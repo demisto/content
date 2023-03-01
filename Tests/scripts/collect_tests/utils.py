@@ -1,7 +1,7 @@
 from configparser import ConfigParser, MissingSectionHeaderError
 from enum import Enum
 from pathlib import Path
-from typing import Any, Iterator, Optional, Union
+from typing import Any, Iterator, Optional, Union, NamedTuple
 
 from demisto_sdk.commands.common.constants import FileType, MarketplaceVersions
 from demisto_sdk.commands.common.tools import json, yaml
@@ -9,7 +9,7 @@ from packaging import version
 from packaging._structures import InfinityType, NegativeInfinityType
 from packaging.version import Version
 
-from Tests.scripts.collect_tests.constants import ALWAYS_INSTALLED_PACKS
+from Tests.scripts.collect_tests.constants import ALWAYS_INSTALLED_PACKS_XSOAR
 from Tests.scripts.collect_tests.exceptions import (
     BlankPackNameException, DeprecatedPackException, NonDictException,
     NonexistentPackException, NonXsoarSupportedPackException,
@@ -171,7 +171,13 @@ class ContentItem(DictFileBased):
     @property
     def _has_no_id(self):
         # some content files may not have an id
-        return self.path.name == 'pack_metadata.json' or self.path.name.endswith('_schema.json')
+        file_path_splitted = self.path.parts
+        return self.path.name == 'pack_metadata.json' \
+            or self.path.name.endswith('_schema.json') \
+            or self.path.name.endswith('testdata.json') \
+            or len(file_path_splitted) > 1 \
+            and file_path_splitted[-2] == 'ReleaseNotes' \
+            and self.path.suffix == '.json'
 
     @property
     def id_(self) -> Optional[str]:  # Optional as some content items don't have an id
@@ -182,6 +188,16 @@ class ContentItem(DictFileBased):
             return self['commonfields']['id']
         if self.path.parent.name == 'Layouts' and self.path.name.startswith('layout-') and self.path.suffix == '.json':
             return self['layout']['id']
+        if self.path.parent.name == 'CorrelationRules' and self.path.suffix == '.yml':
+            return self['global_rule_id']
+        if self.path.parent.name == 'XSIAMDashboards' and self.path.suffix == '.json':
+            return self['dashboards_data'][0]['global_id']
+        if self.path.parent.name == 'Triggers' and self.path.suffix == '.json':
+            return self['trigger_id']
+        if self.path.parent.parent.name == 'XDRCTemplates' and self.path.suffix == '.json':
+            return self['content_global_id']
+        if self.path.parent.name == 'LayoutRules' and self.path.suffix == '.json':
+            return self['rule_id']
         return self['id']
 
     @property
@@ -265,7 +281,7 @@ class PackManager:
 
     def validate_pack(self, pack: str) -> None:
         """raises InvalidPackException if the pack name is not valid."""
-        if pack in ALWAYS_INSTALLED_PACKS:
+        if pack in ALWAYS_INSTALLED_PACKS_XSOAR:
             return
         if not pack:
             raise BlankPackNameException(pack)
@@ -311,3 +327,8 @@ def hotfix_detect_old_script_yml(path: Path):
     if path.parent.name == 'Scripts' and path.name.startswith('script-') and path.suffix == '.yml':
         return FileType.SCRIPT
     return None
+
+
+class FilesToCollect(NamedTuple):
+    changed_files: tuple[str, ...]
+    pack_ids_files_were_removed_from: tuple[str, ...]

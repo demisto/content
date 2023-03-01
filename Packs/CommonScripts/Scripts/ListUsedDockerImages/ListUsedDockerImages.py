@@ -31,14 +31,12 @@ DOCKER_IMAGE = 'dockerImage'
 DEFAULT_DOCKER_IMAGE = 'Default Docker Image'
 
 SCRIPT_TYPE = 'type'
-SCRIPT_ID = 'id'
+SCRIPT_NAME = 'name'
 SCRIPTS = 'scripts'
 
 ENABLED = 'enabled'
 DEPRECATED = 'deprecated'
 IS_INTEGRATION_SCRIPT = 'isIntegrationScript'
-
-MAX_PER_DOCKER = 5
 
 ''' HELPER FUNCTION '''
 
@@ -152,12 +150,12 @@ def extract_dockers_from_automation_search_result(content: str, ignore_deprecate
                 docker_image = 'Default Image Name'
             else:
                 docker_image = script[DOCKER_IMAGE]
-            dockers[script[SCRIPT_ID]] = docker_image
+            dockers[script[SCRIPT_NAME]] = docker_image
 
     return dockers
 
 
-def merge_result(docker_list: dict, result_dict: dict = {}, max_entries_per_docker: int = 5) -> dict:
+def merge_result(docker_list: dict, result_dict: dict = {}) -> dict:
     """Returns a python dict of the merge result
 
     Args:
@@ -181,8 +179,7 @@ def merge_result(docker_list: dict, result_dict: dict = {}, max_entries_per_dock
         if integration_script in ['CommonServerUserPowerShell', 'CommonServerUserPython']:
             continue
         if docker_image in result:
-            if len(result[docker_image]) < max_entries_per_docker:
-                result[docker_image].append(integration_script)
+            result[docker_image].append(integration_script)
         else:
             result[docker_image] = [integration_script]
 
@@ -225,8 +222,8 @@ def list_used_docker_images(export_to_context: bool = True,
         active_docker_list_automation = extract_dockers_from_automation_search_result(
             active_automation['body'], ignore_deprecated_automations)
 
-    result_dict = merge_result(active_docker_list_integration, result_dict, MAX_PER_DOCKER)
-    result_dict = merge_result(active_docker_list_automation, result_dict, MAX_PER_DOCKER)
+    result_dict = merge_result(active_docker_list_integration, result_dict)
+    result_dict = merge_result(active_docker_list_automation, result_dict)
 
     ''' format the result for Markdown view'''
     result_output = []

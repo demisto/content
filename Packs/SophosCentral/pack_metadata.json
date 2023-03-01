@@ -2,17 +2,15 @@
     "name": "Sophos Central",
     "description": "The unified console for managing Sophos products",
     "support": "partner",
-    "currentVersion": "1.1.2",
+    "currentVersion": "1.2.3",
     "author": "Sophos",
     "url": "https://www.sophos.com",
     "email": "apis@sophos.com",
     "created": "2020-11-25T17:22:30Z",
     "categories": [
-        "Data Enrichment & Threat Intelligence"
+        "Network Security"
     ],
-    "tags": [
-        "Network"
-    ],
+    "tags": [],
     "useCases": [],
     "keywords": [],
     "marketplaces": [

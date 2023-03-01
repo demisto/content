@@ -1,0 +1,6 @@
+fromversion: 6.10.0
+id: VMwareESXi
+name: VMware ESXi
+rules: ''
+schema: ''
+tags: VMwareESXi

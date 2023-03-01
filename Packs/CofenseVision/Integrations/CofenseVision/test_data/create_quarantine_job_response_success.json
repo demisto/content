@@ -1,0 +1,99 @@
+{
+  "raw_response": {
+        "id": 1,
+        "createdBy": "test",
+        "createdDate": "2020-12-07T06:32:53.188006",
+        "modifiedBy": "test",
+        "modifiedDate": "2020-12-07T06:32:53.188006",
+        "stopRequested": false,
+        "emailcount": 2,
+        "quarantineEmails": [
+          {
+            "id": 1,
+            "recipientAddress": "recipient1@example.com",
+            "internetMessageId": "<test_id>",
+            "ewsMessageId": null,
+            "status": "NEW",
+            "errorMessage": null,
+            "createdDate": "2020-12-07T06:32:53.193743",
+            "quarantinedDate": null,
+            "originalFolderId": null
+          }
+        ],
+        "quarantineJobRuns": [
+          {
+            "id": 1,
+            "jobRunType": "QUARANTINE",
+            "status": "FAILED",
+            "startedDate": "2020-12-07T06:33:01.465045",
+            "completedDate": "2020-12-07T06:33:01.489754",
+            "total": 2,
+            "error": 0
+          },
+          {
+            "id": 2,
+            "jobRunType": "QUARANTINE",
+            "status": "COMPLETED",
+            "startedDate": "2020-12-07T06:41:31.54015",
+            "completedDate": "2020-12-07T06:41:31.548624",
+            "total": 2,
+            "error": 0
+          }
+        ],
+        "autoQuarantine": true,
+        "matchingIOCs": [
+          "0102030405060708090a0b0c0d0e0f"
+        ],
+        "matchingSources": [
+          "Triage-1"
+        ],
+        "matchingIocInfo": [],
+        "searchId": 12
+      },
+  "outputs": {
+        "id": 1,
+        "createdBy": "test",
+        "createdDate": "2020-12-07T06:32:53.188006",
+        "modifiedBy": "test",
+        "modifiedDate": "2020-12-07T06:32:53.188006",
+        "stopRequested": false,
+        "emailcount": 2,
+        "quarantineEmails": [
+          {
+            "id": 1,
+            "recipientAddress": "recipient1@example.com",
+            "internetMessageId": "<test_id>",
+            "status": "NEW",
+            "createdDate": "2020-12-07T06:32:53.193743"
+          }
+        ],
+        "quarantineJobRuns": [
+          {
+            "id": 1,
+            "jobRunType": "QUARANTINE",
+            "status": "FAILED",
+            "startedDate": "2020-12-07T06:33:01.465045",
+            "completedDate": "2020-12-07T06:33:01.489754",
+            "total": 2,
+            "error": 0
+          },
+          {
+            "id": 2,
+            "jobRunType": "QUARANTINE",
+            "status": "COMPLETED",
+            "startedDate": "2020-12-07T06:41:31.54015",
+            "completedDate": "2020-12-07T06:41:31.548624",
+            "total": 2,
+            "error": 0
+          }
+        ],
+        "autoQuarantine": true,
+        "matchingIOCs": [
+          "0102030405060708090a0b0c0d0e0f"
+        ],
+        "matchingSources": [
+          "Triage-1"
+        ],
+        "searchId": 12
+    }
+}

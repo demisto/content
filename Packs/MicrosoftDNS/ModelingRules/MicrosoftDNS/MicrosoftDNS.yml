@@ -1,9 +1,7 @@
-from_xdr_version: 3.4.0
 fromversion: 6.8.0
 id: Microsoft_DNS
 name: Microsoft DNS
 rules: ''
 schema: ''
 tags: MicrosoftDNS
-to_xdr_version: 3.4.9
 toversion: 6.9.9

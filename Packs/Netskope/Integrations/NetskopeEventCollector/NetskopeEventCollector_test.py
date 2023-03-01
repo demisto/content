@@ -42,7 +42,7 @@ def test_get_sorted_events_by_type():
             "count": 1,
             "_insertion_epoch_timestamp": 1658382261,
             "_id": "c8d6aed8f613f5de0fa5e123",
-            "event_type": "audit"
+            "source_log_event": "audit"
         },
         {
             "timestamp": 1658384700,
@@ -63,7 +63,7 @@ def test_get_sorted_events_by_type():
             "count": 1,
             "_insertion_epoch_timestamp": 1658385000,
             "_id": "d3ad748bf011262fa142123",
-            "event_type": "audit"
+            "source_log_event": "audit"
         }]
 
 
@@ -79,11 +79,12 @@ def test_create_last_run():
         - Verify that when there are no events yet (first fetch) the timestamp for all will be as the first fetch
     """
     assert create_last_run(MOCK_ENTRY, {}) == {'alert': 1657199110, 'audit': 1658384700, 'application': 1656892798,
-                                               'network': 1657693986}
+                                               'network': 1657693986, 'page': 1673866616}
 
     # Still no events - last run should be from first_fetch
-    assert create_last_run([], {'alert': 86400, 'application': 86400, 'audit': 86400, 'network': 86400}) == \
-           {'alert': 86400, 'application': 86400, 'audit': 86400, 'network': 86400}
+    assert create_last_run([], {'alert': 86400, 'application': 86400, 'audit': 86400, 'network': 86400,
+                                'page': 86400}) == \
+           {'alert': 86400, 'application': 86400, 'audit': 86400, 'network': 86400, 'page': 86400}
 
 
 def test_test_module_v2(mocker):
@@ -120,7 +121,7 @@ def test_v2_get_events_command(mocker):
     }
     response, _ = v2_get_events_command(client, args, {})
     assert response.raw_response == MOCK_ENTRY
-    assert len(response.outputs) == 8
+    assert len(response.outputs) == 9
     assert 'Events List' in response.readable_output
 
 
@@ -133,9 +134,9 @@ def test_get_events_v2(mocker):
     Then:
         - Make sure only the events returns.
     """
-    from NetskopeEventCollector import get_events_v2
+    from NetskopeEventCollector import get_events_v2, EVENT_TYPES_V2
     client = Client(BASE_URL, 'netskope_token', 'v2', validate_certificate=False, proxy=False)
     mocker.patch.object(client, 'get_events_request_v2', return_value=EVENTS_RAW_V2)
     response = get_events_v2(client, {}, 1)
-    assert len(response) == 4
+    assert len(response) == len(EVENT_TYPES_V2)
     assert 'results' not in response

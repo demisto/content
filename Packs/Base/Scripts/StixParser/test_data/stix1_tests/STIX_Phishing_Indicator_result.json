@@ -1,0 +1,14 @@
+[
+    {
+        "value": "cf2b3ad32a8a4cfb05e9dfc45875bd70",
+        "indicator_type": "File",
+        "customFields": {},
+        "rawJSON": {
+            "indicator": "cf2b3ad32a8a4cfb05e9dfc45875bd70",
+            "htype": "md5",
+            "type": "File",
+            "indicator_ref": "example:Observable-Pattern-5f1dedd3-ece3-4007-94cd-7d52784c1474",
+            "value": "cf2b3ad32a8a4cfb05e9dfc45875bd70"
+        }
+    }
+]

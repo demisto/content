@@ -314,3 +314,6 @@ outputs:
   type: unknown
 tests:
 - Domain Enrichment - Generic v2 - Test
+marketplaces:
+  - xsoar
+  - marketplacev2

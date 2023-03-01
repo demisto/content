@@ -1,4 +1,7 @@
 category: Analytics & SIEM
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: KnowBe4 KMSAT Event Collector
   version: -1
@@ -11,12 +14,14 @@ configuration:
   options:
   - https://api.events.knowbe4.com
   - https://api-eu.events.knowbe4.com
+  section: Connect
 - displaypassword: API Key
   additionalinfo: The API Key to use for connection.
   name: credentials
   required: true
   hiddenusername: true
   type: 9
+  section: Connect
 - additionalinfo: The time range to consider for the initial data fetch. (<number> <unit>, e.g., 2 days, 2 months, 2 years). Default is 1 day.
   defaultvalue: 1 day
   display: First fetch time interval
@@ -24,6 +29,7 @@ configuration:
   name: first_fetch
   required: false
   type: 0
+  section: Collect
 - additionalinfo: The fetch interval. It is recommended to set it to 5 hours as there are not many events for this API and there's an api-calls daily-limit for the basic API key.
   defaultvalue: 300
   display: Events Fetch Interval
@@ -31,14 +37,20 @@ configuration:
   name: eventFetchInterval
   required: false
   type: 19
+  section: Collect
+  advanced: true
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
+  advanced: true
 description: KnowBe4_KMSAT allows you to push and pull your external data to and from the KnowBe4 console.
 display: 'KnowBe4 KMSAT Event Collector'
 name: KnowBe4 KMSAT Event Collector
@@ -114,7 +126,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.7.33922
+  dockerimage: demisto/python3:3.10.10.48392
   isfetchevents: true
 fromversion: 6.8.0
 tests:

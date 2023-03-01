@@ -3,21 +3,18 @@ commonfields:
   id: Linux
   version: -1
 configuration:
-- additionalinfo: The credentials to associate with the instance. SSH keys can be
-    configured using the credential manager.
+- additionalinfo: The credentials to associate with the instance. SSH keys can be configured using the credential manager, under the Certificate field.
   display: Username
   name: creds
   required: true
   type: 9
-- additionalinfo: The default port to use if one is not specified in the commands
-    `host` argument.
+- additionalinfo: The default port to use if one is not specified in the commands `host` argument.
   defaultvalue: "22"
   display: Default SSH Port
   name: port
   required: true
   type: 0
-- additionalinfo: If multiple hosts are specified in a command, how many hosts should
-    be interacted with concurrently.
+- additionalinfo: If multiple hosts are specified in a command, how many hosts should be interacted with concurrently.
   defaultvalue: "4"
   display: Concurrecy Factor
   name: concurrency
@@ -29,9 +26,7 @@ name: Linux
 script:
   commands:
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -52,9 +47,7 @@ script:
     description: Manages alternative programs for common commands
     name: linux-alternatives
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -62,13 +55,11 @@ script:
       name: command
     - description: An existing script file to be executed in the future.
       name: script_file
-    - description: The count of units in the future to execute the command or script
-        file.
+    - description: The count of units in the future to execute the command or script file.
       name: count
       required: true
     - auto: PREDEFINED
-      description: The type of units in the future to execute the command or script
-        file.
+      description: The type of units in the future to execute the command or script file.
       name: units
       predefined:
       - minutes
@@ -79,8 +70,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: present
-      description: The state dictates if the command or script file should be evaluated
-        as present(added) or absent(deleted).
+      description: The state dictates if the command or script file should be evaluated as present(added) or absent(deleted).
       name: state
       predefined:
       - absent
@@ -92,14 +82,11 @@ script:
     description: Schedule the execution of a command or script file via the at command
     name: linux-at
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
-    - description: The username on the remote host whose authorized_keys file will
-        be modified.
+    - description: The username on the remote host whose authorized_keys file will be modified.
       name: user
       required: true
     - description: The SSH public key(s), as a string or (since Ansible 1.9) url (https://github.com/username.keys).
@@ -120,14 +107,12 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: present
-      description: Whether the given key (with the given key_options) should or should
-        not be in the file.
+      description: Whether the given key (with the given key_options) should or should not be in the file.
       name: state
       predefined:
       - absent
       - present
-    - description: A string of ssh key options to be prepended to the key in the authorized_keys
-        file.
+    - description: A string of ssh key options to be prepended to the key in the authorized_keys file.
       name: key_options
     - default: false
       defaultValue: "False"
@@ -157,17 +142,14 @@ script:
     description: Adds or removes an SSH authorized key
     name: linux-authorized-key
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
     - description: Specifies the path to the file to be managed.
       name: path
       required: true
-    - description: Desired capability to set (with operator and flags, if state is
-        `present`) or remove (if state is `absent`)
+    - description: Desired capability to set (with operator and flags, if state is `present`) or remove (if state is `absent`)
       name: capability
       required: true
     - auto: PREDEFINED
@@ -181,9 +163,7 @@ script:
     description: Manage Linux capabilities
     name: linux-capabilities
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -205,8 +185,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: present
-      description: Whether to ensure the job or environment variable is present or
-        absent.
+      description: Whether to ensure the job or environment variable is present or absent.
       name: state
       predefined:
       - absent
@@ -220,8 +199,7 @@ script:
       name: cron_file
     - default: false
       defaultValue: "False"
-      description: If set, create a backup of the crontab before it is modified. The
-        location of the backup is returned in the `backup_file` variable by this module.
+      description: If set, create a backup of the crontab before it is modified. The location of the backup is returned in the `backup_file` variable by this module.
       name: backup
     - default: false
       defaultValue: '*'
@@ -241,13 +219,11 @@ script:
       name: month
     - default: false
       defaultValue: '*'
-      description: Day of the week that the job should run ( 0-6 for Sunday-Saturday,
-        *, etc )
+      description: Day of the week that the job should run ( 0-6 for Sunday-Saturday, *, etc )
       name: weekday
     - default: false
       defaultValue: "False"
-      description: If the job should be run at reboot. This option is deprecated.
-        Users should use special_time.
+      description: If the job should be run at reboot. This option is deprecated. Users should use special_time.
       name: reboot
     - auto: PREDEFINED
       description: Special time specification nickname.
@@ -284,9 +260,7 @@ script:
     description: Manage cron.d and crontab entries
     name: linux-cron
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -301,8 +275,7 @@ script:
         If specified, the variable will be inserted after the variable specified.
         Used with `state=present`.
       name: insertafter
-    - description: Used with `state=present`. If specified, the variable will be inserted
-        just before the variable specified.
+    - description: Used with `state=present`. If specified, the variable will be inserted just before the variable specified.
       name: insertbefore
     - auto: PREDEFINED
       default: false
@@ -323,24 +296,19 @@ script:
       name: cron_file
     - default: false
       defaultValue: "False"
-      description: If set, create a backup of the crontab before it is modified. The
-        location of the backup is returned in the `backup` variable by this module.
+      description: If set, create a backup of the crontab before it is modified. The location of the backup is returned in the `backup` variable by this module.
       name: backup
     description: Manage variables in crontabs
     name: linux-cronvar
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
     - description: A dconf key to modify or read from the dconf database.
       name: key
       required: true
-    - description: Value to set for the specified dconf key. Value should be specified
-        in GVariant format. Due to complexity of this format, it is best to have a
-        look at existing values in the dconf database. Required for `state=present`.
+    - description: Value to set for the specified dconf key. Value should be specified in GVariant format. Due to complexity of this format, it is best to have a look at existing values in the dconf database. Required for `state=present`.
       name: value
     - auto: PREDEFINED
       default: false
@@ -354,9 +322,7 @@ script:
     description: Modify and read dconf database
     name: linux-dconf
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -391,9 +357,7 @@ script:
     description: Configure a .deb package
     name: linux-debconf
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -427,8 +391,7 @@ script:
       required: true
     - default: false
       defaultValue: "no"
-      description: If `yes`, allows to create new filesystem on devices that already
-        has filesystem.
+      description: If `yes`, allows to create new filesystem on devices that already has filesystem.
       name: force
     - default: false
       defaultValue: "no"
@@ -443,9 +406,7 @@ script:
     description: Makes a filesystem
     name: linux-filesystem
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -498,17 +459,14 @@ script:
       defaultValue: "0"
       description: The amount of time the rule should be in effect for when non-permanent.
       name: timeout
-    - description: The masquerade setting you would like to enable/disable to/from
-        zones within firewalld.
+    - description: The masquerade setting you would like to enable/disable to/from zones within firewalld.
       name: masquerade
     - description: Whether to run this module even when firewalld is offline.
       name: offline
     description: Manage arbitrary ports/services with firewalld
     name: linux-firewalld
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -519,19 +477,14 @@ script:
     description: Gathers facts about remote hosts
     name: linux-gather-facts
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
-    - description: A GConf preference key is an element in the GConf repository that
-        corresponds to an application preference. See man gconftool-2(1)
+    - description: A GConf preference key is an element in the GConf repository that corresponds to an application preference. See man gconftool-2(1)
       name: key
       required: true
-    - description: Preference keys typically have simple values such as strings, integers,
-        or lists of strings and integers. This is ignored if the state is "get". See
-        man gconftool-2(1)
+    - description: Preference keys typically have simple values such as strings, integers, or lists of strings and integers. This is ignored if the state is "get". See man gconftool-2(1)
       name: value
     - auto: PREDEFINED
       description: The type of value being set. This is ignored if the state is "get".
@@ -549,38 +502,30 @@ script:
       - get
       - present
       required: true
-    - description: Specify a configuration source to use rather than the default path.
-        See man gconftool-2(1)
+    - description: Specify a configuration source to use rather than the default path. See man gconftool-2(1)
       name: config_source
     - default: false
       defaultValue: "no"
-      description: Access the config database directly, bypassing server.  If direct
-        is specified then the config_source must be specified as well. See man gconftool-2(1)
+      description: Access the config database directly, bypassing server.  If direct is specified then the config_source must be specified as well. See man gconftool-2(1)
       name: direct
     description: Edit GNOME Configurations
     name: linux-gconftool2
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
-    - description: The name of a getent database supported by the target system (passwd,
-        group, hosts, etc).
+    - description: The name of a getent database supported by the target system (passwd, group, hosts, etc).
       name: database
       required: true
     - default: false
-      description: Key from which to return values from the specified database, otherwise
-        the full contents are returned.
+      description: Key from which to return values from the specified database, otherwise the full contents are returned.
       name: key
     - description: |-
         Override all databases with the specified service
         The underlying system must support the service flag which is not always available.
       name: service
-    - description: "Character used to split the database values into lists/arrays\
-        \ such as ':' or '\t', otherwise  it will try to pick one depending on the\
-        \ database."
+    - description: "Character used to split the database values into lists/arrays such as ':' or '\t', otherwise  it will try to pick one depending on the database."
       name: split
     - default: false
       defaultValue: "yes"
@@ -589,9 +534,7 @@ script:
     description: A wrapper to the unix getent utility
     name: linux-getent
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -628,9 +571,7 @@ script:
     description: Add or remove groups
     name: linux-group
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -656,9 +597,7 @@ script:
     description: Manage hostname
     name: linux-hostname
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -668,27 +607,20 @@ script:
       name: dest
     - description: Name of the interface, required for value changes or option remove
       name: iface
-    - description: Address family of the interface, useful if same interface name
-        is used for both inet and inet6
+    - description: Address family of the interface, useful if same interface name is used for both inet and inet6
       name: address_family
     - description: Name of the option, required for value changes or option remove
       name: option
-    - description: If `option` is not presented for the `interface` and `state` is
-        `present` option will be added. If `option` already exists and is not `pre-up`,
-        `up`, `post-up` or `down`, it's value will be updated. `pre-up`, `up`, `post-up`
-        and `down` options can't be updated, only adding new options, removing existing
-        ones or cleaning the whole option set are supported
+    - description: If `option` is not presented for the `interface` and `state` is `present` option will be added. If `option` already exists and is not `pre-up`, `up`, `post-up` or `down`, it's value will be updated. `pre-up`, `up`, `post-up` and `down` options can't be updated, only adding new options, removing existing ones or cleaning the whole option set are supported
       name: value
     - default: false
       defaultValue: "no"
-      description: Create a backup file including the timestamp information so you
-        can get the original file back if you somehow clobbered it incorrectly.
+      description: Create a backup file including the timestamp information so you can get the original file back if you somehow clobbered it incorrectly.
       name: backup
     - auto: PREDEFINED
       default: false
       defaultValue: present
-      description: If set to `absent` the option or section will be removed if present
-        instead of created.
+      description: If set to `absent` the option or section will be removed if present instead of created.
       name: state
       predefined:
       - present
@@ -701,11 +633,9 @@ script:
         As of Ansible 2.6, the mode may also be the special string `preserve`.
         When set to `preserve` the file will be given the same permissions as the source file.
       name: mode
-    - description: Name of the user that should own the file/directory, as would be
-        fed to `chown`.
+    - description: Name of the user that should own the file/directory, as would be fed to `chown`.
       name: owner
-    - description: Name of the group that should own the file/directory, as would
-        be fed to `chown`.
+    - description: Name of the group that should own the file/directory, as would be fed to `chown`.
       name: group
     - description: |-
         The user part of the SELinux file context.
@@ -747,9 +677,7 @@ script:
     - contextPath: Linux.ifaces.ifaces
       description: interface dictionary
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -890,8 +818,7 @@ script:
         Since there is no way to tell the source or destination ports of such a packet (or ICMP type), such a packet will not match any rules which specify them.
         When the "!" argument precedes fragment argument, the rule will only match head fragments, or unfragmented packets.
       name: fragment
-    - description: This enables the administrator to initialize the packet and byte
-        counters of a rule (during `INSERT`, `APPEND`, `REPLACE` operations).
+    - description: This enables the administrator to initialize the packet and byte counters of a rule (during `INSERT`, `APPEND`, `REPLACE` operations).
       name: set_counters
     - description: |-
         Source port or port range specification.
@@ -900,12 +827,7 @@ script:
         If the first port is omitted, `0` is assumed; if the last is omitted, `65535` is assumed.
         If the first port is greater than the second one they will be swapped.
       name: source_port
-    - description: 'Destination port or port range specification. This can either
-        be a service name or a port number. An inclusive range can also be specified,
-        using the format first:last. If the first port is omitted, ''0'' is assumed;
-        if the last is omitted, ''65535'' is assumed. If the first port is greater
-        than the second one they will be swapped. This is only valid if the rule also
-        specifies one of the following protocols: tcp, udp, dccp or sctp.'
+    - description: 'Destination port or port range specification. This can either be a service name or a port number. An inclusive range can also be specified, using the format first:last. If the first port is omitted, ''0'' is assumed; if the last is omitted, ''65535'' is assumed. If the first port is greater than the second one they will be swapped. This is only valid if the rule also specifies one of the following protocols: tcp, udp, dccp or sctp.'
       name: destination_port
     - description: |-
         This specifies a destination port or range of ports to use, without this, the destination port is never altered.
@@ -963,12 +885,9 @@ script:
       name: uid_owner
     - description: Specifies the GID or group to use in match by owner rule.
       name: gid_owner
-    - description: 'Specifies the error packet type to return while rejecting. It
-        implies "jump: REJECT"'
+    - description: 'Specifies the error packet type to return while rejecting. It implies "jump: REJECT"'
       name: reject_with
-    - description: This allows specification of the ICMP type, which can be a numeric
-        ICMP type, type/code pair, or one of the ICMP type names shown by the command
-        'iptables -p icmp -h'
+    - description: This allows specification of the ICMP type, which can be a numeric ICMP type, type/code pair, or one of the ICMP type names shown by the command 'iptables -p icmp -h'
       name: icmp_type
     - description: |-
         Flushes the specified table and chain of all rules.
@@ -990,9 +909,7 @@ script:
     description: Modify iptables rules
     name: linux-iptables
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -1045,9 +962,7 @@ script:
     description: Uses keytool to import/remove key from java keystore (cacerts)
     name: linux-java-cert
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -1079,9 +994,7 @@ script:
     description: Create or delete a Java keystore in JKS format.
     name: linux-java-keystore
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -1101,9 +1014,7 @@ script:
     description: Block list kernel modules
     name: linux-kernel-blacklist
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -1136,9 +1047,7 @@ script:
     description: Add or remove a host from the C(known_hosts) file
     name: linux-known-hosts
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -1150,9 +1059,7 @@ script:
     - contextPath: Linux.ansible_facts.udp_listen
       description: A list of processes that are listening on a UDP port.
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -1170,9 +1077,7 @@ script:
     description: Creates or removes locales
     name: linux-locale-gen
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -1193,9 +1098,7 @@ script:
     description: Load or unload kernel modules
     name: linux-modprobe
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -1258,15 +1161,12 @@ script:
       name: boot
     - default: false
       defaultValue: "False"
-      description: Create a backup file including the timestamp information so you
-        can get the original file back if you somehow clobbered it incorrectly.
+      description: Create a backup file including the timestamp information so you can get the original file back if you somehow clobbered it incorrectly.
       name: backup
     description: Control active and configured mount points
     name: linux-mount
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -1294,15 +1194,12 @@ script:
         Whether the list of target nodes on the portal should be (re)discovered and added to the persistent iSCSI database.
         Keep in mind that `iscsiadm` discovery resets configuration, like `node.startup` to manual, hence combined with `auto_node_startup=yes` will always return a changed state.
       name: discover
-    - description: Whether the list of nodes in the persistent iSCSI database should
-        be returned by the module.
+    - description: Whether the list of nodes in the persistent iSCSI database should be returned by the module.
       name: show_nodes
     description: Manage iSCSI targets with Open-iSCSI
     name: linux-open-iscsi
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -1346,20 +1243,15 @@ script:
       required: true
     - default: false
       defaultValue: "no"
-      description: Create a backup file including the timestamp information so you
-        can get the original file back if you somehow clobbered it incorrectly.
+      description: Create a backup file including the timestamp information so you can get the original file back if you somehow clobbered it incorrectly.
       name: backup
     - default: false
       defaultValue: "no"
-      description: If set to `yes`, the minimal value will be used or conserved. If
-        the specified value is inferior to the value in the file, file content is
-        replaced with the new value, else content is not modified.
+      description: If set to `yes`, the minimal value will be used or conserved. If the specified value is inferior to the value in the file, file content is replaced with the new value, else content is not modified.
       name: use_min
     - default: false
       defaultValue: "no"
-      description: If set to `yes`, the maximal value will be used or conserved. If
-        the specified value is superior to the value in the file, file content is
-        replaced with the new value, else content is not modified.
+      description: If set to `yes`, the maximal value will be used or conserved. If the specified value is superior to the value in the file, file content is replaced with the new value, else content is not modified.
       name: use_max
     - default: false
       defaultValue: /etc/security/limits.conf
@@ -1371,14 +1263,11 @@ script:
     description: Modify Linux PAM limits
     name: linux-pam-limits
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
-    - description: The name generally refers to the PAM service file to change, for
-        example system-auth.
+    - description: The name generally refers to the PAM service file to change, for example system-auth.
       name: name
       required: true
     - auto: PREDEFINED
@@ -1454,15 +1343,12 @@ script:
       name: path
     - default: false
       defaultValue: "False"
-      description: Create a backup file including the timestamp information so you
-        can get the original file back if you somehow clobbered it incorrectly.
+      description: Create a backup file including the timestamp information so you can get the original file back if you somehow clobbered it incorrectly.
       name: backup
     description: Manage PAM Modules
     name: linux-pamd
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -1545,8 +1431,7 @@ script:
         Where the partition will end as offset from the beginning of the disk, that is, the "distance" from the start of the disk.
         The distance can be specified with all the units supported by parted (except compat) and it is case sensitive, e.g. `10GiB`, `15%`.
       name: part_end
-    - description: Sets the name for the partition number (GPT, Mac, MIPS and PC98
-        only).
+    - description: Sets the name for the partition number (GPT, Mac, MIPS and PC98 only).
       name: name
     - description: A list of the flags that has to be set on the partition.
       isArray: true
@@ -1570,22 +1455,17 @@ script:
     - contextPath: Linux.partition_info.partitions
       description: List of device partitions.
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
     - description: the name of the process you want to get PID for.
       name: name
       required: true
-    description: Retrieves process IDs list if the process is running otherwise return
-      empty list
+    description: Retrieves process IDs list if the process is running otherwise return empty list
     name: linux-pids
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -1595,13 +1475,10 @@ script:
         Data to return for the `ping` return value.
         If this parameter is set to `crash`, the module will cause an exception.
       name: data
-    description: Try to connect to host, verify a usable python and return C(pong)
-      on success
+    description: Try to connect to host, verify a usable python and return C(pong) on success
     name: linux-ping
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -1611,9 +1488,7 @@ script:
     description: Show python path and assert dependency versions
     name: linux-python-requirements-info
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -1642,8 +1517,7 @@ script:
       name: connect_timeout
     - default: false
       defaultValue: whoami
-      description: Command to run on the rebooted host and expect success from to
-        determine the machine is ready for further tasks.
+      description: Command to run on the rebooted host and expect success from to determine the machine is ready for further tasks.
       name: test_command
     - default: false
       defaultValue: Reboot initiated by Ansible
@@ -1659,9 +1533,7 @@ script:
     description: Reboot a machine
     name: linux-reboot
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -1677,15 +1549,12 @@ script:
       required: true
     - default: false
       defaultValue: "False"
-      description: Useful for scenarios (chrooted environment) that you can't get
-        the real SELinux state.
+      description: Useful for scenarios (chrooted environment) that you can't get the real SELinux state.
       name: ignore_selinux_state
     description: Toggles SELinux booleans
     name: linux-seboolean
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -1739,20 +1608,16 @@ script:
       name: reload
     - default: false
       defaultValue: "False"
-      description: Useful for scenarios (chrooted environment) that you can't get
-        the real SELinux state.
+      description: Useful for scenarios (chrooted environment) that you can't get the real SELinux state.
       name: ignore_selinux_state
     description: Manages SELinux file context mapping definitions
     name: linux-sefcontext
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
-    - description: The name of the SELinux policy to use (e.g. `targeted`) will be
-        required if state is not `disabled`.
+    - description: The name of the SELinux policy to use (e.g. `targeted`) will be required if state is not `disabled`.
       name: policy
     - auto: PREDEFINED
       description: The SELinux mode.
@@ -1769,15 +1634,12 @@ script:
     description: Change policy and state of SELinux
     name: linux-selinux
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
     - default: false
-      description: The domain that will be added or removed from the list of permissive
-        domains.
+      description: The domain that will be added or removed from the list of permissive domains.
       name: domain
       required: true
     - description: Indicate if the domain should or should not be set as permissive.
@@ -1795,9 +1657,7 @@ script:
     description: Change permissive domain in SELinux policy
     name: linux-selinux-permissive
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -1809,8 +1669,7 @@ script:
       required: true
     - default: false
       defaultValue: s0
-      description: MLS/MCS Security Range (MLS/MCS Systems only) SELinux Range for
-        SELinux login mapping defaults to the SELinux user record range.
+      description: MLS/MCS Security Range (MLS/MCS Systems only) SELinux Range for SELinux login mapping defaults to the SELinux user record range.
       name: selevel
     - auto: PREDEFINED
       default: false
@@ -1832,9 +1691,7 @@ script:
     description: Manages linux user to SELinux user mapping
     name: linux-selogin
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -1873,9 +1730,7 @@ script:
     description: Manages SELinux network port type definitions
     name: linux-seport
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -1925,9 +1780,7 @@ script:
     description: Manage services
     name: linux-service
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -1937,23 +1790,13 @@ script:
     - contextPath: Linux.ansible_facts.services
       description: States of the services with service name as key.
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
     - default: false
       defaultValue: all
-      description: 'If supplied, restrict the additional facts collected to the given
-        subset. Possible values: `all`, `min`, `hardware`, `network`, `virtual`, `ohai`,
-        and `facter`. Can specify a list of values to specify a larger subset. Values
-        can also be used with an initial `!` to specify that that specific subset
-        should not be collected.  For instance: `!hardware,!network,!virtual,!ohai,!facter`.
-        If `!all` is specified then only the min subset is collected. To avoid collecting
-        even the min subset, specify `!all,!min`. To collect only specific facts,
-        use `!all,!min`, and specify the particular fact subsets. Use the filter parameter
-        if you do not want to display some collected facts.'
+      description: 'If supplied, restrict the additional facts collected to the given subset. Possible values: `all`, `min`, `hardware`, `network`, `virtual`, `ohai`, and `facter`. Can specify a list of values to specify a larger subset. Values can also be used with an initial `!` to specify that that specific subset should not be collected.  For instance: `!hardware,!network,!virtual,!ohai,!facter`. If `!all` is specified then only the min subset is collected. To avoid collecting even the min subset, specify `!all,!min`. To collect only specific facts, use `!all,!min`, and specify the particular fact subsets. Use the filter parameter if you do not want to display some collected facts.'
       name: gather_subset
     - default: false
       defaultValue: "10"
@@ -1961,24 +1804,16 @@ script:
       name: gather_timeout
     - default: false
       defaultValue: '*'
-      description: If supplied, only return facts that match this shell-style (fnmatch)
-        wildcard.
+      description: If supplied, only return facts that match this shell-style (fnmatch) wildcard.
       name: filter
     - default: false
       defaultValue: /etc/ansible/facts.d
-      description: Path used for local ansible facts (`*.fact`) - files in this dir
-        will be run (if executable) and their results be added to `ansible_local`
-        facts if a file is not executable it is read. Check notes for Windows options.
-        (from 2.1 on) File/results format can be JSON or INI-format. The default `fact_path`
-        can be specified in `ansible.cfg` for when setup is automatically called as
-        part of `gather_facts`.
+      description: Path used for local ansible facts (`*.fact`) - files in this dir will be run (if executable) and their results be added to `ansible_local` facts if a file is not executable it is read. Check notes for Windows options. (from 2.1 on) File/results format can be JSON or INI-format. The default `fact_path` can be specified in `ansible.cfg` for when setup is automatically called as part of `gather_facts`.
       name: fact_path
     description: Gathers facts about remote hosts
     name: linux-setup
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -2001,8 +1836,7 @@ script:
       name: ignoreerrors
     - default: false
       defaultValue: "yes"
-      description: If `yes`, performs a `/sbin/sysctl -p` if the `sysctl_file` is
-        updated. If `no`, does not reload `sysctl` even if the `sysctl_file` is updated.
+      description: If `yes`, performs a `/sbin/sysctl -p` if the `sysctl_file` is updated. If `no`, does not reload `sysctl` even if the `sysctl_file` is updated.
       name: reload
     - default: false
       defaultValue: /etc/sysctl.conf
@@ -2015,9 +1849,7 @@ script:
     description: Manage entries in sysctl.conf.
     name: linux-sysctl
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -2026,22 +1858,18 @@ script:
         When using in a chroot environment you always need to specify the full name i.e. (crond.service).
       name: name
     - auto: PREDEFINED
-      description: '`started`/`stopped` are idempotent actions that will not run commands
-        unless necessary. `restarted` will always bounce the service. `reloaded` will
-        always reload.'
+      description: '`started`/`stopped` are idempotent actions that will not run commands unless necessary. `restarted` will always bounce the service. `reloaded` will always reload.'
       name: state
       predefined:
       - reloaded
       - restarted
       - started
       - stopped
-    - description: Whether the service should start on boot. `At least one of state
-        and enabled are required.`
+    - description: Whether the service should start on boot. `At least one of state and enabled are required.`
       name: enabled
     - description: Whether to override existing symlinks.
       name: force
-    - description: Whether the unit should be masked or not, a masked unit is impossible
-        to start.
+    - description: Whether the unit should be masked or not, a masked unit is impossible to start.
       name: masked
     - default: false
       defaultValue: "False"
@@ -2051,8 +1879,7 @@ script:
       name: daemon_reload
     - default: false
       defaultValue: "False"
-      description: Run daemon_reexec command before doing any other operations, the
-        systemd manager will serialize the manager state.
+      description: Run daemon_reexec command before doing any other operations, the systemd manager will serialize the manager state.
       name: daemon_reexec
     - default: false
       defaultValue: "False"
@@ -2071,15 +1898,12 @@ script:
       - global
     - default: false
       defaultValue: "False"
-      description: Do not synchronously wait for the requested operation to finish.
-        Enqueued job will continue without Ansible blocking on its completion.
+      description: Do not synchronously wait for the requested operation to finish. Enqueued job will continue without Ansible blocking on its completion.
       name: no_block
     description: Manage services
     name: linux-systemd
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -2087,23 +1911,18 @@ script:
       name: name
       required: true
     - auto: PREDEFINED
-      description: '`started`/`stopped` are idempotent actions that will not run commands
-        unless necessary. Not all init scripts support `restarted` nor `reloaded`
-        natively, so these will both trigger a stop and start as needed.'
+      description: '`started`/`stopped` are idempotent actions that will not run commands unless necessary. Not all init scripts support `restarted` nor `reloaded` natively, so these will both trigger a stop and start as needed.'
       name: state
       predefined:
       - started
       - stopped
       - restarted
       - reloaded
-    - description: Whether the service should start on boot. `At least one of state
-        and enabled are required.`
+    - description: Whether the service should start on boot. `At least one of state and enabled are required.`
       name: enabled
     - default: false
       defaultValue: "1"
-      description: If the service is being `restarted` or `reloaded` then sleep this
-        many seconds between the stop and start command. This helps to workaround
-        badly behaving services.
+      description: If the service is being `restarted` or `reloaded` then sleep this many seconds between the stop and start command. This helps to workaround badly behaving services.
       name: sleep
     - description: |-
         A substring to look for as would be found in the output of the `ps` command as a stand-in for a status result.
@@ -2114,8 +1933,7 @@ script:
         The runlevels this script should be enabled/disabled from.
         Use this to override the defaults set by the package or init script itself.
       name: runlevels
-    - description: Additional arguments provided on the command line that some init
-        scripts accept.
+    - description: Additional arguments provided on the command line that some init scripts accept.
       name: arguments
     - default: false
       defaultValue: "False"
@@ -2126,9 +1944,7 @@ script:
     description: Manage SysV services.
     name: linux-sysvinit
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -2156,9 +1972,7 @@ script:
     - contextPath: Linux.diff.after
       description: The values after change
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -2268,9 +2082,7 @@ script:
     description: Manage firewall with UFW
     name: linux-ufw
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -2287,8 +2099,7 @@ script:
       name: hidden
     - default: false
       defaultValue: "False"
-      description: Optionally when used with the -u option, this option allows to
-        change the user ID to a non-unique value.
+      description: Optionally when used with the -u option, this option allows to change the user ID to a non-unique value.
       name: non_unique
     - description: Optionally sets the seuser type (user_u) on selinux enabled systems.
       name: seuser
@@ -2328,8 +2139,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: present
-      description: Whether the account should exist or not, taking action if the state
-        is different from what is stated.
+      description: Whether the account should exist or not, taking action if the state is different from what is stated.
       name: state
       predefined:
       - absent
@@ -2342,9 +2152,7 @@ script:
       name: create_home
     - default: false
       defaultValue: "False"
-      description: 'If set to `yes` when used with `home: `, attempt to move the user''s
-        old home directory to the specified directory if it isn''t there already and
-        the old home exists.'
+      description: 'If set to `yes` when used with `home: `, attempt to move the user''s old home directory to the specified directory if it isn''t there already and the old home exists.'
       name: move_home
     - default: false
       defaultValue: "False"
@@ -2450,9 +2258,7 @@ script:
     description: Manage user accounts
     name: linux-user
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -2464,8 +2270,7 @@ script:
       - group
       - project
       required: true
-    - description: The name of the user, group or project to apply the quota to, if
-        other than default.
+    - description: The name of the user, group or project to apply the quota to, if other than default.
       name: name
     - description: The mount point on which to apply the quotas.
       name: mountpoint
@@ -2503,9 +2308,7 @@ script:
     description: Manage quotas on XFS filesystems
     name: linux-xfs-quota
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -2522,10 +2325,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: apr_md5_crypt
-      description: Encryption scheme to be used.  As well as the four choices listed
-        here, you can also use any other hash supported by passlib, such as md5_crypt
-        and sha256_crypt, which are linux passwd hashes.  If you do so the password
-        file will not be compatible with Apache or Nginx
+      description: Encryption scheme to be used.  As well as the four choices listed here, you can also use any other hash supported by passlib, such as md5_crypt and sha256_crypt, which are linux passwd hashes.  If you do so the password file will not be compatible with Apache or Nginx
       name: crypt_scheme
       predefined:
       - apr_md5_crypt
@@ -2542,9 +2342,7 @@ script:
       - absent
     - default: false
       defaultValue: "yes"
-      description: Used with `state=present`. If specified, the file will be created
-        if it does not already exist. If set to "no", will fail if the file does not
-        exist
+      description: Used with `state=present`. If specified, the file will be created if it does not already exist. If set to "no", will fail if the file does not exist
       name: create
     - description: |-
         The permissions the resulting file or directory should have.
@@ -2554,11 +2352,9 @@ script:
         As of Ansible 2.6, the mode may also be the special string `preserve`.
         When set to `preserve` the file will be given the same permissions as the source file.
       name: mode
-    - description: Name of the user that should own the file/directory, as would be
-        fed to `chown`.
+    - description: Name of the user that should own the file/directory, as would be fed to `chown`.
       name: owner
-    - description: Name of the group that should own the file/directory, as would
-        be fed to `chown`.
+    - description: Name of the group that should own the file/directory, as would be fed to `chown`.
       name: group
     - description: |-
         The user part of the SELinux file context.
@@ -2597,9 +2393,7 @@ script:
     description: manage user files for basic authentication
     name: linux-htpasswd
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -2628,25 +2422,21 @@ script:
       - absent
       - signalled
       required: true
-    - description: The signal to send to the program/group, when combined with the
-        'signalled' state. Required when l(state=signalled).
+    - description: The signal to send to the program/group, when combined with the 'signalled' state. Required when l(state=signalled).
       name: signal
     - description: path to supervisorctl executable
       name: supervisorctl_path
     description: Manage the state of a program or group of programs running via supervisord
     name: linux-supervisorctl
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
     - auto: PREDEFINED
       default: false
       defaultValue: present
-      description: Whether the host or user certificate should exist or not, taking
-        action if the state is different from what is stated.
+      description: Whether the host or user certificate should exist or not, taking action if the state is different from what is stated.
       name: state
       predefined:
       - present
@@ -2661,8 +2451,7 @@ script:
       - user
     - default: false
       defaultValue: "False"
-      description: Should the certificate be regenerated even if it already exists
-        and is valid.
+      description: Should the certificate be regenerated even if it already exists and is valid.
       name: force
     - description: Path of the file containing the certificate.
       name: path
@@ -2683,14 +2472,9 @@ script:
         The point in time the certificate is valid to. Time can be specified either as relative time or as absolute timestamp. Time will always be interpreted as UTC. Valid formats are: `[+-]timespec | YYYY-MM-DD | YYYY-MM-DDTHH:MM:SS | YYYY-MM-DD HH:MM:SS | forever` where timespec can be an integer + `[w | d | h | m | s]` (e.g. `+32w1d2h`. Note that if using relative time this module is NOT idempotent.
         Required if `state` is `present`.
       name: valid_to
-    - description: Check if the certificate is valid at a certain point in time. If
-        it is not the certificate will be regenerated. Time will always be interpreted
-        as UTC. Mainly to be used with relative timespec for `valid_from` and / or
-        `valid_to`. Note that if using relative time this module is NOT idempotent.
+    - description: Check if the certificate is valid at a certain point in time. If it is not the certificate will be regenerated. Time will always be interpreted as UTC. Mainly to be used with relative timespec for `valid_from` and / or `valid_to`. Note that if using relative time this module is NOT idempotent.
       name: valid_at
-    - description: Certificates may be limited to be valid for a set of principal
-        (user/host) names. By default, generated certificates are valid for all users
-        or hosts.
+    - description: Certificates may be limited to be valid for a set of principal (user/host) names. By default, generated certificates are valid for all users or hosts.
       isArray: true
       name: principals
     - description: |-
@@ -2711,14 +2495,9 @@ script:
         At present, no options are valid for host keys.
       isArray: true
       name: options
-    - description: Specify the key identity when signing a public key. The identifier
-        that is logged by the server when the certificate is used for authentication.
+    - description: Specify the key identity when signing a public key. The identifier that is logged by the server when the certificate is used for authentication.
       name: identifier
-    - description: 'Specify the certificate serial number. The serial number is logged
-        by the server when the certificate is used for authentication. The certificate
-        serial number may be used in a KeyRevocationList. The serial number may be
-        omitted for checks, but must be specified again for a new certificate. Note:
-        The default value set by ssh-keygen is 0.'
+    - description: 'Specify the certificate serial number. The serial number is logged by the server when the certificate is used for authentication. The certificate serial number may be used in a KeyRevocationList. The serial number may be omitted for checks, but must be specified again for a new certificate. Note: The default value set by ssh-keygen is 0.'
       name: serial_number
     - description: |-
         The permissions the resulting file or directory should have.
@@ -2728,11 +2507,9 @@ script:
         As of Ansible 2.6, the mode may also be the special string `preserve`.
         When set to `preserve` the file will be given the same permissions as the source file.
       name: mode
-    - description: Name of the user that should own the file/directory, as would be
-        fed to `chown`.
+    - description: Name of the user that should own the file/directory, as would be fed to `chown`.
       name: owner
-    - description: Name of the group that should own the file/directory, as would
-        be fed to `chown`.
+    - description: Name of the group that should own the file/directory, as would be fed to `chown`.
       name: group
     - description: |-
         The user part of the SELinux file context.
@@ -2771,36 +2548,24 @@ script:
     description: Generate OpenSSH host or user certificates.
     name: linux-openssh-cert
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
     - auto: PREDEFINED
       default: false
       defaultValue: present
-      description: Whether the private and public keys should exist or not, taking
-        action if the state is different from what is stated.
+      description: Whether the private and public keys should exist or not, taking action if the state is different from what is stated.
       name: state
       predefined:
       - present
       - absent
-    - description: 'Specifies the number of bits in the private key to create. For
-        RSA keys, the minimum size is 1024 bits and the default is 4096 bits. Generally,
-        2048 bits is considered sufficient.  DSA keys must be exactly 1024 bits as
-        specified by FIPS 186-2. For ECDSA keys, size determines the key length by
-        selecting from one of three elliptic curve sizes: 256, 384 or 521 bits. Attempting
-        to use bit lengths other than these three values for ECDSA keys will cause
-        this module to fail. Ed25519 keys have a fixed length and the size will be
-        ignored.'
+    - description: 'Specifies the number of bits in the private key to create. For RSA keys, the minimum size is 1024 bits and the default is 4096 bits. Generally, 2048 bits is considered sufficient.  DSA keys must be exactly 1024 bits as specified by FIPS 186-2. For ECDSA keys, size determines the key length by selecting from one of three elliptic curve sizes: 256, 384 or 521 bits. Attempting to use bit lengths other than these three values for ECDSA keys will cause this module to fail. Ed25519 keys have a fixed length and the size will be ignored.'
       name: size
     - auto: PREDEFINED
       default: false
       defaultValue: rsa
-      description: The algorithm used to generate the SSH private key. `rsa1` is for
-        protocol version 1. `rsa1` is deprecated and may not be supported by every
-        version of ssh-keygen.
+      description: The algorithm used to generate the SSH private key. `rsa1` is for protocol version 1. `rsa1` is deprecated and may not be supported by every version of ssh-keygen.
       name: type
       predefined:
       - rsa
@@ -2812,12 +2577,10 @@ script:
       defaultValue: "False"
       description: Should the key be regenerated even if it already exists
       name: force
-    - description: Name of the files containing the public and private key. The file
-        containing the public key will have the extension `.pub`.
+    - description: Name of the files containing the public and private key. The file containing the public key will have the extension `.pub`.
       name: path
       required: true
-    - description: Provides a new comment to the public key. When checking if the
-        key is in the correct state this will be ignored.
+    - description: Provides a new comment to the public key. When checking if the key is in the correct state this will be ignored.
       name: comment
     - description: |-
         The permissions the resulting file or directory should have.
@@ -2827,11 +2590,9 @@ script:
         As of Ansible 2.6, the mode may also be the special string `preserve`.
         When set to `preserve` the file will be given the same permissions as the source file.
       name: mode
-    - description: Name of the user that should own the file/directory, as would be
-        fed to `chown`.
+    - description: Name of the user that should own the file/directory, as would be fed to `chown`.
       name: owner
-    - description: Name of the group that should own the file/directory, as would
-        be fed to `chown`.
+    - description: Name of the group that should own the file/directory, as would be fed to `chown`.
       name: group
     - description: |-
         The user part of the SELinux file context.
@@ -2870,9 +2631,7 @@ script:
     description: Generate OpenSSH private and public keys.
     name: linux-openssh-keypair
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -2900,20 +2659,17 @@ script:
         If the target is a directory, setting this to `yes` will make it the default ACL for entities created inside the directory.
         Setting `default` to `yes` causes an error if the path is a file.
       name: default
-    - description: The actual user or group that the ACL applies to when matching
-        entity types user or group are selected.
+    - description: The actual user or group that the ACL applies to when matching entity types user or group are selected.
       name: entity
     - auto: PREDEFINED
-      description: The entity type of the ACL to apply, see `setfacl` documentation
-        for more info.
+      description: The entity type of the ACL to apply, see `setfacl` documentation for more info.
       name: etype
       predefined:
       - group
       - mask
       - other
       - user
-    - description: The permissions to apply/remove can be any combination of `r`,
-        `w` and `x` (read, write and execute respectively)
+    - description: The permissions to apply/remove can be any combination of `r`, `w` and `x` (read, write and execute respectively)
       name: permissions
     - description: |-
         DEPRECATED.
@@ -2948,14 +2704,11 @@ script:
     description: Set and retrieve file ACL information.
     name: linux-acl
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
-    - description: Remote absolute path, glob, or list of paths or globs for the file
-        or files to compress or archive.
+    - description: Remote absolute path, glob, or list of paths or globs for the file or files to compress or archive.
       isArray: true
       name: path
       required: true
@@ -2976,8 +2729,7 @@ script:
         The file name of the destination archive.
         This is required when `path` refers to multiple files by either specifying a glob, a directory or multiple paths in a list.
       name: dest
-    - description: Remote absolute path, glob, or list of paths or globs for the file
-        or files to exclude from the archive.
+    - description: Remote absolute path, glob, or list of paths or globs for the file or files to exclude from the archive.
       isArray: true
       name: exclude_path
     - default: false
@@ -2998,11 +2750,9 @@ script:
         As of Ansible 2.6, the mode may also be the special string `preserve`.
         When set to `preserve` the file will be given the same permissions as the source file.
       name: mode
-    - description: Name of the user that should own the file/directory, as would be
-        fed to `chown`.
+    - description: Name of the user that should own the file/directory, as would be fed to `chown`.
       name: owner
-    - description: Name of the group that should own the file/directory, as would
-        be fed to `chown`.
+    - description: Name of the group that should own the file/directory, as would be fed to `chown`.
       name: group
     - description: |-
         The user part of the SELinux file context.
@@ -3041,9 +2791,7 @@ script:
     description: Creates a compressed archive of one or more files or trees
     name: linux-archive
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -3055,8 +2803,7 @@ script:
       required: true
     - default: false
       defaultValue: "False"
-      description: Create a backup file (if `yes`), including the timestamp information
-        so you can get the original file back if you somehow clobbered it incorrectly.
+      description: Create a backup file (if `yes`), including the timestamp information so you can get the original file back if you somehow clobbered it incorrectly.
       name: backup
     - description: A delimiter to separate the file contents.
       name: delimiter
@@ -3074,8 +2821,7 @@ script:
       name: regexp
     - default: false
       defaultValue: "False"
-      description: A boolean that controls if files that start with a '.' will be
-        included or not.
+      description: A boolean that controls if files that start with a '.' will be included or not.
       name: ignore_hidden
     - description: |-
         The validation command to run before copying into place.
@@ -3094,11 +2840,9 @@ script:
         As of Ansible 2.6, the mode may also be the special string `preserve`.
         When set to `preserve` the file will be given the same permissions as the source file.
       name: mode
-    - description: Name of the user that should own the file/directory, as would be
-        fed to `chown`.
+    - description: Name of the user that should own the file/directory, as would be fed to `chown`.
       name: owner
-    - description: Name of the group that should own the file/directory, as would
-        be fed to `chown`.
+    - description: Name of the group that should own the file/directory, as would be fed to `chown`.
       name: group
     - description: |-
         The user part of the SELinux file context.
@@ -3137,9 +2881,7 @@ script:
     description: Assemble configuration files from fragments
     name: linux-assemble
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -3194,18 +2936,15 @@ script:
       name: create
     - default: false
       defaultValue: "False"
-      description: Create a backup file including the timestamp information so you
-        can get the original file back if you somehow clobbered it incorrectly.
+      description: Create a backup file including the timestamp information so you can get the original file back if you somehow clobbered it incorrectly.
       name: backup
     - default: false
       defaultValue: BEGIN
-      description: This will be inserted at `{mark}` in the opening ansible block
-        marker.
+      description: This will be inserted at `{mark}` in the opening ansible block marker.
       name: marker_begin
     - default: false
       defaultValue: END
-      description: This will be inserted at `{mark}` in the closing ansible block
-        marker.
+      description: This will be inserted at `{mark}` in the closing ansible block marker.
       name: marker_end
     - description: |-
         The permissions the resulting file or directory should have.
@@ -3215,11 +2954,9 @@ script:
         As of Ansible 2.6, the mode may also be the special string `preserve`.
         When set to `preserve` the file will be given the same permissions as the source file.
       name: mode
-    - description: Name of the user that should own the file/directory, as would be
-        fed to `chown`.
+    - description: Name of the user that should own the file/directory, as would be fed to `chown`.
       name: owner
-    - description: Name of the group that should own the file/directory, as would
-        be fed to `chown`.
+    - description: Name of the group that should own the file/directory, as would be fed to `chown`.
       name: group
     - description: |-
         The user part of the SELinux file context.
@@ -3263,9 +3000,7 @@ script:
     description: Insert/update/remove a text block surrounded by marker lines
     name: linux-blockinfile
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -3304,10 +3039,7 @@ script:
       name: recurse
     - default: false
       defaultValue: "False"
-      description: 'Force the creation of the symlinks in two cases: the source file
-        does not exist (but will appear later); the destination exists and is a file
-        (so, we need to unlink the `path` file and create symlink to the `src` file
-        in place of it).'
+      description: 'Force the creation of the symlinks in two cases: the source file does not exist (but will appear later); the destination exists and is a file (so, we need to unlink the `path` file and create symlink to the `src` file in place of it).'
       name: force
     - default: false
       defaultValue: "True"
@@ -3345,11 +3077,9 @@ script:
         As of Ansible 2.6, the mode may also be the special string `preserve`.
         When set to `preserve` the file will be given the same permissions as the source file.
       name: mode
-    - description: Name of the user that should own the file/directory, as would be
-        fed to `chown`.
+    - description: Name of the user that should own the file/directory, as would be fed to `chown`.
       name: owner
-    - description: Name of the group that should own the file/directory, as would
-        be fed to `chown`.
+    - description: Name of the group that should own the file/directory, as would be fed to `chown`.
       name: group
     - description: |-
         The user part of the SELinux file context.
@@ -3388,9 +3118,7 @@ script:
     description: Manage files and file properties
     name: linux-file
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -3414,11 +3142,9 @@ script:
         Items whose basenames match an `excludes` pattern are culled from `patterns` matches. Multiple patterns can be specified using a list.
       isArray: true
       name: excludes
-    - description: A regular expression or pattern which should be matched against
-        the file content.
+    - description: A regular expression or pattern which should be matched against the file content.
       name: contains
-    - description: List of paths of directories to search. All paths must be fully
-        qualified.
+    - description: List of paths of directories to search. All paths must be fully qualified.
       isArray: true
       name: paths
       required: true
@@ -3436,8 +3162,7 @@ script:
       - link
     - default: false
       defaultValue: "False"
-      description: If target is a directory, recursively descend into the directory
-        looking for files.
+      description: If target is a directory, recursively descend into the directory looking for files.
       name: recurse
     - description: |-
         Select files whose size is equal to or greater than the specified size.
@@ -3456,13 +3181,11 @@ script:
       - mtime
     - default: false
       defaultValue: "False"
-      description: Set this to `yes` to include hidden files, otherwise they will
-        be ignored.
+      description: Set this to `yes` to include hidden files, otherwise they will be ignored.
       name: hidden
     - default: false
       defaultValue: "False"
-      description: Set this to `yes` to follow symlinks in path for systems with python
-        2.6+.
+      description: Set this to `yes` to follow symlinks in path for systems with python 2.6+.
       name: follow
     - default: false
       defaultValue: "False"
@@ -3482,9 +3205,7 @@ script:
     description: Return a list of files based on specific criteria
     name: linux-find
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -3509,14 +3230,12 @@ script:
       name: value
     - default: false
       defaultValue: "False"
-      description: Create a backup file including the timestamp information so you
-        can get the original file back if you somehow clobbered it incorrectly.
+      description: Create a backup file including the timestamp information so you can get the original file back if you somehow clobbered it incorrectly.
       name: backup
     - auto: PREDEFINED
       default: false
       defaultValue: present
-      description: If set to `absent` the option or section will be removed if present
-        instead of created.
+      description: If set to `absent` the option or section will be removed if present instead of created.
       name: state
       predefined:
       - absent
@@ -3543,11 +3262,9 @@ script:
         As of Ansible 2.6, the mode may also be the special string `preserve`.
         When set to `preserve` the file will be given the same permissions as the source file.
       name: mode
-    - description: Name of the user that should own the file/directory, as would be
-        fed to `chown`.
+    - description: Name of the user that should own the file/directory, as would be fed to `chown`.
       name: owner
-    - description: Name of the group that should own the file/directory, as would
-        be fed to `chown`.
+    - description: Name of the group that should own the file/directory, as would be fed to `chown`.
       name: group
     - description: |-
         The user part of the SELinux file context.
@@ -3586,9 +3303,7 @@ script:
     description: Tweak settings in INI files
     name: linux-ini-file
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -3613,15 +3328,12 @@ script:
       name: force
     - default: false
       defaultValue: 7z
-      description: The path to the `7z` executable to use for extracting files from
-        the ISO.
+      description: The path to the `7z` executable to use for extracting files from the ISO.
       name: executable
     description: Extract files from an ISO image
     name: linux-iso-extract
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -3697,8 +3409,7 @@ script:
       name: create
     - default: false
       defaultValue: "False"
-      description: Create a backup file including the timestamp information so you
-        can get the original file back if you somehow clobbered it incorrectly.
+      description: Create a backup file including the timestamp information so you can get the original file back if you somehow clobbered it incorrectly.
       name: backup
     - default: false
       defaultValue: "False"
@@ -3716,11 +3427,9 @@ script:
         As of Ansible 2.6, the mode may also be the special string `preserve`.
         When set to `preserve` the file will be given the same permissions as the source file.
       name: mode
-    - description: Name of the user that should own the file/directory, as would be
-        fed to `chown`.
+    - description: Name of the user that should own the file/directory, as would be fed to `chown`.
       name: owner
-    - description: Name of the group that should own the file/directory, as would
-        be fed to `chown`.
+    - description: Name of the group that should own the file/directory, as would be fed to `chown`.
       name: group
     - description: |-
         The user part of the SELinux file context.
@@ -3764,9 +3473,7 @@ script:
     description: Manage lines in text files
     name: linux-lineinfile
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -3804,8 +3511,7 @@ script:
       name: before
     - default: false
       defaultValue: "False"
-      description: Create a backup file including the timestamp information so you
-        can get the original file back if you somehow clobbered it incorrectly.
+      description: Create a backup file including the timestamp information so you can get the original file back if you somehow clobbered it incorrectly.
       name: backup
     - description: All arguments accepted by the `file` module also work here.
       name: others
@@ -3821,11 +3527,9 @@ script:
         As of Ansible 2.6, the mode may also be the special string `preserve`.
         When set to `preserve` the file will be given the same permissions as the source file.
       name: mode
-    - description: Name of the user that should own the file/directory, as would be
-        fed to `chown`.
+    - description: Name of the user that should own the file/directory, as would be fed to `chown`.
       name: owner
-    - description: Name of the group that should own the file/directory, as would
-        be fed to `chown`.
+    - description: Name of the group that should own the file/directory, as would be fed to `chown`.
       name: group
     - description: |-
         The user part of the SELinux file context.
@@ -3866,13 +3570,10 @@ script:
         The path to the file to validate is passed in via '%s' which must be present as in the examples below.
         The command is passed securely so shell features like expansion and pipes will not work.
       name: validate
-    description: Replace all instances of a particular string in a file using a back-referenced
-      regular expression
+    description: Replace all instances of a particular string in a file using a back-referenced regular expression
     name: linux-replace
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -3953,8 +3654,7 @@ script:
       description: Numeric id representing the group of the owner
       type: number
     - contextPath: Linux.stat.size
-      description: Size in bytes for a plain file, amount of data for some special
-        files
+      description: Size in bytes for a plain file, amount of data for some special files
       type: number
     - contextPath: Linux.stat.inode
       description: Inode number of the path
@@ -4002,8 +3702,7 @@ script:
       description: Tells you if the invoking user's id matches the owner's id
       type: boolean
     - contextPath: Linux.stat.isgid
-      description: Tells you if the invoking user's group id matches the owner's group
-        id
+      description: Tells you if the invoking user's group id matches the owner's group id
       type: boolean
     - contextPath: Linux.stat.lnk_source
       description: Target of the symlink normalized for the remote filesystem
@@ -4012,8 +3711,7 @@ script:
       description: Target of the symlink.  Note that relative paths remain relative
       type: string
     - contextPath: Linux.stat.md5
-      description: md5 hash of the path; this will be removed in Ansible 2.9 in favor
-        of the checksum return value
+      description: md5 hash of the path; this will be removed in Ansible 2.9 in favor of the checksum return value
       type: string
     - contextPath: Linux.stat.checksum
       description: hash of the path
@@ -4042,9 +3740,7 @@ script:
     - contextPath: Linux.stat.attributes
       description: list of file attributes
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -4076,14 +3772,11 @@ script:
       - push
     - default: false
       defaultValue: "True"
-      description: Mirrors the rsync archive flag, enables recursive, links, perms,
-        times, owner, group flags and -D.
+      description: Mirrors the rsync archive flag, enables recursive, links, perms, times, owner, group flags and -D.
       name: archive
     - default: false
       defaultValue: "False"
-      description: Skip based on checksum, rather than mod-time & size; Note that
-        that "archive" option is still enabled by default - the "checksum" option
-        will not disable it.
+      description: Skip based on checksum, rather than mod-time & size; Note that that "archive" option is still enabled by default - the "checksum" option will not disable it.
       name: checksum
     - default: false
       defaultValue: "True"
@@ -4116,8 +3809,7 @@ script:
       name: links
     - default: false
       defaultValue: "False"
-      description: Copy symlinks as the item that they point to (the referent) is
-        copied, rather than the symlink.
+      description: Copy symlinks as the item that they point to (the referent) is copied, rather than the symlink.
       name: copy_links
     - description: |-
         Preserve permissions.
@@ -4160,26 +3852,21 @@ script:
       name: rsync_opts
     - default: false
       defaultValue: "False"
-      description: Tells rsync to keep the partial file which should make a subsequent
-        transfer of the rest of the file much faster.
+      description: Tells rsync to keep the partial file which should make a subsequent transfer of the rest of the file much faster.
       name: partial
     - default: false
       defaultValue: "False"
       description: Verify destination host key.
       name: verify_host
-    - description: Specify the private key to use for SSH-based rsync connections
-        (e.g. `~/.ssh/id_rsa`).
+    - description: Specify the private key to use for SSH-based rsync connections (e.g. `~/.ssh/id_rsa`).
       name: private_key
     - description: Add a destination to hard link against during the rsync.
       isArray: true
       name: link_dest
-    description: A wrapper around rsync to make common tasks in your playbooks quick
-      and easy
+    description: A wrapper around rsync to make common tasks in your playbooks quick and easy
     name: linux-synchronize
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -4205,9 +3892,7 @@ script:
     description: Creates temporary files and directories
     name: linux-tempfile
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -4226,22 +3911,18 @@ script:
         This option has been deprecated in favor of `remote_src`.
         This option is mutually exclusive with `remote_src`.
       name: copy
-    - description: If the specified absolute path (file or directory) already exists,
-        this step will `not` be run.
+    - description: If the specified absolute path (file or directory) already exists, this step will `not` be run.
       name: creates
     - default: false
       defaultValue: "False"
-      description: If set to True, return the list of files that are contained in
-        the tarball.
+      description: If set to True, return the list of files that are contained in the tarball.
       name: list_files
-    - description: List the directory and file entries that you would like to exclude
-        from the unarchive action.
+    - description: List the directory and file entries that you would like to exclude from the unarchive action.
       isArray: true
       name: exclude
     - default: false
       defaultValue: "False"
-      description: Do not replace existing files that are newer than files from the
-        archive.
+      description: Do not replace existing files that are newer than files from the archive.
       name: keep_newer
     - default: false
       description: |-
@@ -4275,11 +3956,9 @@ script:
         As of Ansible 2.6, the mode may also be the special string `preserve`.
         When set to `preserve` the file will be given the same permissions as the source file.
       name: mode
-    - description: Name of the user that should own the file/directory, as would be
-        fed to `chown`.
+    - description: Name of the user that should own the file/directory, as would be fed to `chown`.
       name: owner
-    - description: Name of the group that should own the file/directory, as would
-        be fed to `chown`.
+    - description: Name of the group that should own the file/directory, as would be fed to `chown`.
       name: group
     - description: |-
         The user part of the SELinux file context.
@@ -4318,9 +3997,7 @@ script:
     description: Unpacks an archive after (optionally) copying it from the local machine.
     name: linux-unarchive
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -4409,8 +4086,7 @@ script:
       - yaml
     - default: false
       defaultValue: "False"
-      description: Create a backup file including the timestamp information so you
-        can get the original file back if you somehow clobbered it incorrectly.
+      description: Create a backup file including the timestamp information so you can get the original file back if you somehow clobbered it incorrectly.
       name: backup
     - default: false
       defaultValue: "False"
@@ -4435,9 +4111,7 @@ script:
     description: Manage bits and pieces of XML files or strings
     name: linux-xml
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -4450,16 +4124,13 @@ script:
       name: removes
     - description: Change into this directory before running the command.
       name: chdir
-    - description: Mapping of expected string/regex and string to respond with. If
-        the response is a list, successive matches return successive responses. List
-        functionality is new in 2.1.
+    - description: Mapping of expected string/regex and string to respond with. If the response is a list, successive matches return successive responses. List functionality is new in 2.1.
       isArray: true
       name: responses
       required: true
     - default: false
       defaultValue: "30"
-      description: Amount of time in seconds to wait for the expected strings. Use
-        `null` to disable timeout.
+      description: Amount of time in seconds to wait for the expected strings. Use `null` to disable timeout.
       name: timeout
     - default: false
       defaultValue: "False"
@@ -4468,9 +4139,7 @@ script:
     description: Executes a command and responds to prompts.
     name: linux-expect
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -4478,8 +4147,7 @@ script:
       name: name
     - default: false
       defaultValue: "no"
-      description: Install packages from local cache, if the packages were installed
-        before
+      description: Install packages from local cache, if the packages were installed before
       name: offline
     - default: false
       defaultValue: "no"
@@ -4504,9 +4172,7 @@ script:
     description: Manage bower packages with bower
     name: linux-bower
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -4515,31 +4181,24 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: present
-      description: The desired state of the Gem bundle. `latest` updates gems to the
-        most recent, acceptable version
+      description: The desired state of the Gem bundle. `latest` updates gems to the most recent, acceptable version
       name: state
       predefined:
       - present
       - latest
     - default: false
       defaultValue: temporary working directory
-      description: The directory to execute the bundler commands from. This directory
-        needs to contain a valid Gemfile or .bundle/ directory
+      description: The directory to execute the bundler commands from. This directory needs to contain a valid Gemfile or .bundle/ directory
       name: chdir
-    - description: A list of Gemfile groups to exclude during operations. This only
-        applies when state is `present`. Bundler considers this a 'remembered' property
-        for the Gemfile and will automatically exclude groups in future operations
-        even if `exclude_groups` is not set
+    - description: A list of Gemfile groups to exclude during operations. This only applies when state is `present`. Bundler considers this a 'remembered' property for the Gemfile and will automatically exclude groups in future operations even if `exclude_groups` is not set
       name: exclude_groups
     - default: false
       defaultValue: "no"
-      description: Only applies if state is `present`. If set removes any gems on
-        the target host that are not in the gemfile
+      description: Only applies if state is `present`. If set removes any gems on the target host that are not in the gemfile
       name: clean
     - default: false
       defaultValue: Gemfile in current directory
-      description: Only applies if state is `present`. The path to the gemfile to
-        use to install gems.
+      description: Only applies if state is `present`. The path to the gemfile to use to install gems.
       name: gemfile
     - default: false
       defaultValue: "no"
@@ -4547,34 +4206,24 @@ script:
       name: local
     - default: false
       defaultValue: "no"
-      description: Only applies if state is `present`. If set it will install gems
-        in ./vendor/bundle instead of the default location. Requires a Gemfile.lock
-        file to have been created prior
+      description: Only applies if state is `present`. If set it will install gems in ./vendor/bundle instead of the default location. Requires a Gemfile.lock file to have been created prior
       name: deployment_mode
     - default: false
       defaultValue: "yes"
-      description: Only applies if state is `present`. Installs gems in the local
-        user's cache or for all users
+      description: Only applies if state is `present`. Installs gems in the local user's cache or for all users
       name: user_install
     - default: false
       defaultValue: RubyGems gem paths
-      description: Only applies if state is `present`. Specifies the directory to
-        install the gems into. If `chdir` is set then this path is relative to `chdir`
+      description: Only applies if state is `present`. Specifies the directory to install the gems into. If `chdir` is set then this path is relative to `chdir`
       name: gem_path
-    - description: Only applies if state is `present`. Specifies the directory to
-        install any gem bins files to. When executed the bin files will run within
-        the context of the Gemfile and fail if any required gem dependencies are not
-        installed. If `chdir` is set then this path is relative to `chdir`
+    - description: Only applies if state is `present`. Specifies the directory to install any gem bins files to. When executed the bin files will run within the context of the Gemfile and fail if any required gem dependencies are not installed. If `chdir` is set then this path is relative to `chdir`
       name: binstub_directory
-    - description: A space separated string of additional commands that can be applied
-        to the Bundler command. Refer to the Bundler documentation for more information
+    - description: A space separated string of additional commands that can be applied to the Bundler command. Refer to the Bundler documentation for more information
       name: extra_args
     description: Manage Ruby Gem dependencies with Bundler
     name: linux-bundler
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -4600,8 +4249,7 @@ script:
       name: prefer_source
     - default: false
       defaultValue: "False"
-      description: Forces installation from package dist even for dev versions (see
-        --prefer-dist).
+      description: Forces installation from package dist even for dev versions (see --prefer-dist).
       name: prefer_dist
     - default: false
       defaultValue: "True"
@@ -4609,8 +4257,7 @@ script:
       name: no_dev
     - default: false
       defaultValue: "False"
-      description: Skips the execution of all scripts defined in composer.json (see
-        --no-scripts).
+      description: Skips the execution of all scripts defined in composer.json (see --no-scripts).
       name: no_scripts
     - default: false
       defaultValue: "False"
@@ -4636,20 +4283,16 @@ script:
       name: apcu_autoloader
     - default: false
       defaultValue: "False"
-      description: Ignore php, hhvm, lib-* and ext-* requirements and force the installation
-        even if the local machine does not fulfill these.
+      description: Ignore php, hhvm, lib-* and ext-* requirements and force the installation even if the local machine does not fulfill these.
       name: ignore_platform_reqs
     description: Dependency Manager for PHP
     name: linux-composer
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
-    - description: The name of the Perl library to install. You may use the "full
-        distribution path", e.g.  MIYAGAWA/Plack-0.99_05.tar.gz
+    - description: The name of the Perl library to install. You may use the "full distribution path", e.g.  MIYAGAWA/Plack-0.99_05.tar.gz
       name: name
     - description: The local directory from where to install
       name: from_path
@@ -4682,9 +4325,7 @@ script:
     description: Manages Perl library dependencies.
     name: linux-cpanm
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -4694,8 +4335,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: present
-      description: The desired state of the gem. `latest` ensures that the latest
-        version is installed.
+      description: The desired state of the gem. `latest` ensures that the latest version is installed.
       name: state
       predefined:
       - present
@@ -4715,9 +4355,7 @@ script:
       name: user_install
     - description: Override the path to the gem executable
       name: executable
-    - description: Install the gems into a specific directory. These gems will be
-        independent from the global installed ones. Specifying this requires user_install
-        to be false.
+    - description: Install the gems into a specific directory. These gems will be independent from the global installed ones. Specifying this requires user_install to be false.
       name: install_dir
     - default: false
       defaultValue: "no"
@@ -4742,9 +4380,7 @@ script:
     description: Manage Ruby gems
     name: linux-gem
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -4771,11 +4407,9 @@ script:
         Use s3://... if the repository is hosted on Amazon S3, added in version 2.2.
         Use file://... if the repository is local, added in version 2.6
       name: repository_url
-    - description: The username to authenticate as to the Maven Repository. Use AWS
-        secret key of the repository is hosted on S3
+    - description: The username to authenticate as to the Maven Repository. Use AWS secret key of the repository is hosted on S3
       name: username
-    - description: The password to authenticate with to the Maven Repository. Use
-        AWS secret access key of the repository is hosted on S3
+    - description: The password to authenticate with to the Maven Repository. Use AWS secret access key of the repository is hosted on S3
       name: password
     - description: Add custom HTTP headers to a request in hash/dict format.
       isArray: true
@@ -4799,8 +4433,7 @@ script:
       name: timeout
     - default: false
       defaultValue: "yes"
-      description: If `no`, SSL certificates will not be validated. This should only
-        be set to `no` when no other option exists.
+      description: If `no`, SSL certificates will not be validated. This should only be set to `no` when no other option exists.
       name: validate_certs
     - default: false
       defaultValue: "no"
@@ -4830,11 +4463,9 @@ script:
         As of Ansible 2.6, the mode may also be the special string `preserve`.
         When set to `preserve` the file will be given the same permissions as the source file.
       name: mode
-    - description: Name of the user that should own the file/directory, as would be
-        fed to `chown`.
+    - description: Name of the user that should own the file/directory, as would be fed to `chown`.
       name: owner
-    - description: Name of the group that should own the file/directory, as would
-        be fed to `chown`.
+    - description: Name of the group that should own the file/directory, as would be fed to `chown`.
       name: group
     - description: |-
         The user part of the SELinux file context.
@@ -4873,9 +4504,7 @@ script:
     description: Downloads an Artifact from a Maven Repository
     name: linux-maven-artifact
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -4903,8 +4532,7 @@ script:
       name: unsafe_perm
     - default: false
       defaultValue: "False"
-      description: Install packages based on package-lock file, same as running npm
-        ci
+      description: Install packages based on package-lock file, same as running npm ci
       name: ci
     - default: false
       defaultValue: "False"
@@ -4924,9 +4552,7 @@ script:
     description: Manage node.js packages with npm
     name: linux-npm
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -4947,9 +4573,7 @@ script:
     description: Manage pear/pecl packages
     name: linux-pear
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -4958,36 +4582,21 @@ script:
         This can be a list (since 2.2) and contain version specifiers (since 2.7).
       isArray: true
       name: name
-    - description: The version number to install of the Python library specified in
-        the `name` parameter.
+    - description: The version number to install of the Python library specified in the `name` parameter.
       name: version
-    - description: The path to a pip requirements file, which should be local to the
-        remote system. File can be specified as a relative path if using the chdir
-        option.
+    - description: The path to a pip requirements file, which should be local to the remote system. File can be specified as a relative path if using the chdir option.
       name: requirements
-    - description: An optional path to a `virtualenv` directory to install into. It
-        cannot be specified together with the 'executable' parameter (added in 2.1).
-        If the virtualenv does not exist, it will be created before installing packages.
-        The optional virtualenv_site_packages, virtualenv_command, and virtualenv_python
-        options affect the creation of the virtualenv.
+    - description: An optional path to a `virtualenv` directory to install into. It cannot be specified together with the 'executable' parameter (added in 2.1). If the virtualenv does not exist, it will be created before installing packages. The optional virtualenv_site_packages, virtualenv_command, and virtualenv_python options affect the creation of the virtualenv.
       name: virtualenv
     - default: false
       defaultValue: "no"
-      description: Whether the virtual environment will inherit packages from the
-        global site-packages directory.  Note that if this setting is changed on an
-        already existing virtual environment it will not have any effect, the environment
-        must be deleted and newly created.
+      description: Whether the virtual environment will inherit packages from the global site-packages directory.  Note that if this setting is changed on an already existing virtual environment it will not have any effect, the environment must be deleted and newly created.
       name: virtualenv_site_packages
     - default: false
       defaultValue: virtualenv
-      description: The command or a pathname to the command to create the virtual
-        environment with. For example `pyvenv`, `virtualenv`, `virtualenv2`, `~/bin/virtualenv`,
-        `/usr/local/bin/virtualenv`.
+      description: The command or a pathname to the command to create the virtual environment with. For example `pyvenv`, `virtualenv`, `virtualenv2`, `~/bin/virtualenv`, `/usr/local/bin/virtualenv`.
       name: virtualenv_command
-    - description: The Python executable used for creating the virtual environment.
-        For example `python3.5`, `python2.7`. When not specified, the Python version
-        used to run the ansible module is used. This parameter should not be used
-        when `virtualenv_command` is using `pyvenv` or the `-m venv` module.
+    - description: The Python executable used for creating the virtual environment. For example `python3.5`, `python2.7`. When not specified, the Python version used to run the ansible module is used. This parameter should not be used when `virtualenv_command` is using `pyvenv` or the `-m venv` module.
       name: virtualenv_python
     - auto: PREDEFINED
       default: false
@@ -5015,37 +4624,27 @@ script:
         Does not affect the Ansible Python interpreter.
         The setuptools package must be installed for both the Ansible Python interpreter and for the version of Python specified by this option.
       name: executable
-    - description: The system umask to apply before installing the pip package. This
-        is useful, for example, when installing on systems that have a very restrictive
-        umask by default (e.g., "0077") and you want to pip install packages which
-        are to be used by all users. Note that this requires you to specify desired
-        umask mode as an octal string, (e.g., "0022").
+    - description: The system umask to apply before installing the pip package. This is useful, for example, when installing on systems that have a very restrictive umask by default (e.g., "0077") and you want to pip install packages which are to be used by all users. Note that this requires you to specify desired umask mode as an octal string, (e.g., "0022").
       name: umask
     description: Manages Python library dependencies
     name: linux-pip
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
     - default: false
       defaultValue: '[''pip'']'
-      description: A list of the pip executables that will be used to get the packages.
-        They can be supplied with the full path or just the executable name, i.e `pip3.7`.
+      description: A list of the pip executables that will be used to get the packages. They can be supplied with the full path or just the executable name, i.e `pip3.7`.
       isArray: true
       name: clients
     description: pip package information
     name: linux-pip-package-info
     outputs:
     - contextPath: Linux.packages.python
-      description: A dictionary with each pip client which then contains a list of
-        dicts with python package information
+      description: A dictionary with each pip client which then contains a list of dicts with python package information
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -5093,23 +4692,17 @@ script:
     description: Manage node.js packages with Yarn
     name: linux-yarn
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
     - default: false
       defaultValue: "no"
-      description: During upgrade, reset versioned world dependencies and change logic
-        to prefer replacing or downgrading packages (instead of holding them) if the
-        currently installed package is no longer available from any repository.
+      description: During upgrade, reset versioned world dependencies and change logic to prefer replacing or downgrading packages (instead of holding them) if the currently installed package is no longer available from any repository.
       name: available
     - description: A package name, like `foo`, or multiple packages, like `foo, bar`.
       name: name
-    - description: A package repository or multiple repositories. Unlike with the
-        underlying apk command, this list will override the system repositories rather
-        than supplement them.
+    - description: A package repository or multiple repositories. Unlike with the underlying apk command, this list will override the system repositories rather than supplement them.
       name: repository
     - auto: PREDEFINED
       default: false
@@ -5126,8 +4719,7 @@ script:
       - latest
     - default: false
       defaultValue: "no"
-      description: Update repository indexes. Can be run with other steps or on it's
-        own.
+      description: Update repository indexes. Can be run with other steps or on it's own.
       name: update_cache
     - default: false
       defaultValue: "no"
@@ -5136,23 +4728,16 @@ script:
     description: Manages apk packages
     name: linux-apk
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
-    - description: A list of package names, like `foo`, or package specifier with
-        version, like `foo=1.0`. Name wildcards (fnmatch) like `apt*` and version
-        wildcards like `foo=1.0*` are also supported.
+    - description: A list of package names, like `foo`, or package specifier with version, like `foo=1.0`. Name wildcards (fnmatch) like `apt*` and version wildcards like `foo=1.0*` are also supported.
       name: name
     - auto: PREDEFINED
       default: false
       defaultValue: present
-      description: Indicates the desired package state. `latest` ensures that the
-        latest version is installed. `build-dep` ensures the package build dependencies
-        are installed. `fixed` attempt to correct a system with broken dependencies
-        in place.
+      description: Indicates the desired package state. `latest` ensures that the latest version is installed. `build-dep` ensures the package build dependencies are installed. `fixed` attempt to correct a system with broken dependencies in place.
       name: state
       predefined:
       - absent
@@ -5162,8 +4747,7 @@ script:
       - fixed
     - default: false
       defaultValue: "no"
-      description: Run the equivalent of `apt-get update` before the operation. Can
-        be run as part of the package installation or as a separate step.
+      description: Run the equivalent of `apt-get update` before the operation. Can be run as part of the package installation or as a separate step.
       name: update_cache
     - default: false
       defaultValue: "0"
@@ -5173,15 +4757,11 @@ script:
       name: cache_valid_time
     - default: false
       defaultValue: "no"
-      description: Will force purging of configuration files if the module state is
-        set to `absent`.
+      description: Will force purging of configuration files if the module state is set to `absent`.
       name: purge
     - description: Corresponds to the `-t` option for `apt` and sets pin priorities
       name: default_release
-    - description: Corresponds to the `--no-install-recommends` option for `apt`.
-        `yes` installs recommended packages.  `no` does not install recommended packages.
-        By default, Ansible will use the same defaults as the operating system. Suggested
-        packages are never installed.
+    - description: Corresponds to the `--no-install-recommends` option for `apt`. `yes` installs recommended packages.  `no` does not install recommended packages. By default, Ansible will use the same defaults as the operating system. Suggested packages are never installed.
       name: install_recommends
     - default: false
       defaultValue: "no"
@@ -5232,8 +4812,7 @@ script:
       name: autoremove
     - default: false
       defaultValue: "no"
-      description: If `yes`, cleans the local repository of retrieved package files
-        that can no longer be downloaded.
+      description: If `yes`, cleans the local repository of retrieved package files that can no longer be downloaded.
       name: autoclean
     - description: |-
         Force the exit code of /usr/sbin/policy-rc.d.
@@ -5252,9 +4831,7 @@ script:
     description: Manages apt-packages
     name: linux-apt
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -5284,16 +4861,12 @@ script:
       - present
     - default: false
       defaultValue: "yes"
-      description: If `no`, SSL certificates for the target url will not be validated.
-        This should only be used on personally controlled sites using self-signed
-        certificates.
+      description: If `no`, SSL certificates for the target url will not be validated. This should only be used on personally controlled sites using self-signed certificates.
       name: validate_certs
     description: Add or remove an apt key
     name: linux-apt-key
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -5321,9 +4894,7 @@ script:
     description: Manage APT repositories via apt-repo
     name: linux-apt-repo
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -5344,29 +4915,20 @@ script:
       name: mode
     - default: false
       defaultValue: "yes"
-      description: Run the equivalent of `apt-get update` when a change occurs.  Cache
-        updates are run after making changes.
+      description: Run the equivalent of `apt-get update` when a change occurs.  Cache updates are run after making changes.
       name: update_cache
     - default: false
       defaultValue: "yes"
-      description: If `no`, SSL certificates for the target repo will not be validated.
-        This should only be used on personally controlled sites using self-signed
-        certificates.
+      description: If `no`, SSL certificates for the target repo will not be validated. This should only be used on personally controlled sites using self-signed certificates.
       name: validate_certs
-    - description: Sets the name of the source list file in sources.list.d. Defaults
-        to a file name based on the repository source url. The .list extension will
-        be automatically added.
+    - description: Sets the name of the source list file in sources.list.d. Defaults to a file name based on the repository source url. The .list extension will be automatically added.
       name: filename
-    - description: Override the distribution codename to use for PPA repositories.
-        Should usually only be set when working with a PPA on a non-Ubuntu target
-        (e.g. Debian or Mint)
+    - description: Override the distribution codename to use for PPA repositories. Should usually only be set when working with a PPA on a non-Ubuntu target (e.g. Debian or Mint)
       name: codename
     description: Add and remove APT repositories
     name: linux-apt-repository
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -5388,9 +4950,7 @@ script:
     description: apt_rpm package manager
     name: linux-apt-rpm
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -5409,9 +4969,7 @@ script:
     description: Dpkg package selection selections
     name: linux-dpkg-selections
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -5457,9 +5015,7 @@ script:
     description: Manage flatpaks
     name: linux-flatpak
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -5502,9 +5058,7 @@ script:
     description: Manage flatpak repository remotes
     name: linux-flatpak-remote
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -5512,11 +5066,7 @@ script:
       name: name
     - default: false
       defaultValue: /usr/local/bin
-      description: A ':' separated list of paths to search for 'brew' executable.
-        Since a package (`formula` in homebrew parlance) location is prefixed relative
-        to the actual path of `brew` command, providing an alternative `brew` path
-        enables managing different set of packages in an alternative location in the
-        system.
+      description: A ':' separated list of paths to search for 'brew' executable. Since a package (`formula` in homebrew parlance) location is prefixed relative to the actual path of `brew` command, providing an alternative `brew` path enables managing different set of packages in an alternative location in the system.
       name: path
     - auto: PREDEFINED
       default: false
@@ -5543,9 +5093,7 @@ script:
     description: Package manager for Homebrew
     name: linux-homebrew
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -5569,8 +5117,7 @@ script:
       name: sudo_password
     - default: false
       defaultValue: "no"
-      description: update homebrew itself first. Note that `brew cask update` is a
-        synonym for `brew update`.
+      description: update homebrew itself first. Note that `brew cask update` is a synonym for `brew update`.
       name: update_homebrew
     - description: options flags to install a package
       name: install_options
@@ -5588,15 +5135,12 @@ script:
       name: upgrade
     - default: false
       defaultValue: "no"
-      description: upgrade casks that auto update; passes --greedy to brew cask outdated
-        when checking if an installed cask has a newer version available
+      description: upgrade casks that auto update; passes --greedy to brew cask outdated when checking if an installed cask has a newer version available
       name: greedy
     description: Install/uninstall homebrew casks.
     name: linux-homebrew-cask
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -5618,25 +5162,19 @@ script:
     description: Tap a Homebrew repository.
     name: linux-homebrew-tap
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
-    - description: The overlay id to install, synchronize, or uninstall. Use 'ALL'
-        to sync all of the installed overlays (can be used only when `state=updated`).
+    - description: The overlay id to install, synchronize, or uninstall. Use 'ALL' to sync all of the installed overlays (can be used only when `state=updated`).
       name: name
       required: true
-    - description: An URL of the alternative overlays list that defines the overlay
-        to install. This list will be fetched and saved under `${overlay_defs}`/${name}.xml),
-        where `overlay_defs` is readed from the Layman's configuration.
+    - description: An URL of the alternative overlays list that defines the overlay to install. This list will be fetched and saved under `${overlay_defs}`/${name}.xml), where `overlay_defs` is readed from the Layman's configuration.
       name: list_url
     - auto: PREDEFINED
       default: false
       defaultValue: present
-      description: Whether to install (`present`), sync (`updated`), or uninstall
-        (`absent`) the overlay.
+      description: Whether to install (`present`), sync (`updated`), or uninstall (`absent`) the overlay.
       name: state
       predefined:
       - present
@@ -5644,16 +5182,12 @@ script:
       - updated
     - default: false
       defaultValue: "yes"
-      description: If `no`, SSL certificates will not be validated. This should only
-        be set to `no` when no other option exists.  Prior to 1.9.3 the code defaulted
-        to `no`.
+      description: If `no`, SSL certificates will not be validated. This should only be set to `no` when no other option exists.  Prior to 1.9.3 the code defaulted to `no`.
       name: validate_certs
     description: Manage Gentoo overlays
     name: linux-layman
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -5677,9 +5211,7 @@ script:
     description: Generic OS package manager
     name: linux-package
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -5701,10 +5233,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: first
-      description: This option controls how the module queries the package managers
-        on the system. `first` means it will return only information for the first
-        supported package manager available. `all` will return information for all
-        supported and available package managers on the system.
+      description: This option controls how the module queries the package managers on the system. `first` means it will return only information for the first supported package manager available. `all` will return information for all supported and available package managers on the system.
       name: strategy
       predefined:
       - first
@@ -5713,15 +5242,9 @@ script:
     name: linux-package-facts
     outputs:
     - contextPath: Linux.ansible_facts.packages
-      description: '[''Maps the package name to a non-empty list of dicts with package
-        information.'', ''Every dict in the list corresponds to one installed version
-        of the package.'', ''The fields described below are present for all package
-        managers. Depending on the package manager, there might be more fields for
-        a package.'']'
+      description: '[''Maps the package name to a non-empty list of dicts with package information.'', ''Every dict in the list corresponds to one installed version of the package.'', ''The fields described below are present for all package managers. Depending on the package manager, there might be more fields for a package.'']'
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -5776,18 +5299,15 @@ script:
       name: conf_file
     - default: false
       defaultValue: "no"
-      description: Whether to disable the GPG checking of signatures of packages being
-        installed. Has an effect only if state is `present` or `latest`.
+      description: Whether to disable the GPG checking of signatures of packages being installed. Has an effect only if state is `present` or `latest`.
       name: disable_gpg_check
     - default: false
       defaultValue: "no"
-      description: Skip packages with broken dependencies(devsolve) and are causing
-        problems.
+      description: Skip packages with broken dependencies(devsolve) and are causing problems.
       name: skip_broken
     - default: false
       defaultValue: "no"
-      description: Force yum to check if cache is out of date and redownload if needed.
-        Has an effect only if state is `present` or `latest`.
+      description: Force yum to check if cache is out of date and redownload if needed. Has an effect only if state is `present` or `latest`.
       name: update_cache
     - default: false
       defaultValue: "yes"
@@ -5804,37 +5324,25 @@ script:
       name: update_only
     - default: false
       defaultValue: /
-      description: Specifies an alternative installroot, relative to which all packages
-        will be installed.
+      description: Specifies an alternative installroot, relative to which all packages will be installed.
       name: installroot
     - default: false
       defaultValue: "no"
-      description: If set to `yes`, and `state=latest` then only installs updates
-        that have been marked security related.
+      description: If set to `yes`, and `state=latest` then only installs updates that have been marked security related.
       name: security
     - default: false
       defaultValue: "no"
-      description: If set to `yes`, and `state=latest` then only installs updates
-        that have been marked bugfix related.
+      description: If set to `yes`, and `state=latest` then only installs updates that have been marked bugfix related.
       name: bugfix
     - default: false
       defaultValue: "no"
-      description: Specify if the named package and version is allowed to downgrade
-        a maybe already installed higher version of that package. Note that setting
-        allow_downgrade=True can make this module behave in a non-idempotent way.
-        The task could end up with a set of packages that does not match the complete
-        list of specified packages to install (because dependencies between the downgraded
-        package and others can cause changes to the packages which were in the earlier
-        transaction).
+      description: Specify if the named package and version is allowed to downgrade a maybe already installed higher version of that package. Note that setting allow_downgrade=True can make this module behave in a non-idempotent way. The task could end up with a set of packages that does not match the complete list of specified packages to install (because dependencies between the downgraded package and others can cause changes to the packages which were in the earlier transaction).
       name: allow_downgrade
-    - description: '`Plugin` name to enable for the install/update operation. The
-        enabled plugin will not persist beyond the transaction.'
+    - description: '`Plugin` name to enable for the install/update operation. The enabled plugin will not persist beyond the transaction.'
       name: enable_plugin
-    - description: '`Plugin` name to disable for the install/update operation. The
-        disabled plugins will not persist beyond the transaction.'
+    - description: '`Plugin` name to disable for the install/update operation. The disabled plugins will not persist beyond the transaction.'
       name: disable_plugin
-    - description: Specifies an alternative release from which all packages will be
-        installed.
+    - description: Specifies an alternative release from which all packages will be installed.
       name: releasever
     - default: false
       defaultValue: "no"
@@ -5869,16 +5377,13 @@ script:
     description: Manages packages with the I(yum) package manager
     name: linux-yum
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
     - default: false
       defaultValue: "yes"
-      description: If set to `yes` Yum will download packages and metadata from this
-        repo in parallel, if possible.
+      description: If set to `yes` Yum will download packages and metadata from this repo in parallel, if possible.
       name: async
     - default: false
       defaultValue: "0"
@@ -5893,22 +5398,15 @@ script:
       name: baseurl
     - default: false
       defaultValue: "1000"
-      description: Relative cost of accessing this repository. Useful for weighing
-        one repo's packages as greater/less than any other.
+      description: Relative cost of accessing this repository. Useful for weighing one repo's packages as greater/less than any other.
       name: cost
     - default: false
       defaultValue: "100"
-      description: When the relative size of deltarpm metadata vs pkgs is larger than
-        this, deltarpm metadata is not downloaded from the repo. Note that you can
-        give values over `100`, so `200` means that the metadata is required to be
-        half the size of the packages. Use `0` to turn off this check, and always
-        download metadata.
+      description: When the relative size of deltarpm metadata vs pkgs is larger than this, deltarpm metadata is not downloaded from the repo. Note that you can give values over `100`, so `200` means that the metadata is required to be half the size of the packages. Use `0` to turn off this check, and always download metadata.
       name: deltarpm_metadata_percentage
     - default: false
       defaultValue: "75"
-      description: When the relative size of delta vs pkg is larger than this, delta
-        is not used. Use `0` to turn off delta rpm processing. Local repositories
-        (with file:// `baseurl`) have delta rpms turned off by default.
+      description: When the relative size of delta vs pkg is larger than this, delta is not used. Use `0` to turn off delta rpm processing. Local repositories (with file:// `baseurl`) have delta rpms turned off by default.
       name: deltarpm_percentage
     - description: |-
         A human readable string describing the repository. This option corresponds to the "name" property in the repo file.
@@ -5920,8 +5418,7 @@ script:
       name: enabled
     - default: false
       defaultValue: "yes"
-      description: Determines whether yum will allow the use of package groups for
-        this repository.
+      description: Determines whether yum will allow the use of package groups for this repository.
       name: enablegroups
     - description: |-
         List of packages to exclude from updates or installs. This should be a space separated list. Shell globs using wildcards (eg. `*` and `?`) are allowed.
@@ -5937,8 +5434,7 @@ script:
       predefined:
       - roundrobin
       - priority
-    - description: File name without the `.repo` extension to save the repo in. Defaults
-        to the value of `name`.
+    - description: File name without the `.repo` extension to save the repo in. Defaults to the value of `name`.
       name: file
     - description: A URL pointing to the ASCII-armored CA key file for the repository.
       name: gpgcakey
@@ -5963,10 +5459,7 @@ script:
       - all
       - packages
       - none
-    - description: Include external configuration file. Both, local path and URL is
-        supported. Configuration file will be inserted at the position of the `include=`
-        line. Included files may contain further include lines. Yum will abort with
-        an error if an inclusion loop is detected.
+    - description: Include external configuration file. Both, local path and URL is supported. Configuration file will be inserted at the position of the `include=` line. Included files may contain further include lines. Yum will abort with an error if an inclusion loop is detected.
       name: include
     - description: |-
         List of packages you want to only use from a repository. This should be a space separated list. Shell globs using wildcards (eg. `*` and `?`) are allowed. Substitution variables (e.g. `$releasever`) are honored here.
@@ -5988,15 +5481,12 @@ script:
       - whatever
     - default: false
       defaultValue: "no"
-      description: This tells yum whether or not HTTP/1.1 keepalive should be used
-        with this repository. This can improve transfer speeds by using one connection
-        when downloading multiple files from a repository.
+      description: This tells yum whether or not HTTP/1.1 keepalive should be used with this repository. This can improve transfer speeds by using one connection when downloading multiple files from a repository.
       name: keepalive
     - auto: PREDEFINED
       default: false
       defaultValue: "1"
-      description: Either `1` or `0`. Determines whether or not yum keeps the cache
-        of headers and packages after successful installation.
+      description: Either `1` or `0`. Determines whether or not yum keeps the cache of headers and packages after successful installation.
       name: keepcache
       predefined:
       - "0"
@@ -6054,8 +5544,7 @@ script:
       defaultValue: "no"
       description: Protect packages from updates from other repositories.
       name: protect
-    - description: URL to the proxy server that yum should use. Set to `_none_` to
-        disable the global proxy setting.
+    - description: URL to the proxy server that yum should use. Set to `_none_` to disable the global proxy setting.
       name: proxy
     - description: Password for this proxy.
       name: proxy_password
@@ -6063,8 +5552,7 @@ script:
       name: proxy_username
     - default: false
       defaultValue: "no"
-      description: This tells yum whether or not it should perform a GPG signature
-        check on the repodata from this repository.
+      description: This tells yum whether or not it should perform a GPG signature check on the repodata from this repository.
       name: repo_gpgcheck
     - default: false
       defaultValue: /etc/yum.repos.d
@@ -6072,8 +5560,7 @@ script:
       name: reposdir
     - default: false
       defaultValue: "10"
-      description: Set the number of times any attempt to retrieve a file should retry
-        before returning an error. Setting this to `0` makes yum try forever.
+      description: Set the number of times any attempt to retrieve a file should retry before returning an error. Setting this to `0` makes yum try forever.
       name: retries
     - default: false
       defaultValue: "no"
@@ -6083,9 +5570,7 @@ script:
       name: s3_enabled
     - default: false
       defaultValue: "no"
-      description: If set to `yes` yum will continue running if this repository cannot
-        be contacted for any reason. This should be set carefully as all repos are
-        consulted for any given command.
+      description: If set to `yes` yum will continue running if this repository cannot be contacted for any reason. This should be set carefully as all repos are consulted for any given command.
       name: skip_if_unavailable
     - default: false
       defaultValue: "no"
@@ -6093,14 +5578,11 @@ script:
         Whether yum should check the permissions on the paths for the certificates on the repository (both remote and local).
         If we can't read any of the files then yum will force `skip_if_unavailable` to be `yes`. This is most useful for non-root processes which use yum on repos that have client cert files which are readable only by root.
       name: ssl_check_cert_permissions
-    - description: Path to the directory containing the databases of the certificate
-        authorities yum should use to verify SSL certificates.
+    - description: Path to the directory containing the databases of the certificate authorities yum should use to verify SSL certificates.
       name: sslcacert
-    - description: Path to the SSL client certificate yum should use to connect to
-        repos/remote sites.
+    - description: Path to the SSL client certificate yum should use to connect to repos/remote sites.
       name: sslclientcert
-    - description: Path to the SSL client key yum should use to connect to repos/remote
-        sites.
+    - description: Path to the SSL client key yum should use to connect to repos/remote sites.
       name: sslclientkey
     - default: false
       defaultValue: "yes"
@@ -6124,12 +5606,9 @@ script:
       name: timeout
     - default: false
       defaultValue: releasever basearch
-      description: When a repository id is displayed, append these yum variables to
-        the string if they are used in the `baseurl`/etc. Variables are appended in
-        the order listed (and found).
+      description: When a repository id is displayed, append these yum variables to the string if they are used in the `baseurl`/etc. Variables are appended in the order listed (and found).
       name: ui_repoid_vars
-    - description: Username to use for basic authentication to a repo or really any
-        url.
+    - description: Username to use for basic authentication to a repo or really any url.
       name: username
     - description: |-
         The permissions the resulting file or directory should have.
@@ -6139,11 +5618,9 @@ script:
         As of Ansible 2.6, the mode may also be the special string `preserve`.
         When set to `preserve` the file will be given the same permissions as the source file.
       name: mode
-    - description: Name of the user that should own the file/directory, as would be
-        fed to `chown`.
+    - description: Name of the user that should own the file/directory, as would be fed to `chown`.
       name: owner
-    - description: Name of the group that should own the file/directory, as would
-        be fed to `chown`.
+    - description: Name of the group that should own the file/directory, as would be fed to `chown`.
       name: group
     - description: |-
         The user part of the SELinux file context.
@@ -6182,9 +5659,7 @@ script:
     description: Add or remove YUM repositories
     name: linux-yum-repository
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -6225,30 +5700,23 @@ script:
       name: extra_args_precommand
     - default: false
       defaultValue: "no"
-      description: Whether to disable to GPG signature checking of the package signature
-        being installed. Has an effect only if state is `present` or `latest`.
+      description: Whether to disable to GPG signature checking of the package signature being installed. Has an effect only if state is `present` or `latest`.
       name: disable_gpg_check
     - default: false
       defaultValue: "yes"
-      description: Corresponds to the `--no-recommends` option for `zypper`. Default
-        behavior (`yes`) modifies zypper's default behavior; `no` does install recommended
-        packages.
+      description: Corresponds to the `--no-recommends` option for `zypper`. Default behavior (`yes`) modifies zypper's default behavior; `no` does install recommended packages.
       name: disable_recommends
     - default: false
       defaultValue: "no"
-      description: Adds `--force` option to `zypper`. Allows to downgrade packages
-        and change vendor or architecture.
+      description: Adds `--force` option to `zypper`. Allows to downgrade packages and change vendor or architecture.
       name: force
     - default: false
       defaultValue: "no"
-      description: Run the equivalent of `zypper refresh` before the operation. Disabled
-        in check mode.
+      description: Run the equivalent of `zypper refresh` before the operation. Disabled in check mode.
       name: update_cache
     - default: false
       defaultValue: "no"
-      description: Adds `--oldpackage` option to `zypper`. Allows to downgrade packages
-        with less side-effects than force. This is implied as soon as a version is
-        specified as part of the package name.
+      description: Adds `--oldpackage` option to `zypper`. Allows to downgrade packages with less side-effects than force. This is implied as soon as a version is specified as part of the package name.
       name: oldpackage
     - description: |-
         Add additional options to `zypper` command.
@@ -6257,9 +5725,7 @@ script:
     description: Manage packages on SUSE and openSUSE
     name: linux-zypper
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -6293,8 +5759,7 @@ script:
       name: priority
     - default: false
       defaultValue: "no"
-      description: Overwrite multiple repository entries, if repositories with both
-        name and URL already exist.
+      description: Overwrite multiple repository entries, if repositories with both name and URL already exist.
       name: overwrite_multiple
     - default: false
       defaultValue: "no"
@@ -6317,9 +5782,7 @@ script:
     description: Add and remove Zypper repositories
     name: linux-zypper-repository
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -6336,30 +5799,23 @@ script:
       - present
     - default: false
       defaultValue: "False"
-      description: Confinement policy. The classic confinement allows a snap to have
-        the same level of access to the system as "classic" packages, like those managed
-        by APT. This option corresponds to the --classic argument. This option can
-        only be specified if there is a single snap in the task.
+      description: Confinement policy. The classic confinement allows a snap to have the same level of access to the system as "classic" packages, like those managed by APT. This option corresponds to the --classic argument. This option can only be specified if there is a single snap in the task.
       name: classic
     - default: false
       defaultValue: stable
-      description: Define which release of a snap is installed and tracked for updates.
-        This option can only be specified if there is a single snap in the task.
+      description: Define which release of a snap is installed and tracked for updates. This option can only be specified if there is a single snap in the task.
       name: channel
     description: Manages snaps
     name: linux-snap
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
     - auto: PREDEFINED
       default: false
       defaultValue: present
-      description: whether to register and subscribe (`present`), or unregister (`absent`)
-        a system
+      description: whether to register and subscribe (`present`), or unregister (`absent`) a system
       name: state
       predefined:
       - present
@@ -6368,11 +5824,9 @@ script:
       name: username
     - description: access.redhat.com or Sat6 password
       name: password
-    - description: Specify an alternative Red Hat Subscription Management or Sat6
-        server
+    - description: Specify an alternative Red Hat Subscription Management or Sat6 server
       name: server_hostname
-    - description: Enable or disable https server certificate verification when connecting
-        to `server_hostname`
+    - description: Enable or disable https server certificate verification when connecting to `server_hostname`
       name: server_insecure
     - description: Specify CDN baseurl
       name: rhsm_baseurl
@@ -6396,8 +5850,7 @@ script:
       name: activationkey
     - description: Organization ID to use in conjunction with activationkey
       name: org_id
-    - description: Register with a specific environment in the destination org. Used
-        with Red Hat Satellite 6.x or Katello
+    - description: Register with a specific environment in the destination org. Used with Red Hat Satellite 6.x or Katello
       name: environment
     - default: false
       defaultValue: ^$
@@ -6432,22 +5885,13 @@ script:
       name: release
     - default: false
       defaultValue: '{}'
-      description: Set syspurpose attributes in file `/etc/rhsm/syspurpose/syspurpose.json`
-        and synchronize these attributes with RHSM server. Syspurpose attributes help
-        attach the most appropriate subscriptions to the system automatically. When
-        `syspurpose.json` file already contains some attributes, then new attributes
-        overwrite existing attributes. When some attribute is not listed in the new
-        list of attributes, the existing attribute will be removed from `syspurpose.json`
-        file. Unknown attributes are ignored.
+      description: Set syspurpose attributes in file `/etc/rhsm/syspurpose/syspurpose.json` and synchronize these attributes with RHSM server. Syspurpose attributes help attach the most appropriate subscriptions to the system automatically. When `syspurpose.json` file already contains some attributes, then new attributes overwrite existing attributes. When some attribute is not listed in the new list of attributes, the existing attribute will be removed from `syspurpose.json` file. Unknown attributes are ignored.
       isArray: true
       name: syspurpose
-    description: Manage registration and subscriptions to RHSM using the C(subscription-manager)
-      command
+    description: Manage registration and subscriptions to RHSM using the C(subscription-manager) command
     name: linux-redhat-subscription
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -6459,8 +5903,7 @@ script:
       required: true
     - default: false
       defaultValue: present
-      description: Whether the channel should be present or not, taking action if
-        the state is different from what is stated.
+      description: Whether the channel should be present or not, taking action if the state is different from what is stated.
       name: state
     - description: The full URL to the RHN/Satellite API.
       name: url
@@ -6474,9 +5917,7 @@ script:
     description: Adds or removes Red Hat software channels
     name: linux-rhn-channel
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -6506,8 +5947,7 @@ script:
       name: systemorgid
     - default: false
       defaultValue: '[]'
-      description: Optionally specify a list of channels to subscribe to upon successful
-        registration.
+      description: Optionally specify a list of channels to subscribe to upon successful registration.
       isArray: true
       name: channels
     - default: false
@@ -6516,15 +5956,12 @@ script:
       name: enable_eus
     - default: false
       defaultValue: "False"
-      description: If `yes`, the registered node will not upload its installed packages
-        information to Satellite server.
+      description: If `yes`, the registered node will not upload its installed packages information to Satellite server.
       name: nopackages
     description: Manage Red Hat Network registration using the C(rhnreg_ks) command
     name: linux-rhn-register
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -6534,17 +5971,14 @@ script:
     description: Set or Unset RHSM Release version
     name: linux-rhsm-release
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
     - auto: PREDEFINED
       default: false
       defaultValue: present
-      description: If state is equal to present or disabled, indicates the desired
-        repository state.
+      description: If state is equal to present or disabled, indicates the desired repository state.
       name: state
       predefined:
       - present
@@ -6559,22 +5993,16 @@ script:
       required: true
     - default: false
       defaultValue: "False"
-      description: Disable all currently enabled repositories that are not not specified
-        in `name`. Only set this to `True` if passing in a list of repositories to
-        the `name` field. Using this with `loop` will most likely not have the desired
-        result.
+      description: Disable all currently enabled repositories that are not not specified in `name`. Only set this to `True` if passing in a list of repositories to the `name` field. Using this with `loop` will most likely not have the desired result.
       name: purge
     description: Manage RHSM repositories using the subscription-manager command
     name: linux-rhsm-repository
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
-    - description: Key that will be modified. Can be a url, a file on the managed
-        node, or a keyid if the key already exists in the database.
+    - description: Key that will be modified. Can be a url, a file on the managed node, or a keyid if the key already exists in the database.
       name: key
       required: true
     - auto: PREDEFINED
@@ -6598,9 +6026,7 @@ script:
     description: Adds or removes a gpg key from the rpm db
     name: linux-rpm-key
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -6628,14 +6054,10 @@ script:
       name: force
     - default: false
       defaultValue: "False"
-      description: Create a backup file including the timestamp information so you
-        can get the original file back if you somehow clobbered it incorrectly.
+      description: Create a backup file including the timestamp information so you can get the original file back if you somehow clobbered it incorrectly.
       name: backup
     - default: false
-      description: If a SHA-256 checksum is passed to this parameter, the digest of
-        the destination file will be calculated after it is downloaded to ensure its
-        integrity and verify that the transfer completed successfully. This option
-        is deprecated. Use `checksum` instead.
+      description: If a SHA-256 checksum is passed to this parameter, the digest of the destination file will be calculated after it is downloaded to ensure its integrity and verify that the transfer completed successfully. This option is deprecated. Use `checksum` instead.
       name: sha256sum
     - default: false
       description: |-
@@ -6646,8 +6068,7 @@ script:
       name: checksum
     - default: false
       defaultValue: "True"
-      description: if `no`, it will not use a proxy, even if one is defined in an
-        environment variable on the target hosts.
+      description: if `no`, it will not use a proxy, even if one is defined in an environment variable on the target hosts.
       name: use_proxy
     - default: false
       defaultValue: "True"
@@ -6701,11 +6122,9 @@ script:
         As of Ansible 2.6, the mode may also be the special string `preserve`.
         When set to `preserve` the file will be given the same permissions as the source file.
       name: mode
-    - description: Name of the user that should own the file/directory, as would be
-        fed to `chown`.
+    - description: Name of the user that should own the file/directory, as would be fed to `chown`.
       name: owner
-    - description: Name of the group that should own the file/directory, as would
-        be fed to `chown`.
+    - description: Name of the group that should own the file/directory, as would be fed to `chown`.
       name: group
     - description: |-
         The user part of the SELinux file context.

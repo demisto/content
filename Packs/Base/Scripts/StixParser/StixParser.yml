@@ -1,16 +1,30 @@
 args:
 - default: true
-  description: ioc xml in stix format
+  description: IOC XML or JSON in STIX format.
   isArray: false
   name: iocXml
-  required: true
-  secret: false
-comment: Parse Stix files to Demisto indicators
+  required: false
+- default: true
+  description: IOC file entry ID.
+  isArray: false
+  name: entry_id
+  required: false
+comment: Parse STIX files to Cortex XSOAR indicators by clicking the **Upload STIX File** button.
 commonfields:
   id: StixParser
   version: -1
 enabled: true
 name: StixParser
+outputs:
+- contextPath: STIXParser.value
+  description: Indicator value.
+  type: String
+- contextPath: STIXParser.type
+  description: Indicator type.
+  type: string
+- contextPath: STIXParser.rawJSON
+  description: Indicator rawJSON.
+  type: string
 script: '-'
 system: true
 tags:
@@ -18,9 +32,9 @@ tags:
 - ioc
 timeout: 0s
 type: python
-subtype: python2
-dockerimage: demisto/stix:1.0.0.34906
+subtype: python3
+dockerimage: demisto/taxii:1.0.0.48109
 tests:
-- STIXParserTest
+- No tests
 dependson: {}
 fromversion: 5.0.0

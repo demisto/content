@@ -6,13 +6,16 @@ from CommonServerUserPython import *
 
 import json
 import requests
+import urllib3
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
+API_KEY = demisto.params().get('credentials', {}).get('password') or demisto.params().get('api_key')
 
-API_KEY = demisto.params()['api_key']
+if API_KEY is None:
+    raise ValueError('Missing API key.')
 
 # Remove trailing slash to prevent wrong URL path to service
 API_URL = demisto.params()['api_url'].rstrip('/')
@@ -64,7 +67,7 @@ def alert_to_demisto_result(alert):
 
     human_readable = tableToMarkdown(f'Alert ID {ec["Shodan"]["Alert"]["ID"]}', {
         'Name': alert.get('name', ''),
-        'IP': alert.get('filters', {'ip', ''})['ip'],
+        'IP': alert.get('filters', {'ip': ''})['ip'],
         'Expires': ec['Shodan']['Alert']['Expires']
     })
 
@@ -188,23 +191,36 @@ def ip_command():
 
         location = f'{round(res.get("latitude", 0.0), 3)},{round(res.get("longitude", 0.0), 3)}'
 
-        ip_details = {
-            'ASN': res.get('asn', ''),
-            'Address': ip,
-            'Hostname': hostname,
-            'Geo': {
-                'Country': res.get('country_name', ''),
-                'Location': location
-            }
-        }
+        relationships_list: list[EntityRelationship] = []
 
-        dbot_score = {
-            'Indicator': ip,
-            'Type': 'ip',
-            'Vendor': 'Shodan_v2',
-            'Score': 0,
-            'Reliability': demisto.params().get('integrationReliability')
-        }
+        vulns_list = res.get('vulns', [])
+        for v in vulns_list:
+            relationships_list.append(EntityRelationship(
+                entity_a=ip,
+                entity_a_type=FeedIndicatorType.IP,
+                name='related-to',
+                entity_b=v,
+                entity_b_type=FeedIndicatorType.CVE,
+                brand='ShodanV2'))
+
+        dbot_score = Common.DBotScore(
+            indicator=ip,
+            indicator_type=DBotScoreType.IP,
+            reliability=demisto.params().get('integrationReliability'),
+            score=0,
+            integration_name='Shodan_v2'
+        )
+
+        ip_details = Common.IP(
+            ip=ip,
+            dbot_score=dbot_score,
+            asn=res.get('asn', ''),
+            hostname=hostname,
+            geo_country=res.get('country_name', ''),
+            geo_latitude=round(res.get("latitude", 0.0), 3),
+            geo_longitude=round(res.get("longitude", 0.0), 3),
+            relationships=relationships_list
+        )
 
         shodan_ip_details = {
             'Tag': res.get('tags', []),
@@ -217,34 +233,35 @@ def ip_command():
             'CountryName': res.get('country_name', ''),
             'Address': ip,
             'OS': res.get('os', ''),
-            'Port': res.get('ports', [])
+            'Port': res.get('ports', []),
+            'Vulnerabilities': vulns_list
         }
 
-        ec = {
-            outputPaths['ip']: ip_details,
-            'DBotScore': dbot_score,
-            'Shodan': {
-                'IP': shodan_ip_details
-            }
+        title = f'Shodan details for IP {ip}'
+
+        human_readable = {
+            'Country': res.get('country_name', ''),
+            'Location': location,
+            'ASN': res.get('asn', ''),
+            'ISP': res.get('isp', ''),
+            'Ports': ', '.join([str(x) for x in res.get('ports', [])]),
+            'Hostname': hostname
         }
 
-        human_readable = tableToMarkdown(f'Shodan details for IP {ip}', {
-            'Country': ec[outputPaths['ip']]['Geo']['Country'],
-            'Location': ec[outputPaths['ip']]['Geo']['Location'],
-            'ASN': ec[outputPaths['ip']]['ASN'],
-            'ISP': ec['Shodan']['IP']['ISP'],
-            'Ports': ', '.join([str(x) for x in ec['Shodan']['IP']['Port']]),
-            'Hostname': ec[outputPaths['ip']]['Hostname']
-        })
+        readable_output = tableToMarkdown(
+            name=title,
+            t=human_readable,
+            removeNull=True
+        )
 
-        demisto.results({
-            'Type': entryTypes['note'],
-            'Contents': res,
-            'ContentsFormat': formats['json'],
-            'HumanReadable': human_readable,
-            'HumanReadableFormat': formats['markdown'],
-            'EntryContext': ec
-        })
+        return CommandResults(
+            readable_output=readable_output,
+            raw_response=res,
+            outputs=shodan_ip_details,
+            relationships=relationships_list,
+            outputs_prefix='Shodan.IP',
+            indicator=ip_details
+        )
 
 
 def shodan_search_count_command():
@@ -436,7 +453,7 @@ if demisto.command() == 'test-module':
 elif demisto.command() == 'search':
     search_command()
 elif demisto.command() == 'ip':
-    ip_command()
+    return_results(ip_command())
 elif demisto.command() == 'shodan-search-count':
     shodan_search_count_command()
 elif demisto.command() == 'shodan-scan-ip':

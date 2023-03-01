@@ -1,0 +1,8 @@
+{
+  "os_type": "AGENT_OS_LINUX",
+  "profile_type": "STANDARD",
+  "name": "LinuxEventsCollection",
+  "content_global_id": "LinuxEventsCollection",
+  "from_xdr_version": "3.5.0",
+  "yaml_template": ""
+}

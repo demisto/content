@@ -1,0 +1,2 @@
+[INGEST:vendor="okta", product="okta", target_dataset="okta_okta_raw" , no_hit=keep]
+alter _time = published;

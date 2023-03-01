@@ -1,4 +1,7 @@
 category: Analytics & SIEM
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: Rapid7 InsightIDR
   version: -1
@@ -13,37 +16,47 @@ configuration:
   - AP
   required: true
   type: 15
+  section: Connect
 - display: InsightIDR API key
   name: apiKey
   required: true
   type: 4
+  section: Connect
 - display: Fetch incidents
   name: isFetch
   required: false
   type: 8
+  section: Collect
 - display: Incident type
   name: incidentType
   required: false
   type: 13
+  section: Connect
 - defaultvalue: 7 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
   required: false
   type: 0
+  section: Collect
 - additionalinfo: Max number of alerts per fetch. Default is 50.
   defaultvalue: '50'
   display: Fetch Limit
   name: max_fetch
   required: false
   type: 0
+  section: Collect
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
+  advanced: true
 description: 'Rapid7 InsightIDR is a Cloud-Based SIEM that detect and respond to security incidents.'
 display: Rapid7 InsightIDR
 name: Rapid7 InsightIDR
@@ -57,27 +70,20 @@ script:
       required: false
       secret: false
     - default: false
-      description: "Only investigations whose\
-        \ createTime is after this date will be returned. If this argument\
-        \ is omitted, investigations with any create_time may be returned. Use ISO\
-        \ time format (e.g., 2018-07-01T00:00:00Z)."
+      description: "Only investigations whose createTime is after this date will be returned. If this argument is omitted, investigations with any create_time may be returned. Use ISO time format (e.g., 2018-07-01T00:00:00Z)."
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
-      description: "Only investigations whose\
-        \ createTime is before this date will be returned. If this argument\
-        \ is omitted, investigations with any create_time may be returned. Use ISO\
-        \ time format (e.g., 2018-07-01T00:00:00Z)."
+      description: "Only investigations whose createTime is before this date will be returned. If this argument is omitted, investigations with any create_time may be returned. Use ISO time format (e.g., 2018-07-01T00:00:00Z)."
       isArray: false
       name: end_time
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Only investigations whose status matches one of the entries in
-        the list will be returned. If this argument is omitted, all investigations will be returned.
+      description: Only investigations whose status matches one of the entries in the list will be returned. If this argument is omitted, all investigations will be returned.
       isArray: false
       name: statuses
       predefined:
@@ -86,15 +92,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: The optional 0-based index of the page to retrieve. Must be an
-        integer greater than or equal to 0.
+      description: The optional 0-based index of the page to retrieve. Must be an integer greater than or equal to 0.
       isArray: false
       name: index
       required: false
       secret: false
     - default: false
-      description: The optional size of the page to retrieve. Must be an integer greater
-        than 0 or less than or equal to 1000.
+      description: The optional size of the page to retrieve. Must be an integer greater than 0 or less than or equal to 1000.
       isArray: false
       name: page_size
       required: false
@@ -178,28 +182,20 @@ script:
       type: String
   - arguments:
     - default: false
-      description: "Only investigations whose\
-        \ createTime is before this date will be returned. If this argument\
-        \ is omitted, investigations with any create_time may be returned - Use ISO\
-        \ time format (e.g., 2018-07-01T00:00:00Z)."
+      description: "Only investigations whose createTime is before this date will be returned. If this argument is omitted, investigations with any create_time may be returned - Use ISO time format (e.g., 2018-07-01T00:00:00Z)."
       isArray: false
       name: start_time
       required: true
       secret: false
     - default: false
-      description: "AOnly investigations whose\
-        \ createTime is before this date will be returned. If this argument\
-        \ is omitted, investigations with any create_time may be returned. Use ISO\
-        \ time format (e.g., 2018-07-01T00:00:00Z)."
+      description: "AOnly investigations whose createTime is before this date will be returned. If this argument is omitted, investigations with any create_time may be returned. Use ISO time format (e.g., 2018-07-01T00:00:00Z)."
       isArray: false
       name: end_time
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The name of an investigation source. Only investigations from this
-        source will be closed. If the source is ALERT, an alert type must be specified
-        as well. Can be "ALERT", "MANUAL", or "HUNT""The LEQL query to match desired log events. Do not use a calculation.more
+      description: The name of an investigation source. Only investigations from this source will be closed. If the source is ALERT, an alert type must be specified as well. Can be "ALERT", "MANUAL", or "HUNT""The LEQL query to match desired log events. Do not use a calculation.more
       isArray: false
       name: source
       predefined:
@@ -209,17 +205,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: The category of alerts to closed. This argument is
-        required if the source is ALERT and ignored for other sources. This value
-        must be an exact match of the alert type returned by the List Investigations response.
+      description: The category of alerts to closed. This argument is required if the source is ALERT and ignored for other sources. This value must be an exact match of the alert type returned by the List Investigations response.
       isArray: true
       name: alert_type
       required: false
       secret: false
     - default: false
-      description: The maximum number of alerts to close with this request.
-        If this argument is not specified then there is no maximum. If this limit
-        is exceeded, then a 400 error response is returned. The minimum value is 0.
+      description: The maximum number of alerts to close with this request. If this argument is not specified then there is no maximum. If this limit is exceeded, then a 400 error response is returned. The minimum value is 0.
       name: max_investigations_to_close
       required: false
       secret: false
@@ -239,8 +231,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: The email address of the user to assign to this investigation.
-        This must be the same email address used to log in to the Insight platform.
+      description: The email address of the user to assign to this investigation. This must be the same email address used to log in to the Insight platform.
       isArray: false
       name: user_email_address
       required: true
@@ -454,38 +445,31 @@ script:
       required: true
       secret: false
     - default: false
-      description: "Lower bound of the time range you want to query against. Format:\
-        \ UNIX timestamp in milliseconds. This is optional if time_range is supplied."
+      description: "Lower bound of the time range you want to query against. Format: UNIX timestamp in milliseconds. This is optional if time_range is supplied."
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
-      description: 'Upper bound of the time range you want to query against. Format:
-        UNIX timestamp in milliseconds.'
+      description: 'Upper bound of the time range you want to query against. Format: UNIX timestamp in milliseconds.'
       isArray: false
       name: end_time
       required: false
       secret: false
     - default: false
-      description: 'The relative time range in a readable format. Optional if "from" \
-        is supplied. For example: Last 4 Days. Note that if start_time, end_time and\
-        \ time_range is not provided the default will be Last 3 days.'
+      description: 'The relative time range in a readable format. Optional if "from" \ is supplied. For example: Last 4 Days. Note that if start_time, end_time and\ \ time_range is not provided the default will be Last 3 days.'
       isArray: false
       name: time_range
       required: false
       secret: false
     - default: false
-      description: "The LEQL query to match desired log events. Do not use a calculation.more\
-        \ info: https://docs.rapid7.com/insightidr/build-a-query/"
+      description: "The LEQL query to match desired log events. Do not use a calculation.more info: https://docs.rapid7.com/insightidr/build-a-query/"
       isArray: false
       name: query
       required: false
       secret: false
     - default: false
-      description: 'The maximum number of log events to download; cannot exceed 20 million.
-        The default is 20 million. The argument value should be written like this: "10 thousand"
-        or "2 million").'
+      description: 'The maximum number of log events to download; cannot exceed 20 million. The default is 20 million. The argument value should be written like this: "10 thousand" or "2 million").'
       isArray: false
       name: limit
       required: false
@@ -509,22 +493,19 @@ script:
       required: true
       secret: false
     - default: false
-      description: A time range string (i.e 1 week, 1 day) - While using
-        this parameter, start_time and end_time isn't needed
+      description: A time range string (i.e 1 week, 1 day) - While using this parameter, start_time and end_time isn't needed
       isArray: false
       name: time_range
       required: false
       secret: false
     - default: false
-      description: 'Lower bound of the time range you want to query against. Format:
-        UNIX timestamp in milliseconds. Example:1450557004000'
+      description: 'Lower bound of the time range you want to query against. Format: UNIX timestamp in milliseconds. Example:1450557004000'
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
-      description: 'Upper bound of the time range you want to query against. Format:
-        UNIX timestamp in milliseconds. Example:1460557604000'
+      description: 'Upper bound of the time range you want to query against. Format: UNIX timestamp in milliseconds. Example:1460557604000'
       isArray: false
       name: end_time
       required: false
@@ -547,10 +528,10 @@ script:
     name: rapid7-insight-idr-query-log
     outputs:
     - contextPath: Rapid7InsightIDR.Event.log_id
-      description: Event message.
+      description: ID of the log the event appears in.
       type: String
     - contextPath: Rapid7InsightIDR.Event.message
-      description: ID of the log the event appears in.
+      description: Event message.
       type: String
     - contextPath: Rapid7InsightIDR.Event.timestamp
       description: Time when the event was triggered.
@@ -569,22 +550,19 @@ script:
       required: true
       secret: false
     - default: false
-      description: A time range string (e.g., 1 week, 1 day) - While using
-        this parameter, start_time and end_time isn't needed
+      description: A time range string (e.g., 1 week, 1 day) - While using this parameter, start_time and end_time isn't needed
       isArray: false
       name: time_range
       required: false
       secret: false
     - default: false
-      description: 'Lower bound of the time range you want to query against. Format:
-        UNIX timestamp in milliseconds. Example:1450557004000'
+      description: 'Lower bound of the time range you want to query against. Format: UNIX timestamp in milliseconds. Example:1450557004000'
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
-      description: 'Upper bound of the time range you want to query against. Format:
-        UNIX timestamp in milliseconds. Example:1460557604000'
+      description: 'Upper bound of the time range you want to query against. Format: UNIX timestamp in milliseconds. Example:1460557604000'
       isArray: false
       name: end_time
       required: false
@@ -607,15 +585,15 @@ script:
     name: rapid7-insight-idr-query-log-set
     outputs:
     - contextPath: Rapid7InsightIDR.Event.log_id
-      description: Event message.
+      description: ID of the log the event appears in.
       type: String
     - contextPath: Rapid7InsightIDR.Event.message
-      description: ID of the log the event appears in.
+      description: Event message.
       type: String
     - contextPath: Rapid7InsightIDR.Event.timestamp
       description: Time when the event was triggered.
       type: Number
-  dockerimage: demisto/python3:3.10.5.31928
+  dockerimage: demisto/python3:3.10.9.45313
   feed: false
   isfetch: true
   longRunning: false

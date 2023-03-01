@@ -8,6 +8,7 @@ from requests import Response
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from requests.auth import HTTPDigestAuth
+import urllib3
 
 # ----------------------------------------- Constants ---------------------------
 PAGE_NUMBER_ERROR_MSG = 'Invalid input Error: page number should be a positive number'
@@ -176,7 +177,7 @@ class Client(BaseClient):
         return response
 
     def sessions_pcap_request(self,
-                              ids: str,
+                              ids: Optional[str],
                               expression: Optional[str],
                               start_time: Optional[str],
                               stop_time: Optional[str]):
@@ -792,7 +793,7 @@ def sessions_csv_get_command(client: Client,
 
 
 def sessions_pcap_get_command(client: Client,
-                              ids: str,
+                              ids: str = None,
                               expression: str = None,
                               start_time: str = None,
                               stop_time: str = None) -> Dict:
@@ -1076,7 +1077,7 @@ def main() -> None:
     demisto.debug(f'Command being called is {command}')
 
     try:
-        requests.packages.urllib3.disable_warnings()
+        urllib3.disable_warnings()
         client: Client = Client(urljoin(url, ''), verify_certificate, proxy, headers=headers, auth=auth)
 
         commands: Dict[str, Callable] = {

@@ -1,0 +1,275 @@
+id: Rapid7 - Nexpose - Enrichment
+version: -1
+name: Rapid7 - Nexpose - Enrichment
+description: Given an IP address, this playbook searches Rapid7 Nexpose assets for an asset with the associated IP address to retrieve asset information and proceeds to return all associated tags with it.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 991113ea-0dcc-41d0-8db7-88878c9240af
+    type: start
+    task:
+      id: 991113ea-0dcc-41d0-8db7-88878c9240af
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 8fdb21c9-d2af-43ce-8d8d-5a21aa6a6711
+    type: regular
+    task:
+      id: 8fdb21c9-d2af-43ce-8d8d-5a21aa6a6711
+      version: -1
+      name: Search for asset information in Nexpose
+      description: Search and return all assets matching the IP address. Returns only assets the user has access to.
+      script: Rapid7 Nexpose|||nexpose-search-assets
+      type: regular
+      iscommand: true
+      brand: Rapid7 Nexpose
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      ipAddressIs:
+        complex:
+          root: inputs.IP
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 200,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 362b2f00-e0f9-4a2e-8cad-c55c67ccb2bd
+    type: regular
+    task:
+      id: 362b2f00-e0f9-4a2e-8cad-c55c67ccb2bd
+      version: -1
+      name: Get asset tags related to asset
+      description: Returns the specified tags for an asset.
+      script: Rapid7 Nexpose|||nexpose-get-asset-tags
+      type: regular
+      iscommand: true
+      brand: Rapid7 Nexpose
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      asset_id:
+        complex:
+          root: 'Nexpose.Asset'
+          accessor: AssetId
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 200,
+          "y": 640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 128307bb-2c48-412e-8a51-e0f0df902ce4
+    type: condition
+    task:
+      id: 128307bb-2c48-412e-8a51-e0f0df902ce4
+      version: -1
+      name: Is Rapid7 Nexpose enabled?
+      description: Determines if the "Rapid7 Nexpose" integration instance is enabled in order to find assets and asset tags.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "1"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Rapid7 Nexpose
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 1175f95a-8df9-4fd3-8ba5-eb9e8ba8cfc5
+    type: title
+    task:
+      id: 1175f95a-8df9-4fd3-8ba5-eb9e8ba8cfc5
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 7597e8b2-f4f2-493d-87cf-1dc207f6c799
+    type: condition
+    task:
+      id: 7597e8b2-f4f2-493d-87cf-1dc207f6c799
+      version: -1
+      name: Was an asset found?
+      description: Check if an asset was found from Rapid7.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: Nexpose
+                accessor: Asset
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 200,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "3_1_yes": 0.52,
+      "3_4_#default#": 0.19,
+      "5_2_yes": 0.6,
+      "5_4_#default#": 0.2
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1075,
+        "width": 630,
+        "x": 200,
+        "y": -130
+      }
+    }
+  }
+inputs:
+- key: IP
+  value:
+    simple:
+  required: true
+  description: IP used to search for asset information and tags.
+  playbookInputQuery:
+outputs:
+- contextPath: Nexpose.Asset
+  description: List of asset(s) information from the Nexpose search.
+  type: unknown
+- contextPath: Nexpose.AssetTag
+  description: List of asset tags from the Nexpose tag search.
+  type: unknown
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0

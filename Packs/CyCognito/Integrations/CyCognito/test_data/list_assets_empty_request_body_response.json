@@ -1,0 +1,43 @@
+[
+  {
+    "severe_issues": 1,
+    "ip_addresses": [
+      "dummy"
+    ],
+    "id": "test-1",
+    "organizations": [
+      "Acme Homes"
+    ],
+    "sub_domains": [
+      "domain/test-1"
+    ],
+    "first_seen": "2021-07-22T03:27:19.641Z",
+    "security_grade": "F",
+    "investigation_status": "investigated",
+    "domain": "dummy-2",
+    "last_seen": "2022-03-24T04:26:03.296Z",
+    "type": "domain",
+    "hosting_type": "owned",
+    "status": "normal",
+    "issues_count": 1
+  },
+  {
+    "severe_issues": 1,
+    "id": "issue/test-2",
+    "organizations": [
+      "Acme Corporation"
+    ],
+    "sub_domains": [
+      "domain/dummy-1"
+    ],
+    "first_seen": "2021-07-24T15:34:54.458Z",
+    "security_grade": "D",
+    "investigation_status": "investigating",
+    "domain": "dummy-1",
+    "last_seen": "2022-03-24T04:26:03.296Z",
+    "type": "domain",
+    "hosting_type": "owned",
+    "status": "normal",
+    "issues_count": 1
+  }
+]

@@ -1,0 +1,2 @@
+[INGEST:vendor="gitlab", product="gitlab", target_dataset="gitlab_gitlab_raw", no_hit = keep]
+alter _time = created_at;

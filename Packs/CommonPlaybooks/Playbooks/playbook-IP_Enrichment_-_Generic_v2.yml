@@ -98,6 +98,9 @@ tasks:
       ResolveIP:
         complex:
           root: inputs.ResolveIP
+      UseReputationCommand:
+        complex:
+          root: inputs.UseReputationCommand
     separatecontext: true
     loop:
       iscommand: false
@@ -200,8 +203,23 @@ inputs:
   value:
     complex:
       root: inputs.ResolveIP
+      transformers:
+        - operator: SetIfEmpty
+          args:
+            applyIfEmpty: { }
+            defaultValue:
+              value:
+                simple: "False"
   required: true
   description: Determines whether to convert the IP address to a hostname using a DNS query (True/ False).
+- key: UseReputationCommand
+  value:
+    simple: "False"
+  required: true
+  description: |-
+    Define if you would like to use the !IP command.
+    Note: This input should be used whenever there is no auto-extract enabled in the investigation flow.
+    Possible values: True / False.
 outputs:
 - contextPath: IP
   description: The IP objects

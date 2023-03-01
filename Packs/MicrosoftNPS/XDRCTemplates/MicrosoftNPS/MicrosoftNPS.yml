@@ -1,0 +1,10 @@
+filebeat.inputs:
+- type: filestream
+  enabled: true
+  paths:
+    - c:\windows\system32\logfiles\NPS\*.log
+  processors:
+    - add_fields:
+        fields:
+          vendor: msft
+          product: nps

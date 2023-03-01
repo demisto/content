@@ -477,6 +477,8 @@ tasks:
     scriptarguments:
       odata:
         simple: $filter=from/emailAddress/name eq 'testuser_DO_NOT_DELETE'
+      page_size:
+        simple: "1"
       user_id:
         simple: oren@demistodev.onmicrosoft.com
     separatecontext: false

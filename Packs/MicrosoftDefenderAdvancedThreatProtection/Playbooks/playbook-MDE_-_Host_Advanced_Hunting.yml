@@ -40,6 +40,11 @@ inputs:
   playbookInputQuery:
   required: false
   value: {}
+- key: QueryBatch
+  value: {}
+  required: false
+  description: Define the custom queries you would like to run as a part of the 'MDE - Host Advanced Hunting' playbook.  This input will be passed to the 'query_batch' argument in the '!microsoft-atp-advanced-hunting' command. For more information and examples, check the command's hints.
+  playbookInputQuery:
 name: MDE - Host Advanced Hunting
 outputs:
 - contextPath: MicrosoftATP.HuntTampering
@@ -108,6 +113,7 @@ tasks:
       - '13'
       - '85'
       - '90'
+      - "91"
     note: false
     quietmode: 0
     separatecontext: false
@@ -129,6 +135,7 @@ tasks:
           "y": 60
         }
       }
+    continueonerrortype: ""
   '3':
     id: '3'
     ignoreworker: false
@@ -159,6 +166,7 @@ tasks:
           "y": 210
         }
       }
+    continueonerrortype: ""
   '9':
     id: '9'
     ignoreworker: false
@@ -190,6 +198,7 @@ tasks:
           "y": 420
         }
       }
+    continueonerrortype: ""
   '13':
     id: '13'
     ignoreworker: false
@@ -220,6 +229,7 @@ tasks:
           "y": 210
         }
       }
+    continueonerrortype: ""
   '17':
     id: '17'
     ignoreworker: false
@@ -250,6 +260,7 @@ tasks:
           "y": 210
         }
       }
+    continueonerrortype: ""
   '26':
     id: '26'
     ignoreworker: false
@@ -280,6 +291,7 @@ tasks:
           "y": 570
         }
       }
+    continueonerrortype: ""
   '27':
     id: '27'
     ignoreworker: false
@@ -310,6 +322,7 @@ tasks:
           "y": 570
         }
       }
+    continueonerrortype: ""
   '28':
     id: '28'
     ignoreworker: false
@@ -340,6 +353,7 @@ tasks:
           "y": 420
         }
       }
+    continueonerrortype: ""
   '29':
     evidencedata:
       customfields: {}
@@ -380,6 +394,7 @@ tasks:
           "y": 715
         }
       }
+    continueonerrortype: ""
   '37':
     evidencedata:
       customfields: {}
@@ -424,6 +439,7 @@ tasks:
           "y": 715
         }
       }
+    continueonerrortype: ""
   '38':
     evidencedata:
       customfields: {}
@@ -468,6 +484,7 @@ tasks:
           "y": 715
         }
       }
+    continueonerrortype: ""
   '40':
     id: '40'
     ignoreworker: false
@@ -495,6 +512,7 @@ tasks:
           "y": 1280
         }
       }
+    continueonerrortype: ""
   '49':
     conditions:
     - condition:
@@ -537,6 +555,7 @@ tasks:
           "y": 915
         }
       }
+    continueonerrortype: ""
   '50':
     id: '50'
     ignoreworker: false
@@ -575,6 +594,7 @@ tasks:
           "y": 1100
         }
       }
+    continueonerrortype: ""
   '53':
     id: '53'
     ignoreworker: false
@@ -611,6 +631,7 @@ tasks:
           "y": 1100
         }
       }
+    continueonerrortype: ""
   '54':
     conditions:
     - condition:
@@ -653,6 +674,7 @@ tasks:
           "y": 915
         }
       }
+    continueonerrortype: ""
   '80':
     id: '80'
     ignoreworker: false
@@ -725,6 +747,7 @@ tasks:
           "y": 505
         }
       }
+    continueonerrortype: ""
   '81':
     id: '81'
     ignoreworker: false
@@ -797,6 +820,7 @@ tasks:
           "y": 505
         }
       }
+    continueonerrortype: ""
   '82':
     id: '82'
     ignoreworker: false
@@ -869,6 +893,7 @@ tasks:
           "y": 505
         }
       }
+    continueonerrortype: ""
   '83':
     conditions:
     - condition:
@@ -911,6 +936,7 @@ tasks:
           "y": 915
         }
       }
+    continueonerrortype: ""
   '84':
     id: '84'
     ignoreworker: false
@@ -947,6 +973,7 @@ tasks:
           "y": 1100
         }
       }
+    continueonerrortype: ""
   '85':
     id: '85'
     ignoreworker: false
@@ -977,6 +1004,7 @@ tasks:
           "y": 210
         }
       }
+    continueonerrortype: ""
   '86':
     evidencedata:
       customfields: {}
@@ -1025,6 +1053,7 @@ tasks:
           "y": 715
         }
       }
+    continueonerrortype: ""
   '87':
     conditions:
     - condition:
@@ -1067,6 +1096,7 @@ tasks:
           "y": 915
         }
       }
+    continueonerrortype: ""
   '88':
     id: '88'
     ignoreworker: false
@@ -1105,6 +1135,7 @@ tasks:
           "y": 1090
         }
       }
+    continueonerrortype: ""
   '89':
     id: '89'
     taskid: 0a3ba1a2-67eb-4d83-8e17-962c519073d4
@@ -1152,6 +1183,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   '90':
     id: '90'
     taskid: 87ffe3f4-08ba-45e7-8232-46393f0dfca2
@@ -1198,6 +1230,203 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "91":
+    id: "91"
+    taskid: 5d0575ec-de5f-4e07-809a-7752524442c8
+    type: title
+    task:
+      id: 5d0575ec-de5f-4e07-809a-7752524442c8
+      version: -1
+      name: Custom Batch Queries
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "95"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1430,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "92":
+    id: "92"
+    taskid: 840d2674-b2d8-459f-8bf9-631f804f0323
+    type: regular
+    task:
+      id: 840d2674-b2d8-459f-8bf9-631f804f0323
+      version: -1
+      name: Run Custom Queries
+      description: 'Allows you to run programmatic queries like in Microsoft Defender ATP Portal (https://securitycenter.windows.com/hunting). Limitations: You can only run a query on data from the last 30 days. The results include a maximum of 10,000 rows. The number of executions is limited (up to 15 calls per minute, 15 minutes of running time every hour and 4 hours of running time a day).'
+      script: '|||microsoft-atp-advanced-hunting'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "94"
+    scriptarguments:
+      extend-context:
+        simple: MicrosoftATP.Hunt.Result.customQueries=
+      query_batch:
+        complex:
+          root: inputs.QueryBatch
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1430,
+          "y": 715
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: Results for the custom batch queries in Advanced Hunting feature - Microsoft Defender For Endpoint.
+      tags:
+        simple: Custom Queries
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "93":
+    id: "93"
+    taskid: 830501f5-c63f-41c3-8cea-9f34b8217078
+    type: regular
+    task:
+      id: 830501f5-c63f-41c3-8cea-9f34b8217078
+      version: -1
+      name: Add "Custom Queries" Tag
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      appendTags:
+        simple: "true"
+      tags:
+        simple: Custom Queries
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1430,
+          "y": 1110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "94":
+    id: "94"
+    taskid: cfdda55a-4b15-4b32-80c6-801d5109c806
+    type: condition
+    task:
+      id: cfdda55a-4b15-4b32-80c6-801d5109c806
+      version: -1
+      name: Any results?
+      description: Any results?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "40"
+      "yes":
+      - "93"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MicrosoftATP.Hunt.Result.customQueries
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1430,
+          "y": 925
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "95":
+    id: "95"
+    taskid: ef864f21-de9b-4e97-83fc-af2f028f865a
+    type: condition
+    task:
+      id: ef864f21-de9b-4e97-83fc-af2f028f865a
+      version: -1
+      name: Are there any batch queries?
+      description: Are there any batch queries?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "40"
+      "yes":
+      - "92"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.QueryBatch
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1430,
+          "y": 505
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 version: -1
 view: |-
   {
@@ -1205,7 +1434,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 1285,
-        "width": 3300,
+        "width": 3730,
         "x": -1920,
         "y": 60
       }

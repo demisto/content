@@ -1,0 +1,35 @@
+[
+    {
+        "value": "malicious1.example.com",
+        "indicator_type": "Domain",
+        "customFields": {},
+        "rawJSON": {
+            "indicator": "malicious1.example.com",
+            "type": "Domain",
+            "indicator_ref": "example:Observable-87c9a5bb-d005-4b3e-8081-99f720fad62b",
+            "value": "malicious1.example.com"
+        }
+    },
+    {
+        "value": "malicious2.example.com",
+        "indicator_type": "Domain",
+        "customFields": {},
+        "rawJSON": {
+            "indicator": "malicious2.example.com",
+            "type": "Domain",
+            "indicator_ref": "example:Observable-87c9a5bb-d005-4b3e-8081-99f720fad62b",
+            "value": "malicious2.example.com"
+        }
+    },
+    {
+        "value": "malicious3.example.com",
+        "indicator_type": "Domain",
+        "customFields": {},
+        "rawJSON": {
+            "indicator": "malicious3.example.com",
+            "type": "Domain",
+            "indicator_ref": "example:Observable-87c9a5bb-d005-4b3e-8081-99f720fad62b",
+            "value": "malicious3.example.com"
+        }
+    }
+]

@@ -1,0 +1,18 @@
+[MODEL: dataset = gitlab_gitlab_raw]
+alter
+    xdm.event.id = to_string(id),
+    xdm.source.user.identifier = to_string(author_id),
+    xdm.target.resource.id = to_string(entity_id),
+    xdm.target.resource.type = entity_type,
+    xdm.source.user.username = json_extract_scalar(details, "$.author_name"),
+    xdm.target.resource.sub_type = json_extract_scalar(details, "$.target_type"),
+    xdm.target.resource.name = json_extract_scalar(details, "$.target_details"),
+    xdm.event.description = json_extract_scalar(details, "$.custom_message"),
+    xdm.source.ipv4 = json_extract_scalar(details, "$.ip_address"),
+    xdm.target.resource_before.value = json_extract_scalar(details, "$.from"),
+    xdm.target.resource.value = json_extract_scalar(details, "$.to"),
+    xdm.event.operation = json_extract_scalar(details, "$.action"),
+    xdm.event.type = json_extract_scalar(details, "$.action_type"),
+    xdm.event.operation_sub_type = json_extract_scalar(details, "$.action_category"),
+    xdm.observer.vendor = _vendor,
+    xdm.observer.product = _product;

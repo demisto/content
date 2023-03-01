@@ -1,0 +1,25 @@
+{
+    "data": [{
+            "type": "F",
+            "name": "e.dat",
+            "path": "/x/\u3042\u3044\u3046\u3048\u304a/e.dat",
+            "base": "/x/\u3042\u3044\u3046\u3048\u304a",
+            "size": 3,
+            "last-modified": 1669044167
+        }, {
+            "type": "F",
+            "name": "f.dat",
+            "path": "/x/\u3042\u3044\u3046\u3048\u304a/f.dat",
+            "base": "/x/\u3042\u3044\u3046\u3048\u304a",
+            "size": 3,
+            "last-modified": 1669044167
+        }, {
+            "type": "P",
+            "name": "..",
+            "path": "/x",
+            "base": "/x/\u3042\u3044\u3046\u3048\u304a",
+            "size": null,
+            "last-modified": null
+        }
+    ]
+}

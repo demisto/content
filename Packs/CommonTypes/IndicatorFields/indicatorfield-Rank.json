@@ -1,0 +1,60 @@
+{
+    "id": "indicator_rank",
+    "version": -1,
+    "modified": "2022-11-07T08:33:16.160252771Z",
+    "name": "Rank",
+    "ownerOnly": false,
+    "description": "Used to display rank from different sources",
+    "cliName": "rank",
+    "type": "grid",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 2,
+    "hidden": false,
+    "openEnded": false,
+    "associatedToAll": true,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "columns": [
+        {
+            "key": "source",
+            "displayName": "Source",
+            "type": "shortText",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "width": 422,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        },
+        {
+            "key": "rank",
+            "displayName": "Rank",
+            "type": "number",
+            "orgType": "number",
+            "required": false,
+            "script": "",
+            "width": 150,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        }
+    ],
+    "defaultRows": [
+        {}
+    ],
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.0.0"
+}

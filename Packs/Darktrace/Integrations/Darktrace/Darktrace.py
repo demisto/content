@@ -3,7 +3,7 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 
 import json
-import requests
+import urllib3
 import dateparser
 from datetime import datetime
 import traceback
@@ -16,7 +16,7 @@ import hashlib
 """Darktrace Integration for Cortex XSOAR (aka Demisto)"""
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 """*****CONSTANTS*****"""
 

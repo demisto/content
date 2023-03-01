@@ -25,7 +25,7 @@ This playbook does not use any commands.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| FileObject | A list of file objects. Default is "File" key. | File.None | Required |
+| FileObject | A list of file objects. Default is "File" key. | File | Required |
 | Decode | Available values: "True" or "False". Default is "False"<br/>When this is set to "True", in case a macro was found within the file, it will output all the obfuscated strings with their decoded content \(Hex, Base64, StrReverse, Dridex, VBA\). | False | Optional |
 | NonSecretPassword | Will be used to decrypt encrypted files. Encrypted files cannot be analyzed otherwise.<br/>Please note that this input is "Non Secret" because it will be visible as plain text. |  | Optional |
 

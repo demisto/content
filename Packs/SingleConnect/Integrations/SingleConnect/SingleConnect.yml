@@ -1,0 +1,306 @@
+category: Authentication & Identity Management
+commonfields:
+  id: SingleConnect
+  version: -1
+configuration:
+- defaultvalue: https://example.com/
+  display: Your server URL
+  name: url
+  required: true
+  type: 0
+- additionalinfo: The API Key to use for connection
+  display: Credentials
+  name: credentials
+  required: true
+  type: 9
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: Single Connect is a PAM product that enables enterprises to remove static passwords stored in applications by instead keeping passwords in a secure password vault. Single Connect provides a token-based authentication for 3rd party applications when accessing the password vault. This authentication process verifies the application identity and gives secure access to the password associated with that identity.
+display: Single Connect
+name: SingleConnect
+script:
+  commands:
+  - deprecated: false
+    description: List all the accounts in the SAPM
+    execution: false
+    name: single-connect-sapm-account-list-all
+    outputs:
+    - contextPath: SingleConnect.SapmAccount.dbId
+      description: ID of SAPM Account
+      type: Number
+    - contextPath: SingleConnect.SapmAccount.device.name
+      description: The name of the device where the account is located
+      type: String
+    - contextPath: SingleConnect.SapmAccount.device.accessProtocol
+      description: Protocol accessed on the device where the account is located
+      type: String
+    - contextPath: SingleConnect.SapmAccount.device.managementIp
+      description: IP Address of the device where the account is located
+      type: String
+    - contextPath: SingleConnect.SapmAccount.secretName
+      description: Name of the account in the SAPM
+      type: String
+    - contextPath: SingleConnect.SapmAccount.config.name
+      description: Configuration name where the account is managed in the SAPM
+      type: String
+    - contextPath: SingleConnect.SapmAccount.changePeriod
+      description: Password change period of the account in the SAPM
+      type: Number
+    - contextPath: SingleConnect.SapmAccount.username
+      description: Username of the account on the device
+      type: String
+    - contextPath: SingleConnect.SapmAccount.description
+      description: Description of the account in the SAPM
+      type: String
+    - contextPath: SingleConnect.SapmAccount.lastChangeTime
+      description: Last time the account password was changed
+      type: Date
+    - contextPath: SingleConnect.SapmAccount.nextChangeTime
+      description: Time for next password change of account password
+      type: Date
+    - contextPath: SingleConnect.SapmAccount.passwordSeenStatus
+      description: Password seen status of the account
+      type: String
+    - contextPath: SingleConnect.SapmAccount.validationStatus
+      description: Password validity status of account
+      type: String
+    - contextPath: SingleConnect.SapmAccount.permissions.userGroupId
+      description: ID of the user group that has access to the account
+      type: String
+    - contextPath: SingleConnect.SapmAccount.permissions.permission
+      description: Access permission level of the user group that has access to the account
+      type: String
+    - contextPath: SingleConnect.SapmAccount.managers.eid
+      description: Manager user group ID that approves the account
+      type: String
+    - contextPath: SingleConnect.SapmAccount.parentSapmGroup.name
+      description: The name of the SAPM group the account is under
+      type: String
+    - contextPath: SingleConnect.SapmAccount.secretType
+      description: Type of account to be managed
+      type: String
+    - contextPath: SingleConnect.SapmAccount.owner
+      description: Owner of the account
+      type: String
+    - contextPath: SingleConnect.SapmAccount.createdAt
+      description: Creation time of Account
+      type: Date
+    - contextPath: SingleConnect.SapmAccount.updatedAt
+      description: The time the account was last edited
+      type: Date
+    - contextPath: SingleConnect.SapmAccount.approvalRequired
+      description: Approval requirement of account
+      type: Boolean
+    - contextPath: SingleConnect.SapmAccount.privateType
+      description: The status of the account being private to account owner
+      type: String
+    - contextPath: SingleConnect.SapmAccount.groupFullPath
+      description: The full path of the SAPM group that the account is under
+      type: String
+  - arguments:
+    - default: false
+      description: Password expiration time of account
+      isArray: false
+      name: password_expiration_in_minute
+      required: true
+      secret: false
+    - default: false
+      description: ID of SAPM account in the database (can be retrieved from single-connect-sapm-account-list-all or single-connect-sapm-account-search-with-secret-name commands' output)
+      isArray: false
+      name: sapm_db_id
+      required: true
+      secret: false
+    - default: false
+      description: Leave a comment explaining why the password is accessed
+      isArray: false
+      name: comment
+      required: true
+      secret: false
+    deprecated: false
+    description: Get the password for a specific SAPM account.
+    execution: false
+    name: single-connect-sapm-account-show-password
+    outputs:
+    - contextPath: SingleConnect.SapmAccount.passwordPart
+      description: All or Part of the Password
+      type: String
+    - contextPath: SingleConnect.SapmAccount.password
+      description: Account password
+      type: String
+    - contextPath: SingleConnect.SapmAccount.secretNotes
+      description: Secret description defined for the account
+      type: String
+  - arguments:
+    - default: false
+      description: Full or partial IP address of device
+      isArray: false
+      name: device_ip
+      required: true
+      secret: false
+    deprecated: false
+    description: List all the SAPM accounts on a specific device
+    execution: false
+    name: single-connect-device-list-sapm-accounts
+    outputs:
+    - contextPath: SingleConnect.SapmAccount.dbId
+      description: ID of SAPM Account
+      type: Number
+    - contextPath: SingleConnect.SapmAccount.configName
+      description: Configuration name where the account is managed in the SAPM
+      type: String
+    - contextPath: SingleConnect.SapmAccount.username
+      description: Username of the account on the device
+      type: String
+    - contextPath: SingleConnect.SapmAccount.description
+      description: Description of the account in the SAPM
+      type: String
+    - contextPath: SingleConnect.SapmAccount.nextChangeTime
+      description: Time for next password change of account password
+      type: Date
+    - contextPath: SingleConnect.SapmAccount.lastChangeTime
+      description: Last time the account password was changed
+      type: Date
+    - contextPath: SingleConnect.SapmAccount.passwordSeenStatus
+      description: Password seen status of the account
+      type: String
+    - contextPath: SingleConnect.SapmAccount.validationStatus
+      description: Password validity status of account
+      type: String
+    - contextPath: SingleConnect.SapmAccount.approvalStatus
+      description: Status of the account requiring approval
+      type: String
+    - contextPath: SingleConnect.SapmAccount.ip
+      description: IP Address of the device where the account is located
+      type: String
+    - contextPath: SingleConnect.SapmAccount.hostName
+      description: The name of the device where the account is located
+      type: String
+    - contextPath: SingleConnect.SapmAccount.groupName
+      description: The name of the SAPM group the account is under
+      type: String
+    - contextPath: SingleConnect.SapmAccount.groupFullPath
+      description: The full path of the SAPM group that the account is under
+      type: String
+    - contextPath: SingleConnect.SapmAccount.secretName
+      description: Name of the account in the SAPM
+      type: String
+    - contextPath: SingleConnect.SapmAccount.secretType
+      description: Type of account to be managed
+      type: String
+    - contextPath: SingleConnect.SapmAccount.owner
+      description: Owner of the account
+      type: String
+    - contextPath: SingleConnect.SapmAccount.privateType
+      description: The status of the account being private to account owner
+      type: String
+    - contextPath: SingleConnect.SapmAccount.changePeriod
+      description: Password change period of the account in the SAPM
+      type: Number
+    - contextPath: SingleConnect.SapmAccount.createdAt
+      description: Creation time of Account
+      type: Date
+    - contextPath: SingleConnect.SapmAccount.updatedAt
+      description: The time the account was last edited
+      type: Date
+  - arguments:
+    - default: false
+      description: Full or partial account name of the SAPM account
+      isArray: false
+      name: secret_name
+      required: true
+      secret: false
+    deprecated: false
+    description: List the accounts with given secretName
+    execution: false
+    name: single-connect-sapm-account-search-with-secret-name
+    outputs:
+    - contextPath: SingleConnect.SapmAccount.dbId
+      description: ID of SAPM Account
+      type: Number
+    - contextPath: SingleConnect.SapmAccount.device.name
+      description: The name of the device where the account is located
+      type: String
+    - contextPath: SingleConnect.SapmAccount.device.accessProtocol
+      description: Protocol accessed on the device where the account is located
+      type: String
+    - contextPath: SingleConnect.SapmAccount.device.managementIp
+      description: IP Address of the device where the account is located
+      type: String
+    - contextPath: SingleConnect.SapmAccount.secretName
+      description: Name of the account in the SAPM
+      type: String
+    - contextPath: SingleConnect.SapmAccount.config.name
+      description: Configuration name where the account is managed in the SAPM
+      type: String
+    - contextPath: SingleConnect.SapmAccount.changePeriod
+      description: Password change period of the account in the SAPM
+      type: Number
+    - contextPath: SingleConnect.SapmAccount.username
+      description: Username of the account on the device
+      type: String
+    - contextPath: SingleConnect.SapmAccount.description
+      description: Description of the account in the SAPM
+      type: String
+    - contextPath: SingleConnect.SapmAccount.lastChangeTime
+      description: Last time the account password was changed
+      type: Date
+    - contextPath: SingleConnect.SapmAccount.nextChangeTime
+      description: Time for next password change of account password
+      type: Date
+    - contextPath: SingleConnect.SapmAccount.passwordSeenStatus
+      description: Password seen status of the account
+      type: String
+    - contextPath: SingleConnect.SapmAccount.validationStatus
+      description: Password validity status of account
+      type: String
+    - contextPath: SingleConnect.SapmAccount.permissions.userGroupId
+      description: ID of the user group that has access to the account
+      type: String
+    - contextPath: SingleConnect.SapmAccount.permissions.permission
+      description: Access permission level of the user group that has access to the account
+      type: String
+    - contextPath: SingleConnect.SapmAccount.managers.eid
+      description: Manager user group ID that approves the account
+      type: String
+    - contextPath: SingleConnect.SapmAccount.parentSapmGroup.name
+      description: The name of the SAPM group the account is under
+      type: String
+    - contextPath: SingleConnect.SapmAccount.secretType
+      description: Type of account to be managed
+      type: String
+    - contextPath: SingleConnect.SapmAccount.owner
+      description: Owner of the account
+      type: String
+    - contextPath: SingleConnect.SapmAccount.createdAt
+      description: Creation time of Account
+      type: Date
+    - contextPath: SingleConnect.SapmAccount.updatedAt
+      description: The time the account was last edited
+      type: Date
+    - contextPath: SingleConnect.SapmAccount.approvalRequired
+      description: Approval requirement of account
+      type: Boolean
+    - contextPath: SingleConnect.SapmAccount.privateType
+      description: The status of the account being private to account owner
+      type: String
+    - contextPath: SingleConnect.SapmAccount.groupFullPath
+      description: The full path of the SAPM group that the account is under
+      type: String
+  dockerimage: demisto/python3:3.10.10.48392
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests (auto formatted)
+fromversion: 6.2.0

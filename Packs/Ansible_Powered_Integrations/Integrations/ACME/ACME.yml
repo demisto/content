@@ -3,21 +3,18 @@ commonfields:
   id: ACME
   version: -1
 configuration:
-- additionalinfo: The credentials to associate with the instance. SSH keys can be
-    configured using the credential manager.
+- additionalinfo: The credentials to associate with the instance. SSH keys can be configured using the credential manager, under the Certificate field.
   display: Username
   name: creds
   required: true
   type: 9
-- additionalinfo: The default port to use if one is not specified in the commands
-    `host` argument.
+- additionalinfo: The default port to use if one is not specified in the commands `host` argument.
   defaultvalue: "22"
   display: Default SSH Port
   name: port
   required: true
   type: 0
-- additionalinfo: If multiple hosts are specified in a command, how many hosts should
-    be interacted with concurrently.
+- additionalinfo: If multiple hosts are specified in a command, how many hosts should be interacted with concurrently.
   defaultvalue: "4"
   display: Concurrecy Factor
   name: concurrency
@@ -29,9 +26,7 @@ name: ACME
 script:
   commands:
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -87,9 +82,7 @@ script:
         `Warning`: the content will be written into a temporary file, which will be deleted by Ansible when the module completes. Since this is an important private key — it can be used to change the account key, or to revoke your certificates without knowing their private keys —, this might not be acceptable.
         In case `cryptography` is used, the content is not written into a temporary file. It can still happen that it is written to disk by Ansible in the process of moving the module with its argument to the node where it is executed.
       name: account_key_content
-    - description: If specified, assumes that the account URI is as given. If the
-        account key does not match this account, or an account with this URI does
-        not exist, the module fails.
+    - description: If specified, assumes that the account URI is as given. If the account key does not match this account, or an account with this URI does not exist, the module fails.
       name: account_uri
     - auto: PREDEFINED
       defaultValue: "1"
@@ -129,9 +122,7 @@ script:
     description: Create, modify or delete ACME accounts
     name: acme-account
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -159,9 +150,7 @@ script:
         `Warning`: the content will be written into a temporary file, which will be deleted by Ansible when the module completes. Since this is an important private key — it can be used to change the account key, or to revoke your certificates without knowing their private keys —, this might not be acceptable.
         In case `cryptography` is used, the content is not written into a temporary file. It can still happen that it is written to disk by Ansible in the process of moving the module with its argument to the node where it is executed.
       name: account_key_content
-    - description: If specified, assumes that the account URI is as given. If the
-        account key does not match this account, or an account with this URI does
-        not exist, the module fails.
+    - description: If specified, assumes that the account URI is as given. If the account key does not match this account, or an account with this URI does not exist, the module fails.
       name: account_uri
     - auto: PREDEFINED
       defaultValue: "1"
@@ -207,9 +196,7 @@ script:
       description: the account's status
       type: string
     - contextPath: ACME.account.orders
-      description: '[''A URL where a list of orders can be retrieved for this account.'',
-        ''Use the I(retrieve_orders) option to query this URL and retrieve the complete
-        list of orders.'']'
+      description: '[''A URL where a list of orders can be retrieved for this account.'', ''Use the I(retrieve_orders) option to query this URL and retrieve the complete list of orders.'']'
       type: string
     - contextPath: ACME.account.public_account_key
       description: the public account key as a L(JSON Web Key,https://tools.ietf.org/html/rfc7517).
@@ -218,26 +205,18 @@ script:
       description: The order's status.
       type: string
     - contextPath: ACME.orders.expires
-      description: '[''When the order expires.'', ''Timestamp should be formatted
-        as described in RFC3339.'', ''Only required to be included in result when
-        I(status) is C(pending) or C(valid).'']'
+      description: '[''When the order expires.'', ''Timestamp should be formatted as described in RFC3339.'', ''Only required to be included in result when I(status) is C(pending) or C(valid).'']'
       type: string
     - contextPath: ACME.orders.identifiers
       description: '[''List of identifiers this order is for.'']'
     - contextPath: ACME.orders.notBefore
-      description: '[''The requested value of the C(notBefore) field in the certificate.'',
-        ''Date should be formatted as described in RFC3339.'', ''Server is not required
-        to return this.'']'
+      description: '[''The requested value of the C(notBefore) field in the certificate.'', ''Date should be formatted as described in RFC3339.'', ''Server is not required to return this.'']'
       type: string
     - contextPath: ACME.orders.notAfter
-      description: '[''The requested value of the C(notAfter) field in the certificate.'',
-        ''Date should be formatted as described in RFC3339.'', ''Server is not required
-        to return this.'']'
+      description: '[''The requested value of the C(notAfter) field in the certificate.'', ''Date should be formatted as described in RFC3339.'', ''Server is not required to return this.'']'
       type: string
     - contextPath: ACME.orders.error
-      description: '[''In case an error occurred during processing, this contains
-        information about the error.'', ''The field is structured as a problem document
-        (RFC7807).'']'
+      description: '[''In case an error occurred during processing, this contains information about the error.'', ''The field is structured as a problem document (RFC7807).'']'
     - contextPath: ACME.orders.authorizations
       description: '[''A list of URLs for authorizations for this order.'']'
     - contextPath: ACME.orders.finalize
@@ -247,9 +226,7 @@ script:
       description: '[''The URL for retrieving the certificate.'']'
       type: string
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -305,8 +282,7 @@ script:
         The destination file for the full chain (i.e. certificate followed by chain of intermediate certificates).
         Required if `dest` is not specified.
       name: fullchain_dest
-    - description: If specified, the intermediate certificate will be written to this
-        file.
+    - description: If specified, the intermediate certificate will be written to this file.
       name: chain_dest
     - defaultValue: "10"
       description: |-
@@ -324,10 +300,7 @@ script:
         This is especially helpful when having an updated CSR e.g. with additional domains for which a new certificate is desired.
       name: force
     - defaultValue: "False"
-      description: When set to `yes`, will retrieve all alternate chains offered by
-        the ACME CA. These will not be written to disk, but will be returned together
-        with the main chain as `all_chains`. See the documentation for the `all_chains`
-        return value for details.
+      description: When set to `yes`, will retrieve all alternate chains offered by the ACME CA. These will not be written to disk, but will be returned together with the main chain as `all_chains`. See the documentation for the `all_chains` return value for details.
       name: retrieve_all_alternates
     - description: |-
         Path to a file containing the ACME account RSA or Elliptic Curve key.
@@ -342,9 +315,7 @@ script:
         `Warning`: the content will be written into a temporary file, which will be deleted by Ansible when the module completes. Since this is an important private key — it can be used to change the account key, or to revoke your certificates without knowing their private keys —, this might not be acceptable.
         In case `cryptography` is used, the content is not written into a temporary file. It can still happen that it is written to disk by Ansible in the process of moving the module with its argument to the node where it is executed.
       name: account_key_content
-    - description: If specified, assumes that the account URI is as given. If the
-        account key does not match this account, or an account with this URI does
-        not exist, the module fails.
+    - description: If specified, assumes that the account URI is as given. If the account key does not match this account, or an account with this URI does not exist, the module fails.
       name: account_uri
     - auto: PREDEFINED
       defaultValue: "1"
@@ -388,17 +359,10 @@ script:
       description: The challenge resource that must be created for validation.
       type: string
     - contextPath: ACME.challenge_data.resource_original
-      description: '[''The original challenge resource including type identifier for
-        C(tls-alpn-01) challenges.'']'
+      description: '[''The original challenge resource including type identifier for C(tls-alpn-01) challenges.'']'
       type: string
     - contextPath: ACME.challenge_data.resource_value
-      description: '[''The value the resource has to produce for the validation.'',
-        ''For C(http-01) and C(dns-01) challenges, the value can be used as-is.'',
-        ''For C(tls-alpn-01) challenges, note that this return value contains a Base64
-        encoded version of the correct binary blob which has to be put into the acmeValidation
-        x509 extension; see U(https://www.rfc-editor.org/rfc/rfc8737.html#section-3)
-        for details. To do this, you might need the C(b64decode) Jinja filter to extract
-        the binary blob from this return value.'']'
+      description: '[''The value the resource has to produce for the validation.'', ''For C(http-01) and C(dns-01) challenges, the value can be used as-is.'', ''For C(tls-alpn-01) challenges, note that this return value contains a Base64 encoded version of the correct binary blob which has to be put into the acmeValidation x509 extension; see U(https://www.rfc-editor.org/rfc/rfc8737.html#section-3) for details. To do this, you might need the C(b64decode) Jinja filter to extract the binary blob from this return value.'']'
       type: string
     - contextPath: ACME.challenge_data.record
       description: The full DNS record's name for the challenge.
@@ -407,17 +371,13 @@ script:
       description: '[''The leaf certificate itself, in PEM format.'']'
       type: string
     - contextPath: ACME.all_chains.chain
-      description: '[''The certificate chain, excluding the root, as concatenated
-        PEM certificates.'']'
+      description: '[''The certificate chain, excluding the root, as concatenated PEM certificates.'']'
       type: string
     - contextPath: ACME.all_chains.full_chain
-      description: '[''The certificate chain, excluding the root, but including the
-        leaf certificate, as concatenated PEM certificates.'']'
+      description: '[''The certificate chain, excluding the root, but including the leaf certificate, as concatenated PEM certificates.'']'
       type: string
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -450,9 +410,7 @@ script:
         One of the revocation reasonCodes defined in `Section 5.3.1 of RFC5280,https://tools.ietf.org/html/rfc5280#section-5.3.1`.
         Possible values are `0` (unspecified), `1` (keyCompromise), `2` (cACompromise), `3` (affiliationChanged), `4` (superseded), `5` (cessationOfOperation), `6` (certificateHold), `8` (removeFromCRL), `9` (privilegeWithdrawn), `10` (aACompromise)
       name: revoke_reason
-    - description: If specified, assumes that the account URI is as given. If the
-        account key does not match this account, or an account with this URI does
-        not exist, the module fails.
+    - description: If specified, assumes that the account URI is as given. If the account key does not match this account, or an account with this URI does not exist, the module fails.
       name: account_uri
     - auto: PREDEFINED
       defaultValue: "1"
@@ -492,9 +450,7 @@ script:
     description: Revoke certificates with the ACME protocol
     name: acme-certificate-revoke
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -504,8 +460,7 @@ script:
       predefined:
       - tls-alpn-01
       required: true
-    - description: The `challenge_data` entry provided by `acme_certificate` for the
-        challenge.
+    - description: The `challenge_data` entry provided by `acme_certificate` for the challenge.
       isArray: true
       name: challenge_data
       required: true
@@ -520,9 +475,7 @@ script:
     description: Prepare certificates required for ACME challenges such as C(tls-alpn-01)
     name: acme-challenge-cert-helper
   - arguments:
-    - description: hostname or IP of target. Optionally the port can be specified
-        using :PORT. If multiple targets are specified using an array, the integration
-        will use the configured concurrency factor for high performance.
+    - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
       name: host
       required: true
@@ -547,8 +500,7 @@ script:
         Required when `method` is `post`, and not allowed otherwise.
       name: content
     - defaultValue: "True"
-      description: If `method` is `post` or `get`, make the module fail in case an
-        ACME error is returned.
+      description: If `method` is `post` or `get`, make the module fail in case an ACME error is returned.
       name: fail_on_acme_error
     - description: |-
         Path to a file containing the ACME account RSA or Elliptic Curve key.
@@ -563,9 +515,7 @@ script:
         `Warning`: the content will be written into a temporary file, which will be deleted by Ansible when the module completes. Since this is an important private key — it can be used to change the account key, or to revoke your certificates without knowing their private keys —, this might not be acceptable.
         In case `cryptography` is used, the content is not written into a temporary file. It can still happen that it is written to disk by Ansible in the process of moving the module with its argument to the node where it is executed.
       name: account_key_content
-    - description: If specified, assumes that the account URI is as given. If the
-        account key does not match this account, or an account with this URI does
-        not exist, the module fails.
+    - description: If specified, assumes that the account URI is as given. If the account key does not match this account, or an account with this URI does not exist, the module fails.
       name: account_uri
     - auto: PREDEFINED
       defaultValue: "1"

@@ -1,0 +1,111 @@
+category: Network Security
+commonfields:
+  id: Keyfactor
+  version: -1
+configuration:
+- display: API URL
+  name: host
+  required: true
+  type: 0
+- defaultvalue: "false"
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- display: Username
+  displaypassword: Password
+  name: credentials
+  required: true
+  type: 9
+description: "Basic Keyfactor Integration that Posts CSR and Retrieves the certificates"
+display: Keyfactor
+name: Keyfactor
+script:
+  commands:
+  - arguments: []
+    description: Retrieve a list of Certificate Templates
+    name: keyfactor-get-enrollment-csr
+    outputs:
+    - contextPath: Keyfactor.CSRTemplate.Lists.Name
+      description: list of csr template name
+      type: string
+  - arguments:
+    - description: Certificate Signing Request in Base64 format
+      name: csr_base64
+      required: true
+      type: textArea
+    - description: Certificate Authority
+      name: cert_authority
+      required: true
+      type: textArea
+    - auto: PREDEFINED
+      defaultValue: "true"
+      description: Include Certificate Chain
+      name: include_chain
+      predefined:
+      - "true"
+      - "false"
+      required: true
+      type: textArea
+    - description: Certificate Template
+      name: template
+      required: true
+      type: textArea
+    - description: Subject Alternative Names IP addresses
+      name: sans_ip4
+      type: textArea
+    - description: Metadata
+      name: metadata
+      required: true
+      type: unknown
+    - name: keyAlgorithm
+      description: the key algorithm
+      type: textArea
+    description: Send CSR request and return certificate info
+    name: keyfactor-post-enrollment-csr
+    outputs:
+    - contextPath: Keyfactor.CSRTemplate.Lists.SerialNumber
+      description: Certificate Serial Number
+      type: string
+    - contextPath: Keyfactor.CSRTemplate.Lists.IssuerDN
+      description: Certificate Issuer Domain
+      type: string
+    - contextPath: Keyfactor.CSRTemplate.Lists.Thumbprint
+      description: Certificate Thumb Print
+      type: string
+    - contextPath: Keyfactor.CSRTemplate.Lists.KeyfactorID
+      description: Certificate KeyfactorID
+      type: number
+    - contextPath: Keyfactor.CertInfo.Lists.Certificates
+      description: List of Certificates
+      type: string
+    - contextPath: Keyfactor.CertInfo.Lists.RequestDisposition
+      description: Certificate Request Disposition
+      type: string
+    - contextPath: Keyfactor.CertInfo.Lists.DispositionMessage
+      description: Certificate Request Disposition Message
+      type: string
+    - contextPath: Keyfactor.CertInfo.Lists.EnrollmentContext
+      description: Certificate Request Enrollment Context
+      type: string
+    - contextPath: Keyfactor.CertInfo.Lists.KeyfactorRequestId
+      description: Certificate Request ID
+      type: number
+    - contextPath: Keyfactor.CertInfo.Lists.formated_cert
+      description: Formatted Certificate without Trust Chain
+      type: string
+    - contextPath: Keyfactor.CertInfo.Lists.formated_chain
+      description: Formatted Certificate's Trust Chain
+      type: string
+  dockerimage: demisto/akamai:1.0.0.34769
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

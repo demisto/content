@@ -1,0 +1,32 @@
+{
+    "id": 1,
+    "createdBy": "test_user",
+    "createdDate": "2022-07-25T05:08:11.036864677",
+    "modifiedBy": "test_user",
+    "modifiedDate": "2022-07-25T05:08:11.036864677",
+    "subjects": ["test1", "test2"],
+    "senders": [
+        "abc@xyz.com"
+    ],
+    "recipient": null,
+    "attachmentNames": [],
+    "attachmentHashCriteria": {
+        "type": "ANY",
+        "attachmentHashes": []
+    },
+    "domainCriteria": {
+        "type": "ANY",
+        "domains": [],
+        "whiteListUrls": []
+    },
+    "attachmentMimeTypes": [],
+    "attachmentExcludeMimeTypes": [
+        "image"
+    ],
+    "receivedAfterDate": "2022-07-15T00:00:00",
+    "receivedBeforeDate": "2022-07-20T00:00:00",
+    "url": null,
+    "internetMessageId": null,
+    "headers": [],
+    "partialIngest": null
+}

@@ -1,0 +1,28 @@
+[MODEL: dataset=slack_slack_raw]
+filter
+    action not in ("user_login","user_logout")
+| alter
+    xdm.event.id = id,
+    xdm.event.operation = action,
+    xdm.source.user.identifier = json_extract_scalar(actor, "$.user.id"),
+    xdm.source.user.username = json_extract_scalar(actor, "$.user.name"),
+    xdm.target.resource.type = json_extract_scalar(entity, "$.type"),
+    xdm.source.agent.version = json_extract_scalar(context, "$.ua"),
+    xdm.session_context_id = json_extract_scalar(context, "$.session_id"),
+    xdm.source.ipv4 = json_extract_scalar(context, "$.ip_address")
+| alter
+    xdm.target.resource.id = if(xdm.target.resource.type = "channel", json_extract_scalar(entity, "$.channel.id"), xdm.target.resource.type = "user", json_extract_scalar(entity, "$.user.id"), xdm.target.resource.type = "file", json_extract_scalar(entity, "$.file.id"), xdm.target.resource.type = "workspace", json_extract_scalar(entity, "$.workspace.id"), xdm.target.resource.type = "enterprise", json_extract_scalar(entity, "$.enterprise.id"), xdm.target.resource.type = "workflow", json_extract_scalar(entity, "$.workflow.id"), xdm.target.resource.type = "message", json_extract_scalar(entity, "$.message.id"),xdm.target.resource.type = "app", json_extract_scalar(entity, "$.app.id"),xdm.target.resource.type = "usergroups", json_extract_scalar(entity, "$.usergroups.id"),xdm.target.resource.type = "huddles", json_extract_scalar(entity, "$.huddles.id"), ""),
+    xdm.target.resource.name = if(xdm.target.resource.type = "channel", json_extract_scalar(entity, "$.channel.name"), xdm.target.resource.type = "user", json_extract_scalar(entity, "$.user.name"), xdm.target.resource.type = "file", json_extract_scalar(entity, "$.file.name"), xdm.target.resource.type = "workspace", json_extract_scalar(entity, "$.workspace.name"), xdm.target.resource.type = "enterprise", json_extract_scalar(entity, "$.enterprise.name"), xdm.target.resource.type = "workflow", json_extract_scalar(entity, "$.workflow.name"), xdm.target.resource.type = "message", json_extract_scalar(entity, "$.message.name"),xdm.target.resource.type = "app", json_extract_scalar(entity, "$.app.name"),xdm.target.resource.type = "usergroups", json_extract_scalar(entity, "$.usergroups.name"),xdm.target.resource.type = "huddles", json_extract_scalar(entity, "$.huddles.name"), "");
+
+filter
+    action in ("user_login","user_logout")
+| alter
+    xdm.event.id = id,
+    xdm.event.operation = action,
+    xdm.source.user.identifier = json_extract_scalar(actor, "$.user.id"),
+    xdm.source.user.username = json_extract_scalar(actor, "$.user.name"),
+    xdm.target.user.identifier = json_extract_scalar(entity, "$.user.id"),
+    xdm.target.user.username = json_extract_scalar(entity, "$.user.name"),
+    xdm.target.application.name = json_extract_scalar(context, "$.app.name"),
+    xdm.network.session_id = json_extract_scalar(context, "$.session_id"),
+    xdm.source.ipv4 = json_extract_scalar(context, "$.ip_address");

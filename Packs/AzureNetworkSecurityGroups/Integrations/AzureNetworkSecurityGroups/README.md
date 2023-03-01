@@ -7,19 +7,18 @@ Azure network security groups are used to filter network traffic to and from Azu
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Application ID |  | True |
+    | Application ID |  | False |
     | Subscription ID |  | True |
     | Resource Group Name |  | True |
     | Azure AD endpoint | Azure AD endpoint associated with a national cloud. | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
-    | Authentication Type | Type of authentication - could be Authorization Code flow \(recommended\) or Device Code flow. | True |
+    | Authentication Type | Type of authentication - can be Authorization Code flow \(recommended\), Device Code Flow, or Azure Managed Identities. | True |
     | Tenant ID (for user-auth mode) |  | False |
-    | Client Secret (for user-auth mode) |  | False |
     | Client Secret (for user-auth mode) |  | False |
     | Application redirect URI (for user-auth mode) |  | False |
     | Authorization code | For user-auth mode - received from the authorization step. See Detailed Instructions \(?\) section. | False |
-    | Authorization code |  | False |
+    | Azure Managed Identities Client ID | The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM. |False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
@@ -667,3 +666,33 @@ Get a specific rule.
 | AzureNSG.Rule.access | String | The rule's access. Can be "Allow" or "Deny". | 
 | AzureNSG.Rule.priority | Number | The rule's priority. Can be from 100 to 4096. | 
 | AzureNSG.Rule.direction | String | The rule's direction. Can be "Inbound" or "Outbound". | 
+
+
+### azure-nsg-generate-login-url
+***
+Generate the login url used for Authorization code flow.
+
+#### Base Command
+
+`azure-nsg-generate-login-url`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```azure-nsg-generate-login-url```
+
+#### Human Readable Output
+
+>### Authorization instructions
+>1. Click on the [login URL]() to sign in and grant Cortex XSOAR permissions for your Azure Service Management.
+You will be automatically redirected to a link with the following structure:
+```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```
+>2. Copy the `AUTH_CODE` (without the `code=` prefix, and the `session_state` parameter)
+and paste it in your instance configuration under the **Authorization code** parameter.
+
+

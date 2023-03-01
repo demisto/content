@@ -1,6 +1,7 @@
 Uses the Upload API to have a client application request that Check Point Threat Prevention modules scan and analyze a file. When a file is to the service, the file will be encrypted. The file is un-encrypted during analysis, and then deleted.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,11 +11,14 @@ Uses the Upload API to have a client application request that Check Point Threat
 
 
 ## Dependencies
+
 ---
 This script uses the following commands and scripts.
+
 * sb-upload
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -31,5 +35,6 @@ This script uses the following commands and scripts.
 | file_id | The ID of the file. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

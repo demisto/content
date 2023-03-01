@@ -46,7 +46,7 @@ The request payload does not have to contain the fields mentioned above, and may
 
 `curl -POST https://my.demisto.live/instance/execute/webhook -H "Authorization: token" -H "Content-Type: application/json" -d '{"string_field":"string_field_value","array_field":["item1","item2"]}'`
 
-The payload could then be mapped in the [Cortex XSOAR mapping wizard](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/cortex-xsoar-admin/incidents/classification-and-mapping/create-a-mapper):
+The payload could then be mapped in the [Cortex XSOAR mapping wizard](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Create-a-Mapper):
 - Note that the *Store sample events for mapping* parameter needs to be set.
 
     <img width="900" src="./../../doc_imgs/mapping.png" />

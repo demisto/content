@@ -1,0 +1,27 @@
+[MODEL: dataset = brocade_switch_raw]
+alter
+    observer_name = arrayindex( regextract(_raw_log , "\<\d+\>\s*[A-Za-z]+\s\d+\s\d+:\d+:\d+\s([a-zA-Z0-9-_]+)\s" ),0),
+    original_event_type = arrayindex( regextract(_raw_log , "\d{2}\:\d{2}\:\d{2}\s\S+\s(\w+)\:" ),0),
+    original_event_sub_type = arrayindex( regextract(_raw_log , "[A-Z]+[a-z]*\:\s(\S+\s\w+)" ),0),
+    Source_username = arrayindex( regextract(_raw_log , "by\s([a-zA-Z0-9-_\s]+)from" ),0),
+    Source_mac_addresses = arrayindex( regextract(_raw_log , "from\ssrc\sMAC\s(\S+)\s" ) ,0),
+    command_line = arrayindex( regextract(_raw_log , "CLI\sCMD\:\s\"([^\"]+)\"" ),0),
+    auth_status = arrayindex( regextract(_raw_log , "Auth\.\s([A-Za-z]+)" ),0),
+    state_status = arrayindex( regextract(_raw_log , "\,\sstate\s([A-Za-z]+)" ),0),
+    operation = arrayindex( regextract(_raw_log , "STP\sState\s->\s([A-Za-z]+)" ),0)
+// create Source_ipv4 field
+| alter
+    src_ip1 = arrayindex( regextract(_raw_log , "src\sIP\s(\d+\.\d+\.\d+\.\d+)\s" ),0),
+    src_ip2 = arrayindex( regextract(_raw_log , "intruder\sIP:\s+(\d+\.\d+\.\d+\.\d+)" ),0),
+    src_ip3 = arrayindex( regextract(_raw_log , "from\stelnet\sclient\s(\d+\.\d+\.\d+\.\d+)") ,0)
+// end create Source_ipv4 field
+| alter
+    xdm.event.outcome = if(auth_status ~= "fail", XDM_CONST.OUTCOME_FAILED, auth_status = null, null, to_string(auth_status)),
+    xdm.event.operation = coalesce(operation , state_status ),
+    xdm.observer.name = observer_name,
+    xdm.event.type = original_event_type,
+    xdm.event.operation_sub_type = original_event_sub_type,
+    xdm.source.user.username = Source_username,
+    xdm.source.host.ipv4_addresses = arraycreate(coalesce(src_ip1, src_ip2, src_ip3)),
+    xdm.source.host.mac_addresses = arraycreate(coalesce(Source_mac_addresses,"")),
+    xdm.target.process.command_line = command_line;

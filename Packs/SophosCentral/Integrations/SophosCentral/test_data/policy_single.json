@@ -1,0 +1,47 @@
+{
+    "id": "eeb3bacb-6aa2-4d06-a7a8-c2hdh16210f2",
+    "name": "encryp user",
+    "type": "device-encryption",
+    "lockedByManagingAccount": false,
+    "priority": 1,
+    "tenant": {
+        "id": "ee66cdd2-55ea-1234-ba59-529309e264f6"
+    },
+    "enabled": true,
+    "settings": {
+        "endpoint.device-encryption.enable-right-click-context-menu": {
+            "value": true
+        },
+        "endpoint.device-encryption.encrypt-endpoint": {
+            "value": true
+        },
+        "endpoint.device-encryption.encrypt-non-boot-volumes": {
+            "value": false
+        },
+        "endpoint.device-encryption.encrypt-used-space-only": {
+            "value": true
+        },
+        "endpoint.device-encryption.outlook-addin.enable-attachment-prompt": {
+            "value": false
+        },
+        "endpoint.device-encryption.outlook-addin.enabled": {
+            "value": true
+        },
+        "endpoint.device-encryption.outlook-addin.excluded-domains": {
+            "value": ""
+        },
+        "endpoint.device-encryption.require-startup-authentication": {
+            "value": true
+        },
+        "endpoint.device-encryption.reset-authentication.frequency": {
+            "value": 0,
+            "unit": "months"
+        }
+    },
+    "appliesTo": {
+        "users": [],
+        "userGroups": []
+    },
+    "createdAt": "2022-09-22T07:16:52.594Z",
+    "updatedAt": "2022-09-22T07:52:38.816Z"
+}

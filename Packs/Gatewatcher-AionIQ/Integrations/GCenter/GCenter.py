@@ -10,6 +10,217 @@ import urllib3
 urllib3.disable_warnings()  # pylint: disable=no-member
 
 
+class GwElasticQueryBuilder():
+    """Represent an Elasticsearch query.
+
+    Query is built using boolean clauses filter and must_not. Allows you to answer these questions:
+      - List of files reconstructed by the Gcap over a 24H period.
+      - List of files not reconstructed by the Gcap over a 24H period.
+      - List of malcore alerts that does not have the flow_id field.
+      - List of Sigflow alerts with a certain signature and originating from a certain interface.
+
+    Aggregation query summarizes data as metrics, statistics, or other analytics. Allows you to answer these questions:
+      - How many distinct files have been reconstructed by the Gcap.
+      - List of distinct values of a field.
+      - Count malcore alerts by interval of 1 hour.
+
+    Class features:
+      - Filter field exact value or value in list.
+      - Filter existing/non existing field.
+      - Filter timerange.
+      - Filter document number.
+      - Filter document field.
+      - Date histogram aggregation.
+      - Field cardinality aggregation.
+      - Field terms aggregation.
+    """
+
+    def __init__(self):
+        """Init class."""
+        self.query = dict()  # type: ignore
+        self.query["query"] = dict()
+        self.query["query"]["bool"] = dict()
+        self.query["query"]["bool"]["must_not"] = list()
+        self.query["query"]["bool"]["filter"] = list()
+        self.query["query"]["bool"]["filter"].append(dict())
+        self.query["query"]["bool"]["filter"][0]["range"] = dict()
+        self.query["query"]["bool"]["filter"][0]["range"]["@timestamp"] = dict()
+        self.query["query"]["bool"]["filter"][0]["range"]["@timestamp"]["gte"] = "now-1d/d"
+        self.query["query"]["bool"]["filter"][0]["range"]["@timestamp"]["lte"] = "now"
+
+    def dumps(self, pretty: bool = False):
+        """Get the query in json format.
+
+        Args:
+            pretty: True to indent the json string and False instead.
+
+        Returns:
+            Json string with indentation if pretty is True and without indentation if pretty is False.
+        """
+        if pretty:
+            return json.dumps(self.query, indent=4)
+        else:
+            return json.dumps(self.query)
+
+    def set_must_match(self, field: str, value: str) -> None:
+        """Filter document that match the value using the term query.
+
+        Args:
+            field: Document key with format key1.key2.key3 for nested keys.
+            value: Document key value that must match.
+        """
+        terms = {
+            "term": {
+                field: value
+            }
+        }
+        self.query["query"]["bool"]["filter"].append(terms)
+
+    def set_must_match_in_list(self, field: str, values: list) -> None:
+        """Filter document that match one or more values provided in list using the terms query.
+
+        Args:
+            field: Document key with format key1.key2.key3 for nested keys.
+            values: Document key values that must match.
+        """
+        terms = {
+            "terms": {
+                field: values
+            }
+        }
+        self.query["query"]["bool"]["filter"].append(terms)
+
+    def set_must_exists(self, field: str) -> None:
+        """Filter document with existing key using the exists query.
+
+        Args:
+            field: Document key with format key1.key2.key3 for nested keys.
+        """
+        terms = {
+            "exists": {
+                "field": field
+            }
+        }
+        self.query["query"]["bool"]["filter"].append(terms)
+
+    def set_must_not_match(self, field: str, value: Union[str, list]) -> None:
+        """Filter document that does not match the value or values using the term query.
+
+        Args:
+            field: Document key with format key1.key2.key3 for nested keys.
+            value: Document key value that must not match, as a string or a list of strings.
+        """
+        if isinstance(value, str):
+            value = [value]
+        terms = {
+            "terms": {
+                field: value
+            }
+        }
+        self.query["query"]["bool"]["must_not"].append(terms)
+
+    def set_aggs_terms(self, field: str, size: int) -> None:
+        """List and count each distinct values of a document field using the terms aggregation.
+
+        Args:
+            field: Document key with format key1.key2.key3 for nested keys.
+            size: Number of distinct values to return. By default it will return the top ten values.
+
+        Examples:
+            List and count each event_type values::
+
+                >>> query = GwElasticQueryBuilder()
+                >>> query.set_size(0)
+                >>> query.set_aggs_terms(field="event_type", size=10000)
+                {
+                    "event_type": {
+                        "doc_count_error_upper_bound": 0,
+                        "sum_other_doc_count": 0,
+                        "buckets": [
+                            {
+                                "key": "alert",
+                                "doc_count": 176305
+                            },
+                            {
+                                "key": "dns",
+                                "doc_count": 14550
+                            },
+                            {
+                                "key": "fileinfo",
+                                "doc_count": 144
+                            }
+                        ]
+                    }
+                }
+        """
+        terms = {
+            field: {
+                "terms": {
+                    "field": field,
+                    "size": size
+                }
+            }
+        }
+        if "aggs" not in self.query:
+            self.query["aggs"] = {}
+        self.query["aggs"].update(terms)
+
+    def set_size(self, size: int) -> None:
+        """Filter the number of returned documents.
+
+        It does not affect aggregation query.
+        Set it to 0 when using aggregation query to avoid getting the query results
+        in adition to the aggregation results.
+
+        Args:
+            size: Maximum number of returned documents. By default all documents are returned.
+        """
+        self.query["size"] = size
+
+    def set_timerange(self, lower: Optional[Union[str, datetime]] = None,
+                      upper: Optional[Union[str, datetime]] = None) -> None:
+        """Set the lower and upper timerange based on the now keyword.
+
+        The unit for upper and lower relative timestamp are:
+          - y: Years
+          - M: Months
+          - w: Weeks
+          - d: Days
+          - h: Hours
+          - H: Hours
+          - m: Minutes
+          - s: Seconds
+
+        Args:
+            lower: Set the lower relative timestamp based on now or absolute timestamp based on datetime.
+                    If set without the upper argument, the query lte field will be deleted.
+                    Format: "(-/+)Xunit" ("+1h" to add an hour or "-1d" to substract 1 day) or datetime.utcnow().
+            upper: Set the upper relative timestamp based on now or absolute timestamp based on datetime.
+                    If set without the lower argument, the query gte field will be deleted.
+                    Format: "(-/+)Xunit" ("+1h" to add an hour or "-1d" to substract 1 day) or datetime.utcnow().
+
+        """
+        if lower is None and upper is None:
+            raise AttributeError("set_timerange take at least one argument between lower and upper: [ERROR]")
+        timerange = self.query["query"]["bool"]["filter"][0]["range"]
+        if isinstance(upper, str):
+            timerange["@timestamp"]["lte"] = f"now{upper}"
+        elif isinstance(upper, datetime):
+            timerange["@timestamp"]["lte"] = upper.strftime("%Y-%m-%dT%H:%M:%S")
+        elif upper is not None:
+            raise TypeError("set_timerange upper argument only support str and datetime: [ERROR]")
+        if isinstance(lower, str):
+            timerange["@timestamp"]["gte"] = f"now{lower}"
+        elif isinstance(lower, datetime):
+            timerange["@timestamp"]["gte"] = lower.strftime("%Y-%m-%dT%H:%M:%S")
+        elif lower is not None:
+            raise TypeError("set_timerange lower argument only support str and datetime: [ERROR]")
+        if lower is not None and upper is None:
+            timerange["@timestamp"].pop("lte", None)
+        elif upper is not None and lower is None:
+            timerange["@timestamp"].pop("gte", None)
+
+
 class GwAPIException(Exception):
     """A base class from which all other exceptions inherit.
 
@@ -44,6 +255,16 @@ class GwRequests():
             check_cert: True to validate server certificate and False instead.
             proxies: Requests proxies. Default to no proxies.
         """
+        self.index_values = [
+            "suricata",
+            "codebreaker",
+            "malware",
+            "netdata",
+            "syslog",
+            "machine_learning",
+            "retrohunt",
+            "iocs"
+        ]
         self.ip = ip
         self.headers = headers
         self.check_cert = check_cert
@@ -321,6 +542,30 @@ class GwClient(GwRequests):
                 response.text, response.status_code, response.reason
             )
 
+    def get_malcore_list_entry(self, ltype: str) -> list:
+        """Get malcore whitelist/blacklist entry.
+
+        Args:
+            ltype: List type either white or black.
+
+        Returns:
+            Malcore list
+
+        Raises:
+            GwAPIException: If status_code != 200.
+        """
+        response = self._get(
+            endpoint=f"/api/malcore/{ltype}-list/",
+        )
+        if response.status_code == 200:
+            demisto.info(f"Get malcore {ltype}lists on GCenter {self.ip}: [OK]")
+            return response.json()["results"]
+        else:
+            raise GwAPIException(
+                f"Get malcore {ltype}lists on GCenter {self.ip}: [FAILED]",
+                response.text, response.status_code, response.reason
+            )
+
     def add_malcore_list_entry(self, ltype: str, sha256: str,
                                comment: str = None, threat: str = None) -> dict:  # noqa: E501
         """Add malcore whitelist/blacklist entry.
@@ -377,6 +622,34 @@ class GwClient(GwRequests):
         else:
             raise GwAPIException(
                 f"Delete {ltype} list with sha256 {sha256} on"
+                f" GCenter {self.ip}: [FAILED]",
+                response.text, response.status_code, response.reason
+            )
+
+    def get_dga_list_entry(self, ltype: str) -> list:  # noqa: E501
+        """Get the domain name whitelist/blacklist entry.
+
+        Args:
+            ltype: List type either white or black.
+
+        Returns:
+            Domain list whitelist/blacklist.
+
+        Raises:
+            GwAPIException: If status_code != 200.
+        """
+        response = self._get(
+            endpoint=f"/api/dga-detection/{ltype}-list/",
+        )
+        if response.status_code == 200:
+            demisto.info(
+                f"Get dga {ltype}lists on"
+                f" GCenter {self.ip}: [OK]"
+            )
+            return response.json()["results"]
+        else:
+            raise GwAPIException(
+                f"Get dga {ltype}lists on"
                 f" GCenter {self.ip}: [FAILED]",
                 response.text, response.status_code, response.reason
             )
@@ -444,7 +717,7 @@ class GwClient(GwRequests):
 
         Args:
             index: Index name between suricata, codebreaker, malware,
-                    netdata, syslog.
+                    netdata, syslog, machine_learning, retrohunt, iocs.
             query: Query in a dictionary format.
 
         Returns:
@@ -454,15 +727,9 @@ class GwClient(GwRequests):
             GwAPIException: If status_code != 200.
             TypeError: If index value doesn't exist.
         """
-        index_values = [
-            "suricata",
-            "codebreaker",
-            "malware",
-            "netdata",
-            "syslog"
-        ]
-        if index not in index_values:
-            raise TypeError(f"Index value must be between: {index_values}")
+
+        if index not in self.index_values:
+            raise TypeError(f"Index value must be between: {self.index_values}")
         response = self._post(
             endpoint=f"/api/data/es/search/?index={index}",
             json_data=json.loads(query)
@@ -476,6 +743,234 @@ class GwClient(GwRequests):
         else:
             raise GwAPIException(
                 f"Get elasticsearch results for index {index} on"
+                f" GCenter {self.ip}: [FAILED]",
+                response.text, response.status_code, response.reason
+            )
+
+    def get_es_wrapper(self, index: str, timerange: str, size: str, aggs_term: str = None, must_match: str = None,
+                       must_exists: str = None, formatted: str = None) -> dict:
+        """Get results of an elasticsearch query.
+
+        Args:
+            index: Index name between suricata, codebreaker, malware,
+                    netdata, syslog, machine_learning, retrohunt, iocs
+            aggs_term: List and count each distinct values of a document field using the terms aggregation
+                        If aggs_term is empty list hits value
+            must_match: Filter document that match the value using the term query
+            must_exists: Filter document with existing key using the exists query
+            timerange: Set the lower timerange in hour based on the now keyword
+            formatted: True to get the list of aggregation value False to get entire response
+            size : Set the number of aggregate or hits value that can be returned
+
+        Returns:
+            The elacticsearch response.
+
+        Raises:
+            GwAPIException: If status_code != 200.
+            TypeError: If index value doesn't exist.
+        """
+
+        aggs_term = aggs_term.replace(" ", "").split(",") if aggs_term else []
+        must_exists = must_exists.replace(" ", "").split(",") if must_exists else []
+        must_match = must_match.replace(" ", "").split(",") if must_match else {}
+        must_match = dict((a, b) for a, b in (element.split('=') for element in must_match)) if must_match else {}
+
+        try:
+            size_converted = int(size)
+        except ValueError:
+            raise ValueError("Size value must be a number")
+        hits_size = 0 if aggs_term else size_converted
+        query_builder = GwElasticQueryBuilder()
+        query_builder.set_size(hits_size)
+
+        for field in aggs_term:
+            query_builder.set_aggs_terms(field=field, size=size_converted)
+        for field in must_exists:
+            query_builder.set_must_exists(field=field)
+        for field in must_match.keys():
+            query_builder.set_must_match(field=field, value=must_match[field])
+        if timerange:
+            query_builder.set_timerange(lower=f"-{timerange}h")
+
+        if index not in self.index_values:
+            raise TypeError(f"Index value must be between: {self.index_values}")
+        response = self._post(
+            endpoint=f"/api/data/es/search/?index={index}",
+            json_data=json.loads(query_builder.dumps())
+        )
+
+        if response.status_code == 200:
+            demisto.info(
+                f"Get elasticsearch results for index {index} on"
+                f" GCenter {self.ip}: [OK]"
+            )
+            response_formatted = response.json()
+            if formatted == "True" and aggs_term:
+                response_formatted = {}
+                for agg_term in aggs_term:
+                    response_formatted[agg_term] = [
+                        bucket['key'] for bucket in response.json()['aggregations'][agg_term]["buckets"]
+                    ]
+            return response_formatted
+        else:
+            raise GwAPIException(
+                f"Get elasticsearch results for index {index} on"
+                f" GCenter {self.ip}: [FAILED]",
+                response.text, response.status_code, response.reason
+            )
+
+    def get_file_infected(self, timerange: str = None, size: str = None, state: str = None, uuid: str = None) -> list:  # noqa: E501
+        """Get a file from an uuid.
+            If there is no uuid, get all the files infected from a time interval.
+
+        Args:
+            uuid: The uuid of the file to get
+            state: The state of the files to get, in list
+            timerange: Set the lower timerange in minute based on the now keyword
+            size: Set the number of aggregate value that can be returned
+
+        Returns:
+            Asset ignored.
+
+        Raises:
+            GwAPIException: If status_code != 200.
+        """
+
+        if uuid:
+            uuids = [uuid]
+        else:
+            value_state = state.replace(" ", "").split(",") if state else ["Infected", "Suspicious"]
+            try:
+                size_converted = int(size) if size else 10000
+            except ValueError:
+                raise ValueError("Size value must be a number")
+            if timerange is None:
+                timerange = "60"
+            query = GwElasticQueryBuilder()
+            query.set_size(0)
+            query.set_aggs_terms(field="uuid", size=size_converted)
+            query.set_must_not_match(field="fileinfo.filename", value="/ls")
+            query.set_must_match(field="state", value="Infected")
+            query.set_must_match_in_list(field="state", values=value_state)
+            query.set_must_match(field="event_type", value="malware")
+            query.set_timerange(lower=f"-{timerange}m")
+            response = self._post(
+                endpoint="/api/data/es/search/?index=malware",
+                json_data=json.loads(query.dumps())
+            )
+            if response.status_code == 200:
+                demisto.info(f"Get ES uuid on GCenter {self.ip}: [OK]")
+            else:
+                raise GwAPIException(
+                    f"Get alerts uuid on GCenter {self.ip}: [FAILED]",
+                    response.text, response.status_code, response.reason
+                )
+            uuids = [bucket['key'] for bucket in response.json()['aggregations']["uuid"]["buckets"]]
+        files = []
+        for uuid in uuids:
+            response = self._get(
+                endpoint=f"/api/raw-alerts/{uuid}/file",
+            )
+            if response.status_code == 200:
+                filename = response.headers.get("Content-Disposition", "").split("filename=")[1]
+                content = response.content
+                files.append(fileResult(filename, content))
+            else:
+                raise GwAPIException(
+                    f"Get file on GCenter {self.ip}: [FAILED]",
+                    response.text, response.status_code, response.reason
+                )
+
+        demisto.info(f"Get files infected on GCenter {self.ip}: [OK]")
+        return files
+
+    def get_ignore_asset_name(self) -> list:  # noqa: E501
+        """Get ignore asset name.
+
+        Returns:
+            Asset ignored.
+
+        Raises:
+            GwAPIException: If status_code != 200.
+        """
+        response = self._get(
+            endpoint="/api/ignore-lists/asset-names/",
+        )
+        if response.status_code == 200:
+            demisto.info(f"Get ignore asset on GCenter {self.ip}: [OK]")
+            return response.json()["results"]
+        else:
+            raise GwAPIException(
+                f"Get ignore asset on GCenter {self.ip}: [FAILED]",
+                response.text, response.status_code, response.reason
+            )
+
+    def get_ignore_mac_address(self) -> list:
+        """Get ignore mac address.
+
+        Returns:
+            Asset ignored.
+
+        Raises:
+            GwAPIException: If status_code != 200.
+        """
+        response = self._get(
+            endpoint="/api/ignore-lists/mac-addresses/",
+        )
+        if response.status_code == 200:
+            demisto.info(
+                f"Get ignore mac address on GCenter {self.ip}: [OK]"
+            )
+            return response.json()["results"]
+        else:
+            raise GwAPIException(
+                f"Get ignore mac address on GCenter {self.ip}: [FAILED]",
+                response.text, response.status_code, response.reason
+            )
+
+    def get_ignore_kuser_ip(self) -> list:
+        """Get ignore Kerberos ip.
+
+        Returns:
+            Kerberos ip ignored.
+
+        Raises:
+            GwAPIException: If status_code != 200.
+        """
+        response = self._get(
+            endpoint="/api/ignore-lists/kuser-ips/",
+        )
+        if response.status_code == 200:
+            demisto.info(
+                f"Get ignore kerberos ips on GCenter {self.ip}: [OK]"
+            )
+            return response.json()["results"]
+        else:
+            raise GwAPIException(
+                f"Get ignore kerberos ips on GCenter {self.ip}: [FAILED]",
+                response.text, response.status_code, response.reason
+            )
+
+    def get_ignore_kuser_name(self) -> list:  # noqa: E501
+        """Get ignore Kerberos username.
+
+        Returns:
+            Kerberos ignored.
+
+        Raises:
+            GwAPIException: If status_code != 200.
+        """
+        response = self._get(
+            endpoint="/api/ignore-lists/kuser-names/"
+        )
+        if response.status_code == 200:
+            demisto.info(
+                f"Get ignore kerberos username on GCenter {self.ip}: [OK]"
+            )
+            return response.json()["results"]
+        else:
+            raise GwAPIException(
+                f"Get ignore kerberos username on"
                 f" GCenter {self.ip}: [FAILED]",
                 response.text, response.status_code, response.reason
             )
@@ -863,6 +1358,27 @@ def gw_get_alert(client: GwClient, args: Dict[str, Any]) -> CommandResults:  # n
     )
 
 
+def gw_get_malcore_list_entry(client: GwClient, args: Optional[Dict[Any, Any]]) -> CommandResults:  # noqa: E501
+    """Get the malcore whitelist/blacklist
+
+    Args:
+        client: Client to interact with the GCenter.
+        args: Command arguments.
+
+    Returns:
+        CommandResults object with the "GCenter.Malcore.List" prefix.
+    """
+    result = client.get_malcore_list_entry(ltype=args.get("type"))  # type: ignore
+    readable_result = tableToMarkdown("Malcore whitelist/blacklist entries", result)
+    return CommandResults(
+        readable_output=readable_result,
+        outputs_prefix="GCenter.Malcore.List",
+        outputs_key_field="sha256",
+        outputs=result,
+        raw_response=result
+    )
+
+
 def gw_add_malcore_list_entry(client: GwClient, args: Dict[str, Any]) -> CommandResults:  # noqa: E501
     """Add malcore whitelist/blacklist entry command.
 
@@ -913,7 +1429,29 @@ def gw_del_malcore_list_entry(client: GwClient, args: Dict[str, Any]) -> Command
     )
 
 
-def gw_add_dga_list_entry(client: GwClient, args: Dict[str, Any]) -> CommandResults:  # noqa: E501
+def gw_get_dga_list_entry(client: GwClient, args: Optional[Dict[Any, Any]]) -> CommandResults:  # noqa: E501
+    """Get dga whitelist/blacklist
+    Args:
+        client: Client to interact with the GCenter.
+        args: Command arguments.
+
+    Returns:
+        CommandResults object with the "GCenter.Dga.List" prefix.
+    """
+    result = client.get_dga_list_entry(
+        ltype=args.get("type"),  # type: ignore
+    )
+    readable_result = tableToMarkdown("DGA whitelist/blacklist entry", result)
+    return CommandResults(
+        readable_output=readable_result,
+        outputs_prefix="GCenter.Dga.List",
+        outputs_key_field="domain_name",
+        outputs=result,
+        raw_response=result
+    )
+
+
+def gw_add_dga_list_entry(client: GwClient, args: Optional[Dict[Any, Any]]) -> CommandResults:  # noqa: E501
     """Add dga whitelist/blacklist entry command.
 
     Args:
@@ -923,13 +1461,12 @@ def gw_add_dga_list_entry(client: GwClient, args: Dict[str, Any]) -> CommandResu
     Returns:
         CommandResults object with the "GCenter.Dga" prefix.
     """
-    ltype = args.get("type")
     result = client.add_dga_list_entry(
-        ltype=ltype,  # type: ignore
+        ltype=args.get("type"),  # type: ignore
         domain=args.get("domain"),  # type: ignore
         comment=args.get("comment", "added by cortex")  # type: ignore
     )
-    readable_result = tableToMarkdown(f"DGA {ltype}list entry", result)
+    readable_result = tableToMarkdown("DGA whitelist/blacklist entry", result)
     return CommandResults(
         readable_output=readable_result,
         outputs_prefix="GCenter.Dga",
@@ -981,6 +1518,146 @@ def gw_es_query(client: GwClient, args: Dict[str, Any]) -> CommandResults:  # no
         readable_output=readable_result,
         outputs_prefix="GCenter.Elastic",
         outputs_key_field=None,
+        outputs=result,
+        raw_response=result
+    )
+
+
+def gw_es_wrapper(client: GwClient, args: Optional[Dict[Any, Any]]) -> CommandResults:  # noqa: E501
+    """Get results of an elasticsearch query command.
+
+    Args:
+        client: Client to interact with the GCenter.
+        args: Command arguments.
+
+    Returns:
+        CommandResults object with the "GCenter.Elastic.Wrapper" prefix.
+    """
+    result = client.get_es_wrapper(
+        index=args.get("index"),  # type: ignore
+        aggs_term=args.get("aggs_term"),  # type: ignore
+        must_match=args.get("must_match"),  # type: ignore
+        must_exists=args.get("must_exists"),  # type: ignore
+        timerange=args.get("timerange"),  # type: ignore
+        formatted=args.get("formatted"),  # type: ignore
+        size=args.get("size")  # type: ignore
+    )
+    readable_result = tableToMarkdown("Elasticsearch wrapper result", result)
+    return CommandResults(
+        readable_output=readable_result,
+        outputs_prefix="GCenter.Elastic.Wrapper",
+        outputs_key_field=None,
+        outputs=result,
+        raw_response=result
+    )
+
+
+def gw_get_file_infected(client: GwClient, args: Optional[Dict[Any, Any]]) -> CommandResults:  # noqa: E501
+    """Get a file from an uuid.
+        If there is no uuid, get all the files infected from a time interval.
+
+    Args:
+        client: Client to interact with the GCenter.
+        args: Command arguments.
+
+    Returns:
+        CommandResults object with the "GCenter.FileInfected.List" prefix.
+    """
+    result = client.get_file_infected(
+        uuid=args.get("uuid"),  # type: ignore
+        state=args.get("state"),  # type: ignore
+        timerange=args.get("timerange"),  # type: ignore
+        size=args.get("size"),  # type: ignore
+    )
+    readable_result = tableToMarkdown("Files infected entry", result)
+    return CommandResults(
+        readable_output=readable_result,
+        outputs_prefix="GCenter.File",
+        outputs_key_field="id",
+        outputs=result,
+        raw_response=result
+    )
+
+
+def gw_get_ignore_asset_name(client: GwClient, args: Optional[Dict[Any, Any]]) -> CommandResults:  # noqa: E501
+    """Get all the ignored assets name command.
+
+    Args:
+        client: Client to interact with the GCenter.
+        args: Command arguments.
+
+    Returns:
+        CommandResults object with the "GCenter.Ignore.AssetName.List" prefix.
+    """
+    result = client.get_ignore_asset_name()
+    readable_result = tableToMarkdown("Asset name entry", result)
+    return CommandResults(
+        readable_output=readable_result,
+        outputs_prefix="GCenter.Ignore.AssetName.List",
+        outputs_key_field="id",
+        outputs=result,
+        raw_response=result
+    )
+
+
+def gw_get_ignore_kuser_ip(client: GwClient, args: Optional[Dict[Any, Any]]) -> CommandResults:  # noqa: E501
+    """Get all the ignored Kerberos ips command.
+
+    Args:
+        client: Client to interact with the GCenter.
+        args: Command arguments.
+
+    Returns:
+        CommandResults object with the "GCenter.Ignore.KuserIP.List" prefix.
+    """
+    result = client.get_ignore_kuser_ip()
+    readable_result = tableToMarkdown("Kuser IP entry", result)
+    return CommandResults(
+        readable_output=readable_result,
+        outputs_prefix="GCenter.Ignore.KuserIP.List",
+        outputs_key_field="id",
+        outputs=result,
+        raw_response=result
+    )
+
+
+def gw_get_ignore_kuser_name(client: GwClient, args: Optional[Dict[Any, Any]]) -> CommandResults:  # noqa: E501
+    """Get all the ignored Kerberos username command.
+
+    Args:
+        client: Client to interact with the GCenter.
+        args: Command arguments.
+
+    Returns:
+        CommandResults object with the "GCenter.Ignore.KuserName.List" prefix.
+    """
+    result = client.get_ignore_kuser_name()
+    readable_result = tableToMarkdown("Kuser name entry", result)
+    return CommandResults(
+        readable_output=readable_result,
+        outputs_prefix="GCenter.Ignore.KuserName.List",
+        outputs_key_field="id",
+        outputs=result,
+        raw_response=result
+    )
+
+
+def gw_get_ignore_mac_address(client: GwClient, args: Optional[Dict[Any, Any]]) -> CommandResults:  # noqa: E501
+    """Get all the ignored mac addresses command.
+
+    Args:
+        client: Client to interact with the GCenter.
+        args: Command arguments.
+
+    Returns:
+        CommandResults object with the "GCenter.Ignore.MacAddress.List" prefix.
+    """
+    result = client.get_ignore_mac_address()
+    readable_result = tableToMarkdown("MAC adrress entry", result)
+    return CommandResults(
+        readable_output=readable_result,
+        outputs_prefix="GCenter.Ignore.MacAddress.List",
+        outputs_key_field="id",
         outputs=result,
         raw_response=result
     )
@@ -1282,6 +1959,10 @@ def main() -> None:
             return_results(
                 gw_get_alert(client=client, args=args)
             )
+        elif command == "gw-get-malcore-list-entry":
+            return_results(
+                gw_get_malcore_list_entry(client=client, args=args)
+            )
         elif command == "gw-add-malcore-list-entry":
             return_results(
                 gw_add_malcore_list_entry(client=client, args=args)
@@ -1289,6 +1970,10 @@ def main() -> None:
         elif command == "gw-del-malcore-list-entry":
             return_results(
                 gw_del_malcore_list_entry(client=client, args=args)
+            )
+        elif command == "gw-get-dga-list-entry":
+            return_results(
+                gw_get_dga_list_entry(client=client, args=args)
             )
         elif command == "gw-add-dga-list-entry":
             return_results(
@@ -1301,6 +1986,30 @@ def main() -> None:
         elif command == "gw-es-query":
             return_results(
                 gw_es_query(client=client, args=args)
+            )
+        elif command == "gw-es-wrapper":
+            return_results(
+                gw_es_wrapper(client=client, args=args)
+            )
+        elif command == "gw-get-file-infected":
+            return_results(
+                gw_get_file_infected(client=client, args=args)
+            )
+        elif command == "gw-get-ignore-asset-name":
+            return_results(
+                gw_get_ignore_asset_name(client=client, args=args)
+            )
+        elif command == "gw-get-ignore-kuser-ip":
+            return_results(
+                gw_get_ignore_kuser_ip(client=client, args=args)
+            )
+        elif command == "gw-get-ignore-kuser-name":
+            return_results(
+                gw_get_ignore_kuser_name(client=client, args=args)
+            )
+        elif command == "gw-get-ignore-mac-address":
+            return_results(
+                gw_get_ignore_mac_address(client=client, args=args)
             )
         elif command == "gw-add-ignore-asset-name":
             return_results(

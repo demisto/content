@@ -1,22 +1,24 @@
 category: Network Security
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: SolarWinds
   version: -1
 configuration:
-- additionalinfo: 'Name or IP address of the Orion server you want to connect
-    to. Do not specify the port number. Examples: myorigin.mydomain.local, 12.153.24.2'
+- additionalinfo: 'Name or IP address of the Orion server you want to connect to. Do not specify the port number. Examples: myorigin.mydomain.local, 12.153.24.2'
   display: Name or IP address of the Orion server
   name: server
   required: true
   type: 0
-- additionalinfo: Admin can create users such as guests from the Orion platform and provide
-    access permission according to need.
+  section: Connect
+- additionalinfo: Admin can create users such as guests from the Orion platform and provide access permission according to need.
   display: Username of the account
   name: credentials
   required: true
   type: 9
-- additionalinfo: 'Note: "Type of incident to be fetched" and "Incident type"
-    should be the same to fetch similar types of incidents.'
+  section: Connect
+- additionalinfo: 'Note: "Type of incident to be fetched" and "Incident type" should be the same to fetch similar types of incidents.'
   defaultvalue: Alert
   display: Type of incident to be fetched
   hidden: false
@@ -26,6 +28,8 @@ configuration:
   - Event
   required: false
   type: 15
+  section: Collect
+  advanced: true
 - additionalinfo: The maximum limit is 1000.
   defaultvalue: '15'
   display: Maximum number of incidents per fetch
@@ -33,16 +37,15 @@ configuration:
   name: max_fetch
   required: false
   type: 0
-- additionalinfo: 'Date or relative timestamp to start fetching incidents from. For
-    Alert, incidents will be fetched based on triggered date. For Event, the incidents
-    will be fetched based on event time. (Formats accepted:  2 minutes, 2 hours,
-    2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.).'
+  section: Collect
+- additionalinfo: 'Date or relative timestamp to start fetching incidents from. For Alert, incidents will be fetched based on triggered date. For Event, the incidents will be fetched based on event time. (Formats accepted:  2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.).'
   defaultvalue: 3 days
   display: First fetch time interval
   hidden: false
   name: first_fetch
   required: false
   type: 0
+  section: Collect
 - additionalinfo: |-
     Fetch list of alerts as per the severity level. If not specified, it fetches all the incidents.
     Note: Severity level is only available for alerts.
@@ -57,10 +60,9 @@ configuration:
   - Critical
   required: false
   type: 16
-- additionalinfo: Filter alerts based on the type of property to monitor. If
-    not specified, it will fetch all types of alerts. To list additional object types,
-    use the query 'SELECT DISTINCT ObjectType FROM Orion.AlertConfigurations' in the swis-query
-    command.
+  section: Collect
+  advanced: true
+- additionalinfo: Filter alerts based on the type of property to monitor. If not specified, it will fetch all types of alerts. To list additional object types, use the query 'SELECT DISTINCT ObjectType FROM Orion.AlertConfigurations' in the swis-query command.
   display: Object Types
   hidden: false
   name: object_types
@@ -92,9 +94,9 @@ configuration:
   - Wireless Controller
   required: false
   type: 16
-- additionalinfo: Filter events based on the type. If not specified, it will fetch
-    all types of events. To list additional event types, use the query 'SELECT Name FROM
-    Orion.EventTypes' in the swis-query command.
+  section: Collect
+  advanced: true
+- additionalinfo: Filter events based on the type. If not specified, it will fetch all types of events. To list additional event types, use the query 'SELECT Name FROM Orion.EventTypes' in the swis-query command.
   display: Event Types
   hidden: false
   name: event_types
@@ -128,27 +130,33 @@ configuration:
   - Anomaly detected
   required: false
   type: 16
+  section: Collect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Trust any certificate (not secure)
   hidden: false
   name: insecure
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - defaultvalue: SolarWinds Alert
   display: Incident type
   name: incidentType
   required: false
   type: 13
+  section: Connect
 - display: Fetch incidents
   name: isFetch
   required: false
   type: 8
-description: The SolarWinds integration interacts with the SWIS API to allow you
-  to fetch alerts and events. It also provides commands to retrieve lists of alerts
-  and events.
+  section: Collect
+description: The SolarWinds integration interacts with the SWIS API to allow you to fetch alerts and events. It also provides commands to retrieve lists of alerts and events.
 display: SolarWinds
 name: SolarWinds
 script:
@@ -175,8 +183,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A comma-separated list of event types. For example:
-        "Warning", "Informational", "Node Up", etc.'
+      description: 'A comma-separated list of event types. For example: "Warning", "Informational", "Node Up", etc.'
       isArray: true
       name: event_type
       required: false
@@ -207,8 +214,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: ascending
-      description: 'Order by which the response will be sorted. Possible values:
-        "ascending" and "descending".'
+      description: 'Order by which the response will be sorted. Possible values: "ascending" and "descending".'
       isArray: false
       name: sort_order
       predefined:
@@ -218,8 +224,7 @@ script:
       secret: false
     - default: false
       defaultValue: '0'
-      description: The page number from which to retrieve events. By default, the per-page
-        limit is 50 events. You can change this value in the limit argument.
+      description: The page number from which to retrieve events. By default, the per-page limit is 50 events. You can change this value in the limit argument.
       isArray: false
       name: page
       required: false
@@ -234,8 +239,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Retrieves a list of events according to filter values provided in the command
-      arguments.
+    description: Retrieves a list of events according to filter values provided in the command arguments.
     execution: true
     name: swis-event-list
     outputs:
@@ -276,8 +280,7 @@ script:
       description: NetObject type of a triggered event.
       type: String
     - contextPath: SolarWinds.Event.Timestamp
-      description: Last modified time of an event. It is a counter that SQL server
-        automatically increments when the event is updated.
+      description: Last modified time of an event. It is a counter that SQL server automatically increments when the event is updated.
       type: String
     - contextPath: SolarWinds.Event.DisplayName
       description: Display name of an event.
@@ -304,10 +307,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A comma-separated list of the type of property to monitor.
-        For example: "Node", "IPAM.IPRequests", "Orion"."DiscoveryLogs", "APM: Component",
-        "IPAM Networks", "Orion.NodesForecastCapacity", "APM: Application", "Orion.VolumesForecastCapacity",
-        "Orion.NodesForecastCapacity", etc.'
+      description: 'A comma-separated list of the type of property to monitor. For example: "Node", "IPAM.IPRequests", "Orion"."DiscoveryLogs", "APM: Component", "IPAM Networks", "Orion.NodesForecastCapacity", "APM: Application", "Orion.VolumesForecastCapacity", "Orion.NodesForecastCapacity", etc.'
       isArray: true
       name: type
       required: false
@@ -343,8 +343,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: ascending
-      description: 'Order by which the response will be sorted. Possible values are:
-        "ascending" and "descending".'
+      description: 'Order by which the response will be sorted. Possible values are: "ascending" and "descending".'
       isArray: false
       name: sort_order
       predefined:
@@ -354,8 +353,7 @@ script:
       secret: false
     - default: false
       defaultValue: '0'
-      description: The page number from which to retrieve alerts. By default, the per-page
-        limit is 50 alerts. You can change this value in the limit argument.
+      description: The page number from which to retrieve alerts. By default, the per-page limit is 50 alerts. You can change this value in the limit argument.
       isArray: false
       name: page
       required: false
@@ -370,8 +368,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Retrieves a list of alerts based on the filter values provided in
-      the command arguments.
+    description: Retrieves a list of alerts based on the filter values provided in the command arguments.
     execution: false
     name: swis-alert-list
     outputs:
@@ -493,8 +490,7 @@ script:
       description: Condition due to which the alert was triggered.
       type: String
     - contextPath: SolarWinds.Alert.Reset
-      description: Reset condition for the alert. When the condition is met, the alert
-        is removed from active alerts.
+      description: Reset condition for the alert. When the condition is met, the alert is removed from active alerts.
       type: String
     - contextPath: SolarWinds.Alert.Severity
       description: Severity of the alert.
@@ -533,7 +529,7 @@ script:
       Note: The guidelines for composing the query can be found in the 'View Integration Documentation' linked in the integration tips.
     execution: false
     name: swis-query
-  dockerimage: demisto/python3:3.10.5.31797
+  dockerimage: demisto/python3:3.10.10.48392
   feed: false
   isfetch: true
   longRunning: false

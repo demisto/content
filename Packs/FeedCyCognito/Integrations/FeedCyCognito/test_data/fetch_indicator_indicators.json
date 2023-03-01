@@ -1,0 +1,1039 @@
+[
+    {
+        "fields": {
+            "creationdate": null,
+            "domainname": null,
+            "feedcycognitoaliveendpoint": true,
+            "feedcycognitoassetdiscoverability": "Extreme",
+            "feedcycognitoassetid": "ip/127.0.0.1",
+            "feedcycognitoassettype": "ip",
+            "feedcycognitobusinessunits": null,
+            "feedcycognitocertificatesignature": null,
+            "feedcycognitoclosedports": [
+                {
+                    "port": 3389,
+                    "protocol": "tcp",
+                    "status": "closed"
+                }
+            ],
+            "feedcycognitocomment": null,
+            "feedcycognitodomains": [],
+            "feedcycognitodynamicallyresolved": "no",
+            "feedcycognitoexpiration": null,
+            "feedcycognitohostingtypes": "owned",
+            "feedcycognitoinvestigationstatus": "investigated",
+            "feedcycognitoipaddresses": null,
+            "feedcycognitoissueralternativenames": null,
+            "feedcycognitoissuercommonname": null,
+            "feedcycognitoissuercountry": null,
+            "feedcycognitoissuerlocality": null,
+            "feedcycognitoissuerorganization": null,
+            "feedcycognitoissuerorganizationunit": null,
+            "feedcycognitoissuerstate": null,
+            "feedcycognitoissuescount": 1,
+            "feedcycognitolocations": [
+                "Malaysia"
+            ],
+            "feedcycognitoopenportprotocols": [
+                "tcp"
+            ],
+            "feedcycognitoopenports": [
+                {
+                    "port": 3306,
+                    "protocol": "tcp",
+                    "status": "open"
+                }
+            ],
+            "feedcycognitoorganizations": [
+                "Acme Corporation"
+            ],
+            "feedcycognitosecuritygrade": "F",
+            "feedcycognitosevereissues": 1,
+            "feedcycognitosignaturealgorithm": null,
+            "feedcycognitostatus": "new",
+            "feedcycognitosubdomains": null,
+            "feedcycognitosubjectalternativenames": null,
+            "feedcycognitosubjectcommonname": null,
+            "feedcycognitosubjectcountry": null,
+            "feedcycognitosubjectlocality": null,
+            "feedcycognitosubjectorganization": null,
+            "feedcycognitosubjectorganizationunit": null,
+            "feedcycognitosubjectstate": null,
+            "feedcycognitotags": [
+                "Vulnerable Software",
+                "Red Hat"
+            ],
+            "firstseenbysource": "2022-03-23T12:36:17.808Z",
+            "ipaddress": "127.0.0.1",
+            "lastseenbysource": "2022-03-31T03:39:22.568Z",
+            "tags": []
+        },
+        "rawJSON": {
+            "alive": true,
+            "closed_ports": [
+                {
+                    "port": 3389,
+                    "protocol": "tcp",
+                    "status": "closed"
+                }
+            ],
+            "comment": null,
+            "discoverability": "Extreme",
+            "domains": [],
+            "dynamically_resolved": "no",
+            "first_seen": "2022-03-23T12:36:17.808Z",
+            "hosting_type": "owned",
+            "id": "ip/127.0.0.1",
+            "investigation_status": "investigated",
+            "ip": "127.0.0.1",
+            "issues_count": 1,
+            "last_seen": "2022-03-31T03:39:22.568Z",
+            "locations": [
+                "MYS"
+            ],
+            "open_ports": [
+                {
+                    "port": 3306,
+                    "protocol": "tcp",
+                    "status": "open"
+                }
+            ],
+            "organizations": [
+                "Acme Corporation"
+            ],
+            "security_grade": "F",
+            "severe_issues": 1,
+            "status": "new",
+            "tags": [
+                "Vulnerable Software",
+                "Red Hat"
+            ],
+            "type": "ip"
+        },
+        "type": "IP",
+        "value": "127.0.0.1"
+    },
+    {
+        "fields": {
+            "creationdate": null,
+            "domainname": null,
+            "feedcycognitoaliveendpoint": true,
+            "feedcycognitoassetdiscoverability": "Extreme",
+            "feedcycognitoassetid": "ip/127.0.0.2",
+            "feedcycognitoassettype": "ip",
+            "feedcycognitobusinessunits": null,
+            "feedcycognitocertificatesignature": null,
+            "feedcycognitoclosedports": [
+                {
+                    "port": 3389,
+                    "protocol": "tcp",
+                    "status": "closed"
+                }
+            ],
+            "feedcycognitocomment": null,
+            "feedcycognitodomains": [],
+            "feedcycognitodynamicallyresolved": "no",
+            "feedcycognitoexpiration": null,
+            "feedcycognitohostingtypes": "owned",
+            "feedcycognitoinvestigationstatus": "investigated",
+            "feedcycognitoipaddresses": null,
+            "feedcycognitoissueralternativenames": null,
+            "feedcycognitoissuercommonname": null,
+            "feedcycognitoissuercountry": null,
+            "feedcycognitoissuerlocality": null,
+            "feedcycognitoissuerorganization": null,
+            "feedcycognitoissuerorganizationunit": null,
+            "feedcycognitoissuerstate": null,
+            "feedcycognitoissuescount": 2,
+            "feedcycognitolocations": [
+                "Malaysia"
+            ],
+            "feedcycognitoopenportprotocols": [
+                "tcp",
+                "tcp"
+            ],
+            "feedcycognitoopenports": [
+                {
+                    "port": 587,
+                    "protocol": "tcp",
+                    "status": "open"
+                },
+                {
+                    "port": 21,
+                    "protocol": "tcp",
+                    "status": "open"
+                }
+            ],
+            "feedcycognitoorganizations": [
+                "Acme Corporation"
+            ],
+            "feedcycognitosecuritygrade": "F",
+            "feedcycognitosevereissues": 1,
+            "feedcycognitosignaturealgorithm": null,
+            "feedcycognitostatus": "new",
+            "feedcycognitosubdomains": null,
+            "feedcycognitosubjectalternativenames": null,
+            "feedcycognitosubjectcommonname": null,
+            "feedcycognitosubjectcountry": null,
+            "feedcycognitosubjectlocality": null,
+            "feedcycognitosubjectorganization": null,
+            "feedcycognitosubjectorganizationunit": null,
+            "feedcycognitosubjectstate": null,
+            "feedcycognitotags": [
+                "Block Cipher"
+            ],
+            "firstseenbysource": "2022-03-23T12:27:04.354Z",
+            "ipaddress": "127.0.0.2",
+            "lastseenbysource": "2022-03-31T03:39:22.568Z",
+            "tags": []
+        },
+        "rawJSON": {
+            "alive": true,
+            "closed_ports": [
+                {
+                    "port": 3389,
+                    "protocol": "tcp",
+                    "status": "closed"
+                }
+            ],
+            "comment": null,
+            "discoverability": "Extreme",
+            "domains": [],
+            "dynamically_resolved": "no",
+            "first_seen": "2022-03-23T12:27:04.354Z",
+            "hosting_type": "owned",
+            "id": "ip/127.0.0.2",
+            "investigation_status": "investigated",
+            "ip": "127.0.0.2",
+            "issues_count": 2,
+            "last_seen": "2022-03-31T03:39:22.568Z",
+            "locations": [
+                "MYS"
+            ],
+            "open_ports": [
+                {
+                    "port": 587,
+                    "protocol": "tcp",
+                    "status": "open"
+                },
+                {
+                    "port": 21,
+                    "protocol": "tcp",
+                    "status": "open"
+                }
+            ],
+            "organizations": [
+                "Acme Corporation"
+            ],
+            "security_grade": "F",
+            "severe_issues": 1,
+            "status": "new",
+            "tags": [
+                "Block Cipher"
+            ],
+            "type": "ip"
+        },
+        "type": "IP",
+        "value": "127.0.0.2"
+    },
+    {
+        "fields": {
+            "creationdate": null,
+            "domainname": null,
+            "feedcycognitoaliveendpoint": true,
+            "feedcycognitoassetdiscoverability": "High",
+            "feedcycognitoassetid": "ip/127.0.0.3",
+            "feedcycognitoassettype": "ip",
+            "feedcycognitobusinessunits": null,
+            "feedcycognitocertificatesignature": null,
+            "feedcycognitoclosedports": [
+                {
+                    "port": 3389,
+                    "protocol": "tcp",
+                    "status": "closed"
+                },
+                {
+                    "port": 1723,
+                    "protocol": "tcp",
+                    "status": "closed"
+                }
+            ],
+            "feedcycognitocomment": null,
+            "feedcycognitodomains": [],
+            "feedcycognitodynamicallyresolved": "no",
+            "feedcycognitoexpiration": null,
+            "feedcycognitohostingtypes": "owned",
+            "feedcycognitoinvestigationstatus": "uninvestigated",
+            "feedcycognitoipaddresses": null,
+            "feedcycognitoissueralternativenames": null,
+            "feedcycognitoissuercommonname": null,
+            "feedcycognitoissuercountry": null,
+            "feedcycognitoissuerlocality": null,
+            "feedcycognitoissuerorganization": null,
+            "feedcycognitoissuerorganizationunit": null,
+            "feedcycognitoissuerstate": null,
+            "feedcycognitoissuescount": 1,
+            "feedcycognitolocations": [
+                "India"
+            ],
+            "feedcycognitoopenportprotocols": [
+                "tcp",
+                "tcp"
+            ],
+            "feedcycognitoopenports": [
+                {
+                    "port": 9999,
+                    "protocol": "tcp",
+                    "status": "open"
+                },
+                {
+                    "port": 2000,
+                    "protocol": "tcp",
+                    "status": "open"
+                }
+            ],
+            "feedcycognitoorganizations": [
+                "Acme Interior Design"
+            ],
+            "feedcycognitosecuritygrade": "F",
+            "feedcycognitosevereissues": 1,
+            "feedcycognitosignaturealgorithm": null,
+            "feedcycognitostatus": "new",
+            "feedcycognitosubdomains": null,
+            "feedcycognitosubjectalternativenames": null,
+            "feedcycognitosubjectcommonname": null,
+            "feedcycognitosubjectcountry": null,
+            "feedcycognitosubjectlocality": null,
+            "feedcycognitosubjectorganization": null,
+            "feedcycognitosubjectorganizationunit": null,
+            "feedcycognitosubjectstate": null,
+            "feedcycognitotags": [],
+            "firstseenbysource": "2022-03-23T12:38:19.520Z",
+            "ipaddress": "127.0.0.3",
+            "lastseenbysource": "2022-03-31T03:39:22.568Z",
+            "tags": []
+        },
+        "rawJSON": {
+            "alive": true,
+            "closed_ports": [
+                {
+                    "port": 3389,
+                    "protocol": "tcp",
+                    "status": "closed"
+                },
+                {
+                    "port": 1723,
+                    "protocol": "tcp",
+                    "status": "closed"
+                }
+            ],
+            "comment": null,
+            "discoverability": "High",
+            "domains": [],
+            "dynamically_resolved": "no",
+            "first_seen": "2022-03-23T12:38:19.520Z",
+            "hosting_type": "owned",
+            "id": "ip/127.0.0.3",
+            "investigation_status": "uninvestigated",
+            "ip": "127.0.0.3",
+            "issues_count": 1,
+            "last_seen": "2022-03-31T03:39:22.568Z",
+            "locations": [
+                "IND"
+            ],
+            "open_ports": [
+                {
+                    "port": 9999,
+                    "protocol": "tcp",
+                    "status": "open"
+                },
+                {
+                    "port": 2000,
+                    "protocol": "tcp",
+                    "status": "open"
+                }
+            ],
+            "organizations": [
+                "Acme Interior Design"
+            ],
+            "security_grade": "F",
+            "severe_issues": 1,
+            "status": "new",
+            "tags": [],
+            "type": "ip"
+        },
+        "type": "IP",
+        "value": "127.0.0.3"
+    },
+    {
+        "fields": {
+            "creationdate": null,
+            "domainname": null,
+            "feedcycognitoaliveendpoint": true,
+            "feedcycognitoassetdiscoverability": "Extreme",
+            "feedcycognitoassetid": "ip/127.0.0.4",
+            "feedcycognitoassettype": "ip",
+            "feedcycognitobusinessunits": null,
+            "feedcycognitocertificatesignature": null,
+            "feedcycognitoclosedports": [
+                {
+                    "port": 3389,
+                    "protocol": "tcp",
+                    "status": "closed"
+                },
+                {
+                    "port": 3306,
+                    "protocol": "tcp",
+                    "status": "closed"
+                }
+            ],
+            "feedcycognitocomment": null,
+            "feedcycognitodomains": [],
+            "feedcycognitodynamicallyresolved": "no",
+            "feedcycognitoexpiration": null,
+            "feedcycognitohostingtypes": "owned",
+            "feedcycognitoinvestigationstatus": "investigating",
+            "feedcycognitoipaddresses": null,
+            "feedcycognitoissueralternativenames": null,
+            "feedcycognitoissuercommonname": null,
+            "feedcycognitoissuercountry": null,
+            "feedcycognitoissuerlocality": null,
+            "feedcycognitoissuerorganization": null,
+            "feedcycognitoissuerorganizationunit": null,
+            "feedcycognitoissuerstate": null,
+            "feedcycognitoissuescount": 1,
+            "feedcycognitolocations": [
+                "Hong Kong"
+            ],
+            "feedcycognitoopenportprotocols": [
+                "tcp"
+            ],
+            "feedcycognitoopenports": [
+                {
+                    "port": 2000,
+                    "protocol": "tcp",
+                    "status": "open"
+                }
+            ],
+            "feedcycognitoorganizations": [
+                "Acme Corporation"
+            ],
+            "feedcycognitosecuritygrade": "F",
+            "feedcycognitosevereissues": 1,
+            "feedcycognitosignaturealgorithm": null,
+            "feedcycognitostatus": "new",
+            "feedcycognitosubdomains": null,
+            "feedcycognitosubjectalternativenames": null,
+            "feedcycognitosubjectcommonname": null,
+            "feedcycognitosubjectcountry": null,
+            "feedcycognitosubjectlocality": null,
+            "feedcycognitosubjectorganization": null,
+            "feedcycognitosubjectorganizationunit": null,
+            "feedcycognitosubjectstate": null,
+            "feedcycognitotags": [],
+            "firstseenbysource": "2022-03-23T12:38:44.208Z",
+            "ipaddress": "127.0.0.4",
+            "lastseenbysource": "2022-03-31T03:39:22.568Z",
+            "tags": []
+        },
+        "rawJSON": {
+            "alive": true,
+            "closed_ports": [
+                {
+                    "port": 3389,
+                    "protocol": "tcp",
+                    "status": "closed"
+                },
+                {
+                    "port": 3306,
+                    "protocol": "tcp",
+                    "status": "closed"
+                }
+            ],
+            "comment": null,
+            "discoverability": "Extreme",
+            "domains": [],
+            "dynamically_resolved": "no",
+            "first_seen": "2022-03-23T12:38:44.208Z",
+            "hosting_type": "owned",
+            "id": "ip/127.0.0.4",
+            "investigation_status": "investigating",
+            "ip": "127.0.0.4",
+            "issues_count": 1,
+            "last_seen": "2022-03-31T03:39:22.568Z",
+            "locations": [
+                "HKG"
+            ],
+            "open_ports": [
+                {
+                    "port": 2000,
+                    "protocol": "tcp",
+                    "status": "open"
+                }
+            ],
+            "organizations": [
+                "Acme Corporation"
+            ],
+            "security_grade": "F",
+            "severe_issues": 1,
+            "status": "new",
+            "tags": [],
+            "type": "ip"
+        },
+        "type": "IP",
+        "value": "127.0.0.4"
+    },
+    {
+        "fields": {
+            "creationdate": null,
+            "domainname": null,
+            "feedcycognitoaliveendpoint": true,
+            "feedcycognitoassetdiscoverability": "Extreme",
+            "feedcycognitoassetid": "ip/127.0.0.5",
+            "feedcycognitoassettype": "ip",
+            "feedcycognitobusinessunits": null,
+            "feedcycognitocertificatesignature": null,
+            "feedcycognitoclosedports": [
+                {
+                    "port": 110,
+                    "protocol": "tcp",
+                    "status": "closed"
+                }
+            ],
+            "feedcycognitocomment": null,
+            "feedcycognitodomains": [],
+            "feedcycognitodynamicallyresolved": "no",
+            "feedcycognitoexpiration": null,
+            "feedcycognitohostingtypes": "owned",
+            "feedcycognitoinvestigationstatus": "investigated",
+            "feedcycognitoipaddresses": null,
+            "feedcycognitoissueralternativenames": null,
+            "feedcycognitoissuercommonname": null,
+            "feedcycognitoissuercountry": null,
+            "feedcycognitoissuerlocality": null,
+            "feedcycognitoissuerorganization": null,
+            "feedcycognitoissuerorganizationunit": null,
+            "feedcycognitoissuerstate": null,
+            "feedcycognitoissuescount": 2,
+            "feedcycognitolocations": [
+                "Hong Kong"
+            ],
+            "feedcycognitoopenportprotocols": [
+                "tcp",
+                "tcp"
+            ],
+            "feedcycognitoopenports": [
+                {
+                    "port": 587,
+                    "protocol": "tcp",
+                    "status": "open"
+                },
+                {
+                    "port": 143,
+                    "protocol": "tcp",
+                    "status": "open"
+                }
+            ],
+            "feedcycognitoorganizations": [
+                "Acme Corporation"
+            ],
+            "feedcycognitosecuritygrade": "F",
+            "feedcycognitosevereissues": 1,
+            "feedcycognitosignaturealgorithm": null,
+            "feedcycognitostatus": "new",
+            "feedcycognitosubdomains": null,
+            "feedcycognitosubjectalternativenames": null,
+            "feedcycognitosubjectcommonname": null,
+            "feedcycognitosubjectcountry": null,
+            "feedcycognitosubjectlocality": null,
+            "feedcycognitosubjectorganization": null,
+            "feedcycognitosubjectorganizationunit": null,
+            "feedcycognitosubjectstate": null,
+            "feedcycognitotags": [
+                "Open Ports"
+            ],
+            "firstseenbysource": "2022-03-23T12:27:29.407Z",
+            "ipaddress": "127.0.0.5",
+            "lastseenbysource": "2022-03-31T03:39:22.568Z",
+            "tags": []
+        },
+        "rawJSON": {
+            "alive": true,
+            "closed_ports": [
+                {
+                    "port": 110,
+                    "protocol": "tcp",
+                    "status": "closed"
+                }
+            ],
+            "comment": null,
+            "discoverability": "Extreme",
+            "domains": [],
+            "dynamically_resolved": "no",
+            "first_seen": "2022-03-23T12:27:29.407Z",
+            "hosting_type": "owned",
+            "id": "ip/127.0.0.5",
+            "investigation_status": "investigated",
+            "ip": "127.0.0.5",
+            "issues_count": 2,
+            "last_seen": "2022-03-31T03:39:22.568Z",
+            "locations": [
+                "HKG"
+            ],
+            "open_ports": [
+                {
+                    "port": 587,
+                    "protocol": "tcp",
+                    "status": "open"
+                },
+                {
+                    "port": 143,
+                    "protocol": "tcp",
+                    "status": "open"
+                }
+            ],
+            "organizations": [
+                "Acme Corporation"
+            ],
+            "security_grade": "F",
+            "severe_issues": 1,
+            "status": "new",
+            "tags": [
+                "Open Ports"
+            ],
+            "type": "ip"
+        },
+        "type": "IP",
+        "value": "127.0.0.5"
+    },
+    {
+        "fields": {
+            "creationdate": null,
+            "domainname": null,
+            "feedcycognitoaliveendpoint": true,
+            "feedcycognitoassetdiscoverability": "High",
+            "feedcycognitoassetid": "ip/127.0.0.6",
+            "feedcycognitoassettype": "ip",
+            "feedcycognitobusinessunits": null,
+            "feedcycognitocertificatesignature": null,
+            "feedcycognitoclosedports": [],
+            "feedcycognitocomment": null,
+            "feedcycognitodomains": [],
+            "feedcycognitodynamicallyresolved": "no",
+            "feedcycognitoexpiration": null,
+            "feedcycognitohostingtypes": "owned",
+            "feedcycognitoinvestigationstatus": "uninvestigated",
+            "feedcycognitoipaddresses": null,
+            "feedcycognitoissueralternativenames": null,
+            "feedcycognitoissuercommonname": null,
+            "feedcycognitoissuercountry": null,
+            "feedcycognitoissuerlocality": null,
+            "feedcycognitoissuerorganization": null,
+            "feedcycognitoissuerorganizationunit": null,
+            "feedcycognitoissuerstate": null,
+            "feedcycognitoissuescount": 1,
+            "feedcycognitolocations": [
+                "France"
+            ],
+            "feedcycognitoopenportprotocols": [
+                "tcp"
+            ],
+            "feedcycognitoopenports": [
+                {
+                    "port": 3389,
+                    "protocol": "tcp",
+                    "status": "open"
+                }
+            ],
+            "feedcycognitoorganizations": [
+                "ACME Studio"
+            ],
+            "feedcycognitosecuritygrade": "F",
+            "feedcycognitosevereissues": 1,
+            "feedcycognitosignaturealgorithm": null,
+            "feedcycognitostatus": "new",
+            "feedcycognitosubdomains": null,
+            "feedcycognitosubjectalternativenames": null,
+            "feedcycognitosubjectcommonname": null,
+            "feedcycognitosubjectcountry": null,
+            "feedcycognitosubjectlocality": null,
+            "feedcycognitosubjectorganization": null,
+            "feedcycognitosubjectorganizationunit": null,
+            "feedcycognitosubjectstate": null,
+            "feedcycognitotags": [],
+            "firstseenbysource": "2022-03-23T12:26:56.446Z",
+            "ipaddress": "127.0.0.6",
+            "lastseenbysource": "2022-03-31T03:39:22.568Z",
+            "tags": []
+        },
+        "rawJSON": {
+            "alive": true,
+            "closed_ports": [],
+            "comment": null,
+            "discoverability": "High",
+            "domains": [],
+            "dynamically_resolved": "no",
+            "first_seen": "2022-03-23T12:26:56.446Z",
+            "hosting_type": "owned",
+            "id": "ip/127.0.0.6",
+            "investigation_status": "uninvestigated",
+            "ip": "127.0.0.6",
+            "issues_count": 1,
+            "last_seen": "2022-03-31T03:39:22.568Z",
+            "locations": [
+                "FRA"
+            ],
+            "open_ports": [
+                {
+                    "port": 3389,
+                    "protocol": "tcp",
+                    "status": "open"
+                }
+            ],
+            "organizations": [
+                "ACME Studio"
+            ],
+            "security_grade": "F",
+            "severe_issues": 1,
+            "status": "new",
+            "tags": [],
+            "type": "ip"
+        },
+        "type": "IP",
+        "value": "127.0.0.6"
+    },
+    {
+        "fields": {
+            "creationdate": null,
+            "domainname": null,
+            "feedcycognitoaliveendpoint": true,
+            "feedcycognitoassetdiscoverability": "Extreme",
+            "feedcycognitoassetid": "ip/127.0.0.7",
+            "feedcycognitoassettype": "ip",
+            "feedcycognitobusinessunits": null,
+            "feedcycognitocertificatesignature": null,
+            "feedcycognitoclosedports": [
+                {
+                    "port": 3306,
+                    "protocol": "tcp",
+                    "status": "closed"
+                },
+                {
+                    "port": 5986,
+                    "protocol": "tcp",
+                    "status": "closed"
+                }
+            ],
+            "feedcycognitocomment": null,
+            "feedcycognitodomains": [],
+            "feedcycognitodynamicallyresolved": "no",
+            "feedcycognitoexpiration": null,
+            "feedcycognitohostingtypes": "owned",
+            "feedcycognitoinvestigationstatus": "investigated",
+            "feedcycognitoipaddresses": null,
+            "feedcycognitoissueralternativenames": null,
+            "feedcycognitoissuercommonname": null,
+            "feedcycognitoissuercountry": null,
+            "feedcycognitoissuerlocality": null,
+            "feedcycognitoissuerorganization": null,
+            "feedcycognitoissuerorganizationunit": null,
+            "feedcycognitoissuerstate": null,
+            "feedcycognitoissuescount": 3,
+            "feedcycognitolocations": [
+                "Malaysia"
+            ],
+            "feedcycognitoopenportprotocols": [
+                "tcp"
+            ],
+            "feedcycognitoopenports": [
+                {
+                    "port": 3389,
+                    "protocol": "tcp",
+                    "status": "open"
+                }
+            ],
+            "feedcycognitoorganizations": [
+                "Acme Corporation"
+            ],
+            "feedcycognitosecuritygrade": "F",
+            "feedcycognitosevereissues": 1,
+            "feedcycognitosignaturealgorithm": null,
+            "feedcycognitostatus": "new",
+            "feedcycognitosubdomains": null,
+            "feedcycognitosubjectalternativenames": null,
+            "feedcycognitosubjectcommonname": null,
+            "feedcycognitosubjectcountry": null,
+            "feedcycognitosubjectlocality": null,
+            "feedcycognitosubjectorganization": null,
+            "feedcycognitosubjectorganizationunit": null,
+            "feedcycognitosubjectstate": null,
+            "feedcycognitotags": [
+                "Exposed Service"
+            ],
+            "firstseenbysource": "2022-03-23T12:38:27.441Z",
+            "ipaddress": "127.0.0.7",
+            "lastseenbysource": "2022-03-31T03:39:22.568Z",
+            "tags": []
+        },
+        "rawJSON": {
+            "alive": true,
+            "closed_ports": [
+                {
+                    "port": 3306,
+                    "protocol": "tcp",
+                    "status": "closed"
+                },
+                {
+                    "port": 5986,
+                    "protocol": "tcp",
+                    "status": "closed"
+                }
+            ],
+            "comment": null,
+            "discoverability": "Extreme",
+            "domains": [],
+            "dynamically_resolved": "no",
+            "first_seen": "2022-03-23T12:38:27.441Z",
+            "hosting_type": "owned",
+            "id": "ip/127.0.0.7",
+            "investigation_status": "investigated",
+            "ip": "127.0.0.7",
+            "issues_count": 3,
+            "last_seen": "2022-03-31T03:39:22.568Z",
+            "locations": [
+                "MYS"
+            ],
+            "open_ports": [
+                {
+                    "port": 3389,
+                    "protocol": "tcp",
+                    "status": "open"
+                }
+            ],
+            "organizations": [
+                "Acme Corporation"
+            ],
+            "security_grade": "F",
+            "severe_issues": 1,
+            "status": "new",
+            "tags": [
+                "Exposed Service"
+            ],
+            "type": "ip"
+        },
+        "type": "IP",
+        "value": "127.0.0.7"
+    },
+    {
+        "fields": {
+            "creationdate": null,
+            "domainname": null,
+            "feedcycognitoaliveendpoint": true,
+            "feedcycognitoassetdiscoverability": "Moderate",
+            "feedcycognitoassetid": "ip/127.0.0.8",
+            "feedcycognitoassettype": "ip",
+            "feedcycognitobusinessunits": null,
+            "feedcycognitocertificatesignature": null,
+            "feedcycognitoclosedports": [],
+            "feedcycognitocomment": null,
+            "feedcycognitodomains": [],
+            "feedcycognitodynamicallyresolved": "no",
+            "feedcycognitoexpiration": null,
+            "feedcycognitohostingtypes": "cloud",
+            "feedcycognitoinvestigationstatus": "investigated",
+            "feedcycognitoipaddresses": null,
+            "feedcycognitoissueralternativenames": null,
+            "feedcycognitoissuercommonname": null,
+            "feedcycognitoissuercountry": null,
+            "feedcycognitoissuerlocality": null,
+            "feedcycognitoissuerorganization": null,
+            "feedcycognitoissuerorganizationunit": null,
+            "feedcycognitoissuerstate": null,
+            "feedcycognitoissuescount": 1,
+            "feedcycognitolocations": [
+                "United States"
+            ],
+            "feedcycognitoopenportprotocols": [
+                "tcp"
+            ],
+            "feedcycognitoopenports": [
+                {
+                    "port": 443,
+                    "protocol": "tcp",
+                    "status": "open"
+                }
+            ],
+            "feedcycognitoorganizations": [
+                "ACME Ticketing",
+                "ACME Cleantech Solutions",
+                "Acme Holdings"
+            ],
+            "feedcycognitosecuritygrade": "F",
+            "feedcycognitosevereissues": 1,
+            "feedcycognitosignaturealgorithm": null,
+            "feedcycognitostatus": "new",
+            "feedcycognitosubdomains": null,
+            "feedcycognitosubjectalternativenames": null,
+            "feedcycognitosubjectcommonname": null,
+            "feedcycognitosubjectcountry": null,
+            "feedcycognitosubjectlocality": null,
+            "feedcycognitosubjectorganization": null,
+            "feedcycognitosubjectorganizationunit": null,
+            "feedcycognitosubjectstate": null,
+            "feedcycognitotags": [
+                "Vulnerable Library"
+            ],
+            "firstseenbysource": "2022-03-23T12:26:59.305Z",
+            "ipaddress": "127.0.0.8",
+            "lastseenbysource": "2022-03-31T03:39:22.568Z",
+            "tags": []
+        },
+        "rawJSON": {
+            "alive": true,
+            "closed_ports": [],
+            "comment": null,
+            "discoverability": "Moderate",
+            "domains": [],
+            "dynamically_resolved": "no",
+            "first_seen": "2022-03-23T12:26:59.305Z",
+            "hosting_type": "cloud",
+            "id": "ip/127.0.0.8",
+            "investigation_status": "investigated",
+            "ip": "127.0.0.8",
+            "issues_count": 1,
+            "last_seen": "2022-03-31T03:39:22.568Z",
+            "locations": [
+                "USA"
+            ],
+            "open_ports": [
+                {
+                    "port": 443,
+                    "protocol": "tcp",
+                    "status": "open"
+                }
+            ],
+            "organizations": [
+                "ACME Ticketing",
+                "ACME Cleantech Solutions",
+                "Acme Holdings"
+            ],
+            "security_grade": "F",
+            "severe_issues": 1,
+            "status": "new",
+            "tags": [
+                "Vulnerable Library"
+            ],
+            "type": "ip"
+        },
+        "type": "IP",
+        "value": "127.0.0.8"
+    },
+    {
+        "fields": {
+            "creationdate": null,
+            "domainname": null,
+            "feedcycognitoaliveendpoint": true,
+            "feedcycognitoassetdiscoverability": "Extreme",
+            "feedcycognitoassetid": "ip/127.0.0.9",
+            "feedcycognitoassettype": "ip",
+            "feedcycognitobusinessunits": null,
+            "feedcycognitocertificatesignature": null,
+            "feedcycognitoclosedports": [
+                {
+                    "port": 3389,
+                    "protocol": "tcp",
+                    "status": "closed"
+                }
+            ],
+            "feedcycognitocomment": null,
+            "feedcycognitodomains": [],
+            "feedcycognitodynamicallyresolved": "no",
+            "feedcycognitoexpiration": null,
+            "feedcycognitohostingtypes": "owned",
+            "feedcycognitoinvestigationstatus": "uninvestigated",
+            "feedcycognitoipaddresses": null,
+            "feedcycognitoissueralternativenames": null,
+            "feedcycognitoissuercommonname": null,
+            "feedcycognitoissuercountry": null,
+            "feedcycognitoissuerlocality": null,
+            "feedcycognitoissuerorganization": null,
+            "feedcycognitoissuerorganizationunit": null,
+            "feedcycognitoissuerstate": null,
+            "feedcycognitoissuescount": 3,
+            "feedcycognitolocations": [
+                "Malaysia"
+            ],
+            "feedcycognitoopenportprotocols": [
+                "tcp"
+            ],
+            "feedcycognitoopenports": [
+                {
+                    "port": 3306,
+                    "protocol": "tcp",
+                    "status": "open"
+                }
+            ],
+            "feedcycognitoorganizations": [
+                "Acme Corporation"
+            ],
+            "feedcycognitosecuritygrade": "F",
+            "feedcycognitosevereissues": 2,
+            "feedcycognitosignaturealgorithm": null,
+            "feedcycognitostatus": "new",
+            "feedcycognitosubdomains": null,
+            "feedcycognitosubjectalternativenames": null,
+            "feedcycognitosubjectcommonname": null,
+            "feedcycognitosubjectcountry": null,
+            "feedcycognitosubjectlocality": null,
+            "feedcycognitosubjectorganization": null,
+            "feedcycognitosubjectorganizationunit": null,
+            "feedcycognitosubjectstate": null,
+            "feedcycognitotags": [],
+            "firstseenbysource": "2022-03-14T14:08:29.718Z",
+            "ipaddress": "127.0.0.9",
+            "lastseenbysource": "2022-03-31T03:39:22.568Z",
+            "tags": []
+        },
+        "rawJSON": {
+            "alive": true,
+            "closed_ports": [
+                {
+                    "port": 3389,
+                    "protocol": "tcp",
+                    "status": "closed"
+                }
+            ],
+            "comment": null,
+            "discoverability": "Extreme",
+            "domains": [],
+            "dynamically_resolved": "no",
+            "first_seen": "2022-03-14T14:08:29.718Z",
+            "hosting_type": "owned",
+            "id": "ip/127.0.0.9",
+            "investigation_status": "uninvestigated",
+            "ip": "127.0.0.9",
+            "issues_count": 3,
+            "last_seen": "2022-03-31T03:39:22.568Z",
+            "locations": [
+                "MYS"
+            ],
+            "open_ports": [
+                {
+                    "port": 3306,
+                    "protocol": "tcp",
+                    "status": "open"
+                }
+            ],
+            "organizations": [
+                "Acme Corporation"
+            ],
+            "security_grade": "F",
+            "severe_issues": 2,
+            "status": "new",
+            "tags": [],
+            "type": "ip"
+        },
+        "type": "IP",
+        "value": "127.0.0.9"
+    }
+]

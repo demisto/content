@@ -7,25 +7,32 @@ category: Data Enrichment & Threat Intelligence
 description: AWS Sagemaker - Demisto Phishing Email Classifier
 configuration:
 - display: AWS access key
+  name: credentials
+  type: 9
+  required: false
+  displaypassword: AWS secret key
+- display: AWS access key
   name: AWSAccessKey
   defaultvalue: ""
   type: 0
-  required: true
+  required: false
+  hidden: true
 - display: AWS secret key
   name: AWSSecretKey
   defaultvalue: ""
   type: 4
-  required: true
+  required: false
+  hidden: true
 - display: AWS Region code
   name: AWSRegion
-  defaultvalue: us-east-2
+  defaultvalue: "us-east-2"
   type: 0
   required: false
 - display: Endpoint Name
   name: EndpointName
-  defaultvalue: ""
   type: 0
   required: true
+  defaultvalue: ""
 - display: Use system proxy settings
   name: proxy
   type: 8
@@ -47,7 +54,7 @@ script:
       description: The predication probability (range 0-1)
       type: number
     description: Classify input text (usually email content)
-  dockerimage: demisto/boto3py3:1.0.0.33789
+  dockerimage: demisto/boto3py3:1.0.0.38849
   runonce: false
 tests:
 - Test Sagemaker

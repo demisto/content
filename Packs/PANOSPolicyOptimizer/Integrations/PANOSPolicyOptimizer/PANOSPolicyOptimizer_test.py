@@ -147,3 +147,36 @@ def test_extract_csrf():
     assert client.extract_csrf(
         '<input type="hidden" name="_csrf" value="422JE5PO1WARA1I91CB5FRS99UQ65RF31P9Y3L4T" />') == \
            '422JE5PO1WARA1I91CB5FRS99UQ65RF31P9Y3L4T'  # noqa
+
+
+@pytest.mark.parametrize("position, num_of_rules", [('both', 3), ('pre', 2), ('post', 1)])
+def test_get_unused_rules(mocker, position, num_of_rules):
+    """
+
+    Given: position of unused rules (pre, post or any)
+
+    When: running pan-os-po-get-rules for unused rules
+
+    Then: return rules based on their location
+
+    """
+
+    def mock_policy_optimizer_get_rules(timeframe: str, usage: str, exclude: bool, position: str, rule_type: str):
+        pre = {'result': {'result': {'entry': ['test1', 'test2']}}}
+        post = {'result': {'result': {'entry': ['test3']}}}
+        if position == 'pre':
+            return pre
+        else:
+            return post
+
+    client = get_panorama_instance_client()
+    mocker.patch.object(client, 'policy_optimizer_get_rules', side_effect=mock_policy_optimizer_get_rules)
+    args = {'timeframe': '',
+            'usage': 'test',
+            'exclude': 'false',
+            'position': position,
+            'rule_type': 'unused'
+            }
+    rules = policy_optimizer_get_rules_command(client, args).outputs
+
+    assert len(rules) == num_of_rules

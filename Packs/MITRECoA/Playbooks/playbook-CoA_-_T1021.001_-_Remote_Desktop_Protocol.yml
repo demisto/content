@@ -1,0 +1,307 @@
+description: "This playbook Remediates the Remote Desktop Protocol technique using intelligence-driven Courses of Action (COA) defined by Palo Alto Networks Unit 42 team.\n \n***Disclaimer: This playbook does not simulate an attack using the specified technique, but follows the steps to remediation as defined by Palo Alto Networks Unit 42 team’s Actionable Threat Objects and Mitigations (ATOMs).\nTechniques Handled:\n- T1021.001: Remote Desktop Protocol\n\nKill Chain phases:\n- Lateral Movement\n\nMITRE ATT&CK Description:\n\nAdversaries may use Valid Accounts to log into a computer using the Remote Desktop Protocol (RDP). The adversary may then perform actions as the logged-on user.\n\nRemote desktop is a common feature in operating systems. It allows a user to log into an interactive session with a system desktop graphical user interface on a remote system. Microsoft refers to its implementation of the Remote Desktop Protocol (RDP) as Remote Desktop Services (RDS).\n\nAdversaries may connect to a remote system over RDP/RDS to expand access if the service is enabled and allows access to accounts with known credentials. Adversaries will likely use Credential Access techniques to acquire credentials to use with RDP. Adversaries may also use RDP in conjunction with the Accessibility Features technique for Persistence.\n\nPossible playbook uses:\n- The playbook can be used independently to handle and remediate the specific technique.\n- The playbook can be used as a part of the “Courses of Action - Defense Evasion” playbook to remediate techniques based on the kill chain phase.\n- The playbook can be used as a part of the “MITRE ATT&CK - Courses of Action” playbook, which can be triggered by different sources and accepts the technique MITRE ATT&CK ID as an input.\n"
+id: MITRE ATT&CK CoA - T1021.001 - Remote Desktop Protocol
+inputs: []
+name: MITRE ATT&CK CoA - T1021.001 - Remote Desktop Protocol
+outputs:
+- contextPath: Handled.Techniques
+  description: The technique handled in this playbook
+  type: string
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 357d6ad3-424c-4f74-8f1e-c39ad8783ec4
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 357d6ad3-424c-4f74-8f1e-c39ad8783ec4
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    id: "1"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Configure Multi Factor Authentication,Create User Group for Limited Access to Whitelist Applications,Configure Interfaces and Zones segmentation
+      id: 91814bdc-98d8-4c37-8ef7-39cc34a28b68
+      iscommand: false
+      name: Manual - NGFW - Configure Multi Factor Authentication,Create User Group for Limited Access to Whitelist Applications,Configure Interfaces and Zones segmentation
+      type: regular
+      version: -1
+    taskid: 91814bdc-98d8-4c37-8ef7-39cc34a28b68
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "9":
+    id: "9"
+    ignoreworker: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: fdf392f5-29d8-4bf3-8966-e1939b173e09
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: fdf392f5-29d8-4bf3-8966-e1939b173e09
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1435
+        }
+      }
+  "10":
+    id: "10"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "14"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Manual - Configure XDR Host Firewall Profile.
+      id: 6456c391-85e0-4c29-865b-0d3168615fea
+      iscommand: false
+      name: Manual - Configure XDR Host Firewall Profile
+      type: regular
+      version: -1
+    taskid: 6456c391-85e0-4c29-865b-0d3168615fea
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 855
+        }
+      }
+  "14":
+    id: "14"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "18"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Handled.Techniques
+      stringify: {}
+      value:
+        simple: '["T1076","T1021.001"]'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 29a5d749-e8a2-478a-8c62-f2258b7ccba0
+      iscommand: false
+      name: Set technique handled
+      script: Set
+      type: regular
+      version: -1
+    taskid: 29a5d749-e8a2-478a-8c62-f2258b7ccba0
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1050
+        }
+      }
+  "15":
+    id: "15"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "16"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e4c3be08-7f8e-4834-8213-2997d043fdcb
+      iscommand: false
+      name: Configure Host Firewall Profile
+      type: title
+      version: -1
+      description: ''
+    taskid: e4c3be08-7f8e-4834-8213-2997d043fdcb
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+  "16":
+    id: "16"
+    ignoreworker: false
+    nexttasks:
+      '#default#':
+      - "17"
+      "yes":
+      - "10"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      brandname:
+        simple: Cortex XDR - IR
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      id: a0dff1bf-4688-43d0-8e67-035dd1b2c575
+      iscommand: false
+      name: Is Cortex XDR integration Enabled?
+      script: IsIntegrationAvailable
+      type: condition
+      version: -1
+    taskid: a0dff1bf-4688-43d0-8e67-035dd1b2c575
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 510
+        }
+      }
+  "17":
+    id: "17"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |
+        Enable the Cortex XDR integration to follow this CoA.
+
+        If needed - please contact your Palo Alto Networks account manager for future guidance and assistance.
+      id: 23373b2c-b1f9-49af-81bb-3864fa21c07c
+      iscommand: false
+      name: Manual - Enable Cortex XDR integration
+      type: regular
+      version: -1
+    taskid: 23373b2c-b1f9-49af-81bb-3864fa21c07c
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 410,
+          "y": 680
+        }
+      }
+  "18":
+    continueonerror: true
+    id: "18"
+    ignoreworker: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      columns:
+        simple: technique
+      context_path:
+        simple: Handled.Techniques
+      grid_id:
+        simple: handledtechniques
+      keys: {}
+      overwrite: {}
+      sort_by: {}
+      unpack_nested_elements: {}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Creates a Grid table from items or key-value pairs.
+      id: 8432e3b6-6e97-4702-81ac-48bba30bb8a0
+      iscommand: false
+      name: Set grid field
+      script: SetGridField
+      type: regular
+      version: -1
+    taskid: 8432e3b6-6e97-4702-81ac-48bba30bb8a0
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1240
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "16_10_yes": 0.44
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1450,
+        "width": 740,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0

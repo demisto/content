@@ -1,4 +1,7 @@
-category: Data Enrichment & Threat Intelligence
+category: Email
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: Ironscales
   version: -1
@@ -8,44 +11,56 @@ configuration:
   name: url
   required: true
   type: 0
+  section: Connect
 - display: API Key
   name: apikey
   required: true
   type: 4
+  section: Connect
 - display: Company Id
   name: company_id
   required: true
   type: 0
+  section: Connect
 - display: Scopes (e.g. "company.all")
   name: scopes
   required: true
   type: 0
+  section: Connect
 - defaultvalue: '50'
   display: Maximum number of incidents per fetch
   name: max_fetch
   required: false
   type: 0
+  section: Collect
 - display: First fetch
   name: first_fetch
   required: false
   type: 0
+  section: Collect
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Fetch incidents
   name: isFetch
   required: false
   type: 8
+  section: Collect
 - display: Incident type
   defaultvalue: Ironscales
   name: incidentType
   required: false
   type: 13
+  section: Connect
 description: IRONSCALES, a self-learning email security platform integration
 display: Ironscales
 name: Ironscales
@@ -56,8 +71,7 @@ script:
     - description: Incident ID.
       name: incident_id
       required: true
-    - description: Company Id - If empty, the Company Id from the instance configuration
-        is used.
+    - description: Company Id - If empty, the Company Id from the instance configuration is used.
       name: company_id
     description: Get incident data by ID.
     name: ironscales-get-incident
@@ -155,7 +169,7 @@ script:
     outputs:
     - contextPath: Ironscales.OpenIncidents.incident_ids
       description: List of open incidents IDs.
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.10.48392
   isFetchSamples: true
   isfetch: true
   runonce: false

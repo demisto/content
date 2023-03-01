@@ -232,8 +232,8 @@ def main():
         aws_role_session_name = params.get('roleSessionName')
         aws_role_session_duration = params.get('sessionDuration')
         aws_role_policy = None
-        aws_access_key_id = params.get('access_key')
-        aws_secret_access_key = params.get('secret_key')
+        aws_access_key_id = params.get('credentials', {}).get('identifier') or params.get('access_key')
+        aws_secret_access_key = params.get('credentials', {}).get('password') or params.get('secret_key')
         verify_certificate = not params.get('insecure', True)
         timeout = demisto.params().get('timeout')
         retries = demisto.params().get('retries') or 5

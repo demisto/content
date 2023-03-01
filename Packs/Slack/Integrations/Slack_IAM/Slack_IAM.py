@@ -1,9 +1,10 @@
 import demistomock as demisto
 from CommonServerPython import *
 import traceback
+import urllib3
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' GLOBALS '''
 INPUT_SCIM_EXTENSION_KEY = "urn:scim:schemas:extension:custom:1.0:user"
@@ -484,7 +485,7 @@ def main():
 
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
-    access_token = params.get('access_token')
+    access_token = params.get('credentials', {}).get('password') or params.get('access_token')
 
     mapper_in = params.get('mapper_in')
     mapper_out = params.get('mapper_out')

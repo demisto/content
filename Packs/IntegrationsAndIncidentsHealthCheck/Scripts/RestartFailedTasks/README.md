@@ -34,3 +34,8 @@ This script uses the following commands and scripts.
 | RestartedTasks.Task.IncidentID | The ID of the incident of the task | String |
 | RestartedTasks.Task.PlaybookName | The name of the playbook of the task | String |
 | RestartedTasks.Task.TaskName | The name of the task | String |
+
+### Troubleshooting
+Multi-tenant environments should be configured with the Cortex Rest API instance when using this 
+automation. Make sure the *Use tenant* parameter (in the Cortex Rest API integration) is checked 
+to ensure that API calls are made to the current tenant instead of the master tenant.

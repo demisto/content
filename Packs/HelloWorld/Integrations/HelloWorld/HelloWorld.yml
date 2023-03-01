@@ -1,4 +1,7 @@
 category: Utilities
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: HelloWorld
   version: -1
@@ -16,40 +19,51 @@ configuration:
   - F - Reliability cannot be judged
   defaultvalue: C - Fairly reliable
   type: 15
+  section: Collect
 - defaultvalue: https://soar.monstersofhack.com
   display: Server URL (e.g. https://soar.monstersofhack.com)
   name: url
   required: true
   type: 0
+  section: Connect
 - display: Fetch incidents
   name: isFetch
   required: false
   type: 8
+  section: Collect
 - display: Incident type
   name: incidentType
   required: false
   type: 13
+  section: Connect
 - defaultvalue: '10'
   display: Maximum number of incidents per fetch
   name: max_fetch
   required: false
   type: 0
-- display: API Key
-  name: apikey
+  section: Collect
+- displaypassword: API Key
+  name: credentials
   required: true
-  type: 4
+  type: 9
+  hiddenusername: true
+  section: Connect
 - defaultvalue: '65'
   display: Score threshold for IP reputation command
   additionalinfo: Set this to determine the HelloWorld score that will determine if an IP is malicious (0-100)
   name: threshold_ip
   required: false
   type: 0
+  section: Collect
+  advanced: true
 - defaultvalue: '65'
   display: Score threshold for domain reputation command
   additionalinfo: Set this to determine the HelloWorld score that will determine if a domain is malicious (0-100)
   name: threshold_domain
   required: false
   type: 0
+  section: Collect
+  advanced: true
 - defaultvalue: ACTIVE
   display: Fetch alerts with status (ACTIVE, CLOSED)
   name: alert_status
@@ -58,11 +72,15 @@ configuration:
   - CLOSED
   required: false
   type: 15
+  section: Collect
+  advanced: true
 - display: Fetch alerts with type
   additionalinfo: Comma-separated list of types of alerts to fetch. Types might change over time. Some examples are 'Bug' and 'Vulnerability'
   name: alert_type
   required: false
   type: 0
+  section: Collect
+  advanced: true
 - defaultvalue: 'Low'
   display: Minimum severity of alerts to fetch
   name: min_severity
@@ -73,19 +91,25 @@ configuration:
   - Critical
   required: true
   type: 15
+  section: Collect
 - defaultvalue: 3 days
   display: First fetch time
   name: first_fetch
   required: false
   type: 0
+  section: Collect
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
+  advanced: true
 description: This is the Hello World integration for getting started.
 display: HelloWorld
 name: HelloWorld
@@ -603,7 +627,7 @@ script:
     - contextPath: CVE.ID
       description: The ID of the CVE.
       type: string
-  dockerimage: demisto/python3:3.10.5.31928
+  dockerimage: demisto/python3:3.10.9.42476
   isfetch: true
   longRunning: false
   longRunningPort: false

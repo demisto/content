@@ -1108,7 +1108,8 @@ class MsClient:
     def __init__(self, tenant_id, auth_id, enc_key, app_name, base_url, verify, proxy, self_deployed,
                  alert_severities_to_fetch, alert_status_to_fetch, alert_time_to_fetch, max_fetch,
                  auth_type, redirect_uri, auth_code,
-                 is_gcc: bool, certificate_thumbprint: Optional[str] = None, private_key: Optional[str] = None):
+                 is_gcc: bool, certificate_thumbprint: Optional[str] = None, private_key: Optional[str] = None,
+                 managed_identities_client_id: Optional[str] = None):
         client_args = assign_params(
             self_deployed=self_deployed,
             auth_id=auth_id,
@@ -1127,7 +1128,9 @@ class MsClient:
             enc_key=enc_key,
             certificate_thumbprint=certificate_thumbprint,
             private_key=private_key,
-            retry_on_rate_limit=True
+            retry_on_rate_limit=True,
+            managed_identities_client_id=managed_identities_client_id,
+            managed_identities_resource_uri=Resources.security_center
         )
         self.ms_client = MicrosoftClient(**client_args)
         self.alert_severities_to_fetch = alert_severities_to_fetch
@@ -1983,6 +1986,83 @@ class MsClient:
         except Exception:
             raise Exception(f"Machine {machine_id} not found")
         return response
+
+    def get_list_machines_by_software(self, software_id: str) -> dict:
+        """Retrieve a list of device references that has this software installed.
+            Args:
+                software_id (str): Software ID.
+            Returns:
+                dict: Machines list.
+        """
+        cmd_url = f'/Software/{software_id}/machineReferences'
+        return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
+
+    def get_list_software_version_distribution(self, software_id: str) -> dict:
+        """Retrieves a list of your organization's software version distribution.
+            Args:
+                software_id (str): Software ID.
+            Returns:
+                dict: Version distribution list.
+        """
+        cmd_url = f'/Software/{software_id}/distributions'
+        return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
+
+    def get_list_missing_kb_by_software(self, software_id: str) -> dict:
+        """Retrieves missing KBs (security updates) by software ID.
+            Args:
+                software_id (str): Software ID.
+            Returns:
+                dict:  Missing kb by software list.
+        """
+        cmd_url = f'/Software/{software_id}/getmissingkbs'
+        return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
+
+    def get_list_vulnerabilities_by_software(self, software_id: str) -> dict:
+        """Retrieve a list of vulnerabilities in the installed software.
+            Args:
+                software_id (str): Software ID.
+            Returns:
+                dict: list vulnerabilities by software.
+        """
+        cmd_url = f'/Software/{software_id}/vulnerabilities'
+        return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
+
+    def get_list_software(self, filter_req: str, limit: str, offset: str) -> dict:
+        """Retrieves the organization software inventory.
+
+        Returns:
+            dict. software inventory.
+        """
+        cmd_url = '/Software'
+        params = {'$top': limit, '$skip': offset}
+        if filter_req:
+            params['$filter'] = filter_req
+
+        return self.ms_client.http_request(method='GET', url_suffix=cmd_url, params=params)
+
+    def get_list_vulnerabilities_by_machine(self, filter_req: str, limit: str, offset: str) -> dict:
+        """Retrieves a list of all the vulnerabilities affecting the organization per machine.
+
+        Returns:
+            dict: list of all the vulnerabilities affecting the organization per machine.
+        """
+        cmd_url = '/vulnerabilities/machinesVulnerabilities'
+        params = {'$top': limit, '$skip': offset}
+        if filter_req:
+            params['$filter'] = filter_req
+        return self.ms_client.http_request(method='GET', url_suffix=cmd_url, params=params)
+
+    def get_list_vulnerabilities(self, filter_req: str, limit: str, offset: str) -> dict:
+        """Retrieves a list of all vulnerabilities.
+
+        Returns:
+            dict: list of all the vulnerabilities.
+        """
+        cmd_url = '/vulnerabilities'
+        params = {'$top': limit, '$skip': offset}
+        if filter_req:
+            params['$filter'] = filter_req
+        return self.ms_client.http_request(method='GET', url_suffix=cmd_url, params=params)
 
 
 ''' Commands '''
@@ -4028,7 +4108,18 @@ def lateral_movement_evidence_command(client, args):  # pragma: no cover
     page = int(args.get('page', 1))
     limit = int(args.get('limit', 50))
     show_query = argToBoolean(args.pop('show_query', False))
-    query_builder = HuntingQueryBuilder.LateralMovementEvidence(**args)
+    query_args = assign_params(
+        limit=args.get('limit'),
+        query_operation=args.get('query_operation'),
+        page=args.get('page'),
+        device_name=args.get('device_name'),
+        file_name=args.get('file_name'),
+        sha1=args.get('sha1'),
+        sha256=args.get('sha256'),
+        md5=args.get('md5'),
+        device_id=args.get('device_id'),
+        remote_ip_count=args.get('remote_ip_count'))
+    query_builder = HuntingQueryBuilder.LateralMovementEvidence(**query_args)
     query_options = {
         'network_connections': query_builder.build_network_connections_query,
         'smb_connections': query_builder.build_smb_connections_query,
@@ -4063,7 +4154,19 @@ def persistence_evidence_command(client, args):  # pragma: no cover
     time_range = args.pop('time_range', None)
     query_purpose = args.get('query_purpose')
     show_query = argToBoolean(args.pop('show_query', False))
-    query_builder = HuntingQueryBuilder.PersistenceEvidence(**args)
+    quey_args = assign_params(
+        limit=args.get('limit'),
+        query_operation=args.get('query_operation'),
+        query_purpose=args.get('query_purpose'),
+        page=args.get('page'),
+        device_name=args.get('device_name'),
+        file_name=args.get('file_name'),
+        sha1=args.get('sha1'),
+        sha256=args.get('sha256'),
+        md5=args.get('md5'),
+        device_id=args.get('device_id'),
+        process_cmd=args.get('process_cmd'))
+    query_builder = HuntingQueryBuilder.PersistenceEvidence(**quey_args)
     query_options = {
         'scheduled_job': query_builder.build_scheduled_job_query,
         'registry_entry': query_builder.build_registry_entry_query,
@@ -4101,7 +4204,17 @@ def file_origin_command(client, args):  # pragma: no cover
     page = int(args.get('page', 1))
     limit = int(args.get('limit', 50))
     show_query = argToBoolean(args.pop('show_query', False))
-    query_builder = HuntingQueryBuilder.FileOrigin(**args)
+    quey_params = assign_params(
+        limit=args.get('limit'),
+        query_operation=args.get('query_operation'),
+        page=args.get('page'),
+        device_name=args.get('device_name'),
+        file_name=args.get('file_name'),
+        sha1=args.get('sha1'),
+        sha256=args.get('sha256'),
+        md5=args.get('md5'),
+        device_id=args.get('device_id'))
+    query_builder = HuntingQueryBuilder.FileOrigin(**quey_params)
     query = query_builder.build_file_origin_query()
 
     # send request + handle result
@@ -4127,7 +4240,19 @@ def process_details_command(client, args):  # pragma: no cover
     page = int(args.get('page', 1))
     limit = int(args.get('limit', 50))
     show_query = argToBoolean(args.pop('show_query', False))
-    query_builder = HuntingQueryBuilder.ProcessDetails(**args)
+    query_params = assign_params(
+        limit=args.get('limit'),
+        query_operation=args.get('query_operation'),
+        page=args.get('page'),
+        device_name=args.get('device_name'),
+        file_name=args.get('file_name'),
+        sha1=args.get('sha1'),
+        sha256=args.get('sha256'),
+        md5=args.get('md5'),
+        device_id=args.get('device_id'),
+        query_purpose=args.get('query_purpose')
+    )
+    query_builder = HuntingQueryBuilder.ProcessDetails(**query_params)
     query_options = {
         'parent_process': query_builder.build_parent_process_query,
         'grandparent_process': query_builder.build_grandparent_process_query,
@@ -4163,7 +4288,19 @@ def network_connections_command(client, args):  # pragma: no cover
     page = int(args.get('page', 1))
     limit = int(args.get('limit', 50))
     show_query = argToBoolean(args.pop('show_query', False))
-    query_builder = HuntingQueryBuilder.NetworkConnections(**args)
+    query_params = assign_params(
+        limit=args.get('limit'),
+        query_operation=args.get('query_operation'),
+        query_purpose=args.get('query_purpose'),
+        page=args.get('page'),
+        device_name=args.get('device_name'),
+        file_name=args.get('file_name'),
+        sha1=args.get('sha1'),
+        sha256=args.get('sha256'),
+        md5=args.get('md5'),
+        device_id=args.get('device_id')
+    )
+    query_builder = HuntingQueryBuilder.NetworkConnections(**query_params)
     query_options = {
         'external_addresses': query_builder.build_external_addresses_query,
         'dns_query': query_builder.build_dns_query,
@@ -4195,7 +4332,13 @@ def privilege_escalation_command(client, args):  # pragma: no cover
     page = int(args.get('page', 1))
     limit = int(args.get('limit', 50))
     show_query = argToBoolean(args.pop('show_query', False))
-    query_builder = HuntingQueryBuilder.PrivilegeEscalation(**args)
+    quey_args = assign_params(
+        limit=args.get('limit'),
+        query_operation=args.get('query_operation'),
+        page=args.get('page'),
+        device_name=args.get('device_name'),
+        device_id=args.get('device_id'))
+    query_builder = HuntingQueryBuilder.PrivilegeEscalation(**quey_args)
     query = query_builder.build_query()
 
     # send request + handle result
@@ -4220,7 +4363,14 @@ def tampering_command(client, args):  # pragma: no cover
     page = int(args.get('page', 1))
     limit = int(args.get('limit', 50))
     show_query = argToBoolean(args.pop('show_query', False))
-    query_builder = HuntingQueryBuilder.Tampering(**args)
+    quey_args = assign_params(
+        limit=args.get('limit'),
+        query_operation=args.get('query_operation'),
+        page=args.get('page'),
+        device_name=args.get('device_name'),
+        device_id=args.get('device_id')
+    )
+    query_builder = HuntingQueryBuilder.Tampering(**quey_args)
     query = query_builder.build_query()
 
     # send request + handle result
@@ -4246,7 +4396,20 @@ def cover_up_command(client, args):  # pragma: no cover
     page = int(args.get('page', 1))
     limit = int(args.get('limit', 50))
     show_query = argToBoolean(args.pop('show_query', False))
-    query_builder = HuntingQueryBuilder.CoverUp(**args)
+    quey_args = assign_params(
+        limit=args.get('limit'),
+        query_operation=args.get('query_operation'),
+        query_purpose=args.get('query_purpose'),
+        page=args.get('page'),
+        device_name=args.get('device_name'),
+        file_name=args.get('file_name'),
+        sha1=args.get('sha1'),
+        sha256=args.get('sha256'),
+        md5=args.get('md5'),
+        device_id=args.get('device_id'),
+        username=args.get('username')
+    )
+    query_builder = HuntingQueryBuilder.CoverUp(**quey_args)
     query_options = {
         'file_deleted': query_builder.build_file_deleted_query,
         'event_log_cleared': query_builder.build_event_log_cleared_query,
@@ -4275,7 +4438,7 @@ def cover_up_command(client, args):  # pragma: no cover
 
 
 def test_module(client: MsClient):
-    client.ms_client.http_request(method='GET', url_suffix='/alerts', params={'$top': '1'})
+    client.ms_client.http_request(method='GET', url_suffix='/alerts', params={'$top': '1'}, overwrite_rate_limit_retry=True)
 
 
 def get_dbot_indicator(dbot_type, dbot_score, value):
@@ -4304,6 +4467,362 @@ def get_indicator_dbot_object(indicator):
         return get_dbot_indicator(indicator_type, dbot, indicator_value)
     else:
         return None
+
+
+def list_machines_by_software_command(client: MsClient, args: dict) -> CommandResults:
+    """ Retrieve a list of device references that has the given software installed.
+        Args:
+            client: MsClient.
+            args: dict - arguments from CortexSOAR.
+        Returns:
+            A CommandResults object with a list of machines by software.
+    """
+    software_id = str(args.get('id'))
+    headers = ['id', 'computerDnsName', 'osPlatform', 'rbacGroupName', 'rbacGroupId']
+    machines_response = client.get_list_machines_by_software(software_id)
+    machines_response_value = machines_response.get('value')
+    human_readable = tableToMarkdown(f'{INTEGRATION_NAME} list machines by software: {software_id}',
+                                     machines_response_value, headers=headers, removeNull=True)
+    return CommandResults(
+        outputs_prefix='MicrosoftATP.SoftwareMachine',
+        outputs_key_field='id',
+        outputs=machines_response_value,
+        readable_output=human_readable,
+        raw_response=machines_response)
+
+
+def list_software_version_distribution_command(client: MsClient, args: dict) -> CommandResults:
+    """ Retrieves a list of your organization's software version distribution.
+        Args:
+            client: MsClient.
+            args: dict - arguments from CortexSOAR.
+        Returns:
+            A CommandResults object with a list of software version distribution.
+    """
+    software_id = str(args.get('id'))
+    headers = ['version', 'installations', 'vulnerabilities']
+    software_version_distribution_response = client.get_list_software_version_distribution(software_id)
+    software_version_distribution_response_value = software_version_distribution_response.get('value')
+    human_readable = tableToMarkdown(f'{INTEGRATION_NAME} software version distribution:',
+                                     software_version_distribution_response_value, headers=headers, removeNull=True)
+    return CommandResults(
+        outputs_prefix='MicrosoftATP.SoftwareVersion',
+        outputs=software_version_distribution_response_value,
+        outputs_key_field=['version', 'installations', 'vulnerabilities'],
+        readable_output=human_readable,
+        raw_response=software_version_distribution_response)
+
+
+def list_missing_kb_by_software_command(client: MsClient, args: dict) -> CommandResults:
+    """ Retrieves missing KBs (security updates) by software ID
+        Args:
+            client: MsClient.
+            args: dict - arguments from CortexSOAR.
+        Returns:
+            A CommandResults object with a list of missing kb by software.
+    """
+    software_id = str(args.get('id'))
+    headers = ['id', 'name', 'osBuild', 'productsNames', 'url', 'machineMissedOn', 'cveAddressed']
+    missing_kb_by_software_response = client.get_list_missing_kb_by_software(software_id)
+    missing_kb_by_software_response_value = missing_kb_by_software_response.get('value')
+    mark_down_values = add_backslash_infront_of_underscore_list(missing_kb_by_software_response_value)
+    human_readable = tableToMarkdown(f'{INTEGRATION_NAME} missing kb by software: {software_id}',
+                                     mark_down_values, headers=headers, removeNull=True)
+    return CommandResults(
+        outputs_prefix='MicrosoftATP.SoftwareKB',
+        outputs_key_field='id',
+        outputs=missing_kb_by_software_response_value,
+        readable_output=human_readable,
+        raw_response=missing_kb_by_software_response)
+
+
+def list_vulnerabilities_by_software_command(client: MsClient, args: dict) -> list[CommandResults]:
+    """ Retrieves list of vulnerabilities by software.
+        Args:
+            client: MsClient.
+            args: dict - arguments from CortexSOAR.
+        Returns:
+            A CommandResult list with a list of vulnerabilities by software.
+    """
+    results_list = []
+    software_id = str(args.get('id'))
+    headers = ['id', 'name', 'description', 'severity', 'cvssV3', 'publishedOn', 'updatedOn',
+               'exposedMachines', 'exploitVerified',
+               'publicExploit']
+    vulnerabilities_response = client.get_list_vulnerabilities_by_software(software_id)
+    vulnerabilities_response_value = vulnerabilities_response.get('value')
+    demisto.debug(f'Vulnerabilities Response {vulnerabilities_response_value}')
+    if vulnerabilities_response_value:
+        for cve in vulnerabilities_response_value:
+            cve_id = cve.get('id')
+            cve_indicator = Common.CVE(id=cve_id,
+                                       cvss=cve.get('cvssV3'),
+                                       description=cve.get('description'),
+                                       published=cve.get('publishedOn'),
+                                       modified=cve.get('updatedOn')
+                                       )
+            human_readable = tableToMarkdown(f'{INTEGRATION_NAME} vulnerability {cve_id} by software: {software_id}',
+                                             add_backslash_infront_of_underscore_list([cve]), headers=headers, removeNull=True)
+            results_list.append(CommandResults(outputs_prefix='MicrosoftATP.SoftwareCVE',
+                                               outputs_key_field='id',
+                                               outputs=cve,
+                                               readable_output=human_readable,
+                                               raw_response=cve,
+                                               indicator=cve_indicator))
+    else:
+        results_list.append(
+            CommandResults(readable_output=f'No vulnerabilities were found for software: {software_id}.'))
+    return results_list
+
+
+def create_filters_conjunction(filters_arg_list: list[str], name: str) -> str:
+    """ Create filter conjunction (added 'or' between args)
+        example output: id eq 'id1' or id eq 'id2'
+        Args:
+            filters_arg_list: list[str].
+            name: str.
+        Returns:
+            A str corresponding to the filter param in a qury.
+    """
+    query = ''
+    filters_arg_list = list(filter(None, filters_arg_list))
+    list_length = len(filters_arg_list)
+    if filters_arg_list:
+        for index, list_item in enumerate(filters_arg_list):
+            if index == list_length - 1 or list_length == 1:
+                query = f"{query}{name} eq '{list_item}'"
+            else:
+                query = f"{query}{name} eq '{list_item}' or "
+        demisto.debug(f'Filter conjunction query results: {query} ')
+    return query
+
+
+def add_backslash_infront_of_underscore_list(markdown_data: Optional[list[dict]]) -> list[dict]:
+    """ Escape underscores with a backslash in order to show underscores after markdown parsing.
+        Args:
+            markdown_data: list[dict] - list of dicts.
+        Returns:
+            A list of dicts with a backslash before each underscore.
+    """
+    markdown_data_to_return = []
+    if markdown_data:
+        for dict_item in markdown_data:
+            dict = {}
+            for k, v in dict_item.items():
+                if isinstance(v, str):
+                    v = str(v.replace('_', '\_'))
+                dict[k] = v
+            markdown_data_to_return.append(dict)
+    return markdown_data_to_return
+
+
+def create_filters_disjunctions(filters_arg_list: list[str]) -> str:
+    """ Create filter disjunctions (added 'and' between args)
+        example output: id eq 'id1' and vendor eq 'vendor1'
+        Args:
+            filters_arg_list: list[str].
+        Returns:
+            A str corresponding to the filter param in a qury.
+    """
+    query = ''
+    filters_arg_list = list(filter(None, filters_arg_list))
+    list_length = len(filters_arg_list)
+    if filters_arg_list:
+        for index, list_item in enumerate(filters_arg_list):
+            if list_length == 1 and list_item == '':
+                continue
+            if list_length == 1:
+                query = f'{query}{list_item}'
+                continue
+            if index == list_length - 1:
+                query = f'{query}({list_item})'
+                continue
+            else:
+                query = f'{query}({list_item}) and '
+        demisto.debug(f'Filter disjunctions query results: {query} ')
+    return query
+
+
+def create_filter(args_and_name_list: list[tuple[list[str], str]]) -> str:
+    """ Create filter with disjunctions and conjunction according to the API requirements
+        example output: id eq 'id1' and vendor eq 'vendor1' or  vendor eq 'vendor2'
+        Args:
+            filters_arg_list: list[str].
+        Returns:
+            A str corresponding to the filter param in a qury.
+    """
+    list_for_disjunctions = []
+    for arg_and_name in args_and_name_list:
+        list_for_disjunctions.append(create_filters_conjunction(arg_and_name[0], arg_and_name[1]))
+    return create_filters_disjunctions(list_for_disjunctions)
+
+
+def list_software_command(client: MsClient, args: dict) -> CommandResults:
+    """ Retrieves the organization software inventory.
+        Args:
+            client: MsClient.
+            args: dict - arguments from CortexSOAR.
+        Returns:
+            A CommandResults object.
+    """
+    software_id = argToList(args.get('id', ''))
+    names = argToList(args.get('name', ''))
+    vendors = argToList(args.get('vendor', ''))
+    limit = args.get('limit', '50')
+    offset = args.get('offset', '0')
+    filter_req = create_filter([(software_id, 'id'), (names, 'name'), (vendors, 'vendor')])
+    headers = ['id', 'name', 'vendor', 'weaknesses', 'activeAlert', 'exposedMachines', 'installedMachines', 'publicExploit']
+    list_software_response = client.get_list_software(filter_req, limit, offset)
+    list_software_response_value = list_software_response.get('value')
+    mark_down_values = add_backslash_infront_of_underscore_list(list_software_response_value)
+    human_readable = tableToMarkdown(f'{INTEGRATION_NAME} list software:',
+                                     mark_down_values, headers=headers, removeNull=True)
+    return CommandResults(
+        outputs_prefix='MicrosoftATP.Software',
+        outputs_key_field='id',
+        outputs=list_software_response_value,
+        readable_output=human_readable,
+        raw_response=list_software_response)
+
+
+def list_vulnerabilities_by_machine_command(client: MsClient, args: dict) -> list[CommandResults]:
+    """ Retrieves a list of all the vulnerabilities affecting the organization per machine.
+        Args:
+            client: MsClient.
+            args: dict - arguments from CortexSOAR.
+        Returns:
+            A CommandResults object.
+    """
+    machine_id = argToList(args.get('machine_id'))
+    software_id = argToList(args.get('software_id', ''))
+    cve_id = argToList(args.get('cve_id', ''))
+    product_name = argToList(args.get('product_name', ''))
+    product_version = argToList(args.get('product_version', ''))
+    severity = argToList(args.get('severity', ''))
+    product_vendor = argToList(args.get('product_vendor', ''))
+    limit = args.get('limit', '25')
+    offset = args.get('offset', '0')
+    results_list = []
+    filter_req = create_filter([(machine_id, 'machineId'), (software_id, 'id'), (cve_id, 'cveId'),
+                                (product_name, 'productName'), (product_version, 'productVersion'), (severity, 'severity'),
+                                (product_vendor, 'productVendor')])
+    headers = ['id', 'cveId', 'machineId', 'productName', 'productVendor', 'productVersion', 'severity']
+    list_vulnerabilities_response = client.get_list_vulnerabilities_by_machine(filter_req, limit, offset)
+    list_vulnerabilities_response_value = list_vulnerabilities_response.get('value')
+    if list_vulnerabilities_response_value:
+        for cve in list_vulnerabilities_response_value:
+            cve_id = cve.get('cveId')
+            cve_indicator = Common.CVE(id=cve_id,
+                                       cvss='',
+                                       description='',
+                                       published='',
+                                       modified=''
+                                       )
+            human_readable = tableToMarkdown(f'{INTEGRATION_NAME} vulnerability {cve_id}:',
+                                             add_backslash_infront_of_underscore_list([cve]), headers=headers, removeNull=True)
+            results_list.append(CommandResults(outputs_prefix='MicrosoftATP.MachineCVE',
+                                               outputs_key_field='id',
+                                               outputs=cve,
+                                               readable_output=human_readable,
+                                               raw_response=cve,
+                                               indicator=cve_indicator))
+    else:
+        results_list.append(
+            CommandResults(readable_output=f'No vulnerabilities were found for machine: {machine_id}.'))
+    return results_list
+
+
+def create_filter_list_vulnerabilities(id_and_severity: str, name_equal: str, name_contains: str, description: str,
+                                       published_on: str, cvss: str, updated_on: str) -> str:
+    """ Create a string filter.
+        Args:
+            id_and_severity: str - Id and severity of the vulnerability.
+            name: str - Name of the vulnerability.
+            description: str - Description of the vulnerability.
+            published_on: str - Date when vulnerability was published.
+            cvss: str - CVSS v3 score.
+            updated_on: str - Date when vulnerability was updated.
+        Returns:
+            A string filter.
+    """
+    filter_query_list = []
+    if id_and_severity:
+        filter_query_list.append(id_and_severity)
+    if name_contains:
+        filter_query_list.append(f"contains(name, '{name_contains}')")
+    if name_equal:
+        filter_query_list.append(f"name eq '{name_equal}'")
+    if description:
+        filter_query_list.append(f"contains(description, '{description}')")
+    if cvss:
+        filter_query_list.append(f"cvssV3 ge {cvss}")
+    if updated_on:
+        filter_query_list.append(f"updatedOn ge {updated_on}")
+    if published_on:
+        filter_query_list.append(f"publishedOn ge {published_on}")
+
+    return create_filters_disjunctions(filter_query_list)
+
+
+def date_to_iso_format(date: str) -> str:
+    """ Retrieves date string or relational expression to iso format date.
+        Args:
+            date: str - date or relational expression.
+        Returns:
+            A str in ISO format.
+    """
+    date = dateparser.parse(date)
+    date = date.strftime("%Y-%m-%dT%H:%M:%SZ") if date else ''
+    return date
+
+
+def list_vulnerabilities_command(client: MsClient, args: dict) -> list[CommandResults]:
+    """ Retrieves a list of all vulnerabilities.
+        Args:
+            client: MsClient.
+            args: dict - arguments from CortexSOAR.
+        Returns:
+            A CommandResults object.
+    """
+    id = argToList(args.get('id', ''))
+    severity = argToList(args.get('severity', ''))
+    name_equal = args.get('name_equal', '')
+    name_contains = args.get('name_contains', '')
+    description = args.get('description_contains', '')
+    published_on = date_to_iso_format(args.get('published_on', ''))
+    updated_on = date_to_iso_format(args.get('updated_on', ''))
+    cvss = args.get('cvss', '')
+    limit = args.get('limit', '25')
+    offset = args.get('offset', '0')
+    filter_req_id_and_severity = create_filter([(id, 'id'), (severity, 'severity')])
+    filter_req = create_filter_list_vulnerabilities(filter_req_id_and_severity, name_equal, name_contains, description,
+                                                    published_on, cvss, updated_on)
+    headers = ['id', 'name', 'description', 'severity', 'publishedOn', 'updatedOn', 'exposedMachines',
+               'exploitVerified', 'publicExploit', 'cvssV3']
+    list_vulnerabilities_response = client.get_list_vulnerabilities(filter_req, limit, offset)
+    list_vulnerabilities_response_value = list_vulnerabilities_response.get('value')
+    results_list = []
+    if list_vulnerabilities_response_value:
+        for cve in list_vulnerabilities_response_value:
+            cve_id = cve.get('id')
+            cve_indicator = Common.CVE(id=cve_id,
+                                       cvss=cve.get('cvssV3'),
+                                       description=cve.get('description'),
+                                       published=cve.get('publishedOn'),
+                                       modified=cve.get('updatedOn')
+                                       )
+            human_readable = tableToMarkdown(f'{INTEGRATION_NAME} vulnerabilities:',
+                                             add_backslash_infront_of_underscore_list([cve]), headers=headers, removeNull=True)
+            results_list.append(CommandResults(outputs_prefix='MicrosoftATP.Vulnerability',
+                                               outputs_key_field='id',
+                                               outputs=cve,
+                                               readable_output=human_readable,
+                                               raw_response=cve,
+                                               indicator=cve_indicator))
+    else:
+        results_list.append(
+            CommandResults(readable_output='No vulnerabilities were found.'))
+    return results_list
 
 
 def list_machines_by_vulnerability_command(client: MsClient, args: dict) -> CommandResults:
@@ -4889,13 +5408,13 @@ def main():  # pragma: no cover
     params: dict = demisto.params()
     base_url: str = params.get('url', '').rstrip('/') + '/api'
     tenant_id = params.get('tenant_id') or params.get('_tenant_id')
-    auth_id = params.get('auth_id') or params.get('_auth_id')
-    enc_key = params.get('enc_key') or (params.get('credentials') or {}).get('password')
+    auth_id = params.get('_auth_id') or params.get('auth_id')
+    enc_key = (params.get('credentials') or {}).get('password') or params.get('enc_key')
     use_ssl: bool = not params.get('insecure', False)
     proxy: bool = params.get('proxy', False)
     self_deployed: bool = params.get('self_deployed', False)
-    certificate_thumbprint = params.get('certificate_thumbprint')
-    private_key = params.get('private_key')
+    certificate_thumbprint = params.get('creds_certificate', {}).get('identifier') or params.get('certificate_thumbprint')
+    private_key = replace_spaces_in_credential(params.get('creds_certificate', {}).get('password')) or params.get('private_key')
     alert_severities_to_fetch = params.get('fetch_severity')
     alert_status_to_fetch = params.get('fetch_status')
     alert_time_to_fetch = params.get('first_fetch_timestamp', '3 days')
@@ -4906,22 +5425,24 @@ def main():  # pragma: no cover
     auth_type = params.get('auth_type', 'Client Credentials')
     auth_code = params.get('auth_code', {}).get('password', '')
     redirect_uri = params.get('redirect_uri', '')
-
-    if not self_deployed and not enc_key:
-        raise DemistoException('Key must be provided. For further information see '
-                               'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
-    elif not enc_key and not (certificate_thumbprint and private_key):
-        raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
-    if not auth_id:
-        raise Exception('Authentication ID must be provided.')
-    if not tenant_id:
-        raise Exception('Tenant ID must be provided.')
-    if auth_code and redirect_uri:
-        if not self_deployed:
-            raise Exception('In order to use Authorization Code, set Self Deployed: True.')
-    if (auth_code and not redirect_uri) or (redirect_uri and not auth_code):
-        raise Exception('In order to use Authorization Code auth flow, you should set: '
-                        '"Application redirect URI", "Authorization code" and "Self Deployed=True".')
+    managed_identities_client_id = get_azure_managed_identities_client_id(params)
+    self_deployed = self_deployed or managed_identities_client_id is not None
+    if not managed_identities_client_id:
+        if not self_deployed and not enc_key:
+            raise DemistoException('Key must be provided. For further information see '
+                                   'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
+        elif not enc_key and not (certificate_thumbprint and private_key):
+            raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
+        if not auth_id:
+            raise Exception('Authentication ID must be provided.')
+        if not tenant_id:
+            raise Exception('Tenant ID must be provided.')
+        if auth_code and redirect_uri:
+            if not self_deployed:
+                raise Exception('In order to use Authorization Code, set Self Deployed: True.')
+        if auth_code and not redirect_uri:
+            raise Exception('In order to use Authorization Code auth flow, you should set: '
+                            '"Application redirect URI", "Authorization code" and "Self Deployed=True".')
 
     command = demisto.command()
     args = demisto.args()
@@ -4932,7 +5453,8 @@ def main():  # pragma: no cover
             proxy=proxy, self_deployed=self_deployed, alert_severities_to_fetch=alert_severities_to_fetch,
             alert_status_to_fetch=alert_status_to_fetch, alert_time_to_fetch=alert_time_to_fetch,
             max_fetch=max_alert_to_fetch, certificate_thumbprint=certificate_thumbprint, private_key=private_key,
-            is_gcc=is_gcc, auth_type=auth_type, auth_code=auth_code, redirect_uri=redirect_uri
+            is_gcc=is_gcc, auth_type=auth_type, auth_code=auth_code, redirect_uri=redirect_uri,
+            managed_identities_client_id=managed_identities_client_id
         )
         if command == 'test-module':
             if auth_type == 'Authorization Code':
@@ -5053,6 +5575,27 @@ def main():  # pragma: no cover
         elif command == 'microsoft-atp-list-machines-by-vulnerability':
             return_results(list_machines_by_vulnerability_command(client, args))
 
+        elif command == 'microsoft-atp-list-software-version-distribution':
+            return_results(list_software_version_distribution_command(client, args))
+
+        elif command == 'microsoft-atp-list-machines-by-software':
+            return_results(list_machines_by_software_command(client, args))
+
+        elif command == 'microsoft-atp-list-missing-kb-by-software':
+            return_results(list_missing_kb_by_software_command(client, args))
+
+        elif command == 'microsoft-atp-list-vulnerabilities-by-software':
+            return_results(list_vulnerabilities_by_software_command(client, args))
+
+        elif command == 'microsoft-atp-list-software':
+            return_results(list_software_command(client, args))
+
+        elif command == 'microsoft-atp-list-vulnerabilities-by-machine':
+            return_results(list_vulnerabilities_by_machine_command(client, args))
+
+        elif command == 'microsoft-atp-list-vulnerabilities':
+            return_results(list_vulnerabilities_command(client, args))
+
         elif command == 'microsoft-atp-get-file-info':
             demisto.results(get_file_info_command(client, args))
 
@@ -5112,6 +5655,9 @@ def main():  # pragma: no cover
             return_results(get_machine_alerts_command(client, args))
         elif command == 'microsoft-atp-request-and-download-investigation-package':
             return_results(request_download_investigation_package_command(client, args))
+        elif command == 'microsoft-atp-generate-login-url':
+            return_results(generate_login_url(client.ms_client))
+
     except Exception as err:
         return_error(str(err))
 

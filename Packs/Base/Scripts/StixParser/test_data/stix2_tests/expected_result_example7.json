@@ -1,0 +1,32 @@
+[
+  {
+    "value": "1.1.0.0/15",
+    "indicator_type": "CIDR",
+    "rawJSON": {
+      "type": "IP",
+      "spec_version": "2.1",
+      "pattern_type": "stix",
+      "id": "indicator--031778a4-057f-48e6-9db9-c8d72b81ccd5",
+      "created": "2015-05-15T09:12:16.432Z",
+      "modified": "2015-05-15T09:12:16.432Z",
+      "name": "Some Name",
+      "description": "Test description.",
+      "pattern": "[ipv4-addr:value = '1.1.0.0/15']",
+      "indicator_types": [
+        "malicious-activity"
+      ],
+      "valid_from": "2015-05-15T09:12:16.432678Z",
+      "kill_chain_phases": [
+        {
+          "kill_chain_name": "soma-attack",
+          "phase_name": "some-name"
+        }
+      ],
+      "value": "1.1.0.0/15"
+    },
+    "customFields": {
+      "description": "Test description.",
+      "tags": []
+    }
+  }
+]

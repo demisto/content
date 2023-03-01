@@ -257,7 +257,7 @@ var fetchIncidentsToDemisto = function() {
 
 switch (command) {
     case 'test-module':
-        fetchIncidents(query=null, test_module=true);
+        fetchIncidents(args={}, test_module=true);
         return 'ok';
     case 'fetch-incidents':
         return fetchIncidentsToDemisto();

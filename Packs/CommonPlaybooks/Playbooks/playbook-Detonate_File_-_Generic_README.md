@@ -34,7 +34,7 @@ This playbook does not use any commands.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | EntryID | Entry ID of file to be detonated | File.EntryID | Optional |
-| File | File object of file to be detonated | File.None | Optional |
+| File | File object of file to be detonated | File | Optional |
 
 ## Playbook Outputs
 ---

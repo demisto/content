@@ -1,14 +1,28 @@
+import json
 from datetime import datetime, date
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from AWSApiModule import *  # noqa: E402
 import urllib3.util
 import boto3
+from collections import defaultdict
+from typing import Tuple
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
+''' CONSTANTS '''
+
 SERVICE = 'guardduty'
+
+FINDING_FREQUENCY = {
+    'Fifteen Minutes': 'FIFTEEN_MINUTES',
+    'One Hour': 'ONE_HOUR',
+    'Six Hours': 'SIX_HOURS'
+}
+
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
+MAX_RESULTS_RESPONSE = 50
 
 
 class DatetimeEncoder(json.JSONEncoder):
@@ -21,11 +35,31 @@ class DatetimeEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 
-def create_detector(client: boto3.client, args: dict):
-    kwargs = {'Enable': True if args.get('enable') == 'True' else False}
+def create_detector(client: boto3.client, args: dict) -> CommandResults:
+    """
+    Creates a single Amazon GuardDuty detector.
+    """
+    kwargs = {'Enable': argToBoolean(args.get('enabled', False))}
+
+    if args.get('findingFrequency'):
+        kwargs['FindingPublishingFrequency'] = FINDING_FREQUENCY[args['findingFrequency']]
+    get_dataSources = dict()
+    if args.get('enableKubernetesLogs'):
+        get_dataSources.update(
+            {'Kubernetes': {'AuditLogs': {'Enable': argToBoolean(args['enableKubernetesLogs'])}}})
+    if args.get('ebsVolumesMalwareProtection'):
+        get_dataSources.update({'MalwareProtection': {
+            'ScanEc2InstanceWithFindings': {'EbsVolumes': argToBoolean(args['ebsVolumesMalwareProtection'])}}})
+    if args.get('enableS3Logs'):
+        get_dataSources.update({'S3Logs': {'Enable': argToBoolean(args['enableS3Logs'])}})
+    if get_dataSources:
+        kwargs['DataSources'] = get_dataSources
+
     response = client.create_detector(**kwargs)
     data = ({'DetectorId': response['DetectorId']})
-    readable_output = tableToMarkdown('AWS GuardDuty Detectors', data) if data else 'No result were found'
+
+    readable_output = tableToMarkdown('AWS GuardDuty Detectors - detector created successfully',
+                                      data) if data else 'No result were found'
     return CommandResults(readable_output=readable_output,
                           outputs=data,
                           outputs_prefix='AWS.GuardDuty.Detectors',
@@ -40,41 +74,85 @@ def delete_detector(client: boto3.client, args: dict):
         raise Exception(f"The Detector {args.get('detectorId')} failed to delete.")
 
 
-def get_detector(client: boto3.client, args: dict):
+def get_detector(client: boto3.client, args: dict) -> CommandResults:
+    """
+    Retrieves an Amazon GuardDuty detector specified by the detectorId.
+    """
     response = client.get_detector(DetectorId=args.get('detectorId'))
     data = ({
         'DetectorId': args.get('detectorId'),
-        'CreatedAt': response['CreatedAt'],
-        'ServiceRole': response['ServiceRole'],
-        'Status': response['Status'],
-        'UpdatedAt': response['UpdatedAt'],
+        'CreatedAt': response.get('CreatedAt'),
+        'ServiceRole': response.get('ServiceRole'),
+        'Status': response.get('Status'),
+        'UpdatedAt': response.get('UpdatedAt'),
+        'CloudTrailStatus': demisto.get(response, 'DataSources.CloudTrail.Status'),
+        'DNSLogsStatus': demisto.get(response, 'DataSources.DNSLogs.Status'),
+        'FlowLogsStatus': demisto.get(response, 'DataSources.FlowLogs.Status'),
+        'S3LogsStatus': demisto.get(response, 'DataSources.S3Logs.Status'),
+        'KubernetesAuditLogsStatus': demisto.get(response, 'DataSources.Kubernetes.AuditLogs.Status'),
+        'MalwareProtectionStatus': demisto.get(response, 'DataSources.MalwareProtection.ScanEc2InstanceWithFindings'
+                                                         '.EbsVolumes.Status'),
+        'MalwareProtectionReason': demisto.get(response, 'DataSources.MalwareProtection.ScanEc2InstanceWithFindings'
+                                                         '.EbsVolumes.Reason'),
+        'Tags': response.get('Tags'),
+
     })
-    readable_output = tableToMarkdown('AWS GuardDuty Detectors', data) if data else 'No result were found'
+    readable_output = tableToMarkdown('AWS GuardDuty Detectors', data,
+                                      removeNull=True) if data else 'No result were found'
     return CommandResults(readable_output=readable_output,
                           outputs=data,
                           outputs_prefix='AWS.GuardDuty.Detectors',
                           outputs_key_field='DetectorId')
 
 
-def update_detector(client: boto3.client, args: dict):
-    response = client.update_detector(
-        DetectorId=args.get('detectorId'),
-        Enable=True if args.get('enable') == 'True' else False
-    )
+def update_detector(client: boto3.client, args: dict) -> str:
+    """
+    Updates the Amazon GuardDuty detector specified by the detectorId.
+    """
+    kwargs = {'Enable': argToBoolean(args.get('enable', False)), 'DetectorId': args.get('detectorId')}
+
+    if args.get('findingFrequency'):
+        kwargs['FindingPublishingFrequency'] = FINDING_FREQUENCY[args['findingFrequency']]
+    get_dataSources = dict()
+    if args.get('enableKubernetesLogs'):
+        get_dataSources.update(
+            {'Kubernetes': {'AuditLogs': {'Enable': argToBoolean(args['enableKubernetesLogs'])}}})
+    if args.get('ebsVolumesMalwareProtection'):
+        get_dataSources.update({'MalwareProtection': {
+            'ScanEc2InstanceWithFindings': {'EbsVolumes': argToBoolean(args['ebsVolumesMalwareProtection'])}}})
+    if args.get('enableS3Logs'):
+        get_dataSources.update({'S3Logs': {'Enable': argToBoolean(args['enableS3Logs'])}})
+    if get_dataSources:
+        kwargs['DataSources'] = get_dataSources
+
+    response = client.update_detector(**kwargs)
     if response == dict() or response.get('ResponseMetadata', {}).get('HTTPStatusCode') == 200:
-        return f"The Detector {args.get('detectorId')} has been Updated"
+        return f"The Detector {args.get('detectorId')} has been updated successfully"
     else:
         raise Exception(f"Detector {args.get('detectorId')} failed to update. Response was: {response}")
 
 
-def list_detectors(client: boto3.client, args: dict):
-    response = client.list_detectors()
-    detector = response['DetectorIds']
-    # Only takes the first detector in the list, this should be addressed when rewriting.
-    data = ({
-        'DetectorId': detector[0]
-    })
-    readable_output = tableToMarkdown('AWS GuardDuty Detectors', data) if data else 'No result were found'
+def list_detectors(client: boto3.client, args: dict) -> CommandResults:
+    limit, page_size, page = get_pagination_args(args)
+
+    paginator = client.get_paginator('list_detectors')
+    response_iterator = paginator.paginate(
+        PaginationConfig={
+            'MaxItems': limit,
+            'PageSize': page_size,
+        }
+    )
+
+    data = []
+    for i, page_response in enumerate(response_iterator):
+        if page is None or (page - 1) == i:
+            for detector in page_response['DetectorIds']:
+                data.append({'DetectorId': detector})
+            if page:
+                break
+
+    readable_output = tableToMarkdown('AWS GuardDuty Detectors',
+                                      data) if data else 'No result were found'
     return CommandResults(readable_output=readable_output,
                           outputs=data,
                           outputs_prefix='AWS.GuardDuty.Detectors',
@@ -139,7 +217,6 @@ def update_ip_set(client: boto3.client, args: dict):
 
 
 def get_ip_set(client: boto3.client, args: dict):
-
     response = client.get_ip_set(DetectorId=args.get('detectorId'),
                                  IpSetId=args.get('ipSetId'))
     data = ({'DetectorId': args.get('detectorId'),
@@ -156,12 +233,26 @@ def get_ip_set(client: boto3.client, args: dict):
                           outputs_key_field='IpSetId')
 
 
-def list_ip_sets(client: boto3.client, args: dict):
-    response = client.list_ip_sets(DetectorId=args.get('detectorId'))
+def list_ip_sets(client: boto3.client, args: dict) -> CommandResults:
+    limit, page_size, page = get_pagination_args(args)
+
+    paginator = client.get_paginator('list_ip_sets')
+    response_iterator = paginator.paginate(
+        DetectorId=args.get('detectorId'),
+        PaginationConfig={
+            'MaxItems': limit,
+            'PageSize': page_size,
+        }
+    )
+
     data = []
     data.append({'DetectorId': args.get('detectorId')})
-    for ipset in response['IpSetIds']:
-        data.append({'IpSetId': ipset})
+    for i, page_response in enumerate(response_iterator):
+        if page is None or (page - 1) == i:
+            for ipSet in page_response['IpSetIds']:
+                data.append({'IpSetId': ipSet})
+            if page:
+                break
 
     readable_output = tableToMarkdown('AWS GuardDuty IPSets', data) if data else 'No result were found'
     return CommandResults(readable_output=readable_output,
@@ -171,7 +262,6 @@ def list_ip_sets(client: boto3.client, args: dict):
 
 
 def create_threat_intel_set(client: boto3.client, args: dict):
-
     kwargs = {'DetectorId': args.get('detectorId')}
     if args.get('activate') is not None:
         kwargs.update({'Activate': True if args.get('activate') == 'True' else False})
@@ -208,7 +298,6 @@ def delete_threat_intel_set(client: boto3.client, args: dict):
 
 
 def get_threat_intel_set(client: boto3.client, args: dict):
-
     response = client.get_threat_intel_set(
         DetectorId=args.get('detectorId'),
         ThreatIntelSetId=args.get('threatIntelSetId')
@@ -229,12 +318,26 @@ def get_threat_intel_set(client: boto3.client, args: dict):
                           outputs_key_field='ThreatIntelSetId')
 
 
-def list_threat_intel_sets(client: boto3.client, args: dict):
-    response = client.list_threat_intel_sets(DetectorId=args.get('detectorId'))
+def list_threat_intel_sets(client: boto3.client, args: dict) -> CommandResults:
+    limit, page_size, page = get_pagination_args(args)
+
+    paginator = client.get_paginator('list_threat_intel_sets')
+    response_iterator = paginator.paginate(
+        DetectorId=args.get('detectorId'),
+        PaginationConfig={
+            'MaxItems': limit,
+            'PageSize': page_size,
+        }
+    )
+
     data = []
     data.append({'DetectorId': args.get('detectorId')})
-    for threatintelset in response['ThreatIntelSetIds']:
-        data.append({'ThreatIntelSetId': threatintelset})
+    for i, page_response in enumerate(response_iterator):
+        if page is None or (page - 1) == i:
+            for threatIntelSet in page_response['ThreatIntelSetIds']:
+                data.append({'ThreatIntelSetId': threatIntelSet})
+            if page:
+                break
 
     readable_output = tableToMarkdown('AWS GuardDuty ThreatIntel Sets', data) if data else 'No result were found'
     return CommandResults(readable_output=readable_output,
@@ -263,40 +366,52 @@ def update_threat_intel_set(client: boto3.client, args: dict):
                         f"Response was: {response}")
 
 
-def severity_mapping(severity: int):
-    if severity <= 3.9:
-        demistoSevirity = 1
-    elif severity >= 4 and severity <= 6.9:
-        demistoSevirity = 2
-    elif severity >= 7 and severity <= 8.9:
-        demistoSevirity = 3
+def severity_mapping(severity: Optional[float]) -> Optional[int]:
+    demisto_severity = None
+    if severity:
+        if severity <= 3.9:
+            demisto_severity = 1
+        elif 4 <= severity <= 6.9:
+            demisto_severity = 2
+        elif 7 <= severity <= 8.9:
+            demisto_severity = 3
+        else:
+            demisto_severity = 0
+    return demisto_severity
+
+
+def gd_severity_mapping(severity_list: List[str]):
+    if 'Low' in severity_list:
+        gd_severity = 1
+    elif 'Medium' in severity_list:
+        gd_severity = 4
+    elif 'High' in severity_list:
+        gd_severity = 7
     else:
-        demistoSevirity = 0
+        gd_severity = 1
 
-    return demistoSevirity
-
-
-def gd_severity_mapping(severity: str):
-    if severity == 'Low':
-        gdSevirity = 1
-    elif severity == 'Medium':
-        gdSevirity = 4
-    elif severity == 'High':
-        gdSevirity = 7
-    else:
-        gdSevirity = 1
-
-    return gdSevirity
+    return gd_severity
 
 
-def list_findings(client: boto3.client, args: dict):
+def list_findings(client: boto3.client, args: dict) -> CommandResults:
+    limit, page_size, page = get_pagination_args(args)
 
     paginator = client.get_paginator('list_findings')
-    response_iterator = paginator.paginate(DetectorId=args.get('detectorId'))
+    response_iterator = paginator.paginate(
+        DetectorId=args.get('detectorId'),
+        PaginationConfig={
+            'MaxItems': limit,
+            'PageSize': page_size,
+        }
+    )
+
     data = []
-    for page in response_iterator:
-        for finding in page['FindingIds']:
-            data.append({'FindingId': finding})
+    for i, page_response in enumerate(response_iterator):
+        if page is None or (page - 1) == i:
+            for finding in page_response['FindingIds']:
+                data.append({'FindingId': finding})
+            if page:
+                break
 
     readable_output = tableToMarkdown('AWS GuardDuty Findings', data) if data else 'No result were found'
     return CommandResults(readable_output=readable_output,
@@ -305,69 +420,215 @@ def list_findings(client: boto3.client, args: dict):
                           outputs_key_field='')
 
 
-def get_findings(client: boto3.client, args: dict):
+def get_pagination_args(args: dict) -> Tuple[Optional[int], Optional[int], Optional[int]]:
+    """
+    Gets and validates pagination arguments.
+    :param args: The command arguments (page, page_size or limit)
+    :return: limit, page_size, page after validation and convert
+    """
+
+    # Automatic Pagination
+    limit = arg_to_number(args.get('limit', MAX_RESULTS_RESPONSE))
+
+    # Manual Pagination
+    page = arg_to_number(args.get('page'))
+    if page is not None and page <= 0:
+        raise DemistoException('page argument must be greater than 0')
+
+    page_size = arg_to_number(args.get('page_size', MAX_RESULTS_RESPONSE))
+    if not 0 < page_size <= MAX_RESULTS_RESPONSE:  # type: ignore
+        raise DemistoException(f'page_size argument must be between 1 to {MAX_RESULTS_RESPONSE}')
+
+    if page:
+        limit = page * page_size  # type: ignore
+
+    return limit, page_size, page
+
+
+def parse_finding(finding: dict) -> Dict:
+    """
+    Parse the finding data to output, context format
+    :param finding: Contains information about the finding,
+    which is generated when abnormal or suspicious activity is detected.
+    :return: parsed_finding
+    """
+    parsed_finding: dict = dict()
+    parsed_finding['AccountId'] = finding.get('AccountId')
+    parsed_finding['CreatedAt'] = finding.get('CreatedAt')
+    parsed_finding['Description'] = finding.get('Description')
+    parsed_finding['Region'] = finding.get('Region')
+    parsed_finding['Id'] = finding.get('Id')
+    parsed_finding['Title'] = finding.get('Title')
+    parsed_finding['Type'] = finding.get('Type')
+    parsed_finding['Severity'] = severity_mapping(finding.get('Severity'))
+    parsed_finding['UpdatedAt'] = finding.get('UpdatedAt')
+
+    parsed_finding['Arn'] = finding.get('Arn')
+    parsed_finding['Confidence'] = finding.get('Confidence')
+    parsed_finding['Partition'] = finding.get('Partition')
+    parsed_finding['SchemaVersion'] = finding.get('SchemaVersion')
+    parsed_finding['Service'] = json.dumps(finding.get('Service'), cls=DatetimeEncoder)
+    parsed_finding['ResourceType'] = demisto.get(finding, 'Resource.ResourceType')
+
+    get_resource = finding.get('Resource')
+    if get_resource:
+        parsed_finding['Resource'] = {k: json.dumps(v, cls=DatetimeEncoder) for k, v in get_resource.items()
+                                      if k != 'ResourceType'}
+    return parsed_finding
+
+
+def get_findings(client: boto3.client, args: dict) -> dict:
+    return_raw_response = argToBoolean(args.get('returnRawResponse', 'false'))
+
     response = client.get_findings(
         DetectorId=args.get('detectorId'),
         FindingIds=argToList(args.get('findingIds')))
 
     data = []
     for finding in response['Findings']:
-        data.append({
-            'AccountId': finding['AccountId'],
-            'Arn': finding['Arn'],
-            'CreatedAt': finding['CreatedAt'],
-            'Description': finding['Description'],
-            'Id': finding['Id'],
-            'Region': finding['Region'],
-            'Title': finding['Title'],
-            'Type': finding['Type'],
-        })
+        data.append(parse_finding(finding))
 
     output = json.dumps(response['Findings'], cls=DatetimeEncoder)
     raw = json.loads(output)
-    readable_output = tableToMarkdown('AWS GuardDuty Findings', data) if data else 'No result were found'
-    return CommandResults(readable_output=readable_output,
-                          raw_response=raw,
-                          outputs=data,
-                          outputs_prefix='AWS.GuardDuty.Findings',
-                          outputs_key_field='Id')
+
+    headers = ['Id', 'Title', 'Description', 'Type', 'ResourceType', 'CreatedAt', 'AccountId', 'Arn']
+    readable_output = tableToMarkdown('AWS GuardDuty Findings', data, removeNull=True, headers=headers) \
+        if data else 'No result were found'
+
+    return {
+        'ContentsFormat': formats['json'],
+        'Type': entryTypes['note'],
+        'Contents': raw if raw else data,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': readable_output,
+        'EntryContext': {"AWS.GuardDuty.Findings(val.FindingId === obj.Id)": raw if return_raw_response else data}
+    }
 
 
 def parse_incident_from_finding(finding: dict):
     incident: dict = dict()
-    incident['name'] = finding['Title']
-    incident['details'] = finding['Description']
-    incident['occurred'] = finding['CreatedAt']
-    incident['severity'] = severity_mapping(finding['Severity'])
+    incident['name'] = finding.get('Title')
+    incident['details'] = finding.get('Description')
+    incident['occurred'] = finding.get('CreatedAt')
+    incident['severity'] = severity_mapping(finding.get('Severity'))
     incident['rawJSON'] = json.dumps(finding, default=str)
     return incident
 
 
-def fetch_incidents(client: boto3.client, aws_gd_severity: str):
-    incidents = []
+def time_to_unix_epoch(date_time: datetime) -> int:
+    """
+    :param date_time: The time and date in '%Y-%m-%dT%H:%M:%S.%fZ' format
+    :return: Timestamp in Unix Epoch millisecond format
+    example: date_time = dateparser.parse('2017-02-10 00:09:35.000000+00:00') to 1486685375000
+    """
+    return int(date_time.timestamp() * 1000)
+
+
+def fetch_incidents(client: boto3.client, aws_gd_severity: List[str], last_run: dict, fetch_limit: int,
+                    first_fetch_time: str, is_archive: bool) -> Tuple[Dict[str, Any], List[dict]]:
+    """
+    This function will execute each interval (default is 1 minute).
+
+    Args:
+        client (Client): boto3.client client
+        aws_gd_severity (List[str]): Guard Duty Severity level
+        last_run (dict): {'latest_created_time' (string): The greatest incident created_time we fetched from last fetch,
+                          'latest_updated_time' (string): The greatest incident updated_time we fetched from last fetch,
+                          'last_incidents_ids' (list): The last incidents ids of the latest_created_time,
+                          'last_next_token' (string): The value of NextToken from the previous response to continue listing data.}
+        fetch_limit (int): Maximum numbers of incidents per fetch
+        first_fetch_time (str): If last_fetch is None then fetch all incidents since first_fetch_time
+        is_archive (bool): Archive findings After Fetch
+    Returns:
+        next_run: This will be last_run in the next fetch-incidents
+        incidents: Incidents that will be created in Demisto
+    """
+
+    # Get the latest_created_time, latest_updated_time, last_incidents_ids, and last_next_token if exist
+    latest_created_time = last_run.get('latest_created_time')
+    last_incidents_ids = last_run.get('last_incidents_ids', [])
+    last_next_token = last_run.get('last_next_token', "")
+    latest_updated_time = dateparser.parse(last_run.get('latest_updated_time', ""))
+
+    # Handle first time fetch
+    if latest_created_time is None:
+        latest_created_time = dateparser.parse(dateparser.parse(first_fetch_time).strftime(DATE_FORMAT))  # type: ignore
+    else:
+        latest_created_time = dateparser.parse(latest_created_time)
+
     response = client.list_detectors()
     detector = response['DetectorIds']
 
-    list_findings = client.list_findings(
-        DetectorId=detector[0], FindingCriteria={
-            'Criterion': {
-                'service.archived': {'Eq': ['false', 'false']},
-                'severity': {'Gt': gd_severity_mapping(aws_gd_severity)}
-            }
-        }
-    )
+    created_time_to_ids = defaultdict(list)
+    created_time_to_ids[latest_created_time] = last_incidents_ids
 
-    get_findings = client.get_findings(DetectorId=detector[0], FindingIds=list_findings['FindingIds'])
+    criterion_conditions = dict()  # Represents the criteria to be used in the filter for querying findings.
+    criterion_conditions['severity'] = {'Gte': gd_severity_mapping(aws_gd_severity)}
+    if is_archive:
+        demisto.debug('Fetching Amazon GuardDuty with Archive')
+        criterion_conditions['service.archived'] = {'Eq': ['false']}
+    if not last_next_token and latest_updated_time:
+        criterion_conditions['updatedAt'] = {'Gte': time_to_unix_epoch(latest_updated_time)}
+    if last_incidents_ids:
+        criterion_conditions['id'] = {'Neq': last_incidents_ids[:]}
 
-    for finding in get_findings['Findings']:
-        incident = parse_incident_from_finding(finding)
-        incidents.append(incident)
+    demisto.info(f'Fetching Amazon GuardDuty findings for the {detector[0]} since: {str(latest_created_time)}')
 
-    # Create demisto incidents
-    demisto.incidents(incidents)
-    if incidents is not None:
-        # Archive findings
-        client.archive_findings(DetectorId=detector[0], FindingIds=list_findings['FindingIds'])
+    incidents: list[dict] = []
+    while True:
+        left_to_fetch = fetch_limit - len(incidents)
+        max_results = min(MAX_RESULTS_RESPONSE, left_to_fetch)
+
+        list_findings_res = client.list_findings(
+            DetectorId=detector[0],
+            FindingCriteria={'Criterion': criterion_conditions},
+            SortCriteria={'AttributeName': 'createdAt', 'OrderBy': 'ASC'},
+            MaxResults=max_results,
+            NextToken=last_next_token
+        )
+        last_next_token = list_findings_res.get("NextToken", "")
+        finding_ids = list_findings_res.get('FindingIds', [])
+        get_findings_res = client.get_findings(DetectorId=detector[0], FindingIds=finding_ids,
+                                               SortCriteria={'AttributeName': 'createdAt', 'OrderBy': 'ASC'})
+
+        for finding in get_findings_res['Findings']:
+            incident_created_time = dateparser.parse(finding.get('CreatedAt', ""))
+            incident_updated_time = dateparser.parse(finding.get('UpdatedAt', ""))
+            incident_id = finding.get("Id")
+
+            # Update the latest_updated_time
+            if not latest_updated_time or (incident_updated_time and incident_updated_time > latest_updated_time):
+                latest_updated_time = incident_updated_time
+
+            # Update last run (latest_created_time) and add incident if the incident is newer than last fetch
+            if (incident_created_time and latest_created_time) and incident_created_time >= latest_created_time:
+                demisto.debug(f'Added Incident with ID {incident_id}, occured: {str(incident_created_time)}, '
+                              f'updated: {str(incident_updated_time)}')
+
+                latest_created_time = incident_created_time
+                created_time_to_ids[latest_created_time].append(incident_id)
+
+                incident = parse_incident_from_finding(finding)
+                incidents.append(incident)
+
+        if incidents and is_archive:
+            # Archive findings
+            demisto.debug(f'Archived {len(finding_ids)} findings.')
+            client.archive_findings(DetectorId=detector[0], FindingIds=finding_ids)
+
+        # if there is no next_token, or we have reached the fetch_limit -> break
+        if not last_next_token or fetch_limit - len(incidents) == 0:
+            demisto.debug('fetch_limit has been reached or there is no next token')
+            break
+
+    next_run = {'latest_created_time': latest_created_time.strftime(DATE_FORMAT) if latest_created_time else None,
+                'latest_updated_time': latest_updated_time.strftime(DATE_FORMAT) if latest_updated_time else None,
+                'last_incidents_ids': created_time_to_ids[latest_created_time],
+                'last_next_token': last_next_token}
+
+    demisto.debug(f'{next_run=}')
+    demisto.debug(f'fetched {len(incidents)} incidents')
+    return next_run, incidents
 
 
 def create_sample_findings(client: boto3.client, args: dict):
@@ -425,9 +686,25 @@ def update_findings_feedback(client: boto3.client, args: dict):
         raise Exception(f"Failed to send findings feedback. Response was: {response}")
 
 
-def list_members(client: boto3.client, args: dict):
-    response = client.list_members(DetectorId=args.get('detectorId'))
-    data = response.get('Members')
+def list_members(client: boto3.client, args: dict) -> CommandResults:
+    limit, page_size, page = get_pagination_args(args)
+
+    paginator = client.get_paginator('list_members')
+    response_iterator = paginator.paginate(
+        DetectorId=args.get('detectorId'),
+        PaginationConfig={
+            'MaxItems': limit,
+            'PageSize': page_size,
+        }
+    )
+
+    data = []
+    for i, page_response in enumerate(response_iterator):
+        if page is None or (page - 1) == i:
+            for member in page_response['Members']:
+                data.append({'Member': member})
+            if page:
+                break
 
     readable_output = tableToMarkdown('AWS GuardDuty Members', data) if data else 'No result were found'
     return CommandResults(readable_output=readable_output,
@@ -448,7 +725,8 @@ def get_members(client: boto3.client, args: dict):
     members_response = response.get('Members', [])
     filtered_members = [member for member in members_response if member]
 
-    readable_output = tableToMarkdown('AWS GuardDuty Members', filtered_members) if filtered_members else 'No result were found'
+    readable_output = tableToMarkdown('AWS GuardDuty Members',
+                                      filtered_members) if filtered_members else 'No result were found'
     return CommandResults(readable_output=readable_output,
                           outputs=filtered_members,
                           outputs_prefix='AWS.GuardDuty.Members',
@@ -463,19 +741,22 @@ def connection_test(client: boto3.client):
         raise Exception(f"Error listing detectors. Response was {response}")
 
 
-def main():   # pragma: no cover
+def main():  # pragma: no cover
     params = demisto.params()
     aws_default_region = params.get('defaultRegion')
     aws_role_arn = params.get('roleArn')
     aws_role_session_name = params.get('roleSessionName')
     aws_role_session_duration = params.get('sessionDuration')
     aws_role_policy = None
-    aws_access_key_id = params.get('access_key')
-    aws_secret_access_key = params.get('secret_key')
-    aws_gd_severity = params.get('gs_severity', '')
+    aws_access_key_id = params.get('credentials', {}).get('identifier') or params.get('access_key')
+    aws_secret_access_key = params.get('credentials', {}).get('password') or params.get('secret_key')
+    aws_gd_severity = params.get('gs_severity', [])
     verify_certificate = not params.get('insecure', True)
     timeout = params.get('timeout') or 1
     retries = params.get('retries') or 5
+    first_fetch_time = params.get('first_fetch_time', '10 minutes').strip()
+    fetch_limit = arg_to_number(params.get('fetch_limit', 10))
+    is_archive = argToBoolean(params.get('is_archive', False))
 
     try:
         validate_params(aws_default_region, aws_role_arn, aws_role_session_name, aws_access_key_id,
@@ -566,7 +847,12 @@ def main():   # pragma: no cover
             result = get_members(client, demisto.args())
 
         elif demisto.command() == 'fetch-incidents':
-            fetch_incidents(client, aws_gd_severity)
+            next_run, incidents = fetch_incidents(client=client, aws_gd_severity=aws_gd_severity,
+                                                  last_run=demisto.getLastRun(),
+                                                  fetch_limit=fetch_limit,  # type: ignore
+                                                  first_fetch_time=first_fetch_time, is_archive=is_archive)
+            demisto.setLastRun(next_run)
+            demisto.incidents(incidents)
             sys.exit(0)
 
         else:

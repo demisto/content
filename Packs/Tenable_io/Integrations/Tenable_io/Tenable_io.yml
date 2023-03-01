@@ -1,4 +1,4 @@
-category: Data Enrichment & Threat Intelligence
+category: Vulnerability Management
 commonfields:
   id: Tenable.io
   version: -1
@@ -24,9 +24,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: A comprehensive asset-centric solution to accurately track resources
-  while accommodating dynamic assets such as cloud, mobile devices, containers, and
-  web applications.
+description: A comprehensive asset-centric solution to accurately track resources while accommodating dynamic assets such as cloud, mobile devices, containers, and web applications.
 display: Tenable.io
 name: Tenable.io
 script:
@@ -41,8 +39,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Limit the results to those that have only changed since this time.
-        Format: YYYY-MM-DD'
+      description: 'Limit the results to those that have only changed since this time. Format: YYYY-MM-DD'
       isArray: false
       name: lastModificationDate
       required: false
@@ -62,8 +59,7 @@ script:
       description: The targets to scan.
       type: string
     - contextPath: TenableIO.Scan.Status
-      description: The status of the scan (completed, aborted, imported, pending,
-        running, resuming, canceling, cancelled, pausing, paused, stopping, stopped).
+      description: The status of the scan (completed, aborted, imported, pending, running, resuming, canceling, cancelled, pausing, paused, stopping, stopped).
       type: string
     - contextPath: TenableIO.Scan.StartTime
       description: The scheduled start time for the scan.
@@ -103,16 +99,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: If specified, targets to be scanned instead of the default.
-        This value can be an array where each index is a target, or an array with a single
-        index of comma-separated targets.
+      description: If specified, targets to be scanned instead of the default. This value can be an array where each index is a target, or an array with a single index of comma-separated targets.
       isArray: false
       name: scanTargets
       required: false
       secret: false
     deprecated: false
-    description: Launches a scan with existing or custom targets. You can specify custom
-      targets in the command arguments.
+    description: Launches a scan with existing or custom targets. You can specify custom targets in the command arguments.
     execution: false
     name: tenable-io-launch-scan
     outputs:
@@ -123,8 +116,7 @@ script:
       description: The targets to scan.
       type: string
     - contextPath: TenableIO.Scan.Status
-      description: The status of the scan (completed, aborted, imported, pending,
-        running, resuming, canceling, cancelled, pausing, paused, stopping, stopped).
+      description: The status of the scan (completed, aborted, imported, pending, running, resuming, canceling, cancelled, pausing, paused, stopping, stopped).
       type: string
   - arguments:
     - default: true
@@ -136,9 +128,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'no'
-      description: 'If true, the report will contain remediation and host
-        information for the specified scan. Otherwise, the report will only contain
-        vulnerabilities. Possible values: "yes" and "no".'
+      description: 'If true, the report will contain remediation and host information for the specified scan. Otherwise, the report will only contain vulnerabilities. Possible values: "yes" and "no".'
       isArray: false
       name: detailed
       predefined:
@@ -172,8 +162,7 @@ script:
       description: The targets to scan.
       type: string
     - contextPath: TenableIO.Scan.Status
-      description: 'The status of the scan ("completed", "aborted", "imported", "pending",
-        "running", "resuming", "canceling", "cancelled", "pausing", "paused", "stopping", "stopped").'
+      description: 'The status of the scan ("completed", "aborted", "imported", "pending", "running", "resuming", "canceling", "cancelled", "pausing", "paused", "stopping", "stopped").'
       type: string
     - contextPath: TenableIO.Scan.StartTime
       description: The scheduled start time for the scan.
@@ -236,8 +225,7 @@ script:
       description: The unique ID of the remediation.
       type: string
     - contextPath: TenableIO.Remediations.Description
-      description: Specific information related to the vulnerability and steps to
-        remediate.
+      description: Specific information related to the vulnerability and steps to remediate.
       type: string
     - contextPath: TenableIO.Remediations.AffectedHosts
       description: The number of hosts affected.
@@ -261,15 +249,13 @@ script:
       description: The name of the vulnerability.
       type: string
     - contextPath: TenableIO.Vulnerabilities.Severity
-      description: Integer [0-4] indicating how severe the vulnerability is, where
-        0 is info only.
+      description: Integer [0-4] indicating how severe the vulnerability is, where 0 is info only.
       type: number
     - contextPath: TenableIO.Vulnerabilities.Type
       description: The type of the vulnerability.
       type: string
     - contextPath: TenableIO.Vulnerabilities.Family
-      description: Object containing plugin information such as family, type, and
-        publication and modification dates.
+      description: Object containing plugin information such as family, type, and publication and modification dates.
       type: string
     - contextPath: TenableIO.Vulnerabilities.Description
       description: The description of the vulnerability.
@@ -305,8 +291,7 @@ script:
       description: The Common Vulnerability Scoring System version 3 vector.
       type: string
     - contextPath: TenableIO.Vulnerabilities.Cvss3BaseScore
-      description: The Common Vulnerability Scoring System version 3 allotted base
-        score.
+      description: The Common Vulnerability Scoring System version 3 allotted base score.
       type: string
   - arguments:
     - default: false
@@ -322,15 +307,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: The number of days of data prior to and including today that should
-        be returned.
+      description: The number of days of data prior to and including today that should be returned.
       isArray: false
       name: dateRange
       required: false
       secret: false
     deprecated: false
-    description: Gets a list of up to 5000 of the vulnerabilities recorded for a specified
-      asset.
+    description: Gets a list of up to 5000 of the vulnerabilities recorded for a specified asset.
     execution: false
     name: tenable-io-get-vulnerabilities-by-asset
     outputs:
@@ -347,8 +330,7 @@ script:
       description: The name of the vulnerability.
       type: string
     - contextPath: TenableIO.Vulnerabilities.Severity
-      description: Integer [0-4] indicating how severe the vulnerability is, where
-        0 is info only.
+      description: Integer [0-4] indicating how severe the vulnerability is, where 0 is info only.
       type: number
     - contextPath: TenableIO.Vulnerabilities.Family
       description: The vulnerability family.
@@ -357,8 +339,7 @@ script:
       description: The number of times the vulnerability was found.
       type: number
     - contextPath: TenableIO.Vulnerabilities.VulnerabilityState
-      description: 'The current state of the reported vulnerability ("Active", "Fixed",
-        "New", etc.).'
+      description: 'The current state of the reported vulnerability ("Active", "Fixed", "New", etc.).'
       type: string
   - arguments:
     - default: true
@@ -395,8 +376,7 @@ script:
       description: The unique ID of the scan.
       type: String
     - contextPath: TenableIO.Scan.Status
-      description: The status of the scan (completed, aborted, imported, pending,
-        running, resuming, canceling, cancelled, pausing, paused, stopping, stopped).
+      description: The status of the scan (completed, aborted, imported, pending, running, resuming, canceling, cancelled, pausing, paused, stopping, stopped).
       type: String
   - arguments:
     - default: false
@@ -414,9 +394,47 @@ script:
       description: The unique id of the scan.
       type: String
     - contextPath: TenableIO.Scan.Status
-      description: The status of the scan (completed, aborted, imported, pending,
-        running, resuming, canceling, cancelled, pausing, paused, stopping, stopped).
+      description: The status of the scan (completed, aborted, imported, pending, running, resuming, canceling, cancelled, pausing, paused, stopping, stopped).
       type: String
+  - arguments:
+    - description: IP Address of the asset
+      name: ip
+      required: true
+    description: Retrieves details for the specified asset to include custom attributes.
+    name: tenable-io-get-asset-details
+    outputs:
+    - contextPath: TenableIO.AssetDetails.attributes
+      description: Array of custom attributes of asset.
+      type: unknown
+    - contextPath: TenableIO.AssetDetails.counts
+      description: Array of audit statuses and vulnerabilities by type.
+      type: unknown
+    - contextPath: TenableIO.AssetDetails.created_at
+      description: Date asset was created.
+      type: date
+    - contextPath: TenableIO.AssetDetails.first_seen
+      description: Date asset was first seen.
+      type: date
+    - contextPath: TenableIO.AssetDetails.fqdn
+      description: Array of fully-qualified domain names.
+      type: unknown
+    - contextPath: TenableIO.AssetDetails.id
+      description: GUID of tenable.io asset.
+      type: string
+    - contextPath: TenableIO.AssetDetails.interfaces
+      description: Array of interface information.
+    - contextPath: TenableIO.AssetDetails.ipv4
+      description: Array of IPv4 addresses.
+      type: unknown
+    - contextPath: TenableIO.AssetDetails.operating_system
+      description: Array of operating systems.
+      type: unknown
+    - contextPath: TenableIO.AssetDetails.tags
+      description: Array of tags added to asset.
+      type: unknown
+    - contextPath: TenableIO.AssetDetails.updated_at
+      description: Date the asset was last updated.
+      type: date
   feed: false
   isfetch: false
   longRunning: false
@@ -425,7 +443,7 @@ script:
   script: '-'
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.10.6.33415
+  dockerimage: demisto/python3:3.10.9.42476
 tests:
 - Tenable.io test
 fromversion: 5.0.0

@@ -1,0 +1,55 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: Inception
+  version: -1
+configuration:
+- display: ""
+  displaypassword: API Key
+  name: apikey
+  type: 9
+  required: true
+  hiddenusername: true
+- display: Use system proxy settings
+  name: proxy
+  defaultvalue: "false"
+  type: 8
+  required: false
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: "false"
+  type: 8
+  required: false
+description: Stairwell Inception is a security intelligence engine that automates the continuous capture, storage, and of executable files and other primary security artifacts to improve detection and response against advanced attacks that evade traditional security tools.
+display: 'Stairwell Inception'
+name: Inception
+script:
+  commands:
+  - name: inception-variant-discovery
+    arguments:
+    - name: sha256
+      required: true
+      description: File hash (SHA256)
+    description: Discover variants using a file hash (SHA256)
+    outputs:
+    - contextPath: Inception.Variants
+      type: Dictionary
+      description: Variants discovered
+  - name: inception-file-enrichment
+    arguments:
+    - name: fileHash
+      required: true
+      description: File hash (MD5, SHA1, or SHA256)
+    description: Enrich files using file hash (MD5, SHA1, SHA256)
+    outputs:
+    - contextPath: Inception.File_Details
+      type: Dictionary
+      description: File details from enrichment
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.10.10.48392
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)

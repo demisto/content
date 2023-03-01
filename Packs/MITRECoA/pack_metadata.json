@@ -1,0 +1,67 @@
+{
+    "name": "MITRE ATT&CK - Courses of Action",
+    "description": "Looking for actionable intelligence? This intelligence-driven Pack provides manual or automated remediation of MITRE ATT&CK techniques.",
+    "support": "xsoar",
+    "currentVersion": "1.0.2",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2021-01-03T17:54:12Z",
+    "hidden": false,
+    "itemPrefix": [
+        "Mitre COA"
+    ],
+    "categories": [
+        "Data Enrichment & Threat Intelligence"
+    ],
+    "tags": [
+        "Use Case"
+    ],
+    "useCases": [
+        "Threat Intelligence Management"
+    ],
+    "keywords": [
+        "MITRE ATT&CK",
+        "Courses of Action",
+        "Unit 42",
+        "Best Practices"
+    ],
+    "dependencies": {
+        "PAN-OS": {
+            "display_name": "PAN-OS",
+            "mandatory": false
+        },
+        "Phishing": {
+            "display_name": "Phishing",
+            "mandatory": false
+        },
+        "Ransomware": {
+            "display_name": "Ransomware",
+            "mandatory": false
+        },
+        "CommonTypes": {
+            "display_name": "Common Types",
+            "mandatory": true
+        },
+        "CommonScripts": {
+            "display_name": "Common Scripts",
+            "mandatory": true
+        },
+        "CortexXDR": {
+            "display_name": "Palo Alto Networks Cortex XDR - Investigation and Response",
+            "mandatory": false
+        },
+        "FeedMitreAttack": {
+            "display_name": "MITRE ATT&CK",
+            "mandatory": false
+        },
+        "AccessInvestigation": {
+            "display_name": "Access Investigation",
+            "mandatory": false
+        },
+        "Malware": {
+            "display_name": "Malware",
+            "mandatory": false
+        }
+    }
+}

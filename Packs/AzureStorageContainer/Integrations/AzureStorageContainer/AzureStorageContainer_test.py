@@ -90,6 +90,38 @@ def test_azure_storage_create_container_command(requests_mock):
         create_container_command(client, {'container_name': invalid_container_name})
 
 
+def test_azure_storage_create_blob_command_content_length_header(mocker):
+    """
+    Given:
+     - User has provided valid credentials.
+
+    When:
+     - azure-storage-container-blob-create called.
+
+    Then:
+     - Ensure the content length header is being sent with the correct file size.
+    """
+    from AzureStorageContainer import Client, create_blob_command
+
+    def mock_file(_id):
+        return {
+            'path': 'test_data/blob.txt',
+            'name': 'blob.txt',
+        }
+
+    client = Client(
+        server_url=BASE_URL, verify=False, proxy=False,
+        account_sas_token=SAS_TOKEN, storage_account_name=ACCOUNT_NAME, api_version=API_VERSION
+    )
+
+    mocker.patch.object(demisto, 'getFilePath', side_effect=mock_file)
+    http_mocker = mocker.patch.object(client.ms_client, 'http_request', return_value='worked')
+
+    create_blob_command(client, {'container_name': 'container-test', 'file_entry_id': '1'})
+
+    assert http_mocker.call_args.kwargs.get('headers', {}) == {'x-ms-blob-type': 'BlockBlob'}
+
+
 def test_azure_storage_get_container_properties_command(requests_mock):
     """
     Scenario: Retrieve properties for the specified Container.
@@ -397,3 +429,51 @@ def test_create_set_tags_request_body():
                "<Value>tag-value-2-yehuda</Value></Tag></TagSet></Tags>"
 
     assert result == expected
+
+
+def test_generate_sas_signature():
+    from AzureStorageContainer import generate_sas_signature
+    assert generate_sas_signature('test', 'test', 'test', 'test', 'test', 'test', 'test',
+                                  'test', ) == 'sp=test&st=test&se=test&sip=test&spr=https&sv=test&sr=test&sig=pyUQ25%2BIijJ2TstI5Q6Sre3jJWI0b4qwvRg2LtD9uhc%3D'  # noqa
+
+
+def test_check_valid_permission():
+    from AzureStorageContainer import check_valid_permission
+    assert check_valid_permission('cr', 'c')
+    assert not check_valid_permission('cr', 'crw')
+
+
+@pytest.mark.parametrize(argnames='client_id', argvalues=['test_client_id', None])
+def test_test_module_command_with_managed_identities(mocker, requests_mock, client_id):
+    """
+        Given:
+            - Managed Identities client id for authentication.
+        When:
+            - Calling test_module.
+        Then:
+            - Ensure the output are as expected.
+    """
+
+    from AzureStorageContainer import main, MANAGED_IDENTITIES_TOKEN_URL
+    import demistomock as demisto
+    import AzureStorageContainer
+    import re
+
+    mock_token = {'access_token': 'test_token', 'expires_in': '86400'}
+    get_mock = requests_mock.get(MANAGED_IDENTITIES_TOKEN_URL, json=mock_token)
+    requests_mock.get(re.compile('blob.core.windows.net/.*'))
+
+    params = {
+        'managed_identities_client_id': {'password': client_id},
+        'use_managed_identities': 'True',
+        'credentials': {'identifier': 'test_storage_account_name'}
+    }
+    mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(demisto, 'command', return_value='test-module')
+    mocker.patch.object(AzureStorageContainer, 'return_results', return_value=params)
+
+    main()
+
+    assert 'ok' in AzureStorageContainer.return_results.call_args[0][0]
+    qs = get_mock.last_request.qs
+    assert client_id and qs['client_id'] == [client_id] or 'client_id' not in qs

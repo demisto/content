@@ -1,0 +1,52 @@
+{
+    "data": [
+        {
+            "date": "2019",
+            "destinationip": "1.1.1.1",
+            "sourceip": "1.1.1.1",
+            "sourceport": 0,
+            "destinationport": 0,
+            "verdict": "allowed",
+            "time": "12:34",
+            "timestamp": 1548311506,
+            "identities": [
+                {
+                    "id": 1,
+                    "label": "Catch Rate Testing System",
+                    "type": {
+                        "id": 21,
+                        "label": "Sites",
+                        "type": "site"
+                    },
+                    "deleted": false
+                }
+            ],
+            "protocol": {
+                "id": 17,
+                "label": "UDP"
+            },
+            "rule": {
+                "id": 1,
+                "label": "Default Rule"
+            },
+            "type": "firewall",
+            "allapplications": [
+                {
+                    "id": 72,
+                    "label": "dns IT Service Management",
+                    "app": ""
+                }
+            ],
+            "applicationprotocols": [
+                {
+                    "id": 72,
+                    "label": "dns IT Service Management",
+                    "app": ""
+                }
+            ],
+            "packetsize": 32,
+            "direction": "towards"
+        }
+    ],
+    "meta": {}
+}

@@ -6,8 +6,8 @@ name: Block Indicators - Generic v3
 description: |+
   This playbook blocks malicious Indicators using all integrations that are enabled, using the following sub-playbooks:
 
-  - Block URL - Generic
-  - Block Account - Generic
+  - Block URL - Generic v2
+  - Block Account - Generic v2
   - Block IP - Generic v3
   - Block File - Generic v2
   - Block Email - Generic
@@ -44,6 +44,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "2":
     id: "2"
     taskid: c155d55d-f7f3-4af2-8739-3cb6143e0e81
@@ -74,6 +75,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "7":
     id: "7"
     taskid: 15d43128-6c48-4deb-8ed0-044d0454fa7b
@@ -92,8 +94,8 @@ tasks:
       - "11"
       - "12"
       - "13"
-      - "16"
       - "17"
+      - "18"
     separatecontext: false
     view: |-
       {
@@ -109,15 +111,16 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "10":
     id: "10"
-    taskid: 2c18351e-9797-4477-8057-62c91993e3bb
+    taskid: 97b85f3e-e339-490d-8f4c-7a188cfc0f25
     type: playbook
     task:
-      id: 2c18351e-9797-4477-8057-62c91993e3bb
+      id: 97b85f3e-e339-490d-8f4c-7a188cfc0f25
       version: -1
       name: Block File - Generic v2
-      description: "This playbook is used to block files from running on endpoints. \nThis playbook supports the following integrations:\n- Palo Alto Networks Traps\n- Cybereason\n- Carbon Black Enterprise Response\n- Cylance Protect v2\n"
+      description: "This playbook is used to block files from running on endpoints. \nThis playbook supports the following integrations:\n- Palo Alto Networks Traps\n- Palo Alto Networks Cortex XDR\n- Cybereason\n- Carbon Black Enterprise Response\n- Cylance Protect v2\n"
       playbookName: Block File - Generic v2
       type: playbook
       iscommand: false
@@ -152,6 +155,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "11":
     id: "11"
     taskid: dc515274-066d-4d6a-81ec-198ff5c818f8
@@ -192,6 +196,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "12":
     id: "12"
     taskid: cb167974-0620-4c01-80f2-8e62d9446256
@@ -243,6 +248,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "13":
     id: "13"
     taskid: 53c7faa6-ec4b-46c0-8322-71972e65dad0
@@ -325,6 +331,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "14":
     id: "14"
     taskid: 22f0eb38-c4d3-4e67-889b-6abbff216ab8
@@ -352,6 +359,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "15":
     id: "15"
     taskid: 8e6165ed-cc2e-4820-8ae4-c73fd82a3088
@@ -414,55 +422,32 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "16":
-    id: "16"
-    taskid: 702afc6d-9569-46aa-86f7-ab82ee32d705
-    type: playbook
-    task:
-      id: 702afc6d-9569-46aa-86f7-ab82ee32d705
-      version: -1
-      name: Block URL - Generic v2
-      description: |-
-        This playbook blocks malicious URLs using all integrations that are enabled.
-
-        Supported integrations for this playbook:
-        * Palo Alto Networks PAN-OS
-        * Zscaler
-      playbookName: Block URL - Generic v2
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
-    separatecontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 340
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "17":
     id: "17"
-    taskid: 67feec12-16ee-4665-8fed-3d9fc9310adb
+    taskid: f12b6207-b78c-4cde-8f3d-2cbd8c3e0d56
     type: playbook
     task:
-      id: 67feec12-16ee-4665-8fed-3d9fc9310adb
+      id: f12b6207-b78c-4cde-8f3d-2cbd8c3e0d56
       version: -1
       name: Block Account - Generic v2
       playbookName: Block Account - Generic v2
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
+      description: |-
+        This playbook blocks malicious usernames using all integrations that you have enabled.
+
+        Supported integrations for this playbook:
+        * Active Directory
+        * PAN-OS - This requires PAN-OS 9.1 or higher.
+        * SailPoint
+        * PingOne
+        * AWS IAM
+        * Clarizen IAM
+        * Envoy IAM
+        * ExceedLMS IAM
+        * Okta
     nexttasks:
       '#none#':
       - "2"
@@ -481,14 +466,97 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    scriptarguments:
+      Tag:
+        simple: Bad Account
+      UserVerification:
+        complex:
+          root: inputs.UserVerification
+      Username:
+        complex:
+          root: inputs.Username
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+  "18":
+    id: "18"
+    taskid: ac24ec10-63b4-46ed-8c10-ae50147ac064
+    type: playbook
+    task:
+      id: ac24ec10-63b4-46ed-8c10-ae50147ac064
+      version: -1
+      name: Block URL - Generic v2
+      playbookName: Block URL - Generic v2
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      AutoCommit:
+        complex:
+          root: inputs.AutoCommit
+      CustomURLCategory:
+        complex:
+          root: inputs.CustomURLCategory
+      EDLServerIP:
+        complex:
+          root: inputs.EDLServerIP
+      LogForwarding:
+        complex:
+          root: inputs.LogForwarding
+      Tag:
+        complex:
+          root: inputs.Tag
+      URL:
+        complex:
+          root: inputs.URL
+      UserVerification:
+        complex:
+          root: inputs.UserVerification
+      categories:
+        complex:
+          root: inputs.categories
+      device-group:
+        complex:
+          root: inputs.device-group
+      type:
+        complex:
+          root: inputs.type
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 0,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 850,
-        "width": 2530,
-        "x": 50,
+        "width": 2580,
+        "x": 0,
         "y": 50
       }
     }
@@ -579,16 +647,86 @@ inputs:
 - key: MD5
   value:
     complex:
-      root: File
-      accessor: MD5
+      root: DBotScore
+      accessor: Indicator
+      filters:
+      - - operator: stringHasLength
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+          right:
+            value:
+              simple: "32"
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Type
+            iscontext: true
+          right:
+            value:
+              simple: file
+        - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Type
+            iscontext: true
+          right:
+            value:
+              simple: hash
+      transformers:
+      - operator: uniq
   required: false
   description: The MD5 hash of the file you want to block.
   playbookInputQuery:
 - key: SHA256
   value:
     complex:
-      root: File
-      accessor: SHA256
+      root: DBotScore
+      accessor: Indicator
+      filters:
+      - - operator: stringHasLength
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+          right:
+            value:
+              simple: "64"
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Type
+            iscontext: true
+          right:
+            value:
+              simple: file
+        - operator: isEqualString
+          left:
+            value:
+              simple: DBotScore.Type
+            iscontext: true
+          right:
+            value:
+              simple: hash
+      transformers:
+      - operator: uniq
   required: false
   description: The SHA256 hash of the file you want to block.
   playbookInputQuery:
@@ -616,15 +754,9 @@ inputs:
     This input determines whether Palo Alto Networks Panorama or Firewall Static Address Groups are used.
     Specify the Static Address Group name for IPs list handling.
   playbookInputQuery:
-- key: URLListName
-  value:
-    simple: Demisto Remediation - URL EDL
-  required: false
-  description: URL list from the instance context with which to override the remote file.
-  playbookInputQuery:
 - key: CustomURLCategory
   value:
-    simple: Demisto Remediation - Malicious URLs
+    simple: XSOAR Remediation - Malicious URLs
   required: false
   description: Custom URL Category name.
   playbookInputQuery:
@@ -663,7 +795,8 @@ inputs:
 - key: Tag
   value: {}
   required: false
-  description: Insert a tag name with which indicators will get tagged. This tag can be used later in the External Dynamic Lists integration by using the tag for filtering IPs in the indicator query.
+  description: |-
+    Insert a tag name with which indicators will get tagged. This tag can be used later in the External Dynamic Lists integration by using the tag for filtering IPs in the indicator query.
   playbookInputQuery:
 - key: DAG
   value: {}
@@ -686,7 +819,7 @@ inputs:
 - key: SiteName
   value: {}
   required: false
-  description: Signal Sciences WAF - Enter the site name for the integration to be applied. The site name can be found in your instance console.
+  description: 'Signal Sciences WAF - Enter the site name for the integration to be applied. The site name can be found in your instance console.'
   playbookInputQuery:
 - key: AkamaiNetworkListID
   value: {}
@@ -710,7 +843,7 @@ inputs:
   playbookInputQuery:
 - key: RuleName
   value:
-    simple: XSOAR - Block Indicators playbook - ${incident.id}
+    simple: "XSOAR - Block Indicators playbook - ${incident.id}"
   required: false
   description: |-
     The rule name/description that will be presented on the created rule in certain integrations (if there is a need).
@@ -726,6 +859,12 @@ inputs:
     Determine if a newly created rule should be with the network direction of outbound or inbound blocked traffic.
     Possible values: inbound or outbound
     Default: outbound
+  playbookInputQuery:
+- key: EDLServerIP
+  value: {}
+  required: false
+  description: |-
+    EDL Server IP Address
   playbookInputQuery:
 outputs:
 - contextPath: CheckpointFWRule.Domain
@@ -788,3 +927,6 @@ outputs:
 tests:
 - Block IP - Generic V3_Test
 fromversion: 6.5.0
+marketplaces:
+  - xsoar
+  - marketplacev2

@@ -1,0 +1,52 @@
+[MODEL: dataset=symantec_bluecoatproxysg_raw]
+alter
+// timestamp = arrayindex(regextract(_raw_log, "^([\S]+\s[\S]+)\s[\d]+"), 0)
+// Although avialble in the format, cs-uri-path and cs-uri-query are not in One DM due to compability issues.
+time_taken = arrayindex(regextract(_raw_log, "^[\S]+\s[\S]+\s([\S]+)\s"), 0),
+c_ip = arrayindex(regextract(_raw_log, "^[\S]+\s[\S]+\s[\S]+\s([\S]+)\s"), 0),
+sc_status = arrayindex(regextract(_raw_log, "^[\S]+\s[\S]+\s[\S]+\s[\S]+\s([\S]+)\s"), 0),
+s_action = arrayindex(regextract(_raw_log, "^[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s([\S]+)\s"), 0),
+sc_bytes = arrayindex(regextract(_raw_log, "^[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s([\S]+)\s"), 0),
+cs_bytes = arrayindex(regextract(_raw_log, "^[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s([\S]+)\s"), 0),
+cs_method = arrayindex(regextract(_raw_log, "^[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s([\S]+)\s"), 0),
+cs_uri_scheme = arrayindex(regextract(_raw_log, "^[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s([\S]+)\s"), 0),
+cs_host = arrayindex(regextract(_raw_log, "^[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s([\S]+)\s"), 0),
+cs_uri_port = arrayindex(regextract(_raw_log, "^[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s([\S]+)\s"), 0),
+cs_username = arrayindex(regextract(_raw_log, "^[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s([\S]+)\s"), 0),
+cs_auth_group = arrayindex(regextract(_raw_log, "^[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s([\S]+)\s"), 0),
+s_supplier_name = arrayindex(regextract(_raw_log, "^[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s([\S]+)\s"), 0),
+rs_content_type = arrayindex(regextract(_raw_log, "^[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s([\S]+)\s"), 0),
+cs_referer = arrayindex(regextract(_raw_log, "^[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s([\S]+)\s"), 0),
+cs_user_agent = if(_raw_log ~= "^[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s\"([a-zA-Z0-9\_\:\;\'\-\s\(\)\.\/\$\@\!\%\^\&\*\+\=\~\,]+)\"\s[\S]+\s\"[a-zA-Z0-9\_\:\;\'\-\s\(\)\.\/\$\@\!\%\^\&\*\+\=\~\,]+\"\s[\S]+\s[\S]+",arrayindex(regextract(_raw_log, "^[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s\"([a-zA-Z0-9\_\:\;\'\-\s\(\)\.\/\$\@\!\%\^\&\*\+\=\~\,]+)\"\s[\S]+\s\"[a-zA-Z0-9\_\:\;\'\-\s\(\)\.\/\$\@\!\%\^\&\*\+\=\~\,]+\"\s[\S]+\s[\S]+"), 0),arrayindex(regextract(_raw_log, "^[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s(\-)\s[\S]+\s\"[a-zA-Z0-9\_\:\;\'\-\s\(\)\.\/\$\@\!\%\^\&\*\+\=\~\,]+\"\s[\S]+\s[\S]+"), 0)),
+cs_filter_result = if(_raw_log ~= "^[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s\"[a-zA-Z0-9\_\:\;\'\-\s\(\)\.\/\$\@\!\%\^\&\*\+\=\~\,]+\"\s([\S]+)\s\"[a-zA-Z0-9\_\:\;\'\-\s\(\)\.\/\$\@\!\%\^\&\*\+\=\~\,]+\"\s[\S]+\s[\S]+",arrayindex(regextract(_raw_log, "^[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s\"[a-zA-Z0-9\_\:\;\'\-\s\(\)\.\/\$\@\!\%\^\&\*\+\=\~\,]+\"\s([\S]+)\s\"[a-zA-Z0-9\_\:\;\'\-\s\(\)\.\/\$\@\!\%\^\&\*\+\=\~\,]+\"\s[\S]+\s[\S]+"), 0),arrayindex(regextract(_raw_log, "^[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s\-\s([\S]+)\s\"[a-zA-Z0-9\_\:\;\'\-\s\(\)\.\/\$\@\!\%\^\&\*\+\=\~\,]+\"\s[\S]+\s[\S]+"), 0)),
+cs_categories = if(_raw_log ~= "^[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s\"[a-zA-Z0-9\_\:\;\'\-\s\(\)\.\/\$\@\!\%\^\&\*\+\=\~\,]+\"\s[\S]+\s\"([a-zA-Z0-9\_\:\;\'\-\s\(\)\.\/\$\@\!\%\^\&\*\+\=\~\,]+)\"\s[\S]+\s[\S]+",arrayindex(regextract(_raw_log, "^[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s\"[a-zA-Z0-9\_\:\;\'\-\s\(\)\.\/\$\@\!\%\^\&\*\+\=\~\,]+\"\s[\S]+\s\"([a-zA-Z0-9\_\:\;\'\-\s\(\)\.\/\$\@\!\%\^\&\*\+\=\~\,]+)\"\s[\S]+\s[\S]+"), 0),arrayindex(regextract(_raw_log, "^[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s\-\s[\S]+\s\"([a-zA-Z0-9\_\:\;\'\-\s\(\)\.\/\$\@\!\%\^\&\*\+\=\~\,]+)\"\s[\S]+\s[\S]+"), 0)),
+x_virus_id = if(_raw_log ~= "^[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s\"[a-zA-Z0-9\_\:\;\'\-\s\(\)\.\/\$\@\!\%\^\&\*\+\=\~\,]+\"\s[\S]+\s\"[a-zA-Z0-9\_\:\;\'\-\s\(\)\.\/\$\@\!\%\^\&\*\+\=\~\,]+\"\s([\S]+)\s[\S]+",arrayindex(regextract(_raw_log, "^[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s\"[a-zA-Z0-9\_\:\;\'\-\s\(\)\.\/\$\@\!\%\^\&\*\+\=\~\,]+\"\s[\S]+\s\"[a-zA-Z0-9\_\:\;\'\-\s\(\)\.\/\$\@\!\%\^\&\*\+\=\~\,]+\"\s([\S]+)\s[\S]+"), 0),arrayindex(regextract(_raw_log, "^[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s\-\s[\S]+\s\"[a-zA-Z0-9\_\:\;\'\-\s\(\)\.\/\$\@\!\%\^\&\*\+\=\~\,]+\"\s([\S]+)\s[\S]+"), 0)),
+s_ip = if(_raw_log ~= "^[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s\"[a-zA-Z0-9\_\:\;\'\-\s\(\)\.\/\$\@\!\%\^\&\*\+\=\~\,]+\"\s[\S]+\s\"[a-zA-Z0-9\_\:\;\'\-\s\(\)\.\/\$\@\!\%\^\&\*\+\=\~\,]+\"\s[\S]+\s([\S]+)",arrayindex(regextract(_raw_log, "^[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s\"[a-zA-Z0-9\_\:\;\'\-\s\(\)\.\/\$\@\!\%\^\&\*\+\=\~\,]+\"\s[\S]+\s\"[a-zA-Z0-9\_\:\;\'\-\s\(\)\.\/\$\@\!\%\^\&\*\+\=\~\,]+\"\s[\S]+\s([\S]+)"), 0),arrayindex(regextract(_raw_log, "^[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s[\S]+\s\-\s[\S]+\s\"[a-zA-Z0-9\_\:\;\'\-\s\(\)\.\/\$\@\!\%\^\&\*\+\=\~\,]+\"\s[\S]+\s([\S]+)"), 0))
+| alter
+    c_ip_v4 = if(c_ip ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", c_ip, null),
+    c_ip_v6 = if(c_ip !~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", if(c_ip !~= "-", c_ip, null), null),
+    s_ip_v4 = if(s_ip ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", s_ip, null),
+    s_ip_v6 = if(s_ip !~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", if(s_ip !~= "-", s_ip, null), null)
+| alter
+    xdm.event.duration = to_integer(time_taken),
+    xdm.source.ipv4 = c_ip_v4,
+    xdm.source.ipv6 = c_ip_v6,
+    xdm.network.http.response_code = sc_status,
+    xdm.event.outcome_reason = s_action,
+    xdm.target.sent_bytes = to_integer(sc_bytes),
+    xdm.source.sent_bytes = to_integer(cs_bytes),
+    xdm.network.http.method = cs_method,
+    xdm.network.ip_protocol = cs_uri_scheme,
+    xdm.source.host.hostname = cs_host,
+    xdm.source.port = to_integer(cs_uri_port),
+    xdm.source.user.username = cs_username,
+    xdm.source.user.groups = arraycreate(cs_auth_group),
+    xdm.observer.name = s_supplier_name,
+    xdm.network.http.content_type = rs_content_type,
+    xdm.network.http.referrer = cs_referer,
+    xdm.source.user_agent = cs_user_agent,
+    xdm.event.outcome = if(cs_filter_result = "DENIED", XDM_CONST.OUTCOME_FAILED, cs_filter_result = "OBSERVED", XDM_CONST.OUTCOME_SUCCESS, cs_filter_result = "PROXIED", XDM_CONST.OUTCOME_PARTIAL, cs_filter_result = null, null, to_string(cs_filter_result)),
+    xdm.network.http.url_category = cs_categories,
+    xdm.alert.original_alert_id = x_virus_id,
+    xdm.source.host.ipv4_addresses = arraycreate(s_ip_v4),
+    xdm.source.host.ipv6_addresses = arraycreate(s_ip_v6);

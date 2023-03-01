@@ -16,8 +16,8 @@ Microsoft Defender Advanced Threat Protection Get Machine Action Status
 ## Authentication
 ---
 There are two different authentication methods for self-deployed configuration: 
-- [Client Credentials flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-client-creds-grant-flow)
-- [Authorization Code flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-auth-code-flow)
+- [Client Credentials flow](https://learn.microsoft.com/en-us/microsoft-365/security/defender-endpoint/exposed-apis-create-app-webapp?view=o365-worldwide)
+- [Authorization Code flow](https://learn.microsoft.com/en-us/microsoft-365/security/defender-endpoint/exposed-apis-create-app-nativeapp?view=o365-worldwide)
 For more details about the authentication used in this integration, see [Microsoft Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication).
 
 **Note**: If you previously configured the Windows Defender ATP integration, you need to perform the authentication flow again for this integration and enter the authentication parameters you receive when configuring the integration instance.
@@ -27,21 +27,24 @@ For more details about the authentication used in this integration, see [Microso
 
 ### Required Permissions
 Please add the following permissions to the app registration. Choose application permissions for the Client Credentials flow, and delegated permissions for the Authorization Code flow.
-* AdvancedQuery.Read.All - Application / AdvancedQuery.Read - Delegated
-* Alert.ReadWrite.All - Application / Alert.ReadWrite - Delegated
-* File.Read.All - Application / Delegated
-* Ip.Read.All - Application / Delegated
-* Machine.CollectForensics - Application / Delegated
-* Machine.Isolate - Application / Delegated
-* Machine.ReadWrite.All - Application / Machine.ReadWrite - Delegated
-* Machine.RestrictExecution - Application / Delegated
-* Machine.Scan - Application / Delegated
-* Machine.StopAndQuarantine - Application / Delegated
-* ThreatIndicators.ReadWrite.OwnedBy - Application / Delegated. Please note - this permission is only used for the deprecated indicators command. If you are not using the deprecated indicators command, it is not required. 
-* Url.Read.All - Application / Delegated
-* User.Read.All - Application / Delegated
-* Ti.ReadWrite (Read and write IOCs belonging to the app) - Application / Delegated
-* Vulnerability.Read.All - Application / Vulnerability.Read - Delegated
+* WindowsDefenderATP - AdvancedQuery.Read.All - Application / AdvancedQuery.Read - Delegated
+* WindowsDefenderATP - Alert.ReadWrite.All - Application / Alert.ReadWrite - Delegated
+* WindowsDefenderATP - File.Read.All - Application / Delegated
+* WindowsDefenderATP - Ip.Read.All - Application / Delegated
+* WindowsDefenderATP - Machine.CollectForensics - Application / Delegated
+* WindowsDefenderATP - Machine.Isolate - Application / Delegated
+* WindowsDefenderATP - Machine.ReadWrite.All - Application / Machine.ReadWrite - Delegated
+* WindowsDefenderATP - Machine.RestrictExecution - Application / Delegated
+* WindowsDefenderATP - Machine.Scan - Application / Delegated
+* WindowsDefenderATP - Machine.StopAndQuarantine - Application / Delegated
+* WindowsDefenderATP - ThreatIndicators.ReadWrite.OwnedBy - Application / Delegated. Please note - this permission is only used for the deprecated indicators command. If you are not using the deprecated indicators command, it is not required. 
+* WindowsDefenderATP - Url.Read.All - Application / Delegated
+* WindowsDefenderATP - User.Read.All - Application / Delegated
+* WindowsDefenderATP - Ti.ReadWrite (Read and write IOCs belonging to the app) - Application / Delegated
+* WindowsDefenderATP - Vulnerability.Read.All - Application / Vulnerability.Read - Delegated
+* WindowsDefenderATP - Software.Read.All - Application / Software.Read - Delegated
+* WindowsDefenderATP - Machine.LiveResponse - Application / Delegated
+* WindowsDefenderATP - Machine.Read.All - Application / Machine.Read - Delegated
 
 ## Configure Microsoft Defender for Endpoint on Cortex XSOAR
 ---
@@ -53,23 +56,28 @@ Please add the following permissions to the app registration. Choose application
     | **Parameter** | **Description** | **Example** |
     | ---------             | -----------           | -------            |
     | Name | A meaningful name for the integration instance. | XXXXX Instance Alpha |
+    | Fetches Incidents | Whether to fetch the incidents. | N/A |
+    | Incident Type | The type of incident to select. | Phishing |
     | Host URL | The URL to the Microsoft Defender for Endpoint server, including the scheme. | `https://api.securitycenter.windows.com` |
-    | ID | The ID used to gain access to the integration. | N/A |
-    | Token | A piece of data that servers use to verify for authenticity. | eea810f5-a6f6 |
+    | ID | The ID used to gain access to the integration. Your Client/Application ID. | N/A |
+    | Token | A piece of data that servers use to verify for authenticity. This is your Tenant ID. | eea810f5-a6f6 |
+    | Key | Your client secret. | |
     | Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates & secrets" page of the app. | A97BF50B7BB6D909CE8CAAF9FA8109A571134C33 |
     | Private Key | Used for certificate authentication. The private key of the registered certificate. | eea810f5-a6f6 |
-    | Fetch Incidents | Whether to fetch the incidents. | N/A |
-    | Incident Type | The type of incident to select. | Phishing |
-    | Status to filter out alerts for fetching as incidents| The property values are, "New", "InProgress" or "Resolved". Comma-separated lists are supported, e.g., New,Resolved. | New,In Progress,Resolved |
-    | Severity to filter out alerts for fetching as incidents | The property values are, "Informational", "Low", "Medium" and "High". Comma-separated lists are supported, e.g., Medium,High. | Medium,High |
-    | Trust any Certificate (Not Secure) | When selected, certificates are not checked. | N/A |
-    | Use system proxy settings | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration. | https://proxyserver.com |
-    | First Fetch Timestamp | The first timestamp to be fetched in number, time unit format. | 12 hours, 7 days |
-    | self-deployed | Use a self-deployed Azure Application. |  N/A |
-    | Using GCC | Whether a GCC edpoint is used. |  False |
     | Authentication Type | Type of authentication - either Authorization Code \(recommended\) or Client Credentials. |  |
     | Application redirect URI (for authorization code mode) |  | False |
     | Authorization code | for user-auth mode - received from the authorization step. see Detailed Instructions section | False |
+    | Azure Managed Identities Client ID | The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM. | UUID |
+    | Status to filter out alerts for fetching as incidents| The property values are, "New", "InProgress" or "Resolved". Comma-separated lists are supported, e.g., New,Resolved. | New,In Progress,Resolved |
+    | Severity to filter out alerts for fetching as incidents | The property values are, "Informational", "Low", "Medium" and "High". Comma-separated lists are supported, e.g., Medium,High. | Medium,High |
+    | Maximum number of incidents to fetch | The maximum number of incidents to retrieve per fetch. | 50 |
+    | Trust any Certificate (Not Secure) | When selected, certificates are not checked. | N/A |
+    | Fetch alert evidence | When selected, fetches alerts in Microsoft Defender. | N/A |
+    | Use system proxy settings | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration. | https://proxyserver.com |
+    | Use a self-deployed Azure Appliction | For authorization code flow, mark this as true. |  N/A |
+    | First Fetch Timestamp | The first timestamp to be fetched in the format \<number\> \<time unit\>. | 12 hours, 7 days |
+    | Using Microsoft GCC | Whether a GCC edpoint is used. |  False |
+
 
 
 
@@ -157,6 +165,13 @@ After you successfully execute a command, a DBot message appears in the War Room
 48. microsoft-atp-get-alert-by-id
 49. microsoft-atp-request-and-download-investigation-package
 50. microsoft-atp-offboard-machine
+51. microsoft-atp-list-software
+52. microsoft-atp-list-software-version-distribution
+53. microsoft-atp-list-machines-by-software
+54. microsoft-atp-list-vulnerabilities-by-software
+55. microsoft-atp-list-vulnerabilities-by-machine
+56. microsoft-atp-list-vulnerabilities
+57. microsoft-atp-list-missing-kb-by-software
 
 ### 1. microsoft-atp-isolate-machine
 ---
@@ -1025,8 +1040,8 @@ Alert.ReadWrite.All
 | alert_id | The alert ID to update. | Required | 
 | status | The alert status to update. Possible values: "New", "InProgress", and "Resolved". | Optional | 
 | assigned_to | The owner of the alert. | Optional | 
-| classification | The specification of the alert. Possible values: "Unknown", "FalsePositive", "TruePositive". | Optional | 
-| determination | The determination of the alert. Possible values: "NotAvailable", "Apt", "Malware", "SecurityPersonnel", "SecurityTesting", "UnwantedSoftware", and "Other". | Optional | 
+| classification | The specification of the alert. Possible values: "Unknown", "FalsePositive", "TruePositive", "InformationalExpectedActivity". | Optional | 
+| determination | The determination of the alert. Possible values: "NotAvailable", "Malware", "SecurityTesting", "UnwantedSoftware", and "Other". | Optional | 
 | comment | The comment to be added to the alert. | Optional | 
 
 
@@ -1080,7 +1095,13 @@ The alert da637200417169017725_183736971 has been updated successfully
 
 ### 9. microsoft-atp-advanced-hunting
 ---
-Runs programmatic queries in Microsoft Defender ATP Portal (https://securitycenter.windows.com/hunting). You can only run a query on data from the last 30 days. The maximum number of rows is 10,000. The number of executions is limited to 15 calls per minute, and 15 minutes of running time every hour, and 4 hours of running time a day.
+Runs programmatic queries in Microsoft Defender ATP Portal (https://securitycenter.windows.com/hunting). 
+- You can only run a query on data from the last 30 days. 
+- The maximum number of rows is 10,000. 
+- The number of executions is limited to 15 calls per minute, and 15 minutes of running time every hour, and 4 hours of running time a day.
+- This API can only query tables belonging to Microsoft Defender for Endpoint.
+The following reference - [Data Schema](https://learn.microsoft.com/en-us/microsoft-365/security/defender/advanced-hunting-schema-tables?view=o365-worldwide#learn-the-schema-tables),
+lists all the tables in the schema. Each table name links to a page describing the column names for that table and which service it applies to. 
 
 ##### Required Permissions
 AdvancedQuery.Read.All	
@@ -6072,3 +6093,512 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+
+
+### microsoft-atp-list-software
+***
+Retrieves the organization software inventory.
+ 
+ 
+#### Base Command
+ 
+`microsoft-atp-list-software`
+#### Input
+ 
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | Software ID. | Optional |
+| name | Software name. | Optional |
+| vendor | Software publisher name. | Optional |
+| limit | Maximum number of results to retrieve. Default is 50. | Optional |
+| offset | The number of items in the queried collection that are to be skipped and not included in the result. Default is 0. | Optional |
+ 
+ 
+#### Context Output
+ 
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.Software.id | String | Software ID. |
+| MicrosoftATP.Software.name | String | Software name. |
+| MicrosoftATP.Software.vendor | String | Software publisher name. |
+| MicrosoftATP.Software.weaknesses | Number | Number of discovered vulnerabilities. |
+| MicrosoftATP.Software.publicExploit | Boolean | Whether a public exploit exists for some of the vulnerabilities. |
+| MicrosoftATP.Software.activeAlert | Boolean | Whether an active alert is associated with this software. |
+| MicrosoftATP.Software.exposedMachines | Number | Number of exposed devices. |
+| MicrosoftATP.Software.installedMachines | Number | The number of installed machines. |
+| MicrosoftATP.Software.impactScore | Number | Exposure score impact of this software. |
+| MicrosoftATP.Software.isNormalized | Boolean | Whether the software is normalized. |
+| MicrosoftATP.Software.category | String | Software category. |
+| MicrosoftATP.Software.distributions | String | Software distributions. |
+ 
+#### Command example
+```!microsoft-atp-list-software id=some_id```
+#### Context Example
+```json
+{
+   "MicrosoftATP": {
+       "Software": {
+           "activeAlert": false,
+           "category": "",
+           "distributions": [],
+           "exposedMachines": 0,
+           "id": "some_id",
+           "impactScore": 0,
+           "installedMachines": 1,
+           "isNormalized": false,
+           "name": "some_name",
+           "publicExploit": false,
+           "vendor": "some_vendor",
+           "weaknesses": 0
+       }
+   }
+}
+```
+ 
+#### Human Readable Output
+ 
+>### Microsoft Defender ATP list software:
+>|id|name|vendor|weaknesses|activeAlert|exposedMachines|installedMachines|publicExploit|
+>|---|---|---|---|---|---|---|---|
+>| some_id | some_name | some_vendor | 0 | false | 0 | 1 | false |
+ 
+
+
+### microsoft-atp-list-software-version-distribution
+***
+Retrieves a list of your organization's software version distribution.
+ 
+ 
+#### Base Command
+ 
+`microsoft-atp-list-software-version-distribution`
+#### Input
+ 
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | Software ID. Use the !microsoft-atp-list-software command to get the ID. | Optional |
+ 
+ 
+#### Context Output
+ 
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.SoftwareVersion.version | String | Version number |
+| MicrosoftATP.SoftwareVersion.installations | Number | Installations number. |
+| MicrosoftATP.SoftwareVersion.vulnerabilities | Number | Number of vulnerabilities. |
+ 
+#### Command example
+```!microsoft-atp-list-software-version-distribution id=some_id```
+#### Context Example
+```json
+{
+   "MicrosoftATP": {
+       "SoftwareVersion": [
+           {
+               "installations": 2,
+               "version": "7.0.2.0",
+               "vulnerabilities": 7
+           },
+           {
+               "installations": 1,
+               "version": "6.2.4.0",
+               "vulnerabilities": 0
+           }
+       ]
+   }
+}
+```
+ 
+#### Human Readable Output
+ 
+>### Microsoft Defender ATP software version distribution:
+>|version|installations|vulnerabilities|
+>|---|---|---|
+>| 7.0.2.0 | 2 | 7 |
+>| 6.2.4.0 | 1 | 0 |
+ 
+ 
+
+### microsoft-atp-list-machines-by-software
+***
+Retrieve a list of device references that has this software installed.
+ 
+ 
+#### Base Command
+ 
+`microsoft-atp-list-machines-by-software`
+#### Input
+ 
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | Software ID. Use the !microsoft-atp-list-software command to get the ID. | Optional |
+ 
+ 
+#### Context Output
+ 
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.SoftwareMachine.id | String | Machine identity. |
+| MicrosoftATP.SoftwareMachine.computerDnsName | String | Machine fully qualified name. |
+| MicrosoftATP.SoftwareMachine.osPlatform | String | Operating system platform. |
+| MicrosoftATP.SoftwareMachine.rbacGroupName | String | Machine group name. |
+| MicrosoftATP.SoftwareMachine.rbacGroupId | Number | Machine group ID. |
+ 
+#### Command example
+```!microsoft-atp-list-machines-by-software id=some_id```
+#### Context Example
+```json
+{
+   "MicrosoftATP": {
+       "SoftwareMachine": [
+           {
+               "computerDnsName": "some_dns_name_1",
+               "id": "1111111111111111111111111111111111111111",
+               "osPlatform": "WindowsServer2016",
+               "rbacGroupId": 1111,
+               "rbacGroupName": "UnassignedGroup"
+           },
+           {
+               "computerDnsName": "some_dns_name_2",
+               "id": "2222222222222222222222222222222222222222",
+               "osPlatform": "WindowsServer2016",
+               "rbacGroupId": 2222,
+               "rbacGroupName": "UnassignedGroup"
+           },
+           {
+               "computerDnsName": "some_dns_name_3",
+               "id": "3333333333333333333333333333333333333333",
+               "osPlatform": "Windows10",
+               "rbacGroupId": 3333,
+               "rbacGroupName": "UnassignedGroup"
+           }
+       ]
+   }
+}
+```
+ 
+#### Human Readable Output
+ 
+>### Microsoft Defender ATP list machines by software: some_id
+>|id|computerDnsName|osPlatform|rbacGroupName|rbacGroupId|
+>|---|---|---|---|---|
+>| 1111111111111111111111111111111111111111 | some_dns_name_1 | WindowsServer2016 | UnassignedGroup | 1111 |
+>| 2222222222222222222222222222222222222222 | some_dns_name_2 | WindowsServer2016 | UnassignedGroup | 2222 |
+>| 3333333333333333333333333333333333333333 | some_dns_name_3 | Windows10 | UnassignedGroup | 3333 |
+ 
+
+### microsoft-atp-list-vulnerabilities-by-software
+***
+Retrieves a list of all the vulnerabilities affecting the organization per software.
+#### Base Command
+`microsoft-atp-list-vulnerabilities-by-software`
+#### Input
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | Software ID. Use the !microsoft-atp-list-software command to get the ID. | Required |
+#### Context Output
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.SoftwareCVE.id | String | Vulnerability ID. |
+| MicrosoftATP.SoftwareCVE.name | String | Vulnerability title. |
+| MicrosoftATP.SoftwareCVE.description | String | Vulnerability description. |
+| MicrosoftATP.SoftwareCVE.severity | String | Vulnerability severity. Possible values are: "Low", "Medium", "High", "Critical" |
+| MicrosoftATP.SoftwareCVE.cvssV3 | Number | CVSS v3 score. |
+| MicrosoftATP.SoftwareCVE.exposedMachines | Number | Number of exposed devices. |
+| MicrosoftATP.SoftwareCVE.publishedOn | Date | Date when vulnerability was published. Date format will be in ISO 8601 format or relational expressions like “7 days ago”. |
+| MicrosoftATP.SoftwareCVE.updatedOn | Date | Date when vulnerability was updated. Date format will be in ISO 8601 format or relational expressions like “7 days ago”. |
+| MicrosoftATP.SoftwareCVE.publicExploit | Boolean | Whether a public exploit exists for some of the vulnerabilities. |
+| MicrosoftATP.SoftwareCVE.exploitVerified | Boolean | Whether a public exploit exists. |
+| MicrosoftATP.SoftwareCVE.exploitInKit | Boolean | Whether the exploit is part of an exploit kit. |
+| MicrosoftATP.SoftwareCVE.exploitTypes | String | Exploit impact. Possible values are: "Local privilege escalation", "Denial of service", "Local". |
+| MicrosoftATP.SoftwareCVE.exploitUris | String | Exploit source URLs. |
+#### Command example
+```!microsoft-atp-list-vulnerabilities-by-software id=some_software```
+#### Context Example
+```json
+{
+  "CVE": [
+      {
+          "CVSS": {
+              "Score": 5.9
+          },
+          "Description": "This vulnerability affects the following vendors: vendor_1, vendor_2, vendor_3. To view more details about this vulnerability please visit the vendor website.",
+          "ID": "CVE-2222-22222",
+          "Modified": "2021-05-17T22:56:00Z",
+          "Published": "2021-05-17T22:56:00Z"
+      }
+  ],
+  "DBotScore": [
+      {
+          "Indicator": "CVE-2222-22222",
+          "Score": 0,
+          "Type": "cve",
+          "Vendor": "some_vendor"
+      }
+  ],
+  "MicrosoftATP": {
+      "SoftwareCVE": [
+          {
+              "cvssV3": 5.9,
+              "description": "This vulnerability affects the following vendors: vendor_1, vendor_2, vendor_3. To view more details about this vulnerability please visit the vendor website.",
+              "exploitInKit": false,
+              "exploitTypes": [],
+              "exploitUris": [],
+              "exploitVerified": false,
+              "exposedMachines": 2,
+              "id": "CVE-2222-22222",
+              "name": "CVE-2222-22222",
+              "publicExploit": false,
+              "publishedOn": "2021-05-17T22:56:00Z",
+              "severity": "Medium",
+              "updatedOn": "2021-05-17T22:56:00Z"
+          }
+      ]
+  }
+}
+```
+#### Human Readable Output
+>### Microsoft Defender ATP vulnerability CCVE-2222-22222 by software: some_software
+>|id|name|description|severity|cvssV3|publishedOn|updatedOn|exposedMachines|exploitVerified|publicExploit|
+>|---|---|---|---|---|---|---|---|---|---|
+>| CVE-2222-22222 | CVE-2222-22222 | This vulnerability affects the following vendors: vendor_1, vendor_2, vendor_3. To view more details about this vulnerability please visit the vendor website. | Medium | 5.9 | 2021-05-17T22:56:00Z | 2021-05-17T22:56:00Z | 2 | false | false |
+ 
+### microsoft-atp-list-vulnerabilities-by-machine
+***
+Retrieves a list of all the vulnerabilities affecting the organization per machine.
+#### Base Command
+`microsoft-atp-list-vulnerabilities-by-machine`
+#### Input
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| machine_id | A comma-separated list of machine IDs used for getting the vulnerabilities. | Optional |
+| software_id | A comma-separated list of software IDs used for getting the vulnerabilities. | Optional |
+| cve_id | A comma-separated list of CVE IDs used for getting the vulnerabilities. | Optional |
+| product_name | A comma-separated list of product names used for getting the vulnerabilities. | Optional |
+| product_version | A comma-separated list of product versions used for getting the vulnerabilities. | Optional |
+| severity | A comma-separated list of vulnerability severities. Possible values are: "Low", "Medium", "High", "Critical". | Optional |
+| product_vendor | A comma-separated list of product vendors used for getting the vulnerabilities. | Optional |
+| limit | Maximum number of results to retrieve. Default is 25. | Optional |
+| offset | The number of items in the queried collection that are to be skipped and not included in the result. Default is 0. | Optional |
+#### Context Output
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.MachineCVE.id | String | Vulnerability ID. |
+| MicrosoftATP.MachineCVE.cveId | String | CVE ID. |
+| MicrosoftATP.MachineCVE.machineId | String | Machine ID. |
+| MicrosoftATP.MachineCVE.fixingKbId | Unknown | Fixing Kb ID. |
+| MicrosoftATP.MachineCVE.productName | String | Product name. |
+| MicrosoftATP.MachineCVE.productVendor | String | Name of the product vendor. |
+| MicrosoftATP.MachineCVE.productVersion | String | Product version. |
+| MicrosoftATP.MachineCVE.severity | String | Vulnerability severity. Possible values are: "Low", "Medium", "High", "Critical". |
+#### Command example
+```!microsoft-atp-list-vulnerabilities-by-machine cve_id=CVE-1111-1111```
+#### Context Example
+```json
+{
+  "CVE": {
+      "CVSS": {},
+      "ID": "1111111111111111111111111111111111111111-_-CVE-1111-1111-_-some_vendor-_-some_name-_-11.11.11.11111111-_-"
+  },
+  "DBotScore": {
+      "Indicator": "1111111111111111111111111111111111111111-_-CVE-1111-1111-_-some_vendor-_-some_name-_-11.11.11.11111111-_-",
+      "Score": 0,
+      "Type": "cve",
+      "Vendor": "Microsoft Defender Advanced Threat Protection"
+  },
+  "MicrosoftATP": {
+      "MachineCVE": {
+          "cveId": "CVE-1111-1111",
+          "fixingKbId": null,
+          "id": "1111111111111111111111111111111111111111-_-CVE-1111-1111-_-some_vendor-_-some_name-_-11.11.11.11111111-_-",
+          "machineId": "1111111111111111111111111111111111111111",
+          "productName": "some_name",
+          "productVendor": "some_vendor",
+          "productVersion": "11.11.11.11111111",
+          "severity": "Medium"
+      }
+  }
+}
+```
+#### Human Readable Output
+>### Microsoft Defender ATP vulnerability CVE-1111-1111:
+>|id|cveId|machineId|productName|productVendor|productVersion|severity|
+>|---|---|---|---|---|---|---|
+>| 1111111111111111111111111111111111111111-_-CVE-1111-1111-_-some_vendor-_-some_name-_-11.11.11.11111111-_- | CVE-1111-1111 | 1111111111111111111111111111111111111111 | some_name | some_vendor | 11.11.11.11111111 | Medium |
+ 
+ 
+### microsoft-atp-list-vulnerabilities
+***
+Retrieves a list of all vulnerabilities.
+#### Base Command
+`microsoft-atp-list-vulnerabilities`
+#### Input
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | Vulnerability ID. | Optional |
+| name_equal | Vulnerability title. | Optional |
+| name_contains | Vulnerability title. Does not work with another filter arguments. |Optional |
+| description_contains | Vulnerability description. Does not work with another filter arguments. | Optional |
+| published_on | Date when the vulnerability was published. Date format will be in ISO 8601 format or relational expressions like “7 days ago”. | Optional |
+| cvss | CVSS v3 score. | Optional |
+| severity | A comma-separated list of vulnerability severities. Possible values are: "Low", "Medium", "High", "Critical". | Optional |
+| updated_on | Date when the vulnerability was updated. Date format will be in ISO 8601 format or relational expressions like “7 days ago”. | Optional |
+| limit | Maximum number of results to retrieve. Default is 25. | Optional |
+| offset | The number of items in the queried collection that are to be skipped and not included in the result. Default is 0. | Optional |
+#### Context Output
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.Vulnerability.id | String | Vulnerability ID. |
+| MicrosoftATP.Vulnerability.name | String | Vulnerability title. |
+| MicrosoftATP.Vulnerability.description | String | Vulnerability description. |
+| MicrosoftATP.Vulnerability.severity | String | Vulnerability severity. Possible values are: "Low", "Medium", "High", "Critical". |
+| MicrosoftATP.Vulnerability.cvssV3 | Number | CVSS v3 score. |
+| MicrosoftATP.Vulnerability.exposedMachines | Number | Number of exposed devices. |
+| MicrosoftATP.Vulnerability.publishedOn | Date | Date when the vulnerability was published. Date format will be in ISO 8601 format or relational expressions like “7 days ago”.
+| MicrosoftATP.Vulnerability.updatedOn | Date | Date when the vulnerability was updated. Date format will be in ISO 8601 format or relational expressions like “7 days ago”. |
+| MicrosoftATP.Vulnerability.publicExploit | Boolean | Whether the public exploit exists. |
+| MicrosoftATP.Vulnerability.exploitVerified | Boolean | Whether the exploit is verified to work. |
+| MicrosoftATP.Vulnerability.exploitInKit | Boolean | Whether the exploit is part of an exploit kit. |
+| MicrosoftATP.Vulnerability.exploitTypes | String | Exploit impact. Possible values are: "Local privilege escalation", "Denial of service", "Local". |
+| MicrosoftATP.Vulnerability.exploitUris | String | Exploit source URLs. |
+#### Command example
+```!microsoft-atp-list-vulnerabilities id="CVE-1111-1111"```
+#### Context Example
+```json
+{
+  "CVE": {
+      "CVSS": {
+          "Score": 6.5
+      },
+      "Description": "some_description.",
+      "ID": "CVE-1111-1111",
+      "Modified": "2002-09-10T00:00:00Z",
+      "Published": "2002-09-10T00:00:00Z"
+  },
+  "DBotScore": {
+      "Indicator": "CVE-1111-1111",
+      "Score": 0,
+      "Type": "cve",
+      "Vendor": "some_vendor"
+  },
+  "MicrosoftATP": {
+      "SoftwareCVE": {
+          "cvssV3": 6.5,
+          "description": "some_description.",
+          "exploitInKit": false,
+          "exploitTypes": [],
+          "exploitUris": [],
+          "exploitVerified": false,
+          "exposedMachines": 0,
+          "id": "CVE-1111-1111",
+          "name": "CVE-1111-1111",
+          "publicExploit": false,
+          "publishedOn": "2002-09-10T00:00:00Z",
+          "severity": "Medium",
+          "updatedOn": "2002-09-10T00:00:00Z"
+      }
+  }
+}
+```
+#### Human Readable Output
+>### Microsoft Defender ATP vulnerabilities:
+>|id|name|description|severity|publishedOn|updatedOn|exposedMachines|exploitVerified|publicExploit|cvssV3|
+>|---|---|---|---|---|---|---|---|---|---|
+>| CVE-1111-1111 | CVE-1111-1111 | some_description. | Medium | 2002-09-10T00:00:00Z | 2002-09-10T00:00:00Z | 0 | false | false | 6.5 |
+
+### microsoft-atp-list-missing-kb-by-software
+***
+Retrieves missing KBs (security updates) by software ID.
+ 
+ 
+#### Base Command
+ 
+`microsoft-atp-list-missing-kb-by-software`
+#### Input
+ 
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | Software ID. Use the !microsoft-atp-list-software command to get the ID. | Required |
+ 
+ 
+#### Context Output
+ 
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicMicrosoftATP.SoftwareKB.id | String | Software ID. |
+| MicMicrosoftATP.SoftwareKB.name | String | Software name. |
+| MicMicrosoftATP.SoftwareKB.osBuild | Number | The operating system build number. |
+| MicMicrosoftATP.SoftwareKB.productsNames | String | Product names. |
+| MicMicrosoftATP.SoftwareKB.url | String | URL. |
+| MicMicrosoftATP.SoftwareKB.machineMissedOn | Number | Machine missed on. |
+| MicMicrosoftATP.SoftwareKB.cveAddressed | Number | CVE addressed. |
+ 
+#### Command example
+```!microsoft-atp-list-missing-kb-by-software id=some_id```
+#### Context Example
+```json
+{
+   "MicrosoftATP": {
+       "SoftwareKB": [
+           {
+               "cveAddressed": 2,
+               "id": "1111111",
+               "machineMissedOn": 1,
+               "name": "some_name_1",
+               "osBuild": 22222,
+               "productsNames": [
+                   "some_id"
+               ],
+               "url": "some_url_1"
+           },
+           {
+               "cveAddressed": 2,
+               "id": "2222222",
+               "machineMissedOn": 1,
+               "name": "some_name_2",
+               "osBuild": 22222,
+               "productsNames": [
+                   "some_id"
+               ],
+               "url": "some_url_2"
+           },
+       ]
+   }
+}
+```
+ 
+#### Human Readable Output
+ 
+>### Microsoft Defender ATP missing kb by software: some_id
+>|id|name|osBuild|productsNames|url|machineMissedOn|cveAddressed|
+>|---|---|---|---|---|---|---|
+>| 1111111 | some_name_1 | 22222 | some_id | some_url_1 | 1 | 2 |
+>| 2222222 | some_name_2 | 22222 | some_id | some_url_2 | 1 | 2 |
+
+
+### microsoft-atp-generate-login-url
+***
+Generate the login url used for Authorization code flow.
+
+#### Base Command
+
+`microsoft-atp-generate-login-url`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```microsoft-atp-generate-login-url```
+
+#### Human Readable Output
+
+>### Authorization instructions
+>1. Click on the [login URL]() to sign in and grant Cortex XSOAR permissions for your Azure Service Management.
+You will be automatically redirected to a link with the following structure:
+```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```
+>2. Copy the `AUTH_CODE` (without the `code=` prefix, and the `session_state` parameter)
+and paste it in your instance configuration under the **Authorization code** parameter.

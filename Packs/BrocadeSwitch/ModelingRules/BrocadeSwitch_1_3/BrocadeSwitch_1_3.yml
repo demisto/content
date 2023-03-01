@@ -1,0 +1,6 @@
+fromversion: 6.10.0
+id: Brocade_switch_modeling_rule
+name: Brocade Switch Modeling Rule
+rules: ''
+schema: ''
+tags: Brocade Switch

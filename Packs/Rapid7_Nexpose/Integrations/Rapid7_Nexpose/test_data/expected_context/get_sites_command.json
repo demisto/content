@@ -1,0 +1,29 @@
+[
+    {
+        "Id": 1,
+        "Name": "Test 1",
+        "Assets": 4,
+        "Vulnerabilities": 41,
+        "Risk": 20407.0,
+        "Type": "static",
+        "LastScan": "2021-08-03T14:09:15.321Z"
+    },
+    {
+        "Id": 2,
+        "Name": "Test 2",
+        "Assets": 19,
+        "Vulnerabilities": 459,
+        "Risk": 215068.0,
+        "Type": "static",
+        "LastScan": "2021-06-29T07:06:54.733Z"
+    },
+    {
+        "Id": 3,
+        "Name": "Test 3",
+        "Assets": 11,
+        "Vulnerabilities": 52,
+        "Risk": 20515.0,
+        "Type": "static",
+        "LastScan": "2020-11-26T17:13:54.117Z"
+    }
+]

@@ -1,0 +1,122 @@
+[
+  {
+    "value": "aa abc cc",
+    "regex": "a(b)c",
+    "output_format": "x\\1y\\1",
+    "ignore_case": "",
+    "multi_line": "",
+    "period_matches_newline": "",
+    "action_dt": "",
+    "result": "aa xbyb cc"
+  },
+  {
+    "value": "aa abc cc",
+    "regex": "a(b)c",
+    "output_format": "x\\0y\\1",
+    "ignore_case": "",
+    "multi_line": "",
+    "period_matches_newline": "",
+    "action_dt": "",
+    "result": "aa xabcyb cc"
+  },
+  {
+    "value": "aa abc cc",
+    "regex": "A(B)C",
+    "output_format": "x\\1y\\1",
+    "ignore_case": "true",
+    "multi_line": "",
+    "period_matches_newline": "",
+    "action_dt": "",
+    "result": "aa xbyb cc"
+  },
+  {
+    "value": "aaa\naaa\nccc",
+    "regex": "^a+",
+    "output_format": "x",
+    "ignore_case": "",
+    "multi_line": "",
+    "period_matches_newline": "",
+    "action_dt": "",
+    "result": "x\naaa\nccc"
+  },
+  {
+    "value": "aaa\naaa\nccc",
+    "regex": "^a+",
+    "output_format": "x",
+    "ignore_case": "",
+    "multi_line": "true",
+    "period_matches_newline": "",
+    "action_dt": "",
+    "result": "x\nx\nccc"
+  },
+  {
+    "value": "aaa\naaa\nccc",
+    "regex": "^a+\\s*",
+    "output_format": "",
+    "ignore_case": "",
+    "multi_line": "true",
+    "period_matches_newline": "",
+    "action_dt": "",
+    "result": "ccc"
+  },
+  {
+    "value": "aaa\nbbb",
+    "regex": "aaa.bbb",
+    "output_format": "xxx",
+    "ignore_case": "",
+    "multi_line": "",
+    "period_matches_newline": "",
+    "action_dt": "",
+    "result": "aaa\nbbb"
+  },
+  {
+    "value": "aaa\nbbb",
+    "regex": "aaa.bbb",
+    "output_format": "xxx",
+    "ignore_case": "",
+    "multi_line": "",
+    "period_matches_newline": "true",
+    "action_dt": "",
+    "result": "xxx"
+  },
+  {
+    "value": "aa abc cc",
+    "regex": "a(b)c",
+    "output_format": "x\\1y\\1",
+    "ignore_case": "",
+    "multi_line": "",
+    "period_matches_newline": "",
+    "action_dt": ".=val.toUpperCase()",
+    "result": "aa XBYB cc"
+  },
+  {
+    "value": "abc",
+    "regex": "b",
+    "output_format": "",
+    "ignore_case": "",
+    "multi_line": "",
+    "period_matches_newline": "",
+    "action_dt": ".=null",
+    "result": "ac"
+  },
+  {
+    "value": "abc",
+    "regex": "b",
+    "output_format": "",
+    "ignore_case": "",
+    "multi_line": "",
+    "period_matches_newline": "",
+    "action_dt": ".=true",
+    "result": "atruec"
+  },
+  {
+    "value": "abc",
+    "regex": "b",
+    "output_format": null,
+    "ignore_case": "",
+    "multi_line": "",
+    "period_matches_newline": "",
+    "action_dt": ".=null",
+    "result": "ac"
+  }
+]

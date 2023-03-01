@@ -1,0 +1,6 @@
+[INGEST:vendor="linux", product="linux", target_dataset="linux_linux_raw", no_hit=keep]
+alter tmp_current_year = arrayindex(regextract(to_string(current_time()), "\d{4}"), 0),
+tmp_timestamp = arrayindex(regextract(_raw_log, "\w{3}\s+\d{1,2}\s\d{2}:\d{2}:\d{2}"), 0)
+|alter tmp_timestamp = format_string("%s %s", tmp_current_year, tmp_timestamp)
+|alter _time = parse_timestamp("%Y %b %d %H:%M:%S", tmp_timestamp)
+|fields - tmp_current_year,tmp_timestamp;

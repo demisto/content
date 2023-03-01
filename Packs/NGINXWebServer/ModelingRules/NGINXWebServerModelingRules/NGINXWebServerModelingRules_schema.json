@@ -1,5 +1,5 @@
 {
-  "nginx_raw": {
+  "nginx_nginx_raw": {
     "_raw_log": {
       "type": "string",
       "is_array": false

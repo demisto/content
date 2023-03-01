@@ -5,7 +5,7 @@ commonfields:
 configuration:
 - display: Server URL
   name: url
-  defaultvalue: "https://snx-analysis.com"
+  defaultvalue: "https://analysis.secneurx.com"
   required: true
   additionalinfo: Input the url of SecneurX Analysis server.
   type: 0
@@ -282,12 +282,32 @@ script:
     - contextPath: SecneurXAnalysis.Report.Status
       description: Analysis queued sample state
       type: String
+  - deprecated: false
+    description: Get the API Key quota usage details.
+    execution: false
+    name: snx-analysis-get-quota
+    outputs:
+    - contextPath: SecneurXAnalysis.Quota.start_time
+      description: Creation Time of the API Key
+      type: String
+    - contextPath: SecneurXAnalysis.Quota.used
+      description: Used count of API Key
+      type: Integer
+    - contextPath: SecneurXAnalysis.Quota.allowed
+      description: Limitation count of API Key
+      type: Integer
+    - contextPath: SecneurXAnalysis.Quota.scale
+      description: API Key expiration renew scale type
+      type: String
+    - contextPath: SecneurXAnalysis.Quota.unused
+      description: Unused count of API Key
+      type: String
   isfetch: false
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.6.33415
+  dockerimage: demisto/python3:3.10.10.48392
 fromversion: 6.5.0
 tests:
 - Detonate File - SecneurX Analysis - Test

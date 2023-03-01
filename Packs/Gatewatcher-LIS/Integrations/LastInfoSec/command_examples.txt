@@ -1,0 +1,3 @@
+!gw-lis-get-by-minute minute=10
+!gw-lis-get-by-minute minute=60 mode=detection categories=phishing type=Host
+!gw-lis-get-by-value value="b71c7db7c4b20c354f63820df1f5cd94dbec97849afa690675d221964b8176b5"

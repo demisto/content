@@ -1,0 +1,34 @@
+[MODEL: dataset="F5_ASM_raw"]
+alter
+      user_agent=arrayindex(regextract(cs3 ,"user\-agent\:\s([^\"]+)\\"), 0),
+      host=arrayindex(regextract(cs3 ,"Host:\s([^\\]+)"), 0),
+	  referrer =arrayindex(regextract(cs3 ,"referer\:\s([^\\]+)"), 0),
+      source_address = c6a2,
+      destination_address = c6a3
+// Parse src ip
+| alter ipv4src = if(src ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", src, null)
+| alter ipv6src = if(src != null and ipv4src = null, src, null)
+// End parse src ip
+// Parse dest ip
+| alter ipv4dest = if(dst ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", dst, null)
+| alter ipv6dest = if(dst != null and ipv4dest = null, dst, null)
+// End parse dest ip
+| alter
+        xdm.event.type = cefName,
+        xdm.network.rule = cs1,
+        xdm.source.port = spt,
+        xdm.target.port = dpt,
+        xdm.network.application_protocol = app,
+        xdm.observer.unique_identifier = deviceExternalId,
+        xdm.alert.name = cs4,
+        xdm.source.ipv4 = ipv4src,
+        xdm.source.ipv6 = ipv6src,
+        xdm.target.ipv4 = ipv4dest,
+        xdm.target.ipv6 =ipv6dest,
+        xdm.observer.name = dvchost,
+        xdm.network.http.response_code = to_string(cn1),
+        xdm.network.http.method = requestMethod,
+        xdm.network.http.url = request,
+        xdm.network.http.referrer = referrer,
+        xdm.source.user_agent = user_agent,
+        xdm.target.process.executable.path = cs3;

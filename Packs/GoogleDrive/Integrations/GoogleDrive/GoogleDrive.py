@@ -77,7 +77,7 @@ COMMAND_SCOPES: Dict[str, List[str]] = {
         'https://www.googleapis.com/auth/drive.file',
         'https://www.googleapis.com/auth/drive.appdata',
         'https://www.googleapis.com/auth/drive.scripts',
-        'https://www.googleapis.com/auth/drive.,etadata',
+        'https://www.googleapis.com/auth/drive.metadata',
     ],
     'FILE_DELETE': [
         'https://www.googleapis.com/auth/drive',
@@ -1097,8 +1097,8 @@ def prepare_single_file_human_readable(outputs_context: Dict[str, Any], args: Di
 
 
 def prepare_file_command_request(client: 'GSuiteClient', args: Dict[str, str], scopes: List[str]) -> Dict[str, Any]:
-
-    http_request_params: Dict[str, str] = {}
+    # Prepare generic HTTP request params
+    http_request_params = assign_params(supportsAllDrives=args.get('supports_all_drives'))
 
     # user_id can be overridden in the args
     user_id = args.get('user_id') or client.user_id
