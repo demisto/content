@@ -56,9 +56,6 @@ class VectraClient(BaseClient):
         """
         Generates the necessary HTTP headers.
 
-        Arguments:
-            - `api_key` (``str``): The API token.
-
         Returns:
             `Dict[str, str]` of the HTTP headers.
         """

@@ -19,6 +19,7 @@ import json
 from datetime import datetime
 from pathlib import Path
 from CommonServerPython import *
+from hypothesis import given, strategies as st
 
 """ Constants """
 BASE_URL = "mock://dev.vectra.ai"
@@ -71,7 +72,8 @@ def test_auth(mocker: MockerFixture, endpoints: Dict[str, str], expected: bool):
     assert all(ep in endpoints for ep in client.endpoints) == expected
 
 
-def test_create_headers():
+@given(st.text())
+def test_create_headers(token: str):
 
     """
     Given:
@@ -82,8 +84,10 @@ def test_create_headers():
         - Authentication headers match.
     """
 
+    client = VectraClient("url.dev,", api_key=token)
+
     actual = client._create_headers()
-    expected = {"Content-Type": "application/json", "Authorization": f"Token {PASSWORD}"}
+    expected = {"Content-Type": "application/json", "Authorization": f"Token {token}"}
 
     assert "Content-Type" in actual.keys()
     assert "Authorization" in actual.keys()
