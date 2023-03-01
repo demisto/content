@@ -610,10 +610,10 @@ def find_indicators(query: str, types: list, added_after, limit: int, offset: in
                 elif stix_ioc:
                     iocs.append(stix_ioc)
                 stix_objects.append(stix_ioc)
-
-    relationships = create_relationship_object(stix_objects) if stix_objects and is_demisto_version_ge('6.6.0') else []
-    iocs.extend(relationships)
-    iocs = sorted(iocs, key=lambda k: k['modified'])
+    if not is_manifest and stix_objects and is_demisto_version_ge('6.6.0'):
+        relationships = create_relationship_object(stix_objects)
+        iocs.extend(relationships)
+        iocs = sorted(iocs, key=lambda k: k['modified'])
     return iocs, extensions, total
 
 
