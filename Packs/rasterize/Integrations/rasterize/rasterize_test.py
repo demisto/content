@@ -111,17 +111,9 @@ def test_merge_options():
 
 
 @pytest.mark.parametrize("r_mode", [RasterizeMode.WEBDRIVER_ONLY, RasterizeMode.HEADLESS_CLI_ONLY])
-def test_rasterize_large_html(mocker, capfd, r_mode):
-    ps_output = '''   PID  PPID S CMD
-    1     0 S python /tmp/pyrunner/_script_docker_python_loop.py
-   39     1 Z [soffice.bin] <defunct>
-'''
-    mocker.patch.object(subprocess, 'check_output', return_value=ps_output)
-    mocker.patch.object(os, 'getpid', return_value=1)
-    mocker.patch.object(os, 'waitpid', return_value=(1, 0))
+def test_rasterize_large_html(r_mode):
     path = os.path.realpath('test_data/large.html')
-    with capfd.disabled():
-        res = rasterize(path=f'file://{path}', width=250, height=250, r_type=RasterizeType.PNG, r_mode=r_mode)
+    res = rasterize(path=f'file://{path}', width=250, height=250, r_type=RasterizeType.PNG, r_mode=r_mode)
     assert res
 
 
@@ -326,7 +318,7 @@ class TestRasterizeIncludeUrl:
         assert not ('--headless' in driver.options) == include_url
 
     @pytest.mark.parametrize('include_url', [False, True])
-    def test_sanity_rasterize_with_include_url(self, mocker, include_url):
+    def test_sanity_rasterize_with_include_url(self, mocker, capfd, include_url):
         """
             Given:
                 - A parameter that mention whether to include the URL bar in the screenshot.
@@ -339,12 +331,20 @@ class TestRasterizeIncludeUrl:
         mocker.patch.object(Display, 'stop', retuen_value=None)
         mocker.patch.object(webdriver, 'Chrome', side_effect=self.MockChrome)
         mocker.patch.object(webdriver, 'ChromeOptions', side_effect=self.MockChromeOptions)
+        ps_output = '''   PID  PPID S CMD
+        1     0 S python /tmp/pyrunner/_script_docker_python_loop.py
+        39     1 Z [soffice.bin] <defunct>
+'''
+        mocker.patch.object(subprocess, 'check_output', return_value=ps_output)
+        mocker.patch.object(os, 'getpid', return_value=1)
+        mocker.patch.object(os, 'waitpid', return_value=(1, 0))
 
         mocker.patch('subprocess.run')
         mocker.patch('builtins.open', mock_open(read_data='image_sha'))
         mocker.patch('os.remove')
 
-        image = rasterize(path='path', width=250, height=250, r_type=RasterizeType.PNG,
-                          r_mode=RasterizeMode.WEBDRIVER_ONLY,
-                          include_url=include_url)
+        with capfd.disabled():
+            image = rasterize(path='path', width=250, height=250, r_type=RasterizeType.PNG,
+                              r_mode=RasterizeMode.WEBDRIVER_ONLY,
+                              include_url=include_url)
         assert image
