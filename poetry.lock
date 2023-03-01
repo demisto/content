@@ -512,7 +512,7 @@ urllib3 = ">=1.26.7"
 
 [[package]]
 name = "demisto-sdk"
-version = "1.10.4"
+version = "1.10.5"
 description = "\"A Python library for the Demisto SDK\""
 category = "dev"
 optional = false
@@ -528,7 +528,7 @@ click = "^8.0.0"
 colorama = "^0.4.4"
 coloredlogs = "^15.0.1"
 configparser = "^5.2.0"
-coverage = "7.2.1"
+coverage = "^7.2.1"
 cryptography = "^36.0.2"
 dateparser = "^1.1.1"
 decorator = "^5.1.1"
@@ -611,7 +611,7 @@ build = ["gsutil (==5.17)"]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
 reference = "unlock_coverage"
-resolved_reference = "acf510431073f8f92019837c586790e16ab48466"
+resolved_reference = "3d9c6b8511043918b81f661615068371bbe67e83"
 
 [[package]]
 name = "deprecated"
