@@ -393,6 +393,29 @@ class Client(BaseClient):
         url_suffix = f'/sensor/{sensor_id}/config/status'
         return self._http_request(method='GET', url_suffix=url_suffix)
 
+    def deploy_sensor_configuration_request(self, sensor_id: int, isSSLPushRequired: bool = False,
+                                            isGAMUpdateRequired: bool = False,
+                                            isSigsetConfigPushRequired: bool = False,
+                                            isBotnetPushRequired: bool = False) -> Dict:
+        """ Deploy a sensor configuration.
+            Args:
+                sensor_id: int - The relevant sensor id.
+                isSSLPushRequired: bool - Is SSL push required.
+                isGAMUpdateRequired: bool - Is GAM update required.
+                isSigsetConfigPushRequired: bool - Is signature set configuration push required.
+                isBotnetPushRequired: bool - Is botnet push required.
+
+            Returns:
+                A success or failure code.
+        """
+        json_data = {"isSSLPushRequired": isSSLPushRequired,
+                     "isGAMUpdateRequired": isGAMUpdateRequired,
+                     "isSigsetConfigPushRequired": isSigsetConfigPushRequired,
+                     "isBotnetPushRequired": isBotnetPushRequired}
+
+        url_suffix = f'/sensor/{sensor_id}/action/update_sensor_config'
+        return self._http_request(method='PUT', url_suffix=url_suffix, json_data=json_data)
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -2024,19 +2047,25 @@ def list_domain_device_command(client: Client, args: Dict) -> CommandResults:
     limit = arg_to_number(args.get('limit', 50))
     all_results = argToBoolean(args.get('all_results', False))
     response = client.list_domain_device_request(domain_id)
+
     if all_results:
         devices = response.get('DeviceResponseList')
     else:
         devices = response.get('DeviceResponseList')[:limit]
 
+    capitalize_devices = []
+    for device in devices:
+        device = {k.capitalize(): v for k, v in device.items()}
+        capitalize_devices.append(device)
+
     readable_output = tableToMarkdown(
-        name='Domain devices List', t=devices, removeNull=True)
+        name='Domain devices List', t=capitalize_devices, removeNull=True)
 
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='NSM.Device',
         outputs=devices,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -2058,8 +2087,14 @@ def list_device_interface_command(client: Client, args: Dict) -> CommandResults:
     else:
         interfaces = response.get('allocatedInterfaceList')[:limit]
 
+    key_list = ['interfaceId', 'interfaceName', 'interfaceType']
+    capitalize_interfaces = []
+    for interface in interfaces:
+        interface = {k.capitalize(): v for k, v in interface.items() if k in key_list}
+        capitalize_interfaces.append(interface)
+
     readable_output = tableToMarkdown(
-        name='Device interfaces List', t=interfaces, removeNull=True
+        name='Device interfaces List', t=capitalize_interfaces, removeNull=True
     )
 
     return CommandResults(
@@ -2079,8 +2114,8 @@ def assign_device_policy_command(client: Client, args: Dict) -> CommandResults:
     """
     device_id = arg_to_number(args.get('device_id'))
     domain_id = arg_to_number(args.get('domain_id'))
-    pre_firewall_policy = args.get('pre_firewall_policy')
-    post_firewall_policy = args.get('post_firewall_policy')
+    pre_firewall_policy = args.get('pre_firewall_policy_name')
+    post_firewall_policy = args.get('post_firewall_policy_name')
 
     response = client.assign_device_policy_request(domain_id=domain_id, device_id=device_id,
                                                    pre_firewall_policy=pre_firewall_policy,
@@ -2112,8 +2147,14 @@ def list_device_policy_command(client: Client, args: Dict) -> CommandResults:
         all_policies = response.get('policyAssignmentsList')
     else:
         all_policies = response.get('policyAssignmentsList')[:limit]
+
+    capitalize_policies = []
+    for policy in all_policies:
+        policy = {k.capitalize(): v for k, v in policy.items()}
+        capitalize_policies.append(policy)
+        
     readable_output = tableToMarkdown(
-        name='Device policy List', t=all_policies, removeNull=True
+        name='Device policy List', t=capitalize_policies, removeNull=True
     )
 
     return CommandResults(
@@ -2127,15 +2168,15 @@ def list_device_policy_command(client: Client, args: Dict) -> CommandResults:
 def assign_interface_policy_command(client: Client, args: Dict) -> CommandResults:
     """
     Args:
-        client(Client): client - A McAfeeNSM client.
+        client(Client): - A McAfeeNSM client.
         args(Dict): - The function arguments.
     Returns: A CommandResult object with a success or failure message.
     """
     domain_id = arg_to_number(args.get('domain_id'))
     interface_id = arg_to_number(args.get('interface_id'))
-    firewall_policy = args.get('firewall_policy')
-    firewall_port_policy = args.get('firewall_port_policy')
-    ips_policy = args.get('ips_policy')
+    firewall_policy = args.get('firewall_policy_name')
+    firewall_port_policy = args.get('firewall_port_policy_name')
+    ips_policy = args.get('ips_policy_name')
     costom_json = args.get('custom_json')
 
     # Check if at least one policy is provided
@@ -2159,8 +2200,8 @@ def list_interface_policy_command(client: Client, args: Dict) -> CommandResults:
     """
 
     Args:
-        client (Client): _description_
-        args (Dict): _description_
+        client (Client):  - A McAfeeNSM client.
+        args (Dict): - The function arguments.
 
     Returns:
         A CommandResult object with a list of policies.
@@ -2182,9 +2223,14 @@ def list_interface_policy_command(client: Client, args: Dict) -> CommandResults:
     else:
         all_policies = [response][:limit]
 
+    capitalize_policies = []
+    for policy in all_policies:
+        policy = {k.capitalize(): v for k, v in policy.items()}
+        capitalize_policies.append(policy)
+        
     return CommandResults(
         readable_output=tableToMarkdown(
-            name='Interface policy List', t=all_policies, removeNull=True
+            name='Interface policy List', t=capitalize_policies, removeNull=True
         ),
         outputs_prefix='NSM.InterfacePolicy',
         outputs=all_policies,
@@ -2196,8 +2242,8 @@ def get_sensor_configuration_command(client: Client, args: Dict) -> CommandResul
     """
 
     Args:
-        client (Client): _description_
-        args (Dict): _description_
+        client (Client):  - A McAfeeNSM client.
+        args (Dict): - The function arguments.
 
     Returns:
         A CommandResult object with the sensor configuration information.
@@ -2214,6 +2260,34 @@ def get_sensor_configuration_command(client: Client, args: Dict) -> CommandResul
         readable_output=readable_output,
         outputs_prefix='NSM.SensorConfiguration',
         outputs=response,
+        raw_response=response
+    )
+
+
+def deploy_sensor_configuration_command(client: Client, args: Dict) -> CommandResults:
+    """
+
+    Args:
+        client (Client): - A McAfeeNSM client.
+        args (Dict): - The function arguments.
+
+    Returns:
+        A CommandResult object with the sensor configuration information.
+    """
+    sensor_id = arg_to_number(args.get('sensor_id'))
+    isSSLPushRequired = argToBoolean(args.get('push_ssl_key', False))
+    isGAMUpdateRequired = argToBoolean(args.get('push_gam_updates', False))
+    isSigsetConfigPushRequired = argToBoolean(args.get('push_configuration_signature_set', False))
+    isBotnetPushRequired = argToBoolean(args.get('push_botnet', False))
+    interval_in_seconds = arg_to_number(args.get('interval_in_seconds', 30))
+
+    response = client.deploy_sensor_configuration_request(sensor_id=sensor_id, isSSLPushRequired=isSSLPushRequired,
+                                                          isGAMUpdateRequired=isGAMUpdateRequired,
+                                                          isSigsetConfigPushRequired=isSigsetConfigPushRequired,
+                                                          isBotnetPushRequired=isBotnetPushRequired)
+
+    return CommandResults(
+        readable_output='Sensor configuration was deployed successfully.',
         raw_response=response
     )
 
@@ -2308,6 +2382,8 @@ def main() -> None:  # pragma: no cover
             results = list_interface_policy_command(client, args)
         elif command == 'nsm-get-sensor-configuration':
             results = get_sensor_configuration_command(client, args)
+        elif command == 'nsm-deploy-sensor-configuration':
+            results = deploy_sensor_configuration_command(client, args)
 
         else:
             raise NotImplementedError('This command is not implemented yet.')
