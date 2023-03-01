@@ -1,5 +1,5 @@
 [INGEST:vendor="microsoft", product="windows", target_dataset="microsoft_windows_raw", no_hit=keep]
-filter provider_name ="Microsoft-Windows-*"
+filter provider_name contains "Microsoft-Windows-"
 |alter time_string=to_string(time_created)
 |alter tmp_time = replex(time_string, "th|rd|nt|st", "")
 |alter _time =  parse_timestamp("%b %d %Y %H:%M:%S", tmp_time)
