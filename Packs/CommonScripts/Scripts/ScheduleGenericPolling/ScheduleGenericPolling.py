@@ -8,26 +8,20 @@ def parseIds(idsArg):
     if idsArg is None:
         return
     if isinstance(idsArg, list):
-        if len(idsArg) == 0:
-            return
-        if len(idsArg) == 1 and isinstance(idsArg[0], str):
-            return idsArg[0]
-        return ','.join(map(str, idsArg))
+        return ','.join([str(item) if type(item) == int or type(item) == bytes else item.encode('utf-8') for item in idsArg])
     if isinstance(idsArg, str):
         return ','.join(argToList(idsArg))
-    if isinstance(idsArg, bytes):
-        return ','.join(argToList(idsArg.decode('utf-8')))
     return str(idsArg)
 
 
 def main():
     args = demisto.args()
     ids = parseIds(args.get('ids'))
-    dt: str = args.get('dt')
+    dt = args.get('dt')
     pollingCommand = args.get('pollingCommand')
     pollingCommandArgName = args.get('pollingCommandArgName')
     tag = args.get('tag')
-    playbookId = f' playbookId="{args.get("playbookId", "")}"'
+    playbookId = f' playbookId="{args.get("playbookId","")}"'
     interval = int(args.get('interval'))
     timeout = int(args.get('timeout'))
 
@@ -42,18 +36,20 @@ def main():
     # Verify correct dt path (does not verify condition!)
     if not demisto.dt(demisto.context(), dt):
         if not demisto.dt(demisto.context(), re.sub('\(.*\)', '', dt)):
-            return_error('Incorrect dt path: no ids found')
-        demisto.results('Warning: no ids matching the dt condition were found.\nVerify that the condition is correct and '
-                        'that all ids have finished running.')
+            return_error("Incorrect dt path: no ids found")
+        demisto.results("Warning: no ids matching the dt condition were found.\nVerify that the condition is correct and "
+                        "that all ids have finished running.")
     command_string = '''!GenericPollingScheduledTask pollingCommand="{0}" pollingCommandArgName="{1}"{2} ids="{3}" \
                         pendingIds="{4}" interval="{5}" timeout="{6}" tag="{7}" additionalPollingCommandArgNames="{8}" \
                         additionalPollingCommandArgValues="{9}"'''.format(pollingCommand, pollingCommandArgName, playbookId,
                                                                           ids.replace('"', r'\"'), dt.replace('"', r'\"'),
                                                                           interval, timeout, tag, args_names, args_values)
-    res = demisto.executeCommand(
-        "ScheduleCommand",
-        {"command": command_string, "cron": f"*/{interval} * * * *", "times": 1},
-    )
+    res = demisto.executeCommand("ScheduleCommand",
+                                 {
+                                     'command': command_string,
+                                     'cron': f'*/{interval} * * * *',
+                                     'times': 1
+                                 })
     if isError(res[0]):
         return_error(res)
 
