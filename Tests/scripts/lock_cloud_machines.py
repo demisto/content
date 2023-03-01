@@ -21,7 +21,7 @@ def options_handler():
     parser.add_argument('--gcs_locks_path', help='Path to lock repo.')
     parser.add_argument('--ci_job_id', help='the job id.')
     parser.add_argument('--test_machines_path', help='the name of the file with all the test machines.')
-    parser.add_argument('--gitlab_status_token', help='gitlub token to get the job status.')
+    parser.add_argument('--gitlab_status_token', help='gitlab token to get the job status.')
     parser.add_argument('--response_machine', help='file to update the chosen machine.')
     parser.add_argument('--lock_machine_name', help='a machine name to lock the specific machine')
     parser.add_argument('--number_machines_to_lock', help='the needed machines number.', type=int)
@@ -110,7 +110,7 @@ def remove_build_from_queue(storage_bucket: any, lock_repository_name: str, job_
     try:
         blob.delete()
     except Exception as err:
-        logging.info(f'when we try to delete a build_from_queue = {file_path}, we get an error: {str(err)}')
+        logging.debug(f'when we try to delete a build_from_queue = {file_path}, we get an error: {str(err)}')
         pass
 
 
@@ -128,7 +128,7 @@ def remove_machine_lock_file(storage_bucket: any, lock_repository_name: str, mac
     try:
         blob.delete()
     except Exception as err:
-        logging.info(f'when we try to delete a lock machine file = {file_path}, we get an error: {str(err)}')
+        logging.debug(f'when we try to delete a lock machine file = {file_path}, we get an error: {str(err)}')
         pass
 
 
@@ -174,7 +174,9 @@ def get_my_place_in_the_queue(storage_client: storage.Client, gcs_locks_path: st
     # sorting the files by time_created
     sorted_builds_in_queue = sorted(builds_in_queue, key=lambda d: d['time_created'], reverse=False)
 
-    my_place_in_the_queue = next((index for (index, d) in enumerate(sorted_builds_in_queue) if d["name"] == job_id))
+    my_place_in_the_queue = next((index for (index, d) in enumerate(sorted_builds_in_queue) if d["name"] == job_id), None)
+    if not my_place_in_the_queue:
+        raise Exception("Unable to find the queue lock file, probably a problem creating the file")
     previous_build_in_queue = ''
     if my_place_in_the_queue > 0:
         previous_build_in_queue = sorted_builds_in_queue[my_place_in_the_queue - 1].get('name')
@@ -199,9 +201,9 @@ def try_to_lock_machine(storage_bucket: any, machine: str, machines_locks: list,
     lock_machine_name = ''
     job_id_of_the_existing_lock = next((d['job_id'] for d in machines_locks if d["machine_name"] == machine), None)
     if job_id_of_the_existing_lock:
-        logging.info(f'There is a lock file for job id: {job_id_of_the_existing_lock}')
+        logging.debug(f'There is a lock file for job id: {job_id_of_the_existing_lock}')
         job_id_of_the_existing_lock_status = check_job_status(gitlab_status_token, job_id_of_the_existing_lock)
-        logging.info(f'the status of job id: {job_id_of_the_existing_lock} is: {job_id_of_the_existing_lock_status}')
+        logging.debug(f'the status of job id: {job_id_of_the_existing_lock} is: {job_id_of_the_existing_lock_status}')
         if job_id_of_the_existing_lock_status != 'running':
             # machine found! removing the not relevant lock and create a now one
             remove_machine_lock_file(storage_bucket, gcs_locks_path, machine, job_id_of_the_existing_lock)
@@ -210,13 +212,14 @@ def try_to_lock_machine(storage_bucket: any, machine: str, machines_locks: list,
     else:
         # machine found! create lock file
         logging.info('There is no existing lock file')
-        logging.info(f'Locking machine {machine}')
-        lock_machine(storage_bucket, gcs_locks_path, machine, job_id)
-        lock_machine_name = machine
+    logging.info(f'Locking machine {machine}')
+    lock_machine(storage_bucket, gcs_locks_path, machine, job_id)
+    lock_machine_name = machine
     return lock_machine_name
 
 
-def get_and_lock_all_needed_machines(storage_client, storage_bucket, list_machines, gcs_locks_path, number_machines_to_lock, job_id, gitlab_status_token):
+def get_and_lock_all_needed_machines(storage_client, storage_bucket, list_machines, gcs_locks_path,
+                                     number_machines_to_lock, job_id, gitlab_status_token):
     """
     get the requested machines and locked them to the job-id.
     Args:
@@ -231,13 +234,13 @@ def get_and_lock_all_needed_machines(storage_client, storage_bucket, list_machin
     Returns: the machine name if locked.
     """
 
-    logging.info('getting all machines lock files')
+    logging.debug('getting all machines lock files')
     machines_locks = get_machines_locks_details(storage_client, 'xsoar-ci-artifacts',
                                                 gcs_locks_path, MACHINES_LOCKS_REPO)
 
-    lock_machine_name = None
-    busy_machines = []
+    lock_machine_list = []
     while number_machines_to_lock > 0:
+        busy_machines = []
         for machine in list_machines:
             lock_machine_name = try_to_lock_machine(storage_bucket, machine, machines_locks,
                                                     gitlab_status_token, gcs_locks_path,
@@ -245,6 +248,7 @@ def get_and_lock_all_needed_machines(storage_client, storage_bucket, list_machin
 
             # We managed to lock a machine
             if lock_machine_name:
+                lock_machine_list.append(lock_machine_name)
                 number_machines_to_lock -= 1
                 # If we don't need more machines to lock we end the loop
                 if not number_machines_to_lock:
@@ -256,8 +260,11 @@ def get_and_lock_all_needed_machines(storage_client, storage_bucket, list_machin
 
         # Next round we will try and lock only the busy machines
         list_machines = busy_machines
-        sleep(60)
-    return lock_machine_name
+
+        # we need more machines but all machines where busy in this round
+        if number_machines_to_lock:
+            sleep(60)
+    return lock_machine_list
 
 
 def create_list_of_machines_to_run(storage_bucket, lock_machine_name, gcs_locks_path, test_machines_path,
@@ -329,22 +336,23 @@ def main():
 
     # running until the build is the first in queue
     wait_for_build_to_be_first_in_queue(storage_client, storage_bucket, options.gcs_locks_path, options.ci_job_id,
-                                            options.gitlab_status_token)
+                                        options.gitlab_status_token)
 
     logging.info('Starting to search for available machine')
 
     list_machines = create_list_of_machines_to_run(storage_bucket, options.lock_machine_name, options.gcs_locks_path,
                                                    options.test_machines_path, options.number_machines_to_lock)
 
-    lock_machine_name = get_and_lock_all_needed_machines(storage_client, storage_bucket, list_machines,
+    lock_machine_list = get_and_lock_all_needed_machines(storage_client, storage_bucket, list_machines,
                                                          options.gcs_locks_path, options.number_machines_to_lock,
                                                          options.ci_job_id, options.gitlab_status_token)
 
     # remove build from queue
     remove_build_from_queue(storage_bucket, options.gcs_locks_path, options.ci_job_id)
 
+    # the output need to be improved if we wont to support locking for multiply machines.
     with open(options.response_machine, "w") as f:
-        f.write(f"export CLOUD_CHOSEN_MACHINE_ID={lock_machine_name}")
+        f.write(f"export CLOUD_CHOSEN_MACHINE_ID={lock_machine_list[0]}")
 
 
 if __name__ == '__main__':
