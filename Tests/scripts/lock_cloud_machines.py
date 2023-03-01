@@ -336,7 +336,7 @@ def main():
                                                          options.ci_job_id, options.gitlab_status_token)
 
     # remove build from queue
-    remove_file(storage_bucket, file_path=f'{options.lock_repository_name}/{QUEUE_REPO}/{options.ci_job_id}')
+    remove_file(storage_bucket, file_path=f'{options.gcs_locks_path}/{QUEUE_REPO}/{options.ci_job_id}')
 
     # the output need to be improved if we wont to support locking for multiply machines.
     with open(options.response_machine, "w") as f:
