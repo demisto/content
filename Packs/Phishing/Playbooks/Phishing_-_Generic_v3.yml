@@ -1665,6 +1665,15 @@ tasks:
                 value:
                   simple: incident.reporteremailaddress
                 iscontext: true
+          - - operator: isNotEqualString
+              left:
+                value:
+                  simple: Account.Email.Address
+                iscontext: true
+              right:
+                value:
+                  simple: ListenerMailbox
+                iscontext: true
           transformers:
           - operator: uniq
       Hostname:
