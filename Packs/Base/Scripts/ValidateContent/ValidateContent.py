@@ -8,6 +8,7 @@ from tempfile import TemporaryDirectory
 from typing import Dict, Optional, Tuple
 
 import git
+from git import cmd
 from demisto_sdk.commands.common.constants import ENTITY_TYPE_TO_DIR, TYPE_TO_EXTENSION, FileType
 from demisto_sdk.commands.common.content import Content
 from demisto_sdk.commands.common.logger import logging_setup
@@ -179,7 +180,7 @@ def run_validate(file_path: str, json_output_file: str) -> None:
         print_ignored_files=False, skip_conf_json=True, validate_id_set=False, file_path=file_path,
         validate_all=False, is_external_repo=False, skip_pack_rn_validation=False, print_ignored_errors=False,
         silence_init_prints=False, no_docker_checks=False, skip_dependencies=False, id_set_path=None,
-        staged=False, json_file_path=json_output_file, skip_schema_check=True, create_id_set=False, check_is_unskipped=False)
+        staged=False, json_file_path=json_output_file, skip_schema_check=True, create_id_set=False, check_is_unskipped=False, multiprocessing=False)
     v_manager.run_validation()
 
 
@@ -254,24 +255,22 @@ def validate_content(filename: str, data: bytes, tmp_directory: str) -> List:
     lint_output_path = os.path.join(tmp_directory, 'lint_res.json')
     output_capture = io.StringIO()
     code_fp_to_row_offset = None
-    with redirect_stdout(output_capture):
-        with redirect_stderr(output_capture):
-            demisto.info(f'before .zip, {filename=}')
-            if filename.endswith('.zip'):
-                path_to_validate, code_fp_to_row_offset = prepare_content_pack_for_validation(
-                    filename, data, tmp_directory
-                )
-            else:
-                path_to_validate, code_fp_to_row_offset = prepare_single_content_item_for_validation(
-                    filename, data, tmp_directory
-                )
+    demisto.info(f'before redirect_stdout')
+    # with redirect_stdout(output_capture):
+    #     with redirect_stderr(output_capture):
+    if filename.endswith('.zip'):
+        path_to_validate, code_fp_to_row_offset = prepare_content_pack_for_validation(
+            filename, data, tmp_directory
+        )
+    else:
+        path_to_validate, code_fp_to_row_offset = prepare_single_content_item_for_validation(
+            filename, data, tmp_directory
+        )
 
-            demisto.info(f'before run_validate')
-            run_validate(path_to_validate, json_output_path)
-            demisto.info(f'before run_lint')
-            run_lint(path_to_validate, lint_output_path)
-
-    demisto.info('after redirect_stdout context manager')
+    demisto.info(f'before validate')
+    run_validate(str(path_to_validate), json_output_path)
+    demisto.info(f'before lint')
+    run_lint(str(path_to_validate), lint_output_path)
 
     all_outputs = []
     with open(json_output_path, 'r') as json_outputs:
@@ -411,6 +410,8 @@ def main():
             args.get('data'),
             args.get('entry_id'),
         )
+
+        demisto.info(f'{filename=}')
 
         os.makedirs(content_tmp_dir.name, exist_ok=True)
         os.chdir(content_tmp_dir.name)
