@@ -18,9 +18,8 @@ def parseIds(idsArg):
 
 def main():
     args = demisto.args()
-    ids = parseIds(['LetersNumbersSign&85 space', 'קצת עברית', '$%$$%%dd'])
+    ids = parseIds(args.get('ids'))
     dt = args.get('dt')
-    dt = "GP.Dummy(val.Status != 'Success').ID"
     pollingCommand = args.get('pollingCommand')
     pollingCommandArgName = args.get('pollingCommandArgName')
     tag = args.get('tag')
