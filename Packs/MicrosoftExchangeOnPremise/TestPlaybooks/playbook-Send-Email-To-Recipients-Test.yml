@@ -45,7 +45,7 @@ tasks:
       iscommand: true
       brand: EWS v2
     scriptarguments:
-      attach_ids:
+      attachIDs:
         simple: ${inputs.attIDs}
       cc:
         simple: ${inputs.cc}
