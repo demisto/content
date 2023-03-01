@@ -66,8 +66,7 @@ Just re-run this automation :)
 ''' %(bad_images[random.randint(0,len(bad_images)-1)])
 
 answers = {
-    "01" : ["nikesh arora","nikesh","arora","ceo","papa nikesh"],
-
+    "01" : ["nikesh arora","nikesh","arora","ceo","papa nikesh"]
 }
 
 # MAIN FUNCTION #
