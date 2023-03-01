@@ -47,14 +47,14 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      attach_ids:
+      attachIDs:
         simple: ${File.EntryID}
-      attach_names: {}
+      attachNames: {}
       bcc: {}
       body: {}
       cc: {}
-      html_body: {}
-      reply_to: {}
+      htmlBody: {}
+      replyTo: {}
       subject:
         simple: test_rešňa
       to:
@@ -166,15 +166,15 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
-      attach_cids: {}
-      attach_ids:
+      attachCIDs: {}
+      attachIDs:
         simple: bad
-      attach_names: {}
+      attachNames: {}
       bcc: {}
       body: {}
       cc: {}
-      html_body: {}
-      reply_to: {}
+      htmlBody: {}
+      replyTo: {}
       subject:
         simple: Bad Email That Fails
       to:
@@ -208,15 +208,15 @@ tasks:
       iscommand: true
       brand: EWS v2
     scriptarguments:
-      attach_cids: {}
-      attach_ids:
+      attachCIDs: {}
+      attachIDs:
         simple: ${File.EntryID}
-      attach_names: {}
+      attachNames: {}
       bcc: {}
       body: {}
       cc: {}
-      html_body: {}
-      reply_to: {}
+      htmlBody: {}
+      replyTo: {}
       subject:
         simple: test
       to:
