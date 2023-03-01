@@ -407,6 +407,7 @@ def test_module():
 
 def relational_date_to_epoch_date_format(date: Optional[str]) -> Optional[int]:
     """ Retrieves date string or relational expression to date YYYY-MM-DD format.
+        Example arg is "7 days ago".
         Args:
             date: str - date or relational expression.
         Returns:
@@ -427,7 +428,7 @@ def relational_date_to_epoch_date_format(date: Optional[str]) -> Optional[int]:
 
 
 def get_scans_command():
-    folder_id = demisto.getArg('folderId'),
+    folder_id = demisto.args().get('folderId'),
     last_modification_date = relational_date_to_epoch_date_format(demisto.getArg('lastModificationDate'))
     response = send_scan_request(folder_id=folder_id, last_modification_date=last_modification_date)
     scan_entries = list(map(get_scan_info, response['scans']))
@@ -671,7 +672,7 @@ def resume_scan_command():
 
 
 def export_request(request_params: dict, assets_or_vulns: str) -> dict:
-    """Gets the UUID of the assets/vulnerabilities export job using the '{BASE_URL}{assets_or_vulns}/export' endpoint.
+    """Gets the UUID of the assets/vulnerabilities export job.
 
     Args:
         request_params (dict): The request params.
@@ -688,7 +689,7 @@ def export_request(request_params: dict, assets_or_vulns: str) -> dict:
 
 
 def export_request_with_export_uuid(export_uuid: str, assets_or_vulns: str) -> dict:
-    """Gets status details of the export job using the '{BASE_URL}{assets_or_vulns}/export/{export_uuid}/status' endpoint.
+    """Gets status details of the export job.
 
     Args:
         export_uuid (string): The UUID of the assets/vulnerabilities export job.
@@ -706,7 +707,6 @@ def export_request_with_export_uuid(export_uuid: str, assets_or_vulns: str) -> d
 
 def get_chunks_request(export_uuid: str, chunk_id: str, assets_or_vulns: str) -> dict:
     """Gets chunks of assets or vulnerabilities
-       using the '{BASE_URL}{assets_or_vulns}/export/{export_uuid}/chunks/{chunk_id}' endpoint.
 
     Args:
         export_uuid (string): The UUID of the assets/vulnerabilities export job.
@@ -757,28 +757,29 @@ def export_assets_build_command_result(chunks_details_list: list[dict]) -> Comma
     for chunk_details in chunks_details_list:
         human_readable_to_append = {}
         if fqdns := chunk_details.get('fqdns'):
-            human_readable_to_append['DNS NAME (FQDN)'] = fqdns[0]
+            human_readable_to_append.update({'DNS NAME (FQDN)': fqdns[0]})
         if tag := chunk_details.get("tags"):
             if first_tag := tag[0]:
-                human_readable_to_append['TAGS'] = f'{first_tag.get("key")}:{first_tag.get("value")}'
+                human_readable_to_append.update({'TAGS': f'{first_tag.get("key")}:{first_tag.get("value")}'})
         if sources := chunk_details.get("sources"):
             if first_source := sources[0]:
-                human_readable_to_append['SOURCE'] = first_source.get('name')
+                human_readable_to_append.update({'SOURCE': first_source.get('name')})
         if network_interfaces := chunk_details.get('network_interfaces'):
             if first_network_interfaces := network_interfaces[0]:
-                human_readable_to_append['IPV4 ADDRESS'] = first_network_interfaces.get('ipv4s')
-        human_readable_to_append['ASSET ID'] = chunk_details.get('id')
-        human_readable_to_append['SYSTEM TYPE'] = chunk_details.get('system_types')
-        human_readable_to_append['OPERATING SYSTEM'] = chunk_details.get('operating_systems')
-        human_readable_to_append['NETWORK'] = chunk_details.get('network_name')
-        human_readable_to_append['FIRST SEEN'] = chunk_details.get('first_seen')
-        human_readable_to_append['LAST SEEN'] = chunk_details.get('last_seen')
-        human_readable_to_append['LAST LICENSED SCAN'] = chunk_details.get('last_licensed_scan_date')
-        remove_nulls_from_dictionary(human_readable_to_append)
+                human_readable_to_append.update({'IPV4 ADDRESS': first_network_interfaces.get('ipv4s')})
+        human_readable_to_append.update(
+            {'ASSET ID': chunk_details.get('id'),
+             'SYSTEM TYPE': chunk_details.get('system_types'),
+             'OPERATING SYSTEM': chunk_details.get('operating_systems'),
+             'NETWORK': chunk_details.get('network_name'),
+             'FIRST SEEN': chunk_details.get('first_seen'),
+             'LAST SEEN': chunk_details.get('last_seen'),
+             'LAST LICENSED SCAN': chunk_details.get('last_licensed_scan_date')}
+        )
         remove_nulls_from_dictionary(chunk_details)
         human_readable.append(human_readable_to_append)
     return CommandResults(
-        outputs_key_field='ASSET ID',
+        outputs_key_field='id',
         outputs_prefix='TenableIO.Asset',
         outputs=chunks_details_list,
         raw_response=chunks_details_list,
@@ -804,7 +805,7 @@ def request_uuid_export_assets(args: Dict[str, Any]) -> PollResult:
             "include_unlicensed": args.get("isLicensed"),
             "filters": {
                 "created_at": relational_date_to_epoch_date_format(
-                    demisto.getArg("createdAt")
+                    args.get("createdAt")
                 ),
                 "updated_at": relational_date_to_epoch_date_format(args.get("updatedAt")),
                 "terminated_at": relational_date_to_epoch_date_format(
@@ -822,14 +823,15 @@ def request_uuid_export_assets(args: Dict[str, Any]) -> PollResult:
                 "has_plugin_results": argToBoolean(args.get("hasPluginResults")) if args.get("hasPluginResults") else None,
             },
         })
-
-    if (tag_category and not(tag_value)) or (not(tag_category) and tag_value):
-        raise DemistoException('Please specify tagCategory and tagValue')
-    elif tag_category is not None and tag_value is not None:
+    if tag_category and tag_value:
         if request_params.get('filters'):
             request_params.get('filters')[f'tag.{tag_category}'] = tag_value
         else:
             request_params['filters'] = {f'tag.{tag_category}': tag_value}
+
+    if (tag_category and not(tag_value)) or (not(tag_category) and tag_value):
+        raise DemistoException('Please specify tagCategory and tagValue')
+
     demisto.debug("request params export assets", request_params)
     api_response = export_request(request_params, 'assets')
     export_uuid = api_response.get('export_uuid')
@@ -852,7 +854,8 @@ def build_vpr_score(args: Dict[str, Any]) -> dict:
     Builds the vpr score request body.
 
     Args:
-        args (Dict[str, Any]): Arguments passed down by the CLI to provide in the HTTP request.
+        args (Dict[str, Any]): Arguments vprScoreOperator, vprScoreRange, vprScoreValue
+        passed down by the CLI to provide in the HTTP request.
 
     Returns:
         dict: vpr score dict.
@@ -912,13 +915,15 @@ def request_uuid_export_vulnerabilities(args: Dict[str, Any]) -> PollResult:
             }
         }
     )
-    if (tag_category and not(tag_value)) or (not(tag_category) and tag_value):
-        raise DemistoException('Please specify tagCategory and tagValue')
-    elif tag_category is not None and tag_value is not None:
+    if tag_category and tag_value:
         if request_params.get('filters'):
             request_params.get('filters')[f'tag.{tag_category}'] = tag_value
         else:
             request_params['filters'] = {f'tag.{tag_category}': tag_value}
+
+    if (tag_category and not(tag_value)) or (not(tag_category) and tag_value):
+        raise DemistoException('Please specify tagCategory and tagValue')
+
     demisto.debug("request params export vulnerabilities", request_params)
     api_response = export_request(request_params, 'vulns')
     export_uuid = api_response.get('export_uuid')
@@ -1001,38 +1006,42 @@ def export_vulnerabilities_build_command_result(chunks_details_list: list[dict])
         port_details = chunk_details.get('port')
         human_readable_to_append = {}
         if asset_details:
-            human_readable_to_append['ASSET ID'] = asset_details.get('uuid')
-            human_readable_to_append['ASSET NAME'] = asset_details.get('hostname')
-            human_readable_to_append['IPV4 ADDRESS'] = asset_details.get('ipv4')
-            human_readable_to_append['OPERATING SYSTEM'] = asset_details.get('operating_system')
-            human_readable_to_append['SYSTEM TYPE'] = asset_details.get('device_type')
-            human_readable_to_append['DNS NAME (FQDN)'] = asset_details.get('fqdn')
-        if plugin_details:
-            human_readable_to_append['PLUGIN ID'] = plugin_details.get('id')
-            human_readable_to_append['PLUGIN NAME'] = plugin_details.get('name')
-            human_readable_to_append["VULNERABILITY PRIORITY RATING"] = (
-                plugin_details.get("vpr").get("score") if plugin_details.get("vpr") else None
+            human_readable_to_append.update(
+                {'ASSET ID': asset_details.get('uuid'),
+                 'ASSET NAME': asset_details.get('hostname'),
+                 'IPV4 ADDRESS': asset_details.get('ipv4'),
+                 'OPERATING SYSTEM': asset_details.get('operating_system'),
+                 'SYSTEM TYPE': asset_details.get('device_type'),
+                 'DNS NAME (FQDN)': asset_details.get('fqdn')}
             )
-            human_readable_to_append['CVSSV2 BASE SCORE'] = plugin_details.get('cvss_base_score')
-            human_readable_to_append['CVE'] = plugin_details.get('cve')
-            human_readable_to_append['DESCRIPTION'] = plugin_details.get('description')
-            human_readable_to_append['SOLUTION'] = plugin_details.get('solution')
+        if plugin_details:
+            human_readable_to_append.update(
+                {'PLUGIN ID': plugin_details.get('id'),
+                 'PLUGIN NAME': plugin_details.get('name'),
+                 'VULNERABILITY PRIORITY RATING': plugin_details.get("vpr").get("score") if plugin_details.get("vpr") else None,
+                 'CVSSV2 BASE SCORE': plugin_details.get('cvss_base_score'),
+                 'CVE': plugin_details.get('cve'),
+                 'DESCRIPTION': plugin_details.get('description'),
+                 'SOLUTION': plugin_details.get('solution')}
+            )
         if port_details:
-            human_readable_to_append['PORT'] = port_details.get('port')
-            human_readable_to_append['PROTOCOL'] = port_details.get('protocol')
-
-        human_readable_to_append['SEVERITY'] = chunk_details.get('severity')
-        human_readable_to_append['FIRST SEEN'] = chunk_details.get('first_found')
-        human_readable_to_append['LAST SEEN'] = chunk_details.get('last_found')
+            human_readable_to_append.update(
+                {'PORT': port_details.get('port'),
+                 'PROTOCOL': port_details.get('protocol')}
+            )
+        human_readable_to_append.update(
+            {'SEVERITY': chunk_details.get('severity'),
+             'FIRST SEEN': chunk_details.get('first_found'),
+             'LAST SEEN': chunk_details.get('last_found')}
+        )
 
         remove_nulls_from_dictionary(chunk_details)
-        remove_nulls_from_dictionary(human_readable_to_append)
         human_readable.append(human_readable_to_append)
     return CommandResults(
         outputs_prefix='TenableIO.Vulnerability',
         outputs=chunks_details_list,
         raw_response=chunks_details_list,
-        readable_output=tableToMarkdown('Export Vulnerabilities Results', human_readable, headers=headers, removeNull=True)
+        readable_output=tableToMarkdown('Vulnerabilities', human_readable, headers=headers, removeNull=True)
     )
 
 
@@ -1048,9 +1057,9 @@ def validate_range(range: Optional[str]) -> tuple[Optional[float], Optional[floa
         range_without_spaces = range.strip()
         nums_list = range_without_spaces.split("-")
         if len(nums_list) < 2:
-            raise DemistoException('Please specify valid vprScoreRange')
+            raise DemistoException('Please specify valid vprScoreRange. For example: 3.5-5.5.')
         elif float(nums_list[0]) > float(nums_list[1]):
-            raise DemistoException('Please specify valid vprScoreRange')
+            raise DemistoException('Please specify valid vprScoreRange. For example: 3.5-5.5.')
         else:
             return float(nums_list[0]), float(nums_list[1])
     return None, None

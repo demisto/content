@@ -179,22 +179,29 @@ def test_get_asset_details_command(mocker, requests_mock):
     ('2.5-3.5', 2.5, 3.5),
     ('0-3', 0, 3),
     ('0 - 3', 0, 3),
+    ('0', 'exception', 'exception'),
+    ('3-0', 'exception', 'exception')
 ])
 def test_validate_range(range_str, expected_lower_range_bound, expected_upper_range_bound):
     """
     Given:
         - range_str (str): A string that represents a range of values in format 2.5-3.0.
     When:
-        - Running the tenable-io-export-vulnerabilities command with vprScoreRange argument.
+        - Running the validate_range function with vprScoreRange argument.
     Then:
         - Verify that validation range function works as expected.
     """
     from Tenable_io import validate_range
 
-    lower_range_bound, upper_range_bound = validate_range(range_str)
+    if isinstance(expected_lower_range_bound, str) and isinstance(expected_upper_range_bound, str):
+        with pytest.raises(DemistoException) as de:
+            lower_range_bound, upper_range_bound = validate_range(range_str)
 
-    assert lower_range_bound == expected_lower_range_bound
-    assert upper_range_bound == expected_upper_range_bound
+        assert de.value.message == 'Please specify valid vprScoreRange. For example: 3.5-5.5.'
+    else:
+        lower_range_bound, upper_range_bound = validate_range(range_str)
+        assert lower_range_bound == expected_lower_range_bound
+        assert upper_range_bound == expected_upper_range_bound
 
 
 @freeze_time("2012-01-14", tz_offset=-4)
@@ -230,7 +237,7 @@ def test_build_vpr_score_validation(args, expected_exception):
     Given:
         - args (dict): args with vprScoreOperator,vprScoreValue and vprScoreRange.
     When:
-        - Running the tenable-io-export-vulnerabilities command with vprScoreOperator,vprScoreValue and vprScoreRange arguments.
+        - Running the build_vpr_score_validation with vprScoreOperator,vprScoreValue and vprScoreRange arguments.
     Then:
         - Verify that validation function works as expected.
     """
@@ -261,7 +268,7 @@ def test_build_vpr_score(args, expected_vpr_score):
     Given:
         - args (dict): args with vprScoreOperator,vprScoreValue and vprScoreRange.
     When:
-        - Running the tenable-io-export-vulnerabilities command with vprScoreOperator,vprScoreValue and vprScoreRange arguments.
+        - Running the build_vpr_score function with vprScoreOperator,vprScoreValue and vprScoreRange arguments.
     Then:
         - Verify that build_vpr_score function works as expected.
     """
@@ -310,7 +317,7 @@ def test_export_vulnerabilities_build_command_result():
     command_result = export_vulnerabilities_build_command_result(export_vulnerabilities_response)
 
     assert command_result.outputs == export_vulnerabilities_response
-    assert command_result.readable_output == '### Export Vulnerabilities Results' \
+    assert command_result.readable_output == '### Vulnerabilities' \
                                              '\n|ASSET ID|ASSET NAME|IPV4 ADDRESS|OPERATING SYSTEM|SYSTEM TYPE|DNS NAME (FQDN)|' \
                                              'SEVERITY|PLUGIN ID|PLUGIN NAME|VULNERABILITY PRIORITY RATING|PROTOCOL|' \
                                              'PORT|FIRST SEEN|' \
@@ -398,7 +405,7 @@ def test_export_vulnerabilities_command(mocker, args, return_value_export_reques
         assert response.readable_output == 'Waiting for export vulnerabilities to finish...'
     else:
         assert response.outputs == export_vulnerabilities_response
-        assert response.readable_output == '### Export Vulnerabilities Results' \
+        assert response.readable_output == '### Vulnerabilities' \
                                            '\n|ASSET ID|ASSET NAME|IPV4 ADDRESS|OPERATING SYSTEM|' \
                                            'SYSTEM TYPE|DNS NAME (FQDN)|SEVERITY|PLUGIN ID|PLUGIN NAME|' \
                                            'VULNERABILITY PRIORITY RATING|PROTOCOL|PORT|FIRST SEEN|LAST SEEN|' \
