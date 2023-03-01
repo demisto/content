@@ -1,4 +1,4 @@
-category: Utilities
+category: Authentication & Identity Management
 commonfields:
   id: OracleIAM
   version: -1
@@ -70,9 +70,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: 'When set to true, after the command execution the status of the
-        user in the 3rd-party integration will be active. Possible values: "true"
-        and "false".'
+      description: 'When set to true, after the command execution the status of the user in the 3rd-party integration will be active. Possible values: "true" and "false".'
       isArray: false
       name: allow-enable
       predefined:
@@ -86,8 +84,7 @@ script:
     name: iam-create-user
     outputs:
     - contextPath: IAM.Vendor.active
-      description: When true, indicates that the employee's status is active in the
-        3rd-party integration.
+      description: When true, indicates that the employee's status is active in the 3rd-party integration.
       type: Boolean
     - contextPath: IAM.Vendor.brand
       description: Name of the integration.
@@ -129,8 +126,7 @@ script:
     name: iam-get-user
     outputs:
     - contextPath: IAM.Vendor.active
-      description: When true, indicates that the employee's status is active in the
-        3rd-party integration.
+      description: When true, indicates that the employee's status is active in the 3rd-party integration.
       type: Boolean
     - contextPath: IAM.Vendor.brand
       description: Name of the integration.
@@ -169,9 +165,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: 'When set to true, after the command execution the status of the
-        user in the 3rd-party integration will be active. Possible values: "true"
-        and "false".'
+      description: 'When set to true, after the command execution the status of the user in the 3rd-party integration will be active. Possible values: "true" and "false".'
       isArray: false
       name: allow-enable
       predefined:
@@ -180,14 +174,12 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Updates an existing user with the data passed in the user-profile
-      argument.
+    description: Updates an existing user with the data passed in the user-profile argument.
     execution: true
     name: iam-update-user
     outputs:
     - contextPath: IAM.Vendor.active
-      description: When true, indicates that the employee's status is active in the
-        3rd-party integration.
+      description: When true, indicates that the employee's status is active in the 3rd-party integration.
       type: Boolean
     - contextPath: IAM.Vendor.brand
       description: Name of the integration.
@@ -229,8 +221,7 @@ script:
     name: iam-disable-user
     outputs:
     - contextPath: IAM.Vendor.active
-      description: When true, indicates that the employee's status is active in the
-        3rd-party integration.
+      description: When true, indicates that the employee's status is active in the 3rd-party integration.
       type: Boolean
     - contextPath: IAM.Vendor.brand
       description: Name of the integration.
@@ -296,8 +287,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: 'Whether members need to be included in the response. Possible
-        values: "true" and "false".'
+      description: 'Whether members need to be included in the response. Possible values: "true" and "false".'
       isArray: false
       name: includeMembers
       predefined:
@@ -366,23 +356,19 @@ script:
       required: true
       secret: false
     - default: false
-      description: List of members IDs to add. A maximum of 15,000 users per call
-        can be modified using this command.
+      description: List of members IDs to add. A maximum of 15,000 users per call can be modified using this command.
       isArray: true
       name: memberIdsToAdd
       required: false
       secret: false
     - default: false
-      description: List of members IDs to be deleted from the group. A maximum of
-        15,000 users per call can be modified using this command
+      description: List of members IDs to be deleted from the group. A maximum of 15,000 users per call can be modified using this command
       isArray: true
       name: memberIdsToDelete
       required: false
       secret: false
     deprecated: false
-    description: Updates an existing group resource. This command allows individual
-      (or groups of) users to be added or removed from the group with a single operation.
-      A maximum of 15,000 users can be modified in a single call.
+    description: Updates an existing group resource. This command allows individual (or groups of) users to be added or removed from the group with a single operation. A maximum of 15,000 users can be modified in a single call.
     execution: true
     name: iam-update-group
     outputs:
@@ -402,11 +388,10 @@ script:
       description: Error details if there is a failure.
       type: Unknown
   - deprecated: false
-    description: Retrieves a User Profile schema, which holds all of the user fields
-      within the application. Used for outgoing-mapping through the Get Schema option.
+    description: Retrieves a User Profile schema, which holds all of the user fields within the application. Used for outgoing-mapping through the Get Schema option.
     execution: false
     name: get-mapping-fields
-  dockerimage: demisto/python3:3.10.4.30607
+  dockerimage: demisto/python3:3.10.10.48392
   feed: false
   isfetch: false
   longRunning: false
