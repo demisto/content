@@ -186,8 +186,8 @@ def update_query(query: str, filter_name: str, filter_value: str, filter_operato
 
 
 def build_query_filter(risk_state: Optional[str], risk_level: Optional[str],
-                       detected_date_time_before: Optional[str],
-                       detected_date_time_after: Optional[str]) -> Optional[str]:
+                       detected_date_time_before: Optional[str] = None,
+                       detected_date_time_after: Optional[str] = None) -> Optional[str]:
     """
     Build query filter for API call, in order to get filtered results.
     API query syntax reference: https://docs.microsoft.com/en-us/graph/query-parameters.

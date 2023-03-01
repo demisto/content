@@ -130,8 +130,7 @@ def test_build_query_filter() -> None:
      - Ensure results are valid.
     """
     from AzureRiskyUsers import build_query_filter
-    result = build_query_filter(risk_state='dismissed', risk_level='medium', detected_date_time_after=None,
-                                detected_date_time_before=None)
+    result = build_query_filter(risk_state='dismissed', risk_level='medium')
     assert result == "riskState eq 'dismissed' and riskLevel eq 'medium'"
 
 
