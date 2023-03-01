@@ -17,6 +17,8 @@ description: |-
     - Critical - Public IP was found and both of the other checks returned results.
   6) Notifications and ticketing with 3rd party systems.
   7) Close the incident.
+  
+  This playbook will run when a new incident is created with the **Prisma Cloud - VM Alert Prioritization** incident type whicih also includes a dedicated layout.
 starttaskid: "0"
 tasks:
   "0":
