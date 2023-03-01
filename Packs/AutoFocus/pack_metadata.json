@@ -16,7 +16,8 @@
     ],
     "useCases": [],
     "keywords": [
-        "TIM"
+        "TIM",
+        "feed"
     ],
     "dependencies": {
         "CommonScripts": {
