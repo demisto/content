@@ -1,6 +1,5 @@
 from rasterize import (rasterize, find_zombie_processes, merge_options, DEFAULT_CHROME_OPTIONS, rasterize_image_command,
-                       RasterizeMode, RasterizeType, init_driver, rasterize_html_command,
-                       quit_driver_and_display_and_reap_children)
+                       RasterizeMode, RasterizeType, init_driver, rasterize_html_command)
 import demistomock as demisto
 from CommonServerPython import entryTypes
 from tempfile import NamedTemporaryFile
@@ -336,6 +335,7 @@ class TestRasterizeIncludeUrl:
         mocker.patch('subprocess.run')
         mocker.patch('builtins.open', mock_open(read_data='image_sha'))
         mocker.patch('os.remove')
+
         image = rasterize(path='path', width=250, height=250, r_type=RasterizeType.PNG,
                           r_mode=RasterizeMode.WEBDRIVER_ONLY,
                           include_url=include_url)
