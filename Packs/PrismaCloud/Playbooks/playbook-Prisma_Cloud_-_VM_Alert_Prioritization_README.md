@@ -1,4 +1,6 @@
-This playbook will handle incidents related to Prisma Cloud VM alerts such as "Instances exposed to network traffic from the internet".
+This playbook handles incidents related to dozens of Prisma Cloud public VM alerts.
+It determines the severity of the ingested alert based on data returned from Cortex XSOAR commands interacting with the Prisma Cloud API and creates new issues in either Slack or Jira, with all of the relevant information.
+It updates the Cortex XSOAR incident’s layout with information the analyst can use to investigate the alert. It also extracts and enriches indicators using existing configured integrations and then closes the investigation.
 
 The flow of this playbook is as following:
 1) Check the CSP type.
@@ -12,6 +14,17 @@ The flow of this playbook is as following:
   - Critical - Public IP was found and both of the other checks returned results.
 6) Notifications and ticketing with 3rd party systems.
 7) Close the incident.
+
+This playbook will run when a new incident is created with the **Prisma Cloud - VM Alert Prioritization** incident type.
+
+The Layout
+There are 2 main tabs: Case Info and Investigation.
+Case Info will present high level data, the enrichment results, and the notifications & communications results:
+![Case Info](../doc_files/layout_case_info.png)
+
+The Investigation tab will present low level data, including policy data, violating resources, and indicators:
+![Investigation](../doc_files/layout_investigation.png)
+
 
 ## Dependencies
 
