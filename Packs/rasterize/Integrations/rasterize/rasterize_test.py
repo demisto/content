@@ -1,5 +1,6 @@
 from rasterize import (rasterize, find_zombie_processes, merge_options, DEFAULT_CHROME_OPTIONS, rasterize_image_command,
-                       RasterizeMode, RasterizeType, init_driver, rasterize_html_command)
+                       RasterizeMode, RasterizeType, init_driver, rasterize_html_command,
+                       quit_driver_and_display_and_reap_children)
 import demistomock as demisto
 from CommonServerPython import entryTypes
 from tempfile import NamedTemporaryFile
@@ -318,7 +319,7 @@ class TestRasterizeIncludeUrl:
         assert not ('--headless' in driver.options) == include_url
 
     @pytest.mark.parametrize('include_url', [False, True])
-    def test_sanity_rasterize_with_include_url(self, mocker, capfd, include_url):
+    def test_sanity_rasterize_with_include_url(self, mocker, include_url):
         """
             Given:
                 - A parameter that mention whether to include the URL bar in the screenshot.
@@ -331,20 +332,31 @@ class TestRasterizeIncludeUrl:
         mocker.patch.object(Display, 'stop', retuen_value=None)
         mocker.patch.object(webdriver, 'Chrome', side_effect=self.MockChrome)
         mocker.patch.object(webdriver, 'ChromeOptions', side_effect=self.MockChromeOptions)
-        ps_output = '''   PID  PPID S CMD
-        1     0 S python /tmp/pyrunner/_script_docker_python_loop.py
-        39     1 Z [soffice.bin] <defunct>
-'''
-        mocker.patch.object(subprocess, 'check_output', return_value=ps_output)
-        mocker.patch.object(os, 'getpid', return_value=1)
-        mocker.patch.object(os, 'waitpid', return_value=(1, 0))
 
         mocker.patch('subprocess.run')
         mocker.patch('builtins.open', mock_open(read_data='image_sha'))
         mocker.patch('os.remove')
+        image = rasterize(path='path', width=250, height=250, r_type=RasterizeType.PNG,
+                          r_mode=RasterizeMode.WEBDRIVER_ONLY,
+                          include_url=include_url)
+        assert image
+        
+    def test_quit_driver_and_display_and_reap_children(mocker, capfd):
+        """
+            Given:
+                - A parameter that mention whether to include the URL bar in the screenshot.
+            When:
+                - Running the 'rasterize' function.
+            Then:
+                - Verify that it runs as expected.
+        """
 
         with capfd.disabled():
-            image = rasterize(path='path', width=250, height=250, r_type=RasterizeType.PNG,
-                              r_mode=RasterizeMode.WEBDRIVER_ONLY,
-                              include_url=include_url)
-        assert image
+            ps_output = '''   PID  PPID S CMD
+            1     0 S python /tmp/pyrunner/_script_docker_python_loop.py
+            39     1 Z [soffice.bin] <defunct>
+    '''
+            mocker.patch.object(subprocess, 'check_output', return_value=ps_output)
+            mocker.patch.object(os, 'getpid', return_value=1)
+            mocker.patch.object(os, 'waitpid', return_value=(1, 0))
+            quit_driver_and_display_and_reap_children(None, None)
