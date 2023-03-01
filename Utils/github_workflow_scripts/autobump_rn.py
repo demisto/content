@@ -48,8 +48,8 @@ class UpdateType(str, Enum):
 class SkipReason(str, Enum):
     """ Reasons to skip update release notes"""
     LAST_MODIFIED_TIME = 'The PR was not updated in last {} days. PR last update time: {}'
-    NOT_UPDATE_RN_LABEL_EXIST = 'Label "{}" exist in this PR. PR labels: {}'
-    NO_RELEASE_NOTES_CHANGED = 'No changes were detected on {} directory.'
+    NOT_UPDATE_RN_LABEL_EXIST = 'Label "{}" exist in this PR. PR labels: {}.'
+    NO_NEW_RELEASE_NOTES = 'No new files were detected on {} directory.'
     CONFLICTING_FILES = 'The PR has conflicts not only at {} and {}. The conflicting files are: {}.'
     NO_CONFLICTING_FILES = 'No conflicts were detected.'
     NOT_ALLOW_SUPPORTED_TYPE_PACK = 'The pack is not {} supported. Pack {} support type is: {}.'
@@ -58,7 +58,7 @@ class SkipReason(str, Enum):
     MORE_THAN_ONE_RN = 'Pack: {} has more than one added rn {}.'
     DIFFERENT_RN_METADATA_VERSIONS = 'Pack: {} has different rn version {}, and metadata version {}.'
     ALLOWED_BUMP_CONDITION = 'Pack {} version was updated from {} to {} version. Allowed bump only by + 1.'
-    ONLY_VERSION_CHANGED = 'Pack {} metadata file has different keys in master and branch: {} '
+    ONLY_VERSION_CHANGED = 'Pack {} metadata file has different keys in master and branch: {}.'
 
 
 class ConditionResult:
@@ -116,7 +116,7 @@ class ConditionResult:
 class BaseCondition(ABC):
     """ Base abstract class for conditions"""
 
-    def __init__(self, pr: PullRequest, git_repo: Repo):
+    def __init__(self, pr: PullRequest, git_repo: Repo, **kwargs):
         self.pr = pr
         self.git_repo = git_repo
         self.next_cond = None
@@ -298,7 +298,7 @@ class AddedRNFilesCondition(BaseCondition):
         """
         Returns: Reason why the condition failed, and pr skipped.
         """
-        return SkipReason.NO_RELEASE_NOTES_CHANGED.format(RELEASE_NOTES_DIR)
+        return SkipReason.NO_NEW_RELEASE_NOTES.format(RELEASE_NOTES_DIR)
 
     def _check(self, previous_result: Optional[ConditionResult] = None) -> ConditionResult:
         """ Checks if there are new Release Notes files in the PR.
@@ -522,7 +522,7 @@ class OnlyOneRNPerPackCondition(MetadataCondition):
             rn_files: release notes files for the pack in current pr.
         Returns: Reason why the condition failed, and pr skipped.
         """
-        return SkipReason.MORE_THAN_ONE_RN.format(self.pack, [f.filename for f in rn_files])
+        return SkipReason.MORE_THAN_ONE_RN.format(self.pack, [str(f) for f in rn_files])
 
     def _check(self, previous_result: Optional[ConditionResult] = None, **kwargs) -> ConditionResult:
         """ Checks that only one release notes files per pack was added.
@@ -607,6 +607,7 @@ class AllowedBumpCondition(MetadataCondition):
             return ConditionResult(should_skip=True, reason=self.generate_skip_reason(base_pack_metadata_version,
                                                                                       branch_pack_metadata_version))
         else:
+            assert previous_result, 'No previous result was supplied to the AllowedBumpCondition object.'
             return previous_result + ConditionResult(should_skip=False, update_type=update_type)
 
     @staticmethod
