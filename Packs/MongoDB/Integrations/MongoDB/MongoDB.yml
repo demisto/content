@@ -146,7 +146,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: Whether to update a single entry. If false, will set all found entries. If false, will set all found entries.
+      description: Whether to update a single entry. If true, will set only the first found entry. If false, will set all found entries. default is true.
       isArray: false
       name: update_one
       predefined:
@@ -274,23 +274,34 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'A query that matches the documents to update, in the format: `{"key": "value"}`.'
-      isArray: false
+      description: 'A comma-separated list of queries that match the documents to update, in the format: `{"key1": "value1"},{"key2": "value2"}`. This list must match the comma-separated list of the update argument.'
+      isArray: true
       name: filter
       required: true
       secret: false
     - default: false
-      description: 'The content with which to update entries, in the format: {"$set": {"key": "value"}}. You can use Update Operators or Aggregation Pipeline. For more information, see the integration documentation.'
-      isArray: false
+      description: 'A comma-separated list of content with which to update entries, in the format: `{"$set": {"key1": "value1"}},{"$set": {"key2": "value2"}}`. You can use Update Operators or Aggregation Pipeline. This list must match the comma-separated list of the filter argument. For more information, see the integration documentation.'
+      isArray: true
       name: update
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Updates entries in a collection that matches the query or create a new entry if no entires match the query. Default is false.
+      description: Will create a new entry if no entires match the provided query. This argument will effect all the provided queries. Default is false.
       isArray: false
       name: upsert
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'true'
+      description: Whether to update a single entry per query. If true, will set only the first found entry, If false, will set all found entries. This argument will effect all the provided queries. Default is true.
+      isArray: false
+      name: update_one
       predefined:
       - 'true'
       - 'false'

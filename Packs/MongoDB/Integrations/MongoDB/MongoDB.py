@@ -4,11 +4,12 @@ from json import JSONDecodeError
 from typing import List, Union, Tuple, Any, Optional
 
 from bson.objectid import ObjectId
+from pymongo import UpdateMany, UpdateOne
 from pymongo import MongoClient
 from pymongo.collection import Collection
 from pymongo.database import Database
 from pymongo.errors import OperationFailure
-from pymongo.results import InsertManyResult, UpdateResult, DeleteResult
+from pymongo.results import InsertManyResult, UpdateResult, DeleteResult, BulkWriteResult
 from pymongo.cursor import Cursor
 
 CONTEXT_KEY = 'MongoDB.Entry(val._id === obj._id && obj.collection === val.collection)'
@@ -154,6 +155,27 @@ class Client:
         entries = [self.normalize_id(entry) for entry in entries]
         return entries
 
+    def bulk_update_entries(self, collection, filter_update_zip, update_one, upsert) -> BulkWriteResult:
+        """Bulk updates entries in a collection (Send a batch of write operations to the server).
+
+        Args:
+            collection (str): name of the collection.
+            filter_update_dict (zip): a zip object of filter,update pairs of queries.
+            update_one (boolean): whether to update one or many entries per query.
+            upsert (boolean): whether to insert a new document if no match is found per query.
+        Returns:
+            BulkWriteResult: An object wrapper for bulk API write results
+        """
+        collection_object = self.get_collection(collection)
+        requests = []
+        for filter, update in filter_update_zip:
+            if update_one:
+                requests.append(UpdateOne(filter, update, upsert))
+            else:
+                requests.append(UpdateMany(filter, update, upsert))
+        raw = collection_object.bulk_write(requests)
+        return self.datetime_to_str(raw)
+
 
 def convert_id_to_object_id(entries: Union[List[dict], dict]) -> Union[List[dict], dict]:
     """ Converts list or dict with `_id` key of type str to ObjectID
@@ -232,6 +254,45 @@ def convert_object_id_to_str(entries: List[ObjectId]) -> List[str]:
         ['5e4412f230c5b8f63a7356ba']  # guardrails-disable-line
     '''
     return list(map(str, entries))
+
+
+def parse_and_validate_bulk_update_arguments(filter: str, update: str) -> Tuple[List, List]:
+    """Parses and validates the bulk update queries(filter and update command arguments).
+
+    Args:
+        filter (str): raw string representing the filter command argument.
+        update (str): raw string representing the update command argument.
+
+    Raises:
+        DemistoException: if filter or update command arguments have invalid syntax.
+        DemistoException: if filter and update command arguments do not contain the same number of elements.
+        DemistoException: if the filter command argument contains an invalid json.
+        DemistoException: if the update command argument contains an invalid json.
+
+    Returns:
+        Tuple[List, List]: lists of dictionaries representing the parsed and validated filter and update arguments.
+    """
+    # convert raw command arguments (filter, update) to list of dictionaries
+    try:
+        filters = list(eval(str(f'[{filter}]')))
+        updates = list(eval(str(f'[{update}]')))
+    except SyntaxError as e:
+        raise DemistoException(
+            'There was an error trying to parse `filter` or `update` arguments, please make sure the input is correct.') from e
+
+    if len(filters) != len(updates):
+        raise DemistoException('The `filter` and `update` arguments must contain the same number of elements.')
+
+    try:
+        filter_list = [validate_json_objects(filter) for filter in filters]
+    except JSONDecodeError as e:
+        raise DemistoException('The `filter` argument contains an invalid json.') from e
+    try:
+        update_list = [validate_json_objects(update) for update in updates]
+    except JSONDecodeError as exc:
+        raise DemistoException('The `update` argument contains an invalid json.') from exc
+
+    return filter_list, update_list
 
 
 def test_module(client: Client, **kwargs) -> Tuple[str, dict]:
@@ -472,6 +533,31 @@ def pipeline_query_command(client: Client, collection: str, pipeline: str, limit
         return 'MongoDB: No results found', {}, raw_response
 
 
+def bulk_update_command(
+        client: Client,
+        collection: str,
+        filter: str,
+        update: str,
+        update_one=False,
+        upsert=False,
+        **kwargs,
+) -> Tuple[str, None]:
+
+    filter_list, update_list = parse_and_validate_bulk_update_arguments(filter, update)
+
+    response = client.bulk_update_entries(
+        collection, zip(filter_list, update_list), argToBoolean(update_one), argToBoolean(upsert)
+    )
+    if not response.acknowledged:
+        raise DemistoException('Error occurred when trying to enter update entries.')
+
+    return (
+        f'MongoDB: Total of {response.modified_count} entries has been modified.\
+        \nMongoDB: Total of {response.upserted_count} entries has been inserted.',
+        None,
+    )
+
+
 def main():
     params = demisto.params()
     args = demisto.args()
@@ -494,7 +580,8 @@ def main():
         'mongodb-list-collections': list_collections_command,
         'mongodb-create-collection': create_collection_command,
         'mongodb-drop-collection': drop_collection_command,
-        'mongodb-pipeline-query': pipeline_query_command
+        'mongodb-pipeline-query': pipeline_query_command,
+        'mongodb-bulk-update': bulk_update_command,
     }
     try:
         return_outputs(*commands[command](client, **args))  # type: ignore[operator]
