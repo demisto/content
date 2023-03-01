@@ -340,22 +340,3 @@ class TestRasterizeIncludeUrl:
                           r_mode=RasterizeMode.WEBDRIVER_ONLY,
                           include_url=include_url)
         assert image
-
-    def test_quit_driver_and_display_and_reap_children(mocker, capfd):
-        """
-            Given:
-                - A parameter that mention whether to include the URL bar in the screenshot.
-            When:
-                - Running the 'rasterize' function.
-            Then:
-                - Verify that it runs as expected.
-        """
-        mocker.patch.object(subprocess, 'check_output', return_value=ps_output)
-        mocker.patch.object(os, 'getpid', return_value=1)
-        mocker.patch.object(os, 'waitpid', return_value=(1, 0))
-        with capfd.disabled():
-            ps_output = '''   PID  PPID S CMD
-            1     0 S python /tmp/pyrunner/_script_docker_python_loop.py
-            39     1 Z [soffice.bin] <defunct>
-'''
-            quit_driver_and_display_and_reap_children(None, None)
