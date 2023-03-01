@@ -390,7 +390,7 @@ class Client(BaseClient):
             Returns:
                 A dictionary with the sensor configuration.
         """
-        url_suffix = f'/sensor/{sensor_id}/config/status'
+        url_suffix = f'/sensor/{sensor_id}/action/update_sensor_config'
         return self._http_request(method='GET', url_suffix=url_suffix)
 
     def deploy_sensor_configuration_request(self, sensor_id: int, isSSLPushRequired: bool = False,
@@ -415,6 +415,19 @@ class Client(BaseClient):
 
         url_suffix = f'/sensor/{sensor_id}/action/update_sensor_config'
         return self._http_request(method='PUT', url_suffix=url_suffix, json_data=json_data)
+
+    def check_deploy_sensor_configuration_request_status(self, sensor_id, request_id):
+        """_summary_
+
+        Args:
+            sensor_id (_type_): _description_
+            request_id (_type_): _description_
+
+        Returns:
+            _type_: _description_
+        """
+        url_suffix = f'/sensor/{sensor_id}/action/update_sensor_config/{request_id}'
+        return self._http_request(method='GET', url_suffix=url_suffix)
 
 
 ''' HELPER FUNCTIONS '''
@@ -2152,7 +2165,7 @@ def list_device_policy_command(client: Client, args: Dict) -> CommandResults:
     for policy in all_policies:
         policy = {k.capitalize(): v for k, v in policy.items()}
         capitalize_policies.append(policy)
-        
+
     readable_output = tableToMarkdown(
         name='Device policy List', t=capitalize_policies, removeNull=True
     )
@@ -2227,7 +2240,7 @@ def list_interface_policy_command(client: Client, args: Dict) -> CommandResults:
     for policy in all_policies:
         policy = {k.capitalize(): v for k, v in policy.items()}
         capitalize_policies.append(policy)
-        
+
     return CommandResults(
         readable_output=tableToMarkdown(
             name='Interface policy List', t=capitalize_policies, removeNull=True
@@ -2252,8 +2265,9 @@ def get_sensor_configuration_command(client: Client, args: Dict) -> CommandResul
 
     response = client.get_sensor_configuration_request(sensor_id=sensor_id)
 
+    capitlize_response = {k.capitalize(): v for k, v in response.items()}
     readable_output = tableToMarkdown(
-        name='Sensor Configuration', t=response, removeNull=True
+        name='Sensor Configuration', t=capitlize_response, removeNull=True
     )
 
     return CommandResults(
@@ -2264,15 +2278,16 @@ def get_sensor_configuration_command(client: Client, args: Dict) -> CommandResul
     )
 
 
-def deploy_sensor_configuration_command(client: Client, args: Dict) -> CommandResults:
+@polling_function(name='nsm-deploy-sensor-configuration',
+                  requires_polling_arg=False)
+def deploy_sensor_configuration_command(args: Dict, client: Client) -> PollResult:
     """
-
     Args:
-        client (Client): - A McAfeeNSM client.
         args (Dict): - The function arguments.
+        client (Client): - A McAfeeNSM client.
 
     Returns:
-        A CommandResult object with the sensor configuration information.
+        A PollResult object with a success or failure message
     """
     sensor_id = arg_to_number(args.get('sensor_id'))
     isSSLPushRequired = argToBoolean(args.get('push_ssl_key', False))
@@ -2281,15 +2296,30 @@ def deploy_sensor_configuration_command(client: Client, args: Dict) -> CommandRe
     isBotnetPushRequired = argToBoolean(args.get('push_botnet', False))
     interval_in_seconds = arg_to_number(args.get('interval_in_seconds', 30))
 
-    response = client.deploy_sensor_configuration_request(sensor_id=sensor_id, isSSLPushRequired=isSSLPushRequired,
-                                                          isGAMUpdateRequired=isGAMUpdateRequired,
-                                                          isSigsetConfigPushRequired=isSigsetConfigPushRequired,
-                                                          isBotnetPushRequired=isBotnetPushRequired)
+    if not any([isSSLPushRequired, isGAMUpdateRequired, isSigsetConfigPushRequired, isBotnetPushRequired]):
+        raise DemistoException("Please provide at least one argument to deploy")
 
-    return CommandResults(
-        readable_output='Sensor configuration was deployed successfully.',
-        raw_response=response
-    )
+    basic_response = client.deploy_sensor_configuration_request(sensor_id=sensor_id, isSSLPushRequired=isSSLPushRequired,
+                                                                isGAMUpdateRequired=isGAMUpdateRequired,
+                                                                isSigsetConfigPushRequired=isSigsetConfigPushRequired,
+                                                                isBotnetPushRequired=isBotnetPushRequired)
+    status = client.check_deploy_sensor_configuration_request_status(sensor_id=sensor_id,
+                                                                     request_id=basic_response.get('RequestId'))
+
+    percentage_completion = (status.get('GamUpdatePercentageComplete') + status.get('SSLPercentageComplete')
+                             + status.get('sigsetConfigPercentageComplete') + status.get('botnetPercentageComplete'))
+    if percentage_completion == 400:
+        return PollResult(
+            response=CommandResults(
+                readable_output='Done'),
+            continue_to_poll=False,
+        )
+    else:
+        return PollResult(
+            response=CommandResults(
+                readable_output='Retrying'),
+            continue_to_poll=True
+        )
 
 
 ''' MAIN FUNCTION '''
@@ -2383,7 +2413,7 @@ def main() -> None:  # pragma: no cover
         elif command == 'nsm-get-sensor-configuration':
             results = get_sensor_configuration_command(client, args)
         elif command == 'nsm-deploy-sensor-configuration':
-            results = deploy_sensor_configuration_command(client, args)
+            results = deploy_sensor_configuration_command(args, client)
 
         else:
             raise NotImplementedError('This command is not implemented yet.')

@@ -2031,6 +2031,7 @@ script:
       description: The ID of the sensor. To get the sensor ID, use the !nsm-get-sensors command.
       required: true
   - name: nsm-deploy-sensor-configuration
+    polling: true
     description: add here....
     arguments:
     - name: sensor_id
