@@ -12,7 +12,7 @@ configuration:
   required: false
   type: 8
 description: Telegram integration
-display: Telegram_Beta (Beta)
+display: Telegram (Beta)
 name: Telegram_Beta
 script:
   commands:
