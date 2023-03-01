@@ -5,7 +5,7 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 import dateparser
 import urllib3
 import traceback
-from typing import Callable
+from collections.abc import Callable
 
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
@@ -1907,7 +1907,7 @@ def patch_incident_update_command(client: Client, args: dict[str, Any]) -> Comma
     # Incident Add Comment
     if action == 'add_comment':
         if not update_value:
-            raise ValueError('Missing comment. Enter Free text up to 512 characters')
+            raise ValueError('Comment is absent. Enter Up to 512 characters of free text')
 
         action_desc = 'Add Comment'
         response = client.add_incident_comment(uuid, update_value)
@@ -1923,23 +1923,23 @@ def patch_incident_update_command(client: Client, args: dict[str, Any]) -> Comma
     elif action == 'update_resolution':
         action_desc = 'Update Status'
         if not update_value or INCIDENT_RESOLUTION.get(str(update_value)) is None:
-            raise ValueError(f'Missing/Invalid Incident Resolution value. '
-                             f'Enter any one of these supported value {INCIDENT_RESOLUTION}')
+            raise ValueError(f'Incident Resolution value = "ID" is missing or invalid. '
+                             f'Try supplying any of the resolution IDs {INCIDENT_RESOLUTION}')
         response = client.update_incident(uuid, int(args.get('value', 0)))
         status = response.status_code
     else:
         raise DemistoException(
-            f'Unable to perform Incident update. Only support the following action {INCIDENT_PATCH_ACTION}')
+            f'operation={action} is not supported; it must be one of {INCIDENT_PATCH_ACTION}')
 
-    if status == 204:
-        summary_data = {
-            'incident_id': args.get('incident_id'),
-            'Message': 'Successfully Updated',
-        }
-        headers = list(summary_data.keys())
-        readable_output = tableToMarkdown(f'Incident {action_desc}', summary_data, headers=headers, removeNull=True)
-    else:
-        readable_output = f'Failed {action}. Response from endpoint {status}'
+    if status != 204:
+        raise DemistoException(f'Failure of incident {action} operation')
+
+    summary_data = {
+        'incident_id': args.get('incident_id'),
+        'Message': 'Finished updating',
+    }
+    headers = list(summary_data.keys())
+    readable_output = tableToMarkdown(f'Incident {action_desc}', summary_data, headers=headers, removeNull=True)
 
     return CommandResults(
         readable_output=readable_output,
