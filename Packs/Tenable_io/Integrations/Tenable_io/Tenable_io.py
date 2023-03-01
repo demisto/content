@@ -829,7 +829,7 @@ def request_uuid_export_assets(args: Dict[str, Any]) -> PollResult:
         else:
             request_params['filters'] = {f'tag.{tag_category}': tag_value}
 
-    if (tag_category and not(tag_value)) or (not(tag_category) and tag_value):
+    if (tag_category and not tag_value) or (not tag_category and tag_value):
         raise DemistoException('Please specify tagCategory and tagValue')
 
     demisto.debug("request params export assets", request_params)
@@ -921,7 +921,7 @@ def request_uuid_export_vulnerabilities(args: Dict[str, Any]) -> PollResult:
         else:
             request_params['filters'] = {f'tag.{tag_category}': tag_value}
 
-    if (tag_category and not(tag_value)) or (not(tag_category) and tag_value):
+    if (tag_category and not tag_value) or (not tag_category and tag_value):
         raise DemistoException('Please specify tagCategory and tagValue')
 
     demisto.debug("request params export vulnerabilities", request_params)
@@ -1057,9 +1057,11 @@ def validate_range(range: Optional[str]) -> tuple[Optional[float], Optional[floa
         range_without_spaces = range.strip()
         nums_list = range_without_spaces.split("-")
         if len(nums_list) < 2:
-            raise DemistoException('Please specify valid vprScoreRange. For example: 3.5-5.5.')
+            raise DemistoException('Please specify valid vprScoreRange. VPR values range are 0.1-10.0.')
         elif float(nums_list[0]) > float(nums_list[1]):
-            raise DemistoException('Please specify valid vprScoreRange. For example: 3.5-5.5.')
+            raise DemistoException('Please specify valid vprScoreRange. VPR values range are 0.1-10.0.')
+        elif float(nums_list[0]) < 0.1 or float(nums_list[1]) > 10.0:
+            raise DemistoException('Please specify valid vprScoreRange. VPR values range are 0.1-10.0.')
         else:
             return float(nums_list[0]), float(nums_list[1])
     return None, None

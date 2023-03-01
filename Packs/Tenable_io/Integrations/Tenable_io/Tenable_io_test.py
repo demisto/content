@@ -177,8 +177,8 @@ def test_get_asset_details_command(mocker, requests_mock):
 @pytest.mark.parametrize('range_str, expected_lower_range_bound,expected_upper_range_bound', [
     ('2.5-3', 2.5, 3),
     ('2.5-3.5', 2.5, 3.5),
-    ('0-3', 0, 3),
-    ('0 - 3', 0, 3),
+    ('0.1-3', 0.1, 3),
+    ('0.1 - 3', 0.1, 3),
     ('0', 'exception', 'exception'),
     ('3-0', 'exception', 'exception')
 ])
@@ -197,7 +197,7 @@ def test_validate_range(range_str, expected_lower_range_bound, expected_upper_ra
         with pytest.raises(DemistoException) as de:
             lower_range_bound, upper_range_bound = validate_range(range_str)
 
-        assert de.value.message == 'Please specify valid vprScoreRange. For example: 3.5-5.5.'
+        assert de.value.message == 'Please specify valid vprScoreRange. VPR values range are 0.1-10.0.'
     else:
         lower_range_bound, upper_range_bound = validate_range(range_str)
         assert lower_range_bound == expected_lower_range_bound
