@@ -10,11 +10,8 @@ To view logs only from the Windows Event log, apply the following filter to the 
 ## Collect Events from Vendor
 
 In order to use the collector, you can use one of the following options:
-- [Microsoft Event Logs](#microsoft-event-logs)
-  - [Collect Events from Vendor](#collect-events-from-vendor)
     - [XDRC (XDR Collector)](#xdrc-xdr-collector)
     - [Broker VM](#broker-vm)
-
 
 
 
