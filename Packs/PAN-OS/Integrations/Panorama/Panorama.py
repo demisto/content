@@ -730,6 +730,9 @@ def build_xpath_filter(name_match: str = None, name_contains: str = None, filter
 
 
 def filter_rules_by_status(disabled: str, rules: list) -> list:
+    for rule in rules:
+        parse_pan_os_un_committed_data(rule, ['@admin', '@dirtyId', '@time'])
+
     if disabled.lower() == 'yes':
         return list(filter(lambda x: x.get('disabled', '').lower() == 'yes', rules))
     else:
