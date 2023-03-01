@@ -163,6 +163,32 @@ def test_filter_events(mocker, args, filtered_args, expected_result):
     assert execute_mock.call_args[0][1] == filtered_args
 
 
+@pytest.mark.parametrize('side_effect,expected_call_count,expected_res_len', [
+    ([[{'Contents': {'data': EXAMPLE_INCIDENTS_RAW_RESPONSE, 'total': 80}}],
+      {'data': None, 'total': 80}], 1, 4),
+    ([[{'Contents': {'data': EXAMPLE_INCIDENTS_RAW_RESPONSE, 'total': 110}}],
+      {'data': EXAMPLE_INCIDENTS_RAW_RESPONSE, 'total': 110}], 2, 8)])
+def test_search_incidents_round_lower(mocker, side_effect, expected_call_count, expected_res_len):
+    """
+        Given:
+            - The script args.
+
+        When:
+            - Running the search_incidents function, with iteration over all incidents pages.
+
+        Then:
+            - Validating the outputs as expected.
+            - Validating the filtered args that was sent to the api is as expected.
+        """
+    import SearchIncidentsV2
+
+    execute_mock = mocker.patch.object(SearchIncidentsV2, 'execute_command', side_effect=side_effect)
+
+    _, res, _ = SearchIncidentsV2.search_incidents({})
+    assert execute_mock.call_count == expected_call_count
+    assert len(res) == expected_res_len
+
+
 @pytest.mark.parametrize('platform, link_type, expected_result', [
     ('x2', 'alertLink', 'alerts?action:openAlertDetails='),
     ('xsoar', 'incidentLink', '#/Details/'),
