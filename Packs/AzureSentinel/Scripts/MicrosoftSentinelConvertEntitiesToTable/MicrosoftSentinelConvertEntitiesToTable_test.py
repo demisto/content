@@ -1,6 +1,3 @@
-import pytest
-
-
 def test_format_entity():
     """
     Given:
@@ -19,41 +16,27 @@ def test_format_entity():
     assert result == expected
 
 
-CONTEXT_RESULTS_LIST_OF_DICTS = str([
+CONTEXT_RESULTS = str([
     {'name': 'test', 'kind': 'test_kind', 'properties': {'testProp': 'test_value'}},
     {'name': 'test2', 'kind': 'test_kind2', 'properties': {'testProp': 'test_value2', 'testProp2': 'test_value3'}}
 ])
-CONTEXT_RESULTS_ONE_DICT = str({'name': 'test', 'kind': 'test_kind', 'properties': {'testProp': 'test_value'}})
 
-EXPECTED_TABLE_LIST_OF_DICTS = "|Name|Kind|Test Prop|Test Prop 2|\n" \
-                               "|---|---|---|---|\n" \
-                               "| test | test_kind | test_value |  |\n" \
-                               "| test2 | test_kind2 | test_value2 | test_value3 |\n"
-EXPECTED_TABLE_ONE_DICT = "|Name|Kind|Test Prop|\n" \
-                          "|---|---|---|\n" \
-                          "| test | test_kind | test_value |\n"
+EXPECTED_TABLE = "|Name|Kind|Test Prop|Test Prop 2|\n" \
+                 "|---|---|---|---|\n" \
+                 "| test | test_kind | test_value |  |\n" \
+                 "| test2 | test_kind2 | test_value2 | test_value3 |\n"
 
 
-@pytest.mark.parametrize('context_results, expected', [
-    (
-        CONTEXT_RESULTS_LIST_OF_DICTS,
-        EXPECTED_TABLE_LIST_OF_DICTS
-    ),
-    (
-        CONTEXT_RESULTS_ONE_DICT,
-        EXPECTED_TABLE_ONE_DICT
-    )
-])
-def test_convert_to_table(context_results, expected):
+def test_convert_to_table():
     """
     Given:
-        - A list of entities or a single entity in string format
+        - A list of entities in string format
     When:
         - calling convert_to_table function
     Then:
         - Validate the table is created correctly
     """
     from MicrosoftSentinelConvertEntitiesToTable import convert_to_table
-    result = convert_to_table(context_results)
+    result = convert_to_table(CONTEXT_RESULTS)
 
-    assert result.readable_output == expected
+    assert result.readable_output == EXPECTED_TABLE

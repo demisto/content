@@ -20,14 +20,12 @@ def format_relation(relation: dict) -> dict:
 def convert_to_table(context_results: str) -> CommandResults:
     """
     Args:
-        context_results (str): list of dicts or a single dict but in string format
+        context_results (str): String representing a list of dicts
 
     Returns:
-        CommandResults: CommandResults object with readable_output
+        CommandResults: CommandResults object containing only readable_output
     """
     context_results = ast.literal_eval(context_results)
-    if not isinstance(context_results, list):
-        context_results = [context_results]
 
     context_formatted = [
         format_relation(relation) for relation in context_results
