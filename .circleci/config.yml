@@ -367,6 +367,8 @@ jobs:
 
             python3 Tests/Marketplace/validate_landing_page_sections.py -i $UNZIP_PATH
       - *store_artifacts
+      - store_artifacts:
+          path: $ARTIFACTS_FOLDER
 
 
 
