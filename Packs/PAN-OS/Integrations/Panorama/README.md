@@ -2724,7 +2724,7 @@ Returns the push status for a configuration.
 ***
 Returns information for a Panorama PCAP file. The recommended maximum file size is 5 MB. If the limit is exceeded, you might need to SSH the firewall and run the scp export command to export the PCAP file. For more information, see the Palo Alto Networks documentation.
 
-When trying to get threat-PCAPs of a firewall through a panorama instance, make sure to forward the log containing the threat PCAP file from the firewall to panorama. 
+When trying to retrieve threat-PCAPs of a firewall through a panorama instance, be sure to forward the log containing the threat PCAP file from the firewall to the panorama instance. 
 
 For more information follow instructions from [here](https://docs.paloaltonetworks.com/panorama/10-2/panorama-admin/manage-log-collection/configure-log-forwarding-to-panorama).
 
@@ -2735,7 +2735,7 @@ For more information follow instructions from [here](https://docs.paloaltonetwor
 
 
 #### PCAPs api docs
-You can find information about required/optional arguments for every pcap types here:
+You can find information about required/optional arguments for each pcap type here:
 
 ![filter pcap api](../../doc_files/fliter-pcap-api.png)
 
