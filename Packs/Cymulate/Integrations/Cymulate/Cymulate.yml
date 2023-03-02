@@ -36,8 +36,8 @@ configuration:
   name: fetch_time
   required: false
   type: 0
-description: Multi-Vector Cyber Attack, Breach and Attack Simulation
-display: Cymulate
+description: Multi-Vector Cyber Attack, Breach and Attack Simulation. Deprecated. Use GuardiCore v2 instead.
+display: Cymulate  (Deprecated)
 name: Cymulate
 script:
   commands:
@@ -107,5 +107,6 @@ script:
 tests:
 - No tests
 defaultclassifier: Cymulate
+deprecated: true
 defaultmapperin: Cymulate-mapper
 fromversion: 5.0.0
