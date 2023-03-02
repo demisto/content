@@ -35,8 +35,10 @@ jobs:
           echo "PYTHONPATH=$GITHUB_WORKSPACE" >> $GITHUB_ENV
       - name: Check conflicts and add release notes
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CONTENTBOT_GH_ADMIN_TOKEN: ${{ secrets.CONTENTBOT_GH_ADMIN_TOKEN }}
           RUN_ID: ${{github.run_id}}
         run: |
+          git config --global user.email "bot@demisto.com"
+          git config --global user.name "XSOAR Bot"
           echo "Someone merged to master. Starting to check if conflicts in release notes created."
-          poetry run python Utils/github_workflow_scripts/autobump_rn.py -g $GITHUB_TOKEN -r RUN_ID
+          poetry run python Utils/github_workflow_scripts/autobump_rn.py -g $CONTENTBOT_GH_ADMIN_TOKEN -r RUN_ID
