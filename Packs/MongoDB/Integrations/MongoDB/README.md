@@ -71,8 +71,8 @@ Get an entry from database by ID
 ```
 
 ##### Human Readable Output
-### Total of 0 found in MongoDB collection `test`:
-**No entries.**
+> Total of 0 found in MongoDB collection 'test':
+>**No entries.**
 
 
 ### 2. mongodb-query
@@ -123,11 +123,11 @@ Searches for items by using the specified JSON query. Search by regex is support
 ```
 
 ##### Human Readable Output
-### Total of 2 found in MongoDB collection `test` with query: {"test": true}:
-|_id|
-|---|
-| 5e454023a14c0fb64ca2fd7f |
-| 5e454024a14c0fb64ca2fd80 |
+> Total of 2 found in MongoDB collection 'test' with query: {"test": true}:
+>|_id|
+>|---|
+>| 5e454023a14c0fb64ca2fd7f |
+>| 5e454024a14c0fb64ca2fd80 |
 
 
 ### 3. mongodb-insert
@@ -168,10 +168,10 @@ Inserts an entry to the database
 ```
 
 ##### Human Readable Output
-### MongoDB: Successfully entered 1 entry to the 'testCollection' collection.
-|_id|
-|---|
-| 5e45403c7bc040c2a989007a |
+>MongoDB: Successfully entered 1 entry to the 'testCollection' collection.
+>|_id|
+>|---|
+>| 5e45403c7bc040c2a989007a |
 
 
 ### 4. mongodb-update
@@ -190,6 +190,7 @@ Updates an entry in a collection
 | filter | A query that matches the document to update. | Required | 
 | update | You can use Update Operators or Aggregation Pipeline. Check documentation for further information. | Required | 
 | update_one | Update only one entry. if true, will set all found entries. | Optional | 
+| upsert | Update entries in a collection that matches the query or create a new entry if no entires match the query. Default is false. | Optional |
 
 
 ##### Context Output
@@ -197,10 +198,15 @@ Updates an entry in a collection
 There is no context output for this command.
 
 ##### Command Example
-```!mongodb-update collection=test filter=`{"test": true}` update=`{"$set": {"test": false}}`\```
+```!mongodb-update collection=test filter=`{"test": true}` update=`{"$set": {"test": false}}` ```
 
 ##### Human Readable Output
-### MongoDB: Total of 1 entries has been modified.
+>MongoDB: Total of 1 entries has been modified.
+
+if an entry was created and inserted using the *upset* argument:
+
+>MongoDB: A new entry was inserted to the collection.
+
 
 ### 5. mongodb-delete
 ---
@@ -227,7 +233,7 @@ There is no context output for this command.
 ```!mongodb-delete collection=test filter=`{"test": true}` delete_one=true```
 
 ##### Human Readable Output
-### MongoDB: Delete 1 entries.
+>MongoDB: Delete 1 entries.
 
 ### 6. mongodb-list-collections
 ---
@@ -269,12 +275,12 @@ There are no input arguments for this command.
 ```
 
 ##### Human Readable Output
-### MongoDB: All collections in database:
-|Collection|
-|---|
-| collectionToDelete |
-| testCollection |
-| test |
+>MongoDB: All collections in database:
+>|Collection|
+>|---|
+>| collectionToDelete |
+>| testCollection |
+>| test |
 
 
 ### 7. mongodb-create-collection
@@ -300,7 +306,7 @@ There is no context output for this command.
 ```!mongodb-create-collection collection=testCollection```
 
 ##### Human Readable Output
-### MongoDB: Collection 'testCollection' has been successfully created.
+>MongoDB: Collection 'testCollection' has been successfully created.
 
 ### 8. mongodb-drop-collection
 ---
@@ -325,7 +331,7 @@ There is no context output for this command.
 ```!mongodb-drop-collection collection=collectionToDelete```
 
 ##### Human Readable Output
-### MongoDB: Collection 'collectionToDelete` has been dropped.
+>MongoDB: Collection 'collectionToDelete` has been dropped.
 
 ### mongodb-pipeline-query
 ***
@@ -389,7 +395,7 @@ Searches for items by the specified JSON pipleline query.
 
 #### Human Readable Output
 
->### Total of 3 entries were found in MongoDB collection `test_collection` with pipeline: [{"$match": {"title": "test_title"}}]:
+>Total of 3 entries were found in MongoDB collection `test_collection` with pipeline: [{"$match": {"title": "test_title"}}]:
 >|_id|
 >|---|
 >| 602e624e8be6cb93eb795695 |
