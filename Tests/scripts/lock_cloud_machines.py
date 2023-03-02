@@ -189,7 +189,7 @@ def try_to_lock_machine(storage_bucket: any, machine: str, machines_locks: list,
         logging.debug(f'the status of job id: {job_id_of_the_existing_lock} is: {job_id_of_the_existing_lock_status}')
         if job_id_of_the_existing_lock_status != 'running':
             # The job holding the machine is not running anymore, it is safe to remove its lock from the machine.
-            remove_file(storage_bucket, file_path=f'{gcs_locks_path}/{machine}-lock-{job_id_of_the_existing_lock}')
+            remove_file(storage_bucket, file_path=f'{gcs_locks_path}/{MACHINES_LOCKS_REPO}/{machine}-lock-{job_id_of_the_existing_lock}')
         else:
             return lock_machine_name
     else:
