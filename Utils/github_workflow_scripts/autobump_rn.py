@@ -748,7 +748,7 @@ class BranchAutoBumper:
                 body += PR_COMMENT.format(pack_auto_bumper.pack_id, new_version, )
             print(f'Committed the changes. Commenting on the pr: \n{body}.\n')
             # todo: uncomment - dont work with my creds, only bots should work.
-            # self.pr.create_issue_comment(body)
+            self.pr.create_issue_comment(body)
             self.git_repo.git.push()
         return body
 
