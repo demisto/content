@@ -261,7 +261,8 @@ class Client(CrowdStrikeClient):
         indicator: dict = {}
 
         for resource in raw_response['resources']:
-            if not (type_ := auto_detect_indicator_type(resource.get('indicator'))):
+            if not (type_ := auto_detect_indicator_type(resource.get('indicator'))
+                    or CROWDSTRIKE_TO_XSOAR_TYPES.get(resource.get('type'))):
                 continue
             indicator = {
                 'type': type_,
@@ -354,7 +355,7 @@ def create_relationships(field: str, indicator: dict, resource: dict) -> list:
             demisto.debug(f"The related indicator type {relation.get('type')} is not supported in XSOAR.")
             continue
         related_indicator_type = CROWDSTRIKE_TO_XSOAR_TYPES[field] if field != 'relations' else \
-            CROWDSTRIKE_TO_XSOAR_TYPES[relation['type']]
+            auto_detect_indicator_type(relation.get('indicator')) or CROWDSTRIKE_TO_XSOAR_TYPES[relation['type']]
         relation_name = INDICATOR_TO_CROWDSTRIKE_RELATION_DICT[related_indicator_type].get(indicator['type'], indicator['type']) \
             if field != 'relations' else EntityRelationship.Relationships.RELATED_TO
 
