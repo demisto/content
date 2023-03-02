@@ -268,7 +268,7 @@
           fi
         fi
       fi
-    - section_end "Run Unit Testing and Lint" 
+    - section_end "Run Unit Testing and Lint"
     - job-done
   parallel:
     matrix:
