@@ -501,7 +501,7 @@ xsiam_server_ga:
     INSTANCE_ROLE: "XSIAM"
     GCS_QUEUE_FILE: "queue-ga"
     TEST_MACHINES_LIST: "test-machines-ga"
-    GCS_LOCKS_PATH: "content-locks-xsiam"
+    GCS_LOCKS_PATH: "content-locks/locks-xsiam-ga"
     CLOUD_SERVERS_FILE: "xsiam_servers_path"
     CLOUD_API_KEYS: $XSIAM_API_KEYS
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
@@ -526,7 +526,7 @@ xsiam_server_ga:
 #    INSTANCE_ROLE: "XSIAM"
 #    GCS_QUEUE_FILE: "queue-ga"
 #    TEST_MACHINES_LIST: "test-machines-ga"
-#    GCS_LOCKS_PATH: "content-locks-xsoar-ng"
+#    GCS_LOCKS_PATH: "content-locks/locks-xsoar-ng"
 #    CLOUD_SERVERS_FILE: "xsoar_ng_servers_path"
 #    CLOUD_API_KEYS: $XSOAR_NG_API_KEYS
 #    GCS_SOURCE_BUCKET: "${GCS_PRODUCTION_BUCKET}"
