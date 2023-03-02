@@ -6,16 +6,16 @@ display: CiscoWSA
 category: Utilities
 description: Cisco WSA
 configuration:
-- display: Your server URL
+- display: "Server URL"
   name: url
   defaultvalue: http://192.168.1.1
   type: 12
   required: true
-- display: API Key
+- display: "API Key"
   name: apikey
   type: 4
   required: true
-- display: Port
+- display: "Port"
   name: port
   type: 0
   required: false
