@@ -57,6 +57,7 @@ def main():
     labels = [label.name for label in merged_pr.labels]
     for label in labels:
         pr.add_to_labels(label)
+        pr.add_to_labels("Internal PR")
         print(f'{t.cyan}"{label}" label added to the Internal PR{t.normal}')
 
     merged_by = merged_pr.merged_by.login

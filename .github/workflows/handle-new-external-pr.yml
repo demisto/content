@@ -18,6 +18,25 @@ jobs:
         with:
           python-version: '3.9'
 
+      - name: Get Playbooks Changed
+        id: changed-files
+        uses: tj-actions/changed-files@v35.1.0
+        with:
+          files: |
+            Packs/**/Playbooks/**
+          since_last_remote_commit: false
+
+      - name: Add Security Label
+        uses: actions-ecosystem/action-add-labels@v1
+        if: ${{ steps.changed-files.outputs.all_changed_files }}
+        with:
+          labels: Security
+
+      - name: Add External Label
+        uses: actions-ecosystem/action-add-labels@v1
+        with:
+          labels: External PR
+
       - name: Print Context
         run: |
           echo "$GITHUB_CONTEXT"
