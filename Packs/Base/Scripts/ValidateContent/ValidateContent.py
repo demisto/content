@@ -256,21 +256,21 @@ def validate_content(filename: str, data: bytes, tmp_directory: str) -> List:
     output_capture = io.StringIO()
     code_fp_to_row_offset = None
     demisto.info(f'before redirect_stdout')
-    # with redirect_stdout(output_capture):
-    #     with redirect_stderr(output_capture):
-    if filename.endswith('.zip'):
-        path_to_validate, code_fp_to_row_offset = prepare_content_pack_for_validation(
-            filename, data, tmp_directory
-        )
-    else:
-        path_to_validate, code_fp_to_row_offset = prepare_single_content_item_for_validation(
-            filename, data, tmp_directory
-        )
+    with redirect_stdout(output_capture):
+        with redirect_stderr(output_capture):
+            if filename.endswith('.zip'):
+                path_to_validate, code_fp_to_row_offset = prepare_content_pack_for_validation(
+                    filename, data, tmp_directory
+                )
+            else:
+                path_to_validate, code_fp_to_row_offset = prepare_single_content_item_for_validation(
+                    filename, data, tmp_directory
+                )
 
-    demisto.info(f'before validate')
-    run_validate(str(path_to_validate), json_output_path)
-    demisto.info(f'before lint')
-    run_lint(str(path_to_validate), lint_output_path)
+            demisto.info(f'before validate')
+            run_validate(str(path_to_validate), json_output_path)
+            demisto.info(f'before lint')
+            run_lint(str(path_to_validate), lint_output_path)
 
     all_outputs = []
     with open(json_output_path, 'r') as json_outputs:
