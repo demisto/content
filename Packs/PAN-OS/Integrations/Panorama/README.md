@@ -2735,7 +2735,7 @@ For more information follow instructions from [here](https://docs.paloaltonetwor
 
 
 #### PCAPs api docs
-You can find information about required/optional arguments for every pcap types here:
+You can find information about required/optional arguments for each pcap type here:
 
 ![filter pcap api](../../doc_files/fliter-pcap-api.png)
 
