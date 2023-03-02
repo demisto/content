@@ -2014,17 +2014,17 @@
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
             "playbookID": "Microsoft Defender - ATP - Indicators SC Test",
-            "instance_names": "microsoft_defender_atp_dev_self_deployed",
+            "instance_names": "microsoft_defender_atp_dev_self_deployed"
         },
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
             "playbookID": "Microsoft Defender - ATP - Indicators SC Test",
-            "instance_names": "microsoft_defender_atp_dev",
+            "instance_names": "microsoft_defender_atp_dev"
         },
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
             "playbookID": "Microsoft Defender - ATP - Indicators SC Test",
-            "instance_names": "microsoft_defender_atp_prod",
+            "instance_names": "microsoft_defender_atp_prod"
         },
         {
             "integrations": "Microsoft 365 Defender",
