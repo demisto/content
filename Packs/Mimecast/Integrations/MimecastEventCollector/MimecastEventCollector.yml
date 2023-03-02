@@ -1,4 +1,4 @@
-category: Analytics & SIEM
+category: Email
 commonfields:
   id: Mimecast Event Collector
   version: -1
@@ -57,7 +57,7 @@ script:
     description: Manual command to fetch events and display them.
     execution: false
     name: mimecast-get-events
-  dockerimage: demisto/fastapi:1.0.0.32142
+  dockerimage: demisto/fastapi:1.0.0.48675
   runonce: false
   isfetchevents: true
   subtype: python3
