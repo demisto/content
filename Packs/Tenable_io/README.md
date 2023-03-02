@@ -4,9 +4,10 @@ Use the Tenable.io integration to manage scans and to view assets.
 ## What does this pack do
 Among other things, this integration enables you to:
 
+- Initiate vulnerability scans on demand.
 - Manage vulnerabilities scanning including launch, pause and resume scans.
 - Get details about assets.
-- Get scans status.
-- Get scans details.
-- Export assets and vulnerabilities.
+- Get scans status and report.
+- Search and filter assets in Tenable.io based on various criteria.
+- Search and filter vulnerabilities in Tenable.io based on various criteria.
 
