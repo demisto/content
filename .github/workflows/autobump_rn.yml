@@ -36,5 +36,4 @@ jobs:
           RUN_ID: ${{github.run_id}}
         run: |
           echo "Someone merged to master. Starting to check if conflicts in release notes created."
-          cd Utils/github_workflow_scripts
-          poetry run python autobump_rn.py -g GITHUB_TOKEN -r RUN_ID
+          poetry run python Utils/github_workflow_scripts/autobump_rn.py -g GITHUB_TOKEN -r RUN_ID
