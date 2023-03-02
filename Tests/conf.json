@@ -1996,17 +1996,20 @@
             "integrations": "Microsoft Defender Advanced Threat Protection",
             "playbookID": "Microsoft Defender Advanced Threat Protection - Test prod",
             "instance_names": "microsoft_defender_atp_prod",
-            "is_mockable": false
+            "is_mockable": false,
+            "timeout": 200
         },
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
             "playbookID": "Microsoft Defender Advanced Threat Protection - Test dev",
-            "instance_names": "microsoft_defender_atp_dev"
+            "instance_names": "microsoft_defender_atp_dev",
+            "timeout": 200
         },
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
             "playbookID": "Microsoft Defender Advanced Threat Protection - Test self deployed",
-            "instance_names": "microsoft_defender_atp_dev_self_deployed"
+            "instance_names": "microsoft_defender_atp_dev_self_deployed",
+            "timeout": 200
         },
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
@@ -4139,7 +4142,8 @@
             ],
             "instance_names": [
                 "microsoft_defender_atp_dev_self_deployed"
-            ]
+            ],
+            "timeout": 200
         },
         {
             "playbookID": "Polygon-Test",
