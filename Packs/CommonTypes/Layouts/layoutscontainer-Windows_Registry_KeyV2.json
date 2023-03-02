@@ -1,4 +1,5 @@
 {
+    "description": "Registry Key Indicator Layout",
     "edit": {
         "sections": [
             {
@@ -71,10 +72,6 @@
                 "description": "",
                 "fields": [
                     {
-                        "fieldId": "indicator_key",
-                        "isVisible": true
-                    },
-                    {
                         "fieldId": "indicator_keyvalue",
                         "isVisible": true
                     }
@@ -88,6 +85,8 @@
             }
         ]
     },
+    "group": "indicator",
+    "id": "registryKey",
     "indicatorsDetails": {
         "tabs": [
             {
@@ -449,18 +448,9 @@
                         "displayType": "ROW",
                         "h": 2,
                         "hideItemTitleOnlyOne": true,
-                        "hideName": true,
+                        "hideName": false,
                         "i": "main-b8e9ebf0-b900-11ed-bb45-976e784dad12",
                         "items": [
-                            {
-                                "endCol": 2,
-                                "fieldId": "key",
-                                "height": 22,
-                                "id": "ba9a1780-b901-11ed-bb45-976e784dad12",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
                             {
                                 "endCol": 2,
                                 "fieldId": "keyvalue",
@@ -474,7 +464,7 @@
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
-                        "name": "Key",
+                        "name": "Values",
                         "static": false,
                         "w": 1,
                         "x": 2,
@@ -690,11 +680,8 @@
             }
         ]
     },
-    "id": "registryKey",
     "name": "Registry Key Indicator",
-    "fromVersion": "6.10.0",
-    "group": "indicator",
     "system": false,
-    "description": "Registry Key Indicator Layout",
-    "version": -1
+    "version": -1,
+    "fromVersion": "6.10.0"
 }
