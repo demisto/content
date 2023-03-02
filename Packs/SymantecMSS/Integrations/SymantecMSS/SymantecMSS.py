@@ -204,8 +204,8 @@ def get_incidents_list_request(time, src_ip, severities, max_incidents):
 
     body = ET.SubElement(elem, "soap12:Body")
     incident_get_list = ET.SubElement(body, "IncidentGetList", {"xmlns": "https://www.monitoredsecurity.com/"})
-    ET.SubElement(incident_get_list, "StartTimeStampGMT").text = time
-    ET.SubElement(incident_get_list, "SourceIP").text = src_ip if src_ip else ''
+    ET.SubElement(incident_get_list, "StartTimeStampGMT").text = str(time)
+    ET.SubElement(incident_get_list, "SourceIP").text = str(src_ip) if src_ip else ''
     ET.SubElement(incident_get_list, "Severity").text = severities if severities else ''
     ET.SubElement(incident_get_list, "MaxIncidents").text = str(max_incidents) if max_incidents else ''
 
@@ -290,13 +290,13 @@ def update_incident_request(num, status, resolution, ref, severity, assign_to_or
 
     body = ET.SubElement(root, "soap12:Body")
     update_incident_workflow = ET.SubElement(body, "UpdateIncidentWorkflow", {"xmlns": "https://www.monitoredsecurity.com/"})
-    ET.SubElement(update_incident_workflow, "IncidentNumber").text = num
-    ET.SubElement(update_incident_workflow, "Status").text = status
-    ET.SubElement(update_incident_workflow, "Resolution").text = resolution
-    ET.SubElement(update_incident_workflow, "Reference").text = ref if ref else ''
-    ET.SubElement(update_incident_workflow, "Severity ").text = severity
-    ET.SubElement(update_incident_workflow, "AssignedToOrganiztion").text = assign_to_org if assign_to_org else ''
-    ET.SubElement(update_incident_workflow, "AssignedToPerson").text = assign_to_person if assign_to_person else ''
+    ET.SubElement(update_incident_workflow, "IncidentNumber").text = str(num)
+    ET.SubElement(update_incident_workflow, "Status").text = str(status)
+    ET.SubElement(update_incident_workflow, "Resolution").text = str(resolution)
+    ET.SubElement(update_incident_workflow, "Reference").text = str(ref) if ref else ''
+    ET.SubElement(update_incident_workflow, "Severity ").text = str(severity)
+    ET.SubElement(update_incident_workflow, "AssignedToOrganiztion").text = str(assign_to_org) if assign_to_org else ''
+    ET.SubElement(update_incident_workflow, "AssignedToPerson").text = str(assign_to_person) if assign_to_person else ''
     ET.SubElement(update_incident_workflow, "Comments").text = escape(comments) if comments else ''
 
     elem_str = ET.tostring(root, encoding="utf-8")
@@ -437,7 +437,7 @@ def query_incident_request(num):
 
     body = ET.SubElement(root, "soap12:Body")
     incident_query = ET.SubElement(body, "IncidentQuery", {"xmlns": "https://www.monitoredsecurity.com/"})
-    ET.SubElement(incident_query, "IncidentNumber").text = num
+    ET.SubElement(incident_query, "IncidentNumber").text = str(num)
     elem_str = ET.tostring(root, encoding="utf-8")
     headers = {
         "content-Type": "application/soap+xml; charset=utf-8",
@@ -461,7 +461,7 @@ def query_incident_workflow_request(num):
 
     body = ET.SubElement(root, "soap12:Body")
     incident_workflow_query = ET.SubElement(body, "IncidentWorkflowQuery", {"xmlns": "https://www.monitoredsecurity.com/"})
-    ET.SubElement(incident_workflow_query, "IncidentNumber").text = num
+    ET.SubElement(incident_workflow_query, "IncidentNumber").text = str(num)
     elem_str = ET.tostring(root, encoding="utf-8")
 
     headers = {

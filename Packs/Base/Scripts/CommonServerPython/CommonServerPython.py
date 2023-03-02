@@ -2638,7 +2638,6 @@ def xml2json(xmlstring, options={}, strip_ns=1, strip=1):
     return elem2json(elem, options, strip_ns=strip_ns, strip=strip)
 
 
-
 def json2xml(json_data, factory=ET.Element):
     """Convert a JSON string into an XML string.
     Whatever Element implementation we could import will be used by
