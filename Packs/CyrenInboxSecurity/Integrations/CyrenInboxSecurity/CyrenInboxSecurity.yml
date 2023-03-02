@@ -98,5 +98,5 @@ script:
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
-defaultclassifier: Cyren Inbox Security Classifier
+defaultclassifier: 2b2c9b9d-cfb4-46d6-8b0c-55e02bf9f62c
 defaultmapperin: Cyren Inbox Security Mapper

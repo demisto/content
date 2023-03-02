@@ -1,5 +1,4 @@
 Concentric’s Semantic Intelligence™ solution discovers and protects business critical, unstructured data. We use deep learning to identify risky sharing, inappropriate third party access, assets in the wrong location, mis-classified documents, or lateral movement of data – all without rules or complex upfront configuration.
-This integration was integrated and tested with version xx of ConcentricAI
 
 ## Configure ConcentricAI on Cortex XSOAR
 
