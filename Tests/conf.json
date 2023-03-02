@@ -2015,19 +2015,16 @@
             "integrations": "Microsoft Defender Advanced Threat Protection",
             "playbookID": "Microsoft Defender - ATP - Indicators SC Test",
             "instance_names": "microsoft_defender_atp_dev_self_deployed",
-            "timeout": 200
         },
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
             "playbookID": "Microsoft Defender - ATP - Indicators SC Test",
             "instance_names": "microsoft_defender_atp_dev",
-            "timeout": 200
         },
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
             "playbookID": "Microsoft Defender - ATP - Indicators SC Test",
             "instance_names": "microsoft_defender_atp_prod",
-            "timeout": 200
         },
         {
             "integrations": "Microsoft 365 Defender",
@@ -4144,7 +4141,8 @@
             ],
             "instance_names": [
                 "microsoft_defender_atp_dev_self_deployed"
-            ]
+            ],
+            "timeout": 200
         },
         {
             "playbookID": "Polygon-Test",
