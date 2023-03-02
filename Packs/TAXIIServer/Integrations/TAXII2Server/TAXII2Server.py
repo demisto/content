@@ -567,7 +567,6 @@ def find_indicators(query: str, types: list, added_after, limit: int, offset: in
     new_limit = offset + limit
     iocs = []
     extensions = []
-    stix_objects = []
 
     if is_manifest:
         field_filters: Optional[str] = ','.join(TAXII_REQUIRED_FILTER_FIELDS)
@@ -609,9 +608,8 @@ def find_indicators(query: str, types: list, added_after, limit: int, offset: in
                         extensions.append(extension_definition)
                 elif stix_ioc:
                     iocs.append(stix_ioc)
-                stix_objects.append(stix_ioc)
-    if not is_manifest and stix_objects and is_demisto_version_ge('6.6.0'):
-        relationships = create_relationship_object(stix_objects)
+    if not is_manifest and iocs and is_demisto_version_ge('6.6.0'):
+        relationships = create_relationship_object(iocs)
         iocs.extend(relationships)
         iocs = sorted(iocs, key=lambda k: k['modified'])
     return iocs, extensions, total
@@ -1263,7 +1261,7 @@ def get_entity_b_stix_uuid(relationship: Dict[str, Any]) -> tuple[Optional[str],
     :param relationship: A dictionary containing the relationships fields
     :return: tuple: A tuple containing the STIX UUID and value of the 'entityB'.
     """
-    entity_b_stix_id = None
+    entity_b_stix_id = None   # TODO - need to decide if want the entityB object also
     entity_b_value = relationship.get('entityB')
     entity_b_xsoar_indicator = demisto.searchIndicators(value=entity_b_value, size=1).get('iocs', [])
     if entity_b_xsoar_indicator:
@@ -1274,7 +1272,6 @@ def get_entity_b_stix_uuid(relationship: Dict[str, Any]) -> tuple[Optional[str],
             entity_b_stix_id = create_sdo_stix_uuid(entity_b_xsoar_indicator[0], stix_type)
         else:
             demisto.debug(f'No such indicator type: {entity_b_type} in stix format.')
-            entity_b_stix_id = None
     demisto.debug(f'Generated STIX UUID for {entity_b_value}: {entity_b_stix_id}')
     return entity_b_stix_id, entity_b_value
 
