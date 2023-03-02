@@ -1,6 +1,6 @@
-id: O365 - EWS - Extension - Test
+id: playbook-EWS_O365_Extension_test
 version: -1
-name: O365 - EWS - Extension - Test
+name: playbook-EWS_O365_Extension_test
 starttaskid: "0"
 tasks:
   "0":

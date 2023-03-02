@@ -368,7 +368,7 @@ script:
     - contextPath: Host.IP
       description: The IP address of the host.
       type: String
-  dockerimage: demisto/python3:3.10.8.36650
+  dockerimage: demisto/python3:3.10.10.48392
   feed: false
   isfetch: true
   longRunning: false
