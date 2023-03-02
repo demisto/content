@@ -1806,7 +1806,7 @@ Get resource details.
 >### Resource Details:
 >|Rrn|Id|Name|Url|Account Id|Account Name|Cloud Type|Region Id|Region Name|Service|Resource Type|Insert Ts|Deleted|Vpc Id|Vpc Name|Tags|Risk Grade|Has Network|Has External Finding|Has External Integration|Allow Drill Down|Has Ext Finding Risk Factors|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| rrn::name:place:111:a1b2:a%3Ajj55-2023-01-29-09-25 | rds:aaaaaaaaaaaaaa-2023-01-29-09-25 | rds:aaaaaaaaaaaaaa-2023-01-29-09-25 | [https:<span>//</span>some_url?region=us-east-1#db-snapshots:id=rds:aaaaaaaaaaaaaa-2023-01-29-09-25](https:<span>//</span>some_url/rds/home?region=us-east-1#db-snapshots:id=rds:aaaaaaaaaaaaaa-2023-01-29-09-25) | 111111111111 | AAAAAAA | aws | us-east-1 | AWS Virginia | Amazon RDS | Managed Database Snapshot | 2023-01-29T09:35:27Z | true | vpc-0f | ServerlessVPC | :  | A | false | false | false | true | false |
+>| rrn::name:place:111:a1b2:a%3Ajj55-2023-01-29-09-25 | rds:aaaaaaaaaaaaaa-2023-01-29-09-25 | rds:aaaaaaaaaaaaaa-2023-01-29-09-25 | [https://some_url?region=us-east-1#db-snapshots:id=rds:aaaaaaaaaaaaaa-2023-01-29-09-25](https://some_url/rds/home?region=us-east-1#db-snapshots:id=rds:aaaaaaaaaaaaaa-2023-01-29-09-25) | 111111111111 | AAAAAAA | aws | us-east-1 | AWS Virginia | Amazon RDS | Managed Database Snapshot | 2023-01-29T09:35:27Z | true | vpc-0f | ServerlessVPC | :  | A | false | false | false | true | false |
 
 
 ### prisma-cloud-account-list
@@ -2195,7 +2195,7 @@ Get resource host finding list.
 >### Host Finding Details:
 >|Account Id|Region Id|Finding Id|Type|Source|Severity|Status|Created On|Updated On|Normalized Names|Scan Id|Resource Cloud Id|Source Data Account ID|ARN|Title|Description|Resource Url|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 555555555555 | us-east-1 | 66666666666666666666666666666666 | guard_duty_host | guardduty | low | open | 2023-01-03T16:13:25Z | 2023-02-16T16:01:36Z | UnauthorizedAccess:EC2/SSHBruteForce | scan-id-5 | i-44444444444444444 | 555555555555 | arn:aws:trail:us-west-1:888888888888:trail/control | 35.180.1.1 is performing SSH brute force attacks against i-44444444444444444. | 35.180.1.1 is performing SSH brute force attacks against i-44444444444444444. Brute force attacks are used to gain unauthorized access to your instance by guessing the SSH password. | [https:<span>//</span>some_url?#/findings?search=id%3D66666666666666666666666666666666](https:<span>//</span>some_url?#/findings?search=id%3D66666666666666666666666666666666) |
+>| 555555555555 | us-east-1 | 66666666666666666666666666666666 | guard_duty_host | guardduty | low | open | 2023-01-03T16:13:25Z | 2023-02-16T16:01:36Z | UnauthorizedAccess:EC2/SSHBruteForce | scan-id-5 | i-44444444444444444 | 555555555555 | arn:aws:trail:us-west-1:888888888888:trail/control | 35.180.1.1 is performing SSH brute force attacks against i-44444444444444444. | 35.180.1.1 is performing SSH brute force attacks against i-44444444444444444. Brute force attacks are used to gain unauthorized access to your instance by guessing the SSH password. | [https://some_url?#/findings?search=id%3D66666666666666666666666666666666](https://some_url?#/findings?search=id%3D66666666666666666666666666666666) |
 
 
 ### prisma-cloud-permission-list

@@ -101,7 +101,7 @@ class Client(BaseClient):
             if not token:
                 raise DemistoException(f'Could not retrieve token from server: {response.get("message")}', res=response)
         except ValueError as exception:
-            raise DemistoException('Could not parse API response.', exception=exception)
+            raise DemistoException('Could not parse API response.', exception=exception) from exception
 
         self._headers[REQUEST_CSPM_AUTH_HEADER] = token
 
@@ -446,8 +446,7 @@ def remove_empty_values(value_to_reduce: Union[Dict[str, Any], List, Any]):
                 reduced_list.append(reduced_nested_value)
         return reduced_list
 
-    else:
-        return value_to_reduce
+    return value_to_reduce
 
 
 def get_response_status_header(response: requests.Response) -> str:
@@ -897,14 +896,11 @@ def network_search_v1_command(client: Client, args: Dict[str, Any], return_v1_ou
     return command_results
 
 
-def alert_filter_list_v1_command(client: Client, args: Dict[str, Any], return_v1_output: bool) -> \
-        Union[CommandResults, Dict]:
+def alert_filter_list_v1_command(client: Client, args: Dict[str, Any], return_v1_output: bool) -> Union[CommandResults, Dict]:
     """
     This command is for supporting backwards compatibility, to make transition to V2 easier for users with custom playbooks.
     """
-    command_results = alert_filter_list_command(client)
-
-    return command_results
+    return alert_filter_list_command(client)
 
 
 ''' COMMAND FUNCTIONS '''
@@ -1120,10 +1116,11 @@ def remediation_command_list_command(client: Client, args: Dict[str, Any]) -> Co
         if not (hasattr(de, 'res') and hasattr(de.res, 'status_code')):
             raise
         if de.res.status_code == 405:
-            raise DemistoException(f'Remediation unavailable'
-                                   f'{" for the time given" if time_filter != TIME_FILTER_BASE_CASE else ""}.', exception=de)
+            raise DemistoException(
+                f'Remediation unavailable {" for the time given" if time_filter != TIME_FILTER_BASE_CASE else ""}.',
+                exception=de) from de
         elif de.res.status_code == 400:
-            raise DemistoException('Policy type disallowed using this remediation api.', exception=de)
+            raise DemistoException('Policy type disallowed using this remediation api.', exception=de) from de
         raise
 
     command_results = CommandResults(
@@ -1150,9 +1147,9 @@ def alert_remediate_command(client: Client, args: Dict[str, Any]) -> CommandResu
         if not (hasattr(de, 'res') and hasattr(de.res, 'status_code')):
             raise
         if de.res.status_code == 405:
-            raise DemistoException(f'Remediation unavailable for alert {alert_id}.', exception=de)
+            raise DemistoException(f'Remediation unavailable for alert {alert_id}.', exception=de) from de
         elif de.res.status_code == 404:
-            raise DemistoException(f'Alert {alert_id} is not found.', exception=de)
+            raise DemistoException(f'Alert {alert_id} is not found.', exception=de) from de
         raise
 
     command_results = CommandResults(
@@ -1389,8 +1386,7 @@ def account_status_get_command(client: Client, args: Dict[str, Any]) -> CommandR
 
     responses = []
     for account_id in account_ids:
-        response = client.account_status_get_request(account_id)
-        if response:
+        if response := client.account_status_get_request(account_id):
             response[0]['accountId'] = account_id
             responses.append(response[0])
 
