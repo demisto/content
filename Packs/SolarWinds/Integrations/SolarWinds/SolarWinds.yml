@@ -529,7 +529,7 @@ script:
       Note: The guidelines for composing the query can be found in the 'View Integration Documentation' linked in the integration tips.
     execution: false
     name: swis-query
-  dockerimage: demisto/python3:3.10.5.31797
+  dockerimage: demisto/python3:3.10.10.48392
   feed: false
   isfetch: true
   longRunning: false
