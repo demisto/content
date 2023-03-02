@@ -1,5 +1,5 @@
 Prisma Cloud secures infrastructure, workloads and applications, across the entire cloud-native technology stack.
-This integration was integrated and tested with version xx of PrismaCloud
+This integration was integrated and tested with version 23.2.1 of PrismaCloud
 
 Some changes have been made that might affect your existing content. 
 If you are upgrading from a previous version of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration---prisma-cloud-v2).

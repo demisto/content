@@ -46,6 +46,7 @@ Misconfiguration
 RRN
 FQDN
 VPC
+CloudTrail
 
 [file:classifier-Prisma_Cloud.json]
 ignore=BA101
