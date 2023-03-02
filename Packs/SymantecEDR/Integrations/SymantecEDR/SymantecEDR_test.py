@@ -1,7 +1,6 @@
 """
 Symantec EDR (On-prem) Integration - Unit Tests file
 """
-# type: ignore
 import pytest
 import CommonServerPython
 from SymantecEDR import *
