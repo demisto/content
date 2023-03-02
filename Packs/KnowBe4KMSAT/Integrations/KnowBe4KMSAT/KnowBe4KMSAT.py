@@ -102,7 +102,7 @@ class Client(BaseClient):
             method="GET",
             url_suffix=f"/groups/{group_id}/risk_score_history",
             resp_type="json",
-            ok_codes=(200, 404,),
+            ok_codes=(200, ),
             params=params,
         )
 
@@ -120,7 +120,7 @@ class Client(BaseClient):
             method="GET",
             url_suffix=f"/groups/{group_id}/members",
             resp_type="json",
-            ok_codes=(200, 404,),
+            ok_codes=(200, ),
             params=params,
         )
 
@@ -138,7 +138,7 @@ class Client(BaseClient):
             method="GET",
             url_suffix=f"/users/{user_id}/risk_score_history",
             resp_type="json",
-            ok_codes=(200, 404,),
+            ok_codes=(200, ),
             params=params,
         )
 
@@ -173,7 +173,7 @@ class Client(BaseClient):
             method="GET",
             url_suffix=f"/phishing/security_tests/{pst_id}/recipients",
             resp_type="json",
-            ok_codes=(200, 404,),
+            ok_codes=(200, ),
             params=params,
         )
 
@@ -191,7 +191,7 @@ class Client(BaseClient):
             method="GET",
             url_suffix=f"/phishing/campaigns/{campaign_id}/security_tests",
             resp_type="json",
-            ok_codes=(200, 404,),
+            ok_codes=(200, ),
             params=params,
         )
 
@@ -357,7 +357,7 @@ class UserEventClient(BaseClient):
             url_suffix=f"/events/{event_id}",
             resp_type="json",
             raise_on_status=True,
-            ok_codes=(200, 404,),
+            ok_codes=(200, ),
         )
 
     def user_event_status(self, request_id: str):
@@ -375,7 +375,7 @@ class UserEventClient(BaseClient):
             url_suffix=f"/statuses/{request_id}",
             resp_type="json",
             raise_on_status=True,
-            ok_codes=(200, 404,),
+            ok_codes=(200, ),
         )
 
     def user_event_statuses(self, params: dict):
@@ -976,13 +976,8 @@ def kmsat_training_enrollments_list_command(
             "time_spent",
             "policy_acknowledged",
         ]
-    )
 
-    if not data:
-        raise DemistoException(
-            "Translation failed: the response from server did not include `kmsat_training_enrollments_list_command`.",
-            res=data,
-        )
+    )
     return CommandResults(
         outputs_prefix="KMSAT.TrainingEnrollments",
         outputs_key_field="enrollment_id",
