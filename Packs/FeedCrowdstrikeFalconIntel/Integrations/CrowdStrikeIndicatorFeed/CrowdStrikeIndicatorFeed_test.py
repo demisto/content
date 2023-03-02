@@ -193,8 +193,8 @@ def test_crowdstrike_to_xsoar_types():
             {'last_updated': '1662650343'},
             {'resources': [
                 {
-                    "id": "dummy",
-                    "indicator": "dummy",
+                    "id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                    "indicator": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
                     "type": "hash_md5",
                     "deleted": "False",
                     "published_date": 1622198010,
@@ -223,8 +223,8 @@ def test_crowdstrike_to_xsoar_types():
             {},
             {'resources': [
                 {
-                    "id": "dummy",
-                    "indicator": "dummy",
+                    "id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                    "indicator": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
                     "type": "hash_md5",
                     "deleted": "False",
                     "published_date": 1622198010,
@@ -253,8 +253,8 @@ def test_crowdstrike_to_xsoar_types():
             {},
             {'resources': [
                 {
-                    "id": "dummy",
-                    "indicator": "dummy",
+                    "id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                    "indicator": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
                     "type": "hash_md5",
                     "deleted": "False",
                     "published_date": 1622198010,
