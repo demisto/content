@@ -21,7 +21,7 @@ configuration:
   type: 15
   required: true
   additionalinfo: Reliability of the source providing the intelligence data.
-  defaultvalue: B - Usually Reliable
+  defaultvalue: B - Usually reliable
   options:
   - A+ - 3rd party enrichment
   - A - Completely reliable
