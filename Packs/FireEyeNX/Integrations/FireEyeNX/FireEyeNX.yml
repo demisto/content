@@ -9,10 +9,12 @@ configuration:
   name: url
   required: true
   type: 0
+  section: Connect
 - display: Username
   name: credentials
   required: true
   type: 9
+  section: Connect
 - additionalinfo: The FireEye NX API calls timeout if the response is not
     returned within the configured time interval. Default is 120 seconds.
   defaultvalue: '120'
@@ -21,14 +23,18 @@ configuration:
   name: request_timeout
   required: false
   type: 0
+  section: Connect
+  advanced: true
 - display: Fetch incidents
   name: isFetch
   required: false
   type: 8
+  section: Collect
 - display: Incident type
   name: incidentType
   required: false
   type: 13
+  section: Connect
 - additionalinfo: The time range to consider for the initial data fetch.(<number> <unit>,
     e.g., 1 hour, 2 hours, 6 hours, 12 hours, 48 hours). Default is 12 hours. The API supports up to 48 hours. More than 48 hours will produce an error.
   defaultvalue: 12 hours
@@ -37,6 +43,7 @@ configuration:
   name: first_fetch
   required: false
   type: 0
+  section: Collect
 - additionalinfo: The maximum number of alerts to fetch. A maximum of 200
     alerts is fetched. Default is 50.
   defaultvalue: '50'
@@ -45,6 +52,7 @@ configuration:
   name: max_fetch
   required: false
   type: 0
+  section: Collect
 - additionalinfo: Fetches Alerts and/or IPS Events.
   display: Fetch Types
   hidden: false
@@ -54,6 +62,7 @@ configuration:
   - IPS Events
   required: false
   type: 16
+  section: Collect
 - additionalinfo: Fetches MVX-correlated events only. Works only for events defined in Fetch
     Types.
   display: Fetches MVX-correlated events only
@@ -61,6 +70,7 @@ configuration:
   name: fetch_mvx_correlated_events
   required: false
   type: 8
+  section: Collect
 - additionalinfo: The type of malware object to fetch alerts.
   display: Alert Malware Type
   hidden: false
@@ -73,6 +83,7 @@ configuration:
   - infection_match
   required: false
   type: 15
+  section: Collect
 - additionalinfo: Replaces the domain of the alert URL key to the instance URL for
     fetch incident and command.
   display: Use instance URL for all the fetched alerts URL.
@@ -80,21 +91,27 @@ configuration:
   name: replace_alert_url
   required: false
   type: 8
+  section: Collect
 - display: Fetch artifacts for each alert
   hidden: false
   name: fetch_artifacts
   required: false
   type: 8
+  section: Collect
 - display: Trust any certificate (not secure)
   hidden: false
   name: insecure
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   hidden: false
   name: proxy
   required: false
   type: 8
+  section: Connect
+  advanced: true
 description: FireEye Network Security is an effective cyber threat protection solution
   that helps organizations minimize the risk of costly breaches by accurately detecting
   and immediately stopping advanced, targeted, and other evasive attacks hiding in
