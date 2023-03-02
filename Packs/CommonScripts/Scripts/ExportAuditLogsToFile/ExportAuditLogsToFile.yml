@@ -24,7 +24,7 @@ contentitemexportablefields:
     fromServerVersion: ""
 dependson:
   must:
-  - Demisto REST API|||demisto-api-post
+  - demisto-api-post
 dockerimage: demisto/python3:3.10.9.45313
 enabled: true
 name: ExportAuditLogsToFile
@@ -37,5 +37,8 @@ tags:
 - Utility
 type: python
 fromversion: 6.5.0
+marketplaces:
+- xsoar
+- marketplacev2
 tests:
 - No tests (auto formatted)

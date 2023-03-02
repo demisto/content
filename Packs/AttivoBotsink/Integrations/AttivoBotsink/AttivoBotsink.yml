@@ -182,7 +182,7 @@ script:
     description: List all deceptive users
   isfetch: true
   runonce: false
-  dockerimage: demisto/python3:3.10.6.33415
+  dockerimage: demisto/python3:3.10.10.48392
 tests:
 - AttivoBotsinkTest
 fromversion: 5.0.0

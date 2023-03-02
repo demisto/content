@@ -10,7 +10,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * Cortex XDR - Port Scan - Adjusted
 * Cortex XDR - Possible External RDP Brute-Force
 * Cortex XDR - Malware Investigation
-* Cortex XDR - Cloud Cryptomining
+* Cortex XDR - Cloud Cryptojacking
 * GenericPolling
 
 ### Integrations

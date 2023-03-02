@@ -145,7 +145,12 @@ const operator2 = getOperator(lhsB_name, rhsB_name, conditionB);
 var resultA = evaluate(operator, lhs, rhs, options);
 
 var ret;
-if (lhsB) {
+if (lhsB &&
+    (args.lhsB !== undefined ||
+     args.rhsB !== undefined ||
+     args.conditionB !== undefined ||
+     args.conditionInBetween !== undefined ||
+     args.optionsB !== undefined)) {
     var resultB = evaluate(operator2, lhsB, rhsB, optionsB);
     if (conditionInBetween == 'and' && (resultA && resultB))  {
         ret = convertValue(args, options["input_data_type:then"], args.then);
@@ -159,7 +164,7 @@ if (lhsB) {
 }
 else {
     if (resultA) {
-    ret = convertValue(args, options["input_data_type:then"], args.then);
+        ret = convertValue(args, options["input_data_type:then"], args.then);
     }
     else {
         ret = convertValue(args, options["input_data_type:else"], args.else);

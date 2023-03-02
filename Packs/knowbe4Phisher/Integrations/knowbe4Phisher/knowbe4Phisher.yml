@@ -234,7 +234,7 @@ script:
     description: Removes tags from a given message.
     execution: false
     name: phisher-tags-delete
-  dockerimage: demisto/python3:3.10.8.37233
+  dockerimage: demisto/python3:3.10.9.46807
   feed: false
   isfetch: true
   longRunning: false
