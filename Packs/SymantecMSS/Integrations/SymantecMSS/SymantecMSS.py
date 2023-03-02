@@ -207,7 +207,7 @@ def get_incidents_list_request(time, src_ip, severities, max_incidents):
     ET.SubElement(incident_get_list, "StartTimeStampGMT").text = time
     ET.SubElement(incident_get_list, "SourceIP").text = src_ip if src_ip else ''
     ET.SubElement(incident_get_list, "Severity").text = severities if severities else ''
-    ET.SubElement(incident_get_list, "MaxIncidents").text = max_incidents if max_incidents else ''
+    ET.SubElement(incident_get_list, "MaxIncidents").text = str(max_incidents) if max_incidents else ''
 
     elem_str = ET.tostring(elem, encoding="utf-8")
 
