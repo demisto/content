@@ -1,5 +1,7 @@
 id: Cortex ASM - Remediation Path Rules
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: Cortex ASM - Remediation Path Rules
 description: This playbook returns "RemediationAction" options based return from Remediation Path Rules API, or defaults to data collection task options from "Cortex ADM - Decision" subplaybook.
 starttaskid: "0"
@@ -70,8 +72,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 215
+          "x": 470,
+          "y": 405
         }
       }
     note: false
@@ -113,8 +115,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 385
+          "x": 470,
+          "y": 575
         }
       }
     note: false
@@ -177,8 +179,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 560
+          "x": 470,
+          "y": 750
         }
       }
     note: false
@@ -205,8 +207,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 490,
-          "y": 1665
+          "x": 480,
+          "y": 1855
         }
       }
     note: false
@@ -218,10 +220,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 59707f87-7c81-4617-89fc-cc923d071cbb
+    taskid: feea4021-9d6c-4b15-8234-e83994ba806c
     type: condition
     task:
-      id: 59707f87-7c81-4617-89fc-cc923d071cbb
+      id: feea4021-9d6c-4b15-8234-e83994ba806c
       version: -1
       name: Meets automated remediation requirements?
       description: Determines if the alert meets the criteria for automated remediation.
@@ -231,6 +233,8 @@ tasks:
     nexttasks:
       '#default#':
       - "20"
+      Unclaimed S3 Bucket:
+      - "33"
       "yes":
       - "19"
     separatecontext: false
@@ -278,12 +282,53 @@ tasks:
                 accessor: asmdevcheck
             iscontext: true
           ignorecase: true
+    - label: Unclaimed S3 Bucket
+      condition:
+      - - operator: inList
+          left:
+            value:
+              complex:
+                root: alert
+                accessor: asmattacksurfaceruleid
+                transformers:
+                - operator: StripChars
+                  args:
+                    chars:
+                      value:
+                        simple: '[\"]'
+            iscontext: true
+          right:
+            value:
+              simple: UnclaimedS3Bucket
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: AWS - S3
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 230,
-          "y": -320
+          "x": -60,
+          "y": -310
         }
       }
     note: false
@@ -343,8 +388,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 40
+          "x": 470,
+          "y": 230
         }
       }
     note: false
@@ -515,8 +560,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 230,
-          "y": -140
+          "x": -60,
+          "y": 45
         }
       }
     note: false
@@ -552,7 +597,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -170,
+          "x": -400,
           "y": -140
         }
       }
@@ -596,8 +641,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -400,
-          "y": 1160
+          "x": -410,
+          "y": 1350
         }
       }
     note: false
@@ -641,8 +686,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 720
+          "x": 470,
+          "y": 910
         }
       }
     note: false
@@ -745,8 +790,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 930
+          "x": 470,
+          "y": 1120
         }
       }
     note: false
@@ -782,8 +827,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1160
+          "x": 40,
+          "y": 1350
         }
       }
     note: false
@@ -819,8 +864,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 490,
-          "y": 1160
+          "x": 480,
+          "y": 1350
         }
       }
     note: false
@@ -856,8 +901,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 900,
-          "y": 1160
+          "x": 890,
+          "y": 1350
         }
       }
     note: false
@@ -893,8 +938,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1330,
-          "y": 1160
+          "x": 1320,
+          "y": 1350
         }
       }
     note: false
@@ -926,8 +971,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 490,
-          "y": 1340
+          "x": 480,
+          "y": 1530
         }
       }
     note: false
@@ -966,8 +1011,39 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 490,
-          "y": 1480
+          "x": 480,
+          "y": 1670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: a7dd4065-ed19-4430-8337-aa1c47a756a5
+    type: title
+    task:
+      id: a7dd4065-ed19-4430-8337-aa1c47a756a5
+      version: -1
+      name: Also True
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 250,
+          "y": -140
         }
       }
     note: false
@@ -985,9 +1061,9 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2200,
+        "height": 2390,
         "width": 2110,
-        "x": -400,
+        "x": -410,
         "y": -470
       }
     }
@@ -1005,6 +1081,6 @@ outputs:
 - contextPath: RPR_Timestamp
   description: Timestamp of when the remediation path rule action was determined.
   type: string
-fromversion: 6.5.0
 tests:
 - No tests (auto formatted)
+fromversion: 6.5.0

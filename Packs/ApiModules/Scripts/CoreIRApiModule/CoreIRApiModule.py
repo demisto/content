@@ -1078,6 +1078,9 @@ class CoreClient(BaseClient):
             timeout=self.timeout,
         )
         link = response.get('reply', {}).get('DATA')
+        # If the link is None, the API call will result in a 'Connection Timeout Error', so we raise an exception
+        if not link:
+            raise DemistoException(f'Failed getting response files for {action_id=}, {endpoint_id=}')
         return self._http_request(
             method='GET',
             full_url=link,
