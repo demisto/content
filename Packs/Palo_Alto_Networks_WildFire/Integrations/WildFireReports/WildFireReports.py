@@ -21,10 +21,7 @@ class Client(BaseClient):
         within XSOAR (both on-prem and cloud).
         """
         platform = get_demisto_version().get('platform')
-        if platform == 'x2':  # XSIAM
-            return 'xdr'
-        else:  # XSOAR (on-prem or cloud)
-            return 'xsoartim'
+        return 'xdr' if platform == 'x2' else 'xsoartim'
 
     def get_file_report(self, file_hash: str):
         return self._http_request(
