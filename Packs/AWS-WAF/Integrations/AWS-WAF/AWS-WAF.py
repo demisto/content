@@ -14,11 +14,18 @@ urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # IfrSO8601 format with UTC, default in XSOAR
 SERVICE = 'wafv2'
 OUTPUT_PREFIX = 'AWS.Waf'
 OPERATOR_TO_STATEMENT_OPERATOR = {'And': 'AndStatement', 'Or': 'OrStatement', 'Not': 'NotStatement'}
 STATEMENT_OPERATORS = ('AndStatement', 'OrStatement', 'NotStatement')
+REGEX_MATCH_STATEMENT = 'RegexPatternSetReferenceStatement'
+BYTE_MATCH_STATEMENT = 'ByteMatchStatement'
+MATCH_TYPE_TO_POSITIONAL_CONSTRAIN = {'Exactly Matches String': 'EXACTLY',
+                                      'Starts With String': 'STARTS_WITH',
+                                      'Ends With String': 'ENDS_WITH',
+                                      'Contains String': 'CONTAINS',
+                                      'Contains Words': 'CONTAINS_WORD'}
 
 ''' HELPER FUNCTIONS '''
 
@@ -55,7 +62,6 @@ def build_visibility_config_object(metric_name: str,
 
 
 def build_ip_rule_object(args: dict) -> dict:
-    # TODO get all out to build ip statements
     ip_rule: dict = {'Statement': {}}
     ip_set_arn = argToList(args.get('ip_set_arn')) or []
     condition_operator = args.get('condition_operator', '')
@@ -64,28 +70,21 @@ def build_ip_rule_object(args: dict) -> dict:
                                'when ip_set_arn has more than one value.')
 
     if len(ip_set_arn) == 1:
-        ip_rule['Statement'] = {'IPSetReferenceStatement': {
-            'ARN': ip_set_arn[0]
-        }}
+        ip_rule['Statement'] = build_ip_statement(args)
     elif len(ip_set_arn) > 1:
         statement_operator = OPERATOR_TO_STATEMENT_OPERATOR[condition_operator]
-        ip_rule['Statement'][statement_operator] = {'Statements': []}
-        for ip_set in ip_set_arn:
-            ip_rule['Statement'][statement_operator]['Statements'].append({'IPSetReferenceStatement': {
-                'ARN': ip_set
-            }})
-
+        ip_rule['Statement'][statement_operator] = {
+            'Statements': build_ip_statement(args)
+        }
     return ip_rule
 
 
-def build_ip_statement(args: dict) -> list:
+def build_ip_statement(args: dict) -> list | dict:
     ip_set_arn = argToList(args.get('ip_set_arn')) or []
-    ip_statements = []
-    for ip_set in ip_set_arn:
-        ip_statements.append({'IPSetReferenceStatement': {
-            'ARN': ip_set
-        }})
-    return ip_statements
+    ip_statements = [
+        {'IPSetReferenceStatement': {'ARN': ip_set}} for ip_set in ip_set_arn
+    ]
+    return ip_statements[0] if len(ip_statements) == 1 else ip_statements
 
 
 def build_country_rule_object(args: dict) -> dict:
@@ -109,19 +108,31 @@ def add_statement_to_rule(args: dict, statement, rules):
             return update_rule_with_statement(rule, statement, condition_operator)
 
 
-
-
 def build_string_match_rule_object(args: dict) -> dict:
-    country_codes = argToList(args.get('country_codes')) or []
+    match_type = args.get('match_type')
+    match_statement = REGEX_MATCH_STATEMENT if match_type == 'Matches Regex Pattern Set' \
+        else BYTE_MATCH_STATEMENT
+    string_to_match = args.get('string_to_match')
+    regex_set_arn = args.get('regex_set_arn')
 
-    ip_rule: dict = {
-        'Statement': {'GeoMatchStatement': {'CountryCodes': country_codes}}
+    if match_statement == REGEX_MATCH_STATEMENT and not regex_set_arn:
+        raise DemistoException('Please provide regex_set_arn when using Matches Regex Pattern Set match_type')
+
+    elif match_statement == BYTE_MATCH_STATEMENT and not string_to_match:
+        raise DemistoException('Please provide string_to_match when using strings match_type')
+
+    web_request_component = args.get('web_request_component')
+    oversize_handling = args.get('oversize_handling')
+    text_transformation = args.get('text_transformation')
+
+    string_match_statement: dict = {
+        'Statement': {match_statement: {}}
     }
-    return ip_rule
+    return string_match_statement
 
 
-def build_rule_object(args: dict, rule_group_visibility_config: dict,
-                      build_rule_func: Callable[[dict], dict]) -> dict:
+def build_new_rule_object(args: dict, rule_group_visibility_config: dict,
+                          build_rule_func: Callable[[dict], dict]) -> dict:
     name = args.get('rule_name', '')
     rule_visibility_config = build_visibility_config_object(
         metric_name=name,
@@ -368,7 +379,8 @@ def list_regex_set_command(client: boto3.client, args) -> CommandResults:
     response = client.list_regex_pattern_sets(**kwargs)
     regex_patterns = response.get('RegexPatternSets', [])
     readable_output = tableToMarkdown('List regex Sets', regex_patterns, is_auto_json_transform=True)
-    outputs = {f'{OUTPUT_PREFIX}.RegexSet(val.Id === obj.Id)': regex_patterns, 'RegexSetNextToken': response.get('NextMarker', '')}
+    outputs = {f'{OUTPUT_PREFIX}.RegexSet(val.Id === obj.Id)': regex_patterns,
+               'RegexSetNextToken': response.get('NextMarker', '')}
 
     return CommandResults(readable_output=readable_output,
                           outputs=outputs,
@@ -405,7 +417,8 @@ def list_rule_group_command(client: boto3.client, args) -> CommandResults:
 
     response = client.list_rule_groups(**kwargs)
     rule_groups = response.get('RuleGroups', [])
-    outputs = {f'{OUTPUT_PREFIX}.RuleGroup(val.Id === obj.Id)': rule_groups, 'RuleGroupNextToken': response.get('NextMarker', '')}
+    outputs = {f'{OUTPUT_PREFIX}.RuleGroup(val.Id === obj.Id)': rule_groups,
+               'RuleGroupNextToken': response.get('NextMarker', '')}
     readable_output = tableToMarkdown('List rule groups',
                                       rule_groups,
                                       headers=['Name', 'Id', 'ARN', 'Description'],
@@ -478,7 +491,7 @@ def update_rule(client: boto3.client, args, build_rule_func: Callable, action: s
         rule = add_statement_to_rule(args, statement, rules)
     else:  # action == 'CREATE'
         # build_rule_func can be create_ip_rule, create_country_rule, create_string_match_rule
-        rule = build_rule_object(args, rule_group_visibility_config, build_rule_func)
+        rule = build_new_rule_object(args, rule_group_visibility_config, build_rule_func)
         updated_rules = rules.copy()
         updated_rules.append(rule)
 

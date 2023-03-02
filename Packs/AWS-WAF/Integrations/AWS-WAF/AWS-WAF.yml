@@ -700,7 +700,6 @@ script:
     - contextPath: AWS.Waf.RuleGroup.NextMarker
       description: The token for the next page.
       type: String
-
   - arguments:
     - name: name
       description: The rule group name.
@@ -1002,8 +1001,6 @@ script:
     description: Create a country rule.
     execution: false
     name: aws-waf-country-rule-create
-
-
   - arguments:
       - name: group_id
         description: The rule group id to associate the rule to.
@@ -1118,7 +1115,6 @@ script:
     description: Create a string match rule.
     execution: false
     name: aws-waf-string-match-rule-create
-
   - arguments:
       - name: group_id
         description: The rule group id to delete the rule from.
