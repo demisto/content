@@ -119,5 +119,6 @@ script:
       description: Filter by Event ID.
     description: Searches within the network log (with filters).
 fromversion: 5.0.0
+deprecated: true
 tests:
 - No tests
