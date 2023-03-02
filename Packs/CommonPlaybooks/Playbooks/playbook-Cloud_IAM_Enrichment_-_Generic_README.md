@@ -10,7 +10,7 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-AWS - IAM
+* AWS - IAM
 
 ### Scripts
 
@@ -18,19 +18,19 @@ This playbook does not use any scripts.
 
 ### Commands
 
-* gsuite-role-assignment-list
 * aws-iam-get-user
-* aws-iam-list-user-policies
-* gcp-iam-project-role-list
-* msgraph-identity-protection-risky-user-history-list
-* aws-iam-list-access-keys-for-user
-* msgraph-groups-list-groups
-* aws-iam-list-attached-user-policies
 * gcp-iam-service-accounts-get
-* aws-iam-list-groups-for-user
-* msgraph-user-get
 * gsuite-user-get
 * gcp-iam-service-account-keys-get
+* gcp-iam-project-role-list
+* gsuite-role-assignment-list
+* aws-iam-list-user-policies
+* aws-iam-list-groups-for-user
+* msgraph-user-get
+* msgraph-identity-protection-risky-user-history-list
+* msgraph-groups-list-groups
+* aws-iam-list-access-keys-for-user
+* aws-iam-list-attached-user-policies
 
 ## Playbook Inputs
 
@@ -59,8 +59,8 @@ This playbook does not use any scripts.
 | MSGraph.identityProtection | MSGraph identity protection - risky user history. | unknown |
 | AWS.IAM.Users.AccessKeys.CreateDate | The date when the access key was created. | unknown |
 | AWS.IAM.Users.AccessKeys.UserName | The name of the IAM user that the key is associated with. | unknown |
-| AWS.IAM.Users.Groups | AWS IAM - user groups. | unknown |
-| AWS.IAM.UserPolicies |  AWS IAM - User inline policies. | unknown |
+| AWS.IAM.Users.Groups | AWS IAM - User groups. | unknown |
+| AWS.IAM.UserPolicies | AWS IAM - user inline policies. | unknown |
 | AWS.IAM.AttachedUserPolicies | AWS IAM - User attached policies. | unknown |
 | MSGraphGroup | MSGraph group information. | unknown |
 
