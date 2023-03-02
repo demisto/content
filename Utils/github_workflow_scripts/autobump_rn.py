@@ -418,6 +418,7 @@ class HasConflictOnAllowedFilesCondition(BaseCondition):
         try:
             self.git_repo.git.merge(f"origin/{pr_branch}", "--no-ff", "--no-commit")
         except GitCommandError as e:
+            print('Start checking conflicts.')
             error = e.stdout
             if error:
                 error = error.replace("stdout: '", "").strip()
@@ -427,9 +428,11 @@ class HasConflictOnAllowedFilesCondition(BaseCondition):
                 if "Auto-merging " in line
             ]
             conflict_only_with_given_files = True
+            print('Start checking conflicts. Got to loop')
             for file_name in conflicting_files:
                 if file_name not in files_check_to_conflict_with:
                     conflict_only_with_given_files = False
+            print('Loop Done')
         finally:
             self.git_repo.git.merge("--abort")
         return (conflict_only_with_given_files and conflicting_files), conflicting_files

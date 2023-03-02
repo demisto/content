@@ -17,9 +17,13 @@ ignore=RN115,RN113
 XSIAM
 CoreIRApiModule
 XDRIR
+<<<<<<< HEAD
 
 [file:playbook-XCloud_Cryptomining_-_Set_Verdict.yml]
 ignore=BA101
 
 [file:playbook-XCloud_Cryptomining.yml]
 ignore=BA101
+=======
+NGFW
+>>>>>>> origin/updating_some_of_the_old_links_4
