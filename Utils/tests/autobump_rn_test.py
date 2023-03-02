@@ -134,6 +134,9 @@ class Git:
     def log(self, *args, **kwargs):
         return "*** git commit logs ***"
 
+    def clean(self, *args, **kwargs):
+        pass
+
 
 @pytest.mark.parametrize(
     "prev_version, new_version, expected_res",
