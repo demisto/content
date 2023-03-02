@@ -2,7 +2,6 @@
     "verdict": "clean",
     "verdict_type": "intelligence",
     "sandbox_service": "cynic",
-    "is_targeted": false,
     "type": "file_latest",
     "sha2": "1dc0c8d7304c177ad0e74d3d2f1002eb773f4b180685a7df6bbe75ccc24b0164",
     "md5": "72f5c05b7ea8dd6059bf59f50b22df33",

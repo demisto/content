@@ -165,15 +165,6 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "edrincidentid",
-                                "height": 22,
-                                "id": "9ce8dfa0-9f2f-11ed-a47f-5fb484fa7cb5",
-                                "index": 2,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
                                 "fieldId": "description",
                                 "height": 22,
                                 "id": "aa1eadd0-9f2f-11ed-a47f-5fb484fa7cb5",
@@ -207,17 +198,6 @@
                                 "height": 22,
                                 "id": "9f987870-a162-11ed-8782-a99a4744710c",
                                 "index": 5,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "edrincidentcreatetime",
-                                "height": 22,
-                                "id": "5876a310-9f30-11ed-a47f-5fb484fa7cb5",
-                                "index": 6,
-                                "listId": "1vduzkpmlh-d8316060-ac70-11e9-a30b-53d47e1ea7d7",
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -343,29 +323,11 @@
                                 "startCol": 0
                             },
                             {
-                                "endCol": 2,
-                                "fieldId": "edrprioritylevel",
-                                "height": 22,
-                                "id": "d1508db0-9f2f-11ed-a47f-5fb484fa7cb5",
-                                "index": 2,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
                                 "endCol": 4,
                                 "fieldId": "symantecedrrecommendedaction",
                                 "height": 44,
                                 "id": "4b8dd180-9f32-11ed-a47f-5fb484fa7cb5",
                                 "index": 2,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "edrincidentresolution",
-                                "height": 22,
-                                "id": "54504000-9f32-11ed-a47f-5fb484fa7cb5",
-                                "index": 3,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }

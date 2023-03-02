@@ -1923,7 +1923,7 @@ def patch_incident_update_command(client: Client, args: dict[str, Any]) -> Comma
     elif action == 'update_resolution':
         action_desc = 'Update Status'
         if not update_value or INCIDENT_RESOLUTION.get(str(update_value)) is None:
-            raise ValueError(f'Incident Resolution value is missing or invalid.')
+            raise ValueError('Incident Resolution value is missing or invalid.')
         response = client.update_incident(uuid, int(args.get('value', 0)))
         status = response.status_code
     else:

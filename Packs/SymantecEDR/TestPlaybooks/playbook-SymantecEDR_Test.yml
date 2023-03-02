@@ -43,10 +43,10 @@ tasks:
       version: -1
       name: 'New Incident '
       description: Get incidents from Symantec EDR on-premise API.
-      script: SymantecEDRStage|||symantec-edr-incident-list
+      script: SymantecEDR|||symantec-edr-incident-list
       type: regular
       iscommand: true
-      brand: SymantecEDRStage
+      brand: SymantecEDR
     nexttasks:
       '#none#':
       - "2"
