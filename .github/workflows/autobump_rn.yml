@@ -30,10 +30,13 @@ jobs:
       - name: Install python dependencies
         run: |
           poetry install --with ci
+      - name: set pythonpath
+        run: |
+          echo "PYTHONPATH=$GITHUB_WORKSPACE" >> $GITHUB_ENV
       - name: Check conflicts and add release notes
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           RUN_ID: ${{github.run_id}}
         run: |
           echo "Someone merged to master. Starting to check if conflicts in release notes created."
-          python Utils/github_workflow_scripts/autobump_rn.py -g GITHUB_TOKEN -r RUN_ID
+          poetry run python Utils/github_workflow_scripts/autobump_rn.py -g GITHUB_TOKEN -r RUN_ID
