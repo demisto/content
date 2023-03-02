@@ -961,80 +961,16 @@ tasks:
         simple: Stop
       AWS-userRemediationType:
         simple: Revoke
-      AlertName:
-        complex:
-          root: PaloAltoNetworksXDR.Incident.alerts
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: PaloAltoNetworksXDR.Incident.alerts.alert_id
-                iscontext: true
-              right:
-                value:
-                  simple: inputs.alert_id
-                iscontext: true
-              ignorecase: true
-          accessor: name
       Azure-resourceRemediationType:
         simple: Poweroff
       Azure-userRemediationType:
         simple: Disable
-      AzureSearchTime:
-        simple: ago(1d)
       GCP-accessKeyRemediationType:
         simple: Disable
       GCP-resourceRemediationType:
         simple: Stop
       GCP-userRemediationType:
         simple: Disable
-      GCPProjectName:
-        complex:
-          root: PaloAltoNetworksXDR.Incident.alerts
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: PaloAltoNetworksXDR.Incident.alerts.alert_id
-                iscontext: true
-              right:
-                value:
-                  simple: inputs.alert_id
-                iscontext: true
-          accessor: project
-      IPAddress:
-        complex:
-          root: PaloAltoNetworksXDR.Incident.alerts
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: PaloAltoNetworksXDR.Incident.alerts.alert_id
-                iscontext: true
-              right:
-                value:
-                  simple: inputs.alert_id
-                iscontext: true
-              ignorecase: true
-          accessor: host_ip_list
-      OktaSearch:
-        simple: "True"
-      QRadarSearchTime:
-        simple: Last 1 days
-      SIEMFailedLogonSearch:
-        simple: "True"
-      SplunkEarliestTime:
-        simple: -1d
-      SplunkIndex:
-        simple: '*'
-      SplunkLatestTime:
-        simple: now
-      ThreatLogSearch:
-        simple: "True"
-      XDRAlertSearch:
-        simple: "True"
-      XDRUsernameField:
-        simple: identity_name
       alert_id:
         complex:
           root: inputs.alert_id
@@ -1046,51 +982,6 @@ tasks:
         simple: "False"
       autoUserRemediation:
         simple: "False"
-      cloudIdentityType:
-        complex:
-          root: PaloAltoNetworksXDR.Incident.alerts
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: PaloAltoNetworksXDR.Incident.alerts.alert_id
-                iscontext: true
-              right:
-                value:
-                  simple: inputs.alert_id
-                iscontext: true
-              ignorecase: true
-          accessor: identity_type
-      cloudProvider:
-        complex:
-          root: PaloAltoNetworksXDR.Incident.alerts
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: PaloAltoNetworksXDR.Incident.alerts.alert_id
-                iscontext: true
-              right:
-                value:
-                  simple: inputs.alert_id
-                iscontext: true
-              ignorecase: true
-          accessor: cloud_provider
-      username:
-        complex:
-          root: PaloAltoNetworksXDR.Incident.alerts
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: PaloAltoNetworksXDR.Incident.alerts.alert_id
-                iscontext: true
-              right:
-                value:
-                  simple: inputs.alert_id
-                iscontext: true
-              ignorecase: true
-          accessor: user_name
     separatecontext: true
     continueonerrortype: ""
     loop:

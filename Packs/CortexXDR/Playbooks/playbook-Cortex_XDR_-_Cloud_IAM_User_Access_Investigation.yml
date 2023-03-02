@@ -24,7 +24,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -730
+          "y": -390
         }
       }
     note: false
@@ -57,7 +57,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -100
+          "y": 240
         }
       }
     note: false
@@ -82,11 +82,12 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
+      - "14"
     scriptarguments:
       ip:
         complex:
-          root: inputs.IPAddress
+          root: alertJson.raw_abioc.event
+          accessor: caller_ip
     separatecontext: false
     continueonerror: true
     continueonerrortype: ""
@@ -94,7 +95,7 @@ tasks:
       {
         "position": {
           "x": 860,
-          "y": 50
+          "y": 390
         }
       }
     note: false
@@ -155,37 +156,6 @@ tasks:
     quietmode: 2
     isoversize: false
     isautoswitchedtoquietmode: false
-  "5":
-    id: "5"
-    taskid: aa7e5be7-0c29-4e4a-8246-9109004e8f03
-    type: title
-    task:
-      id: aa7e5be7-0c29-4e4a-8246-9109004e8f03
-      version: -1
-      name: Investigation
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "15"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 240
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "6":
     id: "6"
     taskid: 47daf361-6f62-4183-8bbd-37602dded39a
@@ -211,7 +181,8 @@ tasks:
           left:
             value:
               complex:
-                root: inputs.AlertName
+                root: alertJson
+                accessor: alert_name
             iscontext: true
           right:
             value:
@@ -396,7 +367,8 @@ tasks:
           root: inputs.autoUserRemediation
       cloudProvider:
         complex:
-          root: inputs.cloudProvider
+          root: alertJson.raw_abioc.event
+          accessor: cloud_provider
       region:
         complex:
           root: alertJson.raw_abioc.event
@@ -490,20 +462,24 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
+      - "14"
     scriptarguments:
       GCPProjectName:
         complex:
-          root: inputs.GCPProjectName
+          root: alertJson.raw_abioc.event
+          accessor: project
       cloudIdentityType:
         complex:
-          root: inputs.cloudIdentityType
+          root: alertJson.raw_abioc.event
+          accessor: identity_type
       cloudProvider:
         complex:
-          root: inputs.cloudProvider
+          root: alertJson.raw_abioc.event
+          accessor: cloud_provider
       username:
         complex:
-          root: inputs.username
+          root: alertJson.raw_abioc.event
+          accessor: identity_name
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -515,7 +491,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 50
+          "y": 390
         }
       }
     note: false
@@ -595,95 +571,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "15":
-    id: "15"
-    taskid: 7feac9e4-6d4d-42f3-83ad-33bb0bea7305
-    type: playbook
-    task:
-      id: 7feac9e4-6d4d-42f3-83ad-33bb0bea7305
-      version: -1
-      name: User Investigation - Generic
-      description: |-
-        This playbook performs an investigation on a specific user, using queries and logs from SIEM, identity management systems, XDR, and firewalls.
-
-        Supported Integrations:
-        -Okta
-        -Splunk
-        -QRadar
-        -Azure Log Analytics
-        -PAN-OS
-        -XDR By Palo Alto Networks
-      playbookName: User Investigation - Generic
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "14"
-    scriptarguments:
-      ASN:
-        complex:
-          root: inputs.ASN
-      AzureSearchTime:
-        complex:
-          root: inputs.AzureSearchTime
-      LoginCountry:
-        complex:
-          root: inputs.LoginCountry
-      OktaSearch:
-        complex:
-          root: inputs.OktaSearch
-      QRadarSearchTime:
-        complex:
-          root: inputs.QRadarSearchTime
-      SIEMFailedLogonSearch:
-        complex:
-          root: inputs.SIEMFailedLogonSearch
-      SplunkEarliestTime:
-        complex:
-          root: inputs.SplunkEarliestTime
-      SplunkIndex:
-        complex:
-          root: inputs.SplunkIndex
-      SplunkLatestTime:
-        complex:
-          root: inputs.SplunkLatestTime
-      ThreatLogSearch:
-        complex:
-          root: inputs.ThreatLogSearch
-      UserEmail:
-        complex:
-          root: inputs.username
-      Username:
-        complex:
-          root: inputs.username
-      XDRAlertSearch:
-        complex:
-          root: inputs.XDRAlertSearch
-      XDRUsernameField:
-        complex:
-          root: inputs.XDRUsernameField
-    separatecontext: true
-    continueonerrortype: ""
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 390
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "16":
     id: "16"
     taskid: c6f2ad53-aa37-479d-89ee-6488d9c5bd66
@@ -709,7 +596,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
+      - "14"
     scriptarguments:
       Username:
         complex:
@@ -728,7 +615,7 @@ tasks:
       {
         "position": {
           "x": 40,
-          "y": 50
+          "y": 390
         }
       }
     note: false
@@ -801,7 +688,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -600
+          "y": -260
         }
       }
     note: false
@@ -842,7 +729,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -435
+          "y": -95
         }
       }
     note: false
@@ -877,7 +764,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -270
+          "y": 70
         }
       }
     note: false
@@ -896,38 +783,18 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2455,
+        "height": 2115,
         "width": 1200,
         "x": 40,
-        "y": -730
+        "y": -390
       }
     }
   }
 inputs:
-- key: AlertName
+- key: alert_id
   value: {}
   required: false
-  description: Alert name.
-  playbookInputQuery:
-- key: username
-  value: {}
-  required: false
-  description: User name.
-  playbookInputQuery:
-- key: GCPProjectName
-  value: {}
-  required: false
-  description: The GCP project name.
-  playbookInputQuery:
-- key: IPAddress
-  value: {}
-  required: false
-  description: IP address from the XDR alert.
-  playbookInputQuery:
-- key: cloudProvider
-  value: {}
-  required: false
-  description: The cloud service provider involved.
+  description: The alert ID.
   playbookInputQuery:
 - key: autoResourceRemediation
   value:
@@ -1040,91 +907,6 @@ inputs:
     simple: "False"
   required: false
   description: Whether to block the indicators automatically.
-  playbookInputQuery:
-- key: alert_id
-  value: {}
-  required: false
-  description: The alert ID.
-  playbookInputQuery:
-- key: cloudIdentityType
-  value: {}
-  required: false
-  description: The cloud identity type.
-  playbookInputQuery:
-- key: SplunkIndex
-  value:
-    simple: '*'
-  required: false
-  description: Splunk's index name in which to search. Default is "*" - All.
-  playbookInputQuery:
-- key: SplunkEarliestTime
-  value:
-    simple: -1d
-  required: false
-  description: The earliest time for the Splunk search query.
-  playbookInputQuery:
-- key: SplunkLatestTime
-  value:
-    simple: now
-  required: false
-  description: The latest time for the Splunk search query.
-  playbookInputQuery:
-- key: UserEmail
-  value: {}
-  required: false
-  description: The user email to search Okta logs.
-  playbookInputQuery:
-- key: LoginCountry
-  value: {}
-  required: false
-  description: The country from which the user logged in.
-  playbookInputQuery:
-- key: SIEMFailedLogonSearch
-  value:
-    simple: "True"
-  required: false
-  description: Whether to search for failed logon logs from SIEM? Can be False or True.
-  playbookInputQuery:
-- key: ThreatLogSearch
-  value:
-    simple: "True"
-  required: false
-  description: Whether to search for threat logs from PAN-OS? Can be False or True.
-  playbookInputQuery:
-- key: XDRAlertSearch
-  value:
-    simple: "True"
-  required: false
-  description: Whether to search for related alerts from XDR? Can be False or True.
-  playbookInputQuery:
-- key: OktaSearch
-  value:
-    simple: "True"
-  required: false
-  description: Whether to search for logs from Okta? Can be False or True.
-  playbookInputQuery:
-- key: XDRUsernameField
-  value:
-    simple: identity_name
-  required: false
-  description: Cortex XDR user name field.
-  playbookInputQuery:
-- key: QRadarSearchTime
-  value:
-    simple: Last 1 days
-  required: false
-  description: 'The search time for the QRadar search query. For example:  Last 1 days.'
-  playbookInputQuery:
-- key: AzureSearchTime
-  value:
-    simple: ago(1d)
-  required: false
-  description: 'The search time for the Azure Log Analytics search query. For example: ago(1d).'
-  playbookInputQuery:
-- key: ASN
-  value: {}
-  required: false
-  description: The ASN from which the user logged in.
   playbookInputQuery:
 outputs: []
 quiet: true
