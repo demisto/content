@@ -3106,7 +3106,8 @@
         {
             "integrations": "Office 365 Feed",
             "playbookID": "Office365_Feed_Test",
-            "fromversion": "5.5.0"
+            "fromversion": "5.5.0",
+            "memory_threshold": 150
         },
         {
             "integrations": "GoogleCloudTranslate",
