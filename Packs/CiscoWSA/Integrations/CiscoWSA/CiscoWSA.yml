@@ -6,7 +6,7 @@ display: CiscoWSA
 category: Utilities
 description: Cisco WSA
 configuration:
-- display: ""
+- display: "Server URL"
   name: url
   defaultvalue: http://192.168.1.1
   type: 12

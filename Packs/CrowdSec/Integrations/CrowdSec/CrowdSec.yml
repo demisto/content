@@ -52,6 +52,9 @@ script:
     - contextPath: CrowdSec.Info.ip
       description: 'The IP address'
       type: String
+    - contextPath: IP.Address
+      description: 'The IP address'
+      type: String
     - contextPath: CrowdSec.Info.ip_range
       description: 'The IP range'
       type: String
@@ -166,6 +169,18 @@ script:
     - contextPath: CrowdSec.Info.scores.last_month.total
       description: 'Last month score'
       type: Number
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: number
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
   isfetch: false
   runonce: false
   script: '-'
