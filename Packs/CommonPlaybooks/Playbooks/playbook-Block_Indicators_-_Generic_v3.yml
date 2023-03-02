@@ -1388,6 +1388,17 @@ inputs:
   required: false
   description: The email address that you wish to block.
   playbookInputQuery:
+- key: AutoBlockIndicators
+  value:
+    simple: "True"
+  required: false
+  description: |-
+    Possible values: True/False.  Default: True.
+    Should the given indicators be automatically blocked, or should the user be given the option to choose?
+
+    If set to False - no prompt will appear, and all provided indicators will be blocked automatically.
+    If set to True - the user will be prompted to select which indicators to block.
+  playbookInputQuery:
 - key: CustomBlockRule
   value:
     simple: "True"
@@ -1511,17 +1522,6 @@ inputs:
   value: {}
   required: false
   description: EDL Server IP Address
-  playbookInputQuery:
-- key: AutoBlockIndicators
-  value:
-    simple: "True"
-  required: false
-  description: |-
-    Possible values: True/False.  Default: True.
-    Should the given indicators be automatically blocked, or should the user be given the option to choose?
-
-    If set to False - no prompt will appear, and all provided indicators will be blocked automatically.
-    If set to True - the user will be prompted to select which indicators to block.
   playbookInputQuery:
 outputs:
 - contextPath: CheckpointFWRule.Domain
