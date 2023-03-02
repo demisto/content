@@ -1,0 +1,24 @@
+args:
+- name: list1_name
+  required: true
+- name: list2_name
+  required: true
+commonfields:
+  id: compare_list
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+dockerimage: demisto/python3:3.10.10.48392
+enabled: true
+name: compare_list
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

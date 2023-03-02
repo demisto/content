@@ -1,0 +1,21 @@
+{
+    "name": "compare_list",
+    "description": "",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "tahimakthar",
+    "url": "",
+    "email": "",
+    "created": "2023-03-02T19:36:54Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "tahimakthar"
+    ]
+}
