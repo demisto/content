@@ -261,8 +261,10 @@ class Client(CrowdStrikeClient):
         indicator: dict = {}
 
         for resource in raw_response['resources']:
+            if type_ := auto_detect_indicator_type(resource.get('indicator'))
+                continue
             indicator = {
-                'type': CROWDSTRIKE_TO_XSOAR_TYPES.get(resource.get('type'), resource.get('type')),
+                'type': type_,
                 'value': resource.get('indicator'),
                 'rawJSON': resource,
                 'fields': {'actor': resource.get('actors'),

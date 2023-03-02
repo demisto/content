@@ -37,7 +37,7 @@
       "deleted": false,
       "domain_types": [],
       "id": "domain_abc",
-      "indicator": "abc",
+      "indicator": "demisto.com",
       "ip_address_types": [],
       "kill_chains": [],
       "labels": [
@@ -77,10 +77,10 @@
       "vulnerabilities": []
     },
     "type": "Domain",
-    "value": "abc",
+    "value": "demisto.com",
     "relationships": [
       {
-        "entityA": "abc",
+        "entityA": "demisto.com",
         "entityAFamily": "Indicator",
         "entityAType": "Domain",
         "entityB": "CSA-123",
@@ -92,7 +92,7 @@
         "type": "IndicatorToIndicator"
       },
       {
-        "entityA": "abc",
+        "entityA": "demisto.com",
         "entityAFamily": "Indicator",
         "entityAType": "Domain",
         "entityB": "GOBLINPANDA",
@@ -104,7 +104,7 @@
         "type": "IndicatorToIndicator"
       },
       {
-        "entityA": "abc",
+        "entityA": "demisto.com",
         "entityAFamily": "Indicator",
         "entityAType": "Domain",
         "entityB": "1.1.1.1",
@@ -152,7 +152,7 @@
       "deleted": false,
       "domain_types": [],
       "id": "domain_abc1",
-      "indicator": "abc1",
+      "indicator": "demisto.com",
       "ip_address_types": [],
       "kill_chains": [
         "C2"
@@ -189,10 +189,10 @@
       "vulnerabilities": []
     },
     "type": "Domain",
-    "value": "abc1",
+    "value": "demisto.com",
     "relationships": [
       {
-        "entityA": "abc1",
+        "entityA": "demisto.com",
         "entityAFamily": "Indicator",
         "entityAType": "Domain",
         "entityB": "Gootkit",
@@ -204,7 +204,7 @@
         "type": "IndicatorToIndicator"
       },
       {
-        "entityA": "abc1",
+        "entityA": "demisto.com",
         "entityAFamily": "Indicator",
         "entityAType": "Domain",
         "entityB": "1234567890",
@@ -252,7 +252,7 @@
       "deleted": false,
       "domain_types": [],
       "id": "file_abc1",
-      "indicator": "abc1",
+      "indicator": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
       "ip_address_types": [],
       "kill_chains": [
         "C2"
@@ -289,10 +289,10 @@
       "vulnerabilities": []
     },
     "type": "File",
-    "value": "abc1",
+    "value": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
     "relationships": [
       {
-        "entityA": "abc1",
+        "entityA": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
         "entityAFamily": "Indicator",
         "entityAType": "File",
         "entityB": "Gootkit",
@@ -304,7 +304,7 @@
         "type": "IndicatorToIndicator"
       },
       {
-        "entityA": "abc1",
+        "entityA": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
         "entityAFamily": "Indicator",
         "entityAType": "File",
         "entityB": "1234567890",

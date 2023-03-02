@@ -12,7 +12,7 @@
     "resources": [
         {
             "id": "domain_abc",
-            "indicator": "abc",
+            "indicator": "demisto.com",
             "type": "domain",
             "deleted": false,
             "published_date": 1532708005,
@@ -59,7 +59,7 @@
         },
         {
             "id": "domain_abc1",
-            "indicator": "abc1",
+            "indicator": "demisto.com",
             "type": "domain",
             "deleted": false,
             "published_date": 1573579421,
@@ -101,7 +101,7 @@
         },
         {
             "id": "file_abc1",
-            "indicator": "abc1",
+            "indicator": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
             "type": "hash_md5",
             "deleted": false,
             "published_date": 1573579421,
