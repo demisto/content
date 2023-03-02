@@ -200,7 +200,7 @@
   tags:
     - gce
   needs: []
-  stage: unittests-and-validations
+  stage: "unittests-and-validations $DOCKER"
   artifacts:
     reports:
       coverage_report:
