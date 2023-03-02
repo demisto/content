@@ -694,7 +694,7 @@ def test_validate_array_arg():
     assert de.value.message == 'Bad Name values are unexpected, must be of the following: good, another_good, more_good.'
 
 
-def test_remove_empty_values_from_dict():
+def test_remove_empty_values():
     """
     Given:
         - A dictionary to remove empty values from
@@ -703,7 +703,7 @@ def test_remove_empty_values_from_dict():
     Then:
         - The returned dictionary is the original dictionary without the empty values and nested values
     """
-    from PrismaCloudV2 import remove_empty_values_from_dict
+    from PrismaCloudV2 import remove_empty_values
 
     dict_input = {'empty1': [],
                   'empty2': None,
@@ -734,7 +734,7 @@ def test_remove_empty_values_from_dict():
                             'with_value6': 'false',
                             }
 
-    assert remove_empty_values_from_dict(dict_input) == dict_expected_output
+    assert remove_empty_values(dict_input) == dict_expected_output
 
 
 @pytest.mark.parametrize('page_size, page_number, offset', ((100, 1, 0),

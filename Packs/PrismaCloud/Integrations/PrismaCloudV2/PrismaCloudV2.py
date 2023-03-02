@@ -113,12 +113,12 @@ class Client(BaseClient):
                              detailed: Optional[str] = None, page_token: Optional[str] = None,
                              sort_by: Optional[List[str]] = None):
         params = assign_params(detailed=detailed)
-        data = remove_empty_values_from_dict({'limit': limit,
-                                              'filters': handle_filters(filters),
-                                              'timeRange': time_range,
-                                              'sortBy': sort_by,
-                                              'pageToken': page_token
-                                              })
+        data = remove_empty_values({'limit': limit,
+                                    'filters': handle_filters(filters),
+                                    'timeRange': time_range,
+                                    'sortBy': sort_by,
+                                    'pageToken': page_token
+                                    })
         demisto.info(f'Executing Prisma Cloud alert search with payload: {data}')
 
         return self._http_request('POST', 'v2/alert', params=params, json_data=data)
@@ -148,34 +148,34 @@ class Client(BaseClient):
     def alert_dismiss_request(self, dismissal_note: str, time_range: Dict[str, Any], alert_ids: Optional[List[str]] = None,
                               policy_ids: Optional[List[str]] = None, dismissal_time_range: Optional[Dict[str, Any]] = None,
                               filters: Optional[List[str]] = None):
-        data = remove_empty_values_from_dict({'alerts': alert_ids,
-                                              'policies': policy_ids,
-                                              'dismissalNote': dismissal_note,
-                                              'dismissalTimeRange': dismissal_time_range,
-                                              'filter': {
-                                                  'timeRange': time_range,
-                                                  'filters': handle_filters(filters),
-                                              }})
+        data = remove_empty_values({'alerts': alert_ids,
+                                    'policies': policy_ids,
+                                    'dismissalNote': dismissal_note,
+                                    'dismissalTimeRange': dismissal_time_range,
+                                    'filter': {
+                                        'timeRange': time_range,
+                                        'filters': handle_filters(filters),
+                                    }})
 
         self._http_request('POST', 'alert/dismiss', json_data=data, resp_type='response')
 
     def alert_reopen_request(self, time_range: Dict[str, Any], alert_ids: Optional[List[str]] = None,
                              policy_ids: Optional[List[str]] = None, filters: Optional[List[str]] = None):
-        data = remove_empty_values_from_dict({'alerts': alert_ids,
-                                              'policies': policy_ids,
-                                              'dismissalTimeRange': time_range,
-                                              'filter': {
-                                                  'timeRange': time_range,
-                                                  'filters': handle_filters(filters),
-                                              }})
+        data = remove_empty_values({'alerts': alert_ids,
+                                    'policies': policy_ids,
+                                    'dismissalTimeRange': time_range,
+                                    'filter': {
+                                        'timeRange': time_range,
+                                        'filters': handle_filters(filters),
+                                    }})
 
         self._http_request('POST', 'alert/reopen', json_data=data, resp_type='response')
 
     def remediation_command_list_request(self, time_range: Dict[str, Any], alert_ids: Optional[List[str]] = None,
                                          policy_id: Optional[str] = None):
-        data = remove_empty_values_from_dict({'alerts': alert_ids,
-                                              'filter': {'timeRange': time_range},  # all other filters are ignored by API
-                                              'policies': [policy_id]})
+        data = remove_empty_values({'alerts': alert_ids,
+                                    'filter': {'timeRange': time_range},  # all other filters are ignored by API
+                                    'policies': [policy_id]})
 
         return self._http_request('POST', 'alert/remediation', json_data=data)
 
@@ -185,40 +185,40 @@ class Client(BaseClient):
     def config_search_request(self, time_range: Dict[str, Any], query: str, limit: Optional[int] = None,
                               search_id: Optional[str] = None, sort_direction: Optional[str] = None,
                               sort_field: Optional[str] = None):
-        data = remove_empty_values_from_dict({'id': search_id,
-                                              'limit': limit,
-                                              'query': query,
-                                              'sort': [{'direction': sort_direction, 'field': sort_field}],
-                                              'timeRange': time_range,
-                                              })
+        data = remove_empty_values({'id': search_id,
+                                    'limit': limit,
+                                    'query': query,
+                                    'sort': [{'direction': sort_direction, 'field': sort_field}],
+                                    'timeRange': time_range,
+                                    })
 
         return self._http_request('POST', 'search/config', json_data=data)
 
     def event_search_request(self, time_range: Dict[str, Any], query: str, limit: Optional[int] = None):
-        data = remove_empty_values_from_dict({'limit': limit,
-                                              'query': query,
-                                              'timeRange': time_range,
-                                              })
+        data = remove_empty_values({'limit': limit,
+                                    'query': query,
+                                    'timeRange': time_range,
+                                    })
 
         return self._http_request('POST', 'search/event', json_data=data)
 
     def network_search_request(self, query: str, time_range: Dict[str, Any], search_id: Optional[str] = None,
                                cloud_type: Optional[str] = None):
-        data = remove_empty_values_from_dict({'cloudType': cloud_type,
-                                              'id': search_id,
-                                              'query': query,
-                                              'timeRange': time_range,
-                                              })
+        data = remove_empty_values({'cloudType': cloud_type,
+                                    'id': search_id,
+                                    'query': query,
+                                    'timeRange': time_range,
+                                    })
 
         return self._http_request('POST', 'search', json_data=data)
 
     def resource_get_request(self, rrn: str):
-        data = remove_empty_values_from_dict({'rrn': rrn})
+        data = remove_empty_values({'rrn': rrn})
 
         return self._http_request('POST', 'resource', json_data=data)
 
     def account_list_request(self, exclude_account_group_details: str):
-        data = remove_empty_values_from_dict({'excludeAccountGroupDetails': exclude_account_group_details})
+        data = remove_empty_values({'excludeAccountGroupDetails': exclude_account_group_details})
 
         return self._http_request('GET', 'cloud', json_data=data)
 
@@ -230,22 +230,22 @@ class Client(BaseClient):
 
     def host_finding_list_request(self, rrn: str, finding_types: Optional[List[str]] = None,
                                   risk_factors: Optional[List[str]] = None):
-        data = remove_empty_values_from_dict({'rrn': rrn,
-                                              'findingType': finding_types,
-                                              'riskFactors': risk_factors})
+        data = remove_empty_values({'rrn': rrn,
+                                    'findingType': finding_types,
+                                    'riskFactors': risk_factors})
 
         return self._http_request('POST', 'resource/external_finding', json_data=data)
 
     def permission_list_request(self, query: str, limit: int, user_id: Optional[str] = None):
-        data = remove_empty_values_from_dict({'id': user_id,
-                                              'limit': limit,
-                                              'query': query})
+        data = remove_empty_values({'id': user_id,
+                                    'limit': limit,
+                                    'query': query})
 
         return self._http_request('POST', 'api/v1/permission', json_data=data)
 
     def permission_list_next_page_request(self, next_token: str, limit: int):
-        data = remove_empty_values_from_dict({'limit': limit,
-                                              'pageToken': next_token})
+        data = remove_empty_values({'limit': limit,
+                                    'pageToken': next_token})
 
         return self._http_request('POST', 'api/v1/permission/page', json_data=data)
 
@@ -264,19 +264,19 @@ class Client(BaseClient):
                                 search_options: Optional[List[str]] = None, search_text: Optional[str] = None,
                                 search_title: Optional[str] = None, severities: Optional[List[str]] = None,
                                 tags: Optional[List[str]] = None, statuses: Optional[List[str]] = None):
-        data = remove_empty_values_from_dict({'CICDRunId': cicd_run_id,
-                                              'authors': authors,
-                                              'branch': branch,
-                                              'categories': categories,
-                                              'codeStatus': [code_status],
-                                              'fileTypes': file_types,
-                                              'repository': repository,
-                                              'repositoryId': repository_id,
-                                              'severities': severities,
-                                              'sourceTypes': source_types,
-                                              'tags': handle_tags(tags),
-                                              'types': statuses
-                                              })
+        data = remove_empty_values({'CICDRunId': cicd_run_id,
+                                    'authors': authors,
+                                    'branch': branch,
+                                    'categories': categories,
+                                    'codeStatus': [code_status],
+                                    'fileTypes': file_types,
+                                    'repository': repository,
+                                    'repositoryId': repository_id,
+                                    'severities': severities,
+                                    'sourceTypes': source_types,
+                                    'tags': handle_tags(tags),
+                                    'types': statuses
+                                    })
         if search_title:
             data['search'] = {'options': search_options,
                               'text': search_text,
@@ -429,34 +429,26 @@ def error_file_list_command_args_validation(source_types: List[str], categories:
     validate_array_arg(statuses, 'Statuses', STATUSES_OPTIONS)
 
 
-def remove_empty_values_from_dict(dict_to_reduce: Dict[str, Any]):
+def remove_empty_values(value_to_reduce: Union[Dict[str, Any], List, Any]):
     """
-    Removes empty values from given dict and from the nested dicts and lists in it.
+    Removes empty values from given dict or list and from the nested dicts and lists in it.
     """
-    reduced_dict = {}
-    for key, value in dict_to_reduce.items():
-        if not value:
-            continue
+    if isinstance(value_to_reduce, dict):
+        reduced_dict = {}
+        for key, value in value_to_reduce.items():
+            if reduced_nested_value := remove_empty_values(value):
+                reduced_dict[key] = reduced_nested_value
+        return reduced_dict
 
-        if isinstance(value, dict):
-            if reduced_nested_dict := remove_empty_values_from_dict(value):
-                reduced_dict[key] = reduced_nested_dict
+    elif isinstance(value_to_reduce, list):
+        reduced_list = []
+        for item in value_to_reduce:
+            if reduced_nested_value := remove_empty_values(item):
+                reduced_list.append(reduced_nested_value)
+        return reduced_list
 
-        elif isinstance(value, list):
-            reduced_list = []
-            for item in value:
-                if isinstance(item, dict):
-                    if reduced_nested_dict := remove_empty_values_from_dict(item):
-                        reduced_list.append(reduced_nested_dict)
-                elif item:
-                    reduced_list.append(item)
-            if reduced_list:
-                reduced_dict[key] = reduced_list
-
-        else:
-            reduced_dict[key] = value
-
-    return reduced_dict
+    else:
+        return value_to_reduce
 
 
 def get_response_status_header(response: requests.Response) -> str:
@@ -687,6 +679,9 @@ def format_v1_response(response: Any) -> Any:
 
 def alert_search_v1_command(client: Client, args: Dict[str, Any], return_v1_output: bool) -> \
         Union[CommandResults, List[Union[CommandResults, str]], Dict]:
+    """
+    This command is for supporting backwards compatibility, to make transition to V2 easier for users with custom playbooks.
+    """
     new_args = {
         'time_range_unit': args.get('time-range-unit'),
         'time_range_value': args.get('time-range-value'),
@@ -717,6 +712,9 @@ def alert_search_v1_command(client: Client, args: Dict[str, Any], return_v1_outp
 
 
 def alert_get_details_v1_command(client: Client, args: Dict[str, Any], return_v1_output: bool) -> Union[CommandResults, Dict]:
+    """
+    This command is for supporting backwards compatibility, to make transition to V2 easier for users with custom playbooks.
+    """
     new_args = {
         'alert_id': args.get('alert-id')
     }
@@ -732,6 +730,9 @@ def alert_get_details_v1_command(client: Client, args: Dict[str, Any], return_v1
 
 def alert_dismiss_v1_command(client: Client, args: Dict[str, Any], return_v1_output: bool) -> \
         Union[CommandResults, List[Union[CommandResults, str]], Dict]:
+    """
+    This command is for supporting backwards compatibility, to make transition to V2 easier for users with custom playbooks.
+    """
     new_args = {
         'alert_ids': args.get('alert-id'),
         'policy_ids': args.get('policy-id'),
@@ -758,6 +759,9 @@ def alert_dismiss_v1_command(client: Client, args: Dict[str, Any], return_v1_out
 
 def alert_reopen_v1_command(client: Client, args: Dict[str, Any], return_v1_output: bool) -> \
         Union[CommandResults, List[Union[CommandResults, str]], Dict]:
+    """
+    This command is for supporting backwards compatibility, to make transition to V2 easier for users with custom playbooks.
+    """
     new_args = {
         'alert_ids': args.get('alert-id'),
         'policy_ids': args.get('policy-id'),
@@ -781,6 +785,9 @@ def alert_reopen_v1_command(client: Client, args: Dict[str, Any], return_v1_outp
 
 def remediation_command_list_v1_command(client: Client, args: Dict[str, Any], return_v1_output: bool) -> \
         Union[CommandResults, Dict]:
+    """
+    This command is for supporting backwards compatibility, to make transition to V2 easier for users with custom playbooks.
+    """
     new_args = {
         'alert_ids': args.get('alert-id'),
         'all_results': 'true'
@@ -807,6 +814,9 @@ def remediation_command_list_v1_command(client: Client, args: Dict[str, Any], re
 
 
 def rql_config_search_v1_command(client: Client, args: Dict[str, Any], return_v1_output: bool) -> Union[CommandResults, Dict]:
+    """
+    This command is for supporting backwards compatibility, to make transition to V2 easier for users with custom playbooks.
+    """
     query = f'{args.get("rql")} limit search records to {args.get("limit", "1")}'
     new_args = {
         'query': query,
@@ -823,6 +833,9 @@ def rql_config_search_v1_command(client: Client, args: Dict[str, Any], return_v1
 
 
 def config_search_v1_command(client: Client, args: Dict[str, Any], return_v1_output: bool) -> Union[CommandResults, Dict]:
+    """
+    This command is for supporting backwards compatibility, to make transition to V2 easier for users with custom playbooks.
+    """
     new_args = {
         'query': args.get('query'),
         'limit': args.get('limit', '100'),
@@ -841,6 +854,9 @@ def config_search_v1_command(client: Client, args: Dict[str, Any], return_v1_out
 
 
 def event_search_v1_command(client: Client, args: Dict[str, Any], return_v1_output: bool) -> Union[CommandResults, Dict]:
+    """
+    This command is for supporting backwards compatibility, to make transition to V2 easier for users with custom playbooks.
+    """
     new_args = {
         'query': args.get('query'),
         'limit': args.get('limit', '100'),
@@ -859,6 +875,9 @@ def event_search_v1_command(client: Client, args: Dict[str, Any], return_v1_outp
 
 
 def network_search_v1_command(client: Client, args: Dict[str, Any], return_v1_output: bool) -> Union[CommandResults, Dict]:
+    """
+    This command is for supporting backwards compatibility, to make transition to V2 easier for users with custom playbooks.
+    """
     new_args = {
         'query': args.get('query'),
         'cloud_type': args.get('cloud-type'),
@@ -881,6 +900,9 @@ def network_search_v1_command(client: Client, args: Dict[str, Any], return_v1_ou
 
 def alert_filter_list_v1_command(client: Client, args: Dict[str, Any], return_v1_output: bool) -> \
         Union[CommandResults, Dict]:
+    """
+    This command is for supporting backwards compatibility, to make transition to V2 easier for users with custom playbooks.
+    """
     command_results = alert_filter_list_command(client)
 
     return command_results
@@ -1459,7 +1481,7 @@ def host_finding_list_command(client: Client, args: Dict[str, Any]) -> CommandRe
 def permission_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     user_id = args.get('user_id')
     query = args.get('query')
-    limit = arg_to_number(args.get('limit', DEFAULT_LIMIT)) or int(DEFAULT_LIMIT)
+    limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
     next_token = args.get('next_token')
 
     if not query and not next_token:
@@ -1468,10 +1490,10 @@ def permission_list_command(client: Client, args: Dict[str, Any]) -> CommandResu
         raise DemistoException('You can\'t provide "next_token" with "user_id" or "query".')
 
     if query:
-        response = client.permission_list_request(query, limit, user_id)
+        response = client.permission_list_request(query, limit, user_id)  # type: ignore[arg-type]
         response = response.get('data', {})
     else:
-        response = client.permission_list_next_page_request(str(next_token), limit)
+        response = client.permission_list_next_page_request(str(next_token), limit)  # type: ignore[arg-type]
     response_items = response.get('items', [])
     next_page_token = response.get('nextPageToken')
 
