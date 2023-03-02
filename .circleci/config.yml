@@ -248,10 +248,7 @@ references:
         echo "vulture py2 version: $(python2 -m vulture --version 2>&1)"
         echo "vulture py3 version: $(python3 -m vulture --version 2>&1)"
         mkdir ./unit-tests
-        # demisto-sdk lint -p 8 -a -vvv --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts --coverage-report $ARTIFACTS_FOLDER/coverage_report --docker-image 'native:target' --docker-image-target << pipeline.parameters.docker_image_target >>
-        # demisto-sdk lint -p 8 -a -vvv --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts --coverage-report $ARTIFACTS_FOLDER/coverage_report --docker-image << pipeline.parameters.docker_image_target >>
-        echo "Runing Lint with image:"
-        echo << pipeline.parameters.docker_image_target >>
+        demisto-sdk lint -p 8 -a -vvv --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts --coverage-report $ARTIFACTS_FOLDER/coverage_report --docker-image 'native:target' --docker-image-target << pipeline.parameters.docker_image_target >>
 
 
   generate_coverage_reports: &generate_coverage_reports
