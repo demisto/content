@@ -1068,49 +1068,50 @@ script:
       - name: regex_set_arn
         description: The regex set ARN. You can get those values by running the aws-waf-regex-set-list command. If the match_type is Matches Regex Pattern Set, a value must be provided.
       - name: web_request_component
+        required: true
         description: A comma separated list of two-character country codes.
         auto: PREDEFINED
         predefined:
           - "Headers"
           - "Cookies"
-          - "Query Parameters"
-          - "URI Path"
-          - "Query String"
+          - "QueryParameters"
+          - "UriPath"
+          - "QueryString"
           - "Body"
-          - "HTTP Method"
+          - "HTTPMethod"
       - name: oversize_handling
         description: AWS WAF applies oversize handling to web request contents that are larger than AWS WAF can inspect. If the web_request_component is Headers, Cookies or Body, a value must be provided.
         auto: PREDEFINED
         predefined:
-          - "Continue"
-          - "Match"
-          - "No Match"
+          - "CONTINUE"
+          - "MATCH"
+          - "NO_MATCH"
       - name: text_transformation
         description: A comma separated list of two-character country codes.
-        defaultValue: "None"
+        defaultValue: "NONE"
         auto: PREDEFINED
         predefined:
-          - "None"
-          - "Compress White Space"
-          - "HTML Entity Decode"
-          - "Lowercase"
-          - "Cmd Line"
-          - "URL Decode"
-          - "Base64 Decode"
-          - "Hex Decode"
+          - "NONE"
+          - "COMPRESS_WHITE_SPACE"
+          - "HTML_ENTITY_DECODE"
+          - "LOWERCASE"
+          - "CMD_LINE"
+          - "URL_DECODE"
+          - "BASE64_DECODE"
+          - "HEX_DECODE"
           - "MD5"
-          - "Replace Comments"
-          - "Escape Seq Decode"
-          - "SQL Hex Decode"
-          - "CSS Decode"
-          - "JS Decode"
-          - "Normalize Path"
-          - "Normalize Path Windows"
-          - "Remove Nulls"
-          - "Replace Nulls"
-          - "Base64 Decode Extension"
-          - "URL Decode Unicode"
-          - "UTF8 To Unicode"
+          - "REPLACE_COMMENTS"
+          - "ESCAPE_SEQ_DECODE"
+          - "SQL_HEX_DECODE"
+          - "CSS_DECODE"
+          - "JS_DECODE"
+          - "NORMALIZE_PATH"
+          - "NORMALIZE_PATH_WIN"
+          - "REMOVE_NULLS"
+          - "REPLACE_NULLS"
+          - "BASE64_DECODE_EXT"
+          - "URL_DECODE_UNI"
+          - "UTF8_TO_UNICODE"
     deprecated: false
     description: Create a string match rule.
     execution: false

@@ -108,6 +108,53 @@ def add_statement_to_rule(args: dict, statement, rules):
             return update_rule_with_statement(rule, statement, condition_operator)
 
 
+def build_web_component_match_object(web_request_component, oversize_handling):
+    web_request_component_object = {}
+    if web_request_component in ('Headers', 'Cookies', 'Body'):
+        if not oversize_handling:
+            raise DemistoException(
+                'oversize_handling must be provided when using Headers, Cookies, Body web_request_component')
+        if web_request_component != 'Body':
+            web_request_component_object = {'MatchPattern': {
+                'All': {}
+            },
+                'MatchScope': 'ALL'
+            }
+        web_request_component_object['OversizeHandling'] = oversize_handling
+    return web_request_component_object
+
+
+def build_byte_match_statement(web_request_component, oversize_handling, text_transformation, string_to_match,
+                               match_type) -> dict:
+    web_request_component_object = build_web_component_match_object(web_request_component, oversize_handling)
+
+    return {
+        'SearchString': string_to_match,
+        'FieldToMatch': {
+            web_request_component: web_request_component_object
+        },
+        'TextTransformations': [
+            {'Priority': 0, 'Type': text_transformation
+             }
+        ],
+        'PositionalConstraint': MATCH_TYPE_TO_POSITIONAL_CONSTRAIN[match_type]}
+
+
+def build_regex_match_statement(web_request_component, oversize_handling, text_transformation, regex_set_arn):
+    web_request_component_object = build_web_component_match_object(web_request_component, oversize_handling)
+
+    return {
+        'ARN': regex_set_arn,
+        'FieldToMatch': {
+            web_request_component: web_request_component_object
+        },
+        'TextTransformations': [
+            {'Priority': 0, 'Type': text_transformation
+             }
+        ]
+    }
+
+
 def build_string_match_rule_object(args: dict) -> dict:
     match_type = args.get('match_type')
     match_statement = REGEX_MATCH_STATEMENT if match_type == 'Matches Regex Pattern Set' \
@@ -116,17 +163,32 @@ def build_string_match_rule_object(args: dict) -> dict:
     regex_set_arn = args.get('regex_set_arn')
 
     if match_statement == REGEX_MATCH_STATEMENT and not regex_set_arn:
-        raise DemistoException('Please provide regex_set_arn when using Matches Regex Pattern Set match_type')
+        raise DemistoException('regex_set_arn must be provided when using Matches Regex Pattern Set match_type')
 
     elif match_statement == BYTE_MATCH_STATEMENT and not string_to_match:
-        raise DemistoException('Please provide string_to_match when using strings match_type')
+        raise DemistoException('string_to_match must be provided when using strings match_type')
 
     web_request_component = args.get('web_request_component')
     oversize_handling = args.get('oversize_handling')
-    text_transformation = args.get('text_transformation')
+    text_transformation = args.get('text_transformation') or 'NONE'
+
+    if match_statement == BYTE_MATCH_STATEMENT:
+        statement = build_byte_match_statement(web_request_component=web_request_component,
+                                               oversize_handling=oversize_handling,
+                                               text_transformation=text_transformation,
+                                               string_to_match=string_to_match,
+                                               match_type=match_type)
+
+    else:  # match_statement == REGEX_MATCH_STATEMENT
+        statement = build_regex_match_statement(web_request_component=web_request_component,
+                                                oversize_handling=oversize_handling,
+                                                regex_set_arn=regex_set_arn,
+                                                text_transformation=text_transformation)
+
+    print(statement)
 
     string_match_statement: dict = {
-        'Statement': {match_statement: {}}
+        'Statement': {match_statement: statement}
     }
     return string_match_statement
 
@@ -676,10 +738,10 @@ def main() -> None:
 
         elif demisto.command() == 'aws-waf-ip-statement-add':
             result = add_ip_statement_command(client, args)
-        elif demisto.command() == 'aws-waf-country-statement-add':
-            result = add_country_statement_command(client, args)
-        elif demisto.command() == 'aws-waf-string-match-statement-add':
-            result = add_string_match_statement_command(client, args)
+        # elif demisto.command() == 'aws-waf-country-statement-add':
+        #     result = add_country_statement_command(client, args)
+        # elif demisto.command() == 'aws-waf-string-match-statement-add':
+        #     result = add_string_match_statement_command(client, args)
 
         else:
             raise NotImplementedError(f'Command {demisto.command()} is not implemented in AWS WAF integration.')
