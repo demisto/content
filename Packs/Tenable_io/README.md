@@ -9,6 +9,6 @@ Among other things, this integration enables you to:
 - Manage vulnerability scans including launch, pause and resume scans.
 - Get details about assets.
 - Get scans status and report.
-- Search and filter assets in Tenable.io based on various criteria.
-- Search and filter vulnerabilities in Tenable.io based on various criteria.
+- Export assets in Tenable.io based on various criteria.
+- Export vulnerabilities in Tenable.io based on various criteria.
 
