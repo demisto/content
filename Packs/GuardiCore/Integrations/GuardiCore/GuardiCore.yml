@@ -2,7 +2,7 @@ commonfields:
   id: GuardiCore
   version: -1
 name: GuardiCore
-display: GuardiCore
+display: GuardiCore (Deprecated)
 category: Deception & Breach Simulation
 description: Data center breach detection
 configuration:
@@ -49,7 +49,7 @@ script:
       description: Filter by source (hostname or IP address).
     - name: destination
       description: Filter by destination (hostname or IP address).
-    description: Display information about incidents (with filters).
+    description: Deprecated. Use GuardiCore v2 instead.
   - name: guardicore-uncommon-domains
     arguments: []
     description: Display the uncommon domains.
