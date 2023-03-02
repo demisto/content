@@ -1072,8 +1072,8 @@ class AutoBumperManager:
                 packs_to_autobump.append(
                     PackAutoBumper(
                         pack_id=pack,
-                        rn_file_path=metadata_cond_result.pack_new_rn_file,
-                        update_type=metadata_cond_result.update_type,
+                        rn_file_path=metadata_cond_result.pack_new_rn_file,     # type: ignore[arg-type]
+                        update_type=metadata_cond_result.update_type,       # type: ignore[arg-type]
                     )
                 )
 
