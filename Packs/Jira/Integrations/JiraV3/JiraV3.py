@@ -57,7 +57,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         'issue_type_name': 'fields.issuetype.name',
         'issue_type_id': 'fields.issuetype.id',
         'project_name': 'fields.project.name',
-        # 'description': 'fields.description',
+        'description': 'fields.description',
         'labels': 'fields.labels',
         'priority': 'fields.priority.name',
         'due_date': 'fields.duedate',
@@ -930,7 +930,7 @@ def create_fields_dict_from_dotted_string(issue_fields: Dict[str, Any], dotted_s
     return nested_dict
 
 
-def create_issue_fields(issue_args: Dict[str, Any], issue_fields_mapper: Dict[str, str]) -> Dict[str, Any]:
+def get_issue_fields_for_create(issue_args: Dict[str, str], issue_fields_mapper: Dict[str, str]) -> Dict[str, Any]:
     issue_fields: Dict[str, Any] = defaultdict(dict)
     if 'issue_json' in issue_args:
         try:
@@ -938,9 +938,18 @@ def create_issue_fields(issue_args: Dict[str, Any], issue_fields_mapper: Dict[st
         except TypeError as e:
             demisto.debug(str(e))
             raise DemistoException('issue_json must be in a valid json format') from e
+
     for issue_arg, value in issue_args.items():
+        parsed_value: Any = ''  # This is used to hold any parsed arguments passed from the user, e.g the labels
+        # argument is provided as a string in CSV format, and the API expects to receive a list of labels.
+        if issue_arg == 'labels':
+            parsed_value = argToList(value)
+        elif issue_arg == 'components':
+            parsed_value = [{"name": component} for component in argToList(value)]
+        elif issue_arg in ['description', 'environment']:
+            parsed_value = text_to_adf(value)
         issue_fields |= create_fields_dict_from_dotted_string(
-            issue_fields=issue_fields, dotted_string=issue_fields_mapper.get(issue_arg, ''), value=value)
+            issue_fields=issue_fields, dotted_string=issue_fields_mapper.get(issue_arg, ''), value=parsed_value or value)
     return issue_fields
 
 
@@ -987,8 +996,8 @@ def create_update_dict_from_dotted_string(issue_fields: Dict[str, Any], dotted_s
     return nested_dict
 
 
-def create_issue_update(issue_args: Dict[str, Any], issue_update_mapper: Dict[str, tuple[str, str]],
-                        action: str) -> Dict[str, Any]:
+def get_issue_fields_for_update(issue_args: Dict[str, str], issue_update_mapper: Dict[str, tuple[str, str]],
+                                action: str) -> Dict[str, Any]:
     issue_fields: Dict[str, Any] = defaultdict(dict)
     if 'issue_json' in issue_args:
         try:
@@ -997,9 +1006,17 @@ def create_issue_update(issue_args: Dict[str, Any], issue_update_mapper: Dict[st
             demisto.debug(str(e))
             raise DemistoException('issue_json must be in a valid json format') from e
     for issue_arg, value in issue_args.items():
+        parsed_value: Any = ''  # This is used to hold any parsed arguments passed from the user, e.g the labels
+        # argument is provided as a string in CSV format, and the API expects to receive a list of labels.
+        if issue_arg == 'labels':
+            parsed_value = argToList(value)
+        elif issue_arg == 'components':
+            parsed_value = [{"name": component} for component in argToList(value)]
+        elif issue_arg in ['description', 'environment']:
+            parsed_value = [{'set': text_to_adf(text=value)}]
         dotted_string, update_key = issue_update_mapper.get(issue_arg, ('', ''))
         issue_fields |= create_update_dict_from_dotted_string(
-            issue_fields=issue_fields, dotted_string=dotted_string, update_key=update_key, value=value,
+            issue_fields=issue_fields, dotted_string=dotted_string, update_key=update_key, value=parsed_value or value,
             action=action)
     return issue_fields
 
@@ -1162,7 +1179,7 @@ def get_file_name_and_content(entry_id: str):
     return file_name, file_bytes
 
 
-def edit_issue_status(client: JiraBaseClient, issue_id_or_key: str, status_name: str) -> Any:
+def apply_issue_status(client: JiraBaseClient, issue_id_or_key: str, status_name: str) -> Any:
     """
     In charge of receiving a status of an issue and try to apply it, if it can't, it will throw an error.
     """
@@ -1355,16 +1372,7 @@ def get_expanded_issues(client: JiraBaseClient, issue: Dict[str, Any],
 
 
 def create_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandResults:
-    issue_args: Dict[str, Any] = args
-    epic_name = args.get('epic_name', '')
-    issue_args['labels'] = issue_args.get('labels', '').split(',')
-    issue_args['components'] = [{"name": component} for component in argToList(issue_args.get('components'))]
-    issue_fields = create_issue_fields(issue_args=issue_args, issue_fields_mapper=client.ISSUE_FIELDS_MAPPER)
-
-    issue_fields.get('fields', {})['description'] = text_to_adf(text=args.get('description', ''))
-    issue_fields.get('fields', {})['environment'] = text_to_adf(text=args.get('environment', ''))
-    if epic_name:
-        issue_fields.get('fields', {})['customfield_10010'] = epic_name
+    issue_fields = get_issue_fields_for_create(issue_args=args, issue_fields_mapper=client.ISSUE_FIELDS_MAPPER)
     res = client.create_issue(json_data=issue_fields)
     outputs = {'Id': res.get('id', ''), 'Key': res.get('key', '')}
     markdown_dict = outputs | {'Ticket Link': res.get('self', ''),
@@ -1382,28 +1390,26 @@ def edit_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandR
     issue_id_or_key = args.get('issue_id', args.get('issue_key', ''))
     if not issue_id_or_key:
         raise DemistoException(ID_OR_KEY_MISSING_ERROR)
-    if args.get('status', '') and args.get('transition', ''):
-        raise DemistoException("Please provide only status or transition, but not both.")
-    action = args.get('action', 'rewrite')
     status = args.get('status', '')
     transition = args.get('transition', '')
-    if status:
+    if status and transition:
+        raise DemistoException("Please provide only status or transition, but not both.")
+    elif status:
         demisto.log(f'Updating the status to: {status}')
-        edit_issue_status(client=client, issue_id_or_key=issue_id_or_key, status_name=status)
-    if transition:
+        apply_issue_status(client=client, issue_id_or_key=issue_id_or_key, status_name=status)
+    elif transition:
         demisto.log(f'Updating the status using the transition: {transition}')
         apply_issue_transition(client=client, issue_id_or_key=issue_id_or_key, transition_name=transition)
-    issue_args: Dict[str, Any] = args
-    issue_args['labels'] = issue_args.get('labels', '').split(',')
-    issue_args['components'] = [{"name": component} for component in argToList(issue_args.get('components'))]
-    update_fields = create_issue_update(issue_args=args, issue_update_mapper=client.ISSUE_UPDATE_MAPPER, action=action)
-    if (action == 'append' and (args.get('description', '') or args.get('environment', ''))):
-        # Description and Environment do not support the add operation
-        raise DemistoException('Description and Environment do not support the add operation')
-    update_fields.get('update', {})['description'] = [{'set': text_to_adf(text=args.get('description', ''))}]
-    update_fields.get('update', {})['environment'] = [{'set': text_to_adf(text=args.get('environment', ''))}]
-    res_temp = client.http_request_with_access_token(method='GET',
-                                                     url_suffix=f'rest/api/3/issue/{issue_id_or_key}/editmeta')
+    # issue_args: Dict[str, Any] = args
+    # issue_args['labels'] = issue_args.get('labels', '').split(',')
+    # issue_args['components'] = [{"name": component} for component in argToList(issue_args.get('components'))]
+    action = args.get('action', 'rewrite')
+    update_fields = get_issue_fields_for_update(issue_args=args, issue_update_mapper=client.ISSUE_UPDATE_MAPPER, action=action)
+    # if (action == 'append' and (args.get('description', '') or args.get('environment', ''))):
+    # Description and Environment do not support the add operation
+    # raise DemistoException('Description and Environment do not support the add operation')
+    # update_fields.get('update', {})['description'] = [{'set': text_to_adf(text=args.get('description', ''))}]
+    # update_fields.get('update', {})['environment'] = [{'set': text_to_adf(text=args.get('environment', ''))}]
 
     client.edit_issue(issue_id_or_key=issue_id_or_key, json_data=update_fields)
     demisto.log(f'Issue {issue_id_or_key} was updated successfully')
@@ -1418,6 +1424,17 @@ def edit_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandR
         raw_response=res
     )
 
+
+# def handle_edit_issue_arguments_parsing(issue_args: Dict[str, str], action: str) -> Dict[str, Any]:
+#     issue_args['labels'] = issue_args.get('labels', '').split(',')
+#     issue_args['components'] = [{"name": component} for component in argToList(issue_args.get('components'))]
+#     action = args.get('action', 'rewrite')
+#     update_fields = get_issue_fields_for_update(issue_args=args, issue_update_mapper=client.ISSUE_UPDATE_MAPPER, action=action)
+#     if (action == 'append' and (args.get('description', '') or args.get('environment', ''))):
+#         # Description and Environment do not support the add operation
+#         raise DemistoException('Description and Environment do not support the add operation')
+#     update_fields.get('update', {})['description'] = [{'set': text_to_adf(text=args.get('description', ''))}]
+#     update_fields.get('update', {})['environment'] = [{'set': text_to_adf(text=args.get('environment', ''))}]
 
 def delete_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandResults:
     issue_id_or_key = args.get('issue_id', args.get('issue_key', ''))
@@ -2086,6 +2103,33 @@ def test_module(client: JiraBaseClient) -> str:
                             ' the process'))
 
 
+# Fetch Incidents
+def fetch_incidents(issue_field_to_fetch_from: str, fetch_query: str, id_offset: str, fetch_attachments: bool,
+                    fetch_comments: bool, max_fetch: str, fetch_interval: str):
+    """issue_field_to_fetch_from options:
+        - created
+        - updated
+        - status category change date
+        - id
+
+    Args:
+        issue_field_to_fetch_from (str): _description_
+        fetch_query (str): _description_
+        id_offset (str): _description_
+        fetch_attachments (str): _description_
+        fetch_comments (str): _description_
+    """
+    last_run = demisto.getLastRun()
+    demisto.debug(f'last_run: {last_run}' if last_run else 'last_run is empty')
+    last_fetch_id = last_run.get('id', '')
+    last_fetch_created_time = last_run.get('created_time', '')
+    last_fetch_updated_time = last_run.get('updated_time', '')
+    last_fetch_status_category_change_date = last_run.get('status_category_change_date', '')
+    # if not(max_fetch_results := arg_to_number(max_fetch)):
+
+    print(last_run)
+
+
 def main() -> None:
 
     params: Dict[str, Any] = demisto.params()
@@ -2101,6 +2145,15 @@ def main() -> None:
     # OnPrem configuration params
     server_url = params.get('server_url', 'https://api.atlassian.com/ex/jira')
 
+    # Fetch params
+    issue_field_to_fetch_from = params.get('issue_field_to_fetch_from', '')
+    fetch_query = params.get('fetch_query', '')
+    id_offset = params.get('id_offset', '')
+    fetch_attachments = params.get('fetch_attachments', False)
+    fetch_comments = params.get('fetch_comments', False)
+    max_fetch = params.get('max_fetch', '50')
+    fetch_interval = '1'  # in minutes
+    print(fetch_interval, type(fetch_interval))
     # Print to demisto.info which Jira instance the user supplied.
     # From param or if automatically
     command = demisto.command()
@@ -2138,7 +2191,7 @@ def main() -> None:
         'jira-sprint-issue-move': issues_to_sprint_command,
         'jira-epic-issue-list': epic_issues_list_command,
         'jira-issue-link-type-get': get_issue_link_types_command,
-        'jira-issue-to-issue-link': link_issue_to_issue_command
+        'jira-issue-to-issue-link': link_issue_to_issue_command,
     }
     try:
         client: JiraBaseClient
@@ -2162,6 +2215,14 @@ def main() -> None:
             return_results(test_module(client))
         elif command in commands:
             return_results(commands[command](client, args))
+        elif command == 'fetch-incidents':
+            demisto.incidents(fetch_incidents(issue_field_to_fetch_from=issue_field_to_fetch_from,
+                                              fetch_query=fetch_query,
+                                              id_offset=id_offset,
+                                              fetch_attachments=fetch_attachments,
+                                              fetch_comments=fetch_comments,
+                                              max_fetch=max_fetch,
+                                              fetch_interval=fetch_interval))
         else:
             raise NotImplementedError(f'{command} command is not implemented.')
 

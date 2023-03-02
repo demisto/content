@@ -34,19 +34,31 @@ configuration:
   required: true
 - defaultvalue: status!=done
   display: Query (in JQL) for fetching incidents.
-  name: query
+  additionalinfo: The field that was selected in the "Issue Field to Fetch from" can't be used
+    in the query.
+  name: fetch_query
   required: false
   type: 0
-- additionalinfo: This parameter is dismissed while "Use created field to fetch incidents"
-    is checked.
+- defaultvalue: id
+  display: Issue Field to Fetch from.
+  name: issue_field_to_fetch_from
+  required: false
+  options:
+  - created
+  - updated
+  - status category change date
+  - id
+  type: 15
+- additionalinfo: This parameter is dismissed while not choosing "id" in "Issue Field to Fetch from".
   display: Issue index to start fetching incidents from
-  name: idOffset
+  name: id_offset
   required: false
   type: 0
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  defaultvalue: 'false'
 - defaultvalue: 'false'
   display: Use system proxy settings
   name: proxy
@@ -56,6 +68,7 @@ configuration:
   name: isFetch
   required: false
   type: 8
+  defaultvalue: 'false'
 - defaultvalue: 'false'
   display: Mirror incoming incidents
   hidden: false
@@ -66,15 +79,12 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- display: Use created field to fetch incidents
-  name: fetchByCreated
-  required: false
-  type: 8
 - display: Mirror outgoing incidents
   hidden: false
   name: outgoing_mirror
   required: false
   type: 8
+  defaultvalue: 'false'
 - additionalinfo: Choose the tag to add to an entry to mirror it as an attachment
     in Jira.
   defaultvalue: attachment
@@ -95,13 +105,20 @@ configuration:
   hidden: false
   name: fetch_comments
   required: false
+  defaultvalue: 'false'
   type: 8
 - additionalinfo: Fetch attachments for a Jira ticket.
   display: Fetch attachments
   hidden: false
   name: fetch_attachments
   required: false
+  defaultvalue: 'false'
   type: 8
+- defaultvalue: '50'
+  display: Max incidents per fetch
+  name: max_fetch
+  required: false
+  type: 0
 script:
   commands:
   - arguments:
@@ -611,13 +628,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Selects an issue type by name, for example: "Problem".'
+      description: 'Selects an issue type by name, for example: "Problem". (Issue type name or id is required)'
       isArray: false
       name: issue_type_name
       required: false
       secret: false
     - default: false
-      description: Selects an issue type by its numeric ID.
+      description: Selects an issue type by its numeric ID (Issue type name or id is required).
       isArray: false
       name: issue_type_id
       required: false
@@ -709,12 +726,12 @@ script:
       name: components
       required: false
       secret: false
-    - default: false
-      description: The epic name, supply this argument when creating an issue of type Epic.
-      isArray: true
-      name: epic_name
-      required: false
-      secret: false
+    # - default: false
+    #   description: The epic name, supply this argument when creating an issue of type Epic.
+    #   isArray: true
+    #   name: epic_name
+    #   required: false
+    #   secret: false
     deprecated: false
     description: Creates a new issue in Jira.
     execution: false
@@ -1810,6 +1827,10 @@ script:
     description: Use this command to create a link between two issues.
     execution: false
     name: jira-issue-to-issue-link
+  - deprecated: false
+    description: Dummy fetch
+    execution: false
+    name: fetch-incidents
   dockerimage: demisto/btfl-soup:1.0.1.47958
   script: ''
   type: python
