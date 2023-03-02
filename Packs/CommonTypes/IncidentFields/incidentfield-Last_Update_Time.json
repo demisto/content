@@ -21,6 +21,8 @@
         "AWS Guard Duty Kubernetes Finding",
         "AWS Guard Duty Malware Protection Finding",
         "AWS Guard Duty S3 Finding",
+        "Microsoft Sentinel Incident",
+        "AWS Guard Duty S3 Finding",
         "Prisma Cloud",
         "GCP Compute Engine Misconfiguration",
         "GCP Kubernetes Engine Misconfiguration",
