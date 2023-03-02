@@ -1,7 +1,7 @@
 def test_format_comment():
     """
     Given:
-        - An comment
+        - A comment
     When:
          - calling format_comment function
     Then:

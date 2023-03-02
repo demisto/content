@@ -1,7 +1,7 @@
 def test_format_relation():
     """
     Given:
-        - An relation
+        - A relation
     When:
          - calling format_relation function
     Then:

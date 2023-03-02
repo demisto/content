@@ -6,7 +6,7 @@ import ast
 
 def format_comment(comment: dict) -> dict:
     """
-    Converts an comment to a dictionary with the relevant fields.
+    Converts a comment to a dictionary with the relevant fields.
     """
     return {
         'name': comment.get('name'),
