@@ -1,5 +1,4 @@
 {
-    "fromVersion": "6.10.0",
     "edit": {
         "sections": [
             {
@@ -41,10 +40,6 @@
                 "description": "",
                 "fields": [
                     {
-                        "fieldId": "indicator_blocked",
-                        "isVisible": true
-                    },
-                    {
                         "fieldId": "indicator_communitynotes",
                         "isVisible": true
                     },
@@ -76,6 +71,10 @@
                 "description": "",
                 "fields": [
                     {
+                        "fieldId": "indicator_key",
+                        "isVisible": true
+                    },
+                    {
                         "fieldId": "indicator_keyvalue",
                         "isVisible": true
                     }
@@ -89,8 +88,6 @@
             }
         ]
     },
-    "group": "indicator",
-    "id": "registryKey",
     "indicatorsDetails": {
         "tabs": [
             {
@@ -99,46 +96,104 @@
                 "sections": [
                     {
                         "displayType": "ROW",
-                        "h": 2,
+                        "h": 4,
                         "hideName": false,
                         "i": "main-9fa550a0-a2e6-11e9-a74b-a79deb2f5d2a",
                         "isVisible": true,
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "indicatortype",
+                                "fieldId": "timestamp",
                                 "height": 22,
-                                "id": "61326b10-ba22-11ea-a7c8-5116979227bb",
+                                "id": "55386050-b900-11ed-bb45-976e784dad12",
                                 "index": 0,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "source",
+                                "fieldId": "modified",
                                 "height": 22,
-                                "id": "d24d08c0-cccc-11ea-937a-6f8841d9fed1",
+                                "id": "59f15480-b900-11ed-bb45-976e784dad12",
                                 "index": 1,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "name",
+                                "fieldId": "stixid",
                                 "height": 22,
-                                "id": "cf7864f0-cccc-11ea-937a-6f8841d9fed1",
+                                "id": "64c516d0-b900-11ed-bb45-976e784dad12",
                                 "index": 2,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "path",
-                                "height": 22,
-                                "id": "d5dd5b70-cccc-11ea-937a-6f8841d9fed1",
+                                "fieldId": "description",
+                                "height": 44,
+                                "id": "98a879b0-b900-11ed-bb45-976e784dad12",
                                 "index": 3,
                                 "sectionItemType": "field",
                                 "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "trafficlightprotocol",
+                                "height": 22,
+                                "id": "2faf3d30-b6de-11ea-824d-5b821ee9d562",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "tags",
+                                "height": 22,
+                                "id": "083ac1b0-4e75-11ea-8bf6-67db400d7da5",
+                                "index": 5,
+                                "listId": "main-ffe4f7b0-4e74-11ea-8bf6-67db400d7da5",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "field": {
+                                        "simple": "tags"
+                                    }
+                                },
+                                "buttonClass": "secondary",
+                                "dropEffect": "move",
+                                "endCol": 1,
+                                "fieldId": "",
+                                "height": 44,
+                                "id": "b6cab200-9db5-11ea-a17b-1d06fd239c52",
+                                "index": 6,
+                                "listId": "main-329c6710-a640-11ea-9a93-611e57d9f959",
+                                "name": "Add tags",
+                                "scriptId": "Builtin|||appendIndicatorField",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "field": {
+                                        "simple": "tags"
+                                    }
+                                },
+                                "buttonClass": "secondary",
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "id": "f4d78d70-9db5-11ea-a17b-1d06fd239c52",
+                                "index": 6,
+                                "listId": "main-ffe4f7b0-4e74-11ea-8bf6-67db400d7da5",
+                                "name": "Remove tags",
+                                "scriptId": "Builtin|||removeIndicatorField",
+                                "sectionItemType": "button",
+                                "startCol": 1
                             }
                         ],
                         "maxW": 3,
@@ -147,29 +202,8 @@
                         "name": "Basic Information",
                         "static": false,
                         "w": 1,
-                        "x": 0,
-                        "y": 1
-                    },
-                    {
-                        "description": "By Virus Total",
-                        "displayType": "ROW",
-                        "h": 3,
-                        "hideName": false,
-                        "i": "main-2914c250-a2fe-11e9-b76d-69524aca75e8",
-                        "isVisible": true,
-                        "items": null,
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "Community Score",
-                        "query": "PositiveDetectionsVSDetectionEngines",
-                        "queryType": "script",
-                        "readOnly": true,
-                        "static": false,
-                        "type": "dynamicIndicator",
-                        "w": 1,
-                        "x": 2,
-                        "y": 8
+                        "x": 1,
+                        "y": 0
                     },
                     {
                         "columns": [
@@ -211,7 +245,7 @@
                             }
                         ],
                         "displayType": "ROW",
-                        "h": 3,
+                        "h": 2,
                         "hideName": false,
                         "i": "main-374a4120-ac5d-11e9-82f1-b168a5ac3417",
                         "isVisible": true,
@@ -225,41 +259,7 @@
                         "type": "relatedIncidents",
                         "w": 2,
                         "x": 0,
-                        "y": 8
-                    },
-                    {
-                        "columns": [
-                            {
-                                "displayed": true,
-                                "isDefault": true,
-                                "key": "created",
-                                "width": 150
-                            },
-                            {
-                                "displayed": true,
-                                "isDefault": true,
-                                "key": "content",
-                                "width": 200
-                            },
-                            {
-                                "displayed": true,
-                                "isDefault": true,
-                                "key": "source",
-                                "width": 100
-                            }
-                        ],
-                        "h": 3,
-                        "i": "main-7f557450-3d56-11ea-9dff-c57e8949d2f9",
-                        "items": null,
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "Timeline",
-                        "static": false,
-                        "type": "indicatorTimeline",
-                        "w": 1,
-                        "x": 0,
-                        "y": 3
+                        "y": 7
                     },
                     {
                         "h": 1,
@@ -277,20 +277,6 @@
                         "y": 0
                     },
                     {
-                        "h": 2,
-                        "i": "main-968b1300-3d56-11ea-9dff-c57e8949d2f9",
-                        "items": null,
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "Reputation",
-                        "static": false,
-                        "type": "reputationSources",
-                        "w": 1,
-                        "x": 1,
-                        "y": 1
-                    },
-                    {
                         "h": 1,
                         "hideName": true,
                         "i": "main-981b9e10-3d56-11ea-9dff-c57e8949d2f9",
@@ -302,8 +288,8 @@
                         "static": false,
                         "type": "reputationStatus",
                         "w": 1,
-                        "x": 1,
-                        "y": 0
+                        "x": 0,
+                        "y": 1
                     },
                     {
                         "h": 4,
@@ -317,176 +303,7 @@
                         "type": "comments",
                         "w": 1,
                         "x": 2,
-                        "y": 4
-                    },
-                    {
-                        "columns": [
-                            {
-                                "displayed": true,
-                                "isDefault": true,
-                                "key": "sources-field",
-                                "width": 150
-                            },
-                            {
-                                "displayed": true,
-                                "isDefault": true,
-                                "key": "score",
-                                "width": 100
-                            },
-                            {
-                                "displayed": true,
-                                "isDefault": true,
-                                "key": "reliability",
-                                "width": 150
-                            },
-                            {
-                                "displayed": true,
-                                "isDefault": true,
-                                "key": "expiration",
-                                "width": 150
-                            },
-                            {
-                                "displayed": true,
-                                "key": "Feed Original Severity",
-                                "width": 200
-                            },
-                            {
-                                "displayed": true,
-                                "key": "Feed Threat Types",
-                                "width": 200
-                            },
-                            {
-                                "displayed": true,
-                                "key": "First Seen By Feed",
-                                "width": 200
-                            },
-                            {
-                                "displayed": true,
-                                "key": "Last Seen By Feed",
-                                "width": 200
-                            },
-                            {
-                                "displayed": true,
-                                "key": "Sub Feed",
-                                "width": 200
-                            }
-                        ],
-                        "description": "",
-                        "h": 2,
-                        "hideName": false,
-                        "i": "main-2282fbc0-3d57-11ea-9dff-c57e8949d2f9",
-                        "items": null,
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "Sources",
-                        "static": false,
-                        "type": "sources",
-                        "w": 1,
-                        "x": 1,
-                        "y": 4
-                    },
-                    {
-                        "description": "Highest Reliability",
-                        "displayType": "ROW",
-                        "h": 1,
-                        "hideItemTitleOnlyOne": true,
-                        "hideName": true,
-                        "i": "main-816e35d0-9f38-11ea-943e-df1687bcb1dc",
-                        "items": [
-                            {
-                                "endCol": 2,
-                                "fieldId": "aggregatedreliability",
-                                "height": 22,
-                                "id": "89019a30-9f38-11ea-943e-df1687bcb1dc",
-                                "index": 1,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            }
-                        ],
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "Highest Reliability",
-                        "static": false,
-                        "w": 1,
-                        "x": 1,
-                        "y": 3
-                    },
-                    {
-                        "displayType": "CARD",
-                        "h": 2,
-                        "hideItemTitleOnlyOne": false,
-                        "hideName": false,
-                        "i": "main-329c6710-a640-11ea-9a93-611e57d9f959",
-                        "items": [
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "tags",
-                                "height": 53,
-                                "id": "083ac1b0-4e75-11ea-8bf6-67db400d7da5",
-                                "index": 0,
-                                "listId": "main-ffe4f7b0-4e74-11ea-8bf6-67db400d7da5",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "args": {
-                                    "field": {
-                                        "simple": "tags"
-                                    }
-                                },
-                                "buttonClass": "secondary",
-                                "dropEffect": "move",
-                                "endCol": 1,
-                                "fieldId": "",
-                                "height": 53,
-                                "id": "b6cab200-9db5-11ea-a17b-1d06fd239c52",
-                                "index": 1,
-                                "listId": "main-329c6710-a640-11ea-9a93-611e57d9f959",
-                                "name": "Add tags",
-                                "scriptId": "Builtin|||appendIndicatorField",
-                                "sectionItemType": "button",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "trafficlightprotocol",
-                                "height": 22,
-                                "id": "2faf3d30-b6de-11ea-824d-5b821ee9d562",
-                                "index": 2,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "args": {
-                                    "field": {
-                                        "simple": "tags"
-                                    }
-                                },
-                                "buttonClass": "secondary",
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "",
-                                "height": 53,
-                                "id": "f4d78d70-9db5-11ea-a17b-1d06fd239c52",
-                                "index": 1,
-                                "listId": "main-ffe4f7b0-4e74-11ea-8bf6-67db400d7da5",
-                                "name": "Remove tags",
-                                "scriptId": "Builtin|||removeIndicatorField",
-                                "sectionItemType": "button",
-                                "startCol": 1
-                            }
-                        ],
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "Tags and TLP",
-                        "static": false,
-                        "w": 1,
-                        "x": 2,
-                        "y": 1
+                        "y": 5
                     },
                     {
                         "displayType": "ROW",
@@ -531,56 +348,137 @@
                         "y": 0
                     },
                     {
-                        "displayType": "CARD",
-                        "h": 1,
-                        "hideName": false,
-                        "i": "main-41542550-b6de-11ea-824d-5b821ee9d562",
+                        "h": 2,
+                        "i": "main-fa9ae5a0-b8ff-11ed-bb45-976e784dad12",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Timeline",
+                        "static": false,
+                        "type": "indicatorTimeline",
+                        "w": 1,
+                        "x": 2,
+                        "y": 1
+                    },
+                    {
+                        "h": 2,
+                        "i": "main-4e01e900-b900-11ed-bb45-976e784dad12",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Verdict",
+                        "static": false,
+                        "type": "reputationSources",
+                        "w": 1,
+                        "x": 0,
+                        "y": 2
+                    },
+                    {
+                        "h": 3,
+                        "i": "main-a7ac2a10-b900-11ed-bb45-976e784dad12",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Relationships",
+                        "static": false,
+                        "type": "relationshipsTable",
+                        "w": 2,
+                        "x": 0,
+                        "y": 4
+                    },
+                    {
+                        "columns": [
+                            {
+                                "displayName": "Name",
+                                "fieldCalcScript": "",
+                                "isDefault": true,
+                                "isReadOnly": false,
+                                "key": "name",
+                                "orgType": "shortText",
+                                "required": false,
+                                "script": "",
+                                "selectValues": null,
+                                "type": "shortText",
+                                "width": 176
+                            },
+                            {
+                                "displayName": "Type",
+                                "fieldCalcScript": "",
+                                "isDefault": true,
+                                "isReadOnly": false,
+                                "key": "type",
+                                "orgType": "singleSelect",
+                                "required": false,
+                                "script": "",
+                                "selectValues": [
+                                    "REG_NONE",
+                                    "REG_SZ",
+                                    "REG_EXPAND_SZ",
+                                    "REG_BINARY",
+                                    "REG_DWORD",
+                                    "REG_DWORD_LITTLE_ENDIAN",
+                                    "REG_DWORD_BIG_ENDIAN",
+                                    "REG_LINK",
+                                    "REG_MULTI_SZ",
+                                    "REG_RESOURCE_LIST",
+                                    "REG_FULL_RESOURCE_DESCRIPTOR",
+                                    "0REG_RESOURCE_REQUIREMENTS_LIST",
+                                    "1REG_QWORD",
+                                    "REG_QWORD_LITTLE_ENDIAN"
+                                ],
+                                "type": "singleSelect",
+                                "width": 107
+                            },
+                            {
+                                "displayName": "Data",
+                                "fieldCalcScript": "",
+                                "isDefault": true,
+                                "isReadOnly": false,
+                                "key": "data",
+                                "orgType": "shortText",
+                                "required": false,
+                                "script": "",
+                                "selectValues": null,
+                                "type": "shortText",
+                                "width": 150
+                            }
+                        ],
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": true,
+                        "i": "main-b8e9ebf0-b900-11ed-bb45-976e784dad12",
                         "items": [
                             {
-                                "endCol": 1,
-                                "fieldId": "assigneduser",
-                                "height": 53,
-                                "id": "4b120ad0-b6de-11ea-824d-5b821ee9d562",
+                                "endCol": 2,
+                                "fieldId": "key",
+                                "height": 22,
+                                "id": "ba9a1780-b901-11ed-bb45-976e784dad12",
                                 "index": 0,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
-                                "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "assignedrole",
-                                "height": 53,
-                                "id": "4d3efcf0-b6de-11ea-824d-5b821ee9d562",
+                                "fieldId": "keyvalue",
+                                "height": 106,
+                                "id": "beed6180-b900-11ed-bb45-976e784dad12",
                                 "index": 0,
-                                "listId": "main-41542550-b6de-11ea-824d-5b821ee9d562",
                                 "sectionItemType": "field",
-                                "startCol": 1
+                                "startCol": 0
                             }
                         ],
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
-                        "name": "Assignee",
+                        "name": "Key",
                         "static": false,
                         "w": 1,
                         "x": 2,
                         "y": 3
-                    },
-                    {
-                        "h": 2,
-                        "i": "main-608d2340-dbb4-11ea-894b-59859b6b5482",
-                        "items": [],
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "Feed Related Indicators",
-                        "query": "FeedRelatedIndicatorsWidget",
-                        "queryType": "script",
-                        "static": false,
-                        "type": "dynamicIndicator",
-                        "w": 2,
-                        "x": 0,
-                        "y": 6
                     }
                 ],
                 "type": "custom"
@@ -592,34 +490,51 @@
                 "sections": [
                     {
                         "displayType": "ROW",
-                        "h": 9,
-                        "i": "kopixekjqw-24f18460-beb4-11ea-b519-21bdfb6f5a43",
-                        "items": null,
-                        "maxW": 3,
-                        "minH": 1,
-                        "minW": 1,
-                        "moved": false,
-                        "name": "Extended Details",
-                        "static": false,
-                        "type": "extendedDetails",
-                        "w": 2,
-                        "x": 0,
-                        "y": 0
-                    },
-                    {
-                        "displayType": "ROW",
-                        "h": 9,
+                        "h": 4,
                         "i": "kopixekjqw-27fffce0-beb4-11ea-b519-21bdfb6f5a43",
                         "items": null,
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 1,
                         "moved": false,
                         "name": "Custom Details",
                         "static": false,
                         "type": "customDetails",
-                        "w": 1,
-                        "x": 2,
+                        "w": 3,
+                        "x": 0,
+                        "y": 4
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 4,
+                        "hideName": false,
+                        "i": "kopixekjqw-0d4c0da0-b900-11ed-bb45-976e784dad12",
+                        "items": [
+                            {
+                                "endCol": 6,
+                                "fieldId": "communitynotes",
+                                "height": 106,
+                                "id": "1d76fff0-b900-11ed-bb45-976e784dad12",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 6,
+                                "fieldId": "publications",
+                                "height": 106,
+                                "id": "2bb3dde0-b900-11ed-bb45-976e784dad12",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Additional Details",
+                        "static": false,
+                        "w": 3,
+                        "x": 0,
                         "y": 0
                     }
                 ],
@@ -775,8 +690,11 @@
             }
         ]
     },
+    "id": "registryKey",
     "name": "Registry Key Indicator",
+    "fromVersion": "6.10.0",
+    "group": "indicator",
     "system": false,
-    "version": -1,
-    "description": "Registry Key Indicator Layout"
+    "description": "Registry Key Indicator Layout",
+    "version": -1
 }
