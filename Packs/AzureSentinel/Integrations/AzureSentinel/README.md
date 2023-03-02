@@ -37,8 +37,8 @@ To get the *Subscription ID*, *Workspace Name* and *Resource Group* parameters, 
     | Tenant ID | False |
     | Client ID | False |
     | Azure Managed Identities Client ID | False |
-    | Subscription ID | False |
-    | Resource Group Name | False |
+    | Subscription ID | True |
+    | Resource Group Name | True |
     | Workspace Name | True |
     | Fetch incidents | False |
     | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | False |
