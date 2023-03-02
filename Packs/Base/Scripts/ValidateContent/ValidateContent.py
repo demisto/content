@@ -175,26 +175,22 @@ def run_validate(file_path: str, json_output_file: str) -> None:
         os.makedirs(tests_dir)
     with open(f'{tests_dir}/id_set.json', 'w') as f:
         json.dump({}, f)
-    demisto.info(f'init ValidateManager...')
     v_manager = ValidateManager(
-        is_backward_check=False, prev_ver='master', use_git=False, only_committed_files=False,
+        is_backward_check=False, prev_ver=None, use_git=False, only_committed_files=False,
         print_ignored_files=False, skip_conf_json=True, validate_id_set=False, file_path=file_path,
         validate_all=False, is_external_repo=False, skip_pack_rn_validation=False, print_ignored_errors=False,
         silence_init_prints=False, no_docker_checks=False, skip_dependencies=False, id_set_path=None,
-        staged=False, json_file_path=json_output_file, skip_schema_check=True, create_id_set=False, check_is_unskipped=False, multiprocessing=False, specific_validations="HH200")
-    demisto.info(f'starting validate run...')
+        staged=False, json_file_path=json_output_file, skip_schema_check=True, create_id_set=False, check_is_unskipped=False, multiprocessing=False)
     v_manager.run_validation()
 
 
 def run_lint(file_path: str, json_output_file: str) -> None:
     lint_log_dir = os.path.dirname(json_output_file)
     logging_setup(verbose=3, quiet=False, log_path=lint_log_dir)
-    demisto.info(f'init ValidateManager...')
     lint_manager = LintManager(
         input=file_path, git=False, all_packs=False, quiet=False, verbose=1,
         prev_ver='', json_file_path=json_output_file
     )
-    demisto.info(f'starting lint run...')
     lint_manager.run(
         parallel=1, no_flake8=False, no_xsoar_linter=False, no_bandit=False, no_mypy=False,
         no_pylint=True, no_coverage=True, coverage_report='', no_vulture=False, no_test=True, no_pwsh_analyze=True,
@@ -258,27 +254,23 @@ def validate_content(filename: str, data: bytes, tmp_directory: str) -> List:
     json_output_path = os.path.join(tmp_directory, 'validation_res.json')
     lint_output_path = os.path.join(tmp_directory, 'lint_res.json')
     output_capture = io.StringIO()
-    demisto.info(f'before redirect_stdout')
     code_fp_to_row_offset = None
-    with open('stdout.txt', 'w') as stdout_file:
-        with open('stderr.txt', 'w') as stderr_file:
-            with redirect_stdout(stdout_file):
-                with redirect_stderr(stderr_file):
-                    if filename.endswith('.zip'):
-                        path_to_validate, code_fp_to_row_offset = prepare_content_pack_for_validation(
-                            filename, data, tmp_directory
-                        )
-                    else:
-                        path_to_validate, code_fp_to_row_offset = prepare_single_content_item_for_validation(
-                            filename, data, tmp_directory
-                        )
+    demisto.info(f'before redirect_stdout')
+    # with redirect_stdout(output_capture):
+    #     with redirect_stderr(output_capture):
+    if filename.endswith('.zip'):
+        path_to_validate, code_fp_to_row_offset = prepare_content_pack_for_validation(
+            filename, data, tmp_directory
+        )
+    else:
+        path_to_validate, code_fp_to_row_offset = prepare_single_content_item_for_validation(
+            filename, data, tmp_directory
+        )
 
-                    demisto.info(f'before validate')
-                    run_validate(str(path_to_validate), json_output_path)
-                    demisto.info(f'before lint')
-                    run_lint(str(path_to_validate), lint_output_path)
-
-                    demisto.info(f'finished lint and validate')
+    demisto.info(f'before validate')
+    run_validate(str(path_to_validate), json_output_path)
+    demisto.info(f'before lint')
+    run_lint(str(path_to_validate), lint_output_path)
 
     all_outputs = []
     with open(json_output_path, 'r') as json_outputs:
