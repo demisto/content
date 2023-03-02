@@ -404,7 +404,7 @@ class HasConflictOnAllowedFilesCondition(BaseCondition):
         conflicting_files = []
         conflict_only_with_given_files = False
         try:
-            self.git_repo.git.merge(f"origin/{pr_branch}", "--no-ff", "--no-commit", "--allow-unrelated-histories")
+            self.git_repo.git.merge(f"origin/{pr_branch}", "--no-ff", "--no-commit")
         except GitCommandError as e:
             print(e)
             print('\n\n')
