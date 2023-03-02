@@ -1,7 +1,6 @@
 from copy import deepcopy
 
 import urllib3
-from typing import Tuple
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -461,7 +460,7 @@ def get_response_status_header(response: requests.Response) -> str:
     return ''
 
 
-def calculate_offset(page_size: int, page_number: int) -> Tuple[int, int]:
+def calculate_offset(page_size: int, page_number: int) -> tuple[int, int]:
     """
     Prisma Cloud receives offset and limit arguments. To follow our convention, we receive page_size and page_number arguments and
     calculate the offset from them.
@@ -533,7 +532,7 @@ def add_look_back(last_run_epoch_time: int, look_back_minutes: int) -> int:
 
 
 def fetch_request(client: Client, fetched_ids: Dict[str, int], filters: List[str], limit: int, now: int,
-                  time_range: Dict[str, Any]) -> Tuple[List[Dict[str, Any]], Dict[str, int], int]:
+                  time_range: Dict[str, Any]) -> tuple[List[Dict[str, Any]], Dict[str, int], int]:
     response = client.alert_search_request(time_range=time_range,
                                            filters=filters,
                                            detailed='true',
@@ -1527,7 +1526,7 @@ def permission_list_command(client: Client, args: Dict[str, Any]) -> CommandResu
 
 
 def fetch_incidents(client: Client, last_run: Dict[str, Any], params: Dict[str, Any]) -> \
-        Tuple[List[Dict[str, Any]], Dict[str, int], int]:
+        tuple[List[Dict[str, Any]], Dict[str, int], int]:
     """
     Retrieve new incidents periodically based on pre-defined instance parameters
     """
