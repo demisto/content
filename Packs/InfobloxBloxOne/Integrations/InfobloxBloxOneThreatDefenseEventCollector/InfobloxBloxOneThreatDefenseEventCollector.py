@@ -18,8 +18,7 @@ class BloxOneTDEventCollectorClient(BaseClient):
 
     def fetch_events(self, from_ts: int, to_ts: int, limit: int = 1000, offset: int = 0) -> List[Dict]:
         def map_time(event: Dict) -> Dict:
-            event['_time'] = int(datetime.strptime(event['event_time'], '%Y-%m-%dT%H:%M:%S.%fZ').timestamp())
-            event[''] = 'EventDnsEventV2'
+            # event['_time'] = int(datetime.strptime(event['event_time'], '%Y-%m-%dT%H:%M:%S.%fZ').timestamp())
             return event
         events = self._http_request('GET', '/api/dnsdata/v2/dns_event',
                                     params={'t0': from_ts, 't1': to_ts, '_limit': limit, '_offset': offset}
