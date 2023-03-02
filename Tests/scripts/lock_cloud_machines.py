@@ -189,7 +189,8 @@ def try_to_lock_machine(storage_bucket: any, machine: str, machines_locks: list,
         logging.debug(f'the status of job id: {job_id_of_the_existing_lock} is: {job_id_of_the_existing_lock_status}')
         if job_id_of_the_existing_lock_status != 'running':
             # The job holding the machine is not running anymore, it is safe to remove its lock from the machine.
-            remove_file(storage_bucket, file_path=f'{gcs_locks_path}/{MACHINES_LOCKS_REPO}/{machine}-lock-{job_id_of_the_existing_lock}')
+            remove_file(storage_bucket,
+                        file_path=f'{gcs_locks_path}/{MACHINES_LOCKS_REPO}/{machine}-lock-{job_id_of_the_existing_lock}')
         else:
             return lock_machine_name
     else:
@@ -295,6 +296,7 @@ def wait_for_build_to_be_first_in_queue(storage_client, storage_bucket, gcs_lock
         gitlab_status_token(str): the gitlab token.
     """
     first_in_the_queue = False
+    sleep(random.randint(1, 3))
     while not first_in_the_queue:
         my_place_in_the_queue, previous_build = get_my_place_in_the_queue(storage_client, gcs_locks_path, job_id)
         logging.info(f'My place in the queue is: {my_place_in_the_queue}')

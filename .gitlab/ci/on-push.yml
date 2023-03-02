@@ -44,22 +44,22 @@ trigger-private-build:
   - ./Documentation/commonServerDocs.sh
   - section_end "Create Release Notes and Common Server Documentation"
 
-#stop-running-pipelines:
-#  tags:
-#    - gke
-#  stage: unittests-and-validations
-#  needs: []
-#  extends:
-#    - .default-job-settings
-#  variables:
-#    master_branch_name: master
-#  rules:
-#    - !reference [.filter-non-nightly-docker-updates-rule, rules]
-#    - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/ && $CI_COMMIT_BRANCH != $master_branch_name'
-#  script:
-#    - section_start "Stop running piplines on current branch"
-#    - Utils/gitlab/stop_running_pipelines.sh $CI_COMMIT_BRANCH $CI_PIPELINE_ID
-#    - section_end "Stop running piplines on current branch"
+stop-running-pipelines:
+  tags:
+    - gke
+  stage: unittests-and-validations
+  needs: []
+  extends:
+    - .default-job-settings
+  variables:
+    master_branch_name: master
+  rules:
+    - !reference [.filter-non-nightly-docker-updates-rule, rules]
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/ && $CI_COMMIT_BRANCH != $master_branch_name'
+  script:
+    - section_start "Stop running piplines on current branch"
+    - Utils/gitlab/stop_running_pipelines.sh $CI_COMMIT_BRANCH $CI_PIPELINE_ID
+    - section_end "Stop running piplines on current branch"
 
 
 # runs in circle for the on-push flow (because we need to run it there for contributors anyways)
@@ -515,30 +515,30 @@ xsiam_server_ga:
     - job: mpv2-prepare-testing-bucket
       optional: true
 
-xsoar_ng_server_ga:
-  extends:
-    - .test_content_on_cloud_server_instances_base
-  rules:
-    - !reference [.filter-non-nightly-docker-updates-rule, rules]
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
-      when: always
-  variables:
-    INSTANCE_ROLE: "XSIAM"
-    GCS_QUEUE_FILE: "queue-ga"
-    TEST_MACHINES_LIST: "test-machines-ga"
-    GCS_LOCKS_PATH: "content-locks-xsoar-ng"
-    CLOUD_SERVERS_FILE: "xsoar_ng_servers_path"
-    CLOUD_API_KEYS: $XSOAR_NG_API_KEYS
-    GCS_SOURCE_BUCKET: "${GCS_PRODUCTION_BUCKET}"
-    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
-    ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_XSOAR}/env_results.json"
-    GCS_MACHINES_BUCKET: "marketplace-dist-dev/upload-flow/builds-xsoar-ng"
-    SERVER_TYPE: "XSIAM"
-    MARKETPLACE_NAME: "xsoar"
-  needs:
-    - job: xsoar-prepare-testing-bucket
-      optional: true
-  allow_failure: true
+#xsoar_ng_server_ga:
+#  extends:
+#    - .test_content_on_cloud_server_instances_base
+#  rules:
+#    - !reference [.filter-non-nightly-docker-updates-rule, rules]
+#    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+#      when: always
+#  variables:
+#    INSTANCE_ROLE: "XSIAM"
+#    GCS_QUEUE_FILE: "queue-ga"
+#    TEST_MACHINES_LIST: "test-machines-ga"
+#    GCS_LOCKS_PATH: "content-locks-xsoar-ng"
+#    CLOUD_SERVERS_FILE: "xsoar_ng_servers_path"
+#    CLOUD_API_KEYS: $XSOAR_NG_API_KEYS
+#    GCS_SOURCE_BUCKET: "${GCS_PRODUCTION_BUCKET}"
+#    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
+#    ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_XSOAR}/env_results.json"
+#    GCS_MACHINES_BUCKET: "marketplace-dist-dev/upload-flow/builds-xsoar-ng"
+#    SERVER_TYPE: "XSIAM"
+#    MARKETPLACE_NAME: "xsoar"
+#  needs:
+#    - job: xsoar-prepare-testing-bucket
+#      optional: true
+#  allow_failure: true
 
 
 test-upload-flow:
