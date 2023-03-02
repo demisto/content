@@ -244,7 +244,7 @@ def test_nginx_server(port: int, params: Dict):
             nginx_process.terminate()
             nginx_process.wait(1.0)
         except Exception as ex:
-            demisto.error(f'failed stoping test nginx process: {ex}')
+            demisto.error(f'failed stopping test nginx process: {ex}')
 
 
 def try_parse_integer(int_to_parse: Any, err_msg: str) -> int:
@@ -314,7 +314,7 @@ def run_long_running(params: Dict = None, is_test: bool = False):
                 server_process.terminate()
                 server_process.join(1.0)
             except Exception as ex:
-                demisto.error(f'failed stoping test wsgi server process: {ex}')
+                demisto.error(f'failed stopping test wsgi server process: {ex}')
 
         else:
             nginx_process = start_nginx_server(nginx_port, params)
