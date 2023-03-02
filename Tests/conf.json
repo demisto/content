@@ -261,7 +261,7 @@
         },
         {
             "integrations": "EwsExtension",
-            "playbookID": "O365 - EWS - Extension - Test",
+            "playbookID": "playbook-EWS_O365_Extension_test",
             "fromversion": "6.0.0",
             "timeout": 500
         },
@@ -3598,7 +3598,7 @@
         },
         {
             "integrations": "EWS Extension Online Powershell v2",
-            "playbookID": "EWS Extension: Powershell Online V2 Test",
+            "playbookID": "playbook-O365-EWS-Extension-Powershell-Online-V2-Test",
             "fromversion": "6.0.0",
             "toversion": "6.0.9",
             "timeout": 250
@@ -5436,7 +5436,7 @@
         "cisco-ise-test-playbook": "Issue 44351",
         "GuardiCoreV2-Test": "Issue 43822",
         "ExtractAttackPattern-Test": "Issue 44095",
-        "EWS_O365_test": "Issue 25605",
+        "playbook-EWS_O365_Extension_test": "Issue 25605",
         "Cherwell - test": "Issue 26780",
         "Cherwell Example Scripts - test": "Issue 27107",
         "Endpoint Malware Investigation - Generic - Test": "Issue 44779",
