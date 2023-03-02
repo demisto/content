@@ -20,6 +20,12 @@ class Client(BaseClient):
         Auto API expect the agent header to be 'xdr' when running from within XSIAM and 'xsoartim' when running from
         within XSOAR (both on-prem and cloud).
         """
+        # This block is a patch - need to remove it once the server side fix of the following issue will be merged:
+        # https://jira-hq.paloaltonetworks.local/browse/CRTX-77146
+        if version := get_demisto_version().get('version'):
+            if version == '8.1.0':
+                return 'xsoartim'
+
         platform = get_demisto_version().get('platform')
         return 'xdr' if platform == 'x2' else 'xsoartim'
 
