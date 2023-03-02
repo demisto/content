@@ -261,7 +261,7 @@ class Client(CrowdStrikeClient):
         indicator: dict = {}
 
         for resource in raw_response['resources']:
-            if type_ := auto_detect_indicator_type(resource.get('indicator'))
+            if type_ := auto_detect_indicator_type(resource.get('indicator')):
                 continue
             indicator = {
                 'type': type_,
