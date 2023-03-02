@@ -70,6 +70,8 @@ configuration:
   - Outgoing
   - Incoming And Outgoing
   additionalinfo: "Which direction should the integration mirror incidents."
+  hidden:
+    - marketplacev2
 - display: Mirroring tag
   name: mirror_tag
   type: 0
@@ -77,6 +79,8 @@ configuration:
   defaultvalue: "argus_mirror"
   additionalinfo: "Names of tags used to mark incident entries to be mirrored. Comma\
     \ separated."
+  hidden:
+    - marketplacev2
 - display: Close Argus Case
   name: close_argus_case
   defaultvalue: "true"
@@ -84,6 +88,8 @@ configuration:
   required: false
   additionalinfo: 'If true, when an incident is closed in XSOAR: close the mirrored
     Argus Case'
+  hidden:
+    - marketplacev2
 - display: Close XSOAR Incident
   name: close_incident
   defaultvalue: "true"
@@ -91,6 +97,8 @@ configuration:
   required: false
   additionalinfo: 'If true, when mirrored Argus Case is closed: also close the XSOAR
     Incident'
+  hidden:
+    - marketplacev2
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -6066,7 +6074,7 @@ script:
       required: true
       description: Case ID
     description: Download all attachments related to Argus Case.
-  dockerimage: demisto/argus-toolbelt:2.0.0.29288
+  dockerimage: demisto/argus-toolbelt:3.0.0.49088
   isfetch: true
   runonce: false
   subtype: python3

@@ -3,7 +3,7 @@ commonfields:
   version: -1
 name: PerceptionPoint
 display: PerceptionPoint
-category: Network Security
+category: Email
 description: Loads incidents from Perception Point and releases falsely quarantined emails.
 configuration:
 - display: Token to use Perception Point's API
@@ -59,7 +59,7 @@ script:
       description: The scan ID of the released email.
       type: number
     description: Re-sends an email that was falsely quarantined, using the scan ID.
-  dockerimage: demisto/python3:3.10.8.37233
+  dockerimage: demisto/python3:3.10.10.48392
   isfetch: true
   runonce: false
 tests:
