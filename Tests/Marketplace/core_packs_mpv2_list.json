@@ -18,14 +18,12 @@
     "HelloWorld",
     "ImageOCR",
     "Palo_Alto_Networks_WildFire",
-    "Phishing",
     "ThreatIntelligenceManagement",
     "Unit42Intel",
     "Whois",
     "rasterize"
   ],
   "update_core_packs_list": [
-    "Active_Directory_Query",
     "AutoFocus",
     "Base",
     "CommonPlaybooks",
@@ -39,7 +37,6 @@
     "DemistoRESTAPI",
     "EDL",
     "FeedMitreAttackv2",
-    "FeedTAXII",
     "FeedUnit42v2",
     "FiltersAndTransformers",
     "HelloWorld",
@@ -48,10 +45,7 @@
     "Phishing",
     "ThreatIntelligenceManagement",
     "Unit42Intel",
-    "UrlScan",
-    "VirusTotal",
     "Whois",
-    "ipinfo",
     "rasterize"
   ]
 }
