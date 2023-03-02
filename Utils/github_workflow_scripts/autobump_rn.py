@@ -68,7 +68,7 @@ class ConditionResult:
     def __init__(
         self,
         should_skip: bool,
-        reason: Optional[SkipReason] = "",
+        reason: Optional[str] = "",
         conflicting_packs: Optional[Set] = None,
         pack_new_rn_file: Path = None,
         pr_rn_version: Version = None,
@@ -135,7 +135,7 @@ class BaseCondition(ABC):
         return self.next_cond
 
     @abstractmethod
-    def generate_skip_reason(self, **kwargs) -> SkipReason:
+    def generate_skip_reason(self, **kwargs) -> str:
         """Abstract method. Will be over-written by classes that implements Condition."""
         raise NotImplementedError
 
@@ -198,18 +198,6 @@ class MetadataCondition(BaseCondition, ABC):
         self.origin_base_metadata = origin_base_metadata
         self.pr_base_metadata = pr_base_metadata
 
-    @abstractmethod
-    def generate_skip_reason(self, **kwargs) -> SkipReason:
-        """Generates the reason why the condition failed and why to skip the check"""
-        raise NotImplementedError
-
-    @abstractmethod
-    def _check(
-        self, previous_result: Optional[ConditionResult] = None
-    ) -> ConditionResult:
-        """Check the condition."""
-        raise NotImplementedError
-
     @staticmethod
     def get_metadata_files(pack_id: str, pr: PullRequest, git_repo: Repo):
         """Open packs metadata files (branch, origin/master, base/master) and read its content.
@@ -262,7 +250,7 @@ class MetadataCondition(BaseCondition, ABC):
 class LastModifiedCondition(BaseCondition):
     LAST_SUITABLE_UPDATE_TIME_DAYS = 14
 
-    def generate_skip_reason(self, last_updated: str, **kwargs) -> SkipReason:
+    def generate_skip_reason(self, last_updated: str, **kwargs) -> str:
         """
         Args:
             last_updated: when the pr was last updated.
@@ -296,7 +284,7 @@ class LastModifiedCondition(BaseCondition):
 class LabelCondition(BaseCondition):
     NOT_UPDATE_RN_LABEL = "ignore-auto-bump-version"
 
-    def generate_skip_reason(self, labels: str, **kwargs) -> SkipReason:
+    def generate_skip_reason(self, labels: str, **kwargs) -> str:
         """
         Args:
             labels: pr labels.
@@ -327,7 +315,7 @@ class LabelCondition(BaseCondition):
 
 
 class AddedRNFilesCondition(BaseCondition):
-    def generate_skip_reason(self, **kwargs) -> SkipReason:
+    def generate_skip_reason(self, **kwargs) -> str:
         """
         Returns: Reason why the condition failed, and pr skipped.
         """
@@ -356,7 +344,7 @@ class AddedRNFilesCondition(BaseCondition):
 
 
 class HasConflictOnAllowedFilesCondition(BaseCondition):
-    def generate_skip_reason(self, conflicting_files, **kwargs) -> SkipReason:
+    def generate_skip_reason(self, conflicting_files, **kwargs) -> str:
         """
         Args:
             conflicting_files: files on the pr that conflicts with base.
@@ -434,7 +422,11 @@ class HasConflictOnAllowedFilesCondition(BaseCondition):
                     conflict_only_with_given_files = False
             print('Loop Done')
         finally:
-            self.git_repo.git.merge("--abort")
+            try:
+                self.git_repo.git.merge("--abort")
+            except GitCommandError:
+                print('Merge abort exception caught.')
+            self.git_repo.git.clean("-f")
         return (conflict_only_with_given_files and conflicting_files), conflicting_files
 
 
@@ -448,7 +440,7 @@ class PackSupportCondition(MetadataCondition):
             pack=pack, pr=pr, git_repo=git_repo, branch_metadata=branch_metadata
         )
 
-    def generate_skip_reason(self, support_type: str, **kwargs) -> SkipReason:
+    def generate_skip_reason(self, support_type: str, **kwargs) -> str:
         """
         Args:
             support_type: pack support type.
@@ -497,7 +489,7 @@ class MajorChangeCondition(MetadataCondition):
 
     def generate_skip_reason(
         self, origin_version: Version, branch_version: Version, **kwargs
-    ) -> SkipReason:
+    ) -> str:
         """
         Args:
             origin_version: pack version in the base branch (origin/master).
@@ -559,7 +551,7 @@ class MaxVersionCondition(MetadataCondition):
 
     def generate_skip_reason(
         self, origin_version: str, branch_version: str, **kwargs
-    ) -> SkipReason:
+    ) -> str:
         """
         Args:
             origin_version: pack version in the base branch (origin/master).
@@ -620,7 +612,7 @@ class OnlyVersionChangedCondition(MetadataCondition):
             origin_base_metadata=origin_base_metadata,
         )
 
-    def generate_skip_reason(self, not_allowed_changed_keys, **kwargs) -> SkipReason:
+    def generate_skip_reason(self, not_allowed_changed_keys, **kwargs) -> str:
         """
         Args:
             not_allowed_changed_keys: pack_metadata keys that was changed.
@@ -658,7 +650,7 @@ class OnlyVersionChangedCondition(MetadataCondition):
 
 
 class OnlyOneRNPerPackCondition(MetadataCondition):
-    def generate_skip_reason(self, rn_files: list, **kwargs) -> SkipReason:
+    def generate_skip_reason(self, rn_files: list, **kwargs) -> str:
         """
         Args:
             rn_files: release notes files for the pack in current pr.
@@ -704,7 +696,7 @@ class SameRNMetadataVersionCondition(MetadataCondition):
 
     def generate_skip_reason(
         self, rn_version: Version, metadata_version: Version, **kwargs
-    ) -> SkipReason:
+    ) -> str:
         """
         Args:
             rn_version: version of the release notes.
@@ -765,7 +757,7 @@ class AllowedBumpCondition(MetadataCondition):
 
     def generate_skip_reason(
         self, previous_version: Version, new_version: Version, **kwargs
-    ) -> SkipReason:
+    ) -> str:
         """
         Args:
             previous_version: previous version of the pack.
@@ -1017,7 +1009,7 @@ class AutoBumperManager:
                 continue
 
             packs_to_autobump = []
-            conflicting_packs = base_cond_result.conflicting_packs
+            conflicting_packs = base_cond_result.conflicting_packs or set()
             for pack in conflicting_packs:
                 origin_md, branch_md, pr_base_md = MetadataCondition.get_metadata_files(
                     pack_id=pack,
