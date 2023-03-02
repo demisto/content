@@ -5423,7 +5423,7 @@ script:
       - filter-pcap
       - threat-pcap
       - dlp-pcap
-    - description: The serial number of the firewall to download the PCAP from, use only for Panorama instances.
+    - description: The serial number of the firewall to download the PCAP from, relevant only for Panorama instances.
       name: serialNumber
     - description: The file name for the PCAP type ('dlp-pcap', 'filter-pcap', or 'application-pcap'). Required for 'filter-pcap'.
       name: from
