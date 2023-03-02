@@ -56,6 +56,8 @@ BRACKETS_URL_TO_FORMAT = [
     ('https://www.test.com]', 'https://www.test.com'),
     ('[https://www.test.com', 'https://www.test.com'),
     ('[[https://www.test.com', 'https://www.test.com'),
+    ('\'https://www.test.com/test\'', 'https://www.test.com/test'),
+    ('\'https://www.test.com/?a=\'b\'\'', 'https://www.test.com/?a=\'b\''),
 ]
 
 ATP_REDIRECTS = [
@@ -174,8 +176,10 @@ FORMAT_PUNYCODE = [
 ]
 
 FORMAT_HEX = [
-    ('ftps://foo.bar/baz%20%21%22%23%24%25%26', 'ftps://foo.bar/baz !"#$%&'),
-    ('foo.bar/baz%20%21%22%23%24%25%26', 'foo.bar/baz !"#$%&'),
+    ('ftps://foo.bar/baz%20%21%22%23%24%25%26', 'ftps://foo.bar/baz%20%21%22%23%24%25%26'),
+    ('foo.bar/baz%20%21%22%23%24%25%26', 'foo.bar/baz%20%21%22%23%24%25%26'),
+    ('https://foo.com/?key=foo%26bar', 'https://foo.com/?key=foo%26bar'),    # disable-secrets-detection
+    ('https%3A//foo.com/?key=foo%26bar', 'https://foo.com/?key=foo&bar'),    # disable-secrets-detection
 ]
 
 FAILS = [

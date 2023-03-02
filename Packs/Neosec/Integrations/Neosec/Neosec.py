@@ -159,12 +159,6 @@ def build_filter(
     return [{"name": name, "operator": operator, "value": value} for value in values]
 
 
-def neosec_datetime_to_timestamp(date_str: str) -> int:
-    return int(
-        datetime.strptime(date_str, NEOSEC_DATE_FORMAT).replace(tzinfo=timezone.utc).timestamp()
-    )
-
-
 def timestamp_to_neosec_datetime(timestamp: int) -> str:
     return datetime.utcfromtimestamp(timestamp).strftime(NEOSEC_DATE_FORMAT)
 
@@ -273,10 +267,14 @@ def fetch_incidents(
             if incident_created_time <= last_fetch:
                 continue
 
+        alert_timestamp = dateparser.parse(alert.get("timestamp"))  # type: ignore
+        if not alert_timestamp:
+            raise ValueError("Alert's timestamp is not valid")
+
         incident = {
             "name": alert["name"],
             "occurred": timestamp_to_datestring(
-                neosec_datetime_to_timestamp(alert["timestamp"]) * 1000,
+                int(alert_timestamp.timestamp() * 1000),
                 date_format=DATE_FORMAT,
                 is_utc=True,
             ),

@@ -11,12 +11,10 @@ This playbook supports the following integrations:
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Cortex XDR - Block File
 * Block File - Cylance Protect v2
 * Block File - Carbon Black Response
-* Traps Quarantine Event
-* Traps Blacklist File
 * Block File - Cybereason
+* Cortex XDR - Block File
 
 ### Integrations
 This playbook does not use any integrations.
@@ -34,7 +32,6 @@ This playbook does not use any commands.
 | --- | --- | --- | --- |
 | MD5 | The MD5 hash of the file you want to block. | File.MD5 | Optional |
 | SHA256 | The SHA256 hash of the file you want to block. | File.SHA256 | Optional |
-| EventId | Traps event ID that contains the malicious file to block. |  | Optional |
 
 ## Playbook Outputs
 ---
@@ -47,4 +44,4 @@ This playbook does not use any commands.
 
 ## Playbook Image
 ---
-![Block File - Generic v2](https://raw.githubusercontent.com/demisto/content/2cc17644cf3518afe6050b0eefb5786aeccd393a/Packs/CommonPlaybooks/doc_files/Block_File_-_Generic_v2.png)
+![Block File - Generic v2](../doc_files/Block_File_-_Generic_v2.png)

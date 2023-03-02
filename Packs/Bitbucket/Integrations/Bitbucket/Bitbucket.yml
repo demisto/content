@@ -2552,6 +2552,6 @@ script:
   script: "-"
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.9.42008
+  dockerimage: demisto/python3:3.10.10.48392
 tests:
   - Test_Bitbucket

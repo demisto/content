@@ -573,3 +573,6 @@ outputs:
   type: unknown
 tests:
 - no test - each enrichment sub-playbook has or will have its own test
+marketplaces:
+  - xsoar
+  - marketplacev2

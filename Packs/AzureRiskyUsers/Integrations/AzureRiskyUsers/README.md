@@ -64,6 +64,7 @@ At end of the process you'll see a message that you've logged in successfully.
     | Authentication Type | True |
     | Tenant ID (for Client Credentials mode) | False |
     | Client Secret (for Client Credentials mode) | False |
+    | Azure Managed Identities Client ID | False |
     | Use system proxy | False |
     | Trust any certificate | False |
 

@@ -16,8 +16,8 @@ Use one of the following methods:
 4. In the **Client Secret** field, enter your Client Secret.
 5. In the **Tenant ID** field, enter your Tenant ID .
 6. In the **Application redirect URI** field, enter your Application redirect URI.
-7. In the **Authorization code** field, enter your Authorization code.
-8. Save the instance.
+7. Save the instance.
+8. Run the `!azure-storage-generate-login-url` command in the War Room and follow the instruction.
 
 ### Authentication Using the Device Code Flow
 
@@ -51,14 +51,15 @@ The application must have *user_impersonation* permission and must allow public 
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Application ID |  | True |
+    | Application ID |  | False |
     | Subscription ID |  | True |
     | Resource Group Name |  | True |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
-    | Authentication Type | Type of authentication - could be Authorization Code flow \(recommended\) or Device Code flow. | True |
+    | Authentication Type | Type of authentication - can be Authorization Code flow \(recommended\), Device Code Flow, or Azure Managed Identities. | True |
     | Tenant ID (for user-auth mode) |  | False |
     | Client Secret (for user-auth mode) |  | False |
+    | Azure Managed Identities Client ID | The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM. | False |
     | Application redirect URI (for user-auth mode) |  | False |
     | Authorization code | For user-auth mode - received from the authorization step. See Detailed Instructions \(?\) section. | False |
 
@@ -819,3 +820,31 @@ There is no context output for this command.
 #### Human Readable Output
 
 >The request to delete the blob container was sent successfully.
+
+
+### azure-storage-generate-login-url
+***
+Generate the login url used for Authorization code flow.
+
+#### Base Command
+
+`azure-storage-generate-login-url`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```azure-storage-generate-login-url```
+
+#### Human Readable Output
+
+>### Authorization instructions
+>1. Click on the [login URL]() to sign in and grant Cortex XSOAR permissions for your Azure Service Management.
+You will be automatically redirected to a link with the following structure:
+```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```
+>2. Copy the `AUTH_CODE` (without the `code=` prefix, and the `session_state` parameter)
+and paste it in your instance configuration under the **Authorization code** parameter.

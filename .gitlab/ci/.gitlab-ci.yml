@@ -20,9 +20,10 @@ stages:
 variables:
   DONT_CACHE_LAST_RESPONSE: "true"
   GCS_MARKET_BUCKET: "marketplace-dist"
-  GCS_MARKET_BUCKET_DEV: "marketplace-dist-dev"
   GCS_MARKET_V2_BUCKET: "marketplace-v2-dist"
   GCS_MARKET_XPANSE_BUCKET: "xpanse-dist"
+  GCS_MARKET_BUCKET_DEV: "marketplace-dist-dev"
+  GCS_MARKET_V2_BUCKET_DEV: "marketplace-v2-dist-dev"
   STORAGE_BASE_PATH: ""
   SLACK_CHANNEL: "dmst-build-test"
   DEMISTO_README_VALIDATION: "true"

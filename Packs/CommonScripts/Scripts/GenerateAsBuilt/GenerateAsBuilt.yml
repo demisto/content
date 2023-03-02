@@ -45,3 +45,6 @@ fromversion: 6.0.0
 dockerimage: demisto/teams:1.0.0.43500
 tests:
 - No tests (auto formatted)
+marketplaces:
+  - xsoar
+  - marketplacev2

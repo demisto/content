@@ -1,0 +1,93 @@
+{
+  "templates": [
+    {
+      "name": "APT Group Evolution Policy",
+      "id": 137,
+      "description": "APT campaigns suggested by PicusLabs",
+      "content_type": "static",
+      "content_updated_at": 1662076053240,
+      "category_name": "main",
+      "subcategory_name": "sub",
+      "agent_types": [
+        {
+          "id": 2,
+          "name": "Windows"
+        },
+        {
+          "id": 3,
+          "name": "Installable Agent"
+        }
+      ],
+      "threat_count": 3
+    },
+    {
+      "name": "Top Threats",
+      "id": 2102,
+      "description": "Top threats affecting different sectors and regions",
+      "content_type": "static",
+      "content_updated_at": 1662076089240,
+      "category_name": "Suggested Templates By Picus Labs",
+      "subcategory_name": "",
+      "agent_types": [
+        {
+          "id": 1,
+          "name": "Browser"
+        },
+        {
+          "id": 2,
+          "name": "Windows"
+        },
+        {
+          "id": 3,
+          "name": "Installable Agent"
+        },
+        {
+          "id": 5,
+          "name": "MacOS"
+        },
+        {
+          "id": 6,
+          "name": "Linux"
+        }
+      ],
+      "threat_count": 12
+    },
+    {
+      "name": "Trending Ransomware Threats",
+      "id": 2103,
+      "description": "Trending Ransomware Malware (2020 - 2021) affecting different sectors and regions ",
+      "content_type": "static",
+      "content_updated_at": 1662076089284,
+      "category_name": "Suggested Templates By Picus Labs",
+      "subcategory_name": "",
+      "agent_types": [
+        {
+          "id": 1,
+          "name": "Browser"
+        },
+        {
+          "id": 2,
+          "name": "Windows"
+        },
+        {
+          "id": 3,
+          "name": "Installable Agent"
+        },
+        {
+          "id": 5,
+          "name": "MacOS"
+        },
+        {
+          "id": 6,
+          "name": "Linux"
+        }
+      ],
+      "threat_count": 10
+    }
+  ],
+  "pages": {
+    "total_count": 79,
+    "limit": 50,
+    "offset": 0
+  }
+}

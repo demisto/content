@@ -11,7 +11,7 @@
             "expected_values": {
                 "xdm.event.operation": "The Lightweight Gateway, sheker.local, stopped itself and will restart automatically to protect the domain controller from a low memory condition",
                 "xdm.alert.severity": "5",
-                "xdm.observer.type": "url",
+                "xdm.observer.type": "https://viewmsata.domain.local/",
                 "xdm.source.user.username": "john",
                 "xdm.observer.product": "ATA",
                 "xdm.observer.unique_identifier": "empty",
@@ -19,7 +19,7 @@
                 "xdm.observer.vendor": "Microsoft",
                 "xdm.observer.version": "1.9.7576.49398",
                 "xdm.event.id": "1019",
-                "xdm.observer.action": "https://viewmsata.domain.local/",
+                "xdm.observer.action": "url",
                 "xdm.event.type": "GatewayLowMemoryMonitoringAlert",
                 "xdm.event.description": "GatewayLowMemoryMonitoringAlert"
             }
