@@ -7,6 +7,7 @@ import base64
 
 import pytest
 import datetime
+
 from Reco import RecoClient, fetch_incidents, map_reco_score_to_demisto_score, get_max_fetch
 
 from test_data.structs import (
@@ -212,3 +213,17 @@ def test_max_fetch():
     max_fetch = 200
     result = get_max_fetch(max_fetch)
     assert result == max_fetch
+
+
+def test_update_reco_incident_timeline(requests_mock, reco_client: RecoClient) -> None:
+    incident_id = uuid.uuid1()
+    requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/incident-timeline/{str(incident_id)}", json={}, status_code=200)
+    reco_client.update_reco_incident_timeline(incident_id=incident_id, comment="test")
+
+
+def test_update_reco_incident_timeline_error(capfd, requests_mock, reco_client: RecoClient) -> None:
+    incident_id = uuid.uuid1()
+    requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/incident-timeline/{str(incident_id)}", json={}, status_code=404)
+    with capfd.disabled():
+        with pytest.raises(Exception):
+            reco_client.update_reco_incident_timeline(incident_id=str(incident_id), comment="test")

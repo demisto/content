@@ -61,6 +61,24 @@ description: Reco is a Saas data security solution that protects your data from 
 display: Reco
 name: Reco
 script:
+  commands:
+    - arguments:
+        - default: false
+          description: Comment to add to the incident
+          isArray: false
+          name: comment
+          required: true
+          secret: false
+        - default: false
+          description: Incident ID to add the comment to
+          isArray: false
+          name: incident_id
+          required: true
+          secret: false
+      deprecated: false
+      description: Get the alerts on cloud assets
+      execution: false
+      name: update-reco-incident-timeline
   dockerimage: demisto/python3:3.10.10.47713
   feed: false
   isfetch: true

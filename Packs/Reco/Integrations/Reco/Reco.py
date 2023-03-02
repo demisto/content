@@ -15,6 +15,7 @@ DEMISTO_INFORMATIONAL = 0.5
 RECO_API_TIMEOUT_IN_SECONDS = 30  # Increase timeout for RECO API
 RECO_ACTIVE_INCIDENTS_VIEW = "active_incidents_view"
 RECO_INCIDENT_ID_FIELD = "incident_id"
+RECO_TIMELINE_EVENT_TYPE = "TIMELINE_EVENT_TYPE_USER_COMMENT"
 CREATED_AT_FIELD = "created_at"
 STEP_FETCH = "fetch"
 STEP_INIT = "init"
@@ -130,6 +131,31 @@ class RecoClient(BaseClient):
 
         demisto.info(f"done fetching RECO incident assets, fetched {len(result)} assets.")
         return result
+
+    def update_reco_incident_timeline(self, incident_id: str, comment: str) -> None:
+        """
+        Update timeline of an incident.
+        """
+        demisto.info("Update incident timeline, enter")
+        result: List[Dict[str, Any]] = []
+        try:
+            response = self._http_request(
+                method="PUT",
+                url_suffix=f"/incident-timeline/{incident_id}",
+                timeout=RECO_API_TIMEOUT_IN_SECONDS,
+                data={"event": {
+                    "eventType": RECO_TIMELINE_EVENT_TYPE,
+                    "eventTime": datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
+                    "title": "Comment added by XSOAR",
+                    "content": comment
+                }
+                }
+            )
+        except Exception as e:
+            demisto.error(f"Validate API key ReadTimeout error: {str(e)}")
+            raise e
+
+        demisto.info(f"Comment added to timeline of incident {incident_id}")
 
     def validate_api_key(self) -> str:
         """
@@ -261,7 +287,7 @@ def fetch_incidents(
         incident
         for incident in incidents
         if incident.get("severity", 0) > DEMISTO_INFORMATIONAL
-        and incident.get("dbotMirrorId", None) not in existing_incidents
+           and incident.get("dbotMirrorId", None) not in existing_incidents
     ]  # type: ignore
 
     incidents_sorted = sorted(incidents, key=lambda k: k["occurred"])
@@ -317,6 +343,10 @@ def main() -> None:
             )
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
+        elif command == "update-reco-incident-timeline":
+            reco_client.update_reco_incident_timeline(incident_id=demisto.args()['incident_id'],
+                                                      comment=demisto.args()['comment'])
+            return_results("Incident timeline updated successfully")
         elif command == "test-module":
             test_res = reco_client.validate_api_key()
             return_results(test_res)
