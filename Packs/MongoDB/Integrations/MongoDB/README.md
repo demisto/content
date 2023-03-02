@@ -333,7 +333,7 @@ There is no context output for this command.
 ##### Human Readable Output
 >MongoDB: Collection 'collectionToDelete` has been dropped.
 
-### mongodb-pipeline-query
+### 9. mongodb-pipeline-query
 ***
 Searches for items by the specified JSON pipleline query.
 
@@ -402,6 +402,34 @@ Searches for items by the specified JSON pipleline query.
 >| 602e62598be6cb93eb795697 |
 >| 602e62698be6cb93eb795699 |
 
+### 10. mongodb-bulk-update
+---
+Bulk Updates entires in a collection.
+##### Required Permissions
+`update` permission.
+##### Base Command
+
+`mongodb-bulk-update`
+##### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| collection | The name of the collection in which to update entries. | Required | 
+| filter | A comma-separated list of queries that match the documents to update, in the format:  ``` `[{"key1": "value1"},{"key2": "value2"}]` ```. This list must match the comma-separated list of the update argument. | Required | 
+| update | A comma-separated list of content with which to update entries, in the format: ``` `{"$set": {"key1": "value1"}},{"$set": {"key2": "value2"}}` ```. You can use Update Operators or Aggregation Pipeline. This list must match the comma-separated list of the filter argument. For more information, see the integration documentation. | Required | 
+| update_one | Whether to update a single entry per query. If true, will set only the first found entry, If false, will set all found entries. This argument will effect all the provided queries. Default is true. | Optional | 
+| upsert | Will create a new entry if no entires match the provided queries (per query). This argument will effect all the provided queries. Default is false. | Optional |
+
+
+##### Context Output
+
+There is no context output for this command.
+
+##### Command Example
+```!mongodb-update collection=test filter=`[{"Name": "dummy1"},{"$and": [{"value": 1, "another_value":0}]}]` update=`[{"$set": {"test": false}},{"$set": {"test": true}}]` upsert=true ```
+##### Human Readable Output
+>MongoDB: Total of 1 entries has been modified.
+>MongoDB: Total of 1 entries has been inserted.
 
 ## Additional Information
 ---

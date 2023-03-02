@@ -286,7 +286,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Will create a new entry if no entires match the provided query. This argument will effect all the provided queries. Default is false.
+      description: Will create a new entry if no entires match the provided queries (per query). This argument will effect all the provided queries. Default is false.
       isArray: false
       name: upsert
       predefined:
