@@ -992,6 +992,36 @@ Get entry by the specified entry ID.
 >| 1576423 | Enabled | 192.168.91.3 | Sudden Increase in ICMP Requests From A Host | 1 | 2022-01-04T12:43:00 | 2022-02-13T10:42:30 |
 
 
+### fortisiem-event-search-results
+***
+The results of the specified search ID.
+
+
+#### Base Command
+
+`fortisiem-event-search-results`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| search_id | The ID of the search query to retrieve its results. | Required | 
+| limit | Maximum number of results to return. Default is 50. | Optional | 
+| page | The page number to retrieve. Default is 1. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| FortiSIEM.Event.custId | Number | The customer ID the event is related to. | 
+| FortiSIEM.Event.index | Number | The position number of the event in the results. | 
+| FortiSIEM.Event.id | String | Event ID. | 
+| FortiSIEM.Event.eventType | String | The event type. | 
+| FortiSIEM.Event.receiveTime | Date | When the event was received in UTC time. | 
+| FortiSIEM.Event.nid | String | The event ID. | 
+| FortiSIEM.Event.attributes | Unknown | Additional attributes of the event. | 
+
+
 ## Breaking changes from the previous version of this integration - FortiSIEM v2
 The following sections list the changes in this version.
 

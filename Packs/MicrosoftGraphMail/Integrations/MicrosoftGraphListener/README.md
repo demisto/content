@@ -272,6 +272,23 @@ Tests connectivity of the email.
 #### Context Output
 
 There is no context output for this command.
+### msgraph-mail-auth-reset
+***
+Run this command to rerun the authentication process.
+
+
+#### Base Command
+
+`msgraph-mail-auth-reset`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+
+#### Context Output
+
+There is no context output for this command.
 ### msgraph-mail-list-emails
 ***
 Gets the properties of returned emails. Typically shows partial results. Use the "page_size" and "pages_to_pull" arguments to get all results.
@@ -431,3 +448,30 @@ Update the status of an email to read / unread.
 #### Context Output
 
 There is no context output for this command.
+
+### msgraph-mail-generate-login-url
+***
+Generate the login url used for Authorization code flow.
+
+#### Base Command
+
+`msgraph-mail-generate-login-url`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```msgraph-mail-generate-login-url```
+
+#### Human Readable Output
+
+>### Authorization instructions
+>1. Click on the [login URL]() to sign in and grant Cortex XSOAR permissions for your Azure Service Management.
+You will be automatically redirected to a link with the following structure:
+```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```
+>2. Copy the `AUTH_CODE` (without the `code=` prefix, and the `session_state` parameter)
+and paste it in your instance configuration under the **Authorization code** parameter.

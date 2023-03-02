@@ -45,3 +45,4 @@
 !xdr-endpoint-tag-add endpoint_id=f8a2f58846b542579c12090652e79f3d tag=tag_test
 !xdr-endpoint-tag-remove endpoint_id=f8a2f58846b542579c12090652e79f3d tag=tag_test
 !xdr-get-tenant-info
+!xdr-endpoint-alias-change new_alias_name=test scan_status=success ip_list=1.1.1.1

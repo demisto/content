@@ -327,14 +327,54 @@ script:
     - contextPath: ASM.AssetInternetExposure.externally_inferred_vulnerability_score
       description: Asset vulnerability score.
       type: Unknown
-  dockerimage: demisto/python3:3.10.8.37753
+  - arguments:
+    - description: A string representing the ASM rule ID you want to get the associated remediation path rules for.
+      name: asm_rule_id
+      required: true
+    - auto: PREDEFINED
+      description: Sorts returned incidents by the date/time that the incident was created ("asc" - ascending, "desc" - descending).
+      name: sort_by_creation_time
+      predefined:
+      - asc
+      - desc
+    description: Returns list of remediation path rules.
+    name: asm-list-remediation-rule
+    outputs:
+    - contextPath: ASM.RemediationRule.rule_id
+      description: Remediation path rule UUID.
+      type: String
+    - contextPath: ASM.RemediationRule.rule_name
+      description: Remediation path rule name.
+      type: String
+    - contextPath: ASM.RemediationRule.description
+      description: Remediation path rule description.
+      type: String
+    - contextPath: ASM.RemediationRule.attack_surface_rule_id
+      description: Association ASM rule ID for the remediation path rules.
+      type: String
+    - contextPath: ASM.RemediationRule.criteria
+      description: Array of remediation path rule criteria.
+      type: Unknown
+    - contextPath: ASM.RemediationRule.criteria_conjunction
+      description: Whether criteria is processed with AND or OR.
+      type: String
+    - contextPath: ASM.RemediationRule.action
+      description: Action to take on rule match.
+      type: String
+    - contextPath: ASM.RemediationRule.created_by
+      description: Email of who created the rule.
+      type: String
+    - contextPath: ASM.RemediationRule.created_by_pretty
+      description: Readable name of who created the rule.
+      type: String
+    - contextPath: ASM.RemediationRule.created_at
+      description: Date the rule was created.
+      type: Date
+  dockerimage: demisto/python3:3.10.10.48392
   runonce: false
   script: ''
   subtype: python3
   type: python
 fromversion: 6.5.0
-marketplaces:
-- marketplacev2
-- xpanse
 tests:
 - CortexAttackSurfaceManagement_Test
