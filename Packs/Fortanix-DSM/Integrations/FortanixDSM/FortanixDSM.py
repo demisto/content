@@ -1,11 +1,15 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
+import demistomock as demisto
+from CommonServerPython import *
+from CommonServerUserPython import *
+
 import json
-import requests
-import tempfile
 import urllib3
+import tempfile
 from base64 import b64encode, b64decode
 
+
+# Disable insecure warnings
+urllib3.disable_warnings()
 
 ''' HELPER FUNCTIONS '''
 
@@ -31,13 +35,6 @@ def isJSON(sb):
         return False
 
 
-def get_server_url():
-    url = demisto.params()['server']
-    url = re.sub('/[\/]+$/', '', url)  # guardrails-disable-line
-    url = re.sub('\/$', '', url)  # guardrails-disable-line
-    return url
-
-
 def getMetadata(strMeta):
     metadata = {}
     try:
@@ -54,28 +51,28 @@ def getMetadata(strMeta):
     return metadata
 
 
-def get_headers():
+def get_headers(username, password, apikey=None, bearer=None):
     headers = {'Content-Type': 'application/json'}
 
-    if BEARER and BEARER != '':
-        headers['Authorization'] = 'Bearer ' + BEARER
-    if USERNAME and PASSWORD and USERNAME != '' and PASSWORD != '':
-        if USERNAME.find('CERTIFICATE') < 0 and PASSWORD.find('PRIVATE KEY') < 0:
+    if bearer and bearer != '':
+        headers['Authorization'] = 'Bearer ' + bearer
+    if username and password and username != '' and password != '':
+        if username.find('CERTIFICATE') < 0 and password.find('PRIVATE KEY') < 0:
             headers['Authorization'] = 'Basic ' + \
-                b64encode(b":".join([USERNAME.encode("latin1"),
-                                     PASSWORD.encode("latin1")])).decode('ascii')
-    elif TOKEN and TOKEN != '':
-        headers['Authorization'] = 'Basic ' + TOKEN
+                b64encode(b":".join([username.encode("latin1"),
+                                     password.encode("latin1")])).decode('ascii')
+    elif apikey and apikey != '':
+        headers['Authorization'] = 'Basic ' + apikey
 
     return headers
 
 
-def get_client_cert():
-    if USERNAME.find('CERTIFICATE') > 0 and PASSWORD.find('PRIVATE KEY') > 0:
+def get_client_cert(username, password):
+    if username.find('CERTIFICATE') > 0 and password.find('PRIVATE KEY') > 0:
         fBundle = tempfile.NamedTemporaryFile(delete=False)
         fName = fBundle.name
-        fBundle.write(bytes(USERNAME.replace('\\n', '\n'), 'ascii'))
-        fBundle.write(bytes(PASSWORD.replace('\\n', '\n'), 'ascii'))
+        fBundle.write(bytes(username.replace('\\n', '\n'), 'ascii'))
+        fBundle.write(bytes(password.replace('\\n', '\n'), 'ascii'))
         fBundle.seek(0)
         fBundle.flush()
         fBundle.close()
@@ -84,91 +81,44 @@ def get_client_cert():
         return None
 
 
-def login():
-    path = 'sys/v1/session/auth'
-    url = '{}/{}'.format(SERVER_URL, path)
-
-    res = requests.request('POST', url, headers=get_headers(), cert=get_client_cert(), verify=VERIFY_SSL)
-
-    if (res.status_code < 200 or res.status_code >= 300) and res.status_code not in DEFAULT_STATUS_CODES:
-        try:
-            error_body = res.json()
-            if 'errors' in error_body and isinstance(error_body['errors'], list):
-                error_body = ';'.join(error_body['errors']) if len(error_body['errors']) > 0 else 'None'
-        except Exception as ex:
-            demisto.error("Error in login: {}".format(ex))
-            error_body = res.content
-
-        raise ValueError('Login failed with: {}, Error: {}'.format(str(res.status_code), error_body))
-
-    auth_res = res.json()
-    if not auth_res or 'expires_in' not in auth_res or 'access_token' not in auth_res:
-        raise ValueError('Could not authenticate user')
-
-    return auth_res['access_token']
+''' CLIENT CLASS '''
 
 
-def send_request(path, method='get', body=None, params=None, headers=None):
+class Client(BaseClient):
 
-    data = json.dumps(body) if body is not None else None
-    params = params if params is not None else {}
-    headers = headers if headers is not None else get_headers()
+    def send_request(self, path, method='get', body=None, params=None):
+        data = json.dumps(body) if body is not None else None
+        params = params if params is not None else {}
 
-    url = '{}/{}'.format(SERVER_URL, path)
-
-    res = requests.request(method, url, headers=headers, cert=get_client_cert(), data=data, params=params, verify=VERIFY_SSL)
-
-    if res.status_code < 200 or res.status_code >= 300:
-        try:
-            error_body = res.json()
-            if 'errors' in error_body and isinstance(error_body['errors'], list):
-                error_body = ';'.join(error_body['errors']) if len(error_body['errors']) > 0 else 'None'
-        except Exception as ex:
-            demisto.error("Error in send_request (parsing error msg): {}".format(ex))
-            error_body = res.content
-
-        raise ValueError('Request failed. Status code: {}, details: {}'.format(str(res.status_code), error_body))
-
-    if res.content:
-        return res.json()
-    return ''
+        return self._http_request(method=method, url_suffix=path, data=data, params=params)
 
 
 ''' COMMAND FUNCTIONS '''
 
 
-def test_command(cmd):
-    path = 'sys/v1/health'
-    if cmd == 'fortanix-test':
-        path = 'sys/v1/version'
-    res = send_request(path)
-    if cmd == 'fortanix-test':
-        readable_output = tableToMarkdown(f'Fortanix DSM status {res}', res)
-        return CommandResults(
-            outputs_prefix='Fortanix.DSM',
-            readable_output=readable_output,
-            outputs=res
-        )
-    else:
-        demisto.results('ok')
+def test_module(client):
+    path = 'sys/v1/session/auth'
+    res = client.send_request(path)
+    if not res:
+        raise DemistoException('NOK')
+    return 'ok'
 
 
-def list_secrets_command():
-    group_id = demisto.args()['group_id'] if 'group_id' in demisto.args() else None
-    name = demisto.args()['name'] if 'name' in demisto.args() else None
-    kid = demisto.args()['kid'] if 'kid' in demisto.args() else None
-    state = demisto.args()['state'] if 'state' in demisto.args() else None
-    page = int(demisto.args()['page']) if 'page' in demisto.args() else None
+def list_secrets_command(client, args, gids=None):
+    name = args.get('name')
+    kid = args.get('kid')
+    if page := args.get('page'):
+        page = int(args.get('page'))
 
     path = 'crypto/v1/keys'
     params = {
         'obj_type': 'SECRET',
         'sort': 'name:asc'
     }
-    if state:
+    if state := args.get('state'):
         if state == 'enabled':
             state = True
-        if state == 'disabled':
+        elif state == 'disabled':
             state = False
         elif state == 'deleted':
             params['show_deleted'] = 'true'
@@ -178,32 +128,34 @@ def list_secrets_command():
     if page and page > 1:
         params['offset'] = str((page - 1) * 100 + 1)
     if kid:
-        path = path + '/' + kid
+        path = f'{path}/{kid}'
     elif name:
         params['name'] = name
     else:
-        if group_id:
+        if group_id := args.get('group_id'):
             params['group_id'] = group_id
-        elif GROUP_IDS and len(GROUP_IDS) and GROUP_IDS.find(' ') < 0 and GROUP_IDS.find(',') < 0:
-            params['group_id'] = GROUP_IDS
+        elif gids and len(gids) and gids.find(' ') < 0 and gids.find(',') < 0:
+            params['group_id'] = gids
 
-    res = send_request(path, 'get', params=params)
+    res = client.send_request(path, 'get', params=params)
     if not res:
-        raise ValueError('Secrets not found')
+        raise DemistoException('Secrets not found')
 
     if kid and res:
         readable_output = tableToMarkdown(f'Fortanix DSM Secret {res}', res)
         return CommandResults(
             outputs_prefix='Fortanix.Secret',
             readable_output=readable_output,
-            outputs=res
+            outputs=res,
+            raw_response=res
         )
     elif len(res) == 1:
         readable_output = tableToMarkdown(f'Fortanix DSM Secret {res[0]}', res[0])
         return CommandResults(
             outputs_prefix='Fortanix.Secret',
             readable_output=readable_output,
-            outputs=res[0]
+            outputs=res[0],
+            raw_response=res
         )
     else:
         mapped_secrets = [{
@@ -217,26 +169,25 @@ def list_secrets_command():
             outputs_prefix='Fortanix.Secret',
             outputs_key_field='Kid',
             readable_output=readable_output,
-            outputs=mapped_secrets
+            outputs=mapped_secrets,
+            raw_response=res
         )
 
 
-def fetch_secret_command():
+def fetch_secret_command(client, args):
 
-    if 'kid' in demisto.args():
-        kid = demisto.args()['kid']
-    else:
-        raise ValueError('Secret cannot be fetched without a key ID')
+    if not (kid := args.get('kid')):
+        raise DemistoException('Secret cannot be fetched without a key ID')
 
     path = 'crypto/v1/keys/export'
     body = {
         'kid': kid
     }
 
-    res = send_request(path, "post", body)
+    res = client.send_request(path, "post", body)
     value = ''
     if not res:
-        raise ValueError('Secret cannot be fetched.')
+        raise DemistoException('Secret cannot be fetched.')
     else:
         try:
             if 'value' in res:
@@ -244,8 +195,6 @@ def fetch_secret_command():
                     value = b64decode(res['value']).decode("utf-8")
                 else:
                     value = res['value']
-            else:
-                value = res
         except Exception:
             value = res['value']
 
@@ -256,11 +205,12 @@ def fetch_secret_command():
     return CommandResults(
         outputs_prefix='Fortanix.Secret.Value',
         readable_output=readable_output,
-        outputs=mapped_value
+        outputs=mapped_value,
+        raw_response=res
     )
 
 
-def import_secret_command(rotate=False):
+def import_secret_command(client, args, gids, rotate=False):
 
     path = 'crypto/v1/keys'
     method = 'put'
@@ -268,48 +218,48 @@ def import_secret_command(rotate=False):
         path = path + '/rekey'
         method = 'post'
 
-    group_id = demisto.args()['group_id'] if 'group_id' in demisto.args() else None
+    if not (name := args.get('name')):
+        raise DemistoException('Secret cannot be imported without a name')
+    if not (value := args.get('value')):
+        raise DemistoException('Secret cannot be imported without a value')
     body = {
-        'name': demisto.args()['name'],
-        'value': b64encode(demisto.args()['value'].encode("utf-8")).decode('ascii'),
+        'name': name,
+        'value': b64encode(value.encode("utf-8")).decode('ascii'),
         'obj_type': 'SECRET',
         'key_ops': ['EXPORT', 'APPMANAGEABLE']
     }
-    if group_id:
+    if group_id := args.get('group_id'):
         body['group_id'] = group_id
-    elif GROUP_IDS and len(GROUP_IDS) and GROUP_IDS.find(' ') < 0 and GROUP_IDS.find(',') < 0:
-        body['group_id'] = GROUP_IDS
+    elif gids and len(gids) and gids.find(' ') < 0 and gids.find(',') < 0:
+        body['group_id'] = gids
 
-    metadata = getMetadata(demisto.args()['metadata']) \
-        if 'metadata' in demisto.args() else None
-    if metadata:
+    if metadata := getMetadata(args.get('metadata')):
         body['custom_metadata'] = metadata
 
-    res = send_request(path, method, body)
+    res = client.send_request(path, method, body)
     if not res:
         msg = 'Secret cannot be '
         msg = msg + 'created.' if rotate else msg + 'rotated.'
-        raise ValueError(msg)
+        raise DemistoException(msg)
 
     readable_output = tableToMarkdown(f'Fortanix DSM Secret {res}', res)
     return CommandResults(
         outputs_prefix='Fortanix.Secret',
         readable_output=readable_output,
-        outputs=res
+        outputs=res,
+        raw_response=res
     )
 
 
-def delete_secret_command():
+def delete_secret_command(client, args):
 
-    if 'kid' in demisto.args():
-        kid = demisto.args()['kid']
-    else:
-        raise ValueError('Secret cannot be deleted without a key ID')
+    if not (kid := args.get('kid')):
+        raise DemistoException('Secret cannot be deleted without a key ID')
 
     path = 'crypto/v1/keys/' + kid
-    res = send_request(path, "delete")
+    res = client.send_request(path, "delete")
     if res:
-        raise ValueError('Secret was not deleted.')
+        raise DemistoException('Secret was not deleted.')
 
     mapped_value = [{
         'Result': 'OK'
@@ -322,16 +272,14 @@ def delete_secret_command():
     )
 
 
-def invoke_plugin_command():
+def invoke_plugin_command(client, args):
 
-    if 'pid' in demisto.args():
-        pid = demisto.args()['pid']
-    else:
-        raise ValueError('Plugin cannot be invoked without a Plugin UUID')
+    if not (pid := args.get('pid')):
+        raise DemistoException('Plugin cannot be invoked without a Plugin UUID')
 
     plugin_input = '{}'
-    if 'input' in demisto.args():
-        args_input = demisto.args()['input']
+    if 'input' in args:
+        args_input = args.get('input')
         try:
             if isBase64(args_input):
                 plugin_input = json.loads(b64decode(args_input))
@@ -342,9 +290,8 @@ def invoke_plugin_command():
         except Exception:
             plugin_input = args_input
 
-    # return_results(plugin_input)
     path = 'sys/v1/plugins/' + pid
-    res = send_request(path, "post", plugin_input)
+    res = client.send_request(path, "post", plugin_input)
     value: List[Dict[Any, Any]]
     if res and isinstance(res, dict):
         value = [res]
@@ -361,24 +308,25 @@ def invoke_plugin_command():
     return CommandResults(
         outputs_prefix='Fortanix.Plugin.Output',
         readable_output=readable_output,
-        outputs=value
+        outputs=value,
+        raw_response=res
     )
 
 
-def encrypt_command():
+def encrypt_command(client, args, pkey=None, pmode=None):
 
-    if 'data' in demisto.args():
-        data = demisto.args()['data']
+    if 'data' in args:
+        data = args.get('data')
     else:
-        raise ValueError('Protection requires data')
+        raise DemistoException('Protection requires data')
 
-    key_name = PROTECTION_KEY
-    if 'key' in demisto.args():
-        key_name = demisto.args()['key']
+    key_name = pkey
+    if 'key' in args:
+        key_name = args.get('key')
 
-    mode = PROTECTION_MODE
-    if 'mode' in demisto.args():
-        mode = demisto.args()['mode']
+    mode = pmode
+    if 'mode' in args:
+        mode = args.get('mode')
 
     path = 'crypto/v1/encrypt'
     body = {
@@ -387,7 +335,7 @@ def encrypt_command():
         'alg': 'AES',
         'mode': mode
     }
-    res = send_request(path, "post", body)
+    res = client.send_request(path, "post", body)
     value = ''
     try:
         if 'cipher' in res:
@@ -405,15 +353,15 @@ def encrypt_command():
     return CommandResults(
         outputs_prefix='Fortanix.Data.Cipher',
         readable_output=readable_output,
-        outputs=mapped_value
+        outputs=mapped_value,
+        raw_response=res
     )
 
 
-def decrypt_command():
+def decrypt_command(client, args, pkey, pmode):
 
     payload_cipher = None
-    if 'cipher' in demisto.args():
-        raw_cipher = demisto.args()['cipher']
+    if raw_cipher := args.get('cipher'):
         try:
             if isBase64(raw_cipher):
                 payload_cipher = json.loads(b64decode(raw_cipher))
@@ -424,7 +372,7 @@ def decrypt_command():
         except Exception:
             payload_cipher = raw_cipher
     else:
-        raise ValueError('Protection requires cipher')
+        raise DemistoException('Protection requires cipher')
 
     cipher = None
     key_name = None
@@ -442,19 +390,19 @@ def decrypt_command():
     else:
         cipher = payload_cipher
 
-    if not iv and 'iv' in demisto.args():
-        iv = demisto.args()['iv']
+    if not iv and 'iv' in args:
+        iv = args.get('iv')
 
     if not key_id:
-        key_name = PROTECTION_KEY
+        key_name = pkey
         key_id = None
-        if 'key' in demisto.args():
-            key_id = demisto.args()['key']
+        if 'key' in args:
+            key_id = args.get('key')
 
     if not mode:
-        mode = PROTECTION_MODE
-        if 'mode' in demisto.args():
-            mode = demisto.args()['mode']
+        mode = pmode
+        if 'mode' in args:
+            mode = args.get('mode')
 
     path = 'crypto/v1/decrypt'
     body = {
@@ -470,7 +418,7 @@ def decrypt_command():
     if iv:
         body['iv'] = iv
 
-    res = send_request(path, "post", body)
+    res = client.send_request(path, "post", body)
     value = ''
     try:
         if 'plain' in res:
@@ -490,42 +438,9 @@ def decrypt_command():
     return CommandResults(
         outputs_prefix='Fortanix.Data.Plain',
         readable_output=readable_output,
-        outputs=mapped_value
+        outputs=mapped_value,
+        raw_response=res
     )
-
-
-''' GLOBAL VARIABLES '''
-
-
-# Disable insecure warnings
-urllib3.disable_warnings()  # pylint: disable=no-member
-
-# built-in method to procure proxy from ENV
-handle_proxy()
-
-
-USERNAME = ''
-PASSWORD = ''
-CREDENTIALS = demisto.params().get('credentials', {})
-if CREDENTIALS:
-    USERNAME = CREDENTIALS.get('identifier', '')
-    PASSWORD = CREDENTIALS.get('password', '')
-
-BEARER = ''
-TOKEN = demisto.params().get('token', '')
-VERIFY_SSL = not demisto.params().get('tls_enforce', False)
-
-BASE_URL = get_server_url()
-SERVER_URL = BASE_URL  # + '/v1'
-
-DEFAULT_STATUS_CODES = {999}
-
-GROUP_IDS = demisto.params().get('group_ids', '')
-if GROUP_IDS and GROUP_IDS != '':
-    GROUP_IDS = GROUP_IDS.strip()
-
-PROTECTION_KEY = demisto.params().get('protection_key', None)
-PROTECTION_MODE = demisto.params().get('protection_mode', None)
 
 
 ''' MAIN FUNCTION '''
@@ -533,40 +448,79 @@ PROTECTION_MODE = demisto.params().get('protection_mode', None)
 
 def main() -> None:
 
-    demisto.debug('Executing command: ' + demisto.command())
     message = ''
+    args = demisto.args()
+    dparams = demisto.params()
+    command = demisto.command()
+
+    proxy = dparams.get('proxy', False)
+    verify_ssl = not dparams.get('tls_enforce', False)
+
+    if endpoint := dparams.get('server'):
+        # guardrails-disable-line
+        endpoint = re.sub('/[\/]+$/', '', endpoint)
+        endpoint = re.sub('\/$', '', endpoint)
+
+    username = dparams.get('credentials', {}).get('identifier')
+    password = dparams.get('credentials', {}).get('password')
+    apikey = dparams.get('token', '')
+    if not ((username and password) or (apikey)):
+        return_results('Either an API Key or other App credentials must be provided')
+
+    if group_ids := dparams.get('group_ids', ''):
+        group_ids = group_ids.strip()
+
+    pkey = dparams.get('protection_key', None)
+    pmode = dparams.get('protection_mode', None)
 
     try:
-        if (USERNAME and PASSWORD and USERNAME != '' and PASSWORD != '') or (TOKEN and TOKEN != ''):
-            BEARER = login()
-        elif BEARER == '' or TOKEN == '':
-            return_results('Either an API KEY or App/User credentials must be provided')
+        if username.find('CERTIFICATE') > 0 and password.find('PRIVATE KEY') > 0:
+            return_results('Client certificate is currently not supported')
 
-        if demisto.command() == 'test-module':
-            test_command(demisto.command())
-        elif demisto.command() == 'fortanix-list-secrets':
-            return_results(list_secrets_command())
-        elif demisto.command() == 'fortanix-get-secret-metadata':
-            return_results(list_secrets_command())
-        elif demisto.command() == 'fortanix-fetch-secret':
-            return_results(fetch_secret_command())
-        elif demisto.command() == 'fortanix-new-secret':
-            return_results(import_secret_command(False))
-        elif demisto.command() == 'fortanix-rotate-secret':
-            return_results(import_secret_command(True))
-        elif demisto.command() == 'fortanix-delete-secret':
-            return_results(delete_secret_command())
-        elif demisto.command() == 'fortanix-invoke-plugin':
-            return_results(invoke_plugin_command())
-        elif demisto.command() == 'fortanix-encrypt':
-            return_results(encrypt_command())
-        elif demisto.command() == 'fortanix-decrypt':
-            return_results(decrypt_command())
+        demisto.debug(f'Executing command: {command}')
+        client = Client(
+            base_url=endpoint,
+            verify=verify_ssl,
+            headers=get_headers(username, password, apikey),
+            proxy=proxy)
 
+
+        if command == 'test-module':
+            test_module(client)
+
+        elif command == 'fortanix-list-secrets':
+            return_results(list_secrets_command(client, args, group_ids))
+
+        elif command == 'fortanix-get-secret-metadata':
+            return_results(list_secrets_command(client, args, group_ids))  # if kid in args or single secret in list
+
+        elif command == 'fortanix-fetch-secret':
+            return_results(fetch_secret_command(client, args))
+
+        elif command == 'fortanix-new-secret':
+            return_results(import_secret_command(client, args, group_ids, False))
+
+        elif command == 'fortanix-rotate-secret':
+            return_results(import_secret_command(client, args, group_ids, True))
+
+        elif command == 'fortanix-delete-secret':
+            return_results(delete_secret_command(client, args))
+
+        elif command == 'fortanix-invoke-plugin':
+            return_results(invoke_plugin_command(client, args))
+
+        elif command == 'fortanix-encrypt':
+            return_results(encrypt_command(client, args, pkey, pmode))
+
+        elif command == 'fortanix-decrypt':
+            return_results(decrypt_command(client, args, pkey, pmode))
+
+    except DemistoException as err:
+        message = f'Failure in Fortanix DSM.\nError:\n{str(err)}'
     except ValueError as err:
-        message = f'Failed to login.\nError:\n{str(err)}'
+        message = f'Error in Fortanix DSM.\nError:\n{str(err)}'
     except Exception as e:
-        message = f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}'
+        message = f'Command Failure: {command}.\nError:\n{str(e)}'
 
     if message != '':
         return_error(message)
