@@ -244,24 +244,20 @@ class TAXIIServer:
 
             """
             # yield the opening tag of the Poll Response
-            root = ET.Element("taxii_11:Poll_Response",
-                              {"xmlns:taxii": "http://taxii.mitre.org/messages/taxii_xml_binding-1",
-                               "xmlns:taxii_11": "http://taxii.mitre.org/messages/taxii_xml_binding-1.1",
-                               "xmlns:tdq": "http://taxii.mitre.org/query/taxii_default_query-1",
-                               "message_id": generate_message_id(),
-                               "in_response_to": message_id,
-                               "collection_name": collection_name,
-                               "more": "false",
-                               "result_part_number": "1"})
-            # Create a child element and add it to the root
-            inclusive_end_timestamp = ET.SubElement(root, "taxii_11:Inclusive_End_Timestamp")
-            inclusive_end_timestamp.text = inclusive_end_time.isoformat()
+            response = '<taxii_11:Poll_Response xmlns:taxii="http://taxii.mitre.org/messages/taxii_xml_binding-1"' \
+                       ' xmlns:taxii_11="http://taxii.mitre.org/messages/taxii_xml_binding-1.1" ' \
+                       'xmlns:tdq="http://taxii.mitre.org/query/taxii_default_query-1"' \
+                       f' message_id="{generate_message_id()}"' \
+                       f' in_response_to="{message_id}"' \
+                       f' collection_name="{collection_name}" more="false" result_part_number="1"> ' \
+                       f'<taxii_11:Inclusive_End_Timestamp>{inclusive_end_time.isoformat()}' \
+                       '</taxii_11:Inclusive_End_Timestamp>'
 
             if exclusive_begin_time is not None:
-                inclusive_end_timestamp = ET.SubElement(root, "taxii_11:Exclusive_Begin_Timestamp")
-                inclusive_end_timestamp.text = exclusive_begin_time.isoformat()
+                response += (f'<taxii_11:Exclusive_Begin_Timestamp>{exclusive_begin_time.isoformat()}'
+                             f'</taxii_11:Exclusive_Begin_Timestamp>')
 
-            yield ET.tostring(root, encoding="unicode")
+            yield response
 
             # yield the content blocks
             indicator_query = self.collections[str(collection_name)]
@@ -278,6 +274,10 @@ class TAXIIServer:
                     yield f'{content_xml}\n'
                 except Exception as e:
                     handle_long_running_error(f'Failed parsing indicator to STIX: {e}')
+
+            # yield the closing tag
+
+            yield '</taxii_11:Poll_Response>'
 
         return Response(
             response=stream_with_context(yield_response()),
