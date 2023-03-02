@@ -1,14 +1,13 @@
 from CommonServerPython import *
 
 ''' IMPORTS '''
+import urllib3
 import dateparser
 from datetime import datetime, timedelta
 import enum
 
 # disable insecure warnings
-import urllib3
 urllib3.disable_warnings()
-
 
 ''' CONSTANTS '''
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
