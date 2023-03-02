@@ -9,16 +9,15 @@ import stat
 import re
 import shutil
 import json
-from typing import List, Set, Tuple
+from typing import List, Set, Tuple, AnyStr
 from pikepdf import Pdf, PasswordError
 import contextlib
 import io
 
-URL_EXTRACTION_REGEX = (
-    r"(?:(?:https?|ftp|hxxps?):\/\/|www\[?\.\]?|ftp\[?\.\]?)(?:[-\w\d]+\[?\.\]?)+"
-    r"[-\w\d]+(?::\d+)?(?:(?:\/|\?)[-\w\d+&@#\/%=~_$?!\-:,.\(\);]*[\w\d+&@#\/%=~_$\(\);])?"
-)
-INTEGRATION_NAME = 'ReadPDFFileV2'
+INTEGRATION_NAME = 'ReadPDFFileV2' 
+EMAIL_REGEX = "[a-zA-Z0-9-_.]+@[a-zA-Z0-9-_.]+"
+# Documentation claims png is enough for pdftohtml, but through testing we found jpg can be generated as well
+IMG_FORMATS = ["jpg", "jpeg", "png", "gif"]
 DEFAULT_NUM_IMAGES = 20
 
 
@@ -54,15 +53,63 @@ class ShellException(Exception):
 
 try:
     ROOT_PATH = os.getcwd()
+
 except OSError:
     return_error(
         "The script failed to access the current working directory. This might happen if your docker isn't "
         "set up correctly. Please contact customer support"
     )
 
-EMAIL_REGXEX = "[a-zA-Z0-9-_.]+@[a-zA-Z0-9-_.]+"
-# Documentation claims png is enough for pdftohtml, but through testing we found jpg can be generated as well
-IMG_FORMATS = ["jpg", "jpeg", "png", "gif"]
+
+def extract_url(extracted_object: AnyStr) -> str | None:
+    """
+    Extracts a URL (if exists) from extracted_object using regex (re.search).
+
+    Args:
+        extracted_object (AnyStr): A string to look for a URL in.
+
+    Returns:
+        (str): The extracted URL.
+    """
+    match = re.search(urlRegex, extracted_object)
+    return match.group(0) if match else None
+
+
+def extract_urls(extracted_object: AnyStr) -> list[str]:
+    """
+    Extract URLs from extracted_object using regex (re.findall).
+
+    Args:
+        extracted_object (AnyStr): A string to look for URLs in.
+
+    Returns:
+        (list[str]): A list of extracted URLs.
+    """
+    results: list[str] = []
+
+    for matched_url in re.finditer(urlRegex, extracted_object):
+        if matched_url.group(0) not in results:
+            results.append(matched_url.group(0))
+
+    return results
+
+
+def extract_email(extracted_object: Any):
+    """
+    Extracts Email (if exists) from the extracted object, according to the EMAIL_REGEX.
+
+    Args:
+        extracted_object (PyPDF2.generic.TextStringObject): A TextStringObject object contains a url or an email.
+
+    Returns:
+         (str): The extracted email.
+    """
+    match = ""
+    matched_email = re.findall(EMAIL_REGEX, extracted_object)
+    if len(matched_email) != 0:
+        match = matched_email[0]
+
+    return match
 
 
 def handle_error_read_only(fun, path, exp) -> None:
@@ -332,12 +379,14 @@ def get_urls_from_binary_file(file_path: str) -> set:
     with open(file_path, "rb") as file:
         # the urls usually appear in the form: '/URI (url)'
         urls = re.findall(r"/URI ?\((.*?)\)", str(file.read()))
+
     binary_file_urls = set()
+
     # make sure the urls match the url regex
     for url in urls:
-        mached_url = re.findall(URL_EXTRACTION_REGEX, url)
-        if len(mached_url) != 0:
-            binary_file_urls.add(mached_url[0])
+        if matched_url := extract_url(url):
+            binary_file_urls.add(matched_url)
+
     return binary_file_urls
 
 
@@ -352,7 +401,7 @@ def get_urls_and_emails_from_pdf_html_content(cpy_file_path: str, output_folder:
         tuple[set, set]: The URLs and emails that were found.
     """
     pdf_html_content = get_pdf_htmls_content(cpy_file_path, output_folder)
-    return set(re.findall(URL_EXTRACTION_REGEX, pdf_html_content)), set(re.findall(EMAIL_REGXEX, pdf_html_content))
+    return set(extract_urls(pdf_html_content)), set(re.findall(EMAIL_REGEX, pdf_html_content))
 
 
 def extract_url_from_annot_object(annot_object: Any):
@@ -366,7 +415,6 @@ def extract_url_from_annot_object(annot_object: Any):
          (PyPDF2.generic.TextStringObject): The extracted url if exists, else - None.
 
     """
-
     # Extracts the URLs from the Annot object (under key: '/A'):
     if a := annot_object.get("/A"):
         if isinstance(a, PyPDF2.generic.IndirectObject):
@@ -376,42 +424,6 @@ def extract_url_from_annot_object(annot_object: Any):
             if isinstance(url, PyPDF2.generic.IndirectObject):
                 url = url.get_object()
             return url
-
-
-def extract_url(extracted_object: Any):
-    """
-    Extracts URL (if exists) from the extracted object, according to the URL_EXTRACTION_REGEX.
-
-    Args:
-        extracted_object (PyPDF2.generic.TextStringObject): A TextStringObject object contains a url or an email.
-
-    Returns:
-         (str): The extracted url.
-    """
-    match = ""
-    matched_url = re.findall(URL_EXTRACTION_REGEX, extracted_object)
-    if len(matched_url) != 0:
-        match = matched_url[0]
-
-    return match
-
-
-def extract_email(extracted_object: Any):
-    """
-    Extracts Email (if exists) from the extracted object, according to the EMAIL_REGXEX.
-
-    Args:
-        extracted_object (PyPDF2.generic.TextStringObject): A TextStringObject object contains a url or an email.
-
-    Returns:
-         (str): The extracted email.
-    """
-    match = ""
-    matched_email = re.findall(EMAIL_REGXEX, extracted_object)
-    if len(matched_email) != 0:
-        match = matched_email[0]
-
-    return match
 
 
 def extract_urls_and_emails_from_annot_objects(annot_objects: list | Any):
@@ -425,7 +437,6 @@ def extract_urls_and_emails_from_annot_objects(annot_objects: list | Any):
          Tuple[set, set]: A set includes the extracted urls, A set includes the extracted emails.
 
     """
-
     urls = set()
     emails = set()
 
@@ -443,8 +454,9 @@ def extract_urls_and_emails_from_annot_objects(annot_objects: list | Any):
         extracted_object = extract_url_from_annot_object(annot_object)
         # Separates URLs and Emails:
         if extracted_object:
-            if url := extract_url(extracted_object):
-                urls.add(url)
+            if results := extract_urls(extracted_object):
+                urls.update(results)
+
             if email := extract_email(extracted_object):
                 emails.add(email)
 
@@ -510,7 +522,6 @@ def extract_urls_and_emails_from_pdf_file(file_path: str, output_folder: str) ->
         tuple[set, set]: A set including the URLs and emails that were found, A set including only emails that were
          extracted from the html content.
     """
-
     # Get urls from the binary file:
     binary_file_urls = get_urls_from_binary_file(file_path)
 
@@ -599,8 +610,10 @@ def main():  # pragma: no cover
 
         extract_data_from_pdf(path=path, user_password=user_password, entry_id=entry_id, max_images=max_images,
                               working_dir=working_dir)
+
     except PdfPermissionsException as e:
         return_warning(str(e))
+
     except ShellException as e:
         file_name = demisto.getFilePath(entry_id).get('name')
         mark_suspicious(
@@ -609,9 +622,11 @@ def main():  # pragma: no cover
             path=path,
             file_name=file_name,
         )
+
     except Exception as e:
         demisto.error(traceback.format_exc())
         return_error(str(e))
+
     finally:
         os.chdir(ROOT_PATH)
         shutil.rmtree(working_dir, onerror=handle_error_read_only)

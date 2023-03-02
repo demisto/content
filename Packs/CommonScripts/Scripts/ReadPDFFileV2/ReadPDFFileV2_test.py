@@ -245,9 +245,9 @@ def test_get_urls_and_emails_from_pdf_annots_with_encrypt(file_path):
     """
     from ReadPDFFileV2 import get_urls_and_emails_from_pdf_annots, handling_pdf_credentials
 
-    expected_urls = {'https://test1.com', 'https://test2.com', 'http://www.test3.net',
+    expected_urls = {'https://test1.com/', 'https://test2.com', 'http://www.test3.net',
                      'https://test5.com.co/ed/trn/update?email=user@test6.net', 'http://www.test7.com',
-                     'https://test8.com'}
+                     'https://test8.com/'}
 
     expected_emails = {'user@test4.com', 'user@test6.net'}
 
@@ -304,9 +304,9 @@ def test_get_urls_and_emails_from_pdf_annots_without_encrypt(file_path):
     """
     from ReadPDFFileV2 import get_urls_and_emails_from_pdf_annots
 
-    expected_urls = {'https://test1.com', 'https://test2.com', 'http://www.test3.net',
+    expected_urls = {'https://test1.com/', 'https://test2.com', 'http://www.test3.net',
                      'https://test5.com.co/ed/trn/update?email=user@test6.net', 'http://www.test7.com',
-                     'https://test8.com'}
+                     'https://test8.com/'}
 
     expected_emails = {'user@test4.com', 'user@test6.net'}
 
@@ -335,8 +335,8 @@ def test_get_urls_and_emails_from_pdf_file_with_encrypt(tmp_path):
     """
     from ReadPDFFileV2 import extract_urls_and_emails_from_pdf_file, handling_pdf_credentials
 
-    expected_urls = {'www.hiddenvirusaddress.cn', 'www.msn.com', 'http://www.docxtesturl.com', 'www.google.com',
-                     'www.docxtesturl.com', 'http://www.msn.com'}
+    expected_urls = {'www.hiddenvirusaddress.cn', 'www.msn.com', 'http://www.docxtesturl.com/', 'www.google.com',
+                     'www.docxtesturl.com', 'http://www.msn.com/'}
     expected_emails = {'Userthatdoesnotexist3@demis', 'userthatdoesnotexist@demisto.com',
                        'userthatdoesnotexist4@demis', 'Userthatdoesnotexist2@demisto.com'}
 
