@@ -2,7 +2,7 @@ import datetime
 import json
 from pathlib import Path
 from packaging.version import Version
-from typing import Optional
+from typing import Optional, List
 from unittest.mock import MagicMock
 import pytest as pytest
 from Utils.github_workflow_scripts.autobump_rn import LastModifiedCondition, \
@@ -13,7 +13,6 @@ from Utils.github_workflow_scripts.autobump_rn import LastModifiedCondition, \
 from git import GitCommandError
 from demisto_sdk.commands.update_release_notes.update_rn import UpdateRN
 import Utils.github_workflow_scripts.autobump_rn as utils
-
 
 MERGE_STDOUT = "stdout: '\n Auto-merging {}\n failed.\n Auto-merging {}\n failed.\n"
 
@@ -34,7 +33,7 @@ class PullRequest:
     def __init__(self,
                  updated_at=None,
                  labels: Optional[Label] = None,
-                 files: Optional[File] = None,
+                 files: Optional[List[File]] = None,
                  branch_name: str = 'branch',
                  ):
         self.number = 1
@@ -54,6 +53,15 @@ class PullRequest:
 
     def get_commits(self):
         return [['23456']]
+
+
+class Repository:
+
+    def __init__(self, pulls: Optional[List[PullRequest]] = None):
+        self.pulls = pulls or []
+
+    def get_pulls(self, *args, **kwargs):
+        return self.pulls
 
 
 class Repo:
@@ -441,7 +449,7 @@ def test_branch_auto_bumper(mocker):
     assert 'Pack MyPack version was automatically bumped to 1.0.2.' in res
 
 
-def test_autobump_manager():
+def test_autobump_manager(mocker):
     """
     Given:
         - Github repo that has branch my-branch
@@ -451,5 +459,20 @@ def test_autobump_manager():
     Then:
         - Validate that the comment body was generated as expected
     """
-    # todo: add test
-    pass
+    origin_metadata = {'name': 'MyPack', 'currentVersion': '1.0.1', 'support': 'xsoar'}
+    branch_metadata = {'name': 'MyPack', 'currentVersion': '1.0.1', 'support': 'xsoar'}
+    base_metadata = {'name': 'MyPack', 'currentVersion': '1.0.0', 'support': 'xsoar'}
+    pr = PullRequest(files=CHANGED_FILES,
+                     branch_name='allowed-conflicts',
+                     )
+    manager = utils.AutoBumperManager(
+        github_repo_obj=Repository([pr]),
+        git_repo_obj=Repo(files=CHANGED_FILES),
+        run_id='1'
+    )
+    mocker.patch('Utils.github_workflow_scripts.autobump_rn.checkout')
+    mocker.patch.object(BranchAutoBumper, 'autobump')
+    mocker.patch.object(MetadataCondition, 'get_metadata_files',
+                        return_value=(origin_metadata, branch_metadata, base_metadata))
+    res = manager.manage()
+    assert res == 'AutoBumping Done.'
