@@ -1,4 +1,4 @@
-category: Messaging
+category: Email
 sectionorder:
 - Connect
 - Collect
@@ -944,7 +944,7 @@ script:
       description: A comma-separated list of CIDs to embed attachments within the email itself.
       isArray: true
     description: Replies to an email using EWS.
-  dockerimage: demisto/py3ews:1.0.0.48807
+  dockerimage: demisto/py3ews:1.0.0.49435
   feed: false
   isfetch: true
   runonce: false
