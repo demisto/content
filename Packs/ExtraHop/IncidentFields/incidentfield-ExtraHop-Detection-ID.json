@@ -2,7 +2,7 @@
     "id": "incident_extrahopdetectionid",
     "version": -1,
     "modified": "2023-02-17T12:16:10.418090761+05:30",
-    "name": "ExtraHop Detection ID",
+    "name": "ExtraHop Reveal(x) Detection ID",
     "ownerOnly": false,
     "description": "The unique ID of the detection",
     "cliName": "extrahopdetectionid",

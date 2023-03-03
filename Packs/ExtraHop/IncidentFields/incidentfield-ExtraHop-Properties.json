@@ -2,7 +2,7 @@
     "id": "incident_extrahopproperties",
     "version": -1,
     "modified": "2023-02-18T13:18:24.590044098+05:30",
-    "name": "ExtraHop Properties",
+    "name": "ExtraHop Reveal(x) Properties",
     "ownerOnly": false,
     "cliName": "extrahopproperties",
     "type": "longText",

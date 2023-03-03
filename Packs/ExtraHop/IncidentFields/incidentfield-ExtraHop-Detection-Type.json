@@ -2,7 +2,7 @@
     "id": "incident_extrahopdetectiontype",
     "version": -1,
     "modified": "2023-02-10T17:23:16.212458535+05:30",
-    "name": "ExtraHop Detection Type",
+    "name": "ExtraHop Reveal(x) Detection Type",
     "ownerOnly": false,
     "description": "The type of ExtraHop detection.",
     "cliName": "extrahopdetectiontype",

@@ -2,7 +2,7 @@
     "id": "incident_extrahopdetectionparticipants",
     "version": -1,
     "modified": "2023-02-14T10:53:00.342706318+05:30",
-    "name": "ExtraHop Detection Participants",
+    "name": "ExtraHop Reveal(x) Detection Participants",
     "ownerOnly": false,
     "description": "The participants of a detection.",
     "cliName": "extrahopdetectionparticipants",

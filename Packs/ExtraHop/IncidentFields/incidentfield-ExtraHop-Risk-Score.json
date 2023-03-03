@@ -2,7 +2,7 @@
     "id": "incident_extrahopriskscore",
     "version": -1,
     "modified": "2023-02-17T12:31:04.033398315+05:30",
-    "name": "ExtraHop Risk Score",
+    "name": "ExtraHop Reveal(x) Risk Score",
     "ownerOnly": false,
     "description": "The risk of the offense in integer.",
     "cliName": "extrahopriskscore",

@@ -34,77 +34,77 @@
                         "transformers": []
                     }
                 },
-                "ExtraHop Detection ID": {
+                "ExtraHop Reveal(x) Detection ID": {
                     "complex": {
                         "filters": [],
                         "root": "id",
                         "transformers": []
                     }
                 },
-                "ExtraHop Detection Participants": {
+                "ExtraHop Reveal(x) Detection Participants": {
                     "complex": {
                         "filters": [],
                         "root": "participants",
                         "transformers": []
                     }
                 },
-                "ExtraHop Detection Status": {
+                "ExtraHop Reveal(x) Detection Status": {
                     "complex": {
                         "filters": [],
                         "root": "status",
                         "transformers": []
                     }
                 },
-                "ExtraHop Detection Type": {
+                "ExtraHop Reveal(x) Detection Type": {
                     "complex": {
                         "filters": [],
                         "root": "type",
                         "transformers": []
                     }
                 },
-                "ExtraHop End Time": {
+                "ExtraHop Reveal(x) End Time": {
                     "complex": {
                         "filters": [],
                         "root": "end_time",
                         "transformers": []
                     }
                 },
-                "ExtraHop Mitre Tactics": {
+                "ExtraHop Reveal(x) Mitre Tactics": {
                     "complex": {
                         "filters": [],
                         "root": "mitre_tactics",
                         "transformers": []
                     }
                 },
-                "ExtraHop Mitre Techniques": {
+                "ExtraHop Reveal(x) Mitre Techniques": {
                     "complex": {
                         "filters": [],
                         "root": "mitre_techniques",
                         "transformers": []
                     }
                 },
-                "ExtraHop Mod Time": {
+                "ExtraHop Reveal(x) Mod Time": {
                     "complex": {
                         "filters": [],
                         "root": "mod_time",
                         "transformers": []
                     }
                 },
-                "ExtraHop Properties": {
+                "ExtraHop Reveal(x) Properties": {
                     "complex": {
                         "filters": [],
                         "root": "properties",
                         "transformers": []
                     }
                 },
-                "ExtraHop Resolution": {
+                "ExtraHop Reveal(x) Resolution": {
                     "complex": {
                         "filters": [],
                         "root": "resolution",
                         "transformers": []
                     }
                 },
-                "ExtraHop Risk Score": {
+                "ExtraHop Reveal(x) Risk Score": {
                     "complex": {
                         "filters": [],
                         "root": "risk_score",
@@ -118,21 +118,21 @@
                         "transformers": []
                     }
                 },
-                "ExtraHop Update Time": {
+                "ExtraHop Reveal(x) Update Time": {
                     "complex": {
                         "filters": [],
                         "root": "update_time",
                         "transformers": []
                     }
                 },
-                "ExtraHop User Created": {
+                "ExtraHop Reveal(x) User Created": {
                     "complex": {
                         "filters": [],
                         "root": "is_user_created",
                         "transformers": []
                     }
                 },
-                "Extrahop Detection Devices": {
+                "Extrahop Reveal(x) Detection Devices": {
                     "complex": {
                         "filters": [],
                         "root": "device_data",

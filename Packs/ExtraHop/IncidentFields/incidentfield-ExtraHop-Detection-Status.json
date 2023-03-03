@@ -2,7 +2,7 @@
     "id": "incident_extrahopdetectionstatus",
     "version": -1,
     "modified": "2023-02-10T17:23:16.212407403+05:30",
-    "name": "ExtraHop Detection Status",
+    "name": "ExtraHop Reveal(x) Detection Status",
     "ownerOnly": false,
     "description": "The status of the detection",
     "cliName": "extrahopdetectionstatus",
