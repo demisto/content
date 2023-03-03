@@ -2643,13 +2643,13 @@ def conversation_history():
 
     raw_response = send_slack_request_sync(CLIENT, 'conversations.history', http_verb="GET", body=body)
 
-    #demisto.results(response)
-    return CommandResults(
-        raw_response = raw_response,
-        outputs_prefix = 'conversations.history',
-        outputs_key_field = 'id',
-        outputs = context
-    )
+    demisto.results(raw_response)
+    #return CommandResults(
+    #    raw_response = raw_response,
+    #    outputs_prefix = 'conversations.history',
+    #    outputs_key_field = 'id',
+    #    outputs = context
+    #)
 
 
 def long_running_main():
