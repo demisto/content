@@ -3,11 +3,7 @@ from CommonServerPython import *  # noqa: F401
 
 
 ''' IMPORTS '''
-import base64
-import os
-import json
 import urllib3
-from urllib.parse import quote
 
 
 # Disable insecure warnings
