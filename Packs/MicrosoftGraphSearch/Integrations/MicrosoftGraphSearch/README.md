@@ -53,4 +53,4 @@ Use the Microsoft Search API in Microsoft Graph to search content stored in OneD
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SearchContent | unknown |  | 
+| SearchContent | unknown | OneDrive or SharePoint content returned from the search | 
