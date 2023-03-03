@@ -2,6 +2,8 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
+
+
 import asyncio
 import concurrent
 import logging.handlers
@@ -2573,21 +2575,45 @@ def list_conversations():
         body['cursor'] = cursor
 
     raw_response = send_slack_request_sync(CLIENT, 'conversations.list', http_verb="GET", body=body)
-    demisto.results(raw_response)
 
     # Provide an option to only select a channel by a name. Instead of returning a full list of results this allows granularity
     # Supports a single channel name
     name_filter = demisto.args().get('name_filter')
 
-    # if name_filter != None:
-    #     for channel in raw_response['channels']:
-    #         if channel['name'] == name_filter:
-    #             channels = channel
-    #             break
-    #         else:
-    #             continue
-    # else:
-    #     channels = raw_response['channels']
+    if name_filter != None:
+        channels = None
+        for channel in raw_response['channels']:
+            if channel['name'] == name_filter:
+                channels = channel
+                break
+            else:
+                continue
+        if channels == None:
+            return_error(f"No channel found with name: {name_filter}")
+    else:
+        channels = raw_response['channels']
+
+    if type(channels) == dict:
+        channel = channels
+        context = {
+            'ID': channel['id'],
+            'Name': channel['name'],
+            'Created': channel['created'],
+            'Creator': channel['creator'],
+            'Purpose': channel['purpose']['value']
+        }
+    if type(channels) == list:
+        context = []
+        for channel in channels:
+            entry = {
+                'ID': channel['id'],
+                'Name': channel['name'],
+                'Created': channel['created'],
+                'Creator': channel['creator'],
+                'Purpose': channel['purpose']['value']
+            }
+            context.append(entry)
+    demisto.results(json.dumps(context, indent=4))
 
     # demisto.results(CommandResults(
     #         readable_output= readable_output,
@@ -2836,5 +2862,6 @@ def main() -> None:
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     register_signal_handler_profiling_dump(profiling_dump_rows_limit=PROFILING_DUMP_ROWS_LIMIT)
     main()
+
 
 
