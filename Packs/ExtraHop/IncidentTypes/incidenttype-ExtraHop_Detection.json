@@ -26,5 +26,5 @@
         "mode": "All",
         "fieldCliNameToExtractSettings": {}
     },
-    "fromVersion": "6.5.0"
+    "fromVersion": "5.0.0"
 }
