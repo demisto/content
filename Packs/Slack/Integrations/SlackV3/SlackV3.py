@@ -1,3 +1,5 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import asyncio
 import concurrent
 import logging.handlers
@@ -7,9 +9,9 @@ from distutils.util import strtobool
 from typing import Tuple
 
 import aiohttp
-import demistomock as demisto  # noqa: F401
+
 import slack_sdk
-from CommonServerPython import *  # noqa: F401
+
 from slack_sdk.errors import SlackApiError
 from slack_sdk.socket_mode.aiohttp import SocketModeClient
 from slack_sdk.socket_mode.request import SocketModeRequest
@@ -2543,7 +2545,7 @@ def list_conversations():
     """
     List the conversations in the workspace
     """
-
+    channel_id = demisto.args().get('channel_id')
     response = send_slack_request_sync(CLIENT, 'conversations.list')
 
     demisto.results(response)
@@ -2554,16 +2556,17 @@ def conversation_history():
     Fetches a conversation's history of messages
     and events
     """
-    
-    # The Channel ID is passed from XSOAR as an argument 
+
+    # The Channel ID is passed from XSOAR as an argument
     # supplied by the user
     channel_id = demisto.args().get('channel_id')
+
 
     body = {
         'channel': channel_id
     }
 
-    response = send_slack_request_sync(CLIENT, 'conversations.history', body=body)
+    response = send_slack_request_sync(CLIENT, 'conversations.history', http_verb="GET", body=body)
 
     demisto.results(response)
 
@@ -2754,7 +2757,7 @@ def main() -> None:
         'slack-get-integration-context': slack_get_integration_context,
         'slack-edit-message': slack_edit_message,
         'slack-pin-message': pin_message,
-        'slack-conversation-history': conversation_history
+        'slack-get-conversation-history': conversation_history
     }
 
     command_name: str = demisto.command()
@@ -2781,3 +2784,4 @@ def main() -> None:
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     register_signal_handler_profiling_dump(profiling_dump_rows_limit=PROFILING_DUMP_ROWS_LIMIT)
     main()
+

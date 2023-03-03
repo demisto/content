@@ -374,15 +374,18 @@ script:
     - contextPath: Slack.Thread.Text
       description: The text the message was updated with.
       type: String
-<<<<<<< HEAD
-  - arguments: []
+  - arguments:
+    - description: 'Supply this argument to only return channels with this name '
+      name: name_filter
     description: List all of the channels in the organization workspace
     name: slack-list-channels
-  dockerimage: demisto/slackv3:1.0.0.45719
-=======
+  - arguments:
+    - description: The channel ID associated with the Slack channel
+      name: channel_id
+      required: true
+    description: Fetches a conversation's history of messages     and events
+    name: slack-get-conversation-history
   dockerimage: demisto/slackv3:1.0.0.48936
-  feed: false
-  isfetch: false
   longRunning: true
   runonce: false
   script: ''
