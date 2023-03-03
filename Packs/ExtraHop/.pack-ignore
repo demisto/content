@@ -17,7 +17,28 @@ ignore=IF107
 ignore=PA116
 
 [file:ExtraHop_v2.yml]
-ignore=BA108,BA109,IN145
+ignore=BA108,BA109,IN145,IN124
 
 [file:README.md]
 ignore=RM106
+
+[known_words]
+Extrahop
+Mappers
+Mapper
+Reveal(x
+CVE-2019-0708
+extrahop-detections-list
+extrahop-metric-list
+extrahop-watchlist-get
+extrahop-peers-get
+extrahop-devices-search
+extrahop-protocols-get
+extrahop-activity-map-get
+extrahop-alert-rules-get
+extrahop-packets-search
+extrahop-ticket-track
+extrahop-devices-tag
+extrahop-alert-rule-create
+extrahop-alert-rule-edit
+extrahop-watchlist-edit

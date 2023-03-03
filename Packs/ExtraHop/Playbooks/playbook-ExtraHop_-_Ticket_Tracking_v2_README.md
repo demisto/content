@@ -28,4 +28,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![ExtraHop_Ticket_Tracking](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/ExtraHop_Ticket_Tracking.png)
+![ExtraHop_Ticket_Tracking](../doc_files/ExtraHop_-_Ticket_Tracking_v2.png)
