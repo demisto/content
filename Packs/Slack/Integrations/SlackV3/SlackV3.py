@@ -7,7 +7,9 @@ from distutils.util import strtobool
 from typing import Tuple
 
 import aiohttp
+import demistomock as demisto  # noqa: F401
 import slack_sdk
+from CommonServerPython import *  # noqa: F401
 from slack_sdk.errors import SlackApiError
 from slack_sdk.socket_mode.aiohttp import SocketModeClient
 from slack_sdk.socket_mode.request import SocketModeRequest
@@ -15,10 +17,6 @@ from slack_sdk.socket_mode.response import SocketModeResponse
 from slack_sdk.web.async_client import AsyncWebClient
 from slack_sdk.web.async_slack_response import AsyncSlackResponse
 from slack_sdk.web.slack_response import SlackResponse
-
-import demistomock as demisto
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-from CommonServerUserPython import *  # noqa
 
 ''' CONSTANTS '''
 
@@ -2528,6 +2526,7 @@ def pin_message():
     except SlackApiError as slack_error:
         return_error(f"{slack_error}")
 
+
 def list_conversations():
     """
     List the conversations in the workspace
@@ -2719,7 +2718,7 @@ def main() -> None:
         'slack-invite-to-channel': invite_to_channel,
         'slack-kick-from-channel': kick_from_channel,
         'slack-rename-channel': rename_channel,
-        'slack-list-channels': list_conversations, 
+        'slack-list-channels': list_conversations,
         'slack-get-user-details': get_user,
         'slack-get-integration-context': slack_get_integration_context,
         'slack-edit-message': slack_edit_message,
