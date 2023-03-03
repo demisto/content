@@ -91,9 +91,9 @@ def file_enrichment_command(client, file_hash):
             mal_eval_output = responseJson['data']['attributes']['mal_eval_result']
             if mal_eval_output:
                 if mal_eval_output['label'] != '':
-                    md += 'Mal-Eval Label: ' +  mal_eval_output['label'] + '\n'
+                    md += 'Mal-Eval Label: ' + mal_eval_output['label'] + '\n'
                 if mal_eval_output['probability_bucket'] != '':
-                    md += 'Mal-Eval Malicious Likelihood: ' +  mal_eval_output['probability_bucket'] + '\n'
+                    md += 'Mal-Eval Malicious Likelihood: ' + mal_eval_output['probability_bucket'] + '\n'
             results = CommandResults(
                 readable_output=md,
                 outputs_prefix='Inception.File_Details',
