@@ -10,14 +10,8 @@ Use the Microsoft Search API in Microsoft Graph to search content stored in OneD
     | ID or Client ID |  | True |
     | Token or Tenant ID |  | True |
     | Key or Client Secret (can be used instead of Certificate Thumbprint and Private Key) |  | False |
-    | ID or Client ID - see Detailed Instructions (?) |  | False |
-    | Token or Tenant ID - see Detailed Instructions (?) |  | False |
-    | Key or Client Secret - see Detailed Instructions (?) |  | False |
     | Certificate Thumbprint (can be used instead of Client Secret) |  | False |
     | Private Key |  | False |
-    | Certificate Thumbprint (optional for self-deployed Azure app) | Used for certificate authentication. As appears in the "Certificates &amp;amp; secrets" page of the app. | False |
-    | Private Key | Used for certificate authentication. The private key of the registered certificate. | False |
-    | Authorization code |  | True |
     | Authorization code |  | True |
     | Application redirect URI |  | True |
     | Trust any certificate (not secure) |  | False |
@@ -39,14 +33,6 @@ Tests connectivity.
 
 `msgraph-search-test`
 
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-
-#### Context Output
-
-There is no context output for this command.
 ### msgraph-search-content
 
 ***
