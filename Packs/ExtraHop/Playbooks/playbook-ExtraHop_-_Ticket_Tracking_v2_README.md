@@ -15,7 +15,7 @@ This playbook does not use any sub-playbooks.
 * SearchIncidentsV2
 
 ### Commands
-* extrahop-track-ticket
+* extrahop-ticket-track
 * setIncident
 
 ## Playbook Inputs

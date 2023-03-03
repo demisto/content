@@ -15,7 +15,7 @@ Links an incident investigation back to the ExtraHop Detection that created it.
 ---
 This script uses the following commands and scripts.
 
-* extrahop-track-ticket
+* extrahop-ticket-track
 
 ## Inputs
 
