@@ -106,6 +106,7 @@ script:
     name: msgraph-search-content
     outputs:
     - contextPath: SearchContent
+      description: OneDrive or SharePoint content returned from the search
   dockerimage: demisto/crypto:1.0.0.49392
   runonce: false
   script: ''
