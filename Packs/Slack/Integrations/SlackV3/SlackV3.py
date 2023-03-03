@@ -2605,21 +2605,24 @@ def conversation_history():
     """
 
     channel_id = demisto.args()['channel_id']
-    #limit = int(demisto.args().get('limit', 100))
+    limit = int(demisto.args().get('limit'))
+    if limit == None:
+        limit = 100
 
 
     body = {
-        'channel': channel_id
+        'channel': channel_id,
+        'limit': limit
     }
 
-    response = send_slack_request_sync(CLIENT, 'conversations.history', http_verb="GET", body=body)
+    raw_response = send_slack_request_sync(CLIENT, 'conversations.history', http_verb="GET", body=body)
 
     #demisto.results(response)
     return CommandResults(
         raw_response = raw_response,
         outputs_prefix = 'conversations.history',
         outputs_key_field = 'id',
-        outputs = outputs
+        outputs = context
     )
 
 
