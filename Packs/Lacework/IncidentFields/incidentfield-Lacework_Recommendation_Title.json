@@ -3,7 +3,7 @@
     "fromVersion": "5.0.0",
     "associatedToAll": false,
     "associatedTypes": [
-        "Lacework Event"
+        "Lacework Alert"
     ],
     "breachScript": "",
     "caseInsensitive": true,

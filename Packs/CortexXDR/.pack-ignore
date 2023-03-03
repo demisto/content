@@ -61,3 +61,9 @@ ignore=PB121
 
 [file:Cortex_XDR_incident_handling_v3.yml]
 ignore=PB121
+
+[file:playbook-Cortex_XDR_-_Cloud_Cryptomining_-_Set_Verdict.yml]
+ignore=BA101
+
+[file:playbook-Cortex_XDR_-_Cloud_Cryptomining.yml]
+ignore=BA101

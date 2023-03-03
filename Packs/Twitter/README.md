@@ -1,4 +1,9 @@
-## Example of Potential Use Cases
-### Search for potentially fraudulent accounts:
+The Twitter integration enables cybersecurity researchers and SOC teams to utilize the power of Twitter to enhance their security operations. With the Twitter integration, these teams can automate their Twitter searching processes to achieve various use cases, such as detecting potential security threats, gathering intelligence on cyber attacks, monitoring brand reputation, tracking threat actors, analyzing trends in the cybersecurity landscape, and preventing fraud by detecting fake accounts impersonating their company. This integration helps security teams to stay ahead of the curve and respond to security incidents in real-time.
 
-As a company with a social media presence, we need to prevent fraud accounts from impersonating our company in order to protect the corporate reputation. We also want to allow customers to do the same. In order to achieve this, we need a reliable way to detect and report fraudulent accounts. To achieve this, we will create an integration that allows XSOAR to connect to Twitter’s API. We will create a searching feature with customizable filters (such as searching by name, keywords, verified status), to allow us to better find the results we are looking for. As we search for fraud accounts, we will support the ability to add benign accounts to a list to be excluded from further searches. These two means of filtration will allow us to efficiently search for and report fraudulent accounts.
+## What does this pack do?
+The integration in this pack enables you to:
+- Detect fraudulent accounts.
+- Search for specific keywords, hashtags, and user accounts related to known indicators of compromise (IOCs) in order to identify and track potentially malicious activity.
+- Gather real-time information on emerging threats, malware campaigns, and other malicious activities, which can then be used to inform and update threat intelligence databases.
+- Search for specific keywords or hashtags related to known phishing campaigns in order to quickly identify and respond to any new phishing attempts.
+- Monitor trending topics and hashtags related to their area of interest in order to identify any emerging threats or malicious activities that may be related.

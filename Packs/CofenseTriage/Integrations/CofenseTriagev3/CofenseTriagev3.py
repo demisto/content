@@ -5,9 +5,10 @@ import time
 import requests
 import traceback
 from typing import Any, Callable, Dict, Tuple
+import urllib3
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 

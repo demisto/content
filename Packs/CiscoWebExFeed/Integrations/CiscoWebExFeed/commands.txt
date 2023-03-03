@@ -1,0 +1,1 @@
+!webex-get-indicators indicator_type=Both limit=3

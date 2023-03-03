@@ -1,3 +1,4 @@
+import urllib.parse
 from collections import defaultdict
 
 
@@ -10,7 +11,7 @@ import ipaddress
 import dateparser
 import tempfile
 from typing import Tuple
-
+import urllib
 # Disable insecure warnings
 urllib3.disable_warnings()
 
@@ -296,6 +297,57 @@ class PrismaCloudComputeClient(BaseClient):
         return self._http_request(
             method="GET", url_suffix="/stats/vulnerabilities/impacted-resources",
             params=params
+        )
+
+    def get_waas_policies(self) -> dict:
+        """
+        Get the current WAAS policy
+
+        Returns:
+            dict: the current policy.
+        """
+        return self._http_request(
+            method="GET", url_suffix="policies/firewall/app/container"
+        )
+
+    def update_waas_policies(self, policy: dict) -> dict:
+        """
+        Update the waas policy.
+
+        Args:
+            policy (dict): the previous waas policy.
+
+        Returns:
+            dict: the updated policy.
+        """
+        return self._http_request(
+            method="PUT", url_suffix="policies/firewall/app/container", json_data=policy, resp_type="response", ok_codes=(200),
+            error_handler=lambda res: f"Error: {res.status_code} - {res.text}"
+        )
+
+    def get_firewall_audit_container_alerts(self, image_name: str, from_time: str, to_time: str, limit: int, audit_type: str):
+        """
+        Get the container audit alerts for a specific image.
+
+        Args:
+            image_name (str): The container image name.
+            from_time (str): The start time of the query for alerts.
+            to_time (str): The end time to query alerts.
+            limit (num): the limit of alerts returned.
+            audit_type (str): the alert audit type.
+
+        Returns:
+            dict: the container alerts.
+        """
+        params = {
+            "type": audit_type,
+            "imageName": image_name,
+            "from": from_time,
+            "to": to_time,
+            "limit": limit
+        }
+        return self._http_request(
+            method="GET", url_suffix="audits/firewall/app/container", params=params
         )
 
 
@@ -1600,6 +1652,111 @@ def get_impacted_resources(client: PrismaCloudComputeClient, args: dict) -> Comm
     )
 
 
+def get_waas_policies(client: PrismaCloudComputeClient, args: dict) -> List[CommandResults]:
+    """
+    Get the WAAS policies.
+    Implement the command 'prisma-cloud-compute-get-waas-policies'
+
+    Args:
+        client (PrismaCloudComputeClient): prisma-cloud-compute client.
+        args (dict): prisma-cloud-compute-get-waas-policies command arguments
+
+    Returns:
+        CommandResults: command-results object.
+    """
+    policies = client.get_waas_policies()
+    entry = []
+    for rule in policies.get("rules") or {}:
+        for spec in rule.get("applicationsSpec") or {}:
+            formatted_waas_policy = {
+                "SQLInjection": spec.get("sqli").get("effect"),
+                "CrossSiteScriptingXSS": spec.get("xss").get("effect"),
+                "OSCommandInjetion": spec.get("cmdi").get("effect"),
+                "CodeInjection": spec.get("codeInjection").get("effect"),
+                "LocalFileInclusion": spec.get("lfi").get("effect"),
+                "AttackToolsAndVulnScanners": spec.get("attackTools").get("effect"),
+                "Shellshock": spec.get("shellshock").get("effect"),
+                "MalformedHTTPRequest": spec.get("malformedReq").get("effect"),
+                "ATP": spec.get("networkControls").get("advancedProtectionEffect"),
+                "DetectInformationLeakage": spec.get("intelGathering").get("infoLeakageEffect")
+            }
+            data = {
+                "Name": rule.get("name"),
+                "WaasPolicy": formatted_waas_policy
+            }
+
+            entry.append(CommandResults(
+                outputs_prefix="PrismaCloudCompute.Policies",
+                outputs_key_field="Name",
+                outputs=data,
+                readable_output=tableToMarkdown(data["Name"], data["WaasPolicy"]),
+                raw_response=policies
+            ))
+
+    return entry
+
+
+def update_waas_policies(client: PrismaCloudComputeClient, args: dict) -> CommandResults:
+    """
+    Update the WAAS policy.
+    Implement the command 'prisma-cloud-compute-update-waas-policies'
+
+    Args:
+        client (PrismaCloudComputeClient): prisma-cloud-compute client.
+        args (dict): prisma-cloud-compute-update-waas-policies command arguments
+
+    Returns:
+        CommandResults: command-results object.
+    """
+    # waas_settings = ["sqli", "xss", "attackTools", "shellshock", "malformedReq", "cmdi", "lfi", "codeInjection"]
+
+    policy = args.get("policy", {})
+
+    for index, rule in enumerate(policy.get("rules")):
+        if rule["name"] != args.get("rule_name"):
+            continue
+        for spec in policy.get("rules")[index].get("applicationsSpec"):
+            spec[args.get("attack_type")] = {"effect": args.get("action")}
+
+    client.update_waas_policies(policy)
+    txt = "Successfully updated the WaaS policy"
+
+    return CommandResults(
+        readable_output=txt
+    )
+
+
+def get_audit_firewall_container_alerts(client: PrismaCloudComputeClient, args: dict) -> CommandResults:
+    """
+    Get the firewall container alerts.
+    Implement the command 'prisma-cloud-compute-get-audit-firewall-container-alerts'
+
+    Args:
+        client (PrismaCloudComputeClient): prisma-cloud-compute client.
+        args (dict): prisma-cloud-compute-get-audit-firewall-container-alerts command arguments
+
+    Returns:
+        CommandResults: command-results object.
+    """
+    now = datetime.now()
+    from_day = arg_to_number(args.get("FromDays", 2))
+    from_time = now - timedelta(days=from_day)      # type: ignore
+    image_name = urllib.parse.quote(args.get("ImageName"), safe='')     # type: ignore
+    audit_type = args.get("audit_type")
+    limit = arg_to_number(args.get("limit", 25))
+    data = client.get_firewall_audit_container_alerts(
+        image_name=image_name, from_time=f"{from_time.isoformat()}Z", to_time=f"{now.isoformat()}Z",
+        limit=limit, audit_type=audit_type)  # type: ignore
+
+    return CommandResults(
+        outputs_prefix="PrismaCloudCompute.Audits",
+        outputs_key_field="_id",
+        outputs=data,
+        readable_output=tableToMarkdown("Audits", data),
+        raw_response=data
+    )
+
+
 def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
@@ -1697,6 +1854,12 @@ def main():
             return_results(results=get_hosts_scan_list(client=client, args=demisto.args()))
         elif requested_command == 'prisma-cloud-compute-vulnerabilities-impacted-resources-list':
             return_results(results=get_impacted_resources(client=client, args=demisto.args()))
+        elif requested_command == 'prisma-cloud-compute-get-waas-policies':
+            return_results(results=get_waas_policies(client=client, args=demisto.args()))
+        elif requested_command == 'prisma-cloud-compute-update-waas-policies':
+            return_results(update_waas_policies(client=client, args=demisto.args()))
+        elif requested_command == 'prisma-cloud-compute-get-audit-firewall-container-alerts':
+            return_results(results=get_audit_firewall_container_alerts(client, args=demisto.args()))
     # Log exceptions
     except Exception as e:
         return_error(f'Failed to execute {requested_command} command. Error: {str(e)}')

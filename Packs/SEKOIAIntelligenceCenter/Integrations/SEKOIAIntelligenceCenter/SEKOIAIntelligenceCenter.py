@@ -21,6 +21,7 @@ DOC_MAPPING = {
     "domain": "https://docs.sekoia.io/develop/rest_api/intelligence_center/intelligence/#tag/Indicators/operation/get_indicator_context",  # noqa
     "file": "https://docs.sekoia.io/develop/rest_api/intelligence_center/intelligence/#tag/Indicators/operation/get_indicator_context",  # noqa
     "email": "https://docs.sekoia.io/develop/rest_api/intelligence_center/intelligence/#tag/Indicators/operation/get_indicator_context",  # noqa
+    "test-module": "https://docs.sekoia.io/getting_started/generate_api_keys/",  # noqa
 }
 
 DBOTSCORE_MAPPING = {
@@ -54,14 +55,17 @@ class Client(BaseClient):
         """
         Validate the API Key against SEKOIA.IO API
         """
-        response = self._http_request(
-            method="GET",
-            url_suffix="/v1/apiauth/auth/validate",
-        )
-        if response.get("message") == "The token is invalid":
-            raise DemistoException(f"{INTEGRATION_NAME} error: the request failed due to: {response}")
-
-        return "ok"
+        try:
+            self._http_request(
+                method="GET",
+                url_suffix="/v1/auth/validate",
+                raise_on_status=True,
+            )
+            return "ok"
+        except DemistoException as e:
+            raise DemistoException(
+                f"{INTEGRATION_NAME} error: the request failed due to: {e}"
+            )
 
     def get_observable(self, value: str, indicator_type: str) -> dict:
         """Find observable matching the given value
@@ -477,8 +481,16 @@ def test_module(client: Client) -> str:
     try:
         client.get_validate_resource()
     except DemistoException as e:
-        if "The token is invalid" in str(e):
-            return "Authorization Error: make sure API Key is correctly set"
+
+        doc = """Please visit the API Key documentation for more information:
+         https://docs.sekoia.io/getting_started/generate_api_keys/"""
+
+        if "T300" in str(e):
+            return f"Authorization Error: The token is invalid. {doc}"
+        elif "T301" in str(e):
+            return f"Authorization Error: The token has expired. {doc}"
+        elif "T302" in str(e):
+            return f"Authorization Error: The token has been revoked. {doc}"
         else:
             raise e
     return "ok"
