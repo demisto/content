@@ -1,0 +1,28 @@
+comment: SimpleDebugger is a python class definition appended to CommonServerUserPython and dynamically included in every automation by the XSOAR automation execution environment.  It is for debugging custom python automations in XSOAR.  You can visually trace code execution, set breakpoints, step through the code, display local variables, and profile execution times of python functions.
+commonfields:
+  id: 7866d988-45af-4a15-80cc-22e5dd757187
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: a065a1a2-4e03-4735-8d0c-93912ca1d439
+    packName: Simple Debugger
+    prevname: ""
+    propagationLabels:
+    - all
+    toServerVersion: ""
+dockerimage: demisto/python3:3.10.10.48392
+enabled: true
+engineinfo: {}
+mainengineinfo: {}
+name: SimpleDebugger
+pswd: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
