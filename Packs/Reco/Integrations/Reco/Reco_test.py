@@ -227,3 +227,17 @@ def test_update_reco_incident_timeline_error(capfd, requests_mock, reco_client: 
     with capfd.disabled():
         with pytest.raises(Exception):
             reco_client.update_reco_incident_timeline(incident_id=str(incident_id), comment="test")
+
+
+def test_resolve_visibility_event(requests_mock, reco_client: RecoClient) -> None:
+    entry_id = uuid.uuid1()
+    requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/set-label-status", json={}, status_code=200)
+    reco_client.resolve_visibility_event(entry_id=entry_id)
+
+
+def test_resolve_visibility_event_error(capfd, requests_mock, reco_client: RecoClient) -> None:
+    entry_id = uuid.uuid1()
+    requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/set-label-status", json={}, status_code=404)
+    with capfd.disabled():
+        with pytest.raises(Exception):
+            reco_client.resolve_visibility_event(entry_id=entry_id)

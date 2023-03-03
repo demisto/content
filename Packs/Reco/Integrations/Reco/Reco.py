@@ -7,6 +7,12 @@ from CommonServerPython import *  # noqa: F401
 
 from typing import Any, Dict, Union, Optional, Tuple, List
 
+LABEL_STATUS_ACTIVE = "LABEL_STATUS_ACTIVE"
+
+ENTRY_TYPE_EVENT = "ENTRY_TYPE_EVENT"
+
+LABEL_STATUS_RESOLVED = "LABEL_STATUS_RESOLVED"
+
 FILTER_RELATIONSHIP_AND = "FILTER_RELATIONSHIP_AND"
 
 DEMISTO_OCCURRED_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
@@ -23,15 +29,20 @@ STEP_INIT = "init"
 
 class RecoClient(BaseClient):
     def __init__(self, api_token: str, base_url: str, verify: bool, proxy):
-        super().__init__(base_url, verify=verify, proxy=proxy, headers={"Authorization": f"Bearer {api_token}"})
+        super().__init__(
+            base_url,
+            verify=verify,
+            proxy=proxy,
+            headers={"Authorization": f"Bearer {api_token}"},
+        )
 
     def get_incidents(
-            self,
-            risk_level: Optional[int] = None,
-            source: Optional[str] = None,
-            before: Optional[datetime] = None,
-            after: Optional[datetime] = None,
-            limit: int = 1000,
+        self,
+        risk_level: Optional[int] = None,
+        source: Optional[str] = None,
+        before: Optional[datetime] = None,
+        after: Optional[datetime] = None,
+        limit: int = 1000,
     ) -> List[Dict[str, Any]]:
         """
         Fetch incidents from Reco API
@@ -54,12 +65,9 @@ class RecoClient(BaseClient):
                 },
                 "fieldSorts": {
                     "sorts": [
-                        {
-                            "sortBy": "updated_at",
-                            "sortDirection": "SORT_DIRECTION_ASC"
-                        }
+                        {"sortBy": "updated_at", "sortDirection": "SORT_DIRECTION_ASC"}
                     ]
-                }
+                },
             }
         }
         if risk_level:
@@ -129,7 +137,9 @@ class RecoClient(BaseClient):
             demisto.error(f"Validate API key ReadTimeout error: {str(e)}")
             raise e
 
-        demisto.info(f"done fetching RECO incident assets, fetched {len(result)} assets.")
+        demisto.info(
+            f"done fetching RECO incident assets, fetched {len(result)} assets."
+        )
         return result
 
     def update_reco_incident_timeline(self, incident_id: str, comment: str) -> None:
@@ -137,25 +147,53 @@ class RecoClient(BaseClient):
         Update timeline of an incident.
         """
         demisto.info("Update incident timeline, enter")
-        result: List[Dict[str, Any]] = []
         try:
-            response = self._http_request(
+            self._http_request(
                 method="PUT",
                 url_suffix=f"/incident-timeline/{incident_id}",
                 timeout=RECO_API_TIMEOUT_IN_SECONDS,
-                data={"event": {
-                    "eventType": RECO_TIMELINE_EVENT_TYPE,
-                    "eventTime": datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
-                    "title": "Comment added by XSOAR",
-                    "content": comment
-                }
-                }
+                data={
+                    "event": {
+                        "eventType": RECO_TIMELINE_EVENT_TYPE,
+                        "eventTime": datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
+                        "title": "Comment added by XSOAR",
+                        "content": comment,
+                    }
+                },
             )
         except Exception as e:
             demisto.error(f"Validate API key ReadTimeout error: {str(e)}")
             raise e
 
         demisto.info(f"Comment added to timeline of incident {incident_id}")
+
+    def resolve_visibility_event(self, entry_id: str) -> None:
+        """Resolve visibility event.
+        :param entry_id: The entry id of the visibility event to resolve
+        """
+        try:
+            self._http_request(
+                method="PUT",
+                url_suffix="/set-label-status",
+                timeout=RECO_API_TIMEOUT_IN_SECONDS,
+                data={
+                    "labelsRelationStatusUpdate": [
+                        {
+                            "labelName": "Accessible to All Org Users",
+                            "entryId": f"{entry_id}_visibility",
+                            "entryType": ENTRY_TYPE_EVENT,
+                            "newStatus": LABEL_STATUS_RESOLVED,
+                            "oldStatus": LABEL_STATUS_ACTIVE,
+                            "comment": "Resolved by XSOAR Automation",
+                        }
+                    ]
+                },
+            )
+        except Exception as e:
+            demisto.error(f"Validate API key ReadTimeout error: {str(e)}")
+            raise e
+
+        demisto.info(f"Visibility event {entry_id} resolved")
 
     def validate_api_key(self) -> str:
         """
@@ -210,7 +248,9 @@ def parse_table_row_to_dict(alert: List[Dict[str, Any]]) -> Dict[str, Any]:
     return alert_as_dict
 
 
-def enrich_incident(reco_client: RecoClient, single_incident: Dict[str, Any]) -> Dict[str, Any]:
+def enrich_incident(
+    reco_client: RecoClient, single_incident: Dict[str, Any]
+) -> Dict[str, Any]:
     alert_as_dict = parse_table_row_to_dict(single_incident.get("cells", {}))
     if RECO_INCIDENT_ID_FIELD in alert_as_dict.keys():
         incident_id: str = str(alert_as_dict[RECO_INCIDENT_ID_FIELD])
@@ -228,7 +268,7 @@ def enrich_incident(reco_client: RecoClient, single_incident: Dict[str, Any]) ->
 
 
 def map_reco_score_to_demisto_score(
-        reco_score: int,
+    reco_score: int,
 ) -> Union[int, float]:  # pylint: disable=E1136
     # demisto_unknown = 0  (commented because of linter issues)
     demisto_informational = 0.5
@@ -248,7 +288,9 @@ def map_reco_score_to_demisto_score(
     return MAPPING[reco_score]
 
 
-def parse_incidents_objects(reco_client: RecoClient, incidents_raw: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+def parse_incidents_objects(
+    reco_client: RecoClient, incidents_raw: List[Dict[str, Any]]
+) -> List[Dict[str, Any]]:
     demisto.info("parse_incidents_objects enter")
     incidents = []
     for single_incident in incidents_raw:
@@ -260,13 +302,13 @@ def parse_incidents_objects(reco_client: RecoClient, incidents_raw: List[Dict[st
 
 
 def fetch_incidents(
-        reco_client: RecoClient,
-        last_run: Dict[str, Any],
-        max_fetch: int,
-        risk_level: Optional[int] = None,
-        source: Optional[str] = None,
-        before: Optional[datetime] = None,
-        after: Optional[datetime] = None,
+    reco_client: RecoClient,
+    last_run: Dict[str, Any],
+    max_fetch: int,
+    risk_level: Optional[int] = None,
+    source: Optional[str] = None,
+    before: Optional[datetime] = None,
+    after: Optional[datetime] = None,
 ) -> Tuple[Dict[str, Any], List[Dict[str, Any]]]:
     demisto.info(f"fetch-incidents called {max_fetch=}")
     next_run = {}
@@ -287,12 +329,16 @@ def fetch_incidents(
         incident
         for incident in incidents
         if incident.get("severity", 0) > DEMISTO_INFORMATIONAL
-           and incident.get("dbotMirrorId", None) not in existing_incidents
+        and incident.get("dbotMirrorId", None) not in existing_incidents
     ]  # type: ignore
 
     incidents_sorted = sorted(incidents, key=lambda k: k["occurred"])
-    next_run["lastRun"] = incidents_sorted[0]["occurred"] if incidents_sorted else last_run_time
-    next_run["incident_ids"] = existing_incidents + [incident["dbotMirrorId"] for incident in incidents]
+    next_run["lastRun"] = (
+        incidents_sorted[0]["occurred"] if incidents_sorted else last_run_time
+    )
+    next_run["incident_ids"] = existing_incidents + [
+        incident["dbotMirrorId"] for incident in incidents
+    ]
     return next_run, incidents
 
 
@@ -314,12 +360,17 @@ def main() -> None:
         params = demisto.params()
         api_url = params.get("url")
         api_token = params.get("api_token")
-        verify_certificate = not params.get('insecure', False)
-        proxy = params.get('proxy', False)
+        verify_certificate = not params.get("insecure", False)
+        proxy = params.get("proxy", False)
 
         max_fetch = get_max_fetch(int(params.get("max_fetch", "200")))
 
-        reco_client = RecoClient(api_token=api_token, base_url=api_url, verify=verify_certificate, proxy=proxy)
+        reco_client = RecoClient(
+            api_token=api_token,
+            base_url=api_url,
+            verify=verify_certificate,
+            proxy=proxy,
+        )
         if command == "fetch-incidents":
             risk_level = params.get("risk_level")
             source = params.get("source")
@@ -327,7 +378,7 @@ def main() -> None:
             after = params.get("after")
 
             # How much time before the first fetch to retrieve incidents
-            if arg := params.get('first_fetch'):
+            if arg := params.get("first_fetch"):
                 first_fetch_time_stamp = dateparser.parse(arg)
                 if first_fetch_time_stamp:
                     after = first_fetch_time_stamp
@@ -344,8 +395,10 @@ def main() -> None:
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
         elif command == "update-reco-incident-timeline":
-            reco_client.update_reco_incident_timeline(incident_id=demisto.args()['incident_id'],
-                                                      comment=demisto.args()['comment'])
+            reco_client.update_reco_incident_timeline(
+                incident_id=demisto.args()["incident_id"],
+                comment=demisto.args()["comment"],
+            )
             return_results("Incident timeline updated successfully")
         elif command == "test-module":
             test_res = reco_client.validate_api_key()
