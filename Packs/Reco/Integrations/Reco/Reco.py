@@ -400,6 +400,11 @@ def main() -> None:
                 comment=demisto.args()["comment"],
             )
             return_results("Incident timeline updated successfully")
+        elif command == "resolve-visibility-event":
+            entry_id = demisto.args()["entry_id"]
+            reco_client.resolve_visibility_event(
+                entry_id=entry_id)
+            return_results(f"Visibility event {entry_id} resolved successfully")
         elif command == "test-module":
             test_res = reco_client.validate_api_key()
             return_results(test_res)

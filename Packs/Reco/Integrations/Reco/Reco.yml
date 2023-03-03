@@ -61,25 +61,7 @@ description: Reco is a Saas data security solution that protects your data from 
 display: Reco
 name: Reco
 script:
-  commands:
-    - arguments:
-        - default: false
-          description: Comment to add to the incident
-          isArray: false
-          name: comment
-          required: true
-          secret: false
-        - default: false
-          description: Incident ID to add the comment to
-          isArray: false
-          name: incident_id
-          required: true
-          secret: false
-      deprecated: false
-      description: Get the alerts on cloud assets
-      execution: false
-      name: update-reco-incident-timeline
-  dockerimage: demisto/python3:3.10.10.47713
+  dockerimage: demisto/python3:3.10.10.48392
   feed: false
   isfetch: true
   longRunning: false
@@ -88,6 +70,36 @@ script:
   script: "-"
   subtype: python3
   type: python
+  commands:
+  - arguments:
+    - default: false
+      description: Comment to add to the incident
+      isArray: false
+      name: comment
+      required: true
+      secret: false
+    - default: false
+      description: Incident ID to add the comment to
+      isArray: false
+      name: incident_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Add a comment to an incident in Reco
+    execution: false
+    name: update-reco-incident-timeline
+  - arguments:
+    - default: false
+      description: entity id of the file to resolve
+      isArray: false
+      name: entity_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Resolve an event in Reco Finding. Reco Findings contains aggregations of
+      events. This command resolves the event in the Reco Finding.
+    execution: false
+    name: resolve-visibility-event
 tests:
 - No tests
 fromversion: 6.5.0
