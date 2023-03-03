@@ -107,7 +107,7 @@ script:
     outputs:
     - contextPath: SearchContent
       description: OneDrive or SharePoint content returned from the search
-  dockerimage: demisto/crypto:1.0.0.49392
+  dockerimage: demisto/crypto:1.0.0.49599
   runonce: false
   script: ''
   subtype: python3
