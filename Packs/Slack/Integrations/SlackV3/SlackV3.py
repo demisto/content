@@ -2569,9 +2569,9 @@ def conversation_history():
 
     #demisto.results(response)
     return CommandResults(
-        raw_response = raw_response
-        outputs_prefix = 'conversations.history'
-        outputs_key_field = 'id'
+        raw_response = raw_response,
+        outputs_prefix = 'conversations.history',
+        outputs_key_field = 'id',
         outputs = outputs
     )
 
