@@ -4,6 +4,8 @@ from CommonServerPython import *  # noqa: F401
 
 
 
+
+
 import asyncio
 import concurrent
 import logging.handlers
@@ -2544,8 +2546,7 @@ def pin_message():
     except SlackApiError as slack_error:
         return_error(f"{slack_error}")
 
-
-def list_conversations():
+def list_channels():
     """
     List the conversations in the workspace
     """
@@ -2602,6 +2603,7 @@ def list_conversations():
             'Creator': channel['creator'],
             'Purpose': channel['purpose']['value']
         }
+        readable_output= tableToMarkdown(f'Channel details for {name_filter}', context)
     if type(channels) == list:
         context = []
         for channel in channels:
@@ -2613,15 +2615,14 @@ def list_conversations():
                 'Purpose': channel['purpose']['value']
             }
             context.append(entry)
-    demisto.results(json.dumps(context, indent=4))
-
-    # demisto.results(CommandResults(
-    #         readable_output= readable_output,
-    #         raw_response= raw_response,
-    #         outputs_prefix= 'Slack.Conversations',
-    #         outputs_key_field= 'id',
-    #         outputs= context
-    #     ))
+        readable_output= tableToMarkdown(f'List of channel details for {channel_types}', context)
+    return_results(CommandResults(
+            readable_output= readable_output,
+            raw_response= raw_response,
+            outputs_prefix= 'Slack.Channels',
+            outputs= context
+        )
+    )
 
 
 def conversation_history():
@@ -2833,7 +2834,7 @@ def main() -> None:
         'slack-invite-to-channel': invite_to_channel,
         'slack-kick-from-channel': kick_from_channel,
         'slack-rename-channel': rename_channel,
-        'slack-list-channels': list_conversations,
+        'slack-list-channels': list_channels,
         'slack-get-user-details': get_user,
         'slack-get-integration-context': slack_get_integration_context,
         'slack-edit-message': slack_edit_message,
@@ -2865,6 +2866,7 @@ def main() -> None:
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     register_signal_handler_profiling_dump(profiling_dump_rows_limit=PROFILING_DUMP_ROWS_LIMIT)
     main()
+
 
 
 

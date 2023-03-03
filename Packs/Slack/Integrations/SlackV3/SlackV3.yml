@@ -387,6 +387,22 @@ script:
       name: cursor
     description: 'List all of the channels in the organization workspace. This command required scopes depend on the type of channel-like object you''re working with. To use the command, you''ll need at least one of the channels:, groups:, im: or mpim: scopes corresponding to the conversation type you''re working with.'
     name: slack-list-channels
+    outputs:
+    - contextPath: Slack.Channels.ID
+      description: The ID for the channel
+      type: string
+    - contextPath: Slack.Channels.Name
+      description: Name of the channel
+      type: string
+    - contextPath: Slack.Channels.Created
+      description: Epoch timestamp when the channel was created
+      type: number
+    - contextPath: Slack.Channels.Creator
+      description: ID for the creator of the channel
+      type: string
+    - contextPath: Slack.Channels.Purpose
+      description: The purpose, or description, of the channel
+      type: string
   - arguments:
     - description: The channel ID associated with the Slack channel
       name: channel_id
