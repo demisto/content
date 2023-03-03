@@ -1,5 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
+
 import asyncio
 import concurrent
 import logging.handlers
@@ -2545,10 +2547,55 @@ def list_conversations():
     """
     List the conversations in the workspace
     """
-    channel_id = demisto.args().get('channel_id')
-    response = send_slack_request_sync(CLIENT, 'conversations.list')
+    channel_types = demisto.args().get('channel_types')
+    # Default for the SDK is public channels, but users can specify "public_channel", "private_channel", "mpim", and "im"
+    # Multiple values can be passed for this argument as a comma separated list
+    if channel_types == None:
+        channel_types = 'public_channel'
 
-    demisto.results(response)
+    # By default archived channels are NOT included by the SDK. Explicitly set this if not set from the CLI or set to False
+    exclude_archived = demisto.args().get('exclude_archived')
+    if exclude_archived == None:
+        exclude_archived = 'true'
+
+    limit = demisto.args().get('limit')
+    if limit == None:
+        limit = 100
+
+    body = {
+        'types': channel_types,
+        'exclude_archived': exclude_archived,
+        'limit': limit
+    }
+
+    cursor = demisto.args().get('cursor')
+    if cursor != None:
+        body['cursor'] = cursor
+
+    raw_response = send_slack_request_sync(CLIENT, 'conversations.list', http_verb="GET", body=body)
+    demisto.results(raw_response)
+
+    # Provide an option to only select a channel by a name. Instead of returning a full list of results this allows granularity
+    # Supports a single channel name
+    name_filter = demisto.args().get('name_filter')
+
+    # if name_filter != None:
+    #     for channel in raw_response['channels']:
+    #         if channel['name'] == name_filter:
+    #             channels = channel
+    #             break
+    #         else:
+    #             continue
+    # else:
+    #     channels = raw_response['channels']
+
+    # demisto.results(CommandResults(
+    #         readable_output= readable_output,
+    #         raw_response= raw_response,
+    #         outputs_prefix= 'Slack.Conversations',
+    #         outputs_key_field= 'id',
+    #         outputs= context
+    #     ))
 
 
 def conversation_history():
@@ -2784,4 +2831,5 @@ def main() -> None:
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     register_signal_handler_profiling_dump(profiling_dump_rows_limit=PROFILING_DUMP_ROWS_LIMIT)
     main()
+
 
