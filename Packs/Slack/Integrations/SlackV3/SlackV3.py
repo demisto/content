@@ -2631,7 +2631,7 @@ def conversation_history():
     """
 
     channel_id = demisto.args()['channel_id']
-    limit = int(demisto.args().get('limit'))
+    limit = demisto.args().get('limit')
     if limit == None:
         limit = 100
 
