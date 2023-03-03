@@ -651,7 +651,7 @@ def test_update_remote_system_command(requests_mock):
         'incidentChanged': True,
         'remoteId': "123456"
     }
-    command_result = sentinelone_v2.update_remote_system_command(requests_mock, args)
+    command_result = sentinelone_v2.update_remote_system_command(requests_mock, args, {})
     assert command_result == "123456"
 
 

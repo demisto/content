@@ -2978,38 +2978,40 @@ def get_mapping_fields_command():
 
 
 def update_remote_incident(client: Client, threat_id: str, sentinelone_analyst_verdict: str,
-                           sentinelone_threat_status: str, closing_notes: str):
+                           sentinelone_threat_status: str, closing_notes: str, close_sentinelone_incident: bool):
     if sentinelone_analyst_verdict:
         action = ANALYST_VERDICT.get(sentinelone_analyst_verdict, None)
         if action:
             response = client.update_threat_analyst_verdict_request(threat_ids=argToList(threat_id), action=action)
             if response.get("affected") and int(response.get("affected")) > 0:
-                demisto.debug(f"Successfully updated the threat analyst verdict to {action}")
+                demisto.debug(f"Successfully updated the threat analyst verdict of incident"
+                              f" with remote ID [{threat_id}] to {action}")
                 note = f"XSOAR - Updated the threat analyst verdict to {sentinelone_analyst_verdict}"
                 client.write_threat_note_request(threat_ids=argToList(threat_id), note=note)
             else:
-                demisto.debug("Unable to update the analyst verdict")
+                demisto.debug(f"Unable to update the analyst verdict of incident with remote ID [{threat_id}]")
     if sentinelone_threat_status:
         action = THREAT_STATUS.get(sentinelone_threat_status, None)
-        if action == "resolved" and demisto.params().get("close_sentinelone_incident"):
+        if action == "resolved" and close_sentinelone_incident:
             response = client.update_threat_status_request(threat_ids=argToList(threat_id), status=action)
             if response.get("affected") and int(response.get("affected")) > 0:
-                demisto.debug("Successfully updated the threat status and marked as resolved")
+                demisto.debug(f"Successfully updated the threat status of incident"
+                              f" with remote ID [{threat_id}] and marked as resolved")
                 note = "XSOAR - Marked as resolved \n" + closing_notes
                 client.write_threat_note_request(threat_ids=argToList(threat_id), note=note)
             else:
-                demisto.debug("Unable to Mark as resolved")
+                demisto.debug(f"Unable to Mark as resolved an incident with remote ID [{threat_id}]")
         if action != "resolved" and action is not None:
             response = client.update_threat_status_request(threat_ids=argToList(threat_id), status=action)
             if response.get("affected") and int(response.get("affected")) > 0:
-                demisto.debug(f"Successfully updated the threat status to {action}")
+                demisto.debug(f"Successfully updated the threat status of incident with remote ID [{threat_id}] to {action}")
                 note = f"XSOAR - Updated the threat status to {sentinelone_threat_status}"
                 client.write_threat_note_request(threat_ids=argToList(threat_id), note=note)
             else:
-                demisto.debug("Unable to update the threat status")
+                demisto.debug(f"Unable to update the threat status of incident with remote ID [{threat_id}]")
 
 
-def update_remote_system_command(client: Client, args: dict) -> str:
+def update_remote_system_command(client: Client, args: dict, params: dict) -> str:
     """update-remote-system command: pushes local changes to the remote system
 
     :type client: ``Client``
@@ -3039,8 +3041,9 @@ def update_remote_system_command(client: Client, args: dict) -> str:
             sentinelone_analyst_verdict = delta.get("sentinelonethreatanalystverdict", None)
             sentinelone_threat_status = delta.get("sentinelonethreatstatus", None)
             closing_notes = delta.get("closeNotes", "")
+            close_sentinelone_incident = params.get("close_sentinelone_incident", False)
             update_remote_incident(client, remote_incident_id, sentinelone_analyst_verdict,
-                                   sentinelone_threat_status, closing_notes)
+                                   sentinelone_threat_status, closing_notes, close_sentinelone_incident)
     except Exception as e:
         demisto.error(f'Error in SentinelOne outgoing mirror for incident {remote_incident_id}. '
                       f'Error message: {str(e)}')
@@ -3048,9 +3051,9 @@ def update_remote_system_command(client: Client, args: dict) -> str:
     return remote_incident_id
 
 
-def set_xsoar_incident_entries(mirrored_object: dict, entries: list, remote_incident_id: str):
+def set_xsoar_incident_entries(mirrored_object: dict, entries: list, remote_incident_id: str, close_xsoar_incident: bool):
     demisto.debug("with in the set xsoar incident entries method")
-    if mirrored_object.get("threatInfo", {}).get("incidentStatus") == "resolved" and demisto.params().get("close_xsoar_incident"):
+    if mirrored_object.get("threatInfo", {}).get("incidentStatus") == "resolved" and close_xsoar_incident:
         demisto.debug(f"Incident is closed: {remote_incident_id}")
         entries.append(
             {
@@ -3092,7 +3095,7 @@ def get_remote_incident_data(client: Client, remote_incident_id: str):
     return mirrored_data
 
 
-def get_remote_data_command(client: Client, args: dict):
+def get_remote_data_command(client: Client, args: dict, params: dict):
     """
     get-remote-data command: Returns an updated remote incident.
     Args:
@@ -3115,7 +3118,8 @@ def get_remote_data_command(client: Client, args: dict):
         )
         mirrored_data = get_remote_incident_data(client, remote_incident_id)
         if mirrored_data:
-            entries = set_xsoar_incident_entries(mirrored_data, entries, remote_incident_id)
+            close_xsoar_incident = params.get("close_xsoar_incident", False)
+            entries = set_xsoar_incident_entries(mirrored_data, entries, remote_incident_id, close_xsoar_incident)
         else:
             demisto.debug(f"No delta was found for incident {remote_incident_id}.")
 
@@ -3288,9 +3292,7 @@ def main():
             'sentinelone-fetch-threat-file': fetch_threat_file,
             'sentinelone-get-installed-applications': get_installed_applications,
             'sentinelone-initiate-endpoint-scan': initiate_endpoint_scan,
-            'get-remote-data': get_remote_data_command,
             'get-modified-remote-data': get_modified_remote_data_command,
-            'update-remote-system': update_remote_system_command,
             'get-mapping-fields': get_mapping_fields_command,
         },
         '2.0': {
@@ -3325,6 +3327,10 @@ def main():
             'sentinelone-remove-item-from-whitelist': remove_item_from_whitelist,
             'sentinelone-run-remote-script': run_remote_script_command,
         },
+        'commands_with_params': {
+            'get-remote-data': get_remote_data_command,
+            'update-remote-system': update_remote_system_command,
+        },
     }
 
     ''' COMMANDS MANAGER / SWITCH PANEL '''
@@ -3351,6 +3357,8 @@ def main():
                 return_results(commands['common'][command](client, demisto.args()))
             elif command in commands[api_version]:
                 return_results(commands[api_version][command](client, demisto.args()))
+            elif command in commands['commands_with_params']:
+                return_results(commands['commands_with_params'][command](client, demisto.args(), params))
             else:
                 raise NotImplementedError(f'The {command} command is not supported for API version {api_version}')
 
