@@ -2549,6 +2549,25 @@ def list_conversations():
     demisto.results(response)
 
 
+def conversation_history():
+    """
+    Fetches a conversation's history of messages
+    and events
+    """
+    
+    # The Channel ID is passed from XSOAR as an argument 
+    # supplied by the user
+    channel_id = demisto.args().get('channel_id')
+
+    body = {
+        'channel': channel_id
+    }
+
+    response = send_slack_request_sync(CLIENT, 'conversations.history', body=body)
+
+    demisto.results(response)
+
+
 def long_running_main():
     """
     Starts the long running thread.
@@ -2734,7 +2753,8 @@ def main() -> None:
         'slack-get-user-details': get_user,
         'slack-get-integration-context': slack_get_integration_context,
         'slack-edit-message': slack_edit_message,
-        'slack-pin-message': pin_message
+        'slack-pin-message': pin_message,
+        'slack-conversation-history': conversation_history
     }
 
     command_name: str = demisto.command()
