@@ -2557,9 +2557,8 @@ def conversation_history():
     and events
     """
 
-    # The Channel ID is passed from XSOAR as an argument
-    # supplied by the user
-    channel_id = demisto.args().get('channel_id')
+    channel_id = demisto.args()['channel_id']
+    #limit = int(demisto.args().get('limit', 100))
 
 
     body = {
@@ -2568,7 +2567,13 @@ def conversation_history():
 
     response = send_slack_request_sync(CLIENT, 'conversations.history', http_verb="GET", body=body)
 
-    demisto.results(response)
+    #demisto.results(response)
+    return CommandResults(
+        raw_response = raw_response
+        outputs_prefix = 'conversations.history'
+        outputs_key_field = 'id'
+        outputs = outputs
+    )
 
 
 def long_running_main():
