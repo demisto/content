@@ -6,7 +6,7 @@ args:
 - name: title
   required: true
   description: The title of the report.
-- description: The to email
+- description: The to email address.
   name: to
   required: true
 commonfields:

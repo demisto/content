@@ -9,7 +9,7 @@ contentitemexportablefields:
     definitionid: ""
 vcShouldKeepItemLegacyProdMachine: false
 name: Prisma Cloud Compute - Audit Alert v2
-description: Default playbook for parsing Prisma Cloud Compute audit alerts
+description: Default playbook for parsing Prisma Cloud Compute audit alerts.
 starttaskid: "0"
 tasks:
   "0":
@@ -48,7 +48,7 @@ tasks:
       id: 360f5aa0-896d-4ec2-8678-d4b2d0de15f6
       version: -1
       name: Parse Audit Alert
-      description: Parse raw vulnerabilities JSON data
+      description: Parse raw vulnerabilities JSON data.
       scriptName: PrismaCloudComputeParseAuditAlert
       type: regular
       iscommand: false
@@ -82,7 +82,7 @@ tasks:
       id: e6f58ee6-ef95-4ab3-8373-931e3c2df555
       version: -1
       name: Pull Images Details
-      description: 'Images returns images by the query specification '
+      description: Returns images by the query specification.
       script: '|||prismacloudcompute-images'
       type: regular
       iscommand: true
@@ -164,7 +164,7 @@ tasks:
       id: a6938596-b367-4735-8667-f980e3b3a517
       version: -1
       name: Gather Image Compliance Issues
-      description: Grab the compliance issues under the image details from PCC
+      description: Grab the compliance issues under the image details from PCC.
       tags:
       - compliance
       scriptName: ToTable
@@ -297,7 +297,7 @@ tasks:
       id: b4fd8f72-715b-441a-84c9-dbd6efb3ad7f
       version: -1
       name: Get Defender Policy
-      description: DefenderSettings returns the defenders settings
+      description: DefenderSettings returns the settings in the Defender policy.
       tags:
       - policy
       script: '|||prismacloudcompute-get-settings-defender'
@@ -330,7 +330,7 @@ tasks:
       id: 1eb223af-dfa4-4883-8254-f6e92444bad9
       version: -1
       name: Get Alert Profiles
-      description: AlertProfiles returns the all alert profiles
+      description: AlertProfiles returns all the alert profiles.
       tags:
       - policy
       script: '|||prismacloudcompute-get-alert-profiles'
@@ -478,7 +478,7 @@ tasks:
       id: 0dda275e-567c-486e-81de-de61857e6366
       version: -1
       name: Get Defender Logs
-      description: DefenderLogs returns the last defender logs
+      description: DefenderLogs returns the last Defender logs.
       script: '|||prismacloudcompute-logs-defender'
       type: regular
       iscommand: true
@@ -514,7 +514,7 @@ tasks:
       id: 9ef59bcc-e809-4cfc-8f13-21319879dc2e
       version: -1
       name: List Defender Backups
-      description: List returns the available backups
+      description: List returns the available backups.
       tags:
       - backups
       script: '|||prismacloudcompute-get-backups'
@@ -547,7 +547,7 @@ tasks:
       id: 778b86c5-6e7b-457a-80f1-63031dceb702
       version: -1
       name: Download Defender Logs
-      description: 'DownloadDefenderLogs downloads all defender logs and metadata '
+      description: DownloadDefenderLogs downloads all defender logs and metadata.
       script: '|||prismacloudcompute-logs-defender-download'
       type: regular
       iscommand: true
@@ -585,7 +585,7 @@ tasks:
       id: e0246d36-18d3-4142-8117-fc60de36e90e
       version: -1
       name: Set Logs to Layout
-      description: Convert an array to a nice table display. Usually, from the context.
+      description: Convert an array to a nice table display (usually from the context).
       scriptName: ToTable
       type: regular
       iscommand: false
@@ -625,7 +625,7 @@ tasks:
       id: 5cbd5d69-2c0d-42f1-8cff-f4b546c4d9e5
       version: -1
       name: Get Container WaaS Policies
-      description: Get the Waas Container Policies from Defend >> WAAS >> Containers
+      description: Get the Waas container policies from Defend >> WAAS >> Containers.
       tags:
       - policy
       script: '|||prisma-cloud-compute-get-waas-policies'
@@ -700,7 +700,7 @@ tasks:
       version: -1
       name: Get container forensics
       description: Get runtime forensics data for a specific container on a specific host
-      tags:
+      tag:
       - forensics
       script: '|||prisma-cloud-compute-profile-container-forensic-list'
       type: regular
@@ -740,7 +740,7 @@ tasks:
       version: -1
       name: Get Host Profile
       description: Get information about the hosts and their profile events. This command supports asterisks which allows you to get host profiles by filtering its fields according to a specific substring.
-      tags:
+      tag:
       - forensics
       script: '|||prisma-cloud-compute-profile-host-list'
       type: regular
@@ -777,7 +777,7 @@ tasks:
       id: 2b732479-d128-4249-8585-505e4e857ceb
       version: -1
       name: Get Image Audits
-      description: Get the audits for the firewall container policies
+      description: Get the audits for the firewall container policies.
       script: '|||prisma-cloud-compute-get-audit-firewall-container-alerts'
       type: regular
       iscommand: true
@@ -819,7 +819,7 @@ tasks:
       id: 3d3710fa-7779-4295-8c5f-6620ea78f8fc
       version: -1
       name: Set Audits to Table
-      description: Convert an array to a nice table display. Usually, from the context.
+      description: Convert an array to a nice table display (usually, from the context).
       scriptName: ToTable
       type: regular
       iscommand: false
@@ -1088,7 +1088,7 @@ inputs:
 - key: baseUrl
   value: {}
   required: false
-  description: The base url of the Prisma Cloud Compute Instance used to create a link back to the alerts for an image.
+  description: The base URL of the Prisma Cloud Compute Instance used to create a link back to the alerts for an image.
   playbookInputQuery:
 outputs: []
 sourceplaybookid: Prisma Cloud Compute - Audit Alert

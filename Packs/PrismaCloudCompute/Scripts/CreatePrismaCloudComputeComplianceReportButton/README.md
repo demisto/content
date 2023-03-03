@@ -1,4 +1,4 @@
-Generate a compliance report via button.
+Generate a compliance report via clicking a button.
 
 ## Script Data
 
@@ -17,7 +17,7 @@ Generate a compliance report via button.
 | --- | --- |
 | table | The table of data. |
 | title | The title of the report. |
-| to | The to email |
+| to | The to email address. |
 
 ## Outputs
 

@@ -1,4 +1,4 @@
-This is a wrapper around the setIndicators script
+This is a wrapper around the setIndicators script.
 
 ## Script Data
 
@@ -15,7 +15,7 @@ This is a wrapper around the setIndicators script
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| Indicators | The csv list of indicators to tag. |
+| Indicators | The CSV list of indicators to tag. |
 | Tags | The tags to add to the indicators. |
 
 ## Outputs

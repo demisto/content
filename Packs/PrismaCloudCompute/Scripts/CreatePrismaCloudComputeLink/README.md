@@ -15,7 +15,7 @@ This script creates a link back to the Prisma Cloud Compute instance.
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| type | The type of WaaS alert. |
+| type | The type of WAAS alert. |
 | imageName | The image name to investigate alerts for. |
 | baseUrl | The base url of the Prisma Cloud Compute Instance \(https://&amp;lt;prisma-ip&amp;gt;:&amp;lt;prisma-port&amp;gt;\) |
 
