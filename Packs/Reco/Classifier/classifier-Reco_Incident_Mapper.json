@@ -1,0 +1,211 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "Reco Incident Mapper",
+    "mapping": {
+        "Exfiltration": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Alert Category": {
+                    "simple": "incident_description"
+                },
+                "Alert ID": {
+                    "simple": "incident_id"
+                },
+                "Analysis Report": {
+                    "simple": "data_categories"
+                },
+                "App": {
+                    "simple": "data_source"
+                },
+                "Description": {
+                    "simple": "incident_description"
+                },
+                "Detected User": {
+                    "simple": "actors"
+                },
+                "External Severity": {
+                    "complex": {
+                        "filters": [],
+                        "root": "risk_level",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "value": {
+                                            "simple": "10,20,30,40"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "value": {
+                                            "simple": "Low,Medium,High,Critical"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    }
+                },
+                "External Status": {
+                    "complex": {
+                        "filters": [],
+                        "root": "status",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "value": {
+                                            "simple": "INCIDENT_STATE_UNMARKED,INCIDENT_STATE_FALSE_POSITIVE,INCIDENT_STATE_TRUE_POSITIVE"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "value": {
+                                            "simple": "Active,InActive,InActive"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    }
+                },
+                "File Names": {
+                    "complex": {
+                        "filters": [],
+                        "root": "assets",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "headers": {},
+                                    "is_auto_json_transform": {},
+                                    "json_transform_properties": {},
+                                    "title": {
+                                        "value": {
+                                            "simple": "Assets Details"
+                                        }
+                                    }
+                                },
+                                "operator": "JsonToTable"
+                            }
+                        ]
+                    }
+                },
+                "Threat Name": {
+                    "simple": "incident_description"
+                },
+                "details": {
+                    "complex": {
+                        "filters": [],
+                        "root": "incident_description",
+                        "transformers": []
+                    }
+                },
+                "occurred": {
+                    "complex": {
+                        "filters": [],
+                        "root": "event_time",
+                        "transformers": []
+                    }
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Additional Indicators": {
+                    "complex": {
+                        "filters": [],
+                        "root": "assets",
+                        "transformers": []
+                    }
+                },
+                "Alert Category": {
+                    "simple": "incident_description"
+                },
+                "Alert ID": {
+                    "simple": "incident_id"
+                },
+                "Analysis Report": {
+                    "simple": "data_categories"
+                },
+                "App": {
+                    "simple": "data_source"
+                },
+                "Description": {
+                    "simple": "incident_description"
+                },
+                "Detected User": {
+                    "simple": "actors"
+                },
+                "External Severity": {
+                    "complex": {
+                        "filters": [],
+                        "root": "risk_level",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "value": {
+                                            "simple": "10,20,30,40"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "value": {
+                                            "simple": "Low,Medium,High,Critical"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    }
+                },
+                "External Status": {
+                    "complex": {
+                        "filters": [],
+                        "root": "status",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "value": {
+                                            "simple": "INCIDENT_STATE_UNMARKED,INCIDENT_STATE_FALSE_POSITIVE,INCIDENT_STATE_TRUE_POSITIVE"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "value": {
+                                            "simple": "Active,InActive,InActive"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    }
+                },
+                "Threat Name": {
+                    "simple": "incident_description"
+                },
+                "details": {
+                    "complex": {
+                        "filters": [],
+                        "root": "incident_description",
+                        "transformers": []
+                    }
+                },
+                "occurred": {
+                    "complex": {
+                        "filters": [],
+                        "root": "event_time",
+                        "transformers": []
+                    }
+                }
+            }
+        }
+    },
+    "name": "Reco Incident Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.5.0"
+}

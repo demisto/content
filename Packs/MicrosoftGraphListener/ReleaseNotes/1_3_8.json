@@ -1,0 +1,1 @@
+{"breakingChanges":true,"breakingChangesNotes":"Make sure to update the **Microsoft Graph Mail** pack, before this pack, to avoid losing the **Microsoft Graph Single User** integration's configured instance."}

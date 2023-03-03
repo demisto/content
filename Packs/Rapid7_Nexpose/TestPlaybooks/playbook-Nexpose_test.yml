@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 70f7b808-713b-4188-82a2-2d6770699970
+    taskid: ddac8dd5-706c-4e28-85c1-d039ded17ff4
     type: start
     task:
-      id: 70f7b808-713b-4188-82a2-2d6770699970
+      id: ddac8dd5-706c-4e28-85c1-d039ded17ff4
       version: -1
       name: ""
       iscommand: false
@@ -35,10 +35,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 2c6b739f-eff7-414d-8dc2-392b45dae316
+    taskid: 7a1c729d-b7b1-41d2-86b0-11a34228f121
     type: regular
     task:
-      id: 2c6b739f-eff7-414d-8dc2-392b45dae316
+      id: 7a1c729d-b7b1-41d2-86b0-11a34228f121
       version: -1
       name: DeleteContext
       description: |-
@@ -75,10 +75,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 3b55001f-56bd-485b-83e8-62ddf8ea2861
+    taskid: d810063b-3b34-4af5-8f73-9a804fa6fc2c
     type: regular
     task:
-      id: 3b55001f-56bd-485b-83e8-62ddf8ea2861
+      id: d810063b-3b34-4af5-8f73-9a804fa6fc2c
       version: -1
       name: nexpose-create-asset
       description: Create a new asset.
@@ -114,10 +114,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 5a1a136f-9df1-4dcd-8330-643be6fe1e5f
+    taskid: bc6cd8f5-acde-49a4-8ccf-101204184011
     type: regular
     task:
-      id: 5a1a136f-9df1-4dcd-8330-643be6fe1e5f
+      id: bc6cd8f5-acde-49a4-8ccf-101204184011
       version: -1
       name: nexpose-get-sites
       description: Retrieves accessible sites.
@@ -133,7 +133,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3695
+          "y": 3895
         }
       }
     note: false
@@ -146,10 +146,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: c51a4b3b-6ab8-41d5-82dc-4d72d5d9094a
+    taskid: 09af6418-1a60-4232-885f-3c0a741f1b9d
     type: regular
     task:
-      id: c51a4b3b-6ab8-41d5-82dc-4d72d5d9094a
+      id: 09af6418-1a60-4232-885f-3c0a741f1b9d
       version: -1
       name: nexpose-create-scan-report
       description: Generates a new report for a specified scan.
@@ -168,7 +168,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3345
+          "y": 3545
         }
       }
     note: false
@@ -181,10 +181,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 9a5fbf85-4196-46ea-847b-7d994dc6dacf
+    taskid: 45076dd9-c482-4836-8e43-c8ac595a1135
     type: regular
     task:
-      id: 9a5fbf85-4196-46ea-847b-7d994dc6dacf
+      id: 45076dd9-c482-4836-8e43-c8ac595a1135
       version: -1
       name: 'nexpose-create-sites-report'
       description: |-
@@ -201,7 +201,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3870
+          "y": 4070
         }
       }
     note: false
@@ -217,10 +217,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 63f08428-58dc-498c-8748-401b3a61ccbd
+    taskid: c9ba6165-bbd3-472a-8203-4bce3b3c1256
     type: regular
     task:
-      id: 63f08428-58dc-498c-8748-401b3a61ccbd
+      id: c9ba6165-bbd3-472a-8203-4bce3b3c1256
       version: -1
       name: nexpose-list-vulnerability
       description: Retrieve information about all or a specific vulnerability.
@@ -241,7 +241,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2820
+          "y": 3020
         }
       }
     note: false
@@ -254,10 +254,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: 49ca39dd-1ecc-4c5c-81b7-c2d9b63c6a39
+    taskid: a11ac0b1-3148-44a3-85a3-9aebfb5c238f
     type: regular
     task:
-      id: 49ca39dd-1ecc-4c5c-81b7-c2d9b63c6a39
+      id: a11ac0b1-3148-44a3-85a3-9aebfb5c238f
       version: -1
       name: nexpose-update-shared-credential
       description: Update an existing shared credential.
@@ -286,7 +286,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4395
+          "y": 4595
         }
       }
     note: false
@@ -299,10 +299,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 3154a480-a543-4e78-8d5d-ba55c75080d0
+    taskid: ad811024-7dee-4432-85f1-aae5c9287983
     type: regular
     task:
-      id: 3154a480-a543-4e78-8d5d-ba55c75080d0
+      id: ad811024-7dee-4432-85f1-aae5c9287983
       version: -1
       name: DeleteContext
       type: regular
@@ -320,7 +320,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3520
+          "y": 3720
         }
       }
     note: false
@@ -339,10 +339,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 81a6aa63-296c-4a71-8866-9fcf1016c1f5
+    taskid: d545b102-529f-4289-85e9-d45488d64125
     type: regular
     task:
-      id: 81a6aa63-296c-4a71-8866-9fcf1016c1f5
+      id: d545b102-529f-4289-85e9-d45488d64125
       version: -1
       name: DeleteContext
       description: |-
@@ -366,7 +366,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4045
+          "y": 4245
         }
       }
     note: false
@@ -379,10 +379,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: 7bf6ca35-7581-48ab-88c9-8f12e13743a0
+    taskid: 659b280e-7795-4f0b-89d4-a0bdc848646c
     type: regular
     task:
-      id: 7bf6ca35-7581-48ab-88c9-8f12e13743a0
+      id: 659b280e-7795-4f0b-89d4-a0bdc848646c
       version: -1
       name: nexpose-download-report
       description: Returns the generated report.
@@ -403,7 +403,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2295
+          "y": 2495
         }
       }
     note: false
@@ -416,10 +416,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: fc9107e4-4ac5-449b-8c4a-abdfbddfae34
+    taskid: 18efbd6c-b269-4f47-8943-497474a97d18
     type: title
     task:
-      id: fc9107e4-4ac5-449b-8c4a-abdfbddfae34
+      id: 18efbd6c-b269-4f47-8943-497474a97d18
       version: -1
       name: Done
       type: title
@@ -431,7 +431,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4920
+          "y": 5120
         }
       }
     note: false
@@ -444,10 +444,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: b43898e3-d990-49e0-8075-83bd142d7c66
+    taskid: cfdc34c7-34fe-48db-8d15-1d0d2c01e020
     type: regular
     task:
-      id: b43898e3-d990-49e0-8075-83bd142d7c66
+      id: cfdc34c7-34fe-48db-8d15-1d0d2c01e020
       version: -1
       name: nexpose-search-assets
       description: Search all assets matching filters (with Returns all assets for which you have access that match the given search criteria.
@@ -469,7 +469,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1595
+          "y": 1795
         }
       }
     note: false
@@ -481,10 +481,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 70ec66e2-f1e4-4410-8769-2ba387d680b4
+    taskid: 9c51939f-7d09-479d-8daf-171524f9160d
     type: regular
     task:
-      id: 70ec66e2-f1e4-4410-8769-2ba387d680b4
+      id: 9c51939f-7d09-479d-8daf-171524f9160d
       version: -1
       name: nexpose-get-asset
       description: Returns the specified asset.
@@ -494,7 +494,7 @@ tasks:
       brand: Rapid7 Nexpose
     nexttasks:
       '#none#':
-      - "9"
+      - "35"
     scriptarguments:
       id:
         complex:
@@ -518,10 +518,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: f704d903-0973-4333-85ad-91d24087aaf6
+    taskid: 00877e3e-f94a-4f72-8887-65b993e5a855
     type: regular
     task:
-      id: f704d903-0973-4333-85ad-91d24087aaf6
+      id: 00877e3e-f94a-4f72-8887-65b993e5a855
       version: -1
       name: nexpose-delete-asset
       description: Delete an asset.
@@ -541,7 +541,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1420
+          "y": 1600
         }
       }
     note: false
@@ -553,10 +553,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 0e636df0-bff0-42c0-837b-1806ae043b53
+    taskid: 8649de29-48ac-4688-80ca-071a3a7454bd
     type: regular
     task:
-      id: 0e636df0-bff0-42c0-837b-1806ae043b53
+      id: 8649de29-48ac-4688-80ca-071a3a7454bd
       version: -1
       name: nexpose-get-scan
       description: Get a specific scan.
@@ -576,7 +576,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 3170
+          "y": 3370
         }
       }
     note: false
@@ -588,10 +588,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 5896ee7e-1724-43b2-86a2-febe525228c2
+    taskid: 11a11752-f96c-47ed-8887-dddd9b1d38d5
     type: regular
     task:
-      id: 5896ee7e-1724-43b2-86a2-febe525228c2
+      id: 11a11752-f96c-47ed-8887-dddd9b1d38d5
       version: -1
       name: nexpose-create-assets-report
       description: Generates a new report on given assets according to a template and arguments.
@@ -613,7 +613,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2120
+          "y": 2320
         }
       }
     note: false
@@ -625,10 +625,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 9f0453ea-d6ef-4cd5-8aba-b5928a1d212d
+    taskid: 26bb260f-81ab-49fe-8054-7cf9afe0e129
     type: regular
     task:
-      id: 9f0453ea-d6ef-4cd5-8aba-b5928a1d212d
+      id: 26bb260f-81ab-49fe-8054-7cf9afe0e129
       version: -1
       name: nexpose-get-assets
       description: Returns all assets for which you have access.
@@ -648,7 +648,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1945
+          "y": 2145
         }
       }
     note: false
@@ -660,10 +660,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: c39fd714-db80-42d0-8496-e909bc0c8a0f
+    taskid: 4cd47765-e59c-4fe0-89d1-b8b245d964bf
     type: regular
     task:
-      id: c39fd714-db80-42d0-8496-e909bc0c8a0f
+      id: 4cd47765-e59c-4fe0-89d1-b8b245d964bf
       version: -1
       name: nexpose-create-vulnerability-exception
       description: Create a new vulnerability exception.
@@ -703,10 +703,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: d870a5d3-18f3-4056-8336-88f6fbad9808
+    taskid: a98fb35f-9a71-4a8b-814f-d1dc3ea124ba
     type: regular
     task:
-      id: d870a5d3-18f3-4056-8336-88f6fbad9808
+      id: a98fb35f-9a71-4a8b-814f-d1dc3ea124ba
       version: -1
       name: DeleteContext
       description: |-
@@ -731,7 +731,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1770
+          "y": 1970
         }
       }
     note: false
@@ -743,10 +743,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 72e9557a-977a-4e17-84b0-9bbea7f11497
+    taskid: 5793896b-8863-4f80-8a83-09aa38ce3d48
     type: regular
     task:
-      id: 72e9557a-977a-4e17-84b0-9bbea7f11497
+      id: 5793896b-8863-4f80-8a83-09aa38ce3d48
       version: -1
       name: nexpose-delete-vulnerability-exception
       description: Delete a vulnerability exception.
@@ -778,10 +778,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 595249b1-f646-4f53-8d49-fdb33b75b23c
+    taskid: 491f738b-8035-4848-8b35-80e2fb82fc21
     type: regular
     task:
-      id: 595249b1-f646-4f53-8d49-fdb33b75b23c
+      id: 491f738b-8035-4848-8b35-80e2fb82fc21
       version: -1
       name: DeleteContext
       description: |-
@@ -806,7 +806,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2470
+          "y": 2670
         }
       }
     note: false
@@ -818,10 +818,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: d25d6282-f22c-483d-8ad8-65b1334db3b8
+    taskid: 23d46f91-b236-4afb-80c3-a19b8b3109e2
     type: regular
     task:
-      id: d25d6282-f22c-483d-8ad8-65b1334db3b8
+      id: 23d46f91-b236-4afb-80c3-a19b8b3109e2
       version: -1
       name: DeleteContext
       description: |-
@@ -846,7 +846,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2995
+          "y": 3195
         }
       }
     note: false
@@ -858,10 +858,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 196faadc-e753-4fe3-8ecc-c7e893d8a109
+    taskid: 053a7827-e04e-4836-8028-4c840000c2ee
     type: regular
     task:
-      id: 196faadc-e753-4fe3-8ecc-c7e893d8a109
+      id: 053a7827-e04e-4836-8028-4c840000c2ee
       version: -1
       name: nexpose-create-shared-credential
       description: 'Create a new shared credential. For detailed explanation of all parameters of this command, please see: https://help.rapid7.com/insightvm/en-us/api/index.html#operation/createSharedCredential'
@@ -891,7 +891,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4220
+          "y": 4420
         }
       }
     note: false
@@ -903,10 +903,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 637b095a-908d-4e8f-840c-51afe985c526
+    taskid: 66738833-b600-4ee3-8f41-01a8f152f739
     type: regular
     task:
-      id: 637b095a-908d-4e8f-840c-51afe985c526
+      id: 66738833-b600-4ee3-8f41-01a8f152f739
       version: -1
       name: nexpose-list-shared-credential
       description: Retrieve information about all or a specific shared credential.
@@ -926,7 +926,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4570
+          "y": 4770
         }
       }
     note: false
@@ -938,10 +938,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 82b069e9-8b69-44dd-8b58-6c73e72594d8
+    taskid: 898e546b-921a-4248-8cfb-81c99f5c5380
     type: regular
     task:
-      id: 82b069e9-8b69-44dd-8b58-6c73e72594d8
+      id: 898e546b-921a-4248-8cfb-81c99f5c5380
       version: -1
       name: nexpose-delete-shared-credential
       description: |-
@@ -964,7 +964,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4745
+          "y": 4945
         }
       }
     note: false
@@ -976,10 +976,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: afd6a393-f8c0-47f5-8800-5ab81bb8a78e
+    taskid: 5db7a1a4-0138-47a5-894b-7293582de9ca
     type: regular
     task:
-      id: afd6a393-f8c0-47f5-8800-5ab81bb8a78e
+      id: 5db7a1a4-0138-47a5-894b-7293582de9ca
       version: -1
       name: nexpose-get-asset-vulnerability
       description: Returns details and possible remediations for an asset's vulnerability.
@@ -1001,7 +1001,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2645
+          "y": 2845
         }
       }
     note: false
@@ -1013,10 +1013,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: 89c0bcc3-f1f4-4499-8303-f1afdc023854
+    taskid: e267e3f0-ebdd-494e-839d-9ffc18d150fc
     type: regular
     task:
-      id: 89c0bcc3-f1f4-4499-8303-f1afdc023854
+      id: e267e3f0-ebdd-494e-839d-9ffc18d150fc
       version: -1
       name: nexpose-update-vulnerability-exception-expiration
       description: Update an existing vulnerability exception.
@@ -1050,10 +1050,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: 9b66aff2-600a-449d-8f89-2aa712cfa44b
+    taskid: e249b3f5-f3ee-479e-8732-84952f059664
     type: regular
     task:
-      id: 9b66aff2-600a-449d-8f89-2aa712cfa44b
+      id: e249b3f5-f3ee-479e-8732-84952f059664
       version: -1
       name: nexpose-update-vulnerability-exception-status
       description: Update an existing vulnerability exception.
@@ -1085,12 +1085,53 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 4df31681-b628-482c-833e-b8f34272c78f
+    type: regular
+    task:
+      id: 4df31681-b628-482c-833e-b8f34272c78f
+      version: -1
+      name: nexpose-get-asset-tags
+      description: Returns the specified tags for an asset.
+      script: Rapid7 Nexpose|||nexpose-get-asset-tags
+      type: regular
+      iscommand: true
+      brand: Rapid7 Nexpose
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      asset_id:
+        complex:
+          root: Nexpose.Asset
+          accessor: id
+      id:
+        complex:
+          root: Nexpose.Asset
+          accessor: id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 4935,
+        "height": 5135,
         "width": 380,
         "x": 50,
         "y": 50

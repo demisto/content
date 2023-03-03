@@ -1,0 +1,34 @@
+!threat-grid-who-am-i
+!threat-grid-rate-limit-get login=metauman entity_type=user
+!threat-grid-submissions-search
+!threat-grid-domain-samples-list domain=google.com
+!threat-grid-ip-samples-list ip=8.8.8.8
+!threat-grid-path-samples-list path=user
+!threat-grid-sample-get
+!threat-grid-sample-summary-get sample_id=beef4528afce497041a32589ef6d45a5
+!threat-grid-ip-associated-domains ip=8.8.8.8
+!threat-grid-ip-associated-urls ip=8.8.8.8
+!threat-grid-domain-associated-urls domain=google.com
+!threat-grid-domain-associated-ips domain=google.com
+!threat-grid-feeds-artifact
+!threat-grid-feeds-domain
+!threat-grid-feeds-ip
+!threat-grid-feeds-network-stream
+!threat-grid-feeds-url
+!threat-grid-feeds-path
+!threat-grid-feed-specific-get feed_name=doc-net-com-dns
+!threat-grid-ip-search ip=8.8.8.8
+!threat-grid-analysis-artifacts-get sample_id=beef4528afce497041a32589ef6d45a5
+!threat-grid-analysis-iocs-get sample_id=beef4528afce497041a32589ef6d45a5
+!threat-grid-analysis-metadata-get sample_id=beef4528afce497041a32589ef6d45a5
+!threat-grid-analysis-network-streams-get sample_id=beef4528afce497041a32589ef6d45a5
+!threat-grid-analysis-processes-get sample_id=beef4528afce497041a32589ef6d45a5
+!threat-grid-analysis-annotations-get sample_id=beef4528afce497041a32589ef6d45a5
+!threat-grid-url-search url=http://google.com:80/
+!threat-grid-url-samples-list url=http://google.com:80/
+!threat-grid-registry-key-samples-list registry_key=ChangeNotice
+!threat-grid-sample-upload url=http://google.com:80/
+!file file=b78a7855df1053fcfc8d46ddba490a44ccd704cb37c53766c3ef019e9b3762cd
+!ip ip=8.8.8.8
+!url url=http://google.com:80/
+!domain domain=google.com

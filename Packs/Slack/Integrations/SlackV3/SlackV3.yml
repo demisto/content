@@ -374,10 +374,15 @@ script:
     - contextPath: Slack.Thread.Text
       description: The text the message was updated with.
       type: String
+<<<<<<< HEAD
   - arguments: []
     description: List all of the channels in the organization workspace
     name: slack-list-channels
   dockerimage: demisto/slackv3:1.0.0.45719
+=======
+  dockerimage: demisto/slackv3:1.0.0.48936
+  feed: false
+  isfetch: false
   longRunning: true
   runonce: false
   script: ''
