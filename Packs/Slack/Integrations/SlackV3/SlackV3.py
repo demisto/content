@@ -2540,12 +2540,32 @@ def pin_message():
     except SlackApiError as slack_error:
         return_error(f"{slack_error}")
 
+
 def list_conversations():
     """
     List the conversations in the workspace
     """
 
     response = send_slack_request_sync(CLIENT, 'conversations.list')
+
+    demisto.results(response)
+
+
+def conversation_history():
+    """
+    Fetches a conversation's history of messages
+    and events
+    """
+    
+    # The Channel ID is passed from XSOAR as an argument 
+    # supplied by the user
+    channel_id = demisto.args().get('channel_id')
+
+    body = {
+        'channel': channel_id
+    }
+
+    response = send_slack_request_sync(CLIENT, 'conversations.history', body=body)
 
     demisto.results(response)
 
@@ -2735,7 +2755,8 @@ def main() -> None:
         'slack-get-user-details': get_user,
         'slack-get-integration-context': slack_get_integration_context,
         'slack-edit-message': slack_edit_message,
-        'slack-pin-message': pin_message
+        'slack-pin-message': pin_message,
+        'slack-conversation-history': conversation_history
     }
 
     command_name: str = demisto.command()
