@@ -612,10 +612,10 @@ script:
       name: operator
       predefined:
       - '>'
-      - <
-      - <=
+      - '<'
+      - '<='
       - '>='
-      - =
+      - '='
       - '!='
       - startswith
       - exists
