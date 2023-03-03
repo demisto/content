@@ -10,4 +10,4 @@ The integration pack allows:
 
 
 
-For more information on Abnormal Security, please visit www.reco.ai
+For more information on Reco, please visit www.reco.ai
