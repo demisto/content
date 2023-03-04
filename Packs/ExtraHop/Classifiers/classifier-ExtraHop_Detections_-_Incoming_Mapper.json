@@ -132,7 +132,7 @@
                         "transformers": []
                     }
                 },
-                "Extrahop Reveal(x) Detection Devices": {
+                "ExtraHop Reveal(x) Detection Devices": {
                     "complex": {
                         "filters": [],
                         "root": "device_data",
