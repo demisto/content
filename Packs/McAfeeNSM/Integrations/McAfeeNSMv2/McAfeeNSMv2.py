@@ -13,6 +13,10 @@ urllib3.disable_warnings()
 
 VERSION = demisto.params().get('version', 'V.9x')
 STATE_TO_NUMBER = {"Disabled": 0, "Enabled": 1}
+DEPLOY_ARGUMENT_MAPPER = {"push_ssl_key": "SSLPercentageComplete",
+                          "push_gam_updates": "GamUpdatePercentageComplete",
+                          "push_configuration_signature_set": "sigsetConfigPercentageComplete",
+                          "push_botnet": "botnetPercentageComplete"}
 
 ''' CLIENT CLASS '''
 
@@ -2068,7 +2072,7 @@ def list_domain_device_command(client: Client, args: Dict) -> CommandResults:
 
     capitalize_devices = []
     for device in devices:
-        device = {k.capitalize(): v for k, v in device.items()}
+        device = {k[:1].upper() + k[1:]: v for k, v in device.items()}
         capitalize_devices.append(device)
 
     readable_output = tableToMarkdown(
@@ -2077,7 +2081,7 @@ def list_domain_device_command(client: Client, args: Dict) -> CommandResults:
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='NSM.Device',
-        outputs=devices,
+        outputs=capitalize_devices,
         raw_response=response,
     )
 
@@ -2103,7 +2107,7 @@ def list_device_interface_command(client: Client, args: Dict) -> CommandResults:
     key_list = ['interfaceId', 'interfaceName', 'interfaceType']
     capitalize_interfaces = []
     for interface in interfaces:
-        interface = {k.capitalize(): v for k, v in interface.items() if k in key_list}
+        interface = {k[:1].upper() + k[1:]: v for k, v in interface.items() if k in key_list}
         capitalize_interfaces.append(interface)
 
     readable_output = tableToMarkdown(
@@ -2113,7 +2117,7 @@ def list_device_interface_command(client: Client, args: Dict) -> CommandResults:
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='NSM.Interface',
-        outputs=interfaces,
+        outputs=capitalize_interfaces,
         raw_response=response
     )
 
@@ -2163,7 +2167,7 @@ def list_device_policy_command(client: Client, args: Dict) -> CommandResults:
 
     capitalize_policies = []
     for policy in all_policies:
-        policy = {k.capitalize(): v for k, v in policy.items()}
+        policy = {k[:1].upper() + k[1:]: v for k, v in policy.items()}
         capitalize_policies.append(policy)
 
     readable_output = tableToMarkdown(
@@ -2173,7 +2177,7 @@ def list_device_policy_command(client: Client, args: Dict) -> CommandResults:
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='NSM.DevicePolicy',
-        outputs=all_policies,
+        outputs=capitalize_policies,
         raw_response=response
     )
 
@@ -2238,7 +2242,7 @@ def list_interface_policy_command(client: Client, args: Dict) -> CommandResults:
 
     capitalize_policies = []
     for policy in all_policies:
-        policy = {k.capitalize(): v for k, v in policy.items()}
+        policy = {k[:1].upper() + k[1:]: v for k, v in policy.items()}
         capitalize_policies.append(policy)
 
     return CommandResults(
@@ -2246,7 +2250,7 @@ def list_interface_policy_command(client: Client, args: Dict) -> CommandResults:
             name='Interface policy List', t=capitalize_policies, removeNull=True
         ),
         outputs_prefix='NSM.InterfacePolicy',
-        outputs=all_policies,
+        outputs=capitalize_policies,
         raw_response=response
     )
 
@@ -2265,7 +2269,7 @@ def get_sensor_configuration_command(client: Client, args: Dict) -> CommandResul
 
     response = client.get_sensor_configuration_request(sensor_id=sensor_id)
 
-    capitlize_response = {k.capitalize(): v for k, v in response.items()}
+    capitlize_response = {k[:1].upper() + k[1:]: v for k, v in response.items()}
     readable_output = tableToMarkdown(
         name='Sensor Configuration', t=capitlize_response, removeNull=True
     )
@@ -2278,8 +2282,7 @@ def get_sensor_configuration_command(client: Client, args: Dict) -> CommandResul
     )
 
 
-@polling_function(name='nsm-deploy-sensor-configuration',
-                  requires_polling_arg=False)
+@polling_function(name='nsm-deploy-sensor-configuration', interval=20, requires_polling_arg=False)
 def deploy_sensor_configuration_command(args: Dict, client: Client) -> PollResult:
     """
     Args:
@@ -2289,37 +2292,77 @@ def deploy_sensor_configuration_command(args: Dict, client: Client) -> PollResul
     Returns:
         A PollResult object with a success or failure message
     """
+    # if not is_demisto_version_ge('6.2.0'):
+    #     raise DemistoException('This command is not supported for your server version. Please update your server version to 6.2.0 or later.')
+
+    request_id = arg_to_number(args.get('request_id'))
     sensor_id = arg_to_number(args.get('sensor_id'))
-    isSSLPushRequired = argToBoolean(args.get('push_ssl_key', False))
-    isGAMUpdateRequired = argToBoolean(args.get('push_gam_updates', False))
-    isSigsetConfigPushRequired = argToBoolean(args.get('push_configuration_signature_set', False))
-    isBotnetPushRequired = argToBoolean(args.get('push_botnet', False))
-    interval_in_seconds = arg_to_number(args.get('interval_in_seconds', 30))
+    if not request_id:
+        sensor_id = arg_to_number(args.get('sensor_id'))
+        isSSLPushRequired = argToBoolean(args.get('push_ssl_key', False))
+        isGAMUpdateRequired = argToBoolean(args.get('push_gam_updates', False))
+        isSigsetConfigPushRequired = argToBoolean(args.get('push_configuration_signature_set', False))
+        isBotnetPushRequired = argToBoolean(args.get('push_botnet', False))
+        interval_in_seconds = arg_to_number(args.get('interval_in_seconds', 20))
 
-    if not any([isSSLPushRequired, isGAMUpdateRequired, isSigsetConfigPushRequired, isBotnetPushRequired]):
-        raise DemistoException("Please provide at least one argument to deploy")
+        if not any([isSSLPushRequired, isGAMUpdateRequired, isSigsetConfigPushRequired, isBotnetPushRequired]):
+            raise DemistoException("Please provide at least one argument to deploy")
 
-    basic_response = client.deploy_sensor_configuration_request(sensor_id=sensor_id, isSSLPushRequired=isSSLPushRequired,
-                                                                isGAMUpdateRequired=isGAMUpdateRequired,
-                                                                isSigsetConfigPushRequired=isSigsetConfigPushRequired,
-                                                                isBotnetPushRequired=isBotnetPushRequired)
+        print("creating a new request ID")
+        requests_id = client.deploy_sensor_configuration_request(sensor_id=sensor_id, isSSLPushRequired=isSSLPushRequired,
+                                                                 isGAMUpdateRequired=isGAMUpdateRequired,
+                                                                 isSigsetConfigPushRequired=isSigsetConfigPushRequired,
+                                                                 isBotnetPushRequired=isBotnetPushRequired).get('RequestId')
+        print("request_id: ", requests_id)
+        args["request_id"] = requests_id
     status = client.check_deploy_sensor_configuration_request_status(sensor_id=sensor_id,
-                                                                     request_id=basic_response.get('RequestId'))
+                                                                     request_id=request_id)
 
-    percentage_completion = (status.get('GamUpdatePercentageComplete') + status.get('SSLPercentageComplete')
-                             + status.get('sigsetConfigPercentageComplete') + status.get('botnetPercentageComplete'))
-    if percentage_completion == 400:
+    # percentage_completion: int = 0
+    # number_of_elements_to_check: int = 0
+    # for k, v in args.items():
+    #     if v == ("true" or "True"):
+    #         number_of_elements_to_check += 1
+    #         percentage_completion += status[DEPLOY_ARGUMENT_MAPPER.get(k)]
+
+    # print("sum of the percentege is: ", percentage_completion, "\n number of elements to deploy= ",
+    #       number_of_elements_to_check, "\n and the status is: ", status)
+
+    # if percentage_completion / number_of_elements_to_check == 100:
+    if status.get("sigsetConfigPercentageComplete") == 100:
+        message = CommandResults(
+            readable_output='Done')
+
         return PollResult(
-            response=CommandResults(
-                readable_output='Done'),
+            response=message,
             continue_to_poll=False,
         )
     else:
+        # round = args.get('round') or 1
+        # print("round number: ", round)
+        # print("request_id= ", Request_ID)
+        # round += 1
+        message = CommandResults(readable_output="retrying...")
+
         return PollResult(
-            response=CommandResults(
-                readable_output='Retrying'),
-            continue_to_poll=True
+            partial_result=message,
+            response=message,
+            continue_to_poll=True,
+            args_for_next_run={"request_id": request_id,
+                               "sensor_id": sensor_id,
+                               **args}
         )
+
+
+def check_command(client: Client, **args):
+    request_id = args.get('request_id')
+    sensor_id = args.get('sensor_id')
+    status = client.check_deploy_sensor_configuration_request_status(sensor_id=sensor_id,
+                                                                     request_id=request_id)
+
+    return CommandResults(
+        readable_output=status
+    )
 
 
 ''' MAIN FUNCTION '''
@@ -2414,7 +2457,8 @@ def main() -> None:  # pragma: no cover
             results = get_sensor_configuration_command(client, args)
         elif command == 'nsm-deploy-sensor-configuration':
             results = deploy_sensor_configuration_command(args, client)
-
+        elif command == 'check':
+            results = check_command(client, **args)
         else:
             raise NotImplementedError('This command is not implemented yet.')
         return_results(results)

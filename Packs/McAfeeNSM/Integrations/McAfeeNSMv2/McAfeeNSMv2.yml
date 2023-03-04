@@ -2068,6 +2068,13 @@ script:
     - name: interval_in_seconds
       description: add here....
       defaultvalue: 30
+  - name: check
+    description: testing
+    arguments:
+    - name: request_id
+      description: t
+    - name: sensor_id
+      description: r
   isfetch: false
   runonce: false
   script: '-'
