@@ -197,7 +197,7 @@ tasks:
       type: regular
       iscommand: true
       brand: ""
-      description: 'Send an email'
+      description: 'Send an email to the service owner with remediation information.'
       script: '|||send-mail'
     nexttasks:
       '#none#':
