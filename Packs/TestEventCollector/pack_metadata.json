@@ -1,0 +1,24 @@
+{
+    "name": "Test Event Collector",
+    "description": "Test Event Collector for test purposes",
+    "support": "xsoar",
+    "currentVersion": "2.0.12",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Cloud Services"
+    ],
+    "tags": [
+        "Palo Alto Networks Products"
+    ],
+    "useCases": [],
+    "keywords": [],
+    "itemPrefix": [
+        "Saas Security"
+    ],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}
