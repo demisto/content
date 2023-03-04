@@ -820,8 +820,7 @@ class Pack(object):
         return changelog_entry
 
     def _create_changelog_entry(self, release_notes, version_display_name, build_number,
-                                new_version=True, initial_release=False, pull_request_numbers=None,
-                                marketplace='xsoar', id_set=None):
+                                new_version=True, initial_release=False, marketplace='xsoar', id_set=None):
         """ Creates dictionary entry for changelog.
 
         Args:
@@ -838,6 +837,7 @@ class Pack(object):
         """
         id_set = id_set if id_set else {}
         entry_result = {}
+        pull_request_numbers = self.get_version_to_pr_numbers(version_display_name)
 
         if new_version:
             entry_result = {Changelog.RELEASE_NOTES: release_notes,
@@ -1606,8 +1606,6 @@ class Pack(object):
         pack_versions_to_keep: List[str] = []
 
         try:
-            version_to_prs = self.get_version_to_pr_numbers(release_notes_dir)
-            logging.debug(f"found the following versions to PRs: {version_to_prs}")
             # load changelog from downloaded index
             logging.info(f"Loading changelog for {self._pack_name} pack")
             changelog_index_path = os.path.join(index_folder_path, self._pack_name, Pack.CHANGELOG_JSON)
@@ -1636,8 +1634,6 @@ class Pack(object):
                         task_status = False
                         return task_status, not_updated_build, pack_versions_to_keep
                     else:
-                        prs_for_version = version_to_prs[latest_release_notes]
-                        logging.info(f"found prs for version {latest_release_notes} : {prs_for_version}")
                         if latest_release_notes in changelog:
                             logging.debug(f"Found existing release notes for version: {latest_release_notes}")
                             version_changelog, not_updated_build = self._create_changelog_entry(
@@ -1645,7 +1641,6 @@ class Pack(object):
                                 version_display_name=latest_release_notes,
                                 build_number=build_number,
                                 new_version=False,
-                                pull_request_numbers=prs_for_version,
                                 marketplace=marketplace,
                                 id_set=id_set,
                             )
@@ -1657,7 +1652,6 @@ class Pack(object):
                                 version_display_name=latest_release_notes,
                                 build_number=build_number,
                                 new_version=True,
-                                pull_request_numbers=prs_for_version,
                                 marketplace=marketplace,
                                 id_set=id_set,
                             )
@@ -1670,8 +1664,8 @@ class Pack(object):
                                          f"{modified_release_notes_lines_dict}")
                             for version, modified_release_notes_lines in modified_release_notes_lines_dict.items():
                                 versions, _ = self.get_same_block_versions(release_notes_dir, version, changelog)
-                                all_relevant_pr_nums_for_unified = list({pr_num for version in versions.keys()
-                                                                        for pr_num in version_to_prs[version]})
+                                all_relevant_pr_nums_for_unified = list({pr_num for _version in versions.keys()
+                                                                        for pr_num in self.get_version_to_pr_numbers(_version)})
                                 logging.debug(f"{all_relevant_pr_nums_for_unified=}")
                                 updated_entry = self._get_updated_changelog_entry(
                                     changelog=changelog,
@@ -3627,28 +3621,20 @@ class Pack(object):
         return {str(bc_ver): bc_version_to_text.get(str(bc_ver)) for bc_ver in breaking_changes_versions if
                 predecessor_version < bc_ver <= rn_version}
 
-    def get_version_to_pr_numbers(self, release_notes_dir) -> Dict[str, List[int]]:
+    def get_version_to_pr_numbers(self, version: str) -> List[int]:
         """
-        Get Dict[Version,List[PullRequests]] for the given directory
+        Get List[PullRequests] for the given version
         Args:
-            release_notes_dir: the directory to find the pull request numbers for
+            version: The pack version to find the pull request numbers for
 
         Returns:
-            a dict of version -> List[Pull Request Numbers] for each file in the release_notes_dir
+            List[Pull Request Numbers]: A list of pr numbers of the pack version
         """
 
-        def file_path(file):
-            return f"Packs/{self.name}/{self.RELEASE_NOTES}/{file}"
+        pack_version_rn_file_path = f"Packs/{self.name}/{self.RELEASE_NOTES}/{version.replace('.', '_')}.md"
+        packs_version_pr_numbers = get_pull_request_numbers_from_file(pack_version_rn_file_path)
 
-        if not os.path.exists(release_notes_dir):
-            return {}
-        versions_dict = {}
-        for file in filter_dir_files_by_extension(release_notes_dir, '.md'):
-            rn_version = underscore_file_name_to_dotted_version(file)
-            pr_numbers = get_pull_request_numbers_from_file(file_path(file))
-            versions_dict[rn_version] = pr_numbers
-
-        return versions_dict
+        return packs_version_pr_numbers
 
     def get_preview_image_gcp_path(self, pack_file_name: str, folder_name: str) -> Optional[str]:
         """ Genrate the preview image path as it stored in the gcp
