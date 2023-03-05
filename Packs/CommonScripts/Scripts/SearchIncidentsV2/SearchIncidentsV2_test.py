@@ -42,6 +42,8 @@ def execute_get_incidents_command_side_effect(amount_of_mocked_incidents):
         mocked_incidents.append(execute_command_mock)
         counter += 1
 
+    mocked_incidents.append({'data': []})
+
     return mocked_incidents
 
 
@@ -249,17 +251,29 @@ def test_summarize_incidents():
 
 @pytest.mark.parametrize('amount_of_mocked_incidents, args', [
     (306, {}),
+    (306, {"limit": 200}),
+    (105, {"limit": 200}),
+    (1000, {"limit": 100}),
+    (1000, {"limit": 1100})
 ])
-def test_main_flow_with_pagination_and_limit(mocker, amount_of_mocked_incidents, args):
+def test_main_flow_with_limit(mocker, amount_of_mocked_incidents, args):
     """
     Given:
-       - Case A: Total of 306 incidents in XSOAR and no args
+       - Case A: Total of 306 incidents matching in XSOAR and no args
+       - Case B: Total of 306 incidents matching in XSOAR and limit = 200
+       - Case C: Total of 105 incidents matching in XSOAR and limit = 200
+       - Case D: Total of 1000 incidents matching in XSOAR and limit = 100
+       - Case E: Total of 1000 incidents matching in XSOAR and limit = 1100
 
     When:
        - Running the main flow
 
     Then:
-       - Case A: Make sure only 100 incidents has been returned.
+       - Case A: Make sure only 100 incidents has been returned (default of the limit if not stated)
+       - Case B: Make sure only 200 incidents has been returned.
+       - Case C: Make sure only 105 incidents has been returned (cause there are fewer incidents than requested limit)
+       - Case D: Make sure only 100 incidents has been returned.
+       - Case E: Make sure only 1000 incidents has been returned.
 
     """
     import SearchIncidentsV2
@@ -277,4 +291,6 @@ def test_main_flow_with_pagination_and_limit(mocker, amount_of_mocked_incidents,
     SearchIncidentsV2.main()
 
     assert return_results_mocker.called
-    assert len(return_results_mocker.call_args[0][0].outputs) == 100
+    assert len(return_results_mocker.call_args[0][0].outputs) == min(
+        amount_of_mocked_incidents, args.get('limit') or SearchIncidentsV2.DEFAULT_LIMIT
+    )
