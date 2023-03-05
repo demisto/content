@@ -2,6 +2,7 @@ import urllib.parse
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+from requests.packages import urllib3
 ''' IMPORTS '''
 
 # Disable insecure warnings
