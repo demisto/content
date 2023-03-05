@@ -47,7 +47,7 @@ class Client(BaseClient):
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client: Client) -> str:
+def test_module(client: Client) -> str:  # pragma: no coverage
     try:
         wildfire_hash_example = 'dca86121cc7427e375fd24fe5871d727'  # guardrails-disable-line
         res = client.get_file_report(wildfire_hash_example)
