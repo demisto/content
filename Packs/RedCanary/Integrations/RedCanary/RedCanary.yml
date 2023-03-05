@@ -3,7 +3,7 @@ commonfields:
   version: -1
 name: RedCanary
 display: Red Canary
-category: Endpoint
+category: Deception & Breach Simulation
 description: Red Canary collects endpoint data using Carbon Black Response and CrowdStrike
   Falcon.  The collected data is standardized into a common schema which allows teams
   to detect, analyze and respond to security incidents.
