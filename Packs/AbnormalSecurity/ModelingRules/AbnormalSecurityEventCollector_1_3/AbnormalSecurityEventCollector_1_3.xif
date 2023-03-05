@@ -1,7 +1,7 @@
 [MODEL: dataset="abnormal_security_email_protection_raw"]
 alter
 	attachmentNames = arraystring(arraycreate(attachmentNames), ","),
-	ccEmails = arraycreate(ccEmails),
+	ccEmails = ccEmails = ccEmails -> [],
 	summaryInsights = arraystring(arraycreate(summaryInsights), ","),
     toAddresses = arraycreate(toAddresses),
     senderIpAddress = coalesce(arraycreate(senderIpAddress))
@@ -11,7 +11,7 @@ alter
     xdm.email.recipients = toAddresses,
     xdm.email.attachment.filename = attachmentNames,
     xdm.email.subject = subject,
-    xdm.email.cc = ccEmails,
+    xdm.email.cc = arraymap(ccEmails, trim("@element", "\"")),
     xdm.email.sender = fromAddress,
     xdm.email.return_path = returnPath,
     xdm.email.message_id = internetMessageId,
