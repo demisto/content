@@ -6,6 +6,7 @@ xdm.source.ipv6=if(json_extract_scalar(event_data ,"$.IpAddress") contains ":" a
 xdm.source.port=to_integer(json_extract_scalar(event_data ,"$.IpPort")),
 xdm.source.user.username=coalesce(json_extract_scalar(event_data ,"$.SubjectUserName"),json_extract_scalar(user, "$.name"),json_extract_scalar(user_data,"$.SubjectUserName")),
 xdm.source.process.executable.path=json_extract_scalar(event_data ,"$.ProcessName"),
+xdm.source.process.name=arrayindex(regextract(event_data ,"$.ProcessName","\\([^\\]+)$"),0),
 xdm.source.user.identifier=coalesce(json_extract_scalar(event_data ,"$.SubjectUserSid"),json_extract_scalar(user ,"$.identifier"),json_extract_scalar(user,"$.SubjectUserSid")),
 xdm.target.user.identifier=json_extract_scalar(event_data ,"$.TargetUserSid"),
 xdm.source.user.domain=coalesce(json_extract_scalar(event_data ,"$.SubjectDomainName"),json_extract_scalar(user,"$.domain"),json_extract_scalar(user_data,"$.SubjectDomainName")),
