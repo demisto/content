@@ -1107,11 +1107,11 @@ class checkout:  # pragma: no cover
         self.repo.remote().fetch(branch_to_checkout)
         self._branch_to_checkout = branch_to_checkout
         # todo: delete
-        self.repo.git.rev_parse('HEAD')
+        self._original_branch = self.repo.git.rev_parse('HEAD')
         try:
             self._original_branch = self.repo.active_branch.name
         except TypeError:
-            self.repo.git.rev_parse('HEAD')
+            self._original_branch = self.repo.git.rev_parse('HEAD')
 
     def __enter__(self):
         """Checks out the given branch"""
