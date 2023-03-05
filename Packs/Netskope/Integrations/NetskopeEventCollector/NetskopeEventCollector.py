@@ -13,6 +13,7 @@ urllib3.disable_warnings()  # pylint: disable=no-member
 
 ALL_SUPPORTED_EVENT_TYPES = ['alert', 'application', 'audit', 'network', 'page']
 MAX_EVENTS_PAGE_SIZE = 10000
+MAX_EVENTS_PAGES_PER_FETCH = 3 * MAX_EVENTS_PAGE_SIZE  # up to 3 pages for each event type
 
 
 ''' CLIENT CLASS '''
@@ -203,7 +204,7 @@ def get_events_v2(client, last_run: dict, limit: Optional[int] = None) -> List[A
         # et - event_type
         et_events = []
         et_limit = limit
-        while len(et_events) < et_limit:
+        while len(et_events) < limit:
             page_limit = min(et_limit, MAX_EVENTS_PAGE_SIZE)
             response = client.get_events_request_v2(event_type, last_run, page_limit)
             if response.get('ok') != 1:
@@ -269,8 +270,7 @@ def main() -> None:  # pragma: no cover
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     first_fetch = params.get('first_fetch')
-    # max_fetch = min(arg_to_number(params.get('max_fetch')), 10000)
-    max_fetch = arg_to_number(params.get('max_fetch'))
+    max_fetch = min(arg_to_number(params.get('max_fetch')), MAX_EVENTS_PAGES_PER_FETCH)
     vendor, product = params.get('vendor', 'netskope'), params.get('product', 'netskope')
 
     demisto.debug(f'Command being called is {demisto.command()}')

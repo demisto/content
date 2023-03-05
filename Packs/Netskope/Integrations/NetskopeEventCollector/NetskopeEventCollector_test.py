@@ -11,6 +11,7 @@ def util_load_json(path):
 
 MOCK_ENTRY = util_load_json('test_data/mock_events.json')
 EVENTS_RAW_V2 = util_load_json('test_data/events_raw_v2.json')
+EVENTS_RAW_V2_MULTI = util_load_json('test_data/events_raw_v2_2_results.json')
 BASE_URL = 'https://netskope.example.com/'
 
 
@@ -139,4 +140,46 @@ def test_get_events_v2(mocker):
     mocker.patch.object(client, 'get_events_request_v2', return_value=EVENTS_RAW_V2)
     response = get_events_v2(client, {}, 1)
     assert len(response) == len(ALL_SUPPORTED_EVENT_TYPES)
+    assert 'results' not in response
+
+
+def test_get_events_v2__multi_page__end_at_limit(mocker):
+    """
+    Given:
+        - netskope-get-events call
+        - 2 pages are available per type
+        - page size is set to 1
+        - limit is set to 2 per event type
+    When:
+        - Running the command
+    Then:
+        - Make sure 2 * ALL_SUPPORTED_EVENT_TYPES is returned
+    """
+    import NetskopeEventCollector as NEC
+    client = Client(BASE_URL, 'netskope_token', 'v2', validate_certificate=False, proxy=False)
+    mocker.patch.object(client, 'get_events_request_v2', side_effect=[EVENTS_RAW_V2 for _ in range(10)])
+    NEC.MAX_EVENTS_PAGE_SIZE = 1
+    response = NEC.get_events_v2(client, {}, 2)
+    assert len(response) == (2 * len(NEC.ALL_SUPPORTED_EVENT_TYPES))
+
+
+def test_get_events_v2__multi_page__end_before_limit(mocker):
+    """
+    Given:
+        - netskope-get-events call
+        - 2 pages are available per type (last type only 1 page)
+        - page size is set to 2
+        - limit is set to 4 per event type
+    When:
+        - Running the command
+    Then:
+        - Make sure (4 * ALL_SUPPORTED_EVENT_TYPES - 1) is returned
+    """
+    import NetskopeEventCollector as NEC
+    client = Client(BASE_URL, 'netskope_token', 'v2', validate_certificate=False, proxy=False)
+    side_effect = [EVENTS_RAW_V2_MULTI for _ in range(9)] + [EVENTS_RAW_V2]
+    mocker.patch.object(client, 'get_events_request_v2', side_effect=side_effect)
+    NEC.MAX_EVENTS_PAGE_SIZE = 2
+    response = NEC.get_events_v2(client, {}, 4)
+    assert len(response) == (4 * len(NEC.ALL_SUPPORTED_EVENT_TYPES) - 1)
     assert 'results' not in response
