@@ -315,7 +315,8 @@ class TestBulkUpdateQueryCommands:
                                         [{"$set": {"test": 1}},
                                          {"$set": {"test": 2}}]))
     case_bulk_update_complex_filter = (
-        "[{\"$and\": [{\"value\":0,\"another_value\":1}],\"Name\":\"dummy1\",\"less_than\": {\"$lt\":3000}},{\"Name\":\"dummy2\"}]",
+        "[{\"$and\": [{\"value\":0,\"another_value\":1}],\"Name\":\"dummy1\",\
+            \"less_than\": {\"$lt\":3000}},{\"Name\":\"dummy2\"}]",
         "[{\"$set\":{\"test\":1}},{\"$set\":{\"test\":2}}]",
         ([{"$and": [{"value": 0, "another_value": 1}],
            "less_than": {"$lt": 3000},

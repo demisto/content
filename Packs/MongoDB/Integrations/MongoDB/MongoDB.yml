@@ -309,7 +309,7 @@ script:
     description: Bulk Updates entires in a collection.
     execution: false
     name: mongodb-bulk-update
-  dockerimage: demisto/py3-tools:1.0.0.49475
+  dockerimage: demisto/py3-tools:1.0.0.49572
   feed: false
   isfetch: false
   longRunning: false
