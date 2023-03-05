@@ -1,7 +1,7 @@
 This integration supports both Palo Alto Networks Panorama and Palo Alto Networks Firewall. You can create separate instances of each integration, and they are not necessarily related or dependent on one another.
 
 This integration enables you to manage the Palo Alto Networks Firewall and Panorama. For more information see the [PAN-OS documentation](https://docs.paloaltonetworks.com/pan-os.html).
-This integration was integrated and tested with version 8.1.0 and 9.0.1 of Palo Alto Firewall, Palo Alto Panorama.
+This integration was integrated and tested with versions 8.xx, 9.xx, and 10.xx of Palo Alto Firewall and Palo Alto Panorama.
 
 
 ## Use Cases
