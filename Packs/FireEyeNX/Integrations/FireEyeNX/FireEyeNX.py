@@ -14,6 +14,8 @@ from requests.exceptions import (
 )
 import urllib3
 
+
+# comment
 # Disable insecure warnings
 urllib3.disable_warnings()
 
