@@ -136,8 +136,10 @@ def get_events_v1(client: Client, last_run: dict, limit: Optional[int] = None) -
         events (list).
     """
     events = []
+    if limit is None:
+        limit = MAX_EVENTS_PAGE_SIZE
     for event_type in ALL_SUPPORTED_EVENT_TYPES:
-        event_type_events = []
+        event_type_events: list = []
         event_type_limit = limit
         while len(event_type_events) < limit:
             page_limit = min(event_type_limit, MAX_EVENTS_PAGE_SIZE)
@@ -146,7 +148,7 @@ def get_events_v1(client: Client, last_run: dict, limit: Optional[int] = None) -
             else:
                 response = client.get_events_request_v1(event_type, last_run, page_limit)
 
-            if response.get('status') != 'success' or not (results := response.get('data', [])):
+            if response.get('status') != 'success' or not (results := response.get('data', [])):  # type: ignore
                 break
 
             event_type_events.extend(results)
@@ -198,9 +200,11 @@ def get_events_v2(client, last_run: dict, limit: Optional[int] = None) -> List[A
         events (list).
     """
     events = []
+    if limit is None:
+        limit = MAX_EVENTS_PAGE_SIZE
     for event_type in ALL_SUPPORTED_EVENT_TYPES:
         # et - event_type
-        et_events = []
+        et_events: list = []
         et_limit = limit
         while len(et_events) < limit:
             page_limit = min(et_limit, MAX_EVENTS_PAGE_SIZE)
@@ -266,7 +270,7 @@ def main() -> None:  # pragma: no cover
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     first_fetch = params.get('first_fetch')
-    max_fetch = min(arg_to_number(params.get('max_fetch')), MAX_EVENTS_PAGES_PER_FETCH)
+    max_fetch = min(arg_to_number(params.get('max_fetch')), MAX_EVENTS_PAGES_PER_FETCH)  # type: ignore[type-var]
     vendor, product = params.get('vendor', 'netskope'), params.get('product', 'netskope')
 
     demisto.debug(f'Command being called is {demisto.command()}')
