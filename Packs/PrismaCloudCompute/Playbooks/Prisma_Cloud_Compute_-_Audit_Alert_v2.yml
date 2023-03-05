@@ -896,7 +896,7 @@ tasks:
       ignore-outputs:
         simple: "true"
       query:
-        simple: incident.id:${incident.id} and type:CVE
+        simple: ${incident.id:${incident.id} and type:CVE}
     separatecontext: false
     view: |-
       {
