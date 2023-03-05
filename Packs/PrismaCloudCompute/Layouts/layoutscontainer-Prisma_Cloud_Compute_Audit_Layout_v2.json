@@ -951,5 +951,6 @@
     "system": false,
     "version": -1,
     "description": "",
-    "fromVersion": "6.0.0"
+    "fromVersion": "6.0.0",
+    "marketplaces": ["xsoar"]
 }
