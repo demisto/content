@@ -153,8 +153,8 @@ configuration:
     - marketplacev2
 - display: Resolve closed incidents from XSOAR in AWS Security Hub
   additionalinfo: After closing an incident in XSOAR, update its workflow status in AWS Security Hub to resolved
-  defaultvalue: 'None'
-  name: close_incident_multiple_options
+  defaultvalue: true
+  name: close_incident
   required: false
   type: 8
   section: Collect
@@ -3417,7 +3417,7 @@ script:
       secret: false
   - name: get-mapping-fields
     description: Returns the list of fields to map in outgoing mirroring. This command is only used for debugging purposes.
-  dockerimage: demisto/boto3py3:1.0.0.49549
+  dockerimage: demisto/boto3py3:1.0.0.49601
   feed: false
   isfetch: true
   ismappable: true

@@ -990,7 +990,8 @@ def main():  # pragma: no cover
     finding_type = params.get('finding_type', '')
     workflow_status = params.get('workflow_status', '')
     product_name = argToList(params.get('product_name', ''))
-    closure_case = params.get('close_incident_multiple_options')
+    closure_case = params.get('close_incident')
+    demisto.debug(f'{closure_case=}')
 
     try:
         validate_params(aws_default_region, aws_role_arn, aws_role_session_name, aws_access_key_id,
