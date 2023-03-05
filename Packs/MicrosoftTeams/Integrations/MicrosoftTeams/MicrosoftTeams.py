@@ -2238,35 +2238,6 @@ def direct_message_handler(integration_context: dict, request_body: dict, conver
             except Exception as e:
                 data = str(e)
 
-    # # user is external and not allowed to run any command
-    # if not demisto_user and not allow_external_incidents_creation:
-    #     data = f"I'm sorry but I was unable to find you as a Cortex XSOAR user " \
-    #            f"for {user_email if user_email else username}. You're not allowed to run any command"
-    # # user is external but allowed to create incident
-    # elif not demisto_user and allow_external_incidents_creation:
-    #     # user is not trying to create incident
-    #     if not create_incident:
-    #         data = "As a non Cortex XSOAR user, you're allowed to use command:\nnew incident [details]"
-    #     # user wants to create incident
-    #     elif create_incident:
-    #         data = process_incident_create_message(demisto_user, message)
-    #         formatted_message = urlify_hyperlinks(data)
-    #     else:
-    #         try:
-    #             data = demisto.directMessage(message, username, user_email, allow_external_incidents_creation)
-    #             return_card = True
-    #             if data.startswith('`'):  # We got a list of incidents/tasks:
-    #                 data_by_line: list = data.replace('```', '').strip().split('\n')
-    #                 return_card = True
-    #                 if data_by_line[0].startswith('Task'):
-    #                     attachment = process_tasks_list(data_by_line)
-    #                 else:
-    #                     attachment = process_incidents_list(data_by_line)
-    #             else:  # Mirror investigation command / unknown direct message
-    #                 attachment = process_mirror_or_unknown_message(data)
-    #         except Exception as e:
-    #             data = str(e)
-
     if return_card:
         conversation = {
             'type': 'message',

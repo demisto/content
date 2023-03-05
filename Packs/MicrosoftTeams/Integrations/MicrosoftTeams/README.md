@@ -2,7 +2,8 @@ Use the Microsoft Teams integration to send messages and notifications to your t
 This integration was integrated and tested with version 1.0 of Microsoft Teams.
 
 **Note::** 
-- The integration has the ability to run builtin XSOAR commands, through a mirrored channel. make sure to type the command in the chat, do not copy and paste it, it will not be sent as a command.
+- The integration has the ability to run builtin XSOAR commands, through a mirrored channel. make sure to type the command in the chat exactly as typed in CORTEX XSOAR CLI, do not copy and paste it, it will not be handled as a command. example: `!DeleteContext all=yes`
+
 - For use cases where it is only need to send messages to a specific channel, we recommend checking the [Microsoft Teams via Webhook Integration](https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams-via-webhook), which has a simpler setup.
 
 ## Integration Architecture
