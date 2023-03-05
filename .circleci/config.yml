@@ -377,9 +377,7 @@ workflows:
   version: 2
   commit:
     when:
-      not:
-        or:
-          - << pipeline.parameters.nightly >>
+      $CIRCLE_BRANCH =~ pull/[0-9]+
     jobs:
       - Setup Environment
       - Run Unit Testing And Lint:
