@@ -1,6 +1,7 @@
 import uuid
 from dataclasses import dataclass
 from typing import Callable, Tuple
+from urllib.parse import quote
 
 import urllib3
 
@@ -272,7 +273,7 @@ class Client:
         """
         get_file_path_res = demisto.getFilePath(file)
         file_path = get_file_path_res["path"]
-        file_name = file_name or get_file_path_res.get('name', '')
+        file_name = quote(file_name or get_file_path_res.get('name', ''))
 
         url_suffix = f"/samples/entities/samples/v2?file_name={file_name}&is_confidential={is_confidential}" \
                      f"&comment={comment}"
@@ -352,7 +353,7 @@ class Client:
         body = {
             "sandbox": [
                 {
-                    "url": url,
+                    "url": quote(url, safe=":/"),
                     "environment_id": convert_environment_id_string_to_int(environment_id),
                     "action_script": action_script,
                     "command_line": command_line,

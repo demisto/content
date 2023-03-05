@@ -468,13 +468,7 @@ def test_send_message_with_user(mocker, requests_mock):
 
     mocker.patch.object(demisto, 'results')
 
-    mocker.patch.object(
-        demisto,
-        'params',
-        return_value={
-            'bot_id': bot_id
-        }
-    )
+    mocker.patch("MicrosoftTeams.BOT_ID", new=bot_id)
     mocker.patch.object(
         demisto,
         'args',
@@ -682,13 +676,7 @@ def test_send_message_with_adaptive_card(mocker, requests_mock):
 def test_sending_message_using_email_address(mocker, requests_mock):
     mocker.patch.object(demisto, 'results')
     # verify message is sent properly given email with uppercase letters to send to
-    mocker.patch.object(
-        demisto,
-        'params',
-        return_value={
-            'bot_id': bot_id
-        }
-    )
+    mocker.patch("MicrosoftTeams.BOT_ID", new=bot_id)
     mocker.patch.object(
         demisto,
         'args',
