@@ -406,10 +406,7 @@ class HasConflictOnAllowedFilesCondition(BaseCondition):
         try:
             self.git_repo.git.merge(f"origin/{pr_branch}", "--no-ff", "--no-commit")
         except GitCommandError as e:
-            print(e)
-            print('\n\n')
-            print(e.stdout)
-            print('Start checking conflicts.')
+            print(f'{e}\n\n{e.stdout}')
             error = e.stdout
             if error:
                 error = error.replace("stdout: '", "").strip()
@@ -418,17 +415,15 @@ class HasConflictOnAllowedFilesCondition(BaseCondition):
                 for line in error.splitlines()
                 if "Auto-merging " in line
             ]
-            conflict_only_with_given_files = True
-            print('Start checking conflicts. Got to loop')
-            for file_name in conflicting_files:
-                if file_name not in files_check_to_conflict_with:
-                    conflict_only_with_given_files = False
-            print('Loop Done')
+            conflict_only_with_given_files = all(
+                file_name in files_check_to_conflict_with
+                for file_name in conflicting_files
+            )
         finally:
             try:
                 self.git_repo.git.merge("--abort")
-            except GitCommandError:
-                print('Merge abort exception caught.')
+            except GitCommandError as ex:
+                print(f'Merge abort exception caught.  {ex}')
             self.git_repo.git.clean("-f")
         return (conflict_only_with_given_files and conflicting_files), conflicting_files
 
@@ -937,7 +932,8 @@ class BranchAutoBumper:
         6. Pushes the changes.
         """
         body = PR_COMMENT_TITLE.format(self.github_run_id)
-        if self.branch not in ["conflict_in_cs", "conflicts_in_base"]:
+        if self.branch not in ["conflict_in_cs", "conflicts_in_base", "conflict_in_xdr",
+                               "conflict_in_nx", "conflicts_in_msg"]:
             # todo: delete it, only for testing
             return "Pack MyPack version was automatically bumped to 1.0.2."
         with checkout(self.git_repo, self.branch):
@@ -962,7 +958,6 @@ class BranchAutoBumper:
                     new_version,
                 )
             print(f"Committed the changes. Commenting on the pr: \n{body}.\n")
-            # todo: uncomment - dont work with my creds, only bots should work.
             self.pr.create_issue_comment(body)
             self.git_repo.git.push()
         return body
