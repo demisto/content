@@ -168,8 +168,8 @@ FORMAT_NON_ASCII = [
     ('https://testö.com/test.html', 'https://testö.com/test.html'),
     ('www.testö.com/test.aspx', 'www.testö.com/test.aspx'),
     ('https://www.teöst.com/', 'https://www.teöst.com/'),
-    ('https://www.test.se/Common/Auth/MailLogin?&rUrl=https://test.com/wp–images/fmn/abcmb1/amclimore@test.com',  # disable-secrets-detection
-     'https://www.test.se/Common/Auth/MailLogin?&rUrl=https://test.com/wp–images/fmn/abcmb1/amclimore@test.com'),  # disable-secrets-detection
+    ('https://www.test.se/Auth/?&rUrl=https://test.com/wp–images/amclimore@test.com',  # disable-secrets-detection
+     'https://www.test.se/Auth/?&rUrl=https://test.com/wp–images/amclimore@test.com'),  # disable-secrets-detection
 ]
 
 FORMAT_PUNYCODE = [
