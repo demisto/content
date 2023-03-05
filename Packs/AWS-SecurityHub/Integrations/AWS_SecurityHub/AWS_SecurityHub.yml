@@ -153,7 +153,7 @@ configuration:
     - marketplacev2
 - display: Resolve closed incidents from XSOAR in AWS Security Hub
   additionalinfo: After closing an incident in XSOAR, update its workflow status in AWS Security Hub to resolved
-  defaultvalue: true
+  defaultvalue: 'true'
   name: close_incident
   required: false
   type: 8
