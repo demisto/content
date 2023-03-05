@@ -4,7 +4,7 @@ commonfields:
 name: GuardiCore
 display: GuardiCore (Deprecated)
 category: Deception
-description: Deprecated. No available replacement.
+description: Deprecated. Use GuardiCore v2 instead.
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)
   name: server
