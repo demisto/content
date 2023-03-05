@@ -32,7 +32,7 @@ def get_indicators_from_incident():
     """
     incident_id = demisto.incident()['id']
     indicators_query = {
-        "incident": incident_id
+        "investigationIDs": incident_id
     }
 
     find_indicators_args = {'query': indicators_query}
