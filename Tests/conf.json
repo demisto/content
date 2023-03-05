@@ -1414,7 +1414,9 @@
         },
         {
             "integrations": "WildFire-v2",
-            "playbookID": "Detonate URL - WildFire-v2 - Test"
+            "playbookID": "Detonate URL - WildFire-v2 - Test",
+            "timeout": 200
+
         },
         {
             "integrations": "WildFire-v2",
