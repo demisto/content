@@ -81,6 +81,7 @@ run-validations:
     - if: '$NIGHTLY'
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
 
+
 # runs in gitlab for the on-push flow, on every new commit pushed to the branch.
 validate-content-conf:
   tags:
