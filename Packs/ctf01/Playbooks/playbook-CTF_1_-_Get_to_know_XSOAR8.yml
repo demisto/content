@@ -92,7 +92,7 @@ tasks:
         tooltip: Try to generate the report to see it's content. This is so importent to our "CISO".
         readonly: false
       title: Practicing with Reports
-      description: "XSOAR reporting can be a powerful value proposition. \nReports can contain widgets and be customized. \nThey can be used for a variety of tasks, including things such as measurement of efficiency and teamwork. \n\nThere is a flag hidden in one of the reports. Generate a report and try to find it :sunglasses: . \n\n![myfile](https://raw.githubusercontent.com/demisto/content/4643108281a0869f27c8daf9a9b965b58917beb4/Packs/ctf01/doc_files/status-report-status-update.gif) "
+      description: "XSOAR reporting can be a powerful value proposition. \nReports can contain widgets and be customized. \nThey can be used for a variety of tasks, including things such as measurement of efficiency and teamwork. \n\nThere is a flag hidden in one of the reports. Generate a report and try to find it :sunglasses:\nMake sure to allow pop-ups for downloading the report. \n\n![myfile](https://raw.githubusercontent.com/demisto/content/4643108281a0869f27c8daf9a9b965b58917beb4/Packs/ctf01/doc_files/status-report-status-update.gif) "
       sender: Your SOC team
       expired: false
       totalanswers: 0
@@ -313,7 +313,7 @@ tasks:
         readonly: false
       title: Incident fields
       description: |-
-        Now navigate to the Incident's fields section. This is located ON the Incidents tab and not in Settings & Info. We promise the way to get to the Field settings IS there!
+        Now navigate to the Incident's fields section. This is located ON the Settings & Info. We promise the way to get to the Field settings IS there!
 
         ![myfile](https://raw.githubusercontent.com/demisto/content/4643108281a0869f27c8daf9a9b965b58917beb4/Packs/ctf01/doc_files/custom-custom-game.gif)
       sender: Your SOC team
@@ -380,7 +380,7 @@ tasks:
         tooltip: You can see that information easily from pack's overview
         readonly: false
       title: Get to know the Marketplace
-      description: "Go to the Marketplace, search, and download the content pack \"CTF 2\".\n(Since there are multiple users on the same system - it might be downloaded already) \n\n![myfile](https://raw.githubusercontent.com/demisto/content/4643108281a0869f27c8daf9a9b965b58917beb4/Packs/ctf01/doc_files/new_marketplace.gif)"
+      description: "Go to the Marketplace, search, and download the content pack \"CTF 2\".\n(Since there are multiple users on the same tenant - it might be downloaded already. Don't forget to check the \"Show Installed\" checkbox). \n\n![myfile](https://raw.githubusercontent.com/demisto/content/4643108281a0869f27c8daf9a9b965b58917beb4/Packs/ctf01/doc_files/new_marketplace.gif)"
       sender: ""
       expired: false
       totalanswers: 0

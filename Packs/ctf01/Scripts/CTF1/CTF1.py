@@ -60,8 +60,8 @@ HTML_MESSAGE_BAD = '''
 <img src="%s" alt="Error">
 <div style='font-size:18px;'>
 Nope!!! Try again.
-Remember to overwrite the "secret" argument when you are re-running the task (Using the trash-can icon). 
-To re-run this task -> Click on "Complete Task" -> fill out the Secret Value -> click on the 'Run script now' :)
+Remember to overwrite the "secret" argument when you are re-running the task. 
+To re-run this task -> Click on "Complete Task" -> clear the Secret value using the trash-can icon -> out the Secret value -> click on the 'Run script now' :)
 </div>
 ''' %(bad_images[random.randint(0,len(bad_images)-1)])
 
@@ -94,7 +94,7 @@ def main():
         #General Error handeling
         else:
             if (args.get("question_ID") ==  "03"):
-                return_error(f'In case the playbook is in "Quite Mode", no output will be displayed in the war-room.\n\nYou can skip this task if you want or re-run it with <none> :). ')
+                return_error(f'In case the playbook is in "Quite Mode", no output will be displayed in the war-room.\n\nYou can skip this task if you want or re-run it with <none>. To re-run this task -> Click on "Complete Task" -> fill out the Secret Value -> click on the \'Run script now\' :). ')
             else:
                 #return_error(f'Nope... try again!!!\nRemember to overwrite the "secret" argument when you are re-running the task :)')
                     demisto.results({
