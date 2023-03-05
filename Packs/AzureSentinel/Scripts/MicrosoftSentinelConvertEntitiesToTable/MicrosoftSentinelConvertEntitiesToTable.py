@@ -23,12 +23,7 @@ def convert_to_table(context_results: str) -> CommandResults:
     Returns:
         CommandResults: CommandResults object containing only readable_output
     """
-    context_results = re.sub(
-        r':\s*(true|false)\b',
-        lambda x: f':{x.group(1).capitalize()}',
-        context_results
-    )  # Convert true/false to True/False for literal_eval
-    context_results = ast.literal_eval(context_results)
+    context_results = json.loads(context_results)
 
     context_formatted = [
         format_entity(entity) for entity in context_results
