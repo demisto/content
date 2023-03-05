@@ -2304,7 +2304,7 @@ script:
     - contextPath: AWS.IAM.Users.LoginProfile.PasswordResetRequired
       description: Specifies whether the user is required to set a new password on next sign-in.
       type: Boolean
-  dockerimage: demisto/boto3py3:1.0.0.48904
+  dockerimage: demisto/boto3py3:1.0.0.49601
   feed: false
   isfetch: false
   longRunning: false
