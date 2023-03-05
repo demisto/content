@@ -377,7 +377,7 @@ workflows:
   version: 2
   commit:
     when:
-      condition: $CIRCLE_BRANCH =~ pull/[0-9]+
+      condition: << pipeline.parameters.contrib_branch >>
     jobs:
       - Setup Environment
       - Run Unit Testing And Lint:
