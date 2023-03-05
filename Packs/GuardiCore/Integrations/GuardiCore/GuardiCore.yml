@@ -3,8 +3,8 @@ commonfields:
   version: -1
 name: GuardiCore
 display: GuardiCore (Deprecated)
-category: Deception & Breach Simulation
-description: Data center breach detection
+category: Deception
+description: Deprecated. Use GuardiCore v2 instead.
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)
   name: server
@@ -49,7 +49,7 @@ script:
       description: Filter by source (hostname or IP address).
     - name: destination
       description: Filter by destination (hostname or IP address).
-    description: Deprecated. Use GuardiCore v2 instead.
+    description: Display information about incidents (with filters).
   - name: guardicore-uncommon-domains
     arguments: []
     description: Display the uncommon domains.
@@ -119,6 +119,5 @@ script:
       description: Filter by Event ID.
     description: Searches within the network log (with filters).
 fromversion: 5.0.0
-deprecated: true
 tests:
 - No tests
