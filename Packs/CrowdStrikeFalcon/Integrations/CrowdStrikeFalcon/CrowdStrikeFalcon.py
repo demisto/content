@@ -1825,27 +1825,19 @@ def list_quarantined_files(ids: list) -> dict:
         Returns:
             list: A list contains metadata about the files.
     """
-    return http_request(
-        method='POST',
-        url_suffix='/quarantine/entities/quarantined-files/GET/v1',
-        json={'ids': ids},
-    )
+    return http_request(method='POST', url_suffix='/quarantine/entities/quarantined-files/GET/v1', json={'ids': ids})
 
 
-def apply_quarantined_files_action(ids: list) -> dict:
+def apply_quarantined_files_action(body: dict) -> dict:
     """
-        Returns the file's metadata by a list of IDs.
+        Returns the updated file's metadata.
 
         Args:
-            ids (list): A list of the IDs of the files.
+            body (dict): The request body with the parameters to update.
         Returns:
-            list: A list contains metadata about the files.
+            list: A list contains metadata about the updated files.
     """
-    return http_request(
-        method='POST',
-        url_suffix='/quarantine/entities/quarantined-files/GET/v1',
-        json={'ids': ids},
-    )
+    return http_request(method='PATCH', url_suffix='/quarantine/entities/quarantined-files/v1', json=body)
 
 
 ''' MIRRORING COMMANDS '''
@@ -4403,12 +4395,12 @@ def search_ioa_exclusion_command(args):
 
 
 def list_quarantined_file_command(args):
-    if not (ids := args.get('ids')):
-        pagination_params = assign_params(
+    if not (ids := argToList(args.get('ids'))):
+        pagination_args = assign_params(
             limit=args.get('limit', '50'),
             offset=args.get('offset')
         )
-        query_args = assign_params(
+        search_args = assign_params(
             sha256=argToList(args.get('sha256')),
             state=args.get('state'),
             filename=argToList(args.get('filename')),
@@ -4416,7 +4408,7 @@ def list_quarantined_file_command(args):
             username=argToList(args.get('username')),
         )
 
-        ids = list_quarantined_files_id(args.get('filter'), query_args, pagination_params).get('resources')
+        ids = list_quarantined_files_id(args.get('filter'), search_args, pagination_args).get('resources')
 
     files = list_quarantined_files(ids).get('resources')
 
@@ -4424,27 +4416,38 @@ def list_quarantined_file_command(args):
         outputs_prefix='CrowdStrike.MLExclusion',
         outputs_key_field='id',
         outputs=files,
-        readable_output=tableToMarkdown('CrowdStrike Falcon IOA exclusions', files),
+        readable_output=tableToMarkdown('CrowdStrike Falcon Quarantined File', files),
     )
 
 
 def apply_quarantine_file_action_command(args):
-    ids = argToList(args.get('ids'))
-    update_args = assign_params(
-        sha256=args.get('sha256'),
-        state=args.get('state'),
-        filename=argToList(args.get('filename')),
-        hostname=argToList(args.get('hostname')),
-        username=argToList(args.get('username')),
-    )
+    if not (ids := argToList(args.get('ids'))):
+        pagination_args = assign_params(
+            limit=args.get('limit', '50'),
+            offset=args.get('offset')
+        )
+        search_args = assign_params(
+            sha256=args.get('sha256'),
+            state=args.get('state'),
+            filename=argToList(args.get('filename')),
+            hostname=argToList(args.get('hostname')),
+            username=argToList(args.get('username')),
+        )
+    
+        ids = list_quarantined_files_id(args.get('filter'), search_args, pagination_args).get('resources')
 
-    files = apply_quarantined_files_action(update_args).get('resources')
+    update_args = assign_params(
+        id=ids,
+        action=args.get('action'),
+        comment=args.get('comment'),
+    )
+    if not update_args:
+        raise Exception('At least one update argument (action, comment) should be provided to update the quarantine file.')
+    
+    apply_quarantined_files_action(update_args).get('resources')
 
     return CommandResults(
-        outputs_prefix='CrowdStrike.MLExclusion',
-        outputs_key_field='id',
-        outputs=files,
-        readable_output=tableToMarkdown('CrowdStrike Falcon IOA exclusions', files),
+        readable_output=f'The Quarantined File with IDs {ids} was successfully updated.',
     )
 
 

@@ -4497,3 +4497,38 @@ def test_search_ioa_exclusion_command_by_filter(requests_mock):
     assert len(results.outputs) == 1
     assert results.outputs[0].get('id') == '123456'
     assert results.outputs[0].get('name') == 'test'
+
+
+def test_list_quarantined_file_command(requests_mock):
+    from CrowdStrikeFalcon import list_quarantined_file_command
+    requests_mock.get(
+        f'{SERVER_URL}/quarantine/queries/quarantined-files/v1?q=hostname%3A%27%5B%27INSTANCE-1%27%5D%27&limit=50',
+        json={'resources': ['121212', '171717']}
+    )
+    requests_mock.post(
+        f'{SERVER_URL}/quarantine/entities/quarantined-files/GET/v1',
+        json=load_json('test_data/list_quarantine_files.json')
+    )
+
+    results = list_quarantined_file_command({'hostname': 'INSTANCE-1'})
+
+    assert len(results.outputs) == 2
+    assert results.outputs[0].get('id') == '121212'
+    assert results.outputs[1].get('id') == '171717'
+
+
+def test_apply_quarantine_file_action_command(requests_mock):
+    from CrowdStrikeFalcon import apply_quarantine_file_action_command
+    requests_mock.get(
+        f'{SERVER_URL}/quarantine/queries/quarantined-files/v1?q=hostname%3A%27%5B%27INSTANCE-1%27%5D%27&limit=50',
+        json={'resources': ['121212', '171717']}
+    )
+    mock_request = requests_mock.patch(
+        f'{SERVER_URL}/quarantine/entities/quarantined-files/v1',
+        json={}
+    )
+
+    results = apply_quarantine_file_action_command({'hostname': 'INSTANCE-1', 'comment': 'Added a test comment.'})
+
+    assert results.readable_output == "The Quarantined File with IDs ['121212', '171717'] was successfully updated."
+    assert mock_request.last_request.text == '{"id": ["121212", "171717"], "comment": "Added a test comment."}'
