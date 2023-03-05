@@ -2,6 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 
 
+# comment
 def _get_incident():
     return demisto.incidents()[0]
 
