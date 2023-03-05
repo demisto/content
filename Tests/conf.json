@@ -778,7 +778,8 @@
         {
             "integrations": "Cortex XDR - IR",
             "playbookID": "Test XDR Playbook general commands",
-            "fromversion": "4.1.0"
+            "fromversion": "4.1.0",
+            "timeout": 1200
         },
         {
             "integrations": "Cortex XDR - IR",
