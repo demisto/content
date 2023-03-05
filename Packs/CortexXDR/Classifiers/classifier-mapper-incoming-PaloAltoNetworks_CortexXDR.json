@@ -19,6 +19,9 @@
 				"File Paths": {
 					"simple": "alerts.actor_process_image_path"
 				},
+                "File SHA256": {
+					"simple": "file_artifacts.filesha256"
+				},
 				"Hostnames": {
 					"simple": "alerts.hostname"
 				}
