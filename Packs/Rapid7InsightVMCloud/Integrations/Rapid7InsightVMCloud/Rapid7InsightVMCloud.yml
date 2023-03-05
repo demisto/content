@@ -27,7 +27,7 @@ name: Rapid7 InsightVM Cloud
 script:
   commands:
   - arguments:
-    - description: The identifier of the asset to retrieve the details for.
+    - description: The identifier of the asset to retrieve details for.
       name: asset_id
       required: true
     description: Returns the assessment and details of an asset (specified by ID). Only assets that the caller has access to can be returned.
