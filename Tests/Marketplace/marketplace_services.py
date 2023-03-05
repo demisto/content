@@ -3165,8 +3165,7 @@ class Pack(object):
 
         return task_status
 
-    def upload_readme_images(self, storage_bucket, storage_base_path, diff_files_list=None, detect_changes=False,
-                             marketplace='xsoar'):
+    def upload_readme_images(self, storage_bucket, storage_base_path, diff_files_list=None, detect_changes=False):
         """ Downloads pack readme links to images, and upload them to gcs.
 
             Searches for image links in pack readme.
@@ -3195,7 +3194,7 @@ class Pack(object):
                 # detect added/modified integration readme files
                 logging.info(f'found a pack: {self._pack_name} with changes in README')
                 readme_images_storage_paths = self.collect_images_from_readme_and_replace_with_storage_path(
-                    pack_readme_path, storage_pack_path, marketplace)
+                    pack_readme_path, storage_pack_path)
 
                 # no external image urls were found in the readme file
                 if not readme_images_storage_paths:
@@ -3218,7 +3217,7 @@ class Pack(object):
         finally:
             return task_status
 
-    def collect_images_from_readme_and_replace_with_storage_path(self, pack_readme_path, gcs_pack_path, marketplace):
+    def collect_images_from_readme_and_replace_with_storage_path(self, pack_readme_path, gcs_pack_path):
         """
         Replaces inplace all images links in the pack README.md with their new gcs location
 
@@ -3231,12 +3230,7 @@ class Pack(object):
             A list of dicts of all the image urls found in the README.md file with all related data
             (original_url, new_gcs_path, image_name)
         """
-        if marketplace == 'xsoar':
-            marketplace_bucket = "marketplace-dist"
-        else:
-            marketplace_bucket = "marketplace-v2-dist"
-
-        google_api_readme_images_url = f'https://storage.googleapis.com/{marketplace_bucket}/content/packs/{self.name}'
+        google_api_readme_images_url = f'api/marketplace/file?name=content/packs/{self.name}'
         url_regex = r"^!\[(.*)\]\((?P<url>.*)\)"
         urls_list = []
 
@@ -3357,8 +3351,7 @@ class Pack(object):
             self.cleanup()
             return False
 
-        task_status = self.upload_readme_images(storage_bucket, storage_base_path, diff_files_list, detect_changes,
-                                                marketplace)
+        task_status = self.upload_readme_images(storage_bucket, storage_base_path, diff_files_list, detect_changes)
         if not task_status:
             self._status = PackStatus.FAILED_README_IMAGE_UPLOAD.name
             self.cleanup()
