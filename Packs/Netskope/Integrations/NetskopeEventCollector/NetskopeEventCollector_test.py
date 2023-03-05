@@ -1,7 +1,7 @@
 import io
 import json
 
-from NetskopeEventCollector import get_sorted_events_by_type, create_last_run, Client
+from NetskopeEventCollector import get_sorted_events_by_type, Client
 
 
 def util_load_json(path):
