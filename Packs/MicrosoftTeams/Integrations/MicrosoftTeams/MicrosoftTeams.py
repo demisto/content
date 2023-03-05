@@ -2318,7 +2318,7 @@ def message_handler(integration_context: dict, request_body: dict, channel_data:
                             demisto.debug(f"Adding Entry {message} to investigation {investigation_id}")
                             demisto.addEntry(
                                 id=investigation_id,
-                                entry=message,
+                                entry=message.strip(),
                                 username=username,
                                 email=user_email,
                                 footer=f'\n**{ENTRY_FOOTER}**'

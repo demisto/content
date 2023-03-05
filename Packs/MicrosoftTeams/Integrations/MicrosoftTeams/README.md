@@ -2,7 +2,7 @@ Use the Microsoft Teams integration to send messages and notifications to your t
 This integration was integrated and tested with version 1.0 of Microsoft Teams.
 
 **Note::** 
-- The integration has the ability to run builtin XSOAR commands, through a mirrored channel. make sure to type the command in the chat exactly as typed in CORTEX XSOAR CLI, do not copy and paste it, it will not be handled as a command. example: `!DeleteContext all=yes`
+- The integration has the ability to run builtin XSOAR commands, through a mirrored channel. make sure to pass the command in the chat exactly as typed in CORTEX XSOAR CLI. example: `!DeleteContext all=yes`. Use command `mirror-investigation` to mirror/create a mirrored channel.
 
 - For use cases where it is only need to send messages to a specific channel, we recommend checking the [Microsoft Teams via Webhook Integration](https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams-via-webhook), which has a simpler setup.
 
@@ -351,6 +351,7 @@ https://login.microsoftonline.com/TENANT_ID/oauth2/v2.0/authorize?response_type=
 - Posting a message or adaptive card to a private/shared channel is currently not supported in the ***send-notification*** command. Thus, also the ***mirror_investigation*** command does not support private/shared channels. For more information, see [Microsoft General known issues and limitations](https://learn.microsoft.com/en-us/connectors/teams/#general-known-issues-and-limitations).
 - In case of multiple chats/users sharing the same name, the first one will be taken.
 - See Microsoft documentation for [Limits and specifications for Microsoft Teams](https://learn.microsoft.com/en-us/microsoftteams/limits-specifications-teams).
+- If a non XSOAR user ran the command `new incident` in the chat with the bot, the owner of the created incident would be the logged in XSOAR user, not the external user who ran the command.
 
 
 ## Commands
@@ -395,6 +396,8 @@ Message was sent successfully.
 ### mirror-investigation
 ***
 Mirrors the Cortex XSOAR investigation to the specified Microsoft Teams channel. Supports only standard channels.
+
+**Note**: Mirrored channels could be used to run CORTEX XSOAR builtin commands.
 
 
 ##### Base Command
@@ -727,6 +730,10 @@ Note: Only one oneOnOne chat can exist between two members. If a oneOnOne chat a
 ##### Required Permissions
 `Chat.Create` - Delegated, Application
 `Chat.ReadWrite` - Delegated
+`TeamsAppInstallation.ReadWriteForChat` - Delegated
+`TeamsAppInstallation.ReadWriteSelfForChat` - Delegated
+`TeamsAppInstallation.ReadWriteSelfForChat.All` - Application               
+`TeamsAppInstallation.ReadWriteForChat.All` - Application
 
 ##### Input
 
@@ -772,6 +779,10 @@ Sends a new chat message in the specified chat.
 ##### Required Permissions
 `ChatMessage.Send` - Delegated
 `Chat.ReadWrite` - Delegated
+`TeamsAppInstallation.ReadWriteForChat` - Delegated
+`TeamsAppInstallation.ReadWriteSelfForChat` - Delegated
+`TeamsAppInstallation.ReadWriteSelfForChat.All` - Application               
+`TeamsAppInstallation.ReadWriteForChat.All` - Application
 
 ##### Input
 
