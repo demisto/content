@@ -18,6 +18,17 @@ DEPLOY_ARGUMENT_MAPPER = {"push_ssl_key": "SSLPercentageComplete",
                           "push_configuration_signature_set": "sigsetConfigPercentageComplete",
                           "push_botnet": "botnetPercentageComplete"}
 
+PERCENTAGE_MAP = {"push_ssl_key": "SSLPercentageComplete",
+                  "push_gam_updates": "GamUpdatePercentageComplete",
+                  "push_configuration_signature_set": "sigsetConfigPercentageComplete",
+                  "push_botnet": "botnetPercentageComplete"}
+
+MESSAGE_MAP = {"push_ssl_key": "SSLStatusMessage",
+               "push_gam_updates": "GamUpdateStatusMessage",
+               "push_configuration_signature_set": "sigsetConfigStatusMessage",
+               "push_botnet": "botnetStatusMessage"}
+INTERVAL = arg_to_number(demisto.args().get("interval_in_seconds", 30))
+
 ''' CLIENT CLASS '''
 
 
@@ -2282,7 +2293,7 @@ def get_sensor_configuration_command(client: Client, args: Dict) -> CommandResul
     )
 
 
-@polling_function(name='nsm-deploy-sensor-configuration', interval=20, requires_polling_arg=False)
+@polling_function(name='nsm-deploy-sensor-configuration', interval=INTERVAL, requires_polling_arg=False)
 def deploy_sensor_configuration_command(args: Dict, client: Client) -> PollResult:
     """
     Args:
@@ -2292,11 +2303,8 @@ def deploy_sensor_configuration_command(args: Dict, client: Client) -> PollResul
     Returns:
         A PollResult object with a success or failure message
     """
-    # if not is_demisto_version_ge('6.2.0'):
-    #     raise DemistoException('This command is not supported for your server version. Please update your server version to 6.2.0 or later.')
 
     request_id = arg_to_number(args.get('request_id'))
-    print("first request id is: ", request_id)
     sensor_id = arg_to_number(args.get('sensor_id'))
     if not request_id:
         sensor_id = arg_to_number(args.get('sensor_id'))
@@ -2304,66 +2312,48 @@ def deploy_sensor_configuration_command(args: Dict, client: Client) -> PollResul
         isGAMUpdateRequired = argToBoolean(args.get('push_gam_updates', False))
         isSigsetConfigPushRequired = argToBoolean(args.get('push_configuration_signature_set', False))
         isBotnetPushRequired = argToBoolean(args.get('push_botnet', False))
-        interval_in_seconds = arg_to_number(args.get('interval_in_seconds', 20))
+        # interval_in_seconds = arg_to_number(args.get('interval_in_seconds', 20))
 
         if not any([isSSLPushRequired, isGAMUpdateRequired, isSigsetConfigPushRequired, isBotnetPushRequired]):
             raise DemistoException("Please provide at least one argument to deploy")
 
-        print("creating a new request ID")
         requests_id = client.deploy_sensor_configuration_request(sensor_id=sensor_id, isSSLPushRequired=isSSLPushRequired,
                                                                  isGAMUpdateRequired=isGAMUpdateRequired,
                                                                  isSigsetConfigPushRequired=isSigsetConfigPushRequired,
                                                                  isBotnetPushRequired=isBotnetPushRequired).get('RequestId')
-        print("request_id: ", requests_id)
         args["request_id"] = requests_id
     status = client.check_deploy_sensor_configuration_request_status(sensor_id=sensor_id,
                                                                      request_id=request_id)
 
-    # percentage_completion: int = 0
-    # number_of_elements_to_check: int = 0
-    # for k, v in args.items():
-    #     if v == ("true" or "True"):
-    #         number_of_elements_to_check += 1
-    #         percentage_completion += status[DEPLOY_ARGUMENT_MAPPER.get(k)]
+    fail_or_success_list = []
+    for k, v in args.items():
+        if v in ("true", "True", "yes"):
+            current_percentage_status = status.get(PERCENTAGE_MAP.get(str(k)))
+            current_message_status = status.get(MESSAGE_MAP.get(str(k)))
+            if current_percentage_status != 100 or current_message_status != "DOWNLOAD COMPLETE":
+                fail_or_success_list.append("Fail")
+                message = CommandResults(
+                    readable_output=f"""The current percentage of deployment for '{k}' is: {current_percentage_status}
+                \nAnd the current message for '{k}' is: {current_message_status}\n\nChecking again in {INTERVAL} seconds...""")
 
-    # print("sum of the percentege is: ", percentage_completion, "\n number of elements to deploy= ",
-    #       number_of_elements_to_check, "\n and the status is: ", status)
+                return PollResult(
+                    partial_result=message,
+                    response=None,
+                    continue_to_poll=True,
+                    args_for_next_run={"request_id": request_id,
+                                       "sensor_id": sensor_id,
+                                       **args})
 
-    # if percentage_completion / number_of_elements_to_check == 100:
-    if status.get("sigsetConfigPercentageComplete") == 100:
-        message = CommandResults(
-            readable_output='Done')
+            else:
+                fail_or_success_list.append("Success")
 
-        return PollResult(
-            response=message,
-            continue_to_poll=False,
-        )
-    else:
-        # round = args.get('round') or 1
-        # print("round number: ", round)
-        # print("request_id= ", Request_ID)
-        # round += 1
-        message = CommandResults(readable_output="retrying...")
+            if all(fail_or_success_list):
+                message = CommandResults(
+                    readable_output='The sensor configuration has been deployed successfully.')
 
-        return PollResult(
-            partial_result=message,
-            response=message,
-            continue_to_poll=True,
-            args_for_next_run={"request_id": request_id,
-                               "sensor_id": sensor_id,
-                               **args}
-        )
-
-
-def check_command(client: Client, **args):
-    request_id = args.get('request_id')
-    sensor_id = args.get('sensor_id')
-    status = client.check_deploy_sensor_configuration_request_status(sensor_id=sensor_id,
-                                                                     request_id=request_id)
-
-    return CommandResults(
-        readable_output=status
-    )
+                return PollResult(
+                    response=message,
+                    continue_to_poll=False)
 
 
 ''' MAIN FUNCTION '''
@@ -2458,8 +2448,6 @@ def main() -> None:  # pragma: no cover
             results = get_sensor_configuration_command(client, args)
         elif command == 'nsm-deploy-sensor-configuration':
             results = deploy_sensor_configuration_command(args, client)
-        elif command == 'check':
-            results = check_command(client, **args)
         else:
             raise NotImplementedError('This command is not implemented yet.')
         return_results(results)

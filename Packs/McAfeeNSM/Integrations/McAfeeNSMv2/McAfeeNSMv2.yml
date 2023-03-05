@@ -2000,11 +2000,11 @@ script:
       required: true
       description: The ID of the interface. To get the interface ID, use the !nsm-list-device-interface command.
     - name: firewall_policy_name
-      description: The name of the firewall policy that will be connected to the interface. To get the domain_id, use the !nsm-list-domain-firewall-policy command.
+      description: The name of the firewall policy that will be connected to the interface. To get the policy name, use the !nsm-list-domain-firewall-policy command.
     - name: firewall_port_policy_name
-      description: The name of the firewall policy that will be connected to the interface/port. To get the domain_id, use the !nsm-list-domain-firewall-policy command.
+      description: The name of the firewall policy that will be connected to the interface/port. To get the policy name, use the !nsm-list-domain-firewall-policy command.
     - name: ips_policy_name
-      description: The name of the IPS policy that will be connected to the interface. To get the domain_id, use the !nsm-get-ips-policies command.
+      description: The name of the IPS policy that will be connected to the interface. To get the policy name, use the !nsm-get-ips-policies command.
     - name: custom_json
       description: fill here...
   - name: nsm-list-interface-policy
@@ -2032,49 +2032,45 @@ script:
       required: true
   - name: nsm-deploy-sensor-configuration
     polling: true
-    description: add here....
+    description: Deploy the pending changes. To get the pending changes, use the !nsm-get-sensor-configuration command.
     arguments:
+    - name: request_id
+      description: This is for the polling to work. not for the user.
+      hidden: true
     - name: sensor_id
       description: The ID of the sensor. To get the sensor ID, use the !nsm-get-sensors command.
       required: true
     - name: push_ssl_key
-      description: add here....
+      description: Deploy the SSL configuration pending changes.
       auto: PREDEFINED
       predefined:
       - true
       - false
       defaultvalue: false
     - name: push_gam_updates
-      description: add here....
+      description: Deploy the Gateway Anti-Malware configuration pending changes.
       auto: PREDEFINED
       predefined:
       - true
       - false
       defaultvalue: false
     - name: push_configuration_signature_set
-      description: add here....
+      description: Deploy the Signature set configuration pending changes.
       auto: PREDEFINED
       predefined:
       - true
       - false
       defaultvalue: false
     - name: push_botnet
-      description: add here....
+      description: Deploy the Firewall policy description pending changes.
       auto: PREDEFINED
       predefined:
       - true
       - false
       defaultvalue: false
     - name: interval_in_seconds
-      description: add here....
+      description: The interval between status checks.
       defaultvalue: 30
-  - name: check
-    description: testing
-    arguments:
-    - name: request_id
-      description: t
-    - name: sensor_id
-      description: r
   isfetch: false
   runonce: false
   script: '-'
