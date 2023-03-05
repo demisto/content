@@ -837,7 +837,7 @@ tasks:
     timertriggers: []
     ignoreworker: false
     fieldMapping:
-    - incidentfield: Prisma Audit Table
+    - incidentfield: Prisma Cloud Compute Audit Table
       output:
         simple: ${AuditTable}
     skipunavailable: false

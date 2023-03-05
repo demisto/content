@@ -10,7 +10,7 @@
     "id": "incident_prismaaudittable",
     "isReadOnly": false,
     "locked": false,
-    "name": "Prisma Audit Table",
+    "name": "Prisma Cloud Compute Audit Table",
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,

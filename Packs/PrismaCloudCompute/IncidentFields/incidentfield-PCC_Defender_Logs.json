@@ -10,7 +10,7 @@
     "id": "incident_pccdefenderlogs",
     "isReadOnly": false,
     "locked": false,
-    "name": "PCC Defender Logs",
+    "name": "Prisma Cloud Compute PCC Defender Logs",
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,

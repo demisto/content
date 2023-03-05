@@ -950,5 +950,6 @@
     "name": "Prisma Cloud Compute Audit Layout v2",
     "system": false,
     "version": -1,
-    "description": ""
+    "description": "",
+    "fromVersion": "6.0.0"
 }
