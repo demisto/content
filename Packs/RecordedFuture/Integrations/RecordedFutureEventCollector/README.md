@@ -1,4 +1,4 @@
-This is the Recorded Future event collector integration for XSIAM.
+This integration fetches alerts from Recorded Future.
 This integration was integrated and tested with version 2 of the Recorded Future API.
 
 ## Configure Recorded Future Event Collector on Cortex XSOAR
