@@ -376,11 +376,11 @@ jobs:
 workflows:
   version: 2
   commit:
-    filters:
-      # matching the environment variable "CIRCLE_BRANCH" from the setup environment step.
-      branches:
-        only:
-          - "pull/[0-9]+"
+    when:
+      matches:
+        # matching the environment variable "CIRCLE_BRANCH" from the setup environment step.
+        pattern: "pull/[0-9]+"
+        value: $CIRCLE_BRANCH
     jobs:
       - Setup Environment
       - Run Unit Testing And Lint:
