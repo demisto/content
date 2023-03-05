@@ -675,8 +675,6 @@ tasks:
     scriptarguments:
       image:
         simple: ${incident.prismacloudcomputeimage}
-      using:
-        simple: PaloAltoNetworks_PrismaCloudCompute_additional_remediation_instance_1
     separatecontext: false
     view: |-
       {
@@ -713,8 +711,6 @@ tasks:
         simple: ${incident.prismacloudcomputefqdn}
       id:
         simple: ${PrismaCloudCompute.ProfileContainer._id}
-      using:
-        simple: PaloAltoNetworks_PrismaCloudCompute_additional_remediation_instance_1
     separatecontext: false
     view: |-
       {
@@ -749,8 +745,6 @@ tasks:
     scriptarguments:
       hostname:
         simple: ${incident.prismacloudcomputehost}
-      using:
-        simple: PaloAltoNetworks_PrismaCloudCompute_tmp_instance_1
     separatecontext: false
     view: |-
       {
