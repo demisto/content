@@ -1940,7 +1940,8 @@
         },
         {
             "integrations": "Demisto Lock",
-            "playbookID": "DemistoLockTest"
+            "playbookID": "DemistoLockTest",
+            "instance_name": "no_sync"
         },
         {
             "playbookID": "test-domain-indicator",
@@ -1996,17 +1997,20 @@
             "integrations": "Microsoft Defender Advanced Threat Protection",
             "playbookID": "Microsoft Defender Advanced Threat Protection - Test prod",
             "instance_names": "microsoft_defender_atp_prod",
-            "is_mockable": false
+            "is_mockable": false,
+            "timeout": 200
         },
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
             "playbookID": "Microsoft Defender Advanced Threat Protection - Test dev",
-            "instance_names": "microsoft_defender_atp_dev"
+            "instance_names": "microsoft_defender_atp_dev",
+            "timeout": 200
         },
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
             "playbookID": "Microsoft Defender Advanced Threat Protection - Test self deployed",
-            "instance_names": "microsoft_defender_atp_dev_self_deployed"
+            "instance_names": "microsoft_defender_atp_dev_self_deployed",
+            "timeout": 200
         },
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
@@ -2123,6 +2127,10 @@
             "integrations": "RedLock",
             "playbookID": "RedLockTest",
             "nightly": true
+        },
+        {
+            "integrations": "PrismaCloud v2",
+            "playbookID": "Prisma Cloud V2 Test"
         },
         {
             "integrations": "Symantec Messaging Gateway",
@@ -4139,7 +4147,8 @@
             ],
             "instance_names": [
                 "microsoft_defender_atp_dev_self_deployed"
-            ]
+            ],
+            "timeout": 200
         },
         {
             "playbookID": "Polygon-Test",
