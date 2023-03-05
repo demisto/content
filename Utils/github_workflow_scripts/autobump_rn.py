@@ -864,13 +864,10 @@ class PackAutoBumper:
 
     def set_pr_changed_rn_related_data(self):
         """Opens release notes and bc changes files and saves its text."""
-        with open(self._last_rn_file_path) as f:
-            self._rn_text = f.read()
-
+        self._rn_text = self._last_rn_file_path.read_text()
         self._has_bc = self._bc_file.is_file()
         if self._has_bc:
-            with open(self._bc_file) as f:
-                self._bc_text = f.read()
+            self._bc_text = self._bc_file.read_text()
 
     def autobump(self) -> str:
         """AutoBumps packs version:
@@ -881,21 +878,24 @@ class PackAutoBumper:
         5. If there breaking changes file, updating it to the new version
         Returns: (str) new pack version.
         """
+
         print(f"Starting to bump packs {self.pack_id} version.")
         new_version, metadata_dict = self._update_rn_obj.bump_version_number()
         self._update_rn_obj.write_metadata_to_file(metadata_dict=metadata_dict)
         new_release_notes_path = self._update_rn_obj.get_release_notes_path(new_version)
-        with open(new_release_notes_path, "w") as fp:
-            fp.write(self._rn_text)
-        if self._has_bc:
-            with open(new_release_notes_path.replace("md", "json"), "w") as fp:
-                fp.write(self._bc_text)
-            with open(self._bc_file) as f:
-                previous_bc_txt = f.read()
-            if previous_bc_txt == self._bc_file:
-                # delete previous bc file, if it was not changed after merge from master
-                os.remove(self._bc_file)
-        return new_version
+
+        if Path(new_release_notes_path).stem != self._last_rn_file_path.stem:
+            with open(new_release_notes_path, "w") as fp:
+                fp.write(self._rn_text)
+                # todo: delete prev file if its content the same.
+            if self._has_bc:
+                with open(new_release_notes_path.replace("md", "json"), "w") as fp:
+                    fp.write(self._bc_text)
+                previous_bc_txt = self._bc_file.read_text()
+                if previous_bc_txt == self._bc_file:
+                    # delete previous bc file, if it was not changed after merge from master
+                    os.remove(self._bc_file)
+            return new_version
 
 
 class BranchAutoBumper:
@@ -933,7 +933,7 @@ class BranchAutoBumper:
         """
         body = PR_COMMENT_TITLE.format(self.github_run_id)
         if self.branch not in ["conflict_in_cs", "conflicts_in_base", "conflict_in_xdr",
-                               "conflict_in_nx", "conflicts_in_msg"]:
+                               "conflict_in_nx", "conflicts_in_msg", "conflicts-in-snow", "conflict_in_base_bc"]:
             # todo: delete it, only for testing
             return "Pack MyPack version was automatically bumped to 1.0.2."
         with checkout(self.git_repo, self.branch):
@@ -958,8 +958,8 @@ class BranchAutoBumper:
                     new_version,
                 )
             print(f"Committed the changes. Commenting on the pr: \n{body}.\n")
-            self.pr.create_issue_comment(body)
             self.git_repo.git.push()
+            self.pr.create_issue_comment(body)
         return body
 
 
