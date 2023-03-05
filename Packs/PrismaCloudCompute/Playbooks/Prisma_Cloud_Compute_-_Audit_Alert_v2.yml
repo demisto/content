@@ -1,13 +1,7 @@
-id: f23e09c1-3d03-4e06-8a3a-5dd75978a9d6
-version: 6
+id: Prisma Cloud Compute - Audit Alert v2
+fromversion: 5.0.0
 contentitemexportablefields:
-  contentitemfields:
-    packID: ""
-    itemVersion: 1.0.9
-    fromServerVersion: 5.0.0
-    toServerVersion: ""
-    definitionid: ""
-vcShouldKeepItemLegacyProdMachine: false
+  contentitemfields: {}
 name: Prisma Cloud Compute - Audit Alert v2
 description: Default playbook for parsing Prisma Cloud Compute audit alerts.
 starttaskid: "0"
@@ -22,6 +16,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "5"
@@ -213,6 +208,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -242,6 +238,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "46"
@@ -271,6 +268,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -366,6 +364,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "42"
@@ -426,6 +425,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -452,6 +452,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "39"
@@ -700,8 +701,6 @@ tasks:
       version: -1
       name: Get container forensics
       description: Get runtime forensics data for a specific container on a specific host
-      tag:
-      - forensics
       script: '|||prisma-cloud-compute-profile-container-forensic-list'
       type: regular
       iscommand: true
@@ -740,8 +739,6 @@ tasks:
       version: -1
       name: Get Host Profile
       description: Get information about the hosts and their profile events. This command supports asterisks which allows you to get host profiles by filtering its fields according to a specific substring.
-      tag:
-      - forensics
       script: '|||prisma-cloud-compute-profile-host-list'
       type: regular
       iscommand: true
@@ -864,6 +861,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "26"
@@ -932,6 +930,7 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "45"
@@ -1000,6 +999,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#default#':
       - "7"
@@ -1044,6 +1044,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#default#':
       - "6"
@@ -1091,4 +1092,6 @@ inputs:
   description: The base URL of the Prisma Cloud Compute Instance used to create a link back to the alerts for an image.
   playbookInputQuery:
 outputs: []
-sourceplaybookid: Prisma Cloud Compute - Audit Alert
+tests:
+- No tests (auto formatted)
+version: -1
