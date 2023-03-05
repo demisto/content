@@ -4383,14 +4383,14 @@ def delete_ioa_exclusion_command(args):
 
 def search_ioa_exclusion_command(args):
     if not (ids := argToList(args.get('ids'))):
-        search_params = assign_params(
+        search_args = assign_params(
             limit=args.get('limit'),
             offset=args.get('offset')
         )
         if name := args.get('name'):
-            ids = get_exclusions('ioa', f'name:{name}', search_params).get('resources')
+            ids = get_exclusions('ioa', f'name:{name}', search_args).get('resources')
         else:
-            ids = get_exclusions('ioa', args.get('filter'), search_params).get('resources')
+            ids = get_exclusions('ioa', args.get('filter'), search_args).get('resources')
 
     exclusions = get_exclusion_entities('ioa', ids).get('resources')
 
@@ -4406,17 +4406,17 @@ def list_quarantined_file_command(args):
     if not (ids := args.get('ids')):
         pagination_params = assign_params(
             limit=args.get('limit', '50'),
-            offset = args.get('offset')
+            offset=args.get('offset')
         )
-        query_params = assign_params(
-            sha256=args.get('sha256'),
+        query_args = assign_params(
+            sha256=argToList(args.get('sha256')),
             state=args.get('state'),
             filename=argToList(args.get('filename')),
             hostname=argToList(args.get('hostname')),
             username=argToList(args.get('username')),
         )
 
-        ids = list_quarantined_files_id(args.get('filter'), query_params, pagination_params).get('resources')
+        ids = list_quarantined_files_id(args.get('filter'), query_args, pagination_params).get('resources')
 
     files = list_quarantined_files(ids).get('resources')
 
@@ -4429,20 +4429,16 @@ def list_quarantined_file_command(args):
 
 
 def apply_quarantine_file_action_command(args):
-    if not (ids := args.get('ids')):
-        limit = args.get('limit', '50')
-        offset = args.get('offset')
-        query_params = assign_params(
-            sha256=args.get('sha256'),
-            state=args.get('state'),
-            filename=argToList(args.get('filename')),
-            hostname=argToList(args.get('hostname')),
-            username=argToList(args.get('username')),
-        )
+    ids = argToList(args.get('ids'))
+    update_args = assign_params(
+        sha256=args.get('sha256'),
+        state=args.get('state'),
+        filename=argToList(args.get('filename')),
+        hostname=argToList(args.get('hostname')),
+        username=argToList(args.get('username')),
+    )
 
-        ids = list_quarantined_files_id(args.get('filter'), query_params, limit=limit, offset=offset).get('resources')
-
-    files = apply_quarantined_files_action(ids).get('resources')
+    files = apply_quarantined_files_action(update_args).get('resources')
 
     return CommandResults(
         outputs_prefix='CrowdStrike.MLExclusion',
