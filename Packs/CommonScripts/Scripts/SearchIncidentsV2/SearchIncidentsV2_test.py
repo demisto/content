@@ -27,22 +27,25 @@ def execute_get_incidents_command_side_effect(amount_of_mocked_incidents):
 
     default_jump = 100
     counter = 1
-    for start in range(1, amount_of_mocked_incidents, default_jump):
+    for start in range(1, amount_of_mocked_incidents + 1, default_jump):
         end = min(amount_of_mocked_incidents, default_jump * counter)
 
-        execute_command_mock = [{
-                    'Contents': {
-                        'data': create_sample_incidents(start, end),
-                        'total': amount_of_mocked_incidents
-                    }
-                }] if counter == 1 else {
+        execute_command_mock = [
+            {
+                'Contents': {
+                    'data': create_sample_incidents(start, end),
+                    'total': amount_of_mocked_incidents
+                }
+            }
+        ] if counter == 1 else {
                 'data': create_sample_incidents(start, end)
             }
 
         mocked_incidents.append(execute_command_mock)
         counter += 1
 
-    mocked_incidents.append({'data': []})
+    if mocked_incidents:
+        mocked_incidents.append({'data': None})
 
     return mocked_incidents
 
@@ -164,7 +167,9 @@ def test_apply_filters(args, expected_incident_ids):
 def get_incidents_mock(command, args, extract_contents=True, fail_on_error=True):
     ids = args.get('id', '').split(',')
     incidents_list = [incident for incident in EXAMPLE_INCIDENTS_RAW_RESPONSE if incident['id'] in ids]
-    return [{'Contents': {'data': incidents_list, 'total': len(incidents_list)}}]
+    if not extract_contents:
+        return [{'Contents': {'data': incidents_list, 'total': len(incidents_list)}}]
+    return {'data': None}
 
 
 @pytest.mark.parametrize('args,filtered_args,expected_result', [
@@ -192,37 +197,12 @@ def test_filter_events(mocker, args, filtered_args, expected_result):
     if 'trimevents' in args:
         # trimevents supported only in XSIAM
         mocker.patch.object(demisto, 'demistoVersion', return_value={'platform': 'xsiam'})
-
+    else:
+        mocker.patch('SearchIncidentsV2.get_demisto_version', return_value={})
     _, res, _ = SearchIncidentsV2.search_incidents(args)
     assert res == expected_result
     assert execute_mock.call_count == 1
     assert execute_mock.call_args[0][1] == filtered_args
-
-
-@pytest.mark.parametrize('side_effect,expected_call_count,expected_res_len', [
-    ([[{'Contents': {'data': EXAMPLE_INCIDENTS_RAW_RESPONSE, 'total': 80}}],
-      {'data': None, 'total': 80}], 1, 4),
-    ([[{'Contents': {'data': EXAMPLE_INCIDENTS_RAW_RESPONSE, 'total': 110}}],
-      {'data': EXAMPLE_INCIDENTS_RAW_RESPONSE, 'total': 110}], 2, 8)])
-def test_search_incidents_round_lower(mocker, side_effect, expected_call_count, expected_res_len):
-    """
-        Given:
-            - The script args.
-
-        When:
-            - Running the search_incidents function, with iteration over all incidents pages.
-
-        Then:
-            - Validating the outputs as expected.
-            - Validating the filtered args that was sent to the api is as expected.
-        """
-    import SearchIncidentsV2
-
-    execute_mock = mocker.patch.object(SearchIncidentsV2, 'execute_command', side_effect=side_effect)
-
-    _, res, _ = SearchIncidentsV2.search_incidents({})
-    assert execute_mock.call_count == expected_call_count
-    assert len(res) == expected_res_len
 
 
 @pytest.mark.parametrize('platform, link_type, expected_result', [

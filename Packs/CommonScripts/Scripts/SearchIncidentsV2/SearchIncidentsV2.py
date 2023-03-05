@@ -5,6 +5,7 @@ from CommonServerPython import *
 
 special = ['n', 't', '\\', '"', '\'', '7', 'r']
 DEFAULT_LIMIT = 100
+DEFAULT_PAGE_SIZE = 100
 
 class AlertSeverity(Enum):
     UNKNOWN = 0
@@ -150,16 +151,16 @@ def search_incidents(args: Dict):   # pragma: no cover
             return 'Alerts not found.', {}, {}
         return 'Incidents not found.', {}, {}
 
-    limit, page = arg_to_number(args.get('limit')) or DEFAULT_LIMIT, 1
+    limit = arg_to_number(args.get('limit')) or DEFAULT_LIMIT
     result_data_list = res[0]["Contents"]["data"]
 
-    while len(result_data_list) < limit:
+    if len(result_data_list) == DEFAULT_PAGE_SIZE:
+        page = 1
         args['page'] = page
-        result = execute_command('getIncidents', args).get('data') or []
-        if not result:
-            break
-        result_data_list.extend(result)
-        page += 1
+        while len(result_data_list) < limit and (result := execute_command('getIncidents', args).get('data') or []):
+            result_data_list.extend(result)
+            page += 1
+            args['page'] = page
 
     data = apply_filters(result_data_list, args)
     data = add_incidents_link(data, platform)
