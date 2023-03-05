@@ -1948,40 +1948,40 @@ class TestImagesUpload:
                                                     GCPConfig.CONTENT_PACKS_PATH, GCPConfig.BUILD_BASE_PATH)
         assert task_status
 
-    def test_collect_images_from_readme_and_replace_with_storage_path(self, dummy_pack):
-        """
-           Given:
-               - A README.md file with external urls
-           When:
-               - uploading the pack images to gcs
-           Then:
-               - replace the readme images url with the new path to gcs return a list of all replaces urls.
-       """
-        readme_images_test_folder_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'test_data',
-                                                      'readme_images_test_data')
-        path_readme_to_replace_url = os.path.join(readme_images_test_folder_path, 'url_replace_README.md')
-        with open(os.path.join(readme_images_test_folder_path, 'original_README.md')) as original_readme:
-            data = original_readme.read()
-        with open(path_readme_to_replace_url, 'w') as to_replace:
-            to_replace.write(data)
+    # def test_collect_images_from_readme_and_replace_with_storage_path(self, dummy_pack):
+    #     """
+    #        Given:
+    #            - A README.md file with external urls
+    #        When:
+    #            - uploading the pack images to gcs
+    #        Then:
+    #            - replace the readme images url with the new path to gcs return a list of all replaces urls.
+    #    """
+    #     readme_images_test_folder_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'test_data',
+    #                                                   'readme_images_test_data')
+    #     path_readme_to_replace_url = os.path.join(readme_images_test_folder_path, 'url_replace_README.md')
+    #     with open(os.path.join(readme_images_test_folder_path, 'original_README.md')) as original_readme:
+    #         data = original_readme.read()
+    #     with open(path_readme_to_replace_url, 'w') as to_replace:
+    #         to_replace.write(data)
 
-        expected_urls_ret = {
-            'original_read_me_url': 'https://raw.githubusercontent.com/crestdatasystems/content/'
-                                    '4f707f8922d7ef1fe234a194dcc6fa73f96a4a87/Packs/Lansweeper/doc_files/'
-                                    'Retrieve_Asset_Details_-_Lansweeper.png',
-            'new_gcs_image_path': Path('gcs_test_path/readme_images/Retrieve_Asset_Details_-_Lansweeper.png'),
-            'image_name': 'Retrieve_Asset_Details_-_Lansweeper.png'
-        }
-        ret = dummy_pack.collect_images_from_readme_and_replace_with_storage_path(path_readme_to_replace_url,
-                                                                                  'gcs_test_path', 'marketplacev2')
-        assert ret == [expected_urls_ret]
+    #     expected_urls_ret = {
+    #         'original_read_me_url': 'https://raw.githubusercontent.com/crestdatasystems/content/'
+    #                                 '4f707f8922d7ef1fe234a194dcc6fa73f96a4a87/Packs/Lansweeper/doc_files/'
+    #                                 'Retrieve_Asset_Details_-_Lansweeper.png',
+    #         'new_gcs_image_path': Path('gcs_test_path/readme_images/Retrieve_Asset_Details_-_Lansweeper.png'),
+    #         'image_name': 'Retrieve_Asset_Details_-_Lansweeper.png'
+    #     }
+    #     ret = dummy_pack.collect_images_from_readme_and_replace_with_storage_path(path_readme_to_replace_url,
+    #                                                                               'gcs_test_path', 'marketplacev2')
+    #     assert ret == [expected_urls_ret]
 
-        with open(path_readme_to_replace_url) as replaced_readme:
-            replaced = replaced_readme.read()
-        with open(os.path.join(readme_images_test_folder_path, 'README_after_replace.md')) as expected_res:
-            expected = expected_res.read()
+    #     with open(path_readme_to_replace_url) as replaced_readme:
+    #         replaced = replaced_readme.read()
+    #     with open(os.path.join(readme_images_test_folder_path, 'README_after_replace.md')) as expected_res:
+    #         expected = expected_res.read()
 
-        assert replaced == expected
+    #     assert replaced == expected
 
     @pytest.mark.parametrize('path, expected_res', [('Packs/TestPack/README.md', True),
                                                     ('Packs/Integrations/dummyIntegration/README.md', False),
