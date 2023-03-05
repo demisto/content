@@ -1942,7 +1942,8 @@
         },
         {
             "integrations": "Demisto Lock",
-            "playbookID": "DemistoLockTest"
+            "playbookID": "DemistoLockTest",
+            "instance_name": "no_sync"
         },
         {
             "playbookID": "test-domain-indicator",
