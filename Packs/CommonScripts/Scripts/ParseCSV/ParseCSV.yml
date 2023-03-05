@@ -13,19 +13,19 @@ args:
   secret: false
   deprecated: true
 - default: false
-  description: The column number that contains IP Addresses. Other IOC types should be in that column. (First column is column 0)
+  description: The column number that contains IP Addresses. Other IOC types should not be in that column. (First column is column 0)
   isArray: false
   name: ips
   required: false
   secret: false
 - default: false
-  description: The column number that contains domains. Other IOC types should be in that column. (First column is column 0)
+  description: The column number that contains domains. Other IOC types should not be in that column. (First column is column 0)
   isArray: false
   name: domains
   required: false
   secret: false
 - default: false
-  description: The column number that contains file hashes. Other IOC types should be in that column. (First column is column 0)
+  description: The column number that contains file hashes. Other IOC types should not be in that column. (First column is column 0)
   isArray: false
   name: hashes
   required: false
