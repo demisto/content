@@ -376,26 +376,21 @@ jobs:
 workflows:
   version: 2
   commit:
+    when:
+      matches:
+        # matching the environment variable "CIRCLE_BRANCH" from the setup environment step.
+        pattern: "pull/[0-9]+"
+        value: $CIRCLE_BRANCH
     jobs:
       - Setup Environment
       - Run Unit Testing And Lint:
-        filters:
-          # matching the environment variable "CIRCLE_BRANCH" from the setup environment step.
-          branches:
-            only:
-              - "pull/[0-9]+"
-        requires:
-          - Setup Environment
-        matrix:
-          parameters:
-            dockerimageflag: [ "native:ga", "native:maintenance", "native:dev", "from-yml" ]
+          requires:
+            - Setup Environment
+          matrix:
+            parameters:
+              dockerimageflag: [ "native:ga", "native:maintenance", "native:dev", "from-yml" ]
           name: Run Unit Testing And Lint - Docker Image:<< matrix.dockerimageflag >>
       - Run Validations:
-        filters:
-          # matching the environment variable "CIRCLE_BRANCH" from the setup environment step.
-          branches:
-            only:
-              - "pull/[0-9]+"
           requires:
             - Setup Environment
 
