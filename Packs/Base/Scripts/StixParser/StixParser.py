@@ -15,6 +15,7 @@ import collections
 EPOCH = datetime.utcfromtimestamp(0).replace(tzinfo=pytz.UTC)
 SCRIPT_NAME = 'STIXParser'
 
+# comment
 # CONSTANTS
 TAXII_VER_2_0 = "2.0"
 TAXII_VER_2_1 = "2.1"
