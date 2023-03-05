@@ -8,6 +8,7 @@ on:
 
 permissions:
   pull-requests: write
+  contents: write
 
 jobs:
   autobump_rn_version:
@@ -23,6 +24,7 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
+          token: ${{ secrets.CONTENTBOT_GH_ADMIN_TOKEN }}
       - name: Setup Python
         uses: actions/setup-python@v3
         with:
@@ -44,4 +46,4 @@ jobs:
           git config --global user.email "bot@demisto.com"
           git config --global user.name "XSOAR Bot"
           echo "Someone merged to master. Starting to check if conflicts in release notes created."
-          poetry run python Utils/github_workflow_scripts/autobump_rn.py -g $XSOAR_BOT_TEST_CONTENT -r RUN_ID
+          poetry run python Utils/github_workflow_scripts/autobump_rn.py -g $CONTENTBOT_GH_ADMIN_TOKEN -r RUN_ID
