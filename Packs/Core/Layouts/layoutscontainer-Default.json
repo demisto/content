@@ -521,53 +521,11 @@
                         "i": "3podiwrjhh-caseinfoid-38f848d0-9a45-11ed-aff5-5d4496197108",
                         "items": [
                             {
-                                "endCol": 2,
-                                "fieldId": "agent_hostname",
-                                "height": 26,
-                                "id": "aea2aaa0-a2e5-11ed-81fe-3f9032ac5cab",
-                                "index": -2,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
                                 "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "agent_ip_addresses",
                                 "height": 26,
                                 "id": "b7595950-a2e5-11ed-81fe-3f9032ac5cab",
-                                "index": -2,
-                                "listId": "3podiwrjhh-caseinfoid-38f848d0-9a45-11ed-aff5-5d4496197108",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "mac",
-                                "height": 26,
-                                "id": "b5a6ee60-a2e5-11ed-81fe-3f9032ac5cab",
-                                "index": -2,
-                                "listId": "3podiwrjhh-caseinfoid-38f848d0-9a45-11ed-aff5-5d4496197108",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "agent_os_type",
-                                "height": 26,
-                                "id": "b1691da0-a2e5-11ed-81fe-3f9032ac5cab",
-                                "index": -2,
-                                "listId": "3podiwrjhh-caseinfoid-38f848d0-9a45-11ed-aff5-5d4496197108",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "action_external_hostname",
-                                "height": 26,
-                                "id": "bf6018f0-a2e5-11ed-81fe-3f9032ac5cab",
                                 "index": -2,
                                 "listId": "3podiwrjhh-caseinfoid-38f848d0-9a45-11ed-aff5-5d4496197108",
                                 "sectionItemType": "field",
@@ -588,15 +546,6 @@
                                 "height": 26,
                                 "id": "73f879c0-b73f-11ed-977b-dd8e6ac87856",
                                 "index": 1,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "action_remote_ip_v6",
-                                "height": 26,
-                                "id": "76563fe0-b73f-11ed-977b-dd8e6ac87856",
-                                "index": 2,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -753,15 +702,6 @@
                                 "height": 26,
                                 "id": "3608ea50-b73f-11ed-977b-dd8e6ac87856",
                                 "index": 1,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "action_local_ip_v6",
-                                "height": 26,
-                                "id": "377bdb40-b73f-11ed-977b-dd8e6ac87856",
-                                "index": 2,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -1122,7 +1062,7 @@
                         "minH": 1,
                         "moved": false,
                         "name": "Results",
-                        "query": "b13474d4-cb26-44a0-85d9-ad8adede636a",
+                        "query": "displayUtilitiesResults",
                         "queryType": "script",
                         "static": false,
                         "type": "dynamic",
