@@ -1,5 +1,7 @@
 id: CTF 1 - Get to know XSOAR8
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: CTF 1 - Get to know XSOAR8
 starttaskid: "0"
 tasks:
@@ -16,14 +18,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "21"
+      - "27"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 210
+          "y": 50
         }
       }
     note: false
@@ -148,7 +150,7 @@ tasks:
       - id: "0"
         label: ""
         labelarg:
-          simple: 'What is the flag that is hidden in the playbook task?'
+          simple: What is the flag that is hidden in the playbook task?
         required: true
         gridcolumns: []
         defaultrows: []
@@ -811,15 +813,51 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 386db68a-bcb8-41f8-8a25-034d5634530d
+    type: regular
+    task:
+      id: 386db68a-bcb8-41f8-8a25-034d5634530d
+      version: -1
+      name: Delete Context
+      description: precaution task for re-running the playbook without deleting context.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2965,
+        "height": 2765,
         "width": 810,
         "x": 50,
-        "y": 210
+        "y": 50
       }
     }
   }

@@ -1,5 +1,7 @@
 id: CTF 2 - Classify an incident - RDP Brute force
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: CTF 2 - Classify an incident - RDP Brute force
 starttaskid: "0"
 tasks:
@@ -16,14 +18,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - "39"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 450,
-          "y": -120
+          "y": -290
         }
       }
     note: false
@@ -72,7 +74,9 @@ tasks:
       id: c591b287-7bd4-4606-8b58-43ca0114d204
       version: -1
       name: 'Check your answer #6'
-      description: "Question #6:\nClassify this Incident"
+      description: |-
+        Question #6:
+        Classify this Incident
       scriptName: CTF_2_BF
       type: regular
       iscommand: false
@@ -370,7 +374,9 @@ tasks:
       id: e4fd6e15-1902-4610-8a56-d16ba0bb1fd5
       version: -1
       name: 'Check your answer #1'
-      description: "Question #1:\nAre there any playbook errors?"
+      description: |-
+        Question #1:
+        Are there any playbook errors?
       scriptName: CTF_2_BF
       type: regular
       iscommand: false
@@ -534,7 +540,9 @@ tasks:
       id: 818d59f0-29d3-4257-84bf-8ee191cf7425
       version: -1
       name: 'Check your answer #3'
-      description: "Question #3:\nHow many relationships does the malicious indicator have?"
+      description: |-
+        Question #3:
+        How many relationships does the malicious indicator have?
       scriptName: CTF_2_BF
       type: regular
       iscommand: false
@@ -661,7 +669,9 @@ tasks:
       id: 1d0237e7-a9ad-4683-81d7-c5b8c23cc6c0
       version: -1
       name: 'Check your answer #4'
-      description: "Question #4:\nBased on the Campaign's Report, what was the year when this campaign was first seen?"
+      description: |-
+        Question #4:
+        Based on the Campaign's Report, what was the year when this campaign was first seen?
       scriptName: CTF_2_BF
       type: regular
       iscommand: false
@@ -926,7 +936,9 @@ tasks:
       id: 1e9e6d56-7636-4df2-8e72-23d3bca7335a
       version: -1
       name: 'Check your answer #5'
-      description: "Question #5:\nHow many indicators are associated with the campaign?"
+      description: |-
+        Question #5:
+        How many indicators are associated with the campaign?
       scriptName: CTF_2_BF
       type: regular
       iscommand: false
@@ -1069,7 +1081,9 @@ tasks:
       id: ad47b1e6-f810-4afa-8c14-6b1c71b2e5e5
       version: -1
       name: 'Check your answer #7'
-      description: "Question #7:\nWhat is the malicious indicator tag in our investigation?"
+      description: |-
+        Question #7:
+        What is the malicious indicator tag in our investigation?
       scriptName: CTF_2_BF
       type: regular
       iscommand: false
@@ -1102,15 +1116,51 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 71663406-c22e-4381-8aa7-cbf2fbb38645
+    type: regular
+    task:
+      id: 71663406-c22e-4381-8aa7-cbf2fbb38645
+      version: -1
+      name: Delete Context
+      description: precaution task for re-running the playbook without deleting context.
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 3455,
+        "height": 3625,
         "width": 850,
         "x": 210,
-        "y": -120
+        "y": -290
       }
     }
   }
