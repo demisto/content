@@ -1,7 +1,4 @@
 category: Network Security
-sectionOrder:
-- Connect
-- Collect
 commonfields:
   id: PaloAltoNetworks_PrismaCloudCompute
   version: -1
@@ -12,7 +9,8 @@ configuration:
   type: 8
   section: Collect
 - name: address
-  display: Prisma Cloud Compute Console URL and Port
+  display: |-
+    Prisma Cloud Compute Console URL and Port
   required: true
   type: 0
   additionalinfo: URL address and port of your Prisma Cloud Compute console. Copy the address from the alert profile created in Prisma Cloud Compute, for example https://example.net:1234
@@ -1641,3 +1639,6 @@ script:
 tests:
 - PaloAltoNetworks_PrismaCloudCompute-Test
 fromversion: 5.0.0
+sectionOrder:
+- Connect
+- Collect
