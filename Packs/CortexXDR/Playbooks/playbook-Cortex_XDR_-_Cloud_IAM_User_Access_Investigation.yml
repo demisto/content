@@ -329,14 +329,12 @@ tasks:
         complex:
           root: inputs.AWS-accessKeyRemediationType
       AWS-resourceRemediationType:
-        complex:
-          root: inputs.AWS-resourceRemediationType
+        simple: Stop
       AWS-userRemediationType:
         complex:
           root: inputs.AWS-userRemediationType
       Azure-resourceRemediationType:
-        complex:
-          root: inputs.Azure-resourceRemediationType
+        simple: Poweroff
       Azure-userRemediationType:
         complex:
           root: inputs.Azure-userRemediationType
@@ -344,8 +342,7 @@ tasks:
         complex:
           root: inputs.GCP-accessKeyRemediationType
       GCP-resourceRemediationType:
-        complex:
-          root: inputs.GCP-resourceRemediationType
+        simple: Stop
       GCP-userRemediationType:
         complex:
           root: inputs.GCP-userRemediationType
@@ -360,8 +357,7 @@ tasks:
         complex:
           root: inputs.autoBlockIndicators
       autoResourceRemediation:
-        complex:
-          root: inputs.autoResourceRemediation
+        simple: "False"
       autoUserRemediation:
         complex:
           root: inputs.autoUserRemediation
@@ -796,44 +792,11 @@ inputs:
   required: false
   description: The alert ID.
   playbookInputQuery:
-- key: autoResourceRemediation
+- key: autoBlockIndicators
   value:
     simple: "False"
   required: false
-  description: Whether to execute the resource remediation flow automatically.
-  playbookInputQuery:
-- key: AWS-resourceRemediationType
-  value:
-    simple: Stop
-  required: false
-  description: |-
-    Choose the remediation type for the instances created.
-
-    AWS available types:
-    Stop - for stopping the instances.
-    Terminate - for terminating the instances.
-  playbookInputQuery:
-- key: Azure-resourceRemediationType
-  value:
-    simple: Poweroff
-  required: false
-  description: |-
-    Choose the remediation type for the instances created.
-
-    Azure available types:
-    Poweroff - for shutting down the instances.
-    Delete - for deleting the instances.
-  playbookInputQuery:
-- key: GCP-resourceRemediationType
-  value:
-    simple: Stop
-  required: false
-  description: |-
-    Choose the remediation type for the instances created.
-
-    GCP available types:
-    Stop - For stopping the instances.
-    Delete - For deleting the instances.
+  description: Whether to block the indicators automatically.
   playbookInputQuery:
 - key: autoAccessKeyRemediation
   value:
@@ -901,12 +864,6 @@ inputs:
     GCP available types:
     Delete - For deleting the user.
     Disable - For disabling the user.
-  playbookInputQuery:
-- key: autoBlockIndicators
-  value:
-    simple: "False"
-  required: false
-  description: Whether to block the indicators automatically.
   playbookInputQuery:
 outputs: []
 quiet: true
