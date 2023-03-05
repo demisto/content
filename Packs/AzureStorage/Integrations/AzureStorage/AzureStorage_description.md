@@ -12,8 +12,8 @@ Use one of the following methods:
 4. In the **Client Secret** field, enter your Client Secret.
 5. In the **Tenant ID** field, enter your Tenant ID .
 6. In the **Application redirect URI** field, enter your Application redirect URI.
-7. In the **Authorization code** field, enter your Authorization code.
-8. Save the instance.
+7. Save the instance.
+8. Run the `!azure-storage-generate-login-url` command in the War Room and follow the instruction.
 
 ### Authentication Using the Device Code Flow
 

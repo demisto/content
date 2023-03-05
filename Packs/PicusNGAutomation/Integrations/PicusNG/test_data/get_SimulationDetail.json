@@ -1,0 +1,49 @@
+{
+  "simulation_id": 5195,
+  "simulation_name": "cortextest03",
+  "created_at": 1653009265442,
+  "updated_at": 1653658289586,
+  "agent": {
+    "name": "test01",
+    "id": 1903,
+    "status": "alive",
+    "type": "Windows",
+    "version": "4"
+  },
+  "last_prevention_security_score": 35,
+  "has_detection_analysis": false,
+  "has_last_run_detection_analysis": false,
+  "status": "COMPLETED",
+  "simulation_run": [
+    {
+      "id": "19892",
+      "status": "COMPLETED",
+      "started_at": 1653656664933,
+      "completed_at": 1653658289564
+    },
+    {
+      "id": "19792",
+      "status": "COMPLETED",
+      "started_at": 1653294641897,
+      "completed_at": 1653296268238
+    },
+    {
+      "id": "19660",
+      "status": "COMPLETED",
+      "started_at": 1653269137503,
+      "completed_at": 1653270725156
+    },
+    {
+      "id": "19530",
+      "status": "COMPLETED",
+      "started_at": 1653047495018,
+      "completed_at": 1653049105491
+    },
+    {
+      "id": "19462",
+      "status": "COMPLETED",
+      "started_at": 1653009268533,
+      "completed_at": 1653010883485
+    }
+  ]
+}

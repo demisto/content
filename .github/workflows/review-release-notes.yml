@@ -1,32 +1,38 @@
 name: Review Release Notes
 on: pull_request
+
+env:
+  CHANGED_FILES_DELIMITER: ";"
+
 jobs:
   release_notes_review:
     runs-on: ubuntu-latest
     if: github.repository == 'demisto/content'
     steps:
+
       - name: Checkout
         uses: actions/checkout@v3
         with:
           fetch-depth: 2
+
       - name: Get changed files
         id: changed-files
-        uses: tj-actions/changed-files@v18.7
+        uses: tj-actions/changed-files@v35.1.0
         with:
-          separator: ';'
-      - name: Setup Python
-        uses: actions/setup-python@v3
-        with:
-          python-version: '3.9'
-      - name: Setup Poetry
-        uses: Gr1N/setup-poetry@v7
-      - name: Install Python Dependencies
+          separator: ${{ env.CHANGED_FILES_DELIMITER }}
+          files: |
+            Packs/**/ReleaseNotes/**
+          since_last_remote_commit: false
+
+      - name: Install SDK
+        if: ${{ steps.changed-files.outputs.all_changed_files }}
         run: |
-          poetry install --with ci
+          python3 -m pip install demisto-sdk
+
       - name: Review Release Notes
+        if: ${{ steps.changed-files.outputs.all_changed_files }}
         run: |
-          changed_files="${{ steps.changed-files.outputs.all_changed_files }}"
-          delim=';'
-          echo "Starting docs review"
-          poetry run python Utils/github_workflow_scripts/run_docs_review.py --changed_files "$changed_files" --delimiter $delim
-          echo "Finished docs review successfully"
+          release_notes="${{ steps.changed-files.outputs.all_changed_files }}"
+          echo "Release notes found in PR: ${release_notes}. Starting docs review..."
+
+          Utils/github_workflow_scripts/run_docs_review.py --changed_files "$release_notes" --delimiter "${{ env.CHANGED_FILES_DELIMITER }}"
