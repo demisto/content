@@ -262,6 +262,7 @@ class Client(CrowdStrikeClient):
 
         for resource in raw_response['resources']:
             if not (type_ := auto_detect_indicator_type_from_cs(resource['indicator'], resource['type'])):
+                demisto.debug(f"Indicator {resource['indicator']} of type {resource['type']} is not supported in XSOAR, skipping")
                 continue
             indicator = {
                 'type': type_,
@@ -375,16 +376,16 @@ def create_relationships(field: str, indicator: dict, resource: dict) -> list:
     return relationships
 
 
-def auto_detect_indicator_type_from_cs(value: str, type_: str) -> str | None:
+def auto_detect_indicator_type_from_cs(value: str, crowdstrike_resource_type: str) -> str | None:
     '''
     The function determines the type of indicator according to two cases::
     1. In case the type is ip_address then the type is detected by auto_detect_indicator_type function (CSP).
     2. In any other case, the type is converted by the table CROWDSTRIKE_TO_XSOAR_TYPES to a type of XSOAR.
     '''
-    if type_ == 'ip_address':
+    if crowdstrike_resource_type == 'ip_address':
         return auto_detect_indicator_type(value)
-    else:
-        return CROWDSTRIKE_TO_XSOAR_TYPES.get(type_)
+
+    return CROWDSTRIKE_TO_XSOAR_TYPES.get(crowdstrike_resource_type)
 
 
 def fetch_indicators_command(client: Client):

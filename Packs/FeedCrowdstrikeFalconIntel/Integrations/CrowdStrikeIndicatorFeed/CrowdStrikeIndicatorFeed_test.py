@@ -327,5 +327,4 @@ def test_handling_first_fetch_and_old_integration_context(mocker,
 def test_auto_detect_indicator_type_from_cs(indicator: dict, expected_results: str | None):
     from CrowdStrikeIndicatorFeed import auto_detect_indicator_type_from_cs
 
-    type_ = auto_detect_indicator_type_from_cs(indicator['indicator'], indicator['type'])
-    assert type_ == expected_results
+    assert auto_detect_indicator_type_from_cs(indicator['indicator'], indicator['type']) == expected_results
