@@ -495,7 +495,7 @@ def test_update_remote_system_command(mocker, args, remote_id, expected_kwargs):
     from AWS_SecurityHub import update_remote_system_command
     client = MockClient()
     batch_update_mock = mocker.patch.object(MockClient, 'batch_update_findings')
-    result = update_remote_system_command(client, args, '')
+    result = update_remote_system_command(client, args, True)
     assert result == remote_id
     batch_update_mock.assert_called_with(**expected_kwargs)
 

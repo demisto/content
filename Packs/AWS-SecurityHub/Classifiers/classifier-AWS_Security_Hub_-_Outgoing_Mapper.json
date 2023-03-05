@@ -10,7 +10,7 @@
                     "simple": "awssecurityhubconfidence"
                 },
                 "Criticality": {
-                    "simple": "riskscore"
+                    "simple": "awssecurityhubcriticality"
                 },
                 "FindingIdentifiers.Id": {
                     "simple": "alertid"

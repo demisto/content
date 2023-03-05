@@ -221,19 +221,10 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "riskscore",
-                                "height": 22,
-                                "id": "8ce5a740-9b16-11ed-9539-190e91a3cd3c",
-                                "index": 2,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
                                 "fieldId": "comment",
                                 "height": 22,
                                 "id": "abd54520-9b16-11ed-9539-190e91a3cd3c",
-                                "index": 3,
+                                "index": 2,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
@@ -339,9 +330,18 @@
                             {
                                 "endCol": 2,
                                 "fieldId": "awssecurityhubvulnerabilities",
-                                "height": 22,
+                                "height": 106,
                                 "id": "5cb489d0-b1c6-11ed-99d6-19c0ff503d72",
                                 "index": 8,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "awssecurityhubcriticality",
+                                "height": 22,
+                                "id": "220c4250-bb2b-11ed-ab72-cf5fafeb5c4f",
+                                "index": 9,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -351,7 +351,7 @@
                                 "fieldId": "awssecurityhubresources",
                                 "height": 106,
                                 "id": "3475a900-9b18-11ed-9539-190e91a3cd3c",
-                                "index": 8,
+                                "index": 9,
                                 "listId": "caseinfoid-b1f41570-9b17-11ed-9539-190e91a3cd3c",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -362,7 +362,7 @@
                                 "fieldId": "awssecurityhubschemaversion",
                                 "height": 53,
                                 "id": "5b8078e0-9b18-11ed-9539-190e91a3cd3c",
-                                "index": 9,
+                                "index": 10,
                                 "listId": "caseinfoid-b1f41570-9b17-11ed-9539-190e91a3cd3c",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -372,7 +372,7 @@
                                 "fieldId": "awssecurityhubremediation",
                                 "height": 106,
                                 "id": "aa4c53d0-9b19-11ed-9539-190e91a3cd3c",
-                                "index": 10,
+                                "index": 11,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -381,7 +381,7 @@
                                 "fieldId": "awssecurityhubconfidence",
                                 "height": 53,
                                 "id": "70d54840-a22c-11ed-a53f-e3c6f0d30610",
-                                "index": 11,
+                                "index": 12,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -391,7 +391,7 @@
                                 "fieldId": "awssecurityhubthreats",
                                 "height": 106,
                                 "id": "1d4f1390-9b1a-11ed-9539-190e91a3cd3c",
-                                "index": 12,
+                                "index": 13,
                                 "listId": "caseinfoid-b1f41570-9b17-11ed-9539-190e91a3cd3c",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -401,7 +401,7 @@
                                 "fieldId": "awssecurityhubuserdefinedfields",
                                 "height": 106,
                                 "id": "37e45800-9b1a-11ed-9539-190e91a3cd3c",
-                                "index": 13,
+                                "index": 14,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -411,7 +411,7 @@
                                 "fieldId": "awssecurityhubverificationstate",
                                 "height": 53,
                                 "id": "4362b230-9b1a-11ed-9539-190e91a3cd3c",
-                                "index": 14,
+                                "index": 15,
                                 "listId": "caseinfoid-b1f41570-9b17-11ed-9539-190e91a3cd3c",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -421,7 +421,7 @@
                                 "fieldId": "awssecurityhubrelatedfindings",
                                 "height": 106,
                                 "id": "4e273240-9b1a-11ed-9539-190e91a3cd3c",
-                                "index": 15,
+                                "index": 16,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -430,7 +430,7 @@
                                 "fieldId": "awssecurityhubtypes",
                                 "height": 53,
                                 "id": "72cc5eb0-9b18-11ed-9539-190e91a3cd3c",
-                                "index": 16,
+                                "index": 17,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -440,7 +440,7 @@
                                 "fieldId": "awssecurityhubaction",
                                 "height": 106,
                                 "id": "8e67a170-9b18-11ed-9539-190e91a3cd3c",
-                                "index": 17,
+                                "index": 18,
                                 "listId": "caseinfoid-b1f41570-9b17-11ed-9539-190e91a3cd3c",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -451,7 +451,7 @@
                                 "fieldId": "awssecurityhubcompliance",
                                 "height": 106,
                                 "id": "fde0c540-9b18-11ed-9539-190e91a3cd3c",
-                                "index": 18,
+                                "index": 19,
                                 "listId": "caseinfoid-b1f41570-9b17-11ed-9539-190e91a3cd3c",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -461,7 +461,7 @@
                                 "fieldId": "awssecurityhubrecordstate",
                                 "height": 53,
                                 "id": "9f694f40-9b19-11ed-9539-190e91a3cd3c",
-                                "index": 19,
+                                "index": 20,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -470,7 +470,7 @@
                                 "fieldId": "awssecurityhubproviderfields",
                                 "height": 106,
                                 "id": "19e4dbf0-9b19-11ed-9539-190e91a3cd3c",
-                                "index": 20,
+                                "index": 21,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -479,7 +479,7 @@
                                 "fieldId": "awssecurityhubmalware",
                                 "height": 106,
                                 "id": "202162e0-9b19-11ed-9539-190e91a3cd3c",
-                                "index": 21,
+                                "index": 22,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -488,7 +488,7 @@
                                 "fieldId": "awssecurityhubnetworkpath",
                                 "height": 106,
                                 "id": "26fa02c0-9b19-11ed-9539-190e91a3cd3c",
-                                "index": 22,
+                                "index": 23,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -497,7 +497,7 @@
                                 "fieldId": "awssecurityhubproductfields",
                                 "height": 106,
                                 "id": "4761c1b0-9b19-11ed-9539-190e91a3cd3c",
-                                "index": 23,
+                                "index": 24,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }

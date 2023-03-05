@@ -15,6 +15,12 @@
                 "AWS Security Hub Compliance": {
                     "simple": "Compliance"
                 },
+                "AWS Security Hub Confidence": {
+                    "simple": "Confidence"
+                },
+                "AWS Security Hub Criticality": {
+                    "simple": "Criticality"
+                },
                 "AWS Security Hub Generator Id": {
                     "simple": "GeneratorId"
                 },
@@ -96,9 +102,6 @@
                 "Detection Update Time": {
                     "simple": "LastObservedAt"
                 },
-                "External Confidence": {
-                    "simple": "Confidence"
-                },
                 "External Start Time": {
                     "simple": "FirstObservedAt"
                 },
@@ -107,9 +110,6 @@
                 },
                 "Region": {
                     "simple": "Region"
-                },
-                "Risk Score": {
-                    "simple": "Criticality"
                 },
                 "Title": {
                     "simple": "Title"

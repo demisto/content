@@ -151,15 +151,12 @@ configuration:
   section: Collect
   hidden:
     - marketplacev2
-- display: Mirrored AWS - Security Hub incident closure method
-  additionalinfo: Define how to close the mirrored incident in Security Hub.
+- display: Resolve closed incidents from XSOAR in AWS Security Hub
+  additionalinfo: After closing an incident in XSOAR, update its workflow status in AWS Security Hub to resolved
   defaultvalue: 'None'
   name: close_incident_multiple_options
   required: false
-  type: 15
-  options:
-  - None
-  - Resolved
+  type: 8
   section: Collect
   hidden:
     - marketplacev2

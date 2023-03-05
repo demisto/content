@@ -605,40 +605,6 @@ def last_update_to_time(last_update: str) -> int:
             return int(date_time.timestamp())
 
 
-def additional_kwargs_for_update_remote_data(parsed_args: UpdateRemoteSystemArgs):
-    """
-    Create the rest of kwargs for batch_update_findings.
-    Args:
-        parsed_args: UpdateRemoteSystemArgs - A dictionary containing the data regarding a modified incident,
-            including: data, entries, incident_changed, remote_incident_id, inc_status, delta.
-    Returns:
-        The additional part of kwargs dictionary.
-    """
-    delta = parsed_args.delta
-    data = parsed_args.data
-    demisto.debug(f'In additional_kwargs_for_update_remote_data {delta=}')
-    kwargs = {
-        "FindingIdentifiers": [{
-            "Id": data.get('FindingIdentifiers.Id'),
-            "ProductArn": data.get('FindingIdentifiers.ProductArn')
-        }],
-        'Severity': {
-            "Label": delta.get('Severity.Label')
-        },
-        # should contain only 1 state
-        'VerificationState': delta.get('VerificationState')[0] if delta.get('VerificationState') else None,
-        'Confidence': int(delta.get('Confidence')) if delta.get('Confidence') else None,
-        'Criticality': int(delta.get('Criticality')) if delta.get('Criticality') else None
-    }
-
-    if delta.get('Note.Text') or delta.get('Note.UpdatedBy'):
-        kwargs['Note'] = {
-            'Text': delta.get('Note.Text') if delta.get('Note.Text') else data.get('Note.Text'),
-            'UpdatedBy': delta.get('Note.UpdatedBy') if delta.get('Note.UpdatedBy') else data.get('Note.UpdatedBy')
-        }
-    return remove_empty_elements(kwargs)
-
-
 def disable_security_hub_command(client, args):
     kwargs = safe_load_json(args.get('raw_json', "{ }")) if args.get('raw_json') else {}
     response = client.disable_security_hub(**kwargs)
@@ -933,14 +899,14 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
     return mapping_response
 
 
-def update_remote_system_command(client: boto3.client, args: Dict[str, Any], closure_case: str) -> str:
+def update_remote_system_command(client: boto3.client, args: Dict[str, Any], closure_case: bool) -> str:
     """
     Mirrors out local changes to the remote system.
     Args:
         client: boto3.client - AWS client
         args: A dictionary containing the data regarding a modified incident, including: data, entries,
             incident_changed, remote_incident_id, inc_status, delta.
-        closure_case: str - Whether to resolve an incident in Security Hub, that was closed in XSOAR.
+        closure_case: bool - Whether to resolve an incident in Security Hub, that was closed in XSOAR.
 
     Returns:
         The remote incident id that was modified. This is important when the incident is newly created remotely.
@@ -949,34 +915,43 @@ def update_remote_system_command(client: boto3.client, args: Dict[str, Any], clo
     delta = parsed_args.delta
     remote_incident_id = parsed_args.remote_incident_id
     data = parsed_args.data
-    list_delta_keys = []
     demisto.debug(f'Got the following {parsed_args.inc_status=}, {data=}, {delta=} '
                   f'and remote ID: {remote_incident_id}.')
-    if delta:
-        list_delta_keys = list(delta.keys())
-        demisto.debug(f'Got the following delta keys {list(delta.keys())}.')
-    if parsed_args.incident_changed:
-        demisto.debug(f'Incident id {remote_incident_id} and incident change: {parsed_args.incident_changed}')
-        if parsed_args.inc_status == IncidentStatus.DONE and closure_case == 'Resolved':
-            kwargs = {
-                'Workflow': {
-                    'Status': 'RESOLVED'
-                }
+
+    if parsed_args.incident_changed and delta:
+        demisto.debug(f'Got the following delta keys {list(delta.keys())}.\n'
+                      f'Incident id {remote_incident_id} and incident change: '
+                      f'{parsed_args.incident_changed}')
+        kwargs = {
+            "FindingIdentifiers": [{
+                "Id": data.get('FindingIdentifiers.Id'),
+                "ProductArn": data.get('FindingIdentifiers.ProductArn')
+            }],
+            'Severity': {
+                "Label": delta.get('Severity.Label')
+            },
+            # should contain only 1 state
+            'VerificationState': delta.get('VerificationState')[0] if delta.get('VerificationState') else None,
+            'Confidence': int(delta.get('Confidence')) if delta.get('Confidence') else None,
+            'Criticality': int(delta.get('Criticality')) if delta.get('Criticality') else None,
+            # should contain only 1 status
+            'Workflow': {
+                "Status": delta.get('Workflow.Status')[0] if delta.get('Workflow.Status') else None
             }
-        elif any(field in list_delta_keys for field in OUT_FIELDS):
-            kwargs = {
-                # should contain only 1 status
-                'Workflow': {
-                    "Status": str(delta.get('Workflow.Status')[0]) if delta.get('Workflow.Status') else ''
-                }
+        }
+
+        if delta.get('Note.Text'):
+            kwargs['Note'] = {
+                'Text': delta.get('Note.Text') or data.get('Note.Text'),
+                'UpdatedBy': delta.get('Note.UpdatedBy') or data.get('Note.UpdatedBy')
             }
-        else:
-            demisto.debug(f'Skipping updating remote incident {remote_incident_id} because {closure_case=}')
-            return remote_incident_id
-        if kwargs['Workflow']['Status'] == '':
-            del kwargs['Workflow']
-        add_kwargs = additional_kwargs_for_update_remote_data(parsed_args)
-        kwargs.update(add_kwargs)
+        demisto.debug(f'The {closure_case=} ,{parsed_args.inc_status=}')
+        if parsed_args.inc_status == IncidentStatus.DONE and closure_case:
+            kwargs['Workflow']['Status'] = 'RESOLVED'
+            parsed_args.data['Workflow.Status'] = ['RESOLVED']
+            demisto.debug(f"{parsed_args.data['Workflow.Status']=}")
+
+        kwargs = remove_empty_elements(kwargs)
         demisto.debug(f'{kwargs=}')
         response = client.batch_update_findings(**kwargs)
         if response:
