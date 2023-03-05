@@ -1,7 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
 from itertools import chain
-import ast
 
 
 def format_entity(entity: dict) -> dict:
