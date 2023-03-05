@@ -5,7 +5,7 @@ import pytest
 from bson.objectid import ObjectId
 
 from MongoDB import convert_id_to_object_id, convert_object_id_to_str, convert_str_to_datetime, Client, search_query, \
-    format_sort, pipeline_query_command, parse_and_validate_bulk_update_arguments, bulk_update_command
+    format_sort, pipeline_query_command, parse_and_validate_bulk_update_arguments, bulk_update_command, update_entry_command
 from CommonServerPython import DemistoException
 
 id_to_obj_inputs = [
@@ -263,13 +263,47 @@ def test_pipeline_query_command(mocker):
 
 
 class MockResponse:
-    def __init__(self, modified_count, upserted_count, acknowledged):
+    def __init__(self, acknowledged, modified_count, upserted_count=False, upserted_id=False):
+        self.acknowledged = acknowledged
         self.modified_count = modified_count
         self.upserted_count = upserted_count
-        self.acknowledged = acknowledged
+        self.upserted_id = upserted_id
 
 
 class TestUpdateQueryCommands:
+    client = Client(['aaaaa'], 'a', 'b', 'd')
+    case_upsert_with_no_matching_entry = (
+        "{\"Name\": \"dummy\"}", "{\"$set\":{\"test\":0}}", True, True, MockResponse(True, 0, 0, 1),
+        'A new entry was inserted to the collection.')
+    case_upsert_with_one_matching_entry = (
+        "{\"Name\": \"dummy\"}", "{\"$set\":{\"test\":0}}", True, True, MockResponse(True, 1, 0, 0),
+        'MongoDB: Total of 1 entries has been modified.')
+    case_upsert_with_many_matching_entry = (
+        "{\"Name\": \"dummy\"}", "{\"$set\":{\"test\":0}}", False, True, MockResponse(True, 5, 0, 0),
+        'MongoDB: Total of 5 entries has been modified.')
+    case_upsert_with_matching_entry_no_modifications = (
+        "{\"Name\": \"dummy\"}", "{\"$set\":{\"test\":0}}", True, True, MockResponse(True, 0, 0, 0),
+        'MongoDB: Total of 0 entries has been modified.')
+    case_upsert_with_many_matching_entires_update_only_one = (
+        "{\"Name\": \"dummy\"}", "{\"$set\":{\"test\":0}}", True, True, MockResponse(True, 1, 0, 0),
+        'MongoDB: Total of 1 entries has been modified.')
+    case_no_upsert_with_no_matching_entry = (
+        "{\"Name\": \"dummy\"}", "{\"$set\":{\"test\":0}}", True, False, MockResponse(True, 0, 0, 0),
+        'MongoDB: Total of 0 entries has been modified.')
+
+    update_query_cases = [case_upsert_with_no_matching_entry, case_upsert_with_one_matching_entry,
+                          case_upsert_with_many_matching_entry, case_upsert_with_matching_entry_no_modifications,
+                          case_upsert_with_many_matching_entires_update_only_one, case_no_upsert_with_no_matching_entry]
+
+    @pytest.mark.parametrize('filter, update, update_one, upsert, response, expected', update_query_cases)
+    def test_update_entry_command(self, mocker, filter, update, update_one, upsert, response, expected, client=client):
+        mocker.patch.object(client, 'update_entry', return_value=response)
+        return_value = update_entry_command(client, "test_collection", filter=filter,
+                                            update=update, update_one=update_one, upsert=upsert)
+        assert return_value[0] == expected
+
+
+class TestBulkUpdateQueryCommands:
     client = Client(['aaaaa'], 'a', 'b', 'd')
     # valid command arguments
     case_single_update_args = ("[{\"Name\": \"dummy\"}]", "[{\"$set\":{\"test\":0}}]",
@@ -351,7 +385,7 @@ class TestUpdateQueryCommands:
 
     def test_bulk_update_command(
             self, mocker, client=client, case_simple_bulk_update_args=case_simple_bulk_update_args):
-        response = MockResponse(modified_count=1, upserted_count=1, acknowledged=True)
+        response = MockResponse(acknowledged=True, modified_count=1, upserted_count=1)
         mocker.patch.object(client, 'bulk_update_entries', return_value=response)
         return_value = bulk_update_command(
             client, "test_collection", filter=case_simple_bulk_update_args[0],

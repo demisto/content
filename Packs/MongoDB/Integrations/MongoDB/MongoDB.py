@@ -257,7 +257,7 @@ def convert_object_id_to_str(entries: List[ObjectId]) -> List[str]:
 
 
 def parse_and_validate_bulk_update_arguments(filter: str, update: str) -> Tuple[List, List]:
-    """Parses and validates the bulk update queries(filter and update command arguments).
+    """Parses and validates the bulk update queries (filter and update command arguments).
 
     Args:
         filter (str): raw string representing the filter command argument.
@@ -553,7 +553,7 @@ def bulk_update_command(
         raise DemistoException('Error occurred when trying to enter update entries.')
 
     return (
-        f'MongoDB: Total of {response.modified_count} entries has been modified.' \
+        f'MongoDB: Total of {response.modified_count} entries has been modified.'
         + f'\nMongoDB: Total of {response.upserted_count} entries has been inserted.',
         None,
     )
