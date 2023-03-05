@@ -1,12 +1,13 @@
 import urllib.parse
+import warnings
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-from requests.packages import urllib3
+
 ''' IMPORTS '''
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+warnings.filterwarnings('ignore', message='Unverified HTTPS request')
 
 ''' CONSTANTS '''
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
