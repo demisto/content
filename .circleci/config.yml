@@ -376,10 +376,6 @@ jobs:
 workflows:
   version: 2
   commit:
-    when:
-      not:
-        or:
-          - << pipeline.parameters.nightly >>
     jobs:
       - Setup Environment
       - Run Unit Testing And Lint:
@@ -388,11 +384,11 @@ workflows:
           branches:
             only:
               - "pull/[0-9]+"
-          requires:
-            - Setup Environment
-          matrix:
-            parameters:
-              dockerimageflag: [ "native:ga", "native:maintenance", "native:dev", "from-yml" ]
+        requires:
+          - Setup Environment
+        matrix:
+          parameters:
+            dockerimageflag: [ "native:ga", "native:maintenance", "native:dev", "from-yml" ]
           name: Run Unit Testing And Lint - Docker Image:<< matrix.dockerimageflag >>
       - Run Validations:
         filters:
