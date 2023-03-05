@@ -98,7 +98,7 @@ def wildfire_get_report_command(client: Client, args: Dict[str, str]):
 ''' MAIN FUNCTION '''
 
 
-def main():  # pragma no cover
+def main():  # pragma: no coverage
     command = demisto.command()
     params = demisto.params()
     args = demisto.args()
