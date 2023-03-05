@@ -43,7 +43,7 @@ def convert_to_table(context_results: str) -> CommandResults:
     )
 
 
-def main():
+def main():  # pragma: no cover
     context = dict_safe_get(
         demisto.callingContext,
         ['context', 'Incidents', 0, 'CustomFields', 'microsoftsentinelcomments'],
