@@ -2296,6 +2296,7 @@ def deploy_sensor_configuration_command(args: Dict, client: Client) -> PollResul
     #     raise DemistoException('This command is not supported for your server version. Please update your server version to 6.2.0 or later.')
 
     request_id = arg_to_number(args.get('request_id'))
+    print("first request id is: ", request_id)
     sensor_id = arg_to_number(args.get('sensor_id'))
     if not request_id:
         sensor_id = arg_to_number(args.get('sensor_id'))
