@@ -1800,14 +1800,14 @@ def get_exclusion_entities(exclusion_type: str, exclusion_ids: List) -> dict:
                         url_suffix=f'/policy/entities/{exclusion_type}-exclusions/v1{build_ids_params(exclusion_ids)}')
 
 
-def list_quarantined_files_id(files_filter: dict = None, query: dict | None, pagination: dict) -> dict:
+def list_quarantined_files_id(files_filter: dict | None, query: dict | None, pagination: dict | None) -> dict:
     """
         Returns the files by a list of IDs.
 
         Args:
             files_filter (dict): The exclusion type can be either ml (machine learning) or IOA`.
             query (dict): The exclusion type can be either ml (machine learning) or IOA`.
-            kwargs (dict): API query params (limit, offset).
+            pagination (dict): API query params for pagination (limit, offset).
         Returns:
             list: List of exclusions.
     """
@@ -4271,16 +4271,16 @@ def create_ml_exclusion_command(args):
 
 
 def update_ml_exclusion_command(args):
-    exclusion_id = args.get('id')
     update_args = assign_params(
         value=args.get('value'),
         comment=args.get('comment'),
         groups=argToList(args.get('groups'))
     )
     if not update_args:
-        raise Exception('At least one argument (value, comment or groups) should be provided to update the exclusion.')
+        raise Exception('At least one argument (besides the id argument) should be provided to update the exclusion.')
+    update_args.update({'id': args.get('id')})
 
-    exclusion = update_exclusion('ml', id=exclusion_id, **update_args).get('resources')
+    exclusion = update_exclusion('ml', update_args).get('resources')
 
     return CommandResults(
         outputs_prefix='CrowdStrike.MLExclusion',
@@ -4301,7 +4301,7 @@ def delete_ml_exclusion_command(args):
 
 
 def search_ml_exclusion_command(args):
-    if not (ids := args.get('ids')):
+    if not (ids := argToList(args.get('ids'))):
         search_args = assign_params(
             sort=args.get('sort'),
             limit=args.get('limit'),
@@ -4326,7 +4326,7 @@ def create_ioa_exclusion_command(args):
     create_args = assign_params(
         name=args.get('exclusion_name'),
         pattern_id=args.get('pattern_id'),
-        pattern_name=argToList(args.get('pattern_name')),
+        pattern_name=args.get('pattern_name'),
         cl_regex=args.get('cl_regex'),
         ifn_regex=args.get('ifn_regex'),
         comment=args.get('comment'),
@@ -4346,11 +4346,10 @@ def create_ioa_exclusion_command(args):
 
 
 def update_ioa_exclusion_command(args):
-    exclusion_id = args.get('id')
     update_args = assign_params(
         name=args.get('exclusion_name'),
         pattern_id=args.get('pattern_id'),
-        pattern_name=argToList(args.get('pattern_name')),
+        pattern_name=args.get('pattern_name'),
         cl_regex=args.get('cl_regex'),
         ifn_regex=args.get('ifn_regex'),
         comment=args.get('comment'),
@@ -4359,9 +4358,10 @@ def update_ioa_exclusion_command(args):
         detection_json=args.get('detection_json')
     )
     if not update_args:
-        raise Exception('At least one argument should be provided to update the exclusion.')
+        raise Exception('At least one argument (besides the id argument) should be provided to update the exclusion.')
+    update_args.update({'id': args.get('id')})
 
-    exclusion = update_exclusion('ioa', id=exclusion_id, update_args)
+    exclusion = update_exclusion('ioa', update_args).get('resources')
 
     return CommandResults(
         outputs_prefix='CrowdStrike.IOAExclusion',
@@ -4382,10 +4382,10 @@ def delete_ioa_exclusion_command(args):
 
 
 def search_ioa_exclusion_command(args):
-    if not (ids := args.get('ids')):
+    if not (ids := argToList(args.get('ids'))):
         search_params = assign_params(
-            limit = args.get('limit'),
-            offset = args.get('offset')
+            limit=args.get('limit'),
+            offset=args.get('offset')
         )
         if name := args.get('name'):
             ids = get_exclusions('ioa', f'name:{name}', search_params).get('resources')

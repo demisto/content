@@ -2939,7 +2939,7 @@ script:
       name: groups
       required: false
       isArray: true
-    description: Update the ML exclusions. At least one argument is required in addition of the ID argument.
+    description: Updates an ML exclusions. At least one argument is required in addition of the ID argument.
     name: cs-falcon-update-ml-exclusion
     outputs:
     - contextPath: CrowdStrike.MLExclusion
@@ -3060,8 +3060,8 @@ script:
       name: groups
       required: false
       isArray: true
-    description: ""
-    name: cs-falcon-update-ioa-exclusion. At least one argument is required in addition of the ID argument.
+    description: Updates an IOA exclusion. At least one argument is required in addition of the ID argument.
+    name: cs-falcon-update-ioa-exclusion.
     outputs:
     - contextPath: CrowdStrike.IOAExclusion
       description: ""
