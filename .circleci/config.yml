@@ -378,7 +378,7 @@ workflows:
   commit:
     when:
       # matching the environment variable "CIRCLE_BRANCH" from the setup environment step.
-      $CIRCLE_BRANCH =~ pull/[0-9]+
+      condition: $CIRCLE_BRANCH =~ pull/[0-9]+
     jobs:
       - Setup Environment
       - Run Unit Testing And Lint:
