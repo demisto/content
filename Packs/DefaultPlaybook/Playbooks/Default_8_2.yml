@@ -1,5 +1,7 @@
 id: playbook0
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: Default
 description: |+
   This playbook executes when no other playbook is associated with an incident. It performs the following actions:
@@ -28,8 +30,8 @@ tasks:
     nexttasks:
       '#none#':
       - "13"
-      - "66"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -44,7 +46,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "7":
     id: "7"
     taskid: 7d517aad-0381-4dee-8667-b5128f1e4e56
@@ -58,11 +59,12 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      "Yes":
-      - "35"
       '#default#':
       - "68"
+      "Yes":
+      - "35"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -77,7 +79,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "8":
     id: "8"
     taskid: 697d6e32-b0aa-42d2-837a-5019d65609fc
@@ -102,6 +103,7 @@ tasks:
           root: CloseReason
     reputationcalc: 1
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -118,7 +120,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "12":
     id: "12"
     taskid: 18b00a4c-6f20-4ad8-871d-e8d28020e60f
@@ -132,6 +133,7 @@ tasks:
       brand: ""
       description: ''
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -146,7 +148,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "13":
     id: "13"
     taskid: 24f589f6-d64b-4fcc-8523-6e0d0765821c
@@ -1008,52 +1009,6 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "66":
-    id: "66"
-    taskid: 6407b367-d638-4e6b-84d2-3011f98e69ac
-    type: regular
-    task:
-      id: 6407b367-d638-4e6b-84d2-3011f98e69ac
-      version: -1
-      name: Save indicator tag values
-      description: |-
-        Set multiple keys/values in the context.
-        This also sets an initial value for the "Selected Indicators" incident field.
-      scriptName: SetMultipleValues
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "16"
-    scriptarguments:
-      keys:
-        simple: BlockTag,AllowTag
-      parent:
-        simple: Tags
-      values:
-        simple: ${inputs.MaliciousTagName},${inputs.BenignTagName}
-    separatecontext: false
-    continueonerror: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -380,
-          "y": 240
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    fieldMapping:
-    - incidentfield: Selected Indicators
-      output:
-        simple: Select indicators
     skipunavailable: false
     quietmode: 0
     isoversize: false

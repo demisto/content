@@ -574,7 +574,7 @@
                     {
                         "description": "**Note:** File retrieval requires the *Powershell Remoting* pack and integration.",
                         "displayType": "ROW",
-                        "h": 7,
+                        "h": 5,
                         "hideName": false,
                         "i": "caseinfoid-wnnwvzoxmk-eytv0yxsil-wnnwvzoxmk-eytv0yxsil-caseinfoid-wnnwvzoxmk-caseinfoid-5361e480-8f30-11ed-ba40-93b2031cccfa",
                         "items": [
@@ -744,9 +744,6 @@
                                                 }
                                             ]
                                         }
-                                    },
-                                    "tags": {
-                                        "simple": "${Tags.BlockTag}"
                                     }
                                 },
                                 "buttonClass": "error",
@@ -1000,9 +997,6 @@
                                                 }
                                             ]
                                         }
-                                    },
-                                    "tags": {
-                                        "simple": "${Tags.AllowTag}"
                                     }
                                 },
                                 "buttonClass": "success",
@@ -1172,14 +1166,6 @@
                                                 }
                                             ]
                                         }
-                                    },
-                                    "tags": {
-                                        "complex": {
-                                            "accessor": "BlockTag",
-                                            "filters": [],
-                                            "root": "Tags",
-                                            "transformers": []
-                                        }
                                     }
                                 },
                                 "buttonClass": "error",
@@ -1261,9 +1247,6 @@
                                                 }
                                             ]
                                         }
-                                    },
-                                    "tags": {
-                                        "simple": "${Tags.BlockTag}"
                                     }
                                 },
                                 "buttonClass": "error",
@@ -1438,9 +1421,6 @@
                                                 }
                                             ]
                                         }
-                                    },
-                                    "tags": {
-                                        "simple": "${Tags.AllowTag}"
                                     }
                                 },
                                 "buttonClass": "success",
@@ -1504,9 +1484,6 @@
                                                 }
                                             ]
                                         }
-                                    },
-                                    "tags": {
-                                        "simple": "${Tags.AllowTag}"
                                     }
                                 },
                                 "buttonClass": "success",
@@ -1606,9 +1583,6 @@
                                                 }
                                             ]
                                         }
-                                    },
-                                    "tags": {
-                                        "simple": "${Tags.BlockTag}"
                                     }
                                 },
                                 "buttonClass": "error",
@@ -1671,9 +1645,6 @@
                                             "root": "incident",
                                             "transformers": []
                                         }
-                                    },
-                                    "tags": {
-                                        "simple": "${Tags.BlockTag}"
                                     }
                                 },
                                 "buttonClass": "error",
@@ -1768,9 +1739,6 @@
                                                 }
                                             ]
                                         }
-                                    },
-                                    "tags": {
-                                        "simple": "${Tags.AllowTag}"
                                     }
                                 },
                                 "buttonClass": "success",
@@ -1822,9 +1790,6 @@
                                             "root": "incident",
                                             "transformers": []
                                         }
-                                    },
-                                    "tags": {
-                                        "simple": "${Tags.AllowTag}"
                                     }
                                 },
                                 "buttonClass": "success",
@@ -1864,48 +1829,6 @@
                         "w": 1,
                         "x": 1,
                         "y": 5
-                    },
-                    {
-                        "h": 2,
-                        "hideName": true,
-                        "i": "caseinfoid-wnnwvzoxmk-eytv0yxsil-wnnwvzoxmk-eytv0yxsil-caseinfoid-5d80b3b0-9b2e-11ed-806a-bf1c03602b43",
-                        "items": [],
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "IP Ranges",
-                        "query": {
-                            "tags": [
-                                "IP_Private_Ranges"
-                            ]
-                        },
-                        "queryType": "warRoomFilter",
-                        "static": false,
-                        "type": "invTimeline",
-                        "w": 1,
-                        "x": 0,
-                        "y": 8
-                    },
-                    {
-                        "h": 2,
-                        "hideName": true,
-                        "i": "caseinfoid-wnnwvzoxmk-eytv0yxsil-wnnwvzoxmk-eytv0yxsil-caseinfoid-59084db0-a570-11ed-b616-8f0bd799015c",
-                        "items": [],
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "Internal/External Domain Names",
-                        "query": {
-                            "tags": [
-                                "Internal_Domain_Check_Results"
-                            ]
-                        },
-                        "queryType": "warRoomFilter",
-                        "static": false,
-                        "type": "invTimeline",
-                        "w": 1,
-                        "x": 1,
-                        "y": 8
                     },
                     {
                         "description": "Select indicators from the incident to tag to allow or block using an EDL.",
@@ -2018,9 +1941,6 @@
                                             "root": "incident.selectedindicators",
                                             "transformers": []
                                         }
-                                    },
-                                    "tags": {
-                                        "simple": "${Tags.BlockTag}"
                                     }
                                 },
                                 "buttonClass": "error",
@@ -2099,9 +2019,6 @@
                                             "root": "incident.selectedindicators",
                                             "transformers": []
                                         }
-                                    },
-                                    "tags": {
-                                        "simple": "${Tags.AllowTag}"
                                     }
                                 },
                                 "buttonClass": "success",
@@ -2140,7 +2057,7 @@
                         "displayType": "ROW",
                         "h": 2,
                         "hideName": false,
-                        "i": "caseinfoid-eytv0yxsil-wnnwvzoxmk-eytv0yxsil-p9nvotrecm-caseinfoid-fea97750-94d4-11ed-b06e-e742e87f6373",
+                        "i": "caseinfoid-eytv0yxsil-caseinfoid-eytv0yxsil-wnnwvzoxmk-eytv0yxsil-p9nvotrecm-caseinfoid-fea97750-94d4-11ed-b06e-e742e87f6373",
                         "items": [
                             {
                                 "args": {},
@@ -2242,6 +2159,7 @@
                                 "startCol": 1
                             }
                         ],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -2256,7 +2174,7 @@
                         "displayType": "ROW",
                         "h": 2,
                         "hideName": false,
-                        "i": "caseinfoid-eytv0yxsil-wnnwvzoxmk-eytv0yxsil-p9nvotrecm-caseinfoid-bf028900-94d6-11ed-842c-a3fb82f65f47",
+                        "i": "caseinfoid-eytv0yxsil-caseinfoid-eytv0yxsil-wnnwvzoxmk-eytv0yxsil-p9nvotrecm-caseinfoid-bf028900-94d6-11ed-842c-a3fb82f65f47",
                         "items": [
                             {
                                 "args": {},
@@ -2341,6 +2259,7 @@
                                 "startCol": 1
                             }
                         ],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -2354,7 +2273,7 @@
                         "displayType": "ROW",
                         "h": 2,
                         "hideName": false,
-                        "i": "caseinfoid-eytv0yxsil-wnnwvzoxmk-eytv0yxsil-p9nvotrecm-caseinfoid-61167f70-965e-11ed-9d3b-dbc102f292cd",
+                        "i": "caseinfoid-eytv0yxsil-caseinfoid-eytv0yxsil-wnnwvzoxmk-eytv0yxsil-p9nvotrecm-caseinfoid-61167f70-965e-11ed-9d3b-dbc102f292cd",
                         "items": [
                             {
                                 "args": {},
@@ -2455,6 +2374,7 @@
                                 "startCol": 1
                             }
                         ],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -2469,7 +2389,7 @@
                         "displayType": "ROW",
                         "h": 2,
                         "hideName": false,
-                        "i": "caseinfoid-eytv0yxsil-wnnwvzoxmk-eytv0yxsil-p9nvotrecm-caseinfoid-98149100-9678-11ed-9d3b-dbc102f292cd",
+                        "i": "caseinfoid-eytv0yxsil-caseinfoid-eytv0yxsil-wnnwvzoxmk-eytv0yxsil-p9nvotrecm-caseinfoid-98149100-9678-11ed-9d3b-dbc102f292cd",
                         "items": [
                             {
                                 "args": {
@@ -2581,6 +2501,7 @@
                                 "startCol": 1
                             }
                         ],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -2595,7 +2516,7 @@
                         "displayType": "ROW",
                         "h": 4,
                         "hideName": false,
-                        "i": "caseinfoid-eytv0yxsil-wnnwvzoxmk-eytv0yxsil-p9nvotrecm-caseinfoid-a1fdc3e0-9686-11ed-9d3b-dbc102f292cd",
+                        "i": "caseinfoid-eytv0yxsil-caseinfoid-eytv0yxsil-wnnwvzoxmk-eytv0yxsil-p9nvotrecm-caseinfoid-a1fdc3e0-9686-11ed-9d3b-dbc102f292cd",
                         "items": [
                             {
                                 "endCol": 2,
@@ -3043,6 +2964,7 @@
                                 "startCol": 1
                             }
                         ],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -3058,7 +2980,7 @@
                         "h": 2,
                         "hideItemTitleOnlyOne": false,
                         "hideName": false,
-                        "i": "caseinfoid-eytv0yxsil-wnnwvzoxmk-eytv0yxsil-p9nvotrecm-caseinfoid-01468260-9a51-11ed-b852-e30596ae64d1",
+                        "i": "caseinfoid-eytv0yxsil-caseinfoid-eytv0yxsil-wnnwvzoxmk-eytv0yxsil-p9nvotrecm-caseinfoid-01468260-9a51-11ed-b852-e30596ae64d1",
                         "items": [
                             {
                                 "args": {
@@ -3081,6 +3003,7 @@
                                 "startCol": 0
                             }
                         ],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -3094,7 +3017,7 @@
                         "displayType": "ROW",
                         "h": 1,
                         "hideName": false,
-                        "i": "caseinfoid-eytv0yxsil-wnnwvzoxmk-eytv0yxsil-p9nvotrecm-caseinfoid-21b034c0-9a5f-11ed-b852-e30596ae64d1",
+                        "i": "caseinfoid-eytv0yxsil-caseinfoid-eytv0yxsil-wnnwvzoxmk-eytv0yxsil-p9nvotrecm-caseinfoid-21b034c0-9a5f-11ed-b852-e30596ae64d1",
                         "items": [
                             {
                                 "args": {
@@ -3175,6 +3098,7 @@
                                 "startCol": 3
                             }
                         ],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -3189,7 +3113,7 @@
                         "displayType": "ROW",
                         "h": 2,
                         "hideName": false,
-                        "i": "caseinfoid-eytv0yxsil-wnnwvzoxmk-eytv0yxsil-p9nvotrecm-caseinfoid-3e25d520-9a63-11ed-b852-e30596ae64d1",
+                        "i": "caseinfoid-eytv0yxsil-caseinfoid-eytv0yxsil-wnnwvzoxmk-eytv0yxsil-p9nvotrecm-caseinfoid-3e25d520-9a63-11ed-b852-e30596ae64d1",
                         "items": [
                             {
                                 "args": {},
@@ -3324,6 +3248,7 @@
                                 "startCol": 1
                             }
                         ],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -3338,8 +3263,9 @@
                         "displayType": "ROW",
                         "h": 2,
                         "hideName": false,
-                        "i": "caseinfoid-eytv0yxsil-wnnwvzoxmk-eytv0yxsil-p9nvotrecm-caseinfoid-9262dce0-a158-11ed-85b1-4d3c5dab2f1b",
+                        "i": "caseinfoid-eytv0yxsil-caseinfoid-eytv0yxsil-wnnwvzoxmk-eytv0yxsil-p9nvotrecm-caseinfoid-9262dce0-a158-11ed-85b1-4d3c5dab2f1b",
                         "items": [],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -3353,7 +3279,7 @@
                         "displayType": "ROW",
                         "h": 1,
                         "hideName": false,
-                        "i": "caseinfoid-5f3a55c0-a70f-11ed-9dff-dd54b441de4d",
+                        "i": "caseinfoid-eytv0yxsil-caseinfoid-5f3a55c0-a70f-11ed-9dff-dd54b441de4d",
                         "items": [
                             {
                                 "args": {},
@@ -3367,6 +3293,7 @@
                                 "startCol": 0
                             }
                         ],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -4214,12 +4141,14 @@
             }
         ]
     },
+    "marketplaces": [
+        "xsoar"
+    ],
     "group": "incident",
     "id": "Default",
     "name": "Default",
     "system": false,
     "version": -1,
     "fromVersion": "8.2.0",
-    "marketplaces": ["xsoar"],
     "description": ""
 }
