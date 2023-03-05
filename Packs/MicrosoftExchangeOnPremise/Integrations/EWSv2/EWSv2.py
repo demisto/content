@@ -2163,7 +2163,7 @@ def process_attachments(attach_cids="", attach_ids="", attach_names="", manual_a
                     att_name = att_name[0]
                 attachments_names.append(att_name)
         if len(file_entries_for_attachments) != len(attachments_names):
-            raise Exception("attach_ids and attach_names lists should be the same length")
+            raise Exception("attachIDs and attachNames lists should be the same length")
 
     attachments = collect_manual_attachments(manual_attach_obj)
 
@@ -2197,23 +2197,22 @@ def get_none_empty_addresses(addresses_ls):
     return [adress for adress in addresses_ls if adress]
 
 
-def send_email(to, subject, body="", bcc=None, cc=None, reply_to=None, html_body=None,
-               attach_ids="", attach_cids="", attach_names="", manual_attach_obj=[], from_mailbox=None,
+def send_email(to, subject, body="", bcc=None, cc=None, replyTo=None, htmlBody=None,
+               attachIDs="", attachCIDs="", attachNames="", manualAttachObj=None, from_mailbox=None,
                raw_message=None, from_address=None):
-
+    if not manualAttachObj:
+        manualAttachObj = []
     account = get_account(from_mailbox or ACCOUNT_EMAIL)
     bcc = get_none_empty_addresses(argToList(bcc))
     cc = get_none_empty_addresses(argToList(cc))
     to = get_none_empty_addresses(argToList(to))
-    reply_to = reply_to
-    # manual_attach_obj = manual_attach_obj if manual_attach_obj is not None else []
     subject = subject[:252] + '...' if len(subject) > 255 else subject
 
-    attachments, attachments_names = process_attachments(attach_cids, attach_ids, attach_names, manual_attach_obj)
+    attachments, attachments_names = process_attachments(attachCIDs, attachIDs, attachNames, manualAttachObj)
 
     send_email_to_mailbox(
-        account=account, to=to, subject=subject, body=body, bcc=bcc, cc=cc, reply_to=reply_to,
-        html_body=html_body, attachments=attachments, raw_message=raw_message, from_address=from_address
+        account=account, to=to, subject=subject, body=body, bcc=bcc, cc=cc, reply_to=replyTo,
+        html_body=htmlBody, attachments=attachments, raw_message=raw_message, from_address=from_address
     )
     result_object = {
         'from': account.primary_smtp_address,
@@ -2231,18 +2230,18 @@ def send_email(to, subject, body="", bcc=None, cc=None, reply_to=None, html_body
     }
 
 
-def reply_email(to, in_reply_to, body="", subject="", bcc=None, cc=None, html_body=None, attach_ids="", attach_cids="",
-                attach_names="", from_mailbox=None, manual_attach_obj=None):     # pragma: no cover
+def reply_email(to, inReplyTo, body="", subject="", bcc=None, cc=None, htmlBody=None, attachIDs="", attachCIDs="",
+                attachNames="", from_mailbox=None, manualAttachObj=None):     # pragma: no cover
     account = get_account(from_mailbox or ACCOUNT_EMAIL)
     bcc = bcc.split(",") if bcc else None
     cc = cc.split(",") if cc else None
     to = to.split(",") if to else None
-    manual_attach_obj = manual_attach_obj if manual_attach_obj is not None else []
+    manualAttachObj = manualAttachObj if manualAttachObj is not None else []
     subject = subject[:252] + '...' if len(subject) > 255 else subject
 
-    attachments, attachments_names = process_attachments(attach_cids, attach_ids, attach_names, manual_attach_obj)
+    attachments, attachments_names = process_attachments(attachCIDs, attachIDs, attachNames, manualAttachObj)
 
-    send_email_reply_to_mailbox(account, in_reply_to, to, body, subject, bcc, cc, html_body, attachments)
+    send_email_reply_to_mailbox(account, inReplyTo, to, body, subject, bcc, cc, htmlBody, attachments)
     result_object = {
         'from': account.primary_smtp_address,
         'to': to,
