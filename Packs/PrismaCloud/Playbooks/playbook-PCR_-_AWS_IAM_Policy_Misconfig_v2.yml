@@ -2,7 +2,7 @@ id: Prisma Cloud Remediation - AWS IAM Policy Misconfiguration v2
 version: -1
 fromversion: 6.5.0
 name: Prisma Cloud Remediation - AWS IAM Policy Misconfiguration v2
-description: This playbook remediates Prisma Cloud AWS IAM policy alerts.  It uses sub-playbooks that perform the remediation steps.
+description: This playbook remediates Prisma Cloud AWS IAM policy alerts. It uses sub-playbooks that perform the remediation steps.
 starttaskid: "0"
 tasks:
   "0":

@@ -4574,7 +4574,7 @@ tasks:
       name: Prisma Cloud Correlate Alerts
       description: Search alerts in Prisma Cloud for a specific asset ID and, if present
         in Cortex XSOAR, link them.
-      playbookName: Prisma Cloud Correlate Alerts
+      playbookName: Prisma Cloud Correlate Alerts v2
       type: playbook
       iscommand: false
       brand: ""

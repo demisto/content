@@ -11,7 +11,7 @@
 	"id": "Azure SQL Misconfiguration",
 	"locked": false,
 	"name": "Azure SQL Misconfiguration",
-	"playbookId": "Prisma Cloud Remediation - Azure SQL Misconfiguration",
+	"playbookId": "Prisma Cloud Remediation - Azure SQL Misconfiguration v2",
 	"preProcessingScript": "",
 	"readonly": false,
 	"reputationCalc": 0,

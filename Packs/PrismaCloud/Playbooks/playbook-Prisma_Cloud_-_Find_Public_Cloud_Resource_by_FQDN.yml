@@ -520,7 +520,7 @@ tasks:
       id: 838decb7-a3bd-4af5-83dd-3250df3938f8
       iscommand: false
       name: Prisma Cloud - Find AWS Resource by FQDN
-      playbookId: Prisma Cloud - Find AWS Resource by FQDN
+      playbookId: Prisma Cloud - Find AWS Resource by FQDN v2
       type: playbook
       version: -1
     taskid: 838decb7-a3bd-4af5-83dd-3250df3938f8
@@ -560,7 +560,7 @@ tasks:
       id: 91f7be39-0c10-4605-8f67-8028cdf526fe
       iscommand: false
       name: Prisma Cloud - Find Azure Resource by FQDN
-      playbookId: Prisma Cloud - Find Azure Resource by FQDN
+      playbookId: Prisma Cloud - Find Azure Resource by FQDN v2
       type: playbook
       version: -1
     taskid: 91f7be39-0c10-4605-8f67-8028cdf526fe
@@ -600,7 +600,7 @@ tasks:
       id: 403e6f56-f3b0-4430-8d30-6a242557971e
       iscommand: false
       name: Prisma Cloud - Find GCP Resource by FQDN
-      playbookId: Prisma Cloud - Find GCP Resource by FQDN
+      playbookId: Prisma Cloud - Find GCP Resource by FQDN v2
       type: playbook
       version: -1
     taskid: 403e6f56-f3b0-4430-8d30-6a242557971e
