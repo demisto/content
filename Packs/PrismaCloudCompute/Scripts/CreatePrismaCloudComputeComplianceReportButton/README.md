@@ -5,9 +5,9 @@ Generate a compliance report via clicking a button.
 ---
 
 | **Name** | **Description** |
-| --- | --- |
-| Script Type | python3 |
-| Cortex XSOAR Version | 6.8.0 |
+| --- |-----------------|
+| Script Type | python3         |
+| Cortex XSOAR Version | 6.0.0           |
 
 ## Inputs
 

@@ -5,9 +5,9 @@ This script creates a link back to the Prisma Cloud Compute instance.
 ---
 
 | **Name** | **Description** |
-| --- | --- |
-| Script Type | python3 |
-| Cortex XSOAR Version | 6.5.0 |
+| --- |-----------------|
+| Script Type | python3         |
+| Cortex XSOAR Version | 6.0.0           |
 
 ## Inputs
 
