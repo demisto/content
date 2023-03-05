@@ -251,10 +251,10 @@ def test_summarize_incidents():
 
 @pytest.mark.parametrize('amount_of_mocked_incidents, args', [
     (306, {}),
-    (306, {"limit": 200}),
-    (105, {"limit": 200}),
-    (1000, {"limit": 100}),
-    (1000, {"limit": 1100})
+    (306, {"limit": "200"}),
+    (105, {"limit": "200"}),
+    (1000, {"limit": "100"}),
+    (1000, {"limit": "1100"})
 ])
 def test_main_flow_with_limit(mocker, amount_of_mocked_incidents, args):
     """
@@ -292,5 +292,5 @@ def test_main_flow_with_limit(mocker, amount_of_mocked_incidents, args):
 
     assert return_results_mocker.called
     assert len(return_results_mocker.call_args[0][0].outputs) == min(
-        amount_of_mocked_incidents, args.get('limit') or SearchIncidentsV2.DEFAULT_LIMIT
+        amount_of_mocked_incidents, arg_to_number(args.get('limit')) or SearchIncidentsV2.DEFAULT_LIMIT
     )

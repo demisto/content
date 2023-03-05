@@ -150,7 +150,7 @@ def search_incidents(args: Dict):   # pragma: no cover
             return 'Alerts not found.', {}, {}
         return 'Incidents not found.', {}, {}
 
-    limit, page = args.get('limit') or DEFAULT_LIMIT, 1
+    limit, page = arg_to_number(args.get('limit')) or DEFAULT_LIMIT, 1
     result_data_list = res[0]["Contents"]["data"]
 
     while len(result_data_list) < limit:
