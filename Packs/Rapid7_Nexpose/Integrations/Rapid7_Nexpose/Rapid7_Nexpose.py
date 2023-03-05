@@ -2475,7 +2475,7 @@ def normalize_scan_data(scan_data: dict) -> dict:
         include_none=True,
     )
 
-    if "duration" in scan_data:
+    if scan_data.get("duration"):
         result["TotalTime"] = readable_duration_time(scan_data["duration"])
 
     else:
