@@ -3,7 +3,7 @@ This integration was integrated and tested with version 2 of the Recorded Future
 
 ## Configure Recorded Future Event Collector on Cortex XSOAR
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+1. Navigate to **Settings** > **Configurations** > **Data Collection** > **Automations & Feed Integrations**.
 2. Search for Recorded Future Event Collector.
 3. Click **Add instance** to create and configure a new integration instance.
 
