@@ -5,7 +5,8 @@ import pytest
 from bson.objectid import ObjectId
 
 from MongoDB import convert_id_to_object_id, convert_object_id_to_str, convert_str_to_datetime, Client, search_query, \
-    format_sort, pipeline_query_command
+    format_sort, pipeline_query_command, parse_and_validate_bulk_update_arguments, bulk_update_command
+from CommonServerPython import DemistoException
 
 id_to_obj_inputs = [
     (
@@ -259,3 +260,100 @@ def test_pipeline_query_command(mocker):
 
     assert 'Total of 2 entries were found in MongoDB collection' in readable_outputs
     assert outputs.get('MongoDB.Entry(val._id === obj._id && obj.collection === val.collection)') == expected_context
+
+
+class MockResponse:
+    def __init__(self, modified_count, upserted_count, acknowledged):
+        self.modified_count = modified_count
+        self.upserted_count = upserted_count
+        self.acknowledged = acknowledged
+
+
+class TestUpdateQueryCommands:
+    client = Client(['aaaaa'], 'a', 'b', 'd')
+    # valid command arguments
+    case_single_update_args = ("[{\"Name\": \"dummy\"}]", "[{\"$set\":{\"test\":0}}]",
+                               ([{"Name": "dummy"}], [{"$set": {"test": 0}}]))
+    case_simple_bulk_update_args = ("[{\"Name\": \"dummy1\"},{\"Name\": \"dummy2\"}]",
+                                    "[{\"$set\":{\"test\":1}},{\"$set\":{\"test\":2}}]",
+                                    ([{"Name": "dummy1"},
+                                      {"Name": "dummy2"}],
+                                        [{"$set": {"test": 1}},
+                                         {"$set": {"test": 2}}]))
+    case_bulk_update_complex_filter = (
+        "[{\"$and\": [{\"value\":0,\"another_value\":1}],\"Name\":\"dummy1\",\"less_than\": {\"$lt\":3000}},{\"Name\":\"dummy2\"}]",
+        "[{\"$set\":{\"test\":1}},{\"$set\":{\"test\":2}}]",
+        ([{"$and": [{"value": 0, "another_value": 1}],
+           "less_than": {"$lt": 3000},
+           "Name": "dummy1"},
+          {"Name": "dummy2"}],
+         [{"$set": {"test": 1}},
+          {"$set": {"test": 2}}]))
+    case_bulk_update_complex_update = (
+        "[{\"Name\":\"dummy1\"},{\"Name\":\"dummy2\"}]",
+        "[{\"$set\":{\"test\":1,\"value\":2,\"another_value\":{\"sub_value\": 4}}},{\"$set\":{\"test\":2}}]",
+        ([{"Name": "dummy1"},
+          {"Name": "dummy2"}],
+         [{"$set": {"test": 1, "value": 2, "another_value": {"sub_value": 4}}},
+          {"$set": {"test": 2}}]))
+
+    # invalid command arguments
+    case_missing_brackets = ("{\"Name\": \"dummy1\"},{\"Name\": \"dummy2\"}]",
+                             "[{\"$set\":{\"test\":1}},{\"$set\":{\"test\":2}}]",
+                             'The `filter` argument must be a json array.')
+    case_not_matching_number_of_filters_and_updates = (
+        "[{\"Name\": \"dummy1\"},{\"Name\": \"dummy2\"}]", "[{\"$set\":{\"test\":1}}]",
+        'The `filter` and `update` arguments must contain the same number of elements.')
+    case_invalid_json = ("{\"Name\": \"dummy1\"},{\"Name\": \"dummy2\"]",
+                         "[{\"$set\":{\"test\":1}},{\"$set\":{\"test\":2}}]",
+                         'The `filter` argument contains an invalid json.')
+
+    @pytest.mark.parametrize('filter, update, expected_output', [
+        case_single_update_args,
+        case_simple_bulk_update_args,
+        case_bulk_update_complex_filter,
+        case_bulk_update_complex_update
+    ])
+    def test_parse_and_validate_bulk_update_arguments(self, filter, update, expected_output):
+        """
+        Given:
+            arguments for bulk update command
+
+        When:
+            calling `parse_and_validate_bulk_update_arguments`
+
+        Then:
+            validate the returned arguments
+        """
+        filter_list, update_list = parse_and_validate_bulk_update_arguments(filter, update)
+        assert filter_list == expected_output[0]
+        assert update_list == expected_output[1]
+
+    @pytest.mark.parametrize('filter, update, error_message', [
+        case_missing_brackets,
+        case_not_matching_number_of_filters_and_updates,
+        case_invalid_json
+    ])
+    def test_parse_and_validate_bulk_update_arguments_fail(self, filter, update, error_message):
+        """
+        Given:
+            arguments for bulk update command
+
+        When:
+            calling `parse_and_validate_bulk_update_arguments`
+
+        Then:
+            validate the returned arguments
+        """
+        with pytest.raises(DemistoException) as e:
+            parse_and_validate_bulk_update_arguments(filter, update)
+            assert error_message in str(e.value)
+
+    def test_bulk_update_command(
+            self, mocker, client=client, case_simple_bulk_update_args=case_simple_bulk_update_args):
+        response = MockResponse(modified_count=1, upserted_count=1, acknowledged=True)
+        mocker.patch.object(client, 'bulk_update_entries', return_value=response)
+        return_value = bulk_update_command(
+            client, "test_collection", filter=case_simple_bulk_update_args[0],
+            update=case_simple_bulk_update_args[1])
+        assert return_value[0] == 'MongoDB: Total of 1 entries has been modified.\nMongoDB: Total of 1 entries has been inserted.'

@@ -553,8 +553,8 @@ def bulk_update_command(
         raise DemistoException('Error occurred when trying to enter update entries.')
 
     return (
-        f'MongoDB: Total of {response.modified_count} entries has been modified.\
-        \nMongoDB: Total of {response.upserted_count} entries has been inserted.',
+        f'MongoDB: Total of {response.modified_count} entries has been modified.' \
+        + f'\nMongoDB: Total of {response.upserted_count} entries has been inserted.',
         None,
     )
 
