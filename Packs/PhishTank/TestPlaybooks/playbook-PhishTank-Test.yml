@@ -295,7 +295,7 @@ tasks:
         simple: badURL
       stringify: {}
       value:
-        simple: "hxxp://login.rakuten.co.jp.reise"
+        simple: "hxxp://login.rakuten.co.jp.reise2"
     separatecontext: false
     view: |-
       {
