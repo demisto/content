@@ -3,7 +3,7 @@ commonfields:
   version: -1
 name: Attivo Botsink
 display: Attivo Botsink
-category: Deception
+category: Deception & Breach Simulation
 description: Network-based Threat Deception for Post-Compromise Threat Detection.
 configuration:
 - display: Botsink name or address
