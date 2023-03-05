@@ -68,26 +68,6 @@ def test_get_sorted_events_by_type():
         }]
 
 
-def test_create_last_run():
-    """
-    Given:
-        - List of events
-        - Empty list of events
-    When:
-        - Running the command create_last_run
-    Then:
-        - Verify that when a list of events exists, it will take the last timestamp
-        - Verify that when there are no events yet (first fetch) the timestamp for all will be as the first fetch
-    """
-    assert create_last_run(MOCK_ENTRY, {}) == {'alert': 1657199110, 'audit': 1658384700, 'application': 1656892798,
-                                               'network': 1657693986, 'page': 1673866616}
-
-    # Still no events - last run should be from first_fetch
-    assert create_last_run([], {'alert': 86400, 'application': 86400, 'audit': 86400, 'network': 86400,
-                                'page': 86400}) == \
-           {'alert': 86400, 'application': 86400, 'audit': 86400, 'network': 86400, 'page': 86400}
-
-
 def test_test_module_v2(mocker):
     """
     Given:
