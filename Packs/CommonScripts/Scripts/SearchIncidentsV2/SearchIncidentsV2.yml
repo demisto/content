@@ -117,6 +117,13 @@ args:
   required: false
   secret: false
 - default: false
+  description: The maximum number of incidents to be returned.
+  isArray: false
+  name: limit
+  required: false
+  secret: false
+  defaultValue: '100'
+- default: false
   description: Sort in format of field.asc,field.desc,...
   isArray: false
   name: sort

@@ -11,6 +11,40 @@ data_test_check_if_found_incident = [
 ]
 
 
+def create_sample_incidents(start, end):
+    return [
+        {
+            u'id': u'{i}'.format(i=i),
+            u'type': u'Type{i}'.format(i=i),
+            u'name': u'incident-{i}'.format(i=i),
+        } for i in range(start, end + 1)
+    ]
+
+
+def execute_get_incidents_command_side_effect(amount_of_mocked_incidents):
+
+    mocked_incidents = []
+
+    default_jump = 100
+    counter = 1
+    for start in range(1, amount_of_mocked_incidents, default_jump):
+        end = min(amount_of_mocked_incidents, default_jump * counter)
+
+        execute_command_mock = [{
+                    'Contents': {
+                        'data': create_sample_incidents(start, end),
+                        'total': amount_of_mocked_incidents
+                    }
+                }] if counter == 1 else {
+                'data': create_sample_incidents(start, end)
+            }
+
+        mocked_incidents.append(execute_command_mock)
+        counter += 1
+
+    return mocked_incidents
+
+
 @pytest.mark.parametrize('_input, expected_output', data_test_check_if_found_incident)
 def test_check_if_found_incident(_input, expected_output):
     try:
@@ -211,3 +245,36 @@ def test_summarize_incidents():
     assert summarize_incidents({'add_fields_to_summarize_context': 'test'}, [{'id': 'test', 'CustomFields': {}}]) == [
         {'closed': 'n/a', 'created': 'n/a', 'id': 'test', 'incidentLink': 'n/a', 'name': 'n/a', 'owner': 'n/a',
          'severity': 'n/a', 'status': 'n/a', 'test': 'n/a', 'type': 'n/a'}]
+
+
+@pytest.mark.parametrize('amount_of_mocked_incidents, args', [
+    (306, {}),
+])
+def test_main_flow_with_pagination_and_limit(mocker, amount_of_mocked_incidents, args):
+    """
+    Given:
+       - Case A: Total of 306 incidents in XSOAR and no args
+
+    When:
+       - Running the main flow
+
+    Then:
+       - Case A: Make sure only 100 incidents has been returned.
+
+    """
+    import SearchIncidentsV2
+
+    mocker.patch.object(
+        SearchIncidentsV2,
+        'execute_command',
+        side_effect=execute_get_incidents_command_side_effect(amount_of_mocked_incidents)
+    )
+
+    mocker.patch.object(demisto, 'args', return_value=args)
+    return_results_mocker = mocker.patch.object(SearchIncidentsV2, 'return_results')
+    mocker.patch('SearchIncidentsV2.get_demisto_version', return_value={})
+
+    SearchIncidentsV2.main()
+
+    assert return_results_mocker.called
+    assert len(return_results_mocker.call_args[0][0].outputs) == 100
