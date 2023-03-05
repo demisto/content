@@ -609,7 +609,7 @@ def find_indicators(query: str, types: list, added_after, limit: int, offset: in
                 elif stix_ioc:
                     iocs.append(stix_ioc)
     if not is_manifest and iocs and is_demisto_version_ge('6.6.0'):
-        relationships = create_relationship_object(iocs)
+        relationships = create_relationships_objects(iocs)
         iocs.extend(relationships)
         iocs = sorted(iocs, key=lambda k: k['modified'])
     return iocs, extensions, total
@@ -1205,23 +1205,27 @@ def get_server_collections_command(integration_context):
     return result
 
 
-def create_relationship_object(stix_iocs: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+def create_relationships_objects(stix_iocs: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     """
     Create entries for the relationships returned by the searchRelationships command.
     :param stix_iocs: Entries for the Stix objects associated with given indicators
-    :return: A list of processed relationship of the objects
+    :return: A list of dictionaries representing the relationships objects, including entityBs objects
     """
     relationships_list: List[Dict[str, Any]] = []
+
     iocs_value_to_id = {(stix_ioc.get('value') or stix_ioc.get('name')): stix_ioc.get('id') for stix_ioc in stix_iocs}
     search_relationships = demisto.searchRelationships({'entities': list(iocs_value_to_id.keys())}).get('data', [])
-    if not search_relationships:
-        demisto.debug("No relationships found.")
-        return relationships_list
 
     demisto.debug(f"Found {len(search_relationships)} relationships for {len(iocs_value_to_id)} Stix IOC values.")
     for relationship in search_relationships:
 
-        entity_b_stix_id, entity_b_value = get_entity_b_stix_uuid(relationship)
+        entity_b_value = relationship.get('entityB')
+        if entity_b_value and (entity_b_object := create_entity_b_stix_object(entity_b_value)):
+            relationships_list.append(entity_b_object)
+        else:
+            demisto.debug(f"WARNING: Invalid entity B - Relationships will not be created to entity A:"
+                          f" {relationship.get('entityA')} with relationship name {relationship.get('name')}")
+            continue
 
         try:
             created_parsed = parse(relationship.get('createdInSystem')).strftime(STIX_DATE_FORMAT)
@@ -1239,41 +1243,30 @@ def create_relationship_object(stix_iocs: List[Dict[str, Any]]) -> List[Dict[str
             'id': relationship_stix_id,
             'created': created_parsed,
             'modified': modified_parsed,
-            "relationship_type": relationship.get('type'),
+            "relationship_type": relationship.get('name'),
             'source_ref': iocs_value_to_id.get(relationship.get('entityA')),
-            'target_ref': entity_b_stix_id,
-            'target_value': entity_b_value,
+            'target_ref': entity_b_object.get('id'),
         }
-        custom_fields = relationship.get('CustomFields', {})
-        if custom_fields:
-            relationship_object['start_time'] = custom_fields.get('firstseenbysource', '')
-            relationship_object['stop_time'] = custom_fields.get('lastseenbysource', '')
-            relationship_object['Description'] = custom_fields.get('description', '')
+        if description := demisto.get(relationship, 'CustomFields.description'):
+            relationship_object['Description'] = description
 
         relationships_list.append(relationship_object)
 
     return relationships_list
 
 
-def get_entity_b_stix_uuid(relationship: Dict[str, Any]) -> tuple[Optional[str], Optional[str]]:
+def create_entity_b_stix_object(entity_b_value: str) -> Optional[Dict[str, Any]]:
     """
-    Generates a STIX UUID for the 'entityB' value in the provided 'relationship' dictionary.
-    :param relationship: A dictionary containing the relationships fields
-    :return: tuple: A tuple containing the STIX UUID and value of the 'entityB'.
+    Generates a STIX object for the 'entityB' value in the provided 'relationship' dictionary.
+    :param entity_b_value: The 'entityB' value
+    :return: A dictionary representing the STIX object for the 'entityB' value, or None if the indicator was not found.
     """
-    entity_b_stix_id = None   # TODO - need to decide if want the entityB object also
-    entity_b_value = relationship.get('entityB')
-    entity_b_xsoar_indicator = demisto.searchIndicators(value=entity_b_value, size=1).get('iocs', [])
-    if entity_b_xsoar_indicator:
-        entity_b_type: str = relationship.get('entityBType', '')
-        if stix_type := XSOAR_TYPES_TO_STIX_SCO.get(entity_b_type):
-            entity_b_stix_id = create_sco_stix_uuid(entity_b_xsoar_indicator[0], stix_type)
-        elif stix_type := XSOAR_TYPES_TO_STIX_SDO.get(entity_b_type):
-            entity_b_stix_id = create_sdo_stix_uuid(entity_b_xsoar_indicator[0], stix_type)
-        else:
-            demisto.debug(f'No such indicator type: {entity_b_type} in stix format.')
-    demisto.debug(f'Generated STIX UUID for {entity_b_value}: {entity_b_stix_id}')
-    return entity_b_stix_id, entity_b_value
+    search_indicator = demisto.searchIndicators(value=entity_b_value, size=1).get('iocs', [])
+    if search_indicator and (entity_b_xsoar_indicator := search_indicator[0]):
+        entity_b_type = entity_b_xsoar_indicator.get('indicator_type')
+        entity_b_object, _, _ = create_stix_object(entity_b_xsoar_indicator, entity_b_type)
+        return entity_b_object
+    return None
 
 
 def main():  # pragma: no cover
