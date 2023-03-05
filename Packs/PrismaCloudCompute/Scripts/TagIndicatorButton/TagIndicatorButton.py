@@ -1,5 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
+
 def main():
     args = demisto.args()
     try:
@@ -14,6 +16,7 @@ def main():
 
     except Exception as e:
         return_error(e)
+
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
     main()

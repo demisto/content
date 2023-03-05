@@ -10,7 +10,6 @@ def main():
 
     url = f"{baseUrl}/#!/monitor/events/firewall/app/container?filters={encoded_filters}"
 
-
     return_results(CommandResults(outputs={"link": url}))
 
 
