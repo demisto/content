@@ -377,7 +377,7 @@ workflows:
   version: 2
   commit:
     when:
-      $CIRCLE_BRANCH =~ pull/[0-9]+
+      condition: $CIRCLE_BRANCH =~ pull/[0-9]+
     jobs:
       - Setup Environment
       - Run Unit Testing And Lint:
