@@ -146,9 +146,7 @@ def get_events_v1(client: Client, last_run: dict, limit: Optional[int] = None) -
             else:
                 response = client.get_events_request_v1(event_type, last_run, page_limit)
 
-            if response.get('status') != 'success':
-                break
-            if not (results := response.get('data', [])):
+            if response.get('status') != 'success' or not (results := response.get('data', [])):
                 break
 
             event_type_events.extend(results)
@@ -207,9 +205,7 @@ def get_events_v2(client, last_run: dict, limit: Optional[int] = None) -> List[A
         while len(et_events) < limit:
             page_limit = min(et_limit, MAX_EVENTS_PAGE_SIZE)
             response = client.get_events_request_v2(event_type, last_run, page_limit)
-            if response.get('ok') != 1:
-                break
-            if not (results := response.get('result', [])):
+            if response.get('ok') != 1 or not (results := response.get('result', [])):
                 break
 
             et_events.extend(results)
