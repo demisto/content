@@ -380,6 +380,45 @@ def create_publications(cve: dict) -> list:
     return publications
 
 
+def build_ids_params(ids: list) -> str:
+    """
+        Gets a list of IDs and return a string to use as a query param in the requests of exclusion entities.
+        For example: ['1234', '5678'] => '?ids=1234&ids=5678'
+
+        Args:
+            ids (list): List of exclusion IDs.
+        Returns:
+            str: string to use as a query param in the requests of exclusion.
+    """
+    params = f'?ids={ids[0]}'
+
+    if (ids_length := len(ids)) > 1:
+        for i in range(1, ids_length):
+            params += f'&ids={ids[i]}'
+
+    return params
+
+
+def build_query_params(query_params: dict) -> str:
+    """
+        Gets a list of IDs and return a string to use as a query param in the requests of exclusion entities.
+        For example: ['1234', '5678'] => '?ids=1234&ids=5678'
+
+        Args:
+            ids (list): List of exclusion IDs.
+        Returns:
+            str: string to use as a query param in the requests of exclusion.
+    """
+    query = ''
+
+    for key, value in query_params.items():
+        if query:
+            query += '+'
+        query += f"{key}:'{value}'"
+
+    return query
+
+
 ''' API FUNCTIONS '''
 
 
@@ -1708,6 +1747,105 @@ def get_detections_by_behaviors(behaviors_id):
     except Exception as e:
         demisto.error(f'Error occurred when trying to get detections by behaviors: {str(e)}')
         return {}
+
+
+def create_exclusion(exclusion_type: str, body: dict) -> dict:
+    return http_request(method='POST', url_suffix=f'/policy/entities/{exclusion_type}-exclusions/v1', json=body)
+
+
+def update_exclusion(exclusion_type: str, body: dict) -> dict:
+    return http_request('PATCH', f'/policy/entities/{exclusion_type}-exclusions/v1', json=body)
+
+
+def delete_exclusion(exclusion_type: str, exclusion_ids: list) -> dict:
+    """
+        Deletes an exclusions based on its ID.
+
+        Args:
+            exclusion_type (str): The exclusion type can be either ml (machine learning) or IOA`.
+            exclusion_ids (lsit): A list of exclusion IDs to delete.
+        Returns:
+            dict: Info about the deleted exclusion.
+    """
+    return http_request(method='DELETE',
+                        url_suffix=f'/policy/entities/{exclusion_type}-exclusions/v1{build_ids_params(exclusion_ids)}')
+
+
+def get_exclusions(exclusion_type: str, filter_query: str | None, params: dict) -> dict:
+    """
+        Returns IDs of exclusions that match the filter/value
+
+        Args:
+            exclusion_type (str): The exclusion type can be either ml (machine learning) or IOA`.
+            filter_query (str): Custom filter, For example `value:”<value>”`.
+            params (dict): API query params (sort, limit, offset).
+        Returns:
+            list: List of exclusion IDs.
+    """
+    return http_request(method='GET', url_suffix=f'/policy/queries/{exclusion_type}-exclusions/v1',
+                        params=assign_params(filter=filter_query, **params))
+
+
+def get_exclusion_entities(exclusion_type: str, exclusion_ids: List) -> dict:
+    """
+        Returns the exclusions by a list of IDs.
+
+        Args:
+            exclusion_type (str): The exclusion type can be either ml (machine learning) or IOA`.
+            exclusion_ids (list): A list of exclusion IDs to retrieve.
+        Returns:
+            list: List of exclusions.
+    """
+    return http_request(method='GET',
+                        url_suffix=f'/policy/entities/{exclusion_type}-exclusions/v1{build_ids_params(exclusion_ids)}')
+
+
+def list_quarantined_files_id(files_filter: dict = None, query: dict | None, pagination: dict) -> dict:
+    """
+        Returns the files by a list of IDs.
+
+        Args:
+            files_filter (dict): The exclusion type can be either ml (machine learning) or IOA`.
+            query (dict): The exclusion type can be either ml (machine learning) or IOA`.
+            kwargs (dict): API query params (limit, offset).
+        Returns:
+            list: List of exclusions.
+    """
+
+    return http_request(method='GET', url_suffix=f'/quarantine/queries/quarantined-files/v1',
+                        params=assign_params(filter=files_filter, q=build_query_params(query), **pagination))
+
+
+def list_quarantined_files(ids: list) -> dict:
+    """
+        Returns the file's metadata by a list of IDs.
+
+        Args:
+            ids (list): A list of the IDs of the files.
+        Returns:
+            list: A list contains metadata about the files.
+    """
+    return http_request(
+        method='POST',
+        url_suffix='/quarantine/entities/quarantined-files/GET/v1',
+        json={'ids': ids},
+    )
+
+
+def apply_quarantined_files_action(ids: list) -> dict:
+    """
+        Returns the file's metadata by a list of IDs.
+
+        Args:
+            ids (list): A list of the IDs of the files.
+        Returns:
+            list: A list contains metadata about the files.
+    """
+    return http_request(
+        method='POST',
+        url_suffix='/quarantine/entities/quarantined-files/GET/v1',
+        json={'ids': ids},
+    )
 
 
 ''' MIRRORING COMMANDS '''
@@ -4114,6 +4252,206 @@ def get_cve_command(args: dict) -> list[CommandResults]:
     return command_results_list
 
 
+def create_ml_exclusion_command(args):
+    create_args = assign_params(
+        value=args.get('value'),
+        excluded_from=argToList(args.get('excluded_from')),
+        comment=args.get('comment'),
+        groups=argToList(args.get('groups'))
+    )
+
+    exclusion = create_exclusion('ml', create_args).get('resources')
+
+    return CommandResults(
+        outputs_prefix='CrowdStrike.MLExclusion',
+        outputs_key_field='id',
+        outputs=exclusion,
+        readable_output=tableToMarkdown('CrowdStrike Falcon machine learning exclusion', exclusion ),
+    )
+
+
+def update_ml_exclusion_command(args):
+    exclusion_id = args.get('id')
+    update_args = assign_params(
+        value=args.get('value'),
+        comment=args.get('comment'),
+        groups=argToList(args.get('groups'))
+    )
+    if not update_args:
+        raise Exception('At least one argument (value, comment or groups) should be provided to update the exclusion.')
+
+    exclusion = update_exclusion('ml', id=exclusion_id, **update_args).get('resources')
+
+    return CommandResults(
+        outputs_prefix='CrowdStrike.MLExclusion',
+        outputs_key_field='id',
+        outputs=exclusion,
+        readable_output=tableToMarkdown('CrowdStrike Falcon machine learning exclusion', exclusion),
+    )
+
+
+def delete_ml_exclusion_command(args):
+    ids = argToList(args.get('ids'))
+
+    delete_exclusion('ml', ids)
+
+    return CommandResults(
+        readable_output=f'The machine learning exclusions with IDs {ids} was successfully deleted.'
+    )
+
+
+def search_ml_exclusion_command(args):
+    if not (ids := args.get('ids')):
+        search_args = assign_params(
+            sort=args.get('sort'),
+            limit=args.get('limit'),
+            offset=args.get('offset'),
+        )
+        if value := args.get('value'):
+            ids = get_exclusions('ml', f"value:'{value}'", search_args).get('resources')
+        else:
+            ids = get_exclusions('ml', args.get('filter'), search_args).get('resources')
+
+    exclusions = get_exclusion_entities('ml', ids).get('resources')
+
+    return CommandResults(
+        outputs_prefix='CrowdStrike.MLExclusion',
+        outputs_key_field='id',
+        outputs=exclusions,
+        readable_output=tableToMarkdown('CrowdStrike Falcon machine learning exclusions', exclusions),
+    )
+
+
+def create_ioa_exclusion_command(args):
+    create_args = assign_params(
+        name=args.get('exclusion_name'),
+        pattern_id=args.get('pattern_id'),
+        pattern_name=argToList(args.get('pattern_name')),
+        cl_regex=args.get('cl_regex'),
+        ifn_regex=args.get('ifn_regex'),
+        comment=args.get('comment'),
+        description=argToList(args.get('description')),
+        groups=argToList(args.get('groups')),
+        detection_json=args.get('detection_json')
+    )
+
+    exclusion = create_exclusion('ioa', create_args).get('resources')
+
+    return CommandResults(
+        outputs_prefix='CrowdStrike.IOAExclusion',
+        outputs_key_field='id',
+        outputs=exclusion,
+        readable_output=tableToMarkdown('CrowdStrike Falcon IOA exclusion', exclusion),
+    )
+
+
+def update_ioa_exclusion_command(args):
+    exclusion_id = args.get('id')
+    update_args = assign_params(
+        name=args.get('exclusion_name'),
+        pattern_id=args.get('pattern_id'),
+        pattern_name=argToList(args.get('pattern_name')),
+        cl_regex=args.get('cl_regex'),
+        ifn_regex=args.get('ifn_regex'),
+        comment=args.get('comment'),
+        description=argToList(args.get('description')),
+        groups=argToList(args.get('groups')),
+        detection_json=args.get('detection_json')
+    )
+    if not update_args:
+        raise Exception('At least one argument should be provided to update the exclusion.')
+
+    exclusion = update_exclusion('ioa', id=exclusion_id, update_args)
+
+    return CommandResults(
+        outputs_prefix='CrowdStrike.IOAExclusion',
+        outputs_key_field='id',
+        outputs=exclusion,
+        readable_output=tableToMarkdown('CrowdStrike Falcon IOA exclusion', exclusion),
+    )
+
+
+def delete_ioa_exclusion_command(args):
+    ids = argToList(args.get('ids'))
+
+    delete_exclusion('ioa', ids)
+
+    return CommandResults(
+        readable_output=f'The IOA exclusions with IDs {ids} was successfully deleted.'
+    )
+
+
+def search_ioa_exclusion_command(args):
+    if not (ids := args.get('ids')):
+        search_params = assign_params(
+            limit = args.get('limit'),
+            offset = args.get('offset')
+        )
+        if name := args.get('name'):
+            ids = get_exclusions('ioa', f'name:{name}', search_params).get('resources')
+        else:
+            ids = get_exclusions('ioa', args.get('filter'), search_params).get('resources')
+
+    exclusions = get_exclusion_entities('ioa', ids).get('resources')
+
+    return CommandResults(
+        outputs_prefix='CrowdStrike.MLExclusion',
+        outputs_key_field='id',
+        outputs=exclusions,
+        readable_output=tableToMarkdown('CrowdStrike Falcon IOA exclusions', exclusions),
+    )
+
+
+def list_quarantined_file_command(args):
+    if not (ids := args.get('ids')):
+        pagination_params = assign_params(
+            limit=args.get('limit', '50'),
+            offset = args.get('offset')
+        )
+        query_params = assign_params(
+            sha256=args.get('sha256'),
+            state=args.get('state'),
+            filename=argToList(args.get('filename')),
+            hostname=argToList(args.get('hostname')),
+            username=argToList(args.get('username')),
+        )
+
+        ids = list_quarantined_files_id(args.get('filter'), query_params, pagination_params).get('resources')
+
+    files = list_quarantined_files(ids).get('resources')
+
+    return CommandResults(
+        outputs_prefix='CrowdStrike.MLExclusion',
+        outputs_key_field='id',
+        outputs=files,
+        readable_output=tableToMarkdown('CrowdStrike Falcon IOA exclusions', files),
+    )
+
+
+def apply_quarantine_file_action_command(args):
+    if not (ids := args.get('ids')):
+        limit = args.get('limit', '50')
+        offset = args.get('offset')
+        query_params = assign_params(
+            sha256=args.get('sha256'),
+            state=args.get('state'),
+            filename=argToList(args.get('filename')),
+            hostname=argToList(args.get('hostname')),
+            username=argToList(args.get('username')),
+        )
+
+        ids = list_quarantined_files_id(args.get('filter'), query_params, limit=limit, offset=offset).get('resources')
+
+    files = apply_quarantined_files_action(ids).get('resources')
+
+    return CommandResults(
+        outputs_prefix='CrowdStrike.MLExclusion',
+        outputs_key_field='id',
+        outputs=files,
+        readable_output=tableToMarkdown('CrowdStrike Falcon IOA exclusions', files),
+    )
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
@@ -4280,6 +4618,26 @@ def main():
             return_results(cs_falcon_spotlight_list_host_by_vulnerability_command(args))
         elif command == 'cve':
             return_results(get_cve_command(args))
+        elif command == 'cs-falcon-create-ml-exclusion':
+            return_results(create_ml_exclusion_command(args))
+        elif command == 'cs-falcon-update-ml-exclusion':
+            return_results(update_ml_exclusion_command(args))
+        elif command == 'cs-falcon-delete-ml-exclusion':
+            return_results(delete_ml_exclusion_command(args))
+        elif command == 'cs-falcon-search-ml-exclusion':
+            return_results(search_ml_exclusion_command(args))
+        elif command == 'cs-falcon-create-ioa-exclusion':
+            return_results(create_ioa_exclusion_command(args))
+        elif command == 'cs-falcon-update-ioa-exclusion':
+            return_results(update_ioa_exclusion_command(args))
+        elif command == 'cs-falcon-delete-ioa-exclusion':
+            return_results(delete_ioa_exclusion_command(args))
+        elif command == 'cs-falcon-search-ioa-exclusion':
+            return_results(search_ioa_exclusion_command(args))
+        elif command == 'cs-falcon-list-quarantined-file':
+            return_results(list_quarantined_file_command(args))
+        elif command == 'cs-falcon-apply-quarantine-file-action':
+            return_results(apply_quarantine_file_action_command(args))
         else:
             raise NotImplementedError(f'CrowdStrike Falcon error: '
                                       f'command {command} is not implemented')
