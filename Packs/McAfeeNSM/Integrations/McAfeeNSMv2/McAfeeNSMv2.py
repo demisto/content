@@ -364,7 +364,7 @@ class Client(BaseClient):
         return self._http_request(method='GET', url_suffix=url_suffix)
 
     def assign_interface_policy_request(self, domain_id, interface_id, firewall_policy,
-                                        firewall_port_policy, ips_policy, costom_json):
+                                        firewall_port_policy, ips_policy, custom_policy_json):
         """ Assigns a policy to an interface.
             Args:
                 domain_id: int - The relevant domain id.
@@ -372,7 +372,7 @@ class Client(BaseClient):
                 firewall_policy: str - The firewall policy.
                 firewall_port_policy: str - The firewall port policy.
                 ips_policy: str - The IPS policy.
-                costom_json: str - The custom json.
+                custom_policy_json: str - The custom policy json.
             Returns:
                 A suuccess or failure code
 
@@ -380,7 +380,8 @@ class Client(BaseClient):
         url_suffix = f'/domain/{domain_id}/policyassignments/interface/{interface_id}'
         json_data = {"firewallPolicy": firewall_policy,
                      "firewallPortPolicy": firewall_port_policy,
-                     "ipsPolicy": ips_policy
+                     "ipsPolicy": ips_policy,
+                     "custom_policy_json": custom_policy_json
                      }
         return self._http_request(method='PUT', url_suffix=url_suffix, json_data=json_data)
 
@@ -2205,7 +2206,7 @@ def assign_interface_policy_command(client: Client, args: Dict) -> CommandResult
     firewall_policy = args.get('firewall_policy_name')
     firewall_port_policy = args.get('firewall_port_policy_name')
     ips_policy = args.get('ips_policy_name')
-    costom_json = args.get('custom_json')
+    custom_policy_json = args.get('custom_policy_json')
 
     # Check if at least one policy is provided
     if len(args) < 3:
@@ -2216,7 +2217,7 @@ def assign_interface_policy_command(client: Client, args: Dict) -> CommandResult
                                                       firewall_policy=firewall_policy,
                                                       firewall_port_policy=firewall_port_policy,
                                                       ips_policy=ips_policy,
-                                                      costom_json=costom_json
+                                                      custom_policy_json=custom_policy_json
                                                       )
     return CommandResults(
         readable_output='Policy assigned successfully.',
@@ -2281,6 +2282,16 @@ def get_sensor_configuration_command(client: Client, args: Dict) -> CommandResul
     response = client.get_sensor_configuration_request(sensor_id=sensor_id)
 
     capitlize_response = {k[:1].upper() + k[1:]: v for k, v in response.items()}
+    iner_dict = capitlize_response.get('PendingChanges')
+    add_on_dict={"IsPolicyConfigurationChanged": iner_dict.get("isPolicyConfigurationChanged")}
+    add_on_dict.update({"IsConfigurationChanged": iner_dict.get("isConfigurationChanged")})
+    add_on_dict.update({"IsMalwareConfigurationChanged": iner_dict.get("isMalwareConfigurationChanged")})
+    add_on_dict.update({"IsSignatureSetConfigurationChanged":iner_dict.get("isSignatureSetConfigurationChanged")})
+    add_on_dict.update({"IsSSLConfigurationChanged": iner_dict.get("sSSLConfigurationChanged")})
+    add_on_dict.update({"IsBotnetConfigurationChanged": iner_dict.get("isBotnetConfigurationChanged")})
+    add_on_dict.update({"IsGloablPolicyConfigurationChanged": iner_dict.get("isGloablPolicyConfigurationChanged")})
+    
+    capitlize_response.update(add_on_dict)
     readable_output = tableToMarkdown(
         name='Sensor Configuration', t=capitlize_response, removeNull=True
     )
