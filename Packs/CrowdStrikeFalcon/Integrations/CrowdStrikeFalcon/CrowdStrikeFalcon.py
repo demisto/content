@@ -542,9 +542,9 @@ def handle_response_errors(raw_res: dict, err_msg: str = None):
 
 def create_json_iocs_list(
         ioc_type: str,
-        iocs_value,
+        iocs_value: List[str],
         action: str,
-        platforms,
+        platforms: List[str],
         severity: Optional[str] = None,
         source: Optional[str] = None,
         description: Optional[str] = None,
@@ -1611,7 +1611,7 @@ def change_host_group(is_post: bool,
 
 def change_host_group_members(action_name: str,
                               host_group_id: str,
-                              host_ids) -> Dict:
+                              host_ids: List[str]) -> Dict:
     allowed_actions = {'add-hosts', 'remove-hosts'}
     if action_name not in allowed_actions:
         raise DemistoException(f'CrowdStrike Falcon error: action name should be in {allowed_actions}')
@@ -1639,14 +1639,14 @@ def host_group_members(filter: Optional[str],
     return response
 
 
-def resolve_incident(ids, status: str):
+def resolve_incident(ids: List[str], status: str):
     if status not in STATUS_TEXT_TO_NUM:
         raise DemistoException(f'CrowdStrike Falcon Error: '
                                f'Status given is {status} and it is not in {STATUS_TEXT_TO_NUM.keys()}')
     return update_incident_request(ids, STATUS_TEXT_TO_NUM[status], 'update_status')
 
 
-def update_incident_request(ids, value: str, action_name: str):
+def update_incident_request(ids: List[str], value: str, action_name: str):
     data = {
         "action_parameters": [
             {
@@ -1661,7 +1661,7 @@ def update_incident_request(ids, value: str, action_name: str):
                         json=data)
 
 
-def update_detection_request(ids, status: str) -> Dict:
+def update_detection_request(ids: List[str], status: str) -> Dict:
     if status not in DETECTION_STATUS:
         raise DemistoException(f'CrowdStrike Falcon Error: '
                                f'Status given is {status} and it is not in {DETECTION_STATUS}')
@@ -1678,7 +1678,7 @@ def list_host_groups(filter: Optional[str], limit: Optional[str], offset: Option
     return response
 
 
-def delete_host_groups(host_group_ids) -> Dict:
+def delete_host_groups(host_group_ids: List[str]) -> Dict:
     params = {'ids': host_group_ids}
     response = http_request(method='DELETE',
                             url_suffix='/devices/entities/host-groups/v1',
@@ -1844,7 +1844,7 @@ def reopen_in_xsoar(entries: List, remote_incident_id: str, incident_type_name: 
     })
 
 
-def set_updated_object(updated_object: Dict[str, Any], mirrored_data: Dict[str, Any], mirroring_fields):
+def set_updated_object(updated_object: Dict[str, Any], mirrored_data: Dict[str, Any], mirroring_fields: List[str]):
     """
     Sets the updated object (in place) for the incident or detection we want to mirror in, from the mirrored data, according to
     the mirroring fields. In the mirrored data, the mirroring fields might be nested in a dict or in a dict inside a list (if so,
@@ -2055,7 +2055,7 @@ def get_fetch_times_and_offset(current_fetch_info: dict):
     return last_fetch_time, offset, prev_fetch, last_fetch_timestamp
 
 
-def migrate_last_run(last_run):
+def migrate_last_run(last_run: dict[str, str]) -> list[dict]:
     """This function migrated from old last run object to new last run object
 
     Args:
@@ -2064,13 +2064,13 @@ def migrate_last_run(last_run):
     Returns:
         list[dict]: New last run object.
     """
-    updated_last_run_detections: dict[str, str] = {}
+    updated_last_run_detections: dict[str, str | None] = {}
     if (detection_time := last_run.get('first_behavior_detection_time')) and \
        (detection_time_date := dateparser.parse(detection_time)):
         updated_last_run_detections['time'] = detection_time_date.strftime(DATE_FORMAT)
     updated_last_run_detections['offset'] = last_run.get('detection_offset')
 
-    updated_last_run_incidents: dict[str, str] = {}
+    updated_last_run_incidents: dict[str, str | None] = {}
     if (incident_time := last_run.get('first_behavior_incident_time')) and \
        (incident_time_date := dateparser.parse(incident_time)):
         updated_last_run_incidents['time'] = incident_time_date.strftime(DATE_FORMAT)
@@ -2423,9 +2423,9 @@ def upload_custom_ioc_command(
     """
     if action in {'prevent', 'detect'} and not severity:
         raise ValueError(f'Severity is required for action {action}.')
-    values = argToList(value)
+    values: list[str] = argToList(value)
     applied_globally = argToBoolean(applied_globally) if applied_globally else None
-    host_groups = argToList(host_groups)
+    host_groups: list[str] = argToList(host_groups)
     tags = argToList(tags)
     platforms_list = argToList(platforms)
 
@@ -3576,7 +3576,7 @@ def list_host_group_members_command(host_group_id: Optional[str] = None,
     )
 
 
-def add_host_group_members_command(host_group_id: str, host_ids) -> CommandResults:
+def add_host_group_members_command(host_group_id: str, host_ids: List[str]) -> CommandResults:
     response = change_host_group_members(action_name='add-hosts',
                                          host_group_id=host_group_id,
                                          host_ids=host_ids)
@@ -3588,7 +3588,7 @@ def add_host_group_members_command(host_group_id: str, host_ids) -> CommandResul
                           raw_response=response)
 
 
-def remove_host_group_members_command(host_group_id: str, host_ids) -> CommandResults:
+def remove_host_group_members_command(host_group_id: str, host_ids: List[str]) -> CommandResults:
     response = change_host_group_members(action_name='remove-hosts',
                                          host_group_id=host_group_id,
                                          host_ids=host_ids)
@@ -3600,7 +3600,7 @@ def remove_host_group_members_command(host_group_id: str, host_ids) -> CommandRe
                           raw_response=response)
 
 
-def resolve_incident_command(ids, status: str):
+def resolve_incident_command(ids: List[str], status: str):
     resolve_incident(ids, status)
     readable = '\n'.join([f'{incident_id} changed successfully to {status}' for incident_id in ids])
     return CommandResults(readable_output=readable)
@@ -3617,7 +3617,7 @@ def list_host_groups_command(filter: Optional[str] = None, offset: Optional[str]
                           raw_response=response)
 
 
-def delete_host_groups_command(host_group_ids) -> CommandResults:
+def delete_host_groups_command(host_group_ids: List[str]) -> CommandResults:
     response = delete_host_groups(host_group_ids)
     deleted_ids = response.get('resources')
     readable = '\n'.join([f'Host groups {host_group_id} deleted successfully' for host_group_id in deleted_ids]) \
@@ -3949,17 +3949,17 @@ def get_detection_for_incident_command(incident_id: str) -> CommandResults:
                           raw_response=detection_res)
 
 
-def build_url_filter(values):
+def build_url_filter(values: list[str] | str | None):
     return 'cve.id:[\'' + "','".join(argToList(values)) + '\']'
 
 
-def cs_falcon_spotlight_search_vulnerability_request(aid, cve_id,
-                                                     cve_severity , tags ,
-                                                     status , platform_name: str ,
-                                                     host_group , host_type ,
-                                                     last_seen_within: str , is_suppressed: str , filter_: str,
-                                                     remediation: bool , evaluation_logic: bool ,
-                                                     host_info: bool , limit: str ) -> dict:
+def cs_falcon_spotlight_search_vulnerability_request(aid: list[str] | None, cve_id: list[str] | None,
+                                                     cve_severity: list[str] | None, tags: list[str] | None,
+                                                     status: list[str] | None, platform_name: str | None,
+                                                     host_group: list[str] | None, host_type: list[str] | None,
+                                                     last_seen_within: str | None, is_suppressed: str | None, filter_: str,
+                                                     remediation: bool | None, evaluation_logic: bool | None,
+                                                     host_info: bool | None, limit: str | None) -> dict:
     input_arg_dict = {'aid': aid,
                       'cve.id': cve_id,
                       'host_info.tags': tags,
@@ -3996,13 +3996,13 @@ def cs_falcon_spotlight_search_vulnerability_request(aid, cve_id,
     return http_request('GET', suffix_url)
 
 
-def cs_falcon_spotlight_list_host_by_vulnerability_request(cve_ids, limit: str) -> dict:
+def cs_falcon_spotlight_list_host_by_vulnerability_request(cve_ids: list[str] | None, limit: str) -> dict:
     url_filter = build_url_filter(cve_ids)
     params = {'filter': url_filter, 'facet': 'host_info', 'limit': limit}
     return http_request('GET', '/spotlight/combined/vulnerabilities/v1', params=params)
 
 
-def cve_request(cve_id) -> dict:
+def cve_request(cve_id: list[str] | None) -> dict:
     url_filter = build_url_filter(cve_id)
     return http_request('GET', '/spotlight/combined/vulnerabilities/v1',
                         params={'filter': url_filter, 'facet': 'cve'})
@@ -4077,7 +4077,7 @@ def cs_falcon_spotlight_list_host_by_vulnerability_command(args: dict) -> Comman
                           outputs_prefix="CrowdStrike.VulnerabilityHost", outputs_key_field="id")
 
 
-def get_cve_command(args):
+def get_cve_command(args: dict) -> list[CommandResults]:
     """
         Get a list of vulnerability by spotlight
         : args: filter which include params or filter param.
