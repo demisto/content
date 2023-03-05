@@ -759,7 +759,7 @@ Lists details about all member accounts for the current Security Hub master acco
 >### AWS SecurityHub ListMembers
 >**No entries.**
 
-<~XSOAR>
+
 ### get-remote-data
 ***
 Get remote data from a remote incident. This method does not update the current incident, and should be used for debugging purposes only.
@@ -830,5 +830,5 @@ The supported fields in the mirroring out process are:
 **Important Note:**Mirroring out updates do not affect the value of UpdatedAt for a finding. These updates can be overwritten by the security-findings provider.
 
 * Before updating a comment, make sure that you chose an owner to the incident in the Case Details section. Otherwise, the comment update won't work.
-</~XSOAR>
+
 * Note: AWS Security Hub Verification State, AWS Security Hub Workflow Status fields can contain only 1 state/status.
