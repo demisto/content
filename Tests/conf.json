@@ -4476,7 +4476,7 @@
             "integrations": [
                 "CrowdStrike Falcon X"
             ],
-            "timeout": 1800
+            "timeout": 2000
         },
         {
             "playbookID": "CrowdStrike_Falcon_X_-Test-Detonate_File",
