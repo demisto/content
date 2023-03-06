@@ -337,7 +337,9 @@ jobs:
     steps:
       - *attach_workspace
       - *remote_docker
-      - *restore_cache
+      - *install_poetry
+      - *install_build_dependencies
+      - *install_node_ci
       - *prepare_environment
       - *install_neo4j
       - *infrastructure_testing
@@ -353,7 +355,9 @@ jobs:
     <<: *environment
     steps:
       - *attach_workspace
-      - *restore_cache
+      - *install_poetry
+      - *install_build_dependencies
+      - *install_node_ci
       - *prepare_environment
       - *install_neo4j
       - *secrets
