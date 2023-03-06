@@ -430,14 +430,14 @@ tasks:
         complex:
           root: Endpoint
           accessor: Hostname
-      Endpoint_id:
-        complex:
-          root: PaloAltoNetworksXDR.Endpoint
-          accessor: endpoint_id
+          transformers:
+          - operator: uniq
       Endpoint_ip:
         complex:
           root: IP
           accessor: Address
+          transformers:
+          - operator: uniq
     separatecontext: true
     view: |-
       {
