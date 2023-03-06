@@ -108,6 +108,39 @@ class TestParseCSV:
         result['EntryContext']['File'] = sorted_files
         assert expected == result
 
+    def test_parsecsv_with_iocs_same_column(self, mocker):
+        """
+        Given: CSV table with different IOCs types in same column.
+
+        When: Passing the same column number for both IOCs.
+
+        Then: Ensure each IOC type in context is expected.
+        """
+        from ParseCSV import main
+        with open("./TestData/IOCs_results.json") as f:
+            expected = json.load(f)
+        args = {
+            "entryID": "entry_id",
+            "parseAll": "no",
+            "codec": "utf-8",
+            "ips": "1",
+            "domains": "1"
+        }
+        file_obj = self.create_file_object("./TestData/IOCs.csv")
+        self.mock_demisto(mocker, args_value=args, file_obj=file_obj)
+        main()
+        result = self.get_demisto_results()
+
+        ips_result = result.get('EntryContext', {}).get('IP', [])
+        if ips_result and '1.1.1.1' != ips_result[0].get('Address'):
+            result['EntryContext']['IP'].reverse()
+
+        domains_result = result.get('EntryContext', {}).get('Domain', [])
+        if domains_result and not domains_result[0].get('Name').endswith('com'):
+            result['EntryContext']['Domain'].reverse()
+
+        assert expected == result
+
     def test_main_with_hash_empty_file(self, mocker):
         from ParseCSV import main
         args = {
