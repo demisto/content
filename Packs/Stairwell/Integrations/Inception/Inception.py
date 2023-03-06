@@ -34,10 +34,8 @@ def test_module(client):  # pragma: no cover
 
 def file_enrichment_command(client, file_hash):
     try:
-        response = client.get_file_reputation(file_hash)
-        response = json.dumps(response)
-        if("attributes" in response):
-            responseJson = json.loads(response)
+        responseJson = client.get_file_reputation(file_hash)
+        if "attributes" in responseJson['data']:
             md = '# Stairwell Inception\n'
             file_md5 = responseJson['data']['attributes']['md5']
             file_sha1 = responseJson['data']['attributes']['sha1']
@@ -91,9 +89,11 @@ def file_enrichment_command(client, file_hash):
             mal_eval_output = responseJson['data']['attributes']['mal_eval_result']
             if mal_eval_output:
                 if mal_eval_output['label'] != '':
-                    md += 'Mal-Eval Label: ' + mal_eval_output['label'] + '\n'
+                    mal_eval_label = mal_eval_output['label']
+                    md += f'Mal-Eval Label: {mal_eval_label}\n'
                 if mal_eval_output['probability_bucket'] != '':
-                    md += 'Mal-Eval Malicious Likelihood: ' + mal_eval_output['probability_bucket'] + '\n'
+                    mal_eval_prob = mal_eval_output['probability_bucket']
+                    md += f'Mal-Eval Malicious Likelihood: {mal_eval_prob}\n'
             results = CommandResults(
                 readable_output=md,
                 outputs_prefix='Inception.File_Details',
