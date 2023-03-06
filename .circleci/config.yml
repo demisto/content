@@ -1,4 +1,9 @@
 version: 2.1
+orbs:
+  python: circleci/python@<< pipeline.parameters.python-orb-version >>
+  node: circleci/node@<< pipeline.parameters.node-orb-version >>
+  orb-tools: circleci/orb-tools@10.0
+
 commands:
   set-instance-role-env-variable:
     description: "Sets INSTANCE_ROLE env variable into $BASH_ENV file"
@@ -43,6 +48,12 @@ parameters:
   cache-version:
     type: string
     default: v1  # Change this parameter to clear cache.
+  python-orb-version:
+    type: string
+    default: "2.0.3"
+  node-orb-version:
+    type: string
+    default: "5.0.1"
 
 references:
   environment: &environment
@@ -61,12 +72,12 @@ references:
   
   install_poetry: &install_poetry
     - run:
-        name: Install Poetry
-        command: |
-          # in old images we need to remove existing poetry
-          rm -rf $HOME/.poetry/bin/poetry
-          sudo curl -sSL https://install.python-poetry.org | python3 -
-          poetry --version
+       name: Install Poetry
+       command: |
+        # in old images we need to remove existing poetry
+        rm -rf $HOME/.poetry/bin/poetry
+        sudo curl -sSL https://install.python-poetry.org | python3 -
+        poetry --version
 
   install_build_dependencies: &install_build_dependencies
     - python/install-packages: 
@@ -319,9 +330,9 @@ jobs:
     <<: *environment
     steps:
       - checkout
-      - *install_poetry
-      - *install_build_dependencies
-      - *install_node_ci
+      - <<: *install_poetry
+      - <<: *install_build_dependencies
+      - <<: *install_node_ci
       - *prepare_environment
       - *get_contribution_pack
       - *persist_to_workspace
@@ -336,9 +347,9 @@ jobs:
     steps:
       - *attach_workspace
       - *remote_docker
-      - *install_poetry
-      - *install_build_dependencies
-      - *install_node_ci
+      - <<: *install_poetry
+      - <<: *install_build_dependencies
+      - <<: *install_node_ci
       - *prepare_environment
       - *install_neo4j
       - *infrastructure_testing
@@ -354,9 +365,9 @@ jobs:
     <<: *environment
     steps:
       - *attach_workspace
-      - *install_poetry
-      - *install_build_dependencies
-      - *install_node_ci
+      - <<: *install_poetry
+      - <<: *install_build_dependencies
+      - <<: *install_node_ci
       - *prepare_environment
       - *install_neo4j
       - *secrets
