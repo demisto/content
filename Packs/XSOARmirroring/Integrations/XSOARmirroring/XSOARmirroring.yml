@@ -47,13 +47,13 @@ configuration:
   defaultvalue: notes,chats,attachments
   type: 0
   required: false
-  additionalinfo: Which entries to retrieve from the XSOAR server.
+  additionalinfo: Which entries to retrieve from the XSOAR server. The available options are notes, comments (chats) and files (attachments).
 - display: Incoming Entry tags
   name: tags
   type: 0
   required: false
   additionalinfo: Only entries with these tags are retrieved from the XSOAR server. If no tags are listed, no entries are retrieved.
-- additionalinfo: Choose the tags to filter the enties you wish to send to the other XSOAR instance.
+- additionalinfo: Choose the tags to filter the entries you wish to send to the other XSOAR instance. If no tags are listed, no entries will be sent.
   defaultvalue: ""
   display: Outgoing Entry Tags
   hidden: false

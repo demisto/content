@@ -17,9 +17,9 @@ This integration was integrated and tested with version 6.0 of XSOAR.
     | Maximum number of incidents to pull per fetch. |  | False |
     | Fetch only incidents that match the query | Don't add created time to the query as this field will be addressed in the "First fetch time". | False |
     | First fetch time | Date or relative timestamp to start fetching incidents from, in the format of &amp;lt;number&amp;gt; &amp;lt;time unit&amp;gt;. For example, 2 minutes, 12 hours, 6 days, 2 weeks, 3 months, 1 year, ISO timestamp. Default is 3 days. | False |
-    | Entry Categories | Which entries to retrieve from the XSOAR server. | False |
+    | Entry Categories | Which entries to retrieve from the XSOAR server. The available options are notes, comments (chats) and files (attachments). | False |
     | Incoming Entry tags | Only entries with these tags are retrieved from the XSOAR server. If no tags are listed, no entries are retrieved. | False |
-    | Outgoing Entry Tags | Choose the tags to filter the enties you wish to send to the other XSOAR instance. | False |
+    | Outgoing Entry Tags | Choose the tags to filter the entries you wish to send to the other XSOAR instance. If no tags are listed, no entries will be sent. | False |
     | Incident Mirroring Direction |  | False |
     | Disable fetching for incidents came from this integration | Enable this option to disable mirroring of incidents that came from the integration of XSOAR Mirroring. This adds \`-sourceBrand:“XSOAR Mirroring”\` to your query. | False |
     | Trust any certificate (not secure) |  | False |
