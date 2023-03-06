@@ -1,7 +1,7 @@
 import io
 import json
 
-from NetskopeEventCollector import get_sorted_events_by_type, create_last_run, Client
+from NetskopeEventCollector import get_sorted_events_by_type, Client
 
 
 def util_load_json(path):
@@ -11,6 +11,7 @@ def util_load_json(path):
 
 MOCK_ENTRY = util_load_json('test_data/mock_events.json')
 EVENTS_RAW_V2 = util_load_json('test_data/events_raw_v2.json')
+EVENTS_RAW_V2_MULTI = util_load_json('test_data/events_raw_v2_2_results.json')
 BASE_URL = 'https://netskope.example.com/'
 
 
@@ -67,26 +68,6 @@ def test_get_sorted_events_by_type():
         }]
 
 
-def test_create_last_run():
-    """
-    Given:
-        - List of events
-        - Empty list of events
-    When:
-        - Running the command create_last_run
-    Then:
-        - Verify that when a list of events exists, it will take the last timestamp
-        - Verify that when there are no events yet (first fetch) the timestamp for all will be as the first fetch
-    """
-    assert create_last_run(MOCK_ENTRY, {}) == {'alert': 1657199110, 'audit': 1658384700, 'application': 1656892798,
-                                               'network': 1657693986, 'page': 1673866616}
-
-    # Still no events - last run should be from first_fetch
-    assert create_last_run([], {'alert': 86400, 'application': 86400, 'audit': 86400, 'network': 86400,
-                                'page': 86400}) == \
-           {'alert': 86400, 'application': 86400, 'audit': 86400, 'network': 86400, 'page': 86400}
-
-
 def test_test_module_v2(mocker):
     """
     Given:
@@ -134,9 +115,51 @@ def test_get_events_v2(mocker):
     Then:
         - Make sure only the events returns.
     """
-    from NetskopeEventCollector import get_events_v2, EVENT_TYPES_V2
+    from NetskopeEventCollector import get_events_v2, ALL_SUPPORTED_EVENT_TYPES
     client = Client(BASE_URL, 'netskope_token', 'v2', validate_certificate=False, proxy=False)
     mocker.patch.object(client, 'get_events_request_v2', return_value=EVENTS_RAW_V2)
     response = get_events_v2(client, {}, 1)
-    assert len(response) == len(EVENT_TYPES_V2)
+    assert len(response) == len(ALL_SUPPORTED_EVENT_TYPES)
+    assert 'results' not in response
+
+
+def test_get_events_v2__multi_page__end_at_limit(mocker):
+    """
+    Given:
+        - netskope-get-events call
+        - 2 pages are available per type
+        - page size is set to 1
+        - limit is set to 2 per event type
+    When:
+        - Running the command
+    Then:
+        - Make sure 2 * ALL_SUPPORTED_EVENT_TYPES is returned
+    """
+    import NetskopeEventCollector as NEC
+    client = Client(BASE_URL, 'netskope_token', 'v2', validate_certificate=False, proxy=False)
+    mocker.patch.object(client, 'get_events_request_v2', side_effect=[EVENTS_RAW_V2 for _ in range(10)])
+    NEC.MAX_EVENTS_PAGE_SIZE = 1
+    response = NEC.get_events_v2(client, {}, 2)
+    assert len(response) == (2 * len(NEC.ALL_SUPPORTED_EVENT_TYPES))
+
+
+def test_get_events_v2__multi_page__end_before_limit(mocker):
+    """
+    Given:
+        - netskope-get-events call
+        - 2 pages are available per type (last type only 1 page)
+        - page size is set to 2
+        - limit is set to 4 per event type
+    When:
+        - Running the command
+    Then:
+        - Make sure (4 * ALL_SUPPORTED_EVENT_TYPES - 1) is returned
+    """
+    import NetskopeEventCollector as NEC
+    client = Client(BASE_URL, 'netskope_token', 'v2', validate_certificate=False, proxy=False)
+    side_effect = [EVENTS_RAW_V2_MULTI for _ in range(9)] + [EVENTS_RAW_V2]
+    mocker.patch.object(client, 'get_events_request_v2', side_effect=side_effect)
+    NEC.MAX_EVENTS_PAGE_SIZE = 2
+    response = NEC.get_events_v2(client, {}, 4)
+    assert len(response) == (4 * len(NEC.ALL_SUPPORTED_EVENT_TYPES) - 1)
     assert 'results' not in response
