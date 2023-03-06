@@ -96,7 +96,7 @@ references:
         sudo echo "apoc.import.file.use_neo4j_config=true" >> $apoc_conf_file
         neo4j-admin set-initial-password test
 
-    install_environment: &install_environment
+  install_environment: &install_environment
     - run:
        name: Install Poetry
        command: |
