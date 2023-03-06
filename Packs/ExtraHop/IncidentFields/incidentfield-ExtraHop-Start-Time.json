@@ -1,11 +1,11 @@
 {
-    "id": "incident_extrahopstarttime",
+    "id": "incident_extrahoprevealxstarttime",
     "version": -1,
     "modified": "2023-02-17T12:25:18.21240337+05:30",
     "name": "ExtraHop Reveal(x) Start Time",
     "ownerOnly": false,
     "description": "The start time of detection.",
-    "cliName": "extrahopstarttime",
+    "cliName": "extrahoprevealxstarttime",
     "type": "number",
     "closeForm": false,
     "editForm": true,

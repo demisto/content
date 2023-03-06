@@ -54,7 +54,7 @@ tasks:
       detection_id:
         complex:
           root: foundIncidents.CustomFields
-          accessor: extrahopdetectionid
+          accessor: extrahoprevealxetectionid
       incident_close_reason:
         complex:
           root: foundIncidents
@@ -245,7 +245,7 @@ tasks:
       - "11"
     scriptarguments:
       detection_id:
-        simple: ${incident.extrahopdetectionid}
+        simple: ${incident.extrahoprevealxdetectionid}
       incident_close_reason:
         simple: ${incident.closeReason}
       incident_id:
@@ -306,7 +306,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: incident.extrahopdetectionid
+              simple: incident.extrahoprevealxdetectionid
             iscontext: true
     continueonerrortype: ""
     view: |-

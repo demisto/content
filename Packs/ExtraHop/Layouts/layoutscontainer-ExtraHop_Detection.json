@@ -380,7 +380,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "extrahopdetectionid",
+                                "fieldId": "extrahoprevealxdetectionid",
                                 "height": 22,
                                 "id": "088d5b50-ab92-11ed-85d4-a9318b4d07e0",
                                 "index": 1,
@@ -409,7 +409,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "extrahopstarttime",
+                                "fieldId": "extrahoprevealxstarttime",
                                 "height": 22,
                                 "id": "b86880f0-af7e-11ed-aeb3-17e4ab65d78c",
                                 "index": 4,
@@ -418,7 +418,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "extrahopupdatetime",
+                                "fieldId": "extrahoprevealxupdatetime",
                                 "height": 22,
                                 "id": "c6235da0-af7e-11ed-aeb3-17e4ab65d78c",
                                 "index": 5,
@@ -427,7 +427,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "extrahopmodtime",
+                                "fieldId": "extrahoprevealxmodtime",
                                 "height": 22,
                                 "id": "0fc09e00-b1d7-11ed-b7b0-11ddace27d31",
                                 "index": 6,
@@ -436,7 +436,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "extrahopendtime",
+                                "fieldId": "extrahoprevealxendtime",
                                 "height": 22,
                                 "id": "c9e5bcd0-af7e-11ed-aeb3-17e4ab65d78c",
                                 "index": 7,
@@ -445,7 +445,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "extrahopriskscore",
+                                "fieldId": "extrahoprevealxriskscore",
                                 "height": 22,
                                 "id": "98c8f400-af7e-11ed-aeb3-17e4ab65d78c",
                                 "index": 7,
@@ -463,7 +463,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "extrahopdetectionstatus",
+                                "fieldId": "extrahoprevealxdetectionstatus",
                                 "height": 22,
                                 "id": "2b0711a0-ac53-11ed-9939-b34573b2eaec",
                                 "index": 9,
@@ -472,7 +472,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "extrahopdetectiontype",
+                                "fieldId": "extrahoprevealxdetectiontype",
                                 "height": 22,
                                 "id": "17cd6150-a935-11ed-beec-cd0cb5eb7120",
                                 "index": 10,
@@ -481,7 +481,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "extrahopusercreated",
+                                "fieldId": "extrahoprevealxusercreated",
                                 "height": 22,
                                 "id": "2cb9ac40-a935-11ed-beec-cd0cb5eb7120",
                                 "index": 11,
@@ -553,7 +553,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 6,
-                                "fieldId": "extrahopdetectionparticipants",
+                                "fieldId": "extrahoprevealxdetectionparticipants",
                                 "height": 106,
                                 "id": "2ce1bb60-ab5e-11ed-85b3-0dd32a5984c8",
                                 "index": 1,
@@ -672,7 +672,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 4,
-                                "fieldId": "extrahopmitretechniques",
+                                "fieldId": "extrahoprevealxmitretechniques",
                                 "height": 106,
                                 "id": "27abf110-ab95-11ed-b1dd-9fa418020c0a",
                                 "index": 0,
@@ -700,7 +700,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 4,
-                                "fieldId": "extrahopmitretactics",
+                                "fieldId": "extrahoprevealxmitretactics",
                                 "height": 106,
                                 "id": "abae06b0-ac30-11ed-8ae7-71b5fe3d0b36",
                                 "index": 0,
@@ -727,7 +727,7 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "extrahopproperties",
+                                "fieldId": "extrahoprevealxproperties",
                                 "height": 22,
                                 "id": "56ca3c70-ac32-11ed-8ae7-71b5fe3d0b36",
                                 "index": 0,
@@ -754,7 +754,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 6,
-                                "fieldId": "extrahopdetectiondevices",
+                                "fieldId": "extrahoprevealxdetectiondevices",
                                 "height": 106,
                                 "id": "82b9f5b0-ac36-11ed-af36-61746b21b6cd",
                                 "index": 0,

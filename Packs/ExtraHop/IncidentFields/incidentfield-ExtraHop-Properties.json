@@ -1,10 +1,10 @@
 {
-    "id": "incident_extrahopproperties",
+    "id": "incident_extrahoprevealxproperties",
     "version": -1,
     "modified": "2023-02-18T13:18:24.590044098+05:30",
     "name": "ExtraHop Reveal(x) Properties",
     "ownerOnly": false,
-    "cliName": "extrahopproperties",
+    "cliName": "extrahoprevealxproperties",
     "type": "longText",
     "closeForm": false,
     "editForm": true,

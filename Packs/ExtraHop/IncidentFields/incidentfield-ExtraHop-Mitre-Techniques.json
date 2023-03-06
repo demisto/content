@@ -1,11 +1,11 @@
 {
-    "id": "incident_extrahopmitretechniques",
+    "id": "incident_extrahoprevealxmitretechniques",
     "version": -1,
     "modified": "2023-02-13T17:08:22.20888309+05:30",
     "name": "ExtraHop Reveal(x) Mitre Techniques",
     "ownerOnly": false,
     "description": "The mitre techniques identified in detection.",
-    "cliName": "extrahopmitretechniques",
+    "cliName": "extrahoprevealxmitretechniques",
     "type": "grid",
     "closeForm": false,
     "editForm": true,

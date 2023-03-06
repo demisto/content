@@ -1,10 +1,10 @@
 {
-    "id": "incident_extrahopdetectiondevices",
+    "id": "incident_extrahoprevealxdetectiondevices",
     "version": -1,
     "modified": "2023-02-14T15:56:19.525045398+05:30",
     "name": "ExtraHop Reveal(x) Detection Devices",
     "ownerOnly": false,
-    "cliName": "extrahopdetectiondevices",
+    "cliName": "extrahoprevealxdetectiondevices",
     "type": "grid",
     "closeForm": false,
     "editForm": true,
