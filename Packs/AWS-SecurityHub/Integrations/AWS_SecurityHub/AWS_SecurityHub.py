@@ -6,7 +6,6 @@ from datetime import timezone
 from dateparser import parse
 
 
-# comment
 # Disable insecure warnings
 urllib3.disable_warnings()
 
