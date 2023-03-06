@@ -56,7 +56,7 @@ Mapper
 Reveal(x
 CVE-2019-0708
 extrahop-detections-list
-extrahop-metric-list
+extrahop-metrics-list
 extrahop-watchlist-get
 extrahop-peers-get
 extrahop-devices-search
