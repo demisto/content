@@ -496,7 +496,7 @@ tasks:
       id: d8abe179-60e4-4f0e-8c8c-517847d83785
       version: -1
       name: Soooooo who is the person behind this attack?
-      description: 'In order to answer this you will need to run the CTF #3 automation/script with the provided answer'
+      description: 'In order to answer this you will need to run the CTF_3 automation/script with the provided answer'
       type: regular
       iscommand: false
       brand: ""
