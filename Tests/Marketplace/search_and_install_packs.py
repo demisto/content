@@ -353,11 +353,11 @@ def install_packs(client: demisto_client,
                                                                                 body={'packs': packs,
                                                                                       'ignoreWarnings': True},
                                                                                 accept='application/json',
-                                                                                _request_timeout=request_timeout)
+                                                                                _request_timeout=request_timeout,
+                                                                                response_type='object')
 
             if status_code in range(200, 300) and status_code != 204:
-                packs_data = [{'ID': pack.get('id'), 'CurrentVersion': pack.get('currentVersion')} for pack in
-                              ast.literal_eval(response_data)]
+                packs_data = [{'ID': pack.get('id'), 'CurrentVersion': pack.get('currentVersion')} for pack in response_data]
                 logging.success(f'Packs were successfully installed on server {host}')
                 logging.debug(f'The packs that were successfully installed on server {host}:\n{packs_data}')
 
