@@ -5,7 +5,7 @@ fromversion: 6.0.0
 name: XSOAR Mirroring
 display: XSOAR Mirroring
 category: Utilities
-description: 'Facilitates mirroring of XSOAR incidents between different XSOAR tenants.'
+description: Facilitates mirroring of Cortex XSOAR incidents between different Cortex XSOAR tenants.
 configuration:
 - display: Incident type
   name: incidentType
@@ -16,7 +16,7 @@ configuration:
   defaultvalue: https://host.docker.internal:443
   type: 0
   required: true
-  additionalinfo: The URL of the XSOAR server to which you are connecting.
+  additionalinfo: The URL of the Cortex XSOAR server to which you are connecting.
 - display: API Key
   name: apikey
   type: 4
@@ -26,7 +26,7 @@ configuration:
   name: isFetch
   type: 8
   required: false
-- display: Maximum number of incidents to pull per fetch.
+- display: Maximum number of incidents to pull per fetch
   name: max_fetch
   defaultvalue: "100"
   type: 0
@@ -47,13 +47,13 @@ configuration:
   defaultvalue: notes,chats,attachments
   type: 0
   required: false
-  additionalinfo: Which entries to retrieve from the XSOAR server. The available options are notes, comments (chats) and files (attachments).
+  additionalinfo: Which entries to retrieve from the Cortex XSOAR server. The available options are notes, comments (chats), and files. (attachments).
 - display: Incoming Entry tags
   name: tags
   type: 0
   required: false
-  additionalinfo: Only entries with these tags are retrieved from the XSOAR server. If no tags are listed, no entries are retrieved.
-- additionalinfo: Choose the tags to filter the entries you wish to send to the other XSOAR instance. If no tags are listed, no entries will be sent.
+  additionalinfo: Only entries with these tags are retrieved from the Cortex XSOAR server. If no tags are listed, no entries are retrieved.
+- additionalinfo: Choose the tags to filter the entries you want to send to the other Cortex XSOAR instance. If no tags are listed, no entries will be sent.
   defaultvalue: ""
   display: Outgoing Entry Tags
   hidden: false
@@ -70,8 +70,8 @@ configuration:
   - Incoming And Outgoing
   required: false
   type: 15
-- display: Disable fetching for incidents came from this integration
-  additionalinfo: Enable this option to disable mirroring of incidents that came from the integration of XSOAR Mirroring. This adds `-sourceBrand:“XSOAR Mirroring”` to your query.
+- display: Disable fetching for incidents that came from this integration
+  additionalinfo: Enable this option to disable mirroring of incidents that came from the integration of Cortex XSOAR Mirroring. This adds `-sourceBrand:“XSOAR Mirroring”` to your query.
   name: disable_from_same_integration
   defaultvalue: "true"
   type: 8
@@ -93,8 +93,8 @@ configuration:
   defaultvalue: "true"
   type: 8
   required: false
-  additionalinfo: 'A parameter integration that removes the playbookId field from incoming incidents.
-   Note: when set to true (default), the instance will attempt to run a playbook according to the incoming ID.
+  additionalinfo: 'A parameter integration that removes the playbook ID field from incoming incidents.
+   Note: When set to true (default), the instance will attempt to run a playbook according to the incoming ID.
     When set to false, the instance will run the default playbook for the incident type (if configured locally).'
 script:
   script: ''
@@ -103,10 +103,10 @@ script:
   - name: xsoar-search-incidents
     arguments:
     - name: query
-      description: Which incidents to retrieve
+      description: Which incidents to retrieve.
       defaultValue: -status:closed -category:job
     - name: start_time
-      description: From when to search
+      description: From when to search.
       defaultValue: 3 days
     - name: max_results
       description: How many incidents to retrieve.
@@ -118,12 +118,12 @@ script:
       name: columns
       required: false
       secret: false
-    description: Search remote XSOAR for incidents
+    description: Search remote Cortex XSOAR for incidents.
   - name: xsoar-get-incident
     arguments:
     - name: id
       required: true
-      description: The remote incident id
+      description: The remote incident ID.
     - name: from_date
       description: Retrieve entries that were created after the last update.
       defaultValue: 3 days
@@ -131,19 +131,19 @@ script:
       description: Retrieve only the entries from these categories.
       defaultValue: chats,notes
     - name: tags
-      description: Only entries with these tags are retrieved from the XSOAR server. If no tags are listed, no entries are retrieved.
+      description: Only entries with these tags are retrieved from the Cortex XSOAR server. If no tags are listed, no entries are retrieved.
     - name: max_results
-      description: Max number of entries to retrieve
+      description: Max number of entries to retrieve.
       defaultValue: "10"
-    description: Retrieve incident and entries from remote XSOAR.
+    description: Retrieve incident and entries from the remote Cortex XSOAR server.
   - name: get-remote-data
     arguments:
     - name: id
       required: true
-      description: The remote incident id
+      description: The remote incident ID.
     - name: lastUpdate
       description: Retrieve entries that were created after the last update.
-    description: Get remote data from a remote incident. Please note that this method will not update the current incident, it is used for debugging purposes only.
+    description: Get remote data from a remote incident. Note that this method will not update the current incident. It is used for debugging purposes only.
   - name: get-mapping-fields
     arguments: []
     description: Retrieves the mapping schema from a remote incident.
