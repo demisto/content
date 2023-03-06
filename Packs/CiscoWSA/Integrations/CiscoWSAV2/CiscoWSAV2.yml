@@ -38,7 +38,7 @@ script:
   - name: cisco-wsa-access-policy-list
     description: |-
       Retrieve access policies.
-      Access policies containing allowed/blocked URL categories in the network.   
+      Access policies contain allowed/blocked URL categories in the network.
     arguments:
     - name: policy_names
       description: Policy names to retrieve.
