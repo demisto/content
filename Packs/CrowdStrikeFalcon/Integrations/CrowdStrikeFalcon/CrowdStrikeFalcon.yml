@@ -3098,7 +3098,6 @@ script:
     description: Get a list of ML Exclusions by specifying their IDs, value, or a specific filter.
     name: cs-falcon-search-ml-exclusion
     outputs:
-    outputs:
     - contextPath: CrowdStrike.MLExclusion.id
       description: The ML exclusion ID.
       type: String
@@ -3571,7 +3570,7 @@ script:
         isArray: true
     description: Get quarantine file metadata by specified ids or a filter.
     name: cs-falcon-apply-quarantine-file-action
-  dockerimage: demisto/python3:3.10.9.46807
+  dockerimage: demisto/python3:3.10.10.48392
   isfetch: true
   ismappable: true
   isremotesyncin: true
