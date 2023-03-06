@@ -899,14 +899,14 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
     return mapping_response
 
 
-def update_remote_system_command(client: boto3.client, args: Dict[str, Any], closure_case: bool) -> str:
+def update_remote_system_command(client: boto3.client, args: Dict[str, Any], resolve_findings: bool) -> str:
     """
     Mirrors out local changes to the remote system.
     Args:
         client: boto3.client - AWS client
         args: A dictionary containing the data regarding a modified incident, including: data, entries,
             incident_changed, remote_incident_id, inc_status, delta.
-        closure_case: bool - Whether to resolve an incident in Security Hub, that was closed in XSOAR.
+        resolve_findings: bool - Whether to resolve an incident in Security Hub, that was closed in XSOAR.
 
     Returns:
         The remote incident id that was modified. This is important when the incident is newly created remotely.
@@ -945,8 +945,8 @@ def update_remote_system_command(client: boto3.client, args: Dict[str, Any], clo
                 'Text': delta.get('Note.Text') or data.get('Note.Text'),
                 'UpdatedBy': delta.get('Note.UpdatedBy') or data.get('Note.UpdatedBy')
             }
-        demisto.debug(f'The {closure_case=} ,{parsed_args.inc_status=}')
-        if parsed_args.inc_status == IncidentStatus.DONE and closure_case:
+        demisto.debug(f'The {resolve_findings=} ,{parsed_args.inc_status=}')
+        if parsed_args.inc_status == IncidentStatus.DONE and resolve_findings:
             kwargs['Workflow']['Status'] = 'RESOLVED'
             parsed_args.data['Workflow.Status'] = ['RESOLVED']
             demisto.debug(f"{parsed_args.data['Workflow.Status']=}")
@@ -954,8 +954,7 @@ def update_remote_system_command(client: boto3.client, args: Dict[str, Any], clo
         kwargs = remove_empty_elements(kwargs)
         demisto.debug(f'{kwargs=}')
         response = client.batch_update_findings(**kwargs)
-        if response:
-            demisto.debug(f'The update remote system response is: {response}')
+        demisto.debug(f'The update remote system response is: {response}')
     else:
         demisto.debug(f'Skipping updating remote incident {remote_incident_id} as it did not change.')
     return remote_incident_id
@@ -990,8 +989,7 @@ def main():  # pragma: no cover
     finding_type = params.get('finding_type', '')
     workflow_status = params.get('workflow_status', '')
     product_name = argToList(params.get('product_name', ''))
-    closure_case = params.get('close_incident')
-    demisto.debug(f'{closure_case=}')
+    resolve_findings = params.get('resolve_finding')
 
     try:
         validate_params(aws_default_region, aws_role_arn, aws_role_session_name, aws_access_key_id,
@@ -1035,7 +1033,7 @@ def main():  # pragma: no cover
             return_results(get_remote_data_command(client, args))
             return
         elif command == 'update-remote-system':
-            return_results(update_remote_system_command(client, args, closure_case))
+            return_results(update_remote_system_command(client, args, resolve_findings))
             return
         elif command == 'get-mapping-fields':
             return_results(get_mapping_fields_command())

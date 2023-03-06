@@ -151,10 +151,10 @@ configuration:
   section: Collect
   hidden:
     - marketplacev2
-- display: Resolve closed incidents from XSOAR in AWS Security Hub
-  additionalinfo: After closing an incident in XSOAR, update its workflow status in AWS Security Hub to resolved
+- display: Resolve findings of closed incidents from XSOAR in AWS Security Hub
+  additionalinfo: After closing an incident in XSOAR, update its finding workflow status in AWS Security Hub to resolved
   defaultvalue: 'true'
-  name: close_incident
+  name: resolve_finding
   required: false
   type: 8
   section: Collect
