@@ -211,20 +211,20 @@ def main():
                         md += '\n'
                         continue
 
+                if parse_hash != -1:
+                    md += (row[parse_hash] + '|' if row[parse_hash] else ' |')
+                    is_hash = re.search(r'[0-9A-Fa-f]{32,128}', row[parse_hash])
+                    if is_hash:
+                        hash_list.append(row[parse_hash])
+                        md += '\n'
+                        continue
+
                 if parse_domain != -1:
                     md += (row[parse_domain] + '|' if row[parse_domain] else ' |')
                     has_dot = '.' in row[parse_domain]
                     no_spaces = ' ' not in row[parse_domain]
                     if has_dot and no_spaces:
                         domain_list.append(row[parse_domain])
-                        md += '\n'
-                        continue
-
-                if parse_hash != -1:
-                    md += (row[parse_hash] + '|' if row[parse_hash] else ' |')
-                    is_hash = re.search(r'[0-9A-Fa-f]{32,128}', row[parse_hash])
-                    if is_hash:
-                        hash_list.append(row[parse_hash])
                 md += '\n'
 
         context = {}  # type: dict
