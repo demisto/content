@@ -4,7 +4,7 @@ commonfields:
 name: Cisco WSA
 display: Cisco WSA
 category: Network Security
-description: Cisco Secure Web Appliance protects your organisation by automatically blocking risky sites and testing unknown sites before allowing users to click on them.
+description: Cisco Secure Web Appliance protects your organization by automatically blocking risky sites and testing unknown sites before allowing users to click on them.
 fromversion: 6.2.0
 configuration:
 - name: base_url
@@ -211,7 +211,7 @@ script:
       - ftp
       - http
   - name: cisco-wsa-access-policy-url-filtering-update
-    description: Update URL filtering policy for access policy.
+    description: Update the URL filtering policy for access policy.
     arguments:
     - name: policy_name
       description: Policy name to update.
@@ -227,11 +227,11 @@ script:
       - monitor
       - warn
     - name: predefined_categories
-      description: Comma-separated list of predefined categories (dependencies - use cisco-wsa-url-categories-list command to get all the custom & predefined categories).
+      description: Comma-separated list of predefined categories. (Dependencies - use cisco-wsa-url-categories-list command to get all the custom & predefined categories.)
       required: false
       isArray: true
     - name: youtube_categories_action
-      description: Youtube categories action.
+      description: YouTube categories action.
       required: false
       isArray: false
       auto: PREDEFINED
@@ -240,7 +240,7 @@ script:
       - monitor
       - allow
     - name: youtube_categories
-      description: Comma-separated list of youtube categories.
+      description: Comma-separated list of YouTube categories.
       required: false
       isArray: true
     - name: custom_categories_action
@@ -253,7 +253,7 @@ script:
       - monitor
       - warn
     - name: custom_categories
-      description: Comma-separated list of custom categories (dependencies - use cisco-wsa-url-categories-list command to get all the custom & predefined categories).
+      description: Comma-separated list of custom categories. (Dependencies - use cisco-wsa-url-categories-list command to get all the custom & predefined categories.)
       required: false
       isArray: true
     - name: uncategorized_url
@@ -326,7 +326,7 @@ script:
       - block
       - monitor
   - name: cisco-wsa-access-policy-applications-update
-    description: Update applications policy for access policy. only applicable for global_policy
+    description: Update applications policy for access policy. Only applicable for global_policy.
     arguments:
     - name: policy_name
       description: Policy name to update.
@@ -417,26 +417,26 @@ script:
       required: false
       isArray: true
     - name: block_custom_mime_types
-      description: Block custom MIME types, e.g. audio/x-mpeg3 or audio/*.
+      description: Block custom MIME types, e.g., audio/x-mpeg3 or audio/*.
       required: false
       isArray: false
     - name: http_or_https_max_object_size_mb
-      description: HTTP/HTTPS Max Download Size.
+      description: HTTP/HTTPS maximum download size.
       required: false
       isArray: false
     - name: ftp_max_object_size_mb
-      description: FTP Max Download Size.
+      description: FTP maximum download size.
       required: false
       isArray: false
   - name: cisco-wsa-access-policy-anti-malware-update
-    description: Update anti-malware policy for access policy.
+    description: Update the anti-malware policy for access policy.
     arguments:
     - name: policy_name
       description: Policy name to update.
       required: true
       isArray: false
     - name: settings_status
-      description: Settings status for the Anti-malware.
+      description: Settings status for the anti-malware.
       defaultValue: custom
       required: false
       isArray: false
@@ -461,7 +461,7 @@ script:
     - name: file_reputation_filtering_status
       description: |-
         File Reputation Filters will identify transactions containing known malicious or high-risk files.
-        Files that are unknown may be forwarded to the cloud for File Analysis.
+        Files that are unknown may be forwarded to the cloud for file analysis.
       required: false
       isArray: false
       auto: PREDEFINED
@@ -490,7 +490,7 @@ script:
       description: |-
         Suspect user agent scanning action.
         Required while anti_malware_scanning_status is enabled.
-        Not Relevant while anti_malware_scanning_status is disabled.
+        Not relevant while anti_malware_scanning_status is disabled.
       required: false
       isArray: false
       auto: PREDEFINED
@@ -499,7 +499,7 @@ script:
       - scan
       - none
     - name: block_malware_categories
-      description: Comma-separated list of malware categories to block. Required while anti_malware_scanning_status is enabled. Not Relevant while anti_malware_scanning_status is disable.
+      description: Comma-separated list of malware categories to block. Required while anti_malware_scanning_status is enabled. Not relevant while anti_malware_scanning_status is disabled.
       required: false
       isArray: true
       auto: PREDEFINED
@@ -520,7 +520,7 @@ script:
       - Virus
       - Worm
     - name: block_other_categories
-      description: Comma-separated list of other categories to block. Required while anti_malware_scanning_status is enabled. Not Relevant while anti_malware_scanning_status is disabled.
+      description: Comma-separated list of other categories to block. Required while anti_malware_scanning_status is enabled. Not relevant while anti_malware_scanning_status is disabled.
       required: false
       isArray: true
       auto: PREDEFINED
@@ -546,7 +546,7 @@ script:
       isArray: true
     - name: ip_addresses
       description: |-
-        Comma-separated list of  IP addresses to search for.
+        Comma-separated list of IP addresses to search for.
         This argument will retrieve the domain map record if one of the IP addresses specified is mapped to the domain. 
       required: false
       isArray: true
@@ -557,7 +557,7 @@ script:
       isArray: false
       required: false
     - name: page_size
-      description: A number of results per page. The maximum value is 100.
+      description: The number of results per page. The maximum value is 100.
       isArray: false
       required: false
     - name: limit
@@ -574,7 +574,7 @@ script:
       description: Mapped IP addresses.
     - type: Number
       contextPath: CiscoWSA.DomainMap.order
-      description: Domain map order, index of domain map in the collection.
+      description: Index of the domain map in the collection.
   - name: cisco-wsa-domain-map-create
     description: Create domain mapping for IP addresses.
     arguments:
@@ -583,7 +583,7 @@ script:
       required: true
       isArray: false
     - name: order
-      description: Domain map order, index of domain map in the collection.
+      description: Index of the domain map in the collection.
       required: true
       isArray: false
     - name: ip_addresses
@@ -591,7 +591,7 @@ script:
       required: true
       isArray: true
   - name: cisco-wsa-domain-map-update
-    description: Update domain map.
+    description: Update the domain map.
     arguments:
     - name: domain_name
       description: The domain name to update.
@@ -602,7 +602,7 @@ script:
       required: false
       isArray: false
     - name: order
-      description: Domain map order, index of domain map in the collection.
+      description: Index of the domain map in the collection.
       required: false
       isArray: false
     - name: ip_addresses
@@ -621,7 +621,7 @@ script:
   - name: cisco-wsa-identification-profiles-list
     description: |-
       Retrieve identification profiles.
-      Identification Profiles	are classifications	of users, defining authentication requirements.
+      Identification profiles are classifications of users, defining authentication requirements.
     arguments:
     - name: profile_names
       description: Comma-separated list of profile names to retrieve.
@@ -634,7 +634,7 @@ script:
       isArray: false
       required: false
     - name: page_size
-      description: A number of results per page. The maximum value is 100.
+      description: The number of results per page. The maximum value is 100.
       isArray: false
       required: false
     - name: limit
@@ -675,7 +675,7 @@ script:
       description: Identification Profile proxy port.
     - type: String
       contextPath: CiscoWSA.IdentificationProfile.UserAgents.predefined
-      description: User-agent predefined.
+      description: The predefined user-agent.
     - type: String
       contextPath: CiscoWSA.IdentificationProfile.UserAgents.custom
       description: User-agent custom.
@@ -701,7 +701,7 @@ script:
       isArray: false
     - name: order
       description: |-
-        Identification profile order, index of Identification profile in the collection.
+        Index of the identification profiles in the collection.
         Not applicable for global_identification_profile.
       defaultValue: 1
       required: false
@@ -722,40 +722,40 @@ script:
         where certain clients have been configured to use a specific connecting port.
         For transparent connections, membership by proxy port applies to the port of the destination URL.
         Leave this field blank if membership by connecting proxy port is not needed.
-        e.g. 22-1000,3331
+        e.g., 22-1000,3331
       required: false
       isArray: true
     - name: members_by_subnet
-      description: Comma-separated list of members by Subnet. e.g. 10.1.1.0,10.1.1.0/24,10.1.1.1-10,2001:420:80:1::5
+      description: Comma-separated list of members by Subnet. e.g., 10.1.1.0,10.1.1.0/24,10.1.1.1-10,2001:420:80:1::5
       required: false
       isArray: true
     - name: predefined_url_categories
       description: |- 
-        Comma-separated list of URL Categories to use as membership criteria.
-        Leave blank if membership by URL Category is not needed.
-        (dependencies - use cisco-wsa-url-categories-list command to get all the custom & predefined categories).
+        Comma-separated list of URL categories to use as membership criteria.
+        Leave blank if membership by URL category is not needed.
+        (Dependencies - use cisco-wsa-url-categories-list command to get all the custom & predefined categories.)
       required: false
       isArray: true
     - name: custom_url_categories
       description: |- 
-        Comma-separated list of URL Categories to use as membership criteria.
-        Leave blank if membership by URL Category is not needed.
-        (dependencies - use cisco-wsa-url-categories-list command to get all the custom & predefined categories).
+        Comma-separated list of URL categories to use as membership criteria.
+        Leave blank if membership by URL category is not needed.
+        (Dependencies - use cisco-wsa-url-categories-list command to get all the custom & predefined categories.)
       required: false
       isArray: true
   - name: cisco-wsa-identification-profiles-update
-    description: Update identification profile. This command rewrites the profile values (Not append). For example, if the proxy_ports define as 4000,5000 and you will insert proxy_ports=8000, the proxy_ports will be 8000.
+    description: Update the identification profile. This command rewrites the profile values (does not append). For example, if the proxy_ports is defined as 4000,5000 and you insert proxy_ports=8000, the proxy_ports will be 8000.
     arguments:
     - name: profile_name
       description: Profile name to update.
       required: true
       isArray: false
     - name: new_profile_name
-      description: New profile name for identification profile.
+      description: New profile name for the identification profile.
       required: false
       isArray: false
     - name: status
-      description: Updated status of identification profile.
+      description: Updated the status of the identification profile.
       required: false
       isArray: false
       auto: PREDEFINED
@@ -763,17 +763,17 @@ script:
       - enable
       - disable
     - name: description
-      description: Updated description of identification profile.
+      description: Updated description of the identification profile.
       required: false
       isArray: false
     - name: order
       description: |-
-        Identification profile order, index of Identification profile in the collection.
+        Index of the Identification profile in the collection.
         Not applicable for global_identification_profile.
       required: false
       isArray: false
     - name: protocols
-      description: Comma-separated list of network protocols of identification profile.
+      description: Comma-separated list of network protocols of the identification profile.
       required: false
       defaultValue: HTTPS
       isArray: true
@@ -784,29 +784,29 @@ script:
     - name: proxy_ports
       description: |- 
         Comma-separated list of proxy ports.
-        Membership is defined by proxy port for forward connections,
+        Membership is defined by the proxy port for forward connections,
         where certain clients have been configured to use a specific connecting port.
         For transparent connections, membership by proxy port applies to the port of the destination URL.
         Leave this field blank if membership by connecting proxy port is not needed.
-        e.g. 22-1000,3331
+        e.g.,  22-1000,3331
       required: false
       isArray: true
     - name: members_by_subnet
-      description: Comma-separated list of members by Subnet. e.g. 10.1.1.0,10.1.1.0/24,10.1.1.1-10,2001:420:80:1::5
+      description: Comma-separated list of members by subnet. e.g., 10.1.1.0,10.1.1.0/24,10.1.1.1-10,2001:420:80:1::5.
       required: false
       isArray: true
     - name: predefined_url_categories
       description: |- 
-        Comma-separated list of URL Categories to use as membership criteria.
-        Leave blank if membership by URL Category is not needed.
-        (dependencies - use cisco-wsa-url-categories-list command to get all the custom & predefined categories).
+        Comma-separated list of URL categories to use as membership criteria.
+        Leave blank if membership by URL category is not needed.
+        (Dependencies - use cisco-wsa-url-categories-list command to get all the custom & predefined categories.)
       required: false
       isArray: true
     - name: custom_url_categories
       description: |- 
-        Comma-separated list of URL Categories to use as membership criteria.
-        Leave blank if membership by URL Category is not needed.
-        (dependencies - use cisco-wsa-url-categories-list command to get all the custom & predefined categories).
+        Comma-separated list of URL categories to use as membership criteria.
+        Leave blank if membership by URL category is not needed.
+        (Dependencies - use cisco-wsa-url-categories-list command to get all the custom & predefined categories.)
       required: false
       isArray: true
   - name: cisco-wsa-identification-profiles-delete
@@ -820,7 +820,7 @@ script:
     description: Retrieve URL categories of available categories to allow/block in access policies.
     arguments:
     - name: contain
-      description: A string that contains the category you search for.
+      description: A string that contains the category to search for.
       required: false
       isArray: false
     - name: type
