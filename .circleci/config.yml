@@ -95,7 +95,7 @@ references:
         cache-version: << pipeline.parameters.cache-version >>
 
   install_gcp: &install_gcp
-    gcp-cli/setup:
+    gcp-cli/install:
       version: "latest"
 
   install_neo4j: &install_neo4j
