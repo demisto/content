@@ -67,7 +67,7 @@ MOCK_PACKS_DEPENDENCIES_RESULT = {
 PACKS_PACK_META_FILE_NAME = 'pack_metadata.json'
 
 
-def mocked_generic_request_func(self, path: str, method, body=None, accept=None, _request_timeout=None):
+def mocked_generic_request_func(self, path: str, method, body=None, accept=None, _request_timeout=None, response_type='object'):
     if path == '/contentpacks/marketplace/HelloWorld':
         return MOCK_HELLOWORLD_SEARCH_RESULTS, 200, None
     if path == '/contentpacks/marketplace/AzureSentinel':
