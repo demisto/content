@@ -2897,30 +2897,30 @@ script:
       description: Unique identifier for a vulnerability as cataloged in the National Vulnerability Database (NVD).
       type: String
   - arguments:
-      - description: Value to match for the exclusion.
-        name: value
-        required: true
-      - auto: PREDEFINED
-        description: Exclusion excluded from.
-        name: excluded_from
-        required: true
-        isArray: true
-        predefined:
-          - blocking
-          - extraction
-      - description: Comment describing why the exclusions was created.
-        name: comment
-        required: false
-      - description: A comma separated list of group ID(s) impacted by the exclusion OR all if empty default is all.
-        name: groups
-        required: true
-        isArray: true
-      description: Create a ML exclusion.
-      name: cs-falcon-create-ml-exclusion
-      outputs:
-        - contextPath: CrowdStrike.MLExclusion
-          description: ""
-          type: String
+    - description: Value to match for the exclusion.
+      name: value
+      required: true
+    - auto: PREDEFINED
+      description: Exclusion excluded from.
+      name: excluded_from
+      required: true
+      isArray: true
+      predefined:
+        - blocking
+        - extraction
+    - description: Comment describing why the exclusions was created.
+      name: comment
+      required: false
+    - description: A comma separated list of group ID(s) impacted by the exclusion OR all if empty default is all.
+      name: groups
+      required: true
+      isArray: true
+    description: Create a ML exclusion.
+    name: cs-falcon-create-ml-exclusion
+    outputs:
+      - contextPath: CrowdStrike.MLExclusion
+        description: ""
+        type: String
   - arguments:
       - description: The ID of the exclusion to update.
         name: id
