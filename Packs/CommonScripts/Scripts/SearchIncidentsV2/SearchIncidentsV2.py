@@ -154,6 +154,7 @@ def search_incidents(args: Dict):   # pragma: no cover
 
     limit = arg_to_number(args.get('limit')) or DEFAULT_LIMIT
     result_data_list = res[0]["Contents"]["data"]
+    # adding 1 here because the default page number start from 0
     max_page = (res[0]["Contents"]["total"] // DEFAULT_PAGE_SIZE) + 1
 
     page = DEFAULT_STARTING_PAGE_NUMBER
