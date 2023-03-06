@@ -71,7 +71,7 @@ configuration:
   required: false
   type: 15
 - display: Disable fetching for incidents that came from this integration
-  additionalinfo: Enable this option to disable mirroring of incidents that came from the integration of Cortex XSOAR Mirroring. This adds `-sourceBrand:“XSOAR Mirroring”` to your query.
+  additionalinfo: Enable this option to disable mirroring of incidents that came from the integration of XSOAR Mirroring. This adds `-sourceBrand:“XSOAR Mirroring”` to your query.
   name: disable_from_same_integration
   defaultvalue: "true"
   type: 8
