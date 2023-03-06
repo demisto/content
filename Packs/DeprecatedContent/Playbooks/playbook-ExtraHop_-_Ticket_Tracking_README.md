@@ -16,7 +16,7 @@ This playbook does not use any integrations.
 * AssignAnalystToIncident
 
 ### Commands
-* extrahop-ticket-track
+* extrahop-track-ticket
 * setIncident
 
 ## Playbook Inputs

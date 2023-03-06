@@ -40,7 +40,7 @@ tasks:
       version: -1
       name: Track the incident status in ExtraHop Reveal(x)
       description: Link the ExtraHop Detection to the corresponding Demisto Investigation.  This uses the ExtraHop ticket tracking functionality to properly display ticket status within ExtraHop.
-      script: '|||extrahop-ticket-track'
+      script: '|||extrahop-track-ticket'
       type: regular
       iscommand: true
       brand: ""
@@ -436,7 +436,7 @@ tasks:
       version: -1
       name: Track the incident status in ExtraHop Reveal(x)
       description: Link the ExtraHop Detection to the corresponding Demisto Investigation.  This uses the ExtraHop ticket tracking functionality to properly display ticket status within ExtraHop.
-      script: '|||extrahop-ticket-track'
+      script: '|||extrahop-track-ticket'
       type: regular
       iscommand: true
       brand: ""
