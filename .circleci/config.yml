@@ -70,7 +70,7 @@ references:
       NIGHTLY_PARAMETER: << pipeline.parameters.nightly >>
       GCS_MARKET_BUCKET: << pipeline.parameters.gcs_market_bucket >>
   
-  install_poetry: &install_poetry
+  install_environment: &install_environment
     - run:
        name: Install Poetry
        command: |
@@ -78,8 +78,6 @@ references:
         rm -rf $HOME/.poetry/bin/poetry
         sudo curl -sSL https://install.python-poetry.org | python3 -
         poetry --version
-
-  install_build_dependencies: &install_build_dependencies
     - python/install-packages: 
         pkg-manager: "poetry"
         args: "--with ci"
@@ -88,10 +86,9 @@ references:
           - run:
               name: Check if pyproject.toml is consistent with poetry.lock
               command: poetry lock --check
-
-  install_node_ci: &install_node_ci
     - node/install-packages:
         cache-version: << pipeline.parameters.cache-version >>
+    - *install_neo4j
 
   install_neo4j: &install_neo4j
     run:
@@ -330,9 +327,7 @@ jobs:
     <<: *environment
     steps:
       - checkout
-      - <<: *install_poetry
-      - <<: *install_build_dependencies
-      - <<: *install_node_ci
+      - <<: *install_environment
       - *prepare_environment
       - *get_contribution_pack
       - *persist_to_workspace
@@ -347,11 +342,8 @@ jobs:
     steps:
       - *attach_workspace
       - *remote_docker
-      - <<: *install_poetry
-      - <<: *install_build_dependencies
-      - <<: *install_node_ci
+      - <<: *install_environment
       - *prepare_environment
-      - *install_neo4j
       - *infrastructure_testing
       - *run_unit_testing_and_lint
       - *generate_coverage_reports
@@ -365,11 +357,8 @@ jobs:
     <<: *environment
     steps:
       - *attach_workspace
-      - <<: *install_poetry
-      - <<: *install_build_dependencies
-      - <<: *install_node_ci
+      - <<: *install_environment
       - *prepare_environment
-      - *install_neo4j
       - *secrets
       - *validate_files_and_yaml
       - run:
