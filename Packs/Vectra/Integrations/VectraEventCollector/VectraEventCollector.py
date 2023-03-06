@@ -9,9 +9,6 @@ See https://support.vectra.ai/s/article/KB-VS-1174 for more the API reference.
 """
 
 import demistomock as demisto
-
-# TODO remove requests, used for BaseClient
-# import requests
 from CommonServerPython import *
 from typing import Dict, Any, Tuple
 import pytest
@@ -29,9 +26,6 @@ AUDIT_NEXT_RUN_KEY = "start"
 
 
 class VectraClient(BaseClient):
-    api_version = "2.2"
-    endpoints = ("detections", "audits")
-
     def __init__(
         self,
         url: str,
@@ -40,7 +34,8 @@ class VectraClient(BaseClient):
         insecure: bool = False,
         proxy: bool = False,
     ):
-
+        self.api_version = "2.2"
+        self.endpoints = ("detections", "audits")
         self.api_key = api_key
         self.max_fetch = fetch_limit
 
