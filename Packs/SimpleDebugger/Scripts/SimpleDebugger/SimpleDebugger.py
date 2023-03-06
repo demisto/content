@@ -321,7 +321,7 @@ class SimpleDebugger:
             return True
         return False
 
-    def SdbgTrace(self, frame: FrameType, event: str, arg: Any):
+    def SdbgTrace(self, frame: FrameType, event: str, arg: Any): # pylint: disable=unused-argument
         if event == "exception":
             self.SdbgException()
             return None
