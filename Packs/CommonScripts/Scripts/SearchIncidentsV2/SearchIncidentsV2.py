@@ -7,6 +7,7 @@ special = ['n', 't', '\\', '"', '\'', '7', 'r']
 DEFAULT_LIMIT = 100
 DEFAULT_PAGE_SIZE = 100
 
+
 class AlertSeverity(Enum):
     UNKNOWN = 0
     INFO = 0.5

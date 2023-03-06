@@ -30,14 +30,17 @@ def execute_get_incidents_command_side_effect(amount_of_mocked_incidents):
     for start in range(1, amount_of_mocked_incidents + 1, default_jump):
         end = min(amount_of_mocked_incidents, default_jump * counter)
 
-        execute_command_mock = [
-            {
-                'Contents': {
-                    'data': create_sample_incidents(start, end),
-                    'total': amount_of_mocked_incidents
+        if counter == 1:
+            execute_command_mock = [
+                {
+                    'Contents': {
+                        'data': create_sample_incidents(start, end),
+                        'total': amount_of_mocked_incidents
+                    }
                 }
-            }
-        ] if counter == 1 else {
+            ]
+        else:
+            execute_command_mock = {
                 'data': create_sample_incidents(start, end)
             }
 
