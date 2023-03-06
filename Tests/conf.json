@@ -2157,11 +2157,6 @@
             "timeout": 1000
         },
         {
-            "integrations": "carbonblack-v2",
-            "playbookID": "Carbon Black Response Test",
-            "fromversion": "5.0.0"
-        },
-        {
             "integrations": "VMware Carbon Black EDR v2",
             "playbookID": "Carbon Black Edr - Test",
             "is_mockable": false,
@@ -2352,7 +2347,7 @@
         },
         {
             "integrations": [
-                "carbonblack-v2",
+                "VMware Carbon Black EDR v2",
                 "carbonblackliveresponse",
                 "Cylance Protect v2"
             ],
