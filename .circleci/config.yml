@@ -144,7 +144,8 @@ references:
 
         # we still need to install even if cached. if cached, `poetry` will handle it
         echo "installing venv"
-        NO_HOOKS=1 .hooks/bootstrap
+        poetry install --with ci
+        npm ci
         source ./.venv/bin/activate
 
         # store in bash env so we load our venv in each step
