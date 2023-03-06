@@ -2,6 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
+# comment
 def main():
     indicator = demisto.args().get("indicator")
     indicatorType = demisto.args().get("indicatorType")
