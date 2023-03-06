@@ -48,8 +48,8 @@ class UpdateType(str, Enum):
 
 class SkipReason(str, Enum):
     """ Reasons to skip update release notes"""
-    LAST_MODIFIED_TIME = 'The PR was not updated in last {} days. PR last update time: {}'
-    NOT_UPDATE_RN_LABEL_EXIST = 'Label "{}" exist in this PR. PR labels: {}.'
+    LAST_MODIFIED_TIME = 'The PR was not updated in last {allowed_update_time} days. PR last update time: {update_time}'
+    NOT_UPDATE_RN_LABEL_EXIST = 'Label "{ignore_label}" exist in this PR. PR labels: {pr_labels}.'
     NO_NEW_RELEASE_NOTES = 'No new files were detected on {} directory.'
     CONFLICTING_FILES = 'The PR has conflicts not only at {} and {}. The conflicting files are: {}.'
     NO_CONFLICTING_FILES = 'No conflicts were detected.'
@@ -131,8 +131,8 @@ class BaseCondition(ABC):
         Returns:
             next condition to check after current condition.
         """
-        self.next_cond = condition
-        return self.next_cond
+        self.next_cond = condition  # type: ignore[assignment]
+        return self.next_cond   # type: ignore[return-value]
 
     @abstractmethod
     def generate_skip_reason(self, **kwargs) -> str:
@@ -250,14 +250,15 @@ class MetadataCondition(BaseCondition, ABC):
 class LastModifiedCondition(BaseCondition):
     LAST_SUITABLE_UPDATE_TIME_DAYS = 14
 
-    def generate_skip_reason(self, last_updated: str, **kwargs) -> str:
+    def generate_skip_reason(self, last_updated: str, **kwargs) -> str:     # type: ignore[override]
         """
         Args:
             last_updated: when the pr was last updated.
         Returns: Reason why the condition failed, and pr skipped.
         """
         return SkipReason.LAST_MODIFIED_TIME.format(
-            self.LAST_SUITABLE_UPDATE_TIME_DAYS, last_updated
+            allowed_update_time=self.LAST_SUITABLE_UPDATE_TIME_DAYS,
+            last_updated=last_updated
         )
 
     def _check(
@@ -284,14 +285,14 @@ class LastModifiedCondition(BaseCondition):
 class LabelCondition(BaseCondition):
     NOT_UPDATE_RN_LABEL = "ignore-auto-bump-version"
 
-    def generate_skip_reason(self, labels: str, **kwargs) -> str:
+    def generate_skip_reason(self, labels: str, **kwargs) -> str:   # type: ignore[override]
         """
         Args:
             labels: pr labels.
         Returns: Reason why the condition failed, and pr skipped.
         """
         return SkipReason.NOT_UPDATE_RN_LABEL_EXIST.format(
-            self.NOT_UPDATE_RN_LABEL, labels
+            ignore_label=self.NOT_UPDATE_RN_LABEL, pr_labels=labels
         )
 
     def _check(
@@ -344,7 +345,7 @@ class AddedRNFilesCondition(BaseCondition):
 
 
 class HasConflictOnAllowedFilesCondition(BaseCondition):
-    def generate_skip_reason(self, conflicting_files, **kwargs) -> str:
+    def generate_skip_reason(self, conflicting_files, **kwargs) -> str:  # type: ignore[override]
         """
         Args:
             conflicting_files: files on the pr that conflicts with base.
@@ -406,7 +407,7 @@ class HasConflictOnAllowedFilesCondition(BaseCondition):
         try:
             self.git_repo.git.merge(f"origin/{pr_branch}", "--no-ff", "--no-commit")
         except GitCommandError as e:
-            print(f'{e}\n\n{e.stdout}')
+            print(f'{e}')
             error = e.stdout
             if error:
                 error = error.replace("stdout: '", "").strip()
@@ -438,7 +439,7 @@ class PackSupportCondition(MetadataCondition):
             pack=pack, pr=pr, git_repo=git_repo, branch_metadata=branch_metadata
         )
 
-    def generate_skip_reason(self, support_type: str, **kwargs) -> str:
+    def generate_skip_reason(self, support_type: str, **kwargs) -> str:  # type: ignore[override]
         """
         Args:
             support_type: pack support type.
@@ -485,7 +486,7 @@ class MajorChangeCondition(MetadataCondition):
             origin_base_metadata=origin_base_metadata,
         )
 
-    def generate_skip_reason(
+    def generate_skip_reason(       # type: ignore[override]
         self, origin_version: Version, branch_version: Version, **kwargs
     ) -> str:
         """
@@ -547,7 +548,7 @@ class MaxVersionCondition(MetadataCondition):
             origin_base_metadata=origin_base_metadata,
         )
 
-    def generate_skip_reason(
+    def generate_skip_reason(       # type: ignore[override]
         self, origin_version: str, branch_version: str, **kwargs
     ) -> str:
         """
@@ -610,7 +611,7 @@ class OnlyVersionChangedCondition(MetadataCondition):
             origin_base_metadata=origin_base_metadata,
         )
 
-    def generate_skip_reason(self, not_allowed_changed_keys, **kwargs) -> str:
+    def generate_skip_reason(self, not_allowed_changed_keys, **kwargs) -> str:      # type: ignore[override]
         """
         Args:
             not_allowed_changed_keys: pack_metadata keys that was changed.
@@ -692,7 +693,7 @@ class SameRNMetadataVersionCondition(MetadataCondition):
             pack=pack, pr=pr, git_repo=git_repo, branch_metadata=branch_metadata
         )
 
-    def generate_skip_reason(
+    def generate_skip_reason(       # type: ignore[override]
         self, rn_version: Version, metadata_version: Version, **kwargs
     ) -> str:
         """
@@ -753,7 +754,7 @@ class AllowedBumpCondition(MetadataCondition):
             pr_base_metadata=pr_base_metadata,
         )
 
-    def generate_skip_reason(
+    def generate_skip_reason(       # type: ignore[override]
         self, previous_version: Version, new_version: Version, **kwargs
     ) -> str:
         """
@@ -897,7 +898,7 @@ class PackAutoBumper:
                 if self._bc_file.read_text() == self._bc_text:
                     # delete previous bc file, if it was not changed after merge from master
                     os.remove(self._bc_file)
-            return new_version
+        return new_version
 
 
 class BranchAutoBumper:
