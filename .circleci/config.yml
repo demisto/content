@@ -50,10 +50,10 @@ parameters:
     default: v1  # Change this parameter to clear cache.
   python-orb-version:
     type: string
-    default: "2.0.3" # disable-secrets-detection
+    default: "2.0.3"
   node-orb-version:
     type: string
-    default: "5.0.1" # disable-secrets-detection
+    default: "5.0.1"
 
 references:
   environment: &environment
@@ -69,6 +69,29 @@ references:
       PULL_REQUEST_NUMBER: << pipeline.parameters.pr_number >>
       NIGHTLY_PARAMETER: << pipeline.parameters.nightly >>
       GCS_MARKET_BUCKET: << pipeline.parameters.gcs_market_bucket >>
+  
+  install_poetry: &install_poetry
+    run:
+      name: Install Poetry
+      command: |
+        # in old images we need to remove existing poetry
+        rm -rf $HOME/.poetry/bin/poetry
+        sudo curl -sSL https://install.python-poetry.org | python3 -
+        poetry --version
+
+  install_build_dependencies: &install_build_dependencies
+    python/install-packages: 
+        pkg-manager: "poetry"
+        args: "--with ci"
+        cache-version: << pipeline.parameters.cache-version >>
+        pre-install-steps:
+          - run:
+              name: Check if pyproject.toml is consistent with poetry.lock
+              command: poetry lock --check
+
+  install_node_ci: &install_node_ci
+    node/install-packages:
+        cache-version: << pipeline.parameters.cache-version >>
 
   install_neo4j: &install_neo4j
     run:
@@ -95,26 +118,6 @@ references:
         sudo echo "apoc.import.file.enabled=true" >> $apoc_conf_file
         sudo echo "apoc.import.file.use_neo4j_config=true" >> $apoc_conf_file
         neo4j-admin set-initial-password test
-
-  install_environment: &install_environment
-    - run:
-       name: Install Poetry
-       command: |
-        # in old images we need to remove existing poetry
-        rm -rf $HOME/.poetry/bin/poetry
-        sudo curl -sSL https://install.python-poetry.org | python3 -
-        poetry --version
-    - python/install-packages: 
-        pkg-manager: "poetry"
-        args: "--with ci"
-        cache-version: << pipeline.parameters.cache-version >>
-        pre-install-steps:
-          - run:
-              name: Check if pyproject.toml is consistent with poetry.lock
-              command: poetry lock --check
-    - node/install-packages:
-        cache-version: << pipeline.parameters.cache-version >>
-    - *install_neo4j
 
   container_config: &container_config
     docker:
@@ -327,7 +330,9 @@ jobs:
     <<: *environment
     steps:
       - checkout
-      - <<: *install_environment
+      - *install_poetry
+      - *install_build_dependencies
+      - *install_node_ci
       - *prepare_environment
       - *get_contribution_pack
       - *persist_to_workspace
@@ -342,7 +347,10 @@ jobs:
     steps:
       - *attach_workspace
       - *remote_docker
-      - <<: *install_environment
+      - *install_poetry
+      - *install_build_dependencies
+      - *install_node_ci
+      - *install_neo4j
       - *prepare_environment
       - *infrastructure_testing
       - *run_unit_testing_and_lint
@@ -357,7 +365,10 @@ jobs:
     <<: *environment
     steps:
       - *attach_workspace
-      - <<: *install_environment
+      - *install_poetry
+      - *install_build_dependencies
+      - *install_node_ci
+      - *install_neo4j
       - *prepare_environment
       - *secrets
       - *validate_files_and_yaml
