@@ -4253,12 +4253,14 @@ def create_ml_exclusion_command(args):
     )
 
     exclusion = create_exclusion('ml', create_args).get('resources')
+    human_readable = tableToMarkdown('CrowdStrike Falcon machine learning exclusion', exclusion, sort_headers=False,
+                                     headerTransform=underscoreToCamelCase, is_auto_json_transform=True, removeNull=True)
 
     return CommandResults(
         outputs_prefix='CrowdStrike.MLExclusion',
         outputs_key_field='id',
         outputs=exclusion,
-        readable_output=tableToMarkdown('CrowdStrike Falcon machine learning exclusion', exclusion),
+        readable_output=human_readable,
     )
 
 
@@ -4273,12 +4275,14 @@ def update_ml_exclusion_command(args):
     update_args.update({'id': args.get('id')})
 
     exclusion = update_exclusion('ml', update_args).get('resources')
+    human_readable = tableToMarkdown('CrowdStrike Falcon machine learning exclusion', exclusion, sort_headers=False,
+                                     headerTransform=underscoreToCamelCase, is_auto_json_transform=True, removeNull=True)
 
     return CommandResults(
         outputs_prefix='CrowdStrike.MLExclusion',
         outputs_key_field='id',
         outputs=exclusion,
-        readable_output=tableToMarkdown('CrowdStrike Falcon machine learning exclusion', exclusion),
+        readable_output=human_readable,
     )
 
 
@@ -4305,12 +4309,14 @@ def search_ml_exclusion_command(args):
             ids = get_exclusions('ml', args.get('filter'), search_args).get('resources')
 
     exclusions = get_exclusion_entities('ml', ids).get('resources')
+    human_readable = tableToMarkdown('CrowdStrike Falcon machine learning exclusions', exclusions, sort_headers=False,
+                                     headerTransform=underscoreToCamelCase, is_auto_json_transform=True, removeNull=True)
 
     return CommandResults(
         outputs_prefix='CrowdStrike.MLExclusion',
         outputs_key_field='id',
         outputs=exclusions,
-        readable_output=tableToMarkdown('CrowdStrike Falcon machine learning exclusions', exclusions),
+        readable_output=human_readable,
     )
 
 
@@ -4322,18 +4328,20 @@ def create_ioa_exclusion_command(args):
         cl_regex=args.get('cl_regex'),
         ifn_regex=args.get('ifn_regex'),
         comment=args.get('comment'),
-        description=argToList(args.get('description')),
+        description=args.get('description'),
         groups=argToList(args.get('groups')),
         detection_json=args.get('detection_json')
     )
 
     exclusion = create_exclusion('ioa', create_args).get('resources')
+    human_readable = tableToMarkdown('CrowdStrike Falcon IOA exclusion', exclusion, is_auto_json_transform=True,
+                                     headerTransform=underscoreToCamelCase, sort_headers=False, removeNull=True)
 
     return CommandResults(
         outputs_prefix='CrowdStrike.IOAExclusion',
         outputs_key_field='id',
         outputs=exclusion,
-        readable_output=tableToMarkdown('CrowdStrike Falcon IOA exclusion', exclusion),
+        readable_output=human_readable,
     )
 
 
@@ -4345,7 +4353,7 @@ def update_ioa_exclusion_command(args):
         cl_regex=args.get('cl_regex'),
         ifn_regex=args.get('ifn_regex'),
         comment=args.get('comment'),
-        description=argToList(args.get('description')),
+        description=args.get('description'),
         groups=argToList(args.get('groups')),
         detection_json=args.get('detection_json')
     )
@@ -4354,12 +4362,14 @@ def update_ioa_exclusion_command(args):
     update_args.update({'id': args.get('id')})
 
     exclusion = update_exclusion('ioa', update_args).get('resources')
+    human_readable = tableToMarkdown('CrowdStrike Falcon IOA exclusion', exclusion, is_auto_json_transform=True,
+                                     headerTransform=underscoreToCamelCase, removeNull=True, sort_headers=False)
 
     return CommandResults(
         outputs_prefix='CrowdStrike.IOAExclusion',
         outputs_key_field='id',
         outputs=exclusion,
-        readable_output=tableToMarkdown('CrowdStrike Falcon IOA exclusion', exclusion),
+        readable_output=human_readable,
     )
 
 
@@ -4385,12 +4395,14 @@ def search_ioa_exclusion_command(args):
             ids = get_exclusions('ioa', args.get('filter'), search_args).get('resources')
 
     exclusions = get_exclusion_entities('ioa', ids).get('resources')
+    human_readable = tableToMarkdown('CrowdStrike Falcon IOA exclusions', exclusions, is_auto_json_transform=True,
+                                     headerTransform=underscoreToCamelCase, removeNull=True, sort_headers=False)
 
     return CommandResults(
         outputs_prefix='CrowdStrike.MLExclusion',
         outputs_key_field='id',
         outputs=exclusions,
-        readable_output=tableToMarkdown('CrowdStrike Falcon IOA exclusions', exclusions),
+        readable_output=human_readable,
     )
 
 
@@ -4411,12 +4423,14 @@ def list_quarantined_file_command(args):
         ids = list_quarantined_files_id(args.get('filter'), search_args, pagination_args).get('resources')
 
     files = list_quarantined_files(ids).get('resources')
+    human_readable = tableToMarkdown('CrowdStrike Falcon Quarantined File', files, is_auto_json_transform=True,
+                                     headerTransform=underscoreToCamelCase, sort_headers=False, removeNull=True)
 
     return CommandResults(
         outputs_prefix='CrowdStrike.MLExclusion',
         outputs_key_field='id',
         outputs=files,
-        readable_output=tableToMarkdown('CrowdStrike Falcon Quarantined File', files),
+        readable_output=human_readable,
     )
 
 
@@ -4437,7 +4451,7 @@ def apply_quarantine_file_action_command(args):
         ids = list_quarantined_files_id(args.get('filter'), search_args, pagination_args).get('resources')
 
     update_args = assign_params(
-        id=ids,
+        ids=ids,
         action=args.get('action'),
         comment=args.get('comment'),
     )
