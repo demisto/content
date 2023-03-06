@@ -1,6 +1,6 @@
 Allows mirroring of XSOAR incidents between different Cortex XSOAR tenants.
 
-This integration was integrated and tested with version 6.0 of XSOAR.
+This integration was integrated and tested with version 6.0 of Cortex XSOAR.
 
 ## Configure XSOAR Mirroring on Cortex XSOAR
 
@@ -11,21 +11,21 @@ This integration was integrated and tested with version 6.0 of XSOAR.
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Incident type |  | False |
-    | XSOAR Server URL | The URL of the XSOAR server to which you are connecting. | True |
+    | XSOAR Server URL | The URL of the Cortex XSOAR server to which you are connecting. | True |
     | API Key | The API key to access the server. The key must be provided by the server to which you are connecting. | True |
     | Fetch incidents |  | False |
-    | Maximum number of incidents to pull per fetch. |  | False |
+    | Maximum number of incidents to pull per fetch |  | False |
     | Fetch only incidents that match the query | Don't add created time to the query as this field will be addressed in the "First fetch time". | False |
     | First fetch time | Date or relative timestamp to start fetching incidents from, in the format of &amp;lt;number&amp;gt; &amp;lt;time unit&amp;gt;. For example, 2 minutes, 12 hours, 6 days, 2 weeks, 3 months, 1 year, ISO timestamp. Default is 3 days. | False |
-    | Entry Categories | Which entries to retrieve from the XSOAR server. The available options are notes, comments (chats) and files (attachments). | False |
-    | Incoming Entry tags | Only entries with these tags are retrieved from the XSOAR server. If no tags are listed, no entries are retrieved. | False |
-    | Outgoing Entry Tags | Choose the tags to filter the entries you wish to send to the other XSOAR instance. If no tags are listed, no entries will be sent. | False |
+    | Entry Categories | Which entries to retrieve from the Cortex XSOAR server. The available options are notes, comments (chats), and files (attachments). | False |
+    | Incoming Entry tags | Only entries with these tags are retrieved from the Cortex XSOAR server. If no tags are listed, no entries are retrieved. | False |
+    | Outgoing Entry Tags | Choose the tags to filter the entries you wish to send to the other Cortex XSOAR instance. If no tags are listed, no entries will be sent. | False |
     | Incident Mirroring Direction |  | False |
     | Disable fetching for incidents came from this integration | Enable this option to disable mirroring of incidents that came from the integration of XSOAR Mirroring. This adds \`-sourceBrand:“XSOAR Mirroring”\` to your query. | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
     | Debug mode (will print debug logs to info) |  | False |
-    | Mirror Playbook ID | A parameter integration that removes the playbookId field from incoming incidents. Note: when set to true \(default\), the instance will attempt to run a playbook according to the incoming ID. When set to false, the instance will run the default playbook for the incident type \(if configured locally\). | False |
+    | Mirror Playbook ID | A parameter integration that removes the playbookId field from incoming incidents. Note: When set to true \(default\), the instance will attempt to run a playbook according to the incoming ID. When set to false, the instance will run the default playbook for the incident type \(if configured locally\). | False |
 
 4. To set up the mirroring, enable *Fetching incidents* in your instance configuration.
 5. In the *Incident Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored:
@@ -43,8 +43,8 @@ This integration was integrated and tested with version 6.0 of XSOAR.
 
 ## Important notes:
 - In order to mirror custom fields, you need to create an incoming mapper for the integration and explicitly specify them in it.
-- In order to mirror custom fields in both directions, the custom fields in both XSOAR instances must have the same cli name.
-- Mirrored incidents include the playbook ID. The receiving side will attempt to run a playbook with a matching ID, if one exists locally. To have the machine run the default playbook for the mirrored incident, set the `Mirror Playbook ID` to `false`. Otherwise (default), the machine will attempt to run a playbook whose id matches the `playbookId` field in the mirrored incident.
+- In order to mirror custom fields in both directions, the custom fields in both Cortex XSOAR instances must have the same CLI name.
+- Mirrored incidents include the playbook ID. The receiving side will attempt to run a playbook with a matching ID, if one exists locally. To have the machine run the default playbook for the mirrored incident, set the `Mirror Playbook ID` to `false`. Otherwise (default), the machine will attempt to run a playbook whose ID matches the `playbookId` field in the mirrored incident.
 
 ## Commands
 
@@ -54,7 +54,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### xsoar-search-incidents
 
 ***
-Search remote XSOAR for incidents
+Search remote Cortex XSOAR for incidents.
 
 #### Base Command
 
@@ -242,7 +242,7 @@ There is no context output for this command.
 ### xsoar-get-incident
 
 ***
-Retrieve incident and entries from remote XSOAR.
+Retrieve incident and entries from the remote Cortex XSOAR.
 
 #### Base Command
 
@@ -252,10 +252,10 @@ Retrieve incident and entries from remote XSOAR.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | The remote incident id. | Required | 
+| id | The remote incident ID. | Required | 
 | from_date | Retrieve entries that were created after the last update. Default is 3 days. | Optional | 
 | categories | Retrieve only the entries from these categories. Default is chats,notes. | Optional | 
-| tags | Only entries with these tags are retrieved from the XSOAR server. If no tags are listed, no entries are retrieved. | Optional | 
+| tags | Only entries with these tags are retrieved from the Cortex XSOAR server. If no tags are listed, no entries are retrieved. | Optional | 
 | max_results | Max number of entries to retrieve. Default is 10. | Optional | 
 
 #### Context Output
@@ -434,7 +434,7 @@ There is no context output for this command.
 ### get-remote-data
 
 ***
-Get remote data from a remote incident. Please note that this method will not update the current incident, it is used for debugging purposes only.
+Get remote data from a remote incident. Note that this method will not update the current incident. It is used for debugging purposes only.
 
 #### Base Command
 
@@ -444,7 +444,7 @@ Get remote data from a remote incident. Please note that this method will not up
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | The remote incident id. | Required | 
+| id | The remote incident ID. | Required | 
 | lastUpdate | Retrieve entries that were created after the last update. | Optional | 
 
 #### Context Output
