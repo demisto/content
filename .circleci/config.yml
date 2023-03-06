@@ -3,6 +3,7 @@ orbs:
   python: circleci/python@<< pipeline.parameters.python-orb-version >>
   node: circleci/node@<< pipeline.parameters.node-orb-version >>
   orb-tools: circleci/orb-tools@10.0
+  gcp-cli: circleci/gcp-cli@3.0.1
 
 commands:
   set-instance-role-env-variable:
@@ -54,7 +55,7 @@ parameters:
   node-orb-version:
     type: string
     default: "5.0.1" # disable-secrets-detection
-
+  
 references:
   environment: &environment
     environment:
@@ -92,6 +93,9 @@ references:
   install_node_ci: &install_node_ci
     node/install-packages:
         cache-version: << pipeline.parameters.cache-version >>
+
+  install_gcp: &install_gcp
+    gcp-cli/setup:
 
   install_neo4j: &install_neo4j
     run:
@@ -369,6 +373,7 @@ jobs:
       - *install_build_dependencies
       - *install_node_ci
       - *install_neo4j
+      - *install_gcp
       - *prepare_environment
       - *secrets
       - *validate_files_and_yaml
