@@ -154,14 +154,13 @@ def search_incidents(args: Dict):   # pragma: no cover
 
     limit = arg_to_number(args.get('limit')) or DEFAULT_LIMIT
     result_data_list = res[0]["Contents"]["data"]
+    max_page = (res[0]["Contents"]["total"] // DEFAULT_PAGE_SIZE) + 1
 
-    if len(result_data_list) == DEFAULT_PAGE_SIZE:
-        page = 1
+    page = 1
+    while len(result_data_list) < limit and page < max_page:
         args['page'] = page
-        while len(result_data_list) < limit and (result := execute_command('getIncidents', args).get('data') or []):
-            result_data_list.extend(result)
-            page += 1
-            args['page'] = page
+        result_data_list.extend(execute_command('getIncidents', args).get('data') or [])
+        page += 1
 
     data = apply_filters(result_data_list, args)
     data = add_incidents_link(data, platform)
