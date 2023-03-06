@@ -6515,6 +6515,6 @@ inputs:
   description: Email address to which to send the questions.
   playbookInputQuery:
 outputs: []
-fromversion: 5.0.0
+fromversion: 6.0.0
 tests:
 - No test
