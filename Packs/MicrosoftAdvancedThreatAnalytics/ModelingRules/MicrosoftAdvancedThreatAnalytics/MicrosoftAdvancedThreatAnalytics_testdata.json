@@ -17,7 +17,7 @@
                 "xdm.source.host.hostname": "john.local",
                 "xdm.observer.version": "1.9.7576.49398",
                 "xdm.event.id": "1019",
-                "xdm.target.host.fqdn": "url",
+                "xdm.target.host.fqdn": "https://viewmsata.domain.local/",
                 "xdm.alert.subcategory": "GatewayLowMemoryMonitoringAlert"
             }
         }
