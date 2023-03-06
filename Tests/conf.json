@@ -778,7 +778,8 @@
         {
             "integrations": "Cortex XDR - IR",
             "playbookID": "Test XDR Playbook general commands",
-            "fromversion": "4.1.0"
+            "fromversion": "4.1.0",
+            "timeout": 1200
         },
         {
             "integrations": "Cortex XDR - IR",
@@ -1413,7 +1414,9 @@
         },
         {
             "integrations": "WildFire-v2",
-            "playbookID": "Detonate URL - WildFire-v2 - Test"
+            "playbookID": "Detonate URL - WildFire-v2 - Test",
+            "timeout": 200
+
         },
         {
             "integrations": "WildFire-v2",
@@ -4473,7 +4476,7 @@
             "integrations": [
                 "CrowdStrike Falcon X"
             ],
-            "timeout": 1800
+            "timeout": 2000
         },
         {
             "playbookID": "CrowdStrike_Falcon_X_-Test-Detonate_File",
