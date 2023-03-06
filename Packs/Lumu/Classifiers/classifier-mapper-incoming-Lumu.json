@@ -1,0 +1,210 @@
+{
+	"description": "Maps incoming Lumu incidents fields.",
+	"feed": false,
+	"id": "LumuInMap",
+	"mapping": {
+		"Lumu": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Comment": {
+					"complex": {
+						"filters": [],
+						"root": "comment",
+						"transformers": []
+					}
+				},
+				"adversaries": {
+					"complex": {
+						"filters": [],
+						"root": "adversaries",
+						"transformers": []
+					}
+				},
+				"adversaryId": {
+					"complex": {
+						"filters": [],
+						"root": "adversaryId",
+						"transformers": []
+					}
+				},
+				"adversaryTypes": {
+					"complex": {
+						"filters": [],
+						"root": "adversaryTypes",
+						"transformers": []
+					}
+				},
+				"companyId": {
+					"complex": {
+						"filters": [],
+						"root": "companyId",
+						"transformers": []
+					}
+				},
+				"contactSummary": {
+					"complex": {
+						"filters": [],
+						"root": "contactSummary",
+						"transformers": []
+					}
+				},
+				"details": {
+					"complex": {
+						"filters": [],
+						"root": "description",
+						"transformers": []
+					}
+				},
+				"firstContact": {
+					"complex": {
+						"filters": [],
+						"root": "firstContact",
+						"transformers": []
+					}
+				},
+				"incidentId": {
+					"complex": {
+						"filters": [],
+						"root": "incidentId",
+						"transformers": []
+					}
+				},
+				"labelDistribution": {
+					"complex": {
+						"filters": [],
+						"root": "labelDistribution",
+						"transformers": []
+					}
+				},
+				"lastContact": {
+					"complex": {
+						"filters": [],
+						"root": "lastContact",
+						"transformers": []
+					}
+				},
+				"lumu_actions": {
+					"simple": "actions"
+				},
+				"lumu_actions2": {
+					"simple": "actions"
+				},
+				"lumu_contacts": {
+					"complex": {
+						"filters": [],
+						"root": "contacts",
+						"transformers": []
+					}
+				},
+				"lumu_description": {
+					"complex": {
+						"filters": [],
+						"root": "description",
+						"transformers": []
+					}
+				},
+				"lumu_event_type": {
+					"complex": {
+						"filters": [],
+						"root": "lumu_event_type",
+						"transformers": []
+					}
+				},
+				"lumu_incidentId": {
+					"complex": {
+						"filters": [],
+						"root": "lumu_incidentId",
+						"transformers": []
+					}
+				},
+				"lumu_source_name": {
+					"complex": {
+						"filters": [],
+						"root": "lumu_source_name",
+						"transformers": []
+					}
+				},
+				"lumu_status": {
+					"complex": {
+						"filters": [],
+						"root": "lumu_status",
+						"transformers": []
+					}
+				},
+				"lumu_totalEndpoints": {
+					"complex": {
+						"filters": [],
+						"root": "totalEndpoints",
+						"transformers": []
+					}
+				},
+				"occurred": {
+					"complex": {
+						"filters": [],
+						"root": "timestamp",
+						"transformers": []
+					}
+				},
+				"statusTimestamp": {
+					"complex": {
+						"filters": [],
+						"root": "statusTimestamp",
+						"transformers": []
+					}
+				}
+			}
+		},
+		"dbot_classification_incident_type_all": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"Description": {
+					"complex": {
+						"filters": [],
+						"root": "description",
+						"transformers": []
+					}
+				},
+				"IncomingMirrorError": {
+					"simple": "incomming_mirror_error"
+				},
+				"Source Status": {
+					"complex": {
+						"filters": [],
+						"root": "status",
+						"transformers": []
+					}
+				},
+				"State": {
+					"complex": {
+						"filters": [],
+						"root": "status",
+						"transformers": []
+					}
+				},
+				"dbotMirrorDirection": {
+					"simple": "mirror_direction"
+				},
+				"dbotMirrorInstance": {
+					"simple": "mirror_instance"
+				},
+				"dbotMirrorLastSync": {
+					"simple": "mirror_last_sync"
+				},
+				"dbotMirrorTags": {
+					"simple": "mirror_tags"
+				},
+				"severity": {
+					"complex": {
+						"filters": [],
+						"root": "severity",
+						"transformers": []
+					}
+				}
+			}
+		}
+	},
+	"name": "LumuInMap",
+	"type": "mapping-incoming",
+	"version": -1,
+	"fromVersion": "6.0.0"
+}
