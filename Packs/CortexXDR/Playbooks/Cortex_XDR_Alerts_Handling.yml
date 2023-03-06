@@ -732,8 +732,6 @@ tasks:
           accessor: host_name
       IsolateEndpoint:
         simple: "false"
-      UserEngagementThreshold:
-        simple: "2"
       Username:
         complex:
           root: PaloAltoNetworksXDR.Incident.alerts
