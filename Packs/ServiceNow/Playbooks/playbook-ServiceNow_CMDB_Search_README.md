@@ -29,7 +29,7 @@ This playbook does not use any sub-playbooks.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| SearchCIClass | The CMDB CI class to perform the search on \(Defaults to cmdb_ci_network_adapter\). | cmdb_ci | Optional |
+| SearchCIClass | The CMDB CI class to perform the search on \(Defaults to cmdb_ci\). | cmdb_ci | Optional |
 | SearchQueryField | The CI field used to perform the query \(Defaults to ip_address\). | ip_address | Optional |
 | SearchQueryValue | The value used to perform the query. |  | Required |
 | BypassAddRecord | Value to determine if the "add asset to CMDB" branch should be skipped in order to prevent direction to manual task.  By default this is set to "false" but a "true" value will bypass. | false | Optional |
