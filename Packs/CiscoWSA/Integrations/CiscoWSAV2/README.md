@@ -1555,39 +1555,3 @@ Retrieve URL categories of available categories to allow/block in access policie
 >| test,<br/>Adult | Adult,<br/>Advertisements,<br/>Alcohol,<br/>Animals and Pets,<br/>Arts,<br/>Astrology,<br/>Auctions,<br/>Business and Industry,<br/>Cannabis,<br/>Chat and Instant Messaging,<br/>Cheating and Plagiarism,<br/>Child Abuse Content,<br/>Cloud and Data Centers,<br/>Computer Security,<br/>Computers and Internet,<br/>Conventions, Conferences and Trade Shows,<br/>Cryptocurrency,<br/>Cryptomining,<br/>DIY Projects,<br/>DNS-Tunneling,<br/>Dating,<br/>Digital Postcards,<br/>Dining and Drinking,<br/>DoH and DoT,<br/>Dynamic DNS Provider,<br/>Dynamic and Residential,<br/>Education,<br/>Entertainment,<br/>Extreme,<br/>Fashion,<br/>File Transfer Services,<br/>Filter Avoidance,<br/>Finance,<br/>Freeware and Shareware,<br/>Gambling,<br/>Games,<br/>Government and Law,<br/>Hacking,<br/>Hate Speech,<br/>Health and Medicine,<br/>Humor,<br/>Hunting,<br/>Illegal Activities,<br/>Illegal Downloads,<br/>Illegal Drugs,<br/>Infrastructure and Content Delivery Networks,<br/>Internet Telephony,<br/>Internet of Things,<br/>Job Search,<br/>Lingerie and Swimsuits,<br/>Lotteries,<br/>Military,<br/>Mobile Phones,<br/>Museums,<br/>Nature and Conservation,<br/>News,<br/>Non-governmental Organizations,<br/>Non-sexual Nudity,<br/>Not Actionable,<br/>Online Communities,<br/>Online Document Sharing and Collaboration,<br/>Online Meetings,<br/>Online Storage and Backup,<br/>Online Trading,<br/>Organizational Email,<br/>Paranormal,<br/>Parked Domains,<br/>Peer File Transfer,<br/>Personal Sites,<br/>Personal VPN,<br/>Photo Search and Images,<br/>Politics,<br/>Pornography,<br/>Private IP Addresses as Host,<br/>Professional Networking,<br/>Real Estate,<br/>Recipes and Food,<br/>Reference,<br/>Regional Restricted Sites (Germany),<br/>Regional Restricted Sites (Great Britain),<br/>Regional Restricted Sites (Italy),<br/>Regional Restricted Sites (Poland),<br/>Religion,<br/>SaaS and B2B,<br/>Safe for Kids,<br/>Science and Technology,<br/>Search Engines and Portals,<br/>Sex Education,<br/>Shopping,<br/>Social Networking,<br/>Social Science,<br/>Society and Culture,<br/>Software Updates,<br/>Sports and Recreation,<br/>Streaming Audio,<br/>Streaming Video,<br/>Terrorism and Violent Extremism,<br/>Tobacco,<br/>Transportation,<br/>Travel,<br/>URL Shorteners,<br/>Weapons,<br/>Web Cache and Archives,<br/>Web Hosting,<br/>Web Page Translation,<br/>Web-based Email |
 
 
-## Breaking changes from the previous version of this integration - Cisco WSA V2
-%%FILL HERE%%
-The following sections list the changes in this version.
-
-### Commands
-#### The following commands were removed in this version:
-* *commandName* - this command was replaced by XXX.
-* *commandName* - this command was replaced by XXX.
-
-### Arguments
-#### The following arguments were removed in this version:
-
-In the *commandName* command:
-* *argumentName* - this argument was replaced by XXX.
-* *argumentName* - this argument was replaced by XXX.
-
-#### The behavior of the following arguments was changed:
-
-In the *commandName* command:
-* *argumentName* - is now required.
-* *argumentName* - supports now comma separated values.
-
-### Outputs
-#### The following outputs were removed in this version:
-
-In the *commandName* command:
-* *outputPath* - this output was replaced by XXX.
-* *outputPath* - this output was replaced by XXX.
-
-In the *commandName* command:
-* *outputPath* - this output was replaced by XXX.
-* *outputPath* - this output was replaced by XXX.
-
-## Additional Considerations for this version
-%%FILL HERE%%
-* Insert any API changes, any behavioral changes, limitations, or restrictions that would be new to this version.
