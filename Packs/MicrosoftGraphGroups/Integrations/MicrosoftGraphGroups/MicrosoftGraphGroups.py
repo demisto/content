@@ -172,7 +172,7 @@ class MsGraphClient:
             params['$filter'] = filter_  # type: ignore
 
         if count := demisto.args().get('count'):
-            params['count'] = count
+            params['$count'] = count
             headers['ConsistencyLevel'] = 'eventual'
 
         return self.ms_client.http_request(
