@@ -156,7 +156,7 @@ def search_incidents(args: Dict):   # pragma: no cover
     result_data_list = res[0]["Contents"]["data"]
     max_page = (res[0]["Contents"]["total"] // DEFAULT_PAGE_SIZE) + 1
 
-    page = 1
+    page = DEFAULT_STARTING_PAGE_NUMBER
     while len(result_data_list) < limit and page < max_page:
         args['page'] = page
         result_data_list.extend(execute_command('getIncidents', args).get('data') or [])
