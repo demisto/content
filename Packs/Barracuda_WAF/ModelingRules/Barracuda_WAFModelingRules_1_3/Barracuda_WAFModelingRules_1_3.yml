@@ -1,0 +1,6 @@
+fromversion: 6.10.0
+id: Barracuda_WAF
+name: Barracuda WAF
+rules: ''
+schema: ''
+tags: Apache Tomcat
