@@ -39,11 +39,10 @@ def getMetadata(strMeta):
     metadata = {}
     try:
         if strMeta:
-            if isJSON(strMeta):
-                metadata = json.loads(strMeta)
+            metadata = json.loads(strMeta)
     except Exception:
         demisto.debug('Metadata is null')
-    if metadata is None or len(metadata) == 0:
+    if not metadata:
         raw_meta = strMeta.strip().split(',')
         for attr in raw_meta:
             k_v = attr.strip().split('=')
@@ -54,15 +53,15 @@ def getMetadata(strMeta):
 def get_headers(username, password, apikey=None, bearer=None):
     headers = {'Content-Type': 'application/json'}
 
-    if bearer and bearer != '':
-        headers['Authorization'] = 'Bearer ' + bearer
-    if username and password and username != '' and password != '':
+    if bearer:
+        headers['Authorization'] = f'Bearer {bearer}'
+    if username and password:
         if username.find('CERTIFICATE') < 0 and password.find('PRIVATE KEY') < 0:
             headers['Authorization'] = 'Basic ' + \
                 b64encode(b":".join([username.encode("latin1"),
                                      password.encode("latin1")])).decode('ascii')
-    elif apikey and apikey != '':
-        headers['Authorization'] = 'Basic ' + apikey
+    elif apikey:
+        headers['Authorization'] = f'Basic {apikey}'
 
     return headers
 
@@ -97,11 +96,12 @@ class Client(BaseClient):
 
 
 def test_module(client):
-    path = 'sys/v1/session/auth'
-    res = client.send_request(path)
-    if not res:
-        raise DemistoException('NOK')
-    return 'ok'
+    try:
+        path = 'sys/v1/session/auth'
+        client.send_request(path)
+        return 'ok'
+    except Exception as e:
+        raise DemistoException(f"Error in API call - check the username/password or API Key. Error: {e}.")
 
 
 def list_secrets_command(client, args, gids=None):
@@ -448,13 +448,12 @@ def decrypt_command(client, args, pkey, pmode):
 
 def main() -> None:
 
-    message = ''
     args = demisto.args()
     dparams = demisto.params()
     command = demisto.command()
 
     proxy = dparams.get('proxy', False)
-    verify_ssl = not dparams.get('tls_enforce', False)
+    verify_ssl = not dparams.get('insecure', False)
 
     if endpoint := dparams.get('server'):
         # guardrails-disable-line
@@ -483,7 +482,6 @@ def main() -> None:
             verify=verify_ssl,
             headers=get_headers(username, password, apikey),
             proxy=proxy)
-
 
         if command == 'test-module':
             test_module(client)
@@ -515,15 +513,9 @@ def main() -> None:
         elif command == 'fortanix-decrypt':
             return_results(decrypt_command(client, args, pkey, pmode))
 
-    except DemistoException as err:
-        message = f'Failure in Fortanix DSM.\nError:\n{str(err)}'
-    except ValueError as err:
-        message = f'Error in Fortanix DSM.\nError:\n{str(err)}'
     except Exception as e:
-        message = f'Command Failure: {command}.\nError:\n{str(e)}'
-
-    if message != '':
-        return_error(message)
+        demisto.error(traceback.format_exc())  # print the traceback
+        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
 
 ''' ENTRY POINT '''

@@ -3,7 +3,7 @@ commonfields:
   version: -1
 name: Fortanix DSM
 display: Fortanix DSM
-category: Authentication
+category: Identity and Access Management
 description: Manage Secrets and Protect Confidential Data using Fortanix Data Security Manager
 fromversion: 6.8.0
 configuration:
@@ -11,7 +11,7 @@ configuration:
   name: server
   defaultvalue: https://amer.smartkey.io
   type: 0
-  additionalinfo: URL e.g., https://ftnx.company.com
+  additionalinfo: URL
   required: true
 - display: Username / App UUID / Certificate
   displaypassword: Password / App Secret / Private Key
@@ -24,12 +24,12 @@ configuration:
   type: 4
   additionalinfo: Private key cannot be encrypted
   required: false
-- display: Trust any server certificate (insecure)
-  name: tls_enforce
-  defaultvalue: "true"
-  type: 8
-  additionalinfo: Ignores TLS, not recommended
+- display: Trust any certificate (not secure)
+  name: insecure
   required: false
+  type: 8
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   defaultvalue: "false"
