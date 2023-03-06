@@ -5313,8 +5313,7 @@
             "playbookID": "TestXSOAREDLCheckerPlaybook"
         },
         {
-
-            "integrations": "Cisco WSA V2",
+            "integrations": "CiscoWSAv2",
             "playbookID": "playbook-CiscoWSA_Test",
             "fromversion": "6.8.0"
         },
