@@ -926,7 +926,7 @@ def list_host_files(host_id: str, session_id: str = None) -> Dict:
         :param session_id: optional session_id for the command, if not provided a new session_id will generate
         :return: Response JSON which contains errors (if exist) and retrieved resources
     """
-    endpoint_url = '/real-time-response/entities/file/v1'
+    endpoint_url = '/real-time-response/entities/file/v2'
     if not session_id:
         session_id = init_rtr_single_session(host_id)
 
@@ -980,7 +980,7 @@ def get_script(script_id: list) -> Dict:
         :param script_id: ID of script to get
         :return: Response JSON which contains errors (if exist) and retrieved resource
     """
-    endpoint_url = '/real-time-response/entities/scripts/v1'
+    endpoint_url = '/real-time-response/entities/scripts/v2'
     params = {
         'ids': script_id
     }
@@ -1007,7 +1007,7 @@ def list_scripts() -> Dict:
         Retrieves list of scripts
         :return: Response JSON which contains errors (if exist) and retrieved resources
     """
-    endpoint_url = '/real-time-response/entities/scripts/v1'
+    endpoint_url = '/real-time-response/entities/scripts/v2'
     response = http_request('GET', endpoint_url)
     return response
 
@@ -1081,7 +1081,7 @@ def get_file(file_id: list) -> Dict:
         :param file_id: ID of file to get
         :return: Response JSON which contains errors (if exist) and retrieved resources
     """
-    endpoint_url = '/real-time-response/entities/put-files/v1'
+    endpoint_url = '/real-time-response/entities/put-files/v2'
     params = {
         'ids': file_id
     }
@@ -1094,7 +1094,7 @@ def list_files() -> Dict:
         Get a list of put-file ID's that are available to the user for the put command.
         :return: Response JSON which contains errors (if exist) and retrieved resources
     """
-    endpoint_url = '/real-time-response/entities/put-files/v1'
+    endpoint_url = '/real-time-response/entities/put-files/v2'
     response = http_request('GET', endpoint_url)
     return response
 
