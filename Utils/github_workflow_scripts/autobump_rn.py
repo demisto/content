@@ -962,7 +962,7 @@ class BranchAutoBumper:
                     pack_auto_bumper.pack_id,
                     new_version,
                 )
-            print(f"[{pr.number}] Committed the changes. Commenting on the pr: \n{body}.\n")
+            print(f"[{self.pr.number}] Committed the changes. Commenting on the pr: \n{body}.\n")
             self.git_repo.git.push()
             self.pr.create_issue_comment(body)
         return body
