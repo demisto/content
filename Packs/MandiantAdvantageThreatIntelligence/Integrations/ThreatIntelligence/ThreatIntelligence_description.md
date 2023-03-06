@@ -1,8 +1,9 @@
-## BaseIntegration Help
+Mandiant Advantage Threat Intelligence Integration
 
-Markdown file for integration configuration  help snippet. In this file add:
+### Prerequisites
+- A Mandiant Advantage Threat Intelligence account
 
-- Brief information about how to retrieve the API key of your product
-- Other useful information on how to configure your integration in XSOAR
-
-Since this is a Markdown file, we encourage you to use MD formatting for sections, sub-sections, lists, etc.
+### Get Credentials
+- Log into `advantage.mandiant.com`
+- Navigate to `Settings`, then scroll down to `APIv4 Access and Key`
+- Click `Get Key ID and Secret`
