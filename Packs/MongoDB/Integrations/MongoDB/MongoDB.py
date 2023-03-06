@@ -160,7 +160,7 @@ class Client:
 
         Args:
             collection (str): name of the collection.
-            filter_update_zip (zip): a zip object of filter,update pairs of queries.
+            filter_update_zip (zip): a zip object of (filter,update) pairs of queries.
             update_one (boolean): whether to update one or many entries per query.
             upsert (boolean): whether to insert a new entry if no match is found per query.
         Returns:
@@ -272,11 +272,15 @@ def parse_and_validate_bulk_update_arguments(filter: str, update: str) -> Tuple[
     Returns:
         Tuple[List, List]: lists of dictionaries representing the parsed and validated filter and update arguments.
     """
+    filter_valid_input_example = '`[{"key1": "value1"},{"key2": "value2"}]`'
+    update_valid_input_example = '`[{"$set": {"key1": "value1"}},{"$set": {"key2": "value2"}}]`'
+    brackets_syntax_error_msg = 'The {} argument must be a json array. Valid input example: {}'
+    json_validation_error_msg = 'The {} argument contains an invalid json. Valid input example: {}'
 
     if not filter.startswith('[') or not filter.endswith(']'):
-        raise DemistoException('The `filter` argument must be a json array.')
+        raise DemistoException(brackets_syntax_error_msg.format('`filter`', filter_valid_input_example))
     if not update.startswith('[') or not update.endswith(']'):
-        raise DemistoException('The `update` argument must be a json array.')
+        raise DemistoException(brackets_syntax_error_msg.format('`update`', update_valid_input_example))
 
     filters = argToList(filter)
     updates = argToList(update)
@@ -287,11 +291,11 @@ def parse_and_validate_bulk_update_arguments(filter: str, update: str) -> Tuple[
     try:
         filter_list = [validate_json_objects(filter) for filter in filters]
     except JSONDecodeError as e:
-        raise DemistoException('The `filter` argument contains an invalid json.') from e
+        raise DemistoException(json_validation_error_msg.format('`filter`', filter_valid_input_example)) from e
     try:
         update_list = [validate_json_objects(update) for update in updates]
     except JSONDecodeError as e:
-        raise DemistoException('The `update` argument contains an invalid json.') from e
+        raise DemistoException(json_validation_error_msg.format('`update`', update_valid_input_example)) from e
 
     return filter_list, update_list
 
