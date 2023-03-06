@@ -4865,6 +4865,6 @@ inputs:
     * The web server IP address is configured in the integration instance.
   playbookInputQuery:
 outputs: []
-fromversion: 5.0.0
+fromversion: 6.0.0
 tests:
 - No test
