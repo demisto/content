@@ -9429,7 +9429,7 @@ class IndicatorsSearcher:
     :param limit: the current upper limit of the search (can be updated after init)
 
     :type sort: ``List[Dict]``
-    :param sort: Array of sort params in order of importance. Item structure: {"field": string, "asc": boolean}
+    :param sort: An array of sort params ordered by importance. Item structure: {"field": string, "asc": boolean}
 
     :return: No data returned
     :rtype: ``None``

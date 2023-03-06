@@ -1205,14 +1205,13 @@ def get_server_collections_command(integration_context):
     return result
 
 
-def create_relationships_objects(stix_iocs: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+def create_relationships_objects(stix_iocs: list[dict[str, Any]]) -> list[dict[str, Any]]:
     """
     Create entries for the relationships returned by the searchRelationships command.
     :param stix_iocs: Entries for the Stix objects associated with given indicators
     :return: A list of dictionaries representing the relationships objects, including entityBs objects
     """
-    relationships_list: List[Dict[str, Any]] = []
-
+    relationships_list: list[dict[str, Any]] = []
     iocs_value_to_id = {(stix_ioc.get('value') or stix_ioc.get('name')): stix_ioc.get('id') for stix_ioc in stix_iocs}
     search_relationships = demisto.searchRelationships({'entities': list(iocs_value_to_id.keys())}).get('data', [])
 
@@ -1220,7 +1219,9 @@ def create_relationships_objects(stix_iocs: List[Dict[str, Any]]) -> List[Dict[s
     for relationship in search_relationships:
 
         entity_b_value = relationship.get('entityB')
-        if entity_b_value and (entity_b_object := create_entity_b_stix_object(entity_b_value)):
+        if entity_b_value and (entity_b_value not in iocs_value_to_id) and \
+                (entity_b_object := create_entity_b_stix_object(entity_b_value)):
+            iocs_value_to_id[entity_b_value] = entity_b_object.get('id')
             relationships_list.append(entity_b_object)
         else:
             demisto.debug(f"WARNING: Invalid entity B - Relationships will not be created to entity A:"
@@ -1237,7 +1238,7 @@ def create_relationships_objects(stix_iocs: List[Dict[str, Any]]) -> List[Dict[s
         relationship_unique_id = uuid.uuid5(SERVER.namespace_uuid, f'relationship:{relationship.get("id")}')
         relationship_stix_id = f'relationship--{relationship_unique_id}'
 
-        relationship_object: Dict[str, Any] = {
+        relationship_object: dict[str, Any] = {
             'type': "relationship",
             'spec_version': SERVER.version,
             'id': relationship_stix_id,
@@ -1245,7 +1246,7 @@ def create_relationships_objects(stix_iocs: List[Dict[str, Any]]) -> List[Dict[s
             'modified': modified_parsed,
             "relationship_type": relationship.get('name'),
             'source_ref': iocs_value_to_id.get(relationship.get('entityA')),
-            'target_ref': entity_b_object.get('id'),
+            'target_ref': iocs_value_to_id[entity_b_value],
         }
         if description := demisto.get(relationship, 'CustomFields.description'):
             relationship_object['Description'] = description
@@ -1255,7 +1256,7 @@ def create_relationships_objects(stix_iocs: List[Dict[str, Any]]) -> List[Dict[s
     return relationships_list
 
 
-def create_entity_b_stix_object(entity_b_value: str) -> Optional[Dict[str, Any]]:
+def create_entity_b_stix_object(entity_b_value: str) -> Optional[dict[str, Any]]:
     """
     Generates a STIX object for the 'entityB' value in the provided 'relationship' dictionary.
     :param entity_b_value: The 'entityB' value
