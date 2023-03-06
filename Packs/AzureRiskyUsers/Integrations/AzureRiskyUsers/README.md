@@ -322,6 +322,9 @@ Get a list of the riskDetection objects and their properties.
 | page | Page number. Default is 1. | Optional |
 | risk_state | Risk State to retrieve. If not specified, all states will be retrieved. Possible values are: atRisk, confirmedCompromised, remediated, dismissed, confirmedSafe. | Optional |
 | risk_level | Specify to get only results with the same Risk Level. Possible values are: low, medium, high. | Optional |
+| detected_date_time_before | Filter events that created before specific time range starting, e.g. 2022-06-09T23:00:44.7420905Z. | Optional |
+| detected_date_time_after | Filter events that created after specific time range starting, e.g. 2022-06-09T23:00:44.7420905Z. | Optional |
+| order_by | The method used to order the retrieved results. | Optional |
 
 
 #### Context Output
