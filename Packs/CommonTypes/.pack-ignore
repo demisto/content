@@ -347,6 +347,8 @@ swid
 cpe
 TLDs
 mailto
+Misconfiguration
+CloudTrail
 
 [file:classifier-Mail-listener.json]
 ignore=BA101
