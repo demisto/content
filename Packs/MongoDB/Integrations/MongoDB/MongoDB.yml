@@ -272,13 +272,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: 'A comma-separated list of queries that match the entries to update, in the format: `[{"key1": "value1"},{"key2": "value2"}]`. The order of this list must match the comma-separated list of the update argument.'
+      description: 'A comma-separated list of queries that match the entries to update, in the format: `[{"key1": "value1"},{"key2": "value2"}]`. This list must match the comma-separated list of the update argument by order and size.'
       isArray: true
       name: filter
       required: true
       secret: false
     - default: false
-      description: 'A comma-separated list of operations to update entries, in the format: `[{"$set": {"key1": "value1"}},{"$set": {"key2": "value2"}}]`. You can use "Update Operators" or "Aggregation Pipeline". The order of this list must match the comma-separated list of the filter argument.'
+      description: 'A comma-separated list of operations to update entries, in the format: `[{"$set": {"key1": "value1"}},{"$set": {"key2": "value2"}}]`. You can use "Update Operators" or "Aggregation Pipeline". This list must match the comma-separated list of the filter argument by order and size.'
       isArray: true
       name: update
       required: true

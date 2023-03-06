@@ -266,7 +266,7 @@ class MockResponse:
     """Mock response for TestUpdateQueryCommands and TestBulkUpdateQueryCommands classes.
     represents a partial SDK response of the update_entry and bulk_update_entries functions.
     """
-    def __init__(self, acknowledged, modified_count, upserted_count=False, upserted_id=False):
+    def __init__(self, acknowledged, modified_count, upserted_count, upserted_id=False):
         self.acknowledged = acknowledged
         self.modified_count = modified_count
         self.upserted_count = upserted_count
@@ -304,6 +304,23 @@ class TestUpdateQueryCommands:
         return_value = update_entry_command(client, "test_collection", filter=filter,
                                             update=update, update_one=update_one, upsert=upsert)
         assert return_value[0] == expected
+
+    case_invalid_filter_argument = (
+        "\"Name\": \"dummy\"}", "{\"$set\":{\"test\":0}}", MockResponse(True, 0, 0, 0), 'The `filter` argument is not a valid json. Valid input example: `{"key": "value"}`')
+    case_invalid_update_argument = (
+        "{\"Name\": \"dummy\"}", "\"$set\":{\"test\":0}}", MockResponse(True, 0, 0, 0), 'The `update` argument is not a valid json. Valid input example: `{"$set": {"key": "value"}`')
+    case_invalid_response = (
+        "{\"Name\": \"dummy\"}", "{\"$set\":{\"test\":0}}", None, 'Error occurred when trying to enter update entries.')
+
+    invalid_cases = [case_invalid_filter_argument, case_invalid_update_argument, case_invalid_response]
+
+    @pytest.mark.parametrize('filter, update, response, expected', invalid_cases)
+    def test_update_entry_command_fail(self, mocker, filter, update, response, expected, client=client):
+        mocker.patch.object(client, 'update_entry', return_value=response)
+        try:
+            update_entry_command(client, "test_collection", filter=filter, update=update)
+        except DemistoException as e:
+            assert str(e) == expected
 
 
 class TestBulkUpdateQueryCommands:

@@ -415,8 +415,8 @@ Bulk updates entries in a collection.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | collection | The name of the collection in which to update entries. | Required | 
-| filter | A comma-separated list of queries that match the documents to update, in the format:  ``` `[{"key1": "value1"},{"key2": "value2"}]` ```. This list must match the comma-separated list of the update argument. | Required | 
-| update | A comma-separated list of content with which to update entries, in the format: ``` `[{"$set": {"key1": "value1"}},{"$set": {"key2": "value2"}}]` ```. You can use Update Operators or Aggregation Pipeline. This list must match the comma-separated list of the filter argument. For more information, see the integration documentation. | Required | 
+| filter | A comma-separated list of queries that match the documents to update, in the format:  ``` `[{"key1": "value1"},{"key2": "value2"}]` ```. This list must match the comma-separated list of the update argument by order and size. | Required | 
+| update | A comma-separated list of content with which to update entries, in the format: ``` `[{"$set": {"key1": "value1"}},{"$set": {"key2": "value2"}}]` ```. You can use Update Operators or Aggregation Pipeline. This list must match the comma-separated list of the filter argument by order and size. | Required | 
 | update_one | Whether to update a single entry per query. If true, will set only the first found entry, If false, will set all found entries. This argument will effect all the provided queries. Default is true. | Optional | 
 | upsert | Will create a new entry if no entires match the provided queries (per query). This argument will effect all the provided queries. Default is false. | Optional |
 

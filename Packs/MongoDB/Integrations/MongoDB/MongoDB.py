@@ -256,12 +256,37 @@ def convert_object_id_to_str(entries: List[ObjectId]) -> List[str]:
     return list(map(str, entries))
 
 
-def parse_and_validate_bulk_update_arguments(filter: str, update: str) -> Tuple[List, List]:
+def handle_bulk_update_string_query_arguments(
+        argument: Tuple[str, str],
+        filter_valid_input_example: str, update_valid_input_example: str) -> List[dict]:
+    """Handles the case where the filter or update arguments are strings when using mongodb-bulk-update command.
+        (the other case is a list of dictionaries from context)
+
+    Args:
+        argument (Tuple[str, str]): a tuple containing the argument name and value.
+
+    Raises:
+        DemistoException: if the filter or update argument is not a json array.
+
+    Returns:
+        List[dict]: a list of dictionaries representing the parsed and validated filter or update argument.
+    """
+    argument_name, argument_value = argument
+    if not argument_value.startswith('[') or not argument_value.endswith(']'):
+        brackets_syntax_error_msg = 'The {} argument must be a json array. Valid input example: {}'
+        raise DemistoException(
+            brackets_syntax_error_msg.format(
+                f'`{argument_name}`', filter_valid_input_example
+                if argument_name == 'filter' else update_valid_input_example))
+    return argToList(argument_value)
+
+
+def parse_and_validate_bulk_update_arguments(filter: str | list, update: str | list) -> Tuple[List, List]:
     """Parses and validates the bulk update queries (filter and update command arguments).
 
     Args:
-        filter (str): raw string representing the filter command argument.
-        update (str): raw string representing the update command argument.
+        filter (str | list): raw string representing the filter command argument or a list object (from context).
+        update (str | list): raw string representing the update command argument or a list object (from context).
 
     Raises:
         DemistoException: if filter or update command arguments have invalid syntax.
@@ -274,16 +299,14 @@ def parse_and_validate_bulk_update_arguments(filter: str, update: str) -> Tuple[
     """
     filter_valid_input_example = '`[{"key1": "value1"},{"key2": "value2"}]`'
     update_valid_input_example = '`[{"$set": {"key1": "value1"}},{"$set": {"key2": "value2"}}]`'
-    brackets_syntax_error_msg = 'The {} argument must be a json array. Valid input example: {}'
     json_validation_error_msg = 'The {} argument contains an invalid json. Valid input example: {}'
 
-    if not filter.startswith('[') or not filter.endswith(']'):
-        raise DemistoException(brackets_syntax_error_msg.format('`filter`', filter_valid_input_example))
-    if not update.startswith('[') or not update.endswith(']'):
-        raise DemistoException(brackets_syntax_error_msg.format('`update`', update_valid_input_example))
-
-    filters = argToList(filter)
-    updates = argToList(update)
+    filters = handle_bulk_update_string_query_arguments(
+        ('filter', filter),
+        filter_valid_input_example, update_valid_input_example) if isinstance(filter, str) else filter
+    updates = handle_bulk_update_string_query_arguments(
+        ('update', update),
+        filter_valid_input_example, update_valid_input_example) if isinstance(update, str) else update
 
     if len(filters) != len(updates):
         raise DemistoException('The `filter` and `update` arguments must contain the same number of elements.')
@@ -425,32 +448,36 @@ def format_sort(sort_str: str) -> list:
 def update_entry_command(
         client: Client,
         collection: str,
-        filter: str,
-        update: str,
+        filter: str | dict,
+        update: str | dict,
         update_one=False,
         upsert=False,
         **kwargs,
 ) -> Tuple[str, None]:
-    try:
-        json_filter = validate_json_objects(json.loads(filter))
 
-    except JSONDecodeError:
-        raise DemistoException('The `filter` argument is not a valid json.')
+    filter_valid_input_example = '`{"key": "value"}`'
+    update_valid_input_example = '`{"$set": {"key": "value"}`'
+    invalid_json_error_msg = 'The {} argument is not a valid json. Valid input example: {}'
+
     try:
-        json_update = validate_json_objects(json.loads(update))
+        json_filter = validate_json_objects(json.loads(filter)) if isinstance(filter, str) else validate_json_objects(filter)
     except JSONDecodeError:
-        raise DemistoException('The `update` argument is not a valid json.')
+        raise DemistoException(invalid_json_error_msg.format('`filter`', filter_valid_input_example))
+    try:
+        json_update = validate_json_objects(json.loads(update)) if isinstance(update, str) else validate_json_objects(update)
+    except JSONDecodeError:
+        raise DemistoException(invalid_json_error_msg.format('`update`', update_valid_input_example))
     response = client.update_entry(
         collection, json_filter, json_update, argToBoolean(update_one), argToBoolean(upsert)
     )
-    if not response.acknowledged:
-        raise DemistoException('Error occurred when trying to enter update entries.')
-    human_readable = "A new entry was inserted to the collection." if response.upserted_id \
-        else f'MongoDB: Total of {response.modified_count} entries has been modified.'
-    return (
-        human_readable,
-        None,
-    )
+    if response and response.acknowledged:
+        human_readable = "A new entry was inserted to the collection." if response.upserted_id \
+            else f'MongoDB: Total of {response.modified_count} entries has been modified.'
+        return (
+            human_readable,
+            None,
+        )
+    raise DemistoException('Error occurred when trying to enter update entries.')
 
 
 def delete_entry_command(
@@ -553,14 +580,13 @@ def bulk_update_command(
     response = client.bulk_update_entries(
         collection, zip(filter_list, update_list), argToBoolean(update_one), argToBoolean(upsert)
     )
-    if not response.acknowledged:
-        raise DemistoException('Error occurred when trying to enter update entries.')
-
-    return (
-        f'MongoDB: Total of {response.modified_count} entries has been modified.\
-        \nMongoDB: Total of {response.upserted_count} entries has been inserted.',
-        None,
-    )
+    if response and response.acknowledged:
+        return (
+            f'MongoDB: Total of {response.modified_count} entries has been modified.\
+            \nMongoDB: Total of {response.upserted_count} entries has been inserted.',
+            None,
+        )
+    raise DemistoException('Error occurred when trying to enter update entries.')
 
 
 def main():
