@@ -552,7 +552,7 @@ inputs:
   value:
     simple: cmdb_ci
   required: false
-  description: The CMDB CI class to perform the search on (Defaults to cmdb_ci_network_adapter).
+  description: The CMDB CI class to perform the search on (Defaults to cmdb_ci).
   playbookInputQuery:
 - key: SearchQueryField
   value:
