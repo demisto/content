@@ -1819,13 +1819,6 @@ inputs:
   required: false
   description: URL from Darkfeed
   playbookInputQuery:
-- key: Maximum number of IOCs
-  value:
-    simple: "50"
-  required: false
-  description: Set value to the maximum number of IOCs you would like returned in
-    searches for items from the same source and same actor
-  playbookInputQuery:
 - key: Query time lookup
   value:
     simple: 3 day ago
