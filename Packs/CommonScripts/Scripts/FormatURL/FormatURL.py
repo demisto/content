@@ -458,8 +458,8 @@ class URLCheck(object):
     @staticmethod
     def check_codepoint_validity(char: str) -> bool:
         """
-        Checks if a character from the URL is a valid code point, see https://infra.spec.whatwg.org/#code-points for
-        more information.
+        Checks if a character from the URL is a valid code point, see 
+        https://infra.spec.whatwg.org/#code-points for more information.  # disable-secrets-detection
 
         Args:
             char (str): A character derived from the URL
