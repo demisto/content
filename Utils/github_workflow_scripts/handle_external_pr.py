@@ -7,8 +7,13 @@ import urllib3
 from blessings import Terminal
 from github import Github
 from github.Repository import Repository
-from demisto_sdk.commands.common.tools import get_pack_name, get_pack_names_from_files
-from demisto_sdk.commands.common.constants import PACK_METADATA_SUPPORT  # , PACK_SUPPORT_OPTIONS
+from demisto_sdk.commands.common.tools import (
+    get_pack_names_from_files,
+    get_pack_metadata,
+)
+from demisto_sdk.commands.common.constants import (
+    PACK_METADATA_SUPPORT,
+)  # , PACK_SUPPORT_OPTIONS
 
 from utils import get_env_var, timestamped_print
 
@@ -44,7 +49,9 @@ def determine_reviewer(potential_reviewers: List[str], repo: Repository) -> str:
     """
     label_to_consider = "contribution"
     pulls = repo.get_pulls(state="OPEN")
-    assigned_prs_per_potential_reviewer = {reviewer: 0 for reviewer in potential_reviewers}
+    assigned_prs_per_potential_reviewer = {
+        reviewer: 0 for reviewer in potential_reviewers
+    }
     for pull in pulls:
         # we only consider 'Contribution' prs when computing who to assign
         pr_labels = [label.name.casefold() for label in pull.labels]
@@ -52,7 +59,9 @@ def determine_reviewer(potential_reviewers: List[str], repo: Repository) -> str:
             continue
         assignees = {assignee.login for assignee in pull.assignees}
         requested_reviewers, _ = pull.get_review_requests()
-        reviewers_info = {requested_reviewer.login for requested_reviewer in requested_reviewers}
+        reviewers_info = {
+            requested_reviewer.login for requested_reviewer in requested_reviewers
+        }
         combined_list = assignees.union(reviewers_info)
         for reviewer in potential_reviewers:
             if reviewer in combined_list:
@@ -73,8 +82,18 @@ def get_labels(changed_packs: List[str]) -> List[str]:
     """
     Retrieves the labels from a list of Pack names.
 
-    TODO add docstring
+    Arguments:
+        - `changed_packs` (``List[str]``)
     """
+
+    labels: List[str] = []
+
+    for p in changed_packs:
+        pack_metadata = get_pack_metadata(f"Packs/{p}")
+        support_level = f"SL - {pack_metadata.get(PACK_METADATA_SUPPORT)}"
+        labels.append(support_level)
+
+    return labels
 
 
 def main():
@@ -97,7 +116,7 @@ def main():
     payload = json.loads(payload_str)
     print(f"{t.cyan}Processing PR started{t.normal}")
 
-    org_name = "demisto"
+    org_name = "kgal-pan"
     repo_name = "content"
     gh = Github(get_env_var("CONTENTBOT_GH_ADMIN_TOKEN"), verify=False)
     content_repo = gh.get_repo(f"{org_name}/{repo_name}")
@@ -137,13 +156,17 @@ def main():
         master_branch_commit_sha = content_repo.get_branch("master").commit.sha
         # create new branch
         print(f'{t.cyan}Creating new branch "{new_branch_name}"{t.normal}')
-        content_repo.create_git_ref(f"refs/heads/{new_branch_name}", master_branch_commit_sha)
+        content_repo.create_git_ref(
+            f"refs/heads/{new_branch_name}", master_branch_commit_sha
+        )
         # update base branch of the PR
         pr.edit(base=new_branch_name)
-        print(f'{t.cyan}Updated base branch of PR "{pr_number}" to "{new_branch_name}"{t.normal}')
+        print(
+            f'{t.cyan}Updated base branch of PR "{pr_number}" to "{new_branch_name}"{t.normal}'
+        )
 
     # assign reviewers / request review from
-    reviewer_to_assign = determine_reviewer(REVIEWERS, content_repo)
+    reviewer_to_assign = "kgal-pan"
     pr.add_to_assignees(reviewer_to_assign)
     pr.create_review_request(reviewers=[reviewer_to_assign])
     print(f'{t.cyan}Assigned user "{reviewer_to_assign}" to the PR{t.normal}')
