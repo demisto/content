@@ -8,6 +8,7 @@ DEFAULT_LIMIT = 100
 DEFAULT_PAGE_SIZE = 100
 DEFAULT_STARTING_PAGE_NUMBER = 1
 
+
 class AlertSeverity(Enum):
     UNKNOWN = 0
     INFO = 0.5
