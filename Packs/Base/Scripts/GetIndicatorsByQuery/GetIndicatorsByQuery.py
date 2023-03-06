@@ -89,9 +89,11 @@ def find_indicators_with_limit_loop(indicator_query: str, limit: int):
     """
     iocs: List[dict] = []
     search_indicators = IndicatorsSearcher(query=indicator_query, limit=limit, size=PAGE_SIZE)
+    demisto.debug(f"current memory usage at the beginning: {get_message_memory_dump(None, None)}")
     for ioc_res in search_indicators:
         fetched_iocs = ioc_res.get('iocs') or []
         iocs.extend(fetched_iocs)
+    demisto.debug(f"current memory usage at the end: {get_message_memory_dump(None, None)}")
     return list(map(lambda x: parse_ioc(x), iocs))
 
 
