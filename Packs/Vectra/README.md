@@ -8,7 +8,7 @@ This pack includes Cortex XSIAM content.
 
 1. Log into Vectra.
 1. Go to *My Profile* > *Generate a new token* > *Copy*.
-1. Use it to create credentials or paste it into the *API Token* in the integration instance configuration.
+1. Use it to create [credentials](https://xsoar.pan.dev/docs/integrations/code-conventions#credentials) or paste it into the *API Token* in the integration instance configuration.
 
 ## Collect Events from Vendor
 ### Vectra Event Collector
