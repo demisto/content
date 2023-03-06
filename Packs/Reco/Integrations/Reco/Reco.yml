@@ -102,25 +102,24 @@ script:
       required: true
       secret: false
       deprecated: false
-    description: Resolve an event in Reco Finding. Reco Findings contains aggregations of
-      events. This command resolves the event in the Reco Finding.
+    description: Resolve an event in Reco Finding. Reco Findings contains aggregations of events. This command resolves the event in the Reco Finding.
     execution: false
     name: resolve-visibility-event
-  - arguments:
+  - arguments: []
     deprecated: false
     description: Get Risky Users from Reco
     execution: false
     name: reco-get-risky-users
     outputs:
-      - contextPath: Reco.RiskyUsers
-        description: Risky Users
+    - contextPath: Reco.RiskyUsers
+      description: Risky Users
   - arguments:
-      - default: false
-        description: Email address of the user to add to the risky users list in Reco
-        isArray: false
-        name: email_address
-        required: true
-        secret: false
+    - default: false
+      description: Email address of the user to add to the risky users list in Reco
+      isArray: false
+      name: email_address
+      required: true
+      secret: false
     deprecated: false
     description: Add a user to the risky users list in Reco
     execution: false
