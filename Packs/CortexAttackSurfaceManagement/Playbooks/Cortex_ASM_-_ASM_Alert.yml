@@ -2823,7 +2823,7 @@ tasks:
       closeNotes:
         simple: Alert status set to 'Resolved' by Active Response Module
       closeReason:
-        simple: STATUS_160_RESOLVED
+        simple: Resolved
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2906,7 +2906,7 @@ tasks:
                   simple: 'Alert status set to ''Resolved'' by Active Response Module - Remediation Path Rule: '
               suffix: {}
       closeReason:
-        simple: STATUS_160_RESOLVED
+        simple: Resolved
     separatecontext: false
     continueonerrortype: ""
     view: |-
