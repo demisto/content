@@ -1219,14 +1219,14 @@ def create_relationships_objects(stix_iocs: list[dict[str, Any]]) -> list[dict[s
     for relationship in search_relationships:
 
         entity_b_value = relationship.get('entityB')
-        if entity_b_value and (entity_b_value not in iocs_value_to_id) and \
-                (entity_b_object := create_entity_b_stix_object(entity_b_value)):
-            iocs_value_to_id[entity_b_value] = entity_b_object.get('id')
-            relationships_list.append(entity_b_object)
-        else:
-            demisto.debug(f"WARNING: Invalid entity B - Relationships will not be created to entity A:"
-                          f" {relationship.get('entityA')} with relationship name {relationship.get('name')}")
-            continue
+        if entity_b_value not in iocs_value_to_id:
+            if entity_b_value and (entity_b_object := create_entity_b_stix_object(entity_b_value)):
+                iocs_value_to_id[entity_b_value] = entity_b_object.get('id')
+                relationships_list.append(entity_b_object)
+            else:
+                demisto.debug(f"WARNING: Invalid entity B - Relationships will not be created to entity A:"
+                              f" {relationship.get('entityA')} with relationship name {relationship.get('name')}")
+                continue
 
         try:
             created_parsed = parse(relationship.get('createdInSystem')).strftime(STIX_DATE_FORMAT)
