@@ -935,7 +935,8 @@ class BranchAutoBumper:
         """
         body = PR_COMMENT_TITLE.format(self.github_run_id)
         if self.branch not in ["conflict_in_cs", "conflicts_in_base", "conflict_in_xdr",
-                               "conflict_in_nx", "conflicts_in_msg", "conflicts-in-snow", "conflict_in_base_bc"]:
+                               "conflict_in_nx", "conflicts_in_msg", "conflicts-in-snow", "conflict_in_base_bc",
+                               "conflicts-inaws"]:
             # todo: delete it, only for testing
             return "Pack MyPack version was automatically bumped to 1.0.2."
         with checkout(self.git_repo, self.branch):
