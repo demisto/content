@@ -1,7 +1,7 @@
 id: Carbon Black Response Test
 version: -1
 name: Carbon Black Response Test
-description: Deprecated. No available replacement.
+description: Deprecated. No available replacement because "carbonblack v2" is deprected. Use "VMware Carbon Black EDR v2" integration instead.
 starttaskid: '0'
 tasks:
   '0':
