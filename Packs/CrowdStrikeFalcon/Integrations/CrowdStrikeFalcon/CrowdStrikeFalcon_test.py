@@ -636,7 +636,7 @@ def test_get_script_without_content(requests_mock, mocker):
         }
     )
     requests_mock.get(
-        f'{SERVER_URL}/real-time-response/entities/scripts/v1?ids={script_id}',
+        f'{SERVER_URL}/real-time-response/entities/scripts/v2?ids={script_id}',
         json=response,
         status_code=200
     )
@@ -713,7 +713,7 @@ def test_get_script_with_content(requests_mock, mocker, request):
         }
     )
     requests_mock.get(
-        f'{SERVER_URL}/real-time-response/entities/scripts/v1?ids={script_id}',
+        f'{SERVER_URL}/real-time-response/entities/scripts/v2?ids={script_id}',
         json=response,
         status_code=200
     )
@@ -764,7 +764,7 @@ def test_get_script_does_not_exist(requests_mock, mocker):
         }
     )
     requests_mock.get(
-        f'{SERVER_URL}/real-time-response/entities/scripts/v1?ids={script_id}',
+        f'{SERVER_URL}/real-time-response/entities/scripts/v2?ids={script_id}',
         json=response,
         status_code=200
     )
@@ -904,7 +904,7 @@ def test_list_scripts(requests_mock):
         ]
     }
     requests_mock.get(
-        f'{SERVER_URL}/real-time-response/entities/scripts/v1',
+        f'{SERVER_URL}/real-time-response/entities/scripts/v2',
         json=response
     )
     results = list_scripts_command()
@@ -1051,7 +1051,7 @@ def test_get_file_without_content(requests_mock, mocker):
         }
     )
     requests_mock.get(
-        f'{SERVER_URL}/real-time-response/entities/put-files/v1?ids={file_id}',
+        f'{SERVER_URL}/real-time-response/entities/put-files/v2?ids={file_id}',
         json=response,
         status_code=200
     )
@@ -1129,7 +1129,7 @@ def test_get_file_with_content(requests_mock, mocker, request):
         }
     )
     requests_mock.get(
-        f'{SERVER_URL}/real-time-response/entities/put-files/v1?ids={file_id}',
+        f'{SERVER_URL}/real-time-response/entities/put-files/v2?ids={file_id}',
         json=response,
         status_code=200
     )
@@ -1184,7 +1184,7 @@ def test_get_file_does_not_exist(requests_mock, mocker):
         }
     )
     requests_mock.get(
-        f'{SERVER_URL}/real-time-response/entities/put-files/v1?ids={file_id}',
+        f'{SERVER_URL}/real-time-response/entities/put-files/v2?ids={file_id}',
         json=response,
         status_code=200
     )
@@ -1320,7 +1320,7 @@ def test_list_files(requests_mock):
         ]
     }
     requests_mock.get(
-        f'{SERVER_URL}/real-time-response/entities/put-files/v1',
+        f'{SERVER_URL}/real-time-response/entities/put-files/v2',
         json=response
     )
     results = list_files_command()
@@ -1633,7 +1633,7 @@ def test_list_host_files(requests_mock, mocker):
         status_code=201
     )
     requests_mock.get(
-        f'{SERVER_URL}/real-time-response/entities/file/v1',
+        f'{SERVER_URL}/real-time-response/entities/file/v2',
         json=response,
         status_code=201
     )
