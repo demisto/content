@@ -50,7 +50,7 @@ class SkipReason:
     """ Reasons to skip update release notes"""
     LAST_MODIFIED_TIME = 'The PR was not updated in last {} days. PR last update time: {}'
     NOT_UPDATE_RN_LABEL_EXIST = 'Label "{}" exist in this PR. PR labels: {}.'
-    NO_NEW_RELEASE_NOTES = 'No new files were detected on {rn_dir} directory.'
+    NO_NEW_RELEASE_NOTES = 'No new files were detected on {} directory.'
     CONFLICTING_FILES = 'The PR has conflicts not only at {} and {}. The conflicting files are: {}.'
     NO_CONFLICTING_FILES = 'No conflicts were detected.'
     NOT_ALLOW_SUPPORTED_TYPE_PACK = 'The pack is not {} supported. Pack {} support type is: {}.'
@@ -881,6 +881,7 @@ class PackAutoBumper:
         """
 
         print(f"Starting to bump packs {self.pack_id} version.")
+        print(f"Update type: {self._update_type}, Previous RN path: {self._last_rn_file_path}, Is BC: {self._has_bc}.")
         new_version, metadata_dict = self._update_rn_obj.bump_version_number()
         self._update_rn_obj.write_metadata_to_file(metadata_dict=metadata_dict)
         new_release_notes_path = self._update_rn_obj.get_release_notes_path(new_version)
@@ -961,7 +962,7 @@ class BranchAutoBumper:
                     pack_auto_bumper.pack_id,
                     new_version,
                 )
-            print(f"Committed the changes. Commenting on the pr: \n{body}.\n")
+            print(f"[{pr.number}] Committed the changes. Commenting on the pr: \n{body}.\n")
             self.git_repo.git.push()
             self.pr.create_issue_comment(body)
         return body
@@ -994,7 +995,8 @@ class AutoBumperManager:
             state="open", sort="created", base=BASE
         ):
             print(
-                f"{t.yellow}Looking on pr number {pr.number}: {str(pr.updated_at)=}, branch={pr.head.ref}"
+                f"{t.yellow}Looking on pr number [{pr.number}]: last updated: "
+                f"{str(pr.updated_at)}, branch={pr.head.ref}"
             )
 
             conditions = [
@@ -1070,7 +1072,7 @@ class AutoBumperManager:
                 if metadata_cond_result.should_skip:
                     continue
 
-                print(f"{t.yellow}Adding pack {pack} to autobump its release notes.")
+                print(f"{t.yellow} [{pr.number}] Adding pack {pack} to autobump its release notes.")
                 packs_to_autobump.append(
                     PackAutoBumper(
                         pack_id=pack,
