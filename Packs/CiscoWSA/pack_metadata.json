@@ -1,6 +1,6 @@
 {
-    "name": "Cisco WSA",
-    "description": "Cisco Secure Web Appliance protects your organisation by automatically blocking risky sites and testing unknown sites before allowing users to click on them.",
+    "name": "Cisco WSA V2",
+    "description": "Cisco Secure Web Appliance protects your organization by automatically blocking risky sites and testing unknown sites before allowing users to click on them.",
     "support": "xsoar",
     "currentVersion": "2.0.0",
     "author": "Cortex XSOAR",
