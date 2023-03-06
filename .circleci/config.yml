@@ -376,11 +376,6 @@ jobs:
 workflows:
   version: 2
   commit:
-    when:
-      matches:
-        # matching the environment variable "CIRCLE_BRANCH" from the setup environment step.
-        pattern: /pullֿֿ\/\d+/
-        value: $CIRCLE_BRANCH
     jobs:
       - Setup Environment
       - Run Unit Testing And Lint:
