@@ -96,6 +96,7 @@ references:
 
   install_gcp: &install_gcp
     gcp-cli/setup:
+      version: "latest"
 
   install_neo4j: &install_neo4j
     run:
