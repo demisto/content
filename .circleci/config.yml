@@ -2,8 +2,6 @@ version: 2.1
 orbs:
   python: circleci/python@<< pipeline.parameters.python-orb-version >>
   node: circleci/node@<< pipeline.parameters.node-orb-version >>
-  orb-tools: circleci/orb-tools@10.0  # disable-secrets-detection
-  gcp-cli: circleci/gcp-cli@3.0.1  # disable-secrets-detection
 
 commands:
   set-instance-role-env-variable:
@@ -71,15 +69,6 @@ references:
       NIGHTLY_PARAMETER: << pipeline.parameters.nightly >>
       GCS_MARKET_BUCKET: << pipeline.parameters.gcs_market_bucket >>
   
-  install_poetry: &install_poetry
-    run:
-      name: Install Poetry
-      command: |
-        # in old images we need to remove existing poetry
-        rm -rf $HOME/.poetry/bin/poetry
-        sudo curl -sSL https://install.python-poetry.org | python3 -
-        poetry --version
-
   install_build_dependencies: &install_build_dependencies
     python/install-packages: 
         pkg-manager: "poetry"
@@ -94,9 +83,6 @@ references:
     node/install-packages:
         cache-version: << pipeline.parameters.cache-version >>
 
-  install_gcp: &install_gcp
-    gcp-cli/install:
-      version: "latest"
 
   install_neo4j: &install_neo4j
     run:
@@ -126,7 +112,7 @@ references:
 
   container_config: &container_config
     docker:
-      - image: cimg/python:3.10-node # disable-secrets-detection
+      - image: devdemisto/content-build:3.0.0.49685  # disable-secrets-detection
         auth:
           username: $DOCKERHUB_USER
           password: $DOCKERHUB_PASSWORD
@@ -335,7 +321,6 @@ jobs:
     <<: *environment
     steps:
       - checkout
-      - *install_poetry
       - *install_build_dependencies
       - *install_node_ci
       - *prepare_environment
@@ -352,7 +337,6 @@ jobs:
     steps:
       - *attach_workspace
       - *remote_docker
-      - *install_poetry
       - *install_build_dependencies
       - *install_node_ci
       - *install_neo4j
@@ -370,11 +354,9 @@ jobs:
     <<: *environment
     steps:
       - *attach_workspace
-      - *install_poetry
       - *install_build_dependencies
       - *install_node_ci
       - *install_neo4j
-      - *install_gcp
       - *prepare_environment
       - *secrets
       - *validate_files_and_yaml
