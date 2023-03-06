@@ -50,7 +50,7 @@ class SkipReason(str, Enum):
     """ Reasons to skip update release notes"""
     LAST_MODIFIED_TIME = 'The PR was not updated in last {allowed_update_time} days. PR last update time: {update_time}'
     NOT_UPDATE_RN_LABEL_EXIST = 'Label "{ignore_label}" exist in this PR. PR labels: {pr_labels}.'
-    NO_NEW_RELEASE_NOTES = 'No new files were detected on {} directory.'
+    NO_NEW_RELEASE_NOTES = 'No new files were detected on {rn_dir} directory.'
     CONFLICTING_FILES = 'The PR has conflicts not only at {} and {}. The conflicting files are: {}.'
     NO_CONFLICTING_FILES = 'No conflicts were detected.'
     NOT_ALLOW_SUPPORTED_TYPE_PACK = 'The pack is not {} supported. Pack {} support type is: {}.'
@@ -258,7 +258,7 @@ class LastModifiedCondition(BaseCondition):
         """
         return SkipReason.LAST_MODIFIED_TIME.format(
             allowed_update_time=self.LAST_SUITABLE_UPDATE_TIME_DAYS,
-            last_updated=last_updated
+            update_time=last_updated
         )
 
     def _check(
@@ -320,7 +320,7 @@ class AddedRNFilesCondition(BaseCondition):
         """
         Returns: Reason why the condition failed, and pr skipped.
         """
-        return SkipReason.NO_NEW_RELEASE_NOTES.format(RELEASE_NOTES_DIR)
+        return SkipReason.NO_NEW_RELEASE_NOTES.format(rn_dir=RELEASE_NOTES_DIR)
 
     def _check(
         self, previous_result: Optional[ConditionResult] = None
