@@ -18,7 +18,6 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # IfrSO8601 format with UTC, default in XSOA
 SERVICE = 'wafv2'
 OUTPUT_PREFIX = 'AWS.Waf'
 OPERATOR_TO_STATEMENT_OPERATOR = {'And': 'AndStatement', 'Or': 'OrStatement', 'Not': 'NotStatement'}
-STATEMENT_OPERATORS = ('AndStatement', 'OrStatement', 'NotStatement')
 REGEX_MATCH_STATEMENT = 'RegexPatternSetReferenceStatement'
 BYTE_MATCH_STATEMENT = 'ByteMatchStatement'
 MATCH_TYPE_TO_POSITIONAL_CONSTRAIN = {'Exactly Matches String': 'EXACTLY',
@@ -87,25 +86,73 @@ def build_ip_statement(args: dict) -> list | dict:
     return ip_statements[0] if len(ip_statements) == 1 else ip_statements
 
 
-def build_country_rule_object(args: dict) -> dict:
+def build_country_statement(args: dict) -> dict:
     country_codes = argToList(args.get('country_codes')) or []
+    return {'GeoMatchStatement': {'CountryCodes': country_codes}}
 
-    ip_rule: dict = {
-        'Statement': {'GeoMatchStatement': {'CountryCodes': country_codes}}
+
+def build_country_rule_object(args: dict) -> dict:
+    country_rule: dict = {
+        'Statement': build_country_statement(args)
     }
-    return ip_rule
+    return country_rule
+
+
+def build_string_match_statement(args: dict) -> dict:
+    match_type = args.get('match_type')
+    match_statement = REGEX_MATCH_STATEMENT if match_type == 'Matches Regex Pattern Set' \
+        else BYTE_MATCH_STATEMENT
+    string_to_match = args.get('string_to_match')
+    regex_set_arn = args.get('regex_set_arn')
+    if match_statement == REGEX_MATCH_STATEMENT and not regex_set_arn:
+        raise DemistoException('regex_set_arn must be provided when using Matches Regex Pattern Set match_type')
+
+    elif match_statement == BYTE_MATCH_STATEMENT and not string_to_match:
+        raise DemistoException('string_to_match must be provided when using strings match_type')
+    web_request_component = args.get('web_request_component')
+    oversize_handling = args.get('oversize_handling')
+    text_transformation = args.get('text_transformation') or 'NONE'
+    if match_statement == BYTE_MATCH_STATEMENT:
+        statement = build_byte_match_statement(web_request_component=web_request_component,
+                                               oversize_handling=oversize_handling,
+                                               text_transformation=text_transformation,
+                                               string_to_match=string_to_match,
+                                               match_type=match_type)
+
+    else:  # match_statement == REGEX_MATCH_STATEMENT
+        statement = build_regex_match_statement(web_request_component=web_request_component,
+                                                oversize_handling=oversize_handling,
+                                                regex_set_arn=regex_set_arn,
+                                                text_transformation=text_transformation)
+
+    return {match_statement: statement}
 
 
 def update_rule_with_statement(rule, statement, condition_operator):
-    condition = rule.get('statement', {}).keys()
+    old_rule_statement = rule.get('Statement', {})
+    if 'AndStatement' in old_rule_statement or 'OrStatement' in old_rule_statement:
+        demisto.info('ignoring condition_operator argument as the statement already contains an operator.')
+        condition = list(old_rule_statement.keys())[0]
+        # Building the statements with the old statement
+    elif condition_operator:
+        condition = OPERATOR_TO_STATEMENT_OPERATOR[condition_operator]
+        rule['Statement'] = {condition:
+                                 {'Statements': [old_rule_statement]}
+                             }
+
+    else:
+        raise DemistoException('Rule contains only one statement. Please provide condition operator.')
+    rule['Statement'][condition]['Statements'].append(statement)
 
 
 def add_statement_to_rule(args: dict, statement, rules):
+    new_rules = rules.copy()
     rule_name = args.get('rule_name', '')
     condition_operator = args.get('condition_operator', '')
-    for rule in rules:
+    for rule in new_rules:
         if rule.get('Name') == rule_name:
-            return update_rule_with_statement(rule, statement, condition_operator)
+            update_rule_with_statement(rule, statement, condition_operator)
+            return rules
 
 
 def build_web_component_match_object(web_request_component, oversize_handling):
@@ -156,39 +203,8 @@ def build_regex_match_statement(web_request_component, oversize_handling, text_t
 
 
 def build_string_match_rule_object(args: dict) -> dict:
-    match_type = args.get('match_type')
-    match_statement = REGEX_MATCH_STATEMENT if match_type == 'Matches Regex Pattern Set' \
-        else BYTE_MATCH_STATEMENT
-    string_to_match = args.get('string_to_match')
-    regex_set_arn = args.get('regex_set_arn')
-
-    if match_statement == REGEX_MATCH_STATEMENT and not regex_set_arn:
-        raise DemistoException('regex_set_arn must be provided when using Matches Regex Pattern Set match_type')
-
-    elif match_statement == BYTE_MATCH_STATEMENT and not string_to_match:
-        raise DemistoException('string_to_match must be provided when using strings match_type')
-
-    web_request_component = args.get('web_request_component')
-    oversize_handling = args.get('oversize_handling')
-    text_transformation = args.get('text_transformation') or 'NONE'
-
-    if match_statement == BYTE_MATCH_STATEMENT:
-        statement = build_byte_match_statement(web_request_component=web_request_component,
-                                               oversize_handling=oversize_handling,
-                                               text_transformation=text_transformation,
-                                               string_to_match=string_to_match,
-                                               match_type=match_type)
-
-    else:  # match_statement == REGEX_MATCH_STATEMENT
-        statement = build_regex_match_statement(web_request_component=web_request_component,
-                                                oversize_handling=oversize_handling,
-                                                regex_set_arn=regex_set_arn,
-                                                text_transformation=text_transformation)
-
-    print(statement)
-
     string_match_statement: dict = {
-        'Statement': {match_statement: statement}
+        'Statement': build_string_match_statement(args)
     }
     return string_match_statement
 
@@ -550,7 +566,7 @@ def update_rule(client: boto3.client, args, build_rule_func: Callable, action: s
     elif action == 'ADD':
         # build_rule_func can be add_ip_statement, add_country_statement, add_string_match_statement
         statement = build_rule_func(args)
-        rule = add_statement_to_rule(args, statement, rules)
+        updated_rules = add_statement_to_rule(args, statement, rules)
     else:  # action == 'CREATE'
         # build_rule_func can be create_ip_rule, create_country_rule, create_string_match_rule
         rule = build_new_rule_object(args, rule_group_visibility_config, build_rule_func)
@@ -629,7 +645,6 @@ def create_country_rule_command(client: boto3.client, args) -> CommandResults:
 
 
 def create_string_match_rule_command(client: boto3.client, args) -> CommandResults:
-    # TODO need to change
     response = update_rule(client, args, build_string_match_rule_object, action='CREATE')
 
     readable_output = f'AWS Waf string match rule with id {args.get("Id", "")} was created successfully. ' \
@@ -649,10 +664,29 @@ def delete_rule_command(client: boto3.client, args) -> CommandResults:
 
 
 def add_ip_statement_command(client: boto3.client, args) -> CommandResults:
-    # TODO need to change
-    response = update_rule(client, args, add_ip_statement_to_rule, action='ADD')
+    response = update_rule(client, args, build_ip_statement, action='ADD')
 
     readable_output = f'AWS Waf ip statement was added to rule with id {args.get("Id", "")} successfully. ' \
+                      f'Next Lock Token: {response.get("NextLockToken")}'
+
+    return CommandResults(readable_output=readable_output,
+                          raw_response=response)
+
+
+def add_country_statement_command(client: boto3.client, args) -> CommandResults:
+    response = update_rule(client, args, build_country_statement, action='ADD')
+
+    readable_output = f'AWS Waf country statement was added to rule with id {args.get("Id", "")} successfully. ' \
+                      f'Next Lock Token: {response.get("NextLockToken")}'
+
+    return CommandResults(readable_output=readable_output,
+                          raw_response=response)
+
+
+def add_string_match_statement_command(client: boto3.client, args) -> CommandResults:
+    response = update_rule(client, args, build_string_match_statement, action='ADD')
+
+    readable_output = f'AWS Waf string match statement was added to rule with id {args.get("Id", "")} successfully. ' \
                       f'Next Lock Token: {response.get("NextLockToken")}'
 
     return CommandResults(readable_output=readable_output,
@@ -738,10 +772,10 @@ def main() -> None:
 
         elif demisto.command() == 'aws-waf-ip-statement-add':
             result = add_ip_statement_command(client, args)
-        # elif demisto.command() == 'aws-waf-country-statement-add':
-        #     result = add_country_statement_command(client, args)
-        # elif demisto.command() == 'aws-waf-string-match-statement-add':
-        #     result = add_string_match_statement_command(client, args)
+        elif demisto.command() == 'aws-waf-country-statement-add':
+            result = add_country_statement_command(client, args)
+        elif demisto.command() == 'aws-waf-string-match-statement-add':
+            result = add_string_match_statement_command(client, args)
 
         else:
             raise NotImplementedError(f'Command {demisto.command()} is not implemented in AWS WAF integration.')

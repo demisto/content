@@ -1069,7 +1069,7 @@ script:
         description: The regex set ARN. You can get those values by running the aws-waf-regex-set-list command. If the match_type is Matches Regex Pattern Set, a value must be provided.
       - name: web_request_component
         required: true
-        description: A comma separated list of two-character country codes.
+        description: The web component to inspect.
         auto: PREDEFINED
         predefined:
           - "Headers"
@@ -1087,7 +1087,7 @@ script:
           - "MATCH"
           - "NO_MATCH"
       - name: text_transformation
-        description: A comma separated list of two-character country codes.
+        description: The text transformation to perform.
         defaultValue: "NONE"
         auto: PREDEFINED
         predefined:
@@ -1159,6 +1159,221 @@ script:
     description: Delete a specific rule from a rule group.
     execution: false
     name: aws-waf-rule-delete
+  - arguments:
+      - name: group_id
+        description: The rule group id to associate the statement to.
+        required: true
+      - name: group_name
+        description: The rule group name to associate the statement to.
+        required: true
+      - name: rule_name
+        description: The rule name to associate the statement to.
+        required: true
+      - name: scope
+        description: The rule scope.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - "CLOUDFRONT"
+          - "REGIONAL"
+      - name: region
+        description: The AWS Region. If not specified, the default region will be used.
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - ca-central-1
+          - eu-west-1
+          - eu-central-1
+          - eu-west-2
+          - ap-northeast-1
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-south-1
+          - sa-east-1
+          - eu-north-1
+          - eu-west-3
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: ip_set_arn
+        description: The ip set ARN. You can get this value by running the aws-waf-ip-set-list command.
+        isArray: true
+        required: true
+      - name: condition_operator
+        description: The rule condition operator. If the rule contains only one statement, a value must be provided.
+        auto: PREDEFINED
+        predefined:
+          - "And"
+          - "Or"
+    deprecated: false
+    description: Adds an ip statement to an existing rule.
+    execution: false
+    name: aws-waf-ip-statement-add
+  - arguments:
+      - name: group_id
+        description: The rule group id to associate the statement to.
+        required: true
+      - name: group_name
+        description: The rule group name to associate the statement to.
+        required: true
+      - name: rule_name
+        description: The rule name to associate the statement to.
+        required: true
+      - name: scope
+        description: The rule scope.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - "CLOUDFRONT"
+          - "REGIONAL"
+      - name: region
+        description: The AWS Region. If not specified, the default region will be used.
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - ca-central-1
+          - eu-west-1
+          - eu-central-1
+          - eu-west-2
+          - ap-northeast-1
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-south-1
+          - sa-east-1
+          - eu-north-1
+          - eu-west-3
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: country_codes
+        description: A comma separated list of two-character country codes.
+        isArray: true
+        required: true
+      - name: condition_operator
+        description: The rule condition operator. If the rule contains only one statement, a value must be provided.
+        auto: PREDEFINED
+        predefined:
+          - "And"
+          - "Or"
+    deprecated: false
+    description: Adds a country statement to an existing rule.
+    execution: false
+    name: aws-waf-country-statement-add
+
+  - arguments:
+      - name: group_id
+        description: The rule group id to associate the statement to.
+        required: true
+      - name: group_name
+        description: The rule group name to associate the statement to.
+        required: true
+      - name: rule_name
+        description: The rule name to associate the statement to.
+        required: true
+      - name: scope
+        description: The rule scope.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - "CLOUDFRONT"
+          - "REGIONAL"
+      - name: region
+        description: The AWS Region. If not specified, the default region will be used.
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - ca-central-1
+          - eu-west-1
+          - eu-central-1
+          - eu-west-2
+          - ap-northeast-1
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-south-1
+          - sa-east-1
+          - eu-north-1
+          - eu-west-3
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: match_type
+        description: The string match type.
+        auto: PREDEFINED
+        predefined:
+          - "Exactly Matches String"
+          - "Starts With String"
+          - "Ends With String"
+          - "Contains String"
+          - "Contains Words"
+          - "Matches Regex Pattern Set"
+      - name: string_to_match
+        description: The string to match. If the match_type is Contains Words, a value must be provided.
+      - name: regex_set_arn
+        description: The regex set ARN. You can get those values by running the aws-waf-regex-set-list command. If the match_type is Matches Regex Pattern Set, a value must be provided.
+      - name: web_request_component
+        required: true
+        description: The web component to inspect.
+        auto: PREDEFINED
+        predefined:
+          - "Headers"
+          - "Cookies"
+          - "QueryParameters"
+          - "UriPath"
+          - "QueryString"
+          - "Body"
+          - "HTTPMethod"
+      - name: oversize_handling
+        description: AWS WAF applies oversize handling to web request contents that are larger than AWS WAF can inspect. If the web_request_component is Headers, Cookies or Body, a value must be provided.
+        auto: PREDEFINED
+        predefined:
+          - "CONTINUE"
+          - "MATCH"
+          - "NO_MATCH"
+      - name: text_transformation
+        description: The text transformation to perform.
+        defaultValue: "NONE"
+        auto: PREDEFINED
+        predefined:
+          - "NONE"
+          - "COMPRESS_WHITE_SPACE"
+          - "HTML_ENTITY_DECODE"
+          - "LOWERCASE"
+          - "CMD_LINE"
+          - "URL_DECODE"
+          - "BASE64_DECODE"
+          - "HEX_DECODE"
+          - "MD5"
+          - "REPLACE_COMMENTS"
+          - "ESCAPE_SEQ_DECODE"
+          - "SQL_HEX_DECODE"
+          - "CSS_DECODE"
+          - "JS_DECODE"
+          - "NORMALIZE_PATH"
+          - "NORMALIZE_PATH_WIN"
+          - "REMOVE_NULLS"
+          - "REPLACE_NULLS"
+          - "BASE64_DECODE_EXT"
+          - "URL_DECODE_UNI"
+          - "UTF8_TO_UNICODE"
+      - name: condition_operator
+        description: The rule condition operator. If the rule contains only one statement, a value must be provided.
+        auto: PREDEFINED
+        predefined:
+          - "And"
+          - "Or"
+    deprecated: false
+    description: Adds a string match statement to an existing rule.
+    execution: false
+    name: aws-waf-string-match-statement-add
 
   isfetch: false
   runonce: false
