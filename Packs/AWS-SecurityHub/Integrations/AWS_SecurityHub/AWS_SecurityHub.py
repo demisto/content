@@ -5,7 +5,6 @@ import urllib3.util
 from datetime import timezone
 from dateparser import parse
 
-
 # Disable insecure warnings
 urllib3.disable_warnings()
 
