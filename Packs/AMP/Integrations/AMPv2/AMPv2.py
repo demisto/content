@@ -1217,7 +1217,7 @@ def fetch_incidents(
 
     # Whether to accept an incident without a severity.
     if include_null_severities:
-        incident_severities.add(None)
+        incident_severities.append(None)
 
     for item in items:
         # Break once the maximum number of incidents has been achieved.
