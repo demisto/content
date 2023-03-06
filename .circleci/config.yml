@@ -2,8 +2,8 @@ version: 2.1
 orbs:
   python: circleci/python@<< pipeline.parameters.python-orb-version >>
   node: circleci/node@<< pipeline.parameters.node-orb-version >>
-  orb-tools: circleci/orb-tools@10.0
-  gcp-cli: circleci/gcp-cli@3.0.1
+  orb-tools: circleci/orb-tools@10.0  # disable-secrets-detection
+  gcp-cli: circleci/gcp-cli@3.0.1  # disable-secrets-detection
 
 commands:
   set-instance-role-env-variable:
