@@ -46,7 +46,7 @@ class UpdateType(str, Enum):
     MAJOR = "major"
 
 
-class SkipReason(str, Enum):
+class SkipReason:
     """ Reasons to skip update release notes"""
     LAST_MODIFIED_TIME = 'The PR was not updated in last {allowed_update_time} days. PR last update time: {update_time}'
     NOT_UPDATE_RN_LABEL_EXIST = 'Label "{ignore_label}" exist in this PR. PR labels: {pr_labels}.'
@@ -194,9 +194,9 @@ class MetadataCondition(BaseCondition, ABC):
         """
         super().__init__(pr, git_repo)
         self.pack = pack
-        self.branch_metadata = branch_metadata
-        self.origin_base_metadata = origin_base_metadata
-        self.pr_base_metadata = pr_base_metadata
+        self.branch_metadata = branch_metadata or {}
+        self.origin_base_metadata = origin_base_metadata or {}
+        self.pr_base_metadata = pr_base_metadata or {}
 
     @staticmethod
     def get_metadata_files(pack_id: str, pr: PullRequest, git_repo: Repo):
@@ -426,7 +426,7 @@ class HasConflictOnAllowedFilesCondition(BaseCondition):
             except GitCommandError as ex:
                 print(f'Merge abort exception caught.  {ex}')
             self.git_repo.git.clean("-f")
-        return (conflict_only_with_given_files and conflicting_files), conflicting_files
+        return bool(conflict_only_with_given_files and conflicting_files), conflicting_files
 
 
 class PackSupportCondition(MetadataCondition):
@@ -649,7 +649,7 @@ class OnlyVersionChangedCondition(MetadataCondition):
 
 
 class OnlyOneRNPerPackCondition(MetadataCondition):
-    def generate_skip_reason(self, rn_files: list, **kwargs) -> str:
+    def generate_skip_reason(self, rn_files: list, **kwargs) -> str:    # type: ignore[override]
         """
         Args:
             rn_files: release notes files for the pack in current pr.
