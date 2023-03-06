@@ -363,7 +363,7 @@ def main() -> None:  # pragma: no cover
         client = VectraClient(
             url=config.get("url"),
             api_key=config.get("credentials", {}).get("password"),
-            fetch_limit=arg_to_number(arg=config.get("fetch_limit", 100)),  # type: ignore
+            fetch_limit=arg_to_number(arg=config.get("fetch_limit", 1000)),  # type: ignore
             insecure=config.get("insecure"),
             proxy=config.get("proxy"),
         )
