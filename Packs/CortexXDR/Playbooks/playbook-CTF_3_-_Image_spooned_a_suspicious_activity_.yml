@@ -465,7 +465,7 @@ tasks:
       id: 13b79616-e678-4c83-86f2-a8b2296213fc
       version: -1
       name: R u Sure?
-      description: "Message from the outside...\n\n\nᗪ闩爪爪爪 セ卄闩〸 山闩丂 ﾁ闩丂七... 廾ㄖ尸\U0001F757 七卄闩〸 丫ㄖㄩ 讠\U0001D4DDᐯ\U0001F757丂セ讠Ꮆ闩セ\U0001F757ᗪ 〸卄\U0001F757 讠\U0001D4DDᗪ讠⼕闩セㄖ尺\n\n\n![my_file](https://raw.githubusercontent.com/demisto/content/7c4eb1780678929fac94695180de3537c0f56f23/Packs/ctf01/doc_files/yoda-8ball.gif)"
+      description: "Message from the outside...\n\n\nᗪ闩爪爪 ㄒ廾闩ㄒ 山闩丂 千闩丂ㄒ... 廾龱尸㠪 ㄒ廾闩ㄒ ㄚ龱ㄩ 工\U0001D4DDᐯ㠪丂ㄒ工Ꮆ闩ㄒ㠪ᗪ ㄒ廾㠪 工\U0001D4DDᗪ工⼕闩ㄒ龱尺. \n爪闩ㄚ乃㠪 ㄒ廾㠪尺㠪 闩尺㠪 龱ㄒ廾㠪尺 工\U0001D4DD⼕工ᗪ㠪\U0001D4DDㄒ丂 山工ㄒ廾 ㄒ廾工丂 工\U0001D4DDᗪ工⼕闩ㄒ龱尺?\n\n\n![my_file](https://raw.githubusercontent.com/demisto/content/7c4eb1780678929fac94695180de3537c0f56f23/Packs/ctf01/doc_files/yoda-8ball.gif)"
       type: regular
       iscommand: false
       brand: ""
