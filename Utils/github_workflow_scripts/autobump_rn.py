@@ -48,8 +48,8 @@ class UpdateType(str, Enum):
 
 class SkipReason:
     """ Reasons to skip update release notes"""
-    LAST_MODIFIED_TIME = 'The PR was not updated in last {allowed_update_time} days. PR last update time: {update_time}'
-    NOT_UPDATE_RN_LABEL_EXIST = 'Label "{ignore_label}" exist in this PR. PR labels: {pr_labels}.'
+    LAST_MODIFIED_TIME = 'The PR was not updated in last {} days. PR last update time: {}'
+    NOT_UPDATE_RN_LABEL_EXIST = 'Label "{}" exist in this PR. PR labels: {}.'
     NO_NEW_RELEASE_NOTES = 'No new files were detected on {rn_dir} directory.'
     CONFLICTING_FILES = 'The PR has conflicts not only at {} and {}. The conflicting files are: {}.'
     NO_CONFLICTING_FILES = 'No conflicts were detected.'
@@ -257,8 +257,8 @@ class LastModifiedCondition(BaseCondition):
         Returns: Reason why the condition failed, and pr skipped.
         """
         return SkipReason.LAST_MODIFIED_TIME.format(
-            allowed_update_time=self.LAST_SUITABLE_UPDATE_TIME_DAYS,
-            update_time=last_updated
+            self.LAST_SUITABLE_UPDATE_TIME_DAYS,
+            last_updated
         )
 
     def _check(
@@ -320,7 +320,7 @@ class AddedRNFilesCondition(BaseCondition):
         """
         Returns: Reason why the condition failed, and pr skipped.
         """
-        return SkipReason.NO_NEW_RELEASE_NOTES.format(rn_dir=RELEASE_NOTES_DIR)
+        return SkipReason.NO_NEW_RELEASE_NOTES.format(RELEASE_NOTES_DIR)
 
     def _check(
         self, previous_result: Optional[ConditionResult] = None
@@ -439,7 +439,7 @@ class PackSupportCondition(MetadataCondition):
             pack=pack, pr=pr, git_repo=git_repo, branch_metadata=branch_metadata
         )
 
-    def generate_skip_reason(self, support_type: str, **kwargs) -> str:  # type: ignore[override]
+    def generate_skip_reason(self, support_type: Optional[str], **kwargs) -> str:  # type: ignore[override]
         """
         Args:
             support_type: pack support type.
@@ -720,7 +720,7 @@ class SameRNMetadataVersionCondition(MetadataCondition):
             self.branch_metadata.get(Metadata.CURRENT_VERSION, self.DEFAULT_VERSION)
         )
         assert (
-            previous_result
+            previous_result and previous_result.pack_new_rn_file
         ), "No previous result was supplied to the SameRNMetadataVersionCondition object."
         rn_version_file_name = previous_result.pack_new_rn_file.stem
         rn_version = Version(rn_version_file_name.replace("_", "."))
