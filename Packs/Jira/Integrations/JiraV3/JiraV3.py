@@ -9,6 +9,10 @@ urllib3.disable_warnings()
 # Note: time.time_ns() is used instead of time.time() to avoid the precision loss caused by the float type.
 # Source: https://docs.python.org/3/library/time.html#time.time_ns
 
+""" CONSTANTS """
+DEFAULT_FETCH_LIMIT = 50
+DEFAULT_FIRST_FETCH_INTERVAL = '3 days'
+DEFAULT_FETCH_INTERVAL = 1  # Unit is in minutes
 
 # Errors
 OAUTH2_AUTH_NOT_APPLICABLE_ERROR = ('This command is not applicable to run with a Jira On Prem instance since On Prem instances'
@@ -864,13 +868,13 @@ def str_to_number(arg: str, default_value: int) -> int:
     return to_number if (to_number := arg_to_number(arg)) else default_value
 
 
-def create_query_params(jql: str, start_at: int | None = None,
+def create_query_params(jql_query: str, start_at: int | None = None,
                         max_results: int | None = None) -> Dict[str, Any]:
     start_at = start_at or 0
     max_results = max_results or 50
-    demisto.debug(f'Querying with: {jql}\nstart_at: {start_at}\nmax_results: {max_results}\n')
+    demisto.debug(f'Querying with: {jql_query}\nstart_at: {start_at}\nmax_results: {max_results}\n')
     return {
-        'jql': jql,  # The Jira Query Language string, used to search for issues in a project using SQL-like syntax.
+        'jql': jql_query,  # The Jira Query Language string, used to search for issues in a project using SQL-like syntax.
         'startAt': start_at,  # The index of the first item to return in a page of results (page offset).
         'maxResults': max_results,  # The maximum number of items to return per page.
         # We supply this query parameter to retrieve some content in HTML format, since Jira uses a format called ADF,
@@ -1266,7 +1270,7 @@ def issue_query_command(client: JiraBaseClient, args: Dict[str, str]) -> List[Co
     max_results = arg_to_number(args.get('max_results', ''))
     headers = args.get('headers', '')
     specific_fields = argToList(args.get('specific_fields', ''))
-    query_params = create_query_params(jql=jql_query, start_at=start_at, max_results=max_results)
+    query_params = create_query_params(jql_query=jql_query, start_at=start_at, max_results=max_results)
     res = client.run_query(query_params=query_params)
     if not res:
         return CommandResults(readable_output='No issues matched the query.')
@@ -1601,7 +1605,7 @@ def get_transitions_command(client: JiraBaseClient, args: Dict[str, str]) -> Com
 
 def get_id_offset_command(client: JiraBaseClient, args: Dict[str, Any]) -> CommandResults:
     jql_query = 'ORDER BY created ASC'
-    query_params = create_query_params(jql=jql_query)
+    query_params = create_query_params(jql_query=jql_query)
     res = client.run_query(query_params=query_params)
     first_issue_id = res.get('issues', [])[0].get('id', '')
     return (
@@ -2104,11 +2108,13 @@ def test_module(client: JiraBaseClient) -> str:
 
 
 # Fetch Incidents
-def fetch_incidents(issue_field_to_fetch_from: str, fetch_query: str, id_offset: str, fetch_attachments: bool,
-                    fetch_comments: bool, max_fetch: str, fetch_interval: str):
+def fetch_incidents(client: JiraBaseClient, issue_field_to_fetch_from: str, fetch_query: str, id_offset: str,
+                    fetch_attachments: bool, fetch_comments: bool, max_fetch_incidents: int, fetch_interval: int,
+                    first_fetch_interval: str, incoming_mirror: bool, outgoing_mirror: bool,
+                    comment_tag: str, attachment_tag: str) -> List[Dict[str, Any]]:
     """issue_field_to_fetch_from options:
-        - created
-        - updated
+        - created date
+        - updated date
         - status category change date
         - id
 
@@ -2121,13 +2127,206 @@ def fetch_incidents(issue_field_to_fetch_from: str, fetch_query: str, id_offset:
     """
     last_run = demisto.getLastRun()
     demisto.debug(f'last_run: {last_run}' if last_run else 'last_run is empty')
-    last_fetch_id = last_run.get('id', '')
-    last_fetch_created_time = last_run.get('created_time', '')
-    last_fetch_updated_time = last_run.get('updated_time', '')
+    # This set will hold all the issues ids that were fetched in the last fetch, to eliminate fetching duplicate incidents.
+    last_fetch_issue_ids = last_run.get('issue_ids', set())
+    last_fetch_id = last_run.get('id', id_offset)
+    last_fetch_created_time = last_run.get('created_date', '')
+    last_fetch_updated_time = last_run.get('updated_date', '')
     last_fetch_status_category_change_date = last_run.get('status_category_change_date', '')
-    # if not(max_fetch_results := arg_to_number(max_fetch)):
+    incidents: List[Dict[str, Any]] = []
+    fetch_incidents_query = create_fetch_incidents_query(
+        issue_field_to_fetch_from=issue_field_to_fetch_from,
+        fetch_interval=fetch_interval or DEFAULT_FETCH_INTERVAL,
+        fetch_query=fetch_query,
+        last_fetch_id=last_fetch_id,
+        last_fetch_created_time=last_fetch_created_time,
+        last_fetch_updated_time=last_fetch_updated_time,
+        last_fetch_status_category_change_date=last_fetch_status_category_change_date,
+        first_fetch_interval=first_fetch_interval)
+    query_params = create_query_params(jql_query=fetch_incidents_query, max_results=max_fetch_incidents)
+    issue_ids = set()
+    if query_res := client.run_query(query_params=query_params):
+        for issue in query_res.get('issues', []):
+            issue_id = issue.get('id', '') or ''
+            if issue_id not in last_fetch_issue_ids:
+                issue_ids.add(issue_id)
+                # Making sure that this issue was not fetched during the previous fetch
+                last_fetch_id = issue_id
+                last_fetch_created_time = demisto.get(issue, 'fields.created') or ''
+                last_fetch_updated_time = demisto.get(issue, 'fields.updated') or ''
+                last_fetch_status_category_change_date = demisto.get(issue, 'fields.statuscategorychangedate') or ''
+                incidents.append(create_incident_from_ticket(issue=issue, fetch_attachments=fetch_attachments, fetch_comments=fetch_comments,
+                                                             incoming_mirror=incoming_mirror, outgoing_mirror=outgoing_mirror,
+                                                             comment_tag=comment_tag,
+                                                             attachment_tag=attachment_tag))
+    demisto.setLastRun({
+        'issue_ids': issue_ids,
+        'id': last_fetch_id,
+        'created_date': last_fetch_created_time,
+        'updated_date': last_fetch_updated_time,
+        'status_category_change_date': last_fetch_status_category_change_date
+    })
+    return incidents
 
-    print(last_run)
+
+def create_fetch_incidents_query(issue_field_to_fetch_from: str, fetch_interval: int, fetch_query: str,
+                                 last_fetch_id: str, last_fetch_created_time: str, last_fetch_updated_time: str,
+                                 last_fetch_status_category_change_date: str,
+                                 first_fetch_interval: str) -> str:
+    """_summary_
+    NOTE: It is important to add 'ORDER BY {the issue field to fetch from} ASC' in order to retrieve the data in ascending order,
+    so we could keep save the latest fetch incident (according to issue_field_to_fetch_from) and fetch only new incidents,
+    in other words, incidents that are newer with respect to issue_field_to_fetch_from.
+    Args:
+        issue_field_to_fetch_from (str): _description_
+        fetch_interval (int): _description_
+        fetch_query (str): _description_
+        last_fetch_id (str): _description_
+        last_fetch_created_time (str): _description_
+        last_fetch_updated_time (str): _description_
+        last_fetch_status_category_change_date (str): _description_
+        first_fetch_interval (str): _description_
+
+    Raises:
+        DemistoException: _description_
+
+    Returns:
+        str: _description_
+    """
+    if issue_field_to_fetch_from == 'id':
+        return f'{fetch_query} AND id >= {last_fetch_id} ORDER BY id ASC'
+    first_fetch_date = ''
+    if parsed_first_fetch_interval := dateparser.parse(first_fetch_interval):
+        first_fetch_date = parsed_first_fetch_interval.strftime('%Y-%m-%d %H:%M')
+    else:
+        raise DemistoException('Could not parse the time for the first fetch interval, please make sure it is a valid value')
+    if issue_field_to_fetch_from == 'status category change date':
+        interval_to_fetch_from = safe_get_last_interval_for_fetch(last_fetch_date=last_fetch_status_category_change_date,
+                                                                  fetch_interval=fetch_interval)
+        return (f'{fetch_query} AND statusCategoryChangedDate >= "{interval_to_fetch_from or first_fetch_date}"'
+                ' ORDER BY statusCategoryChangedDate ASC')
+    elif issue_field_to_fetch_from == 'created date':
+        interval_to_fetch_from = safe_get_last_interval_for_fetch(last_fetch_date=last_fetch_created_time,
+                                                                  fetch_interval=fetch_interval)
+        return f'{fetch_query} AND created >= "{interval_to_fetch_from or first_fetch_date}" ORDER BY created ASC'
+    elif issue_field_to_fetch_from == 'updated date':
+        interval_to_fetch_from = safe_get_last_interval_for_fetch(last_fetch_date=last_fetch_updated_time,
+                                                                  fetch_interval=fetch_interval)
+        return f'{fetch_query} AND updated >= "{interval_to_fetch_from or first_fetch_date}" ORDER BY updated ASC'
+    raise DemistoException('Could not create the proper fetch query')
+
+
+def get_mirror_type(incoming_mirror: bool, outgoing_mirror: bool) -> str | None:
+    """This function return the type of mirror to perform on a Jira incident.
+    NOTE: in order to not mirror an incident, the type should be None.
+
+    Args:
+        should_mirror_in (bool): If we should implement mirroring in
+        should_mirror_out (bool): If we should implement mirroring out
+
+    Returns:
+        _type_: The mirror type (Both, In, Out), or None if we should not mirror an incident.
+    """
+    mirror_type = None
+    if incoming_mirror and outgoing_mirror:
+        mirror_type = 'Both'
+    elif incoming_mirror:
+        mirror_type = 'In'
+    elif outgoing_mirror:
+        mirror_type = 'Out'
+    return mirror_type
+
+
+def create_incident_from_ticket(issue: Dict[str, Any], fetch_attachments: bool, fetch_comments: bool,
+                                incoming_mirror: bool, outgoing_mirror: bool,
+                                comment_tag: str, attachment_tag: str) -> Dict[str, Any]:
+    labels = [
+        {'type': 'issue', 'value': json.dumps(issue)},
+        {'type': 'id', 'value': str(issue.get('id'))},
+        {'type': 'lastViewed', 'value': str(demisto.get(issue, 'fields.lastViewed'))},
+        {'type': 'priority', 'value': str(demisto.get(issue, 'fields.priority.name'))},
+        {'type': 'status', 'value': str(demisto.get(issue, 'fields.status.name'))},
+        {'type': 'project', 'value': str(demisto.get(issue, 'fields.project.name'))},
+        {'type': 'updated', 'value': str(demisto.get(issue, 'fields.updated'))},
+        {'type': 'reportername', 'value': str(demisto.get(issue, 'fields.reporter.displayName'))},
+        {'type': 'reporteremail', 'value': str(demisto.get(issue, 'fields.reporter.emailAddress'))},
+        {'type': 'created', 'value': str(demisto.get(issue, 'fields.created'))},
+        {'type': 'summary', 'value': str(demisto.get(issue, 'fields.summary'))},
+        {'type': 'description', 'value': str(demisto.get(issue, 'fields.description'))},
+
+    ]
+
+    name = demisto.get(issue, 'fields.summary')
+    if name:
+        name = f"Jira issue: {issue.get('id')}"
+
+    severity = 0
+    if demisto.get(issue, 'fields.priority') and demisto.get(issue, 'fields.priority.name'):
+        if demisto.get(issue, 'fields.priority.name') == 'Highest':
+            severity = 4
+        elif demisto.get(issue, 'fields.priority.name') == 'High':
+            severity = 3
+        elif demisto.get(issue, 'fields.priority.name') == 'Medium':
+            severity = 2
+        elif demisto.get(issue, 'fields.priority.name') == 'Low':
+            severity = 1
+
+    file_names: list = []
+    # if should_get_attachments:
+    #     for file_result in get_entries_for_fetched_incident(issue.get('id'), False, True)['attachments']:
+    #         if file_result['Type'] != entryTypes['error']:
+    #             file_names.append({
+    #                 'path': file_result.get('FileID', ''),
+    #                 'name': file_result.get('File', '')
+    #             })
+
+    # if should_get_comments:
+    #     labels.append({'type': 'comments', 'value': str(get_entries_for_fetched_incident(issue.get('id'), True, False)
+    #                                                     ['comments'])})
+    # else:
+    #     labels.append({'type': 'comments', 'value': '[]'})
+
+    issue['mirror_direction'] = get_mirror_type(incoming_mirror, outgoing_mirror)
+
+    issue['mirror_tags'] = [
+        comment_tag,
+        attachment_tag
+    ]
+    issue['mirror_instance'] = demisto.integrationInstance()
+
+    return {
+        "name": name,
+        "labels": labels,
+        "details": demisto.get(issue, "fields.description"),
+        "severity": severity,
+        "attachment": file_names,
+        "rawJSON": json.dumps(issue)
+    }
+
+
+def safe_get_last_interval_for_fetch(last_fetch_date: str, fetch_interval: int) -> str:
+    """Since the fetch_incidents function is supposed to run periodically according to the fetch_interval
+    argument, there can be a situation where it gets delayed for some reason (maybe connection problems),
+    so in order to not lose any data if a delay should occur, we fetch data from 1 minute behind of the argument
+    last_fetch_date to ensure no issues are neglected. Duplicate data can be returned, therefore, the fetch_incidents
+    command must handle such duplications.
+
+
+    Args:
+        last_fetch_date (str): The last fetch date, or an empty string if there is not last fetch date.
+        fetch_interval (int): The fetch interval in minutes
+
+    Raises:
+        DemistoException: When last_fetch_date is not a valid date.
+
+    Returns:
+        str: A string representing the last_fetch_date minus 1 minute, or an empty string if last_fetch_date is an empty string.
+    """
+    if not last_fetch_date:
+        return ''
+    if parsed_last_fetch_date := dateparser.parse(last_fetch_date):
+        return (parsed_last_fetch_date - timedelta(minutes=fetch_interval + 1)).strftime('%Y-%m-%d %H:%M')
+    raise DemistoException('Could not parse the time of the last fetch.')
 
 
 def main() -> None:
@@ -2146,14 +2345,20 @@ def main() -> None:
     server_url = params.get('server_url', 'https://api.atlassian.com/ex/jira')
 
     # Fetch params
-    issue_field_to_fetch_from = params.get('issue_field_to_fetch_from', '')
-    fetch_query = params.get('fetch_query', '')
-    id_offset = params.get('id_offset', '')
+    issue_field_to_fetch_from = params.get('issue_field_to_fetch_from', 'id')
+    fetch_query = params.get('fetch_query', 'status!=done')
+    id_offset = params.get('id_offset', '0')
     fetch_attachments = params.get('fetch_attachments', False)
     fetch_comments = params.get('fetch_comments', False)
-    max_fetch = params.get('max_fetch', '50')
-    fetch_interval = '1'  # in minutes
-    print(fetch_interval, type(fetch_interval))
+    max_fetch = params.get('max_fetch', DEFAULT_FETCH_LIMIT)
+    fetch_interval = params.get('incidentFetchInterval', DEFAULT_FETCH_INTERVAL)  # in minutes
+    # This is used for when issue_field_to_fetch_from is either, update date, created date, or status category change date,
+    # it holds values such as: 3 days, 1 minute, 5 hours,...
+    first_fetch_interval = params.get('first_fetch', DEFAULT_FIRST_FETCH_INTERVAL)
+    incoming_mirror = params.get("incoming_mirror", False)
+    outgoing_mirror = params.get('outgoing_mirror', False)
+    comment_tag = params.get('comment_tag', 'comment tag')
+    attachment_tag = params.get('file_tag', 'attachment tag')
     # Print to demisto.info which Jira instance the user supplied.
     # From param or if automatically
     command = demisto.command()
@@ -2216,13 +2421,22 @@ def main() -> None:
         elif command in commands:
             return_results(commands[command](client, args))
         elif command == 'fetch-incidents':
-            demisto.incidents(fetch_incidents(issue_field_to_fetch_from=issue_field_to_fetch_from,
-                                              fetch_query=fetch_query,
-                                              id_offset=id_offset,
-                                              fetch_attachments=fetch_attachments,
-                                              fetch_comments=fetch_comments,
-                                              max_fetch=max_fetch,
-                                              fetch_interval=fetch_interval))
+            demisto.incidents(fetch_incidents(
+                client=client,
+                issue_field_to_fetch_from=issue_field_to_fetch_from,
+                fetch_query=fetch_query,
+                id_offset=id_offset,
+                fetch_attachments=fetch_attachments,
+                fetch_comments=fetch_comments,
+                max_fetch_incidents=arg_to_number(max_fetch) or DEFAULT_FETCH_LIMIT,
+                fetch_interval=arg_to_number(fetch_interval) or DEFAULT_FETCH_INTERVAL,
+                first_fetch_interval=first_fetch_interval,
+                incoming_mirror=argToBoolean(incoming_mirror),
+                outgoing_mirror=argToBoolean(outgoing_mirror),
+                comment_tag=comment_tag,
+                attachment_tag=attachment_tag,
+            ),
+            )
         else:
             raise NotImplementedError(f'{command} command is not implemented.')
 

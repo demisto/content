@@ -44,8 +44,8 @@ configuration:
   name: issue_field_to_fetch_from
   required: false
   options:
-  - created
-  - updated
+  - created date
+  - updated date
   - status category change date
   - id
   type: 15
@@ -87,14 +87,14 @@ configuration:
   defaultvalue: 'false'
 - additionalinfo: Choose the tag to add to an entry to mirror it as an attachment
     in Jira.
-  defaultvalue: attachment
+  defaultvalue: attachment tag
   display: File entry tag
   hidden: false
   name: file_tag
   required: false
   type: 0
 - additionalinfo: Choose the tag to add to an entry to mirror it as a comment in Jira.
-  defaultvalue: comment
+  defaultvalue: comment tag
   display: Comment entry tag
   hidden: false
   name: comment_tag
@@ -117,6 +117,13 @@ configuration:
 - defaultvalue: '50'
   display: Max incidents per fetch
   name: max_fetch
+  required: false
+  type: 0
+- defaultvalue: 3 days
+  display: "The time range to consider for the initial data fetch in format: <number>
+    <unit>. Default is 3 days."
+  additionalinfo: "For example: 2 minutes, 2 hours, 2 days, 2 months, 2 years"
+  name: first_fetch
   required: false
   type: 0
 script:
