@@ -344,7 +344,7 @@ tasks:
       - id: "0"
         label: ""
         labelarg:
-          simple: 'Are there any playbook errors? '
+          simple: 'Check if there are any errors in the playbook?'
         required: false
         gridcolumns: []
         defaultrows: []
