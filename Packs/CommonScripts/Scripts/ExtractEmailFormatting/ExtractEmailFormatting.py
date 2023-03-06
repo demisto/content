@@ -23,8 +23,8 @@ def extract_email(email_address: str) -> str:
     email_format = re.compile("[<(\[{\"\'.]*"
                               "(?:(?:\\\\|\^{3})u[a-f\d]{4})?"
                               "([\w.!#$%&'*+/=?^_`{|}~-]{1,64}"
-                              "\[?@]?[\w.-]{1,255}\[?\.]?"
-                              "[A-Za-z]{2,})", re.IGNORECASE)
+                              "\[?@]?[\w.-]{1,255}(?:\[?\.]?"
+                              "[A-Za-z]{2,}){1,2})", re.IGNORECASE)
 
     try:
         return re.findall(email_format, email_address)[0]

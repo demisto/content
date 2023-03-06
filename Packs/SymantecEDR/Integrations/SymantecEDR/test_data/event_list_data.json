@@ -1,0 +1,80 @@
+{
+    "result": [
+        {
+            "type_id": 8001,
+            "severity_id": 1,
+            "device_time": "2022-12-25T23:11:08.905Z",
+            "log_time": "2022-12-25T10:46:01.302Z",
+            "device_uid": "393b8e82-fe40-429f-8e5e-c6b79a0f2b1c",
+            "device_name": "WIN-TFB8L7BI77H",
+            "device_ip": "127.0.0.1",
+            "device_os_name": "Windows Server 2019 ",
+            "user_name": "SYSTEM",
+            "user_domain": "NT AUTHORITY",
+            "user_sid": "S-1-5-18",
+            "device_domain": "WORKGROUP",
+            "operation": 2,
+            "event_actor": {
+                "pid": 14364,
+                "uid": "78CCAD9F-84A3-F1ED-8217-98261F32744E",
+                "cmd_line": "C:\\Windows\\system32\\DllHost.exe /Processid:{E2B3C97F-6AE1-41AC-817A-F6F92166D7DD}",
+                "start_time": "2022-12-25T23:11:03.849Z",
+                "signature_level_id": 60,
+                "integrity_id": 6,
+                "user": {
+                    "name": "SYSTEM",
+                    "sid": "S-1-5-18"
+                },
+                "file": {
+                    "name": "dllhost.exe",
+                    "md5": "d2ab39ea2c0fcd172751f84bda723a97",
+                    "modified": "2018-09-15T07:12:24.564Z",
+                    "path": "c:\\windows\\system32\\dllhost.exe",
+                    "normalized_path": "CSIDL_SYSTEM\\dllhost.exe",
+                    "signature_company_name": "Microsoft Windows",
+                    "signature_value_ids": [
+                        3,
+                        5
+                    ],
+                    "sha2": "c4e078607db2784be7761c86048dffa6f3ef04b551354a32fcdec3b6a3450905",
+                    "original_name": "dllhost.exe"
+                }
+            },
+            "process": {
+                "pid": 14364,
+                "uid": "78CCAD9F-84A3-F1ED-8217-98261F32744E",
+                "cmd_line": "C:\\Windows\\system32\\DllHost.exe /Processid:{E2B3C97F-6AE1-41AC-817A-F6F92166D7DD}",
+                "signature_level_id": 60,
+                "integrity_id": 6,
+                "user": {
+                    "name": "SYSTEM",
+                    "sid": "S-1-5-18"
+                },
+                "file": {
+                    "normalized_path": "CSIDL_SYSTEM\\dllhost.exe",
+                    "name": "dllhost.exe",
+                    "md5": "d2ab39ea2c0fcd172751f84bda723a97",
+                    "modified": "2018-09-15T07:12:24.564Z",
+                    "path": "c:\\windows\\system32\\dllhost.exe",
+                    "signature_company_name": "Microsoft Windows",
+                    "signature_value_ids": [
+                        3,
+                        5
+                    ],
+                    "sha2": "c4e078607db2784be7761c86048dffa6f3ef04b551354a32fcdec3b6a3450905",
+                    "original_name": "dllhost.exe"
+                }
+            },
+            "enriched_data": {
+                "rule_name": "eProcessClose",
+                "category_name": "Process Termination",
+                "category_id": 3
+            },
+            "ref_uid": "AA9D4723-8DB4-4143-A6DD-7F0F759B3E6C",
+            "uuid": "6a79a590-84a9-11ed-f4c8-000000032af2",
+            "log_name": "epmp_events-fdr-2022-12-25"
+        }
+    ],
+    "next": "MSwyMDIyLTEyLTI1VDIzOjE0OjMzLjMxOFo=",
+    "total": 11809
+}
