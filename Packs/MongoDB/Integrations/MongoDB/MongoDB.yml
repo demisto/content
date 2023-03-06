@@ -145,7 +145,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: Whether to update a single entry. If true, will set only the first found entry. If false, will set all found entries. default is true.
+      description: Whether to update a single entry. If true, will set only the first found entry. If false, will set all found entries. Default is true.
       isArray: false
       name: update_one
       predefined:
@@ -306,7 +306,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Bulk Updates entries in a collection.
+    description: Bulk updates entries in a collection.
     execution: false
     name: mongodb-bulk-update
   dockerimage: demisto/py3-tools:1.0.0.49572

@@ -404,7 +404,7 @@ Searches for items by the specified JSON pipleline query.
 
 ### 10. mongodb-bulk-update
 ---
-Bulk Updates entries in a collection.
+Bulk updates entries in a collection.
 ##### Required Permissions
 `update` permission.
 ##### Base Command
