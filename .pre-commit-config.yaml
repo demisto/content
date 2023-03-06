@@ -10,8 +10,6 @@ repos:
     -   id: check-toml
     -   id: check-xml
     -   id: check-merge-conflict
-    -   id: trailing-whitespace
-    -   id: end-of-file-fixer
 
 -   repo: https://github.com/abravalheri/validate-pyproject
     rev: v0.10.1
