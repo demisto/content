@@ -887,12 +887,14 @@ class PackAutoBumper:
         if Path(new_release_notes_path).stem != self._last_rn_file_path.stem:
             with open(new_release_notes_path, "w") as fp:
                 fp.write(self._rn_text)
-                # todo: delete prev file if its content the same.
+                if Path(new_release_notes_path).read_text() == self._rn_text:
+                    os.remove(self._last_rn_file_path)
+
             if self._has_bc:
                 with open(new_release_notes_path.replace("md", "json"), "w") as fp:
                     fp.write(self._bc_text)
-                previous_bc_txt = self._bc_file.read_text()
-                if previous_bc_txt == self._bc_file:
+
+                if self._bc_file.read_text() == self._bc_text:
                     # delete previous bc file, if it was not changed after merge from master
                     os.remove(self._bc_file)
             return new_version
