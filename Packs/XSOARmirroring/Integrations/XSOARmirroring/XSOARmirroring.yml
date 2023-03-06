@@ -36,12 +36,12 @@ configuration:
   type: 0
   required: false
   additionalinfo: Don't add created time to the query as this field will be addressed in the "First fetch time".
-- additionalinfo: Date or relative timestamp to start fetching incidents from, in the format of <number> <time unit>. For example, 2 minutes, 12 hours, 6 days, 2 weeks, 3 months, 1 year, ISO timestamp. Default is 3 days.
-  display: First fetch time
+- display: First fetch time
   name: first_fetch
   defaultvalue: 3 days
   type: 0
   required: false
+  additionalinfo: Date or relative timestamp to start fetching incidents from, in the format of <number> <time unit>. For example, 2 minutes, 12 hours, 6 days, 2 weeks, 3 months, 1 year, ISO timestamp. Default is 3 days.
 - display: Entry Categories
   name: categories
   defaultvalue: notes,chats,attachments
@@ -147,7 +147,7 @@ script:
   - name: get-mapping-fields
     arguments: []
     description: Retrieves the mapping schema from a remote incident.
-  dockerimage: demisto/python3:3.10.9.46032
+  dockerimage: demisto/python3:3.10.10.48392
   isfetch: true
   runonce: false
   subtype: python3
