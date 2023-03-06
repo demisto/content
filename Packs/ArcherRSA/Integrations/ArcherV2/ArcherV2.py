@@ -52,8 +52,6 @@ def get_token_soap_request(user, password, instance, domain=None):
         root = ET.Element("soap:Envelope", {"xmlns:xsi": "http://www.w3.orecord_to_incidentrg/2001/XMLSchema-instance",
                                             "xmlns:xsd": "http://www.w3.org/2001/XMLSchema",
                                             "xmlns:soap": "http://schemas.xmlsoap.org/soap/envelope/"})
-        root.set("version", "1.0")
-        root.set("encoding", "UTF-8")
         # Create the soap:Body element
         body = ET.SubElement(root, "soap:Body")
         # Create the CreateUserSessionFromInstance element
@@ -89,8 +87,6 @@ def terminate_session_soap_request(token):
     root = ET.Element("soap:Envelope", {"xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
                                         "xmlns:xsd": "http://www.w3.org/2001/XMLSchema",
                                         "xmlns:soap": "http://schemas.xmlsoap.org/soap/envelope/"})
-    root.set("version", "1.0")
-    root.set("encoding", "UTF-8")
     # Create the soap:Body element
     body = ET.SubElement(root, "soap:Body")
     # Create the TerminateSession element
@@ -105,8 +101,6 @@ def get_reports_soap_request(token):
     root = ET.Element("soap:Envelope", {"xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
                                         "xmlns:xsd": "http://www.w3.org/2001/XMLSchema",
                                         "xmlns:soap": "http://schemas.xmlsoap.org/soap/envelope/"})
-    root.set("version", "1.0")
-    root.set("encoding", "UTF-8")
     # Create the soap:Body element
     body = ET.SubElement(root, "soap:Body")
     # Create the GetReports element
@@ -121,8 +115,6 @@ def get_statistic_search_report_soap_request(token, report_guid, max_results):
     root = ET.Element("soap:Envelope", {"xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
                                         "xmlns:xsd": "http://www.w3.org/2001/XMLSchema",
                                         "xmlns:soap": "http://schemas.xmlsoap.org/soap/envelope/"})
-    root.set("version", "1.0")
-    root.set("encoding", "UTF-8")
     # Create the soap:Body element
     body = ET.SubElement(root, "soap:Body")
     # Create the ExecuteStatisticSearchByReport element
@@ -141,8 +133,6 @@ def get_search_options_soap_request(token, report_guid):
     root = ET.Element("soap:Envelope", {"xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
                                         "xmlns:xsd": "http://www.w3.org/2001/XMLSchema",
                                         "xmlns:soap": "http://schemas.xmlsoap.org/soap/envelope/"})
-    root.set("version", "1.0")
-    root.set("encoding", "UTF-8")
     # Create the soap:Body element
     body = ET.SubElement(root, "soap:Body")
     # Create the GetSearchOptionsByGuid element
@@ -160,8 +150,6 @@ def search_records_by_report_soap_request(token, report_guid):
     root = ET.Element("soap:Envelope", {"xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
                                         "xmlns:xsd": "http://www.w3.org/2001/XMLSchema",
                                         "xmlns:soap": "http://schemas.xmlsoap.org/soap/envelope/"})
-    root.set("version", "1.0")
-    root.set("encoding", "UTF-8")
     # Create the soap:Body element
     body = ET.SubElement(root, "soap:Body")
     # Create the SearchRecordsByReport element
@@ -184,8 +172,6 @@ def search_records_soap_request(
     root = ET.Element("soap:Envelope", {"xmlns:soap": "http://schemas.xmlsoap.org/soap/envelope/",
                                         "xmlns:xsd": "http://www.w3.org/2001/XMLSchema",
                                         "xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance"})
-    root.set("version", "1.0")
-    root.set("encoding", "UTF-8")
     # create the soap:Body element
     body = ET.SubElement(root, "soap:Body")
     # create the ExecuteSearch element
@@ -198,7 +184,9 @@ def search_records_soap_request(
     ET.SubElement(search_report, "PageNumber").text = "1"
     ET.SubElement(search_report, "MaxRecordCount").text = str(max_results)
     ET.SubElement(search_report, "ShowStatSummaries").text = "false"
-    ET.SubElement(search_report, "DisplayFields").text = display_fields
+    display_field = ET.fromstring(display_fields)
+    display_fields_elem = ET.SubElement(search_report, "DisplayFields")
+    display_fields_elem.append(display_field)
     # create the Criteria element
     criteria = ET.SubElement(search_report, "Criteria")
     module_criteria = ET.SubElement(criteria, "ModuleCriteria")

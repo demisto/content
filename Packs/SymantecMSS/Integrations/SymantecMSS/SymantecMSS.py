@@ -285,8 +285,6 @@ def update_incident_request(num, status, resolution, ref, severity, assign_to_or
     root = ET.Element("soap12:Envelope", {"xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
                                           "xmlns:xsd": "http://www.w3.org/2001/XMLSchema",
                                           "xmlns:soap12": "http://www.w3.org/2003/05/soap-envelope"})
-    root.set("version", "1.0")
-    root.set("encoding", "UTF-8")
 
     body = ET.SubElement(root, "soap12:Body")
     update_incident_workflow = ET.SubElement(body, "UpdateIncidentWorkflow", {"xmlns": "https://www.monitoredsecurity.com/"})
@@ -432,8 +430,6 @@ def query_incident_request(num):
     root = ET.Element("soap12:Envelope", {"xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
                                           "xmlns:xsd": "http://www.w3.org/2001/XMLSchema",
                                           "xmlns:soap12": "http://www.w3.org/2003/05/soap-envelope"})
-    root.set("version", "1.0")
-    root.set("encoding", "UTF-8")
 
     body = ET.SubElement(root, "soap12:Body")
     incident_query = ET.SubElement(body, "IncidentQuery", {"xmlns": "https://www.monitoredsecurity.com/"})
@@ -456,8 +452,6 @@ def query_incident_workflow_request(num):
     root = ET.Element("soap12:Envelope", {"xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
                                           "xmlns:xsd": "http://www.w3.org/2001/XMLSchema",
                                           "xmlns:soap12": "http://www.w3.org/2003/05/soap-envelope"})
-    root.set("version", "1.0")
-    root.set("encoding", "UTF-8")
 
     body = ET.SubElement(root, "soap12:Body")
     incident_workflow_query = ET.SubElement(body, "IncidentWorkflowQuery", {"xmlns": "https://www.monitoredsecurity.com/"})
