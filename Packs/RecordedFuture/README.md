@@ -90,8 +90,7 @@ Fetch & triage Recorded Future Playbook Alerts
     * Search playbook alerts based on filters
 
 ### Relevant Playbooks
-All the playbooks are meant to be used as sub-playbooks to get reputation, intelligence or assess the threat level in
-regards to a context.
+The template playbooks included help you save time and keep your incidents in sync. They also aid with automating repetitive tasks associated with playbook alerts.
 
 * Recorded Future Playbook Alert Details 
     * A default playbook to fetch details of Playbook alert that does not yet have mapping made by Recorded Future
