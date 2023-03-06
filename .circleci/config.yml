@@ -69,26 +69,6 @@ references:
       PULL_REQUEST_NUMBER: << pipeline.parameters.pr_number >>
       NIGHTLY_PARAMETER: << pipeline.parameters.nightly >>
       GCS_MARKET_BUCKET: << pipeline.parameters.gcs_market_bucket >>
-  
-  install_environment: &install_environment
-    - run:
-       name: Install Poetry
-       command: |
-        # in old images we need to remove existing poetry
-        rm -rf $HOME/.poetry/bin/poetry
-        sudo curl -sSL https://install.python-poetry.org | python3 -
-        poetry --version
-    - python/install-packages: 
-        pkg-manager: "poetry"
-        args: "--with ci"
-        cache-version: << pipeline.parameters.cache-version >>
-        pre-install-steps:
-          - run:
-              name: Check if pyproject.toml is consistent with poetry.lock
-              command: poetry lock --check
-    - node/install-packages:
-        cache-version: << pipeline.parameters.cache-version >>
-    - *install_neo4j
 
   install_neo4j: &install_neo4j
     run:
@@ -115,6 +95,26 @@ references:
         sudo echo "apoc.import.file.enabled=true" >> $apoc_conf_file
         sudo echo "apoc.import.file.use_neo4j_config=true" >> $apoc_conf_file
         neo4j-admin set-initial-password test
+
+    install_environment: &install_environment
+    - run:
+       name: Install Poetry
+       command: |
+        # in old images we need to remove existing poetry
+        rm -rf $HOME/.poetry/bin/poetry
+        sudo curl -sSL https://install.python-poetry.org | python3 -
+        poetry --version
+    - python/install-packages: 
+        pkg-manager: "poetry"
+        args: "--with ci"
+        cache-version: << pipeline.parameters.cache-version >>
+        pre-install-steps:
+          - run:
+              name: Check if pyproject.toml is consistent with poetry.lock
+              command: poetry lock --check
+    - node/install-packages:
+        cache-version: << pipeline.parameters.cache-version >>
+    - *install_neo4j
 
   container_config: &container_config
     docker:
