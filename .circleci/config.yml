@@ -50,10 +50,10 @@ parameters:
     default: v1  # Change this parameter to clear cache.
   python-orb-version:
     type: string
-    default: "2.0.3"
+    default: "2.0.3" # disable-secrets-detection
   node-orb-version:
     type: string
-    default: "5.0.1"
+    default: "5.0.1" # disable-secrets-detection
 
 references:
   environment: &environment
