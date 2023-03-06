@@ -51,7 +51,7 @@ script:
       isArray: false
       required: false
     - name: page_size
-      description: A number of results per page. The maximum value is 100.
+      description: The number of results per page. The maximum value is 100.
       isArray: false
       required: false
     - name: limit
@@ -96,12 +96,12 @@ script:
   - name: cisco-wsa-access-policy-create
     description: |-
       Create an access policy.
-      By this command you can create the access policy object, in order to define more settings you can use the dependencies commands:
-      cisco-wsa-access-policy-protocols-user-agents-update (Update Protocols and User Agents policy for access policy).
-      cisco-wsa-access-policy-url-filtering-update (Update URL filtering policy for access policy).
-      cisco-wsa-access-policy-applications-update (Update applications policy for access policy. only applicable for global_policy).
-      cisco-wsa-access-policy-objects-update (Update objects policy for access policy).
-      cisco-wsa-access-policy-anti-malware-update (Update anti malware policy for access policy).
+      This command enables you to create the access policy object. To define more settings you can use the dependencies commands:
+      cisco-wsa-access-policy-protocols-user-agents-update (Update the Protocols and User Agents policy for access policy).
+      cisco-wsa-access-policy-url-filtering-update (Update the URL filtering policy for access policy).
+      cisco-wsa-access-policy-applications-update (Update the applications policy for access policy. Only applicable for global_policy).
+      cisco-wsa-access-policy-objects-update (Update the objects policy for access policy).
+      cisco-wsa-access-policy-anti-malware-update (Update the anti-malware policy for access policy).
     arguments:
     - name: policy_name
       description: Policy name.
@@ -120,19 +120,19 @@ script:
       required: false
       isArray: false
     - name: policy_order
-      description: Policy order, index of policy in the collection.
+      description: Index of the policies in the collection.
       required: true
       isArray: false
     - name: policy_expiry
-      description: Policy expiry date, format yyyy-MM-ddTHH:mm:ssZ, e.g. 2023-02-21T16:16:29Z.
+      description: Policy expiry date, format yyyy-MM-ddTHH:mm:ssZ, e.g., 2023-02-21T16:16:29Z.
       required: false
       isArray: false
     - name: identification_profiles
-      description: Comma-separated list of valid identification profile name (dependencies - use cisco-wsa-identification-profiles-list command to get all the identification profiles).
+      description: Comma-separated list of valid identification profile name. (Dependencies - use cisco-wsa-identification-profiles-list command to get all the identification profiles.)
       required: true
       isArray: true
   - name: cisco-wsa-access-policy-update
-    description: Update access policy.
+    description: Update the access policy.
     arguments:
     - name: policy_name
       description: Policy name to update.
@@ -151,11 +151,11 @@ script:
       - enable
       - disable
     - name: policy_order
-      description: Policy order, index of policy in the collection. Not applicable for global_policy.
+      description: Index of policies in the collection. Not applicable for global_policy.
       required: false
       isArray: false
     - name: policy_expiry
-      description: Policy expiry date, format yyyy-MM-ddTHH:mm:ssZ, e.g. 2023-02-21T16:16:29Z.
+      description: Policy expiry date, format yyyy-MM-ddTHH:mm:ssZ, e.g., 2023-02-21T16:16:29Z.
       required: false
       isArray: false
     - name: policy_description
@@ -163,7 +163,7 @@ script:
       required: false
       isArray: false
   - name: cisco-wsa-access-policy-protocols-user-agents-update
-    description: Update Protocols and User Agents policy for access policy.
+    description: Update the Protocols and User Agents policy for access policy.
     arguments:
     - name: policy_name
       description: Policy name to update.
