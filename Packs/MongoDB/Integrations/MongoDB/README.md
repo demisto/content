@@ -203,7 +203,7 @@ There is no context output for this command.
 ##### Human Readable Output
 >MongoDB: Total of 1 entries has been modified.
 
-if an entry was created and inserted using the *upset* argument:
+If an entry was created and inserted using the *upset* argument:
 
 >MongoDB: A new entry was inserted to the collection.
 
@@ -404,7 +404,7 @@ Searches for items by the specified JSON pipleline query.
 
 ### 10. mongodb-bulk-update
 ---
-Bulk Updates entires in a collection.
+Bulk Updates entries in a collection.
 ##### Required Permissions
 `update` permission.
 ##### Base Command

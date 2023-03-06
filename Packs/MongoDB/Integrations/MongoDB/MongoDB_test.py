@@ -263,6 +263,9 @@ def test_pipeline_query_command(mocker):
 
 
 class MockResponse:
+    """Mock response for TestUpdateQueryCommands and TestBulkUpdateQueryCommands classes.
+    represents a partial SDK response of the update_entry and bulk_update_entries functions.
+    """
     def __init__(self, acknowledged, modified_count, upserted_count=False, upserted_id=False):
         self.acknowledged = acknowledged
         self.modified_count = modified_count
@@ -284,7 +287,7 @@ class TestUpdateQueryCommands:
     case_upsert_with_matching_entry_no_modifications = (
         "{\"Name\": \"dummy\"}", "{\"$set\":{\"test\":0}}", True, True, MockResponse(True, 0, 0, 0),
         'MongoDB: Total of 0 entries has been modified.')
-    case_upsert_with_many_matching_entires_update_only_one = (
+    case_upsert_with_many_matching_entries_update_only_one = (
         "{\"Name\": \"dummy\"}", "{\"$set\":{\"test\":0}}", True, True, MockResponse(True, 1, 0, 0),
         'MongoDB: Total of 1 entries has been modified.')
     case_no_upsert_with_no_matching_entry = (
@@ -293,7 +296,7 @@ class TestUpdateQueryCommands:
 
     update_query_cases = [case_upsert_with_no_matching_entry, case_upsert_with_one_matching_entry,
                           case_upsert_with_many_matching_entry, case_upsert_with_matching_entry_no_modifications,
-                          case_upsert_with_many_matching_entires_update_only_one, case_no_upsert_with_no_matching_entry]
+                          case_upsert_with_many_matching_entries_update_only_one, case_no_upsert_with_no_matching_entry]
 
     @pytest.mark.parametrize('filter, update, update_one, upsert, response, expected', update_query_cases)
     def test_update_entry_command(self, mocker, filter, update, update_one, upsert, response, expected, client=client):
@@ -391,4 +394,7 @@ class TestBulkUpdateQueryCommands:
         return_value = bulk_update_command(
             client, "test_collection", filter=case_simple_bulk_update_args[0],
             update=case_simple_bulk_update_args[1])
-        assert return_value[0] == 'MongoDB: Total of 1 entries has been modified.\nMongoDB: Total of 1 entries has been inserted.'
+        excepted_output = 'MongoDB: Total of 1 entries has been modified.\
+            \nMongoDB: Total of 1 entries has been inserted.'
+        # 'replace' method is used due to inconsistent spaces in the output
+        assert return_value[0].replace(' ', '') == excepted_output.replace(' ', '')

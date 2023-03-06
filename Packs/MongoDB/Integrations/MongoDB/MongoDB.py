@@ -160,9 +160,9 @@ class Client:
 
         Args:
             collection (str): name of the collection.
-            filter_update_dict (zip): a zip object of filter,update pairs of queries.
+            filter_update_zip (zip): a zip object of filter,update pairs of queries.
             update_one (boolean): whether to update one or many entries per query.
-            upsert (boolean): whether to insert a new document if no match is found per query.
+            upsert (boolean): whether to insert a new entry if no match is found per query.
         Returns:
             BulkWriteResult: An object wrapper for bulk API write results
         """
@@ -290,8 +290,8 @@ def parse_and_validate_bulk_update_arguments(filter: str, update: str) -> Tuple[
         raise DemistoException('The `filter` argument contains an invalid json.') from e
     try:
         update_list = [validate_json_objects(update) for update in updates]
-    except JSONDecodeError as exc:
-        raise DemistoException('The `update` argument contains an invalid json.') from exc
+    except JSONDecodeError as e:
+        raise DemistoException('The `update` argument contains an invalid json.') from e
 
     return filter_list, update_list
 
@@ -539,7 +539,7 @@ def bulk_update_command(
         collection: str,
         filter: str,
         update: str,
-        update_one=False,
+        update_one=True,
         upsert=False,
         **kwargs,
 ) -> Tuple[str, None]:
@@ -553,8 +553,8 @@ def bulk_update_command(
         raise DemistoException('Error occurred when trying to enter update entries.')
 
     return (
-        f'MongoDB: Total of {response.modified_count} entries has been modified.'
-        + f'\nMongoDB: Total of {response.upserted_count} entries has been inserted.',
+        f'MongoDB: Total of {response.modified_count} entries has been modified.\
+        \nMongoDB: Total of {response.upserted_count} entries has been inserted.',
         None,
     )
 

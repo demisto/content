@@ -306,7 +306,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Bulk Updates entires in a collection.
+    description: Bulk Updates entries in a collection.
     execution: false
     name: mongodb-bulk-update
   dockerimage: demisto/py3-tools:1.0.0.49572
