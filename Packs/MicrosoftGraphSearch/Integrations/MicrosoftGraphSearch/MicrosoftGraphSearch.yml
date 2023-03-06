@@ -44,11 +44,6 @@ configuration:
   name: creds_auth_code
   required: true
   type: 9
-- display: Authorization code
-  hidden: true
-  name: auth_code
-  required: true
-  type: 4
 - display: Application redirect URI
   name: redirect_uri
   required: true
