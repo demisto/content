@@ -90,12 +90,12 @@ def main():     # pragma: no cover
     use_ssl = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     ok_codes = (200, 201, 202)
-    refresh_token = params.get('creds_refresh_token', {}).get('password') or params.get('refresh_token', '')
-    auth_and_token_url = params.get('creds_auth_id', {}).get('password') or params.get('auth_id', '')
-    enc_key = params.get('creds_enc_key', {}).get('password') or params.get('enc_key', '')
+    refresh_token = params.get('creds_refresh_token', {}).get('password')
+    auth_and_token_url = params.get('creds_auth_id', {}).get('password')
+    enc_key = params.get('creds_enc_key', {}).get('password')
     certificate_thumbprint = params.get('creds_certificate', {}).get('identifier') or params.get('certificate_thumbprint')
     private_key = replace_spaces_in_credential(params.get('creds_certificate', {}).get('password')) or params.get('private_key')
-    auth_code = params.get('creds_auth_code', {}).get('password') or params.get('auth_code', '')
+    auth_code = params.get('creds_auth_code', {}).get('password')
     app_name = 'ms-graph-search'
 
     if not enc_key:
