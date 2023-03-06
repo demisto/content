@@ -405,7 +405,7 @@ def build_query_params(query_params: dict) -> str:
         For example: ['1234', '5678'] => '?ids=1234&ids=5678'
 
         Args:
-            ids (list): List of exclusion IDs.
+            query_params (dict): List of exclusion IDs.
         Returns:
             str: string to use as a query param in the requests of exclusion.
     """
@@ -1800,7 +1800,7 @@ def get_exclusion_entities(exclusion_type: str, exclusion_ids: List) -> dict:
                         url_suffix=f'/policy/entities/{exclusion_type}-exclusions/v1{build_ids_params(exclusion_ids)}')
 
 
-def list_quarantined_files_id(files_filter: dict | None, query: dict | None, pagination: dict | None) -> dict:
+def list_quarantined_files_id(files_filter: dict | None, query: dict, pagination: dict) -> dict:
     """
         Returns the files by a list of IDs.
 
@@ -1812,7 +1812,7 @@ def list_quarantined_files_id(files_filter: dict | None, query: dict | None, pag
             list: List of exclusions.
     """
 
-    return http_request(method='GET', url_suffix=f'/quarantine/queries/quarantined-files/v1',
+    return http_request(method='GET', url_suffix='/quarantine/queries/quarantined-files/v1',
                         params=assign_params(filter=files_filter, q=build_query_params(query), **pagination))
 
 
@@ -4258,7 +4258,7 @@ def create_ml_exclusion_command(args):
         outputs_prefix='CrowdStrike.MLExclusion',
         outputs_key_field='id',
         outputs=exclusion,
-        readable_output=tableToMarkdown('CrowdStrike Falcon machine learning exclusion', exclusion ),
+        readable_output=tableToMarkdown('CrowdStrike Falcon machine learning exclusion', exclusion),
     )
 
 
@@ -4433,7 +4433,7 @@ def apply_quarantine_file_action_command(args):
             hostname=argToList(args.get('hostname')),
             username=argToList(args.get('username')),
         )
-    
+
         ids = list_quarantined_files_id(args.get('filter'), search_args, pagination_args).get('resources')
 
     update_args = assign_params(
@@ -4443,7 +4443,7 @@ def apply_quarantine_file_action_command(args):
     )
     if not update_args:
         raise Exception('At least one update argument (action, comment) should be provided to update the quarantine file.')
-    
+
     apply_quarantined_files_action(update_args).get('resources')
 
     return CommandResults(

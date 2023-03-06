@@ -3061,7 +3061,7 @@ script:
         required: false
         isArray: true
     description: Updates an IOA exclusion. At least one argument is required in addition of the ID argument.
-    name: cs-falcon-update-ioa-exclusion.
+    name: cs-falcon-update-ioa-exclusion
     outputs:
       - contextPath: CrowdStrike.IOAExclusion
         description: ""
