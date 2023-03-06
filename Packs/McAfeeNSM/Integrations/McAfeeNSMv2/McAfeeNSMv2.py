@@ -364,7 +364,7 @@ class Client(BaseClient):
         return self._http_request(method='GET', url_suffix=url_suffix)
 
     def assign_interface_policy_request(self, domain_id, interface_id, firewall_policy,
-                                        firewall_port_policy, ips_policy, custom_policy_json):
+                                        firewall_port_policy, ips_policy, custom_policy_json_key, custom_policy_json_value):
         """ Assigns a policy to an interface.
             Args:
                 domain_id: int - The relevant domain id.
@@ -372,17 +372,24 @@ class Client(BaseClient):
                 firewall_policy: str - The firewall policy.
                 firewall_port_policy: str - The firewall port policy.
                 ips_policy: str - The IPS policy.
-                custom_policy_json: str - The custom policy json.
+                custom_policy_json_key: str - The custom policy json key.
+                custom_policy_json_value: str - The custom policy json value.
             Returns:
                 A suuccess or failure code
 
         """
         url_suffix = f'/domain/{domain_id}/policyassignments/interface/{interface_id}'
-        json_data = {"firewallPolicy": firewall_policy,
-                     "firewallPortPolicy": firewall_port_policy,
-                     "ipsPolicy": ips_policy,
-                     "custom_policy_json": custom_policy_json
-                     }
+        if custom_policy_json_key:
+            json_data = {"firewallPolicy": firewall_policy,
+                         "firewallPortPolicy": firewall_port_policy,
+                         "ipsPolicy": ips_policy,
+                         f"{custom_policy_json_key}": custom_policy_json_value
+                         }
+        else:
+            json_data = {"firewallPolicy": firewall_policy,
+                         "firewallPortPolicy": firewall_port_policy,
+                         "ipsPolicy": ips_policy}
+
         return self._http_request(method='PUT', url_suffix=url_suffix, json_data=json_data)
 
     def list_interface_policy_request(self, domain_id: int | None, interface_id: int | None) -> Dict:
@@ -739,7 +746,7 @@ def create_body_create_rule(rule_type: str, address: List, number: int,
 
 def create_body_create_rule_for_v10(rule_type: str, address: List, number: int,
                                     from_to_list: list[dict[str, Any | None]], state: str = "Enabled") -> tuple:
-    """ create part of the body for the command create_rule_object
+    """ create part of the body for the command create/update_rule_object
         Args:
             rule_type: str - The type of the rule.
             address: List - A list of addresses, if relevant.
@@ -754,7 +761,7 @@ def create_body_create_rule_for_v10(rule_type: str, address: List, number: int,
         {"value": single_address, "state": STATE_TO_NUMBER.get(state)}
         for single_address in address]
     # for paremets with a range, we need to add the state to the dictionary
-    from_to_list[0].update({"state": STATE_TO_NUMBER.get(state)})
+    from_to_list.append({"state": STATE_TO_NUMBER.get(state)})
 
     if 'HOST' in rule_type:
         return f'HostIPv{number}', {
@@ -1481,7 +1488,7 @@ def update_rule_object_command(client: Client, args: Dict) -> CommandResults:
     address = address_ip_v_4 if address_ip_v_4 else address_ip_v_6
     number = 4 if (address_ip_v_4 or from_to_address_ip_v_4) else 6
     from_to_list = from_to_address_ip_v_4 if from_to_address_ip_v_4 else from_to_address_ip_v_6
-    # create the body according to the version of the NSM
+    #create the body according to the version of the NSM
     if VERSION == "V.10x":
         d_name, extra_body = create_body_create_rule_for_v10(rule_type=rule_type, address=address,
                                                              number=number, from_to_list=from_to_list,
@@ -2211,14 +2218,18 @@ def assign_interface_policy_command(client: Client, args: Dict) -> CommandResult
     # Check if at least one policy is provided
     if len(args) < 3:
         raise DemistoException("Please provide at least one policy to assign")
+    custom_policy_json_key = next(iter(custom_policy_json)) if custom_policy_json else None
+    custum_policy_json_value = custom_policy_json[custom_policy_json_key] if custom_policy_json else None
 
     response = client.assign_interface_policy_request(domain_id=domain_id,
                                                       interface_id=interface_id,
                                                       firewall_policy=firewall_policy,
                                                       firewall_port_policy=firewall_port_policy,
                                                       ips_policy=ips_policy,
-                                                      custom_policy_json=custom_policy_json
+                                                      custom_policy_json_key=custom_policy_json_key,
+                                                      custom_policy_json_value=custum_policy_json_value
                                                       )
+
     return CommandResults(
         readable_output='Policy assigned successfully.',
         raw_response=response
@@ -2283,15 +2294,16 @@ def get_sensor_configuration_command(client: Client, args: Dict) -> CommandResul
 
     capitlize_response = {k[:1].upper() + k[1:]: v for k, v in response.items()}
     iner_dict = capitlize_response.get('PendingChanges')
-    add_on_dict={"IsPolicyConfigurationChanged": iner_dict.get("isPolicyConfigurationChanged")}
+    add_on_dict = {"IsPolicyConfigurationChanged": iner_dict.get("isPolicyConfigurationChanged")}
     add_on_dict.update({"IsConfigurationChanged": iner_dict.get("isConfigurationChanged")})
     add_on_dict.update({"IsMalwareConfigurationChanged": iner_dict.get("isMalwareConfigurationChanged")})
-    add_on_dict.update({"IsSignatureSetConfigurationChanged":iner_dict.get("isSignatureSetConfigurationChanged")})
-    add_on_dict.update({"IsSSLConfigurationChanged": iner_dict.get("sSSLConfigurationChanged")})
+    add_on_dict.update({"IsSignatureSetConfigurationChanged": iner_dict.get("isSignatureSetConfigurationChanged")})
+    add_on_dict.update({"IsSSLConfigurationChanged": iner_dict.get("isSSLConfigurationChanged")})
     add_on_dict.update({"IsBotnetConfigurationChanged": iner_dict.get("isBotnetConfigurationChanged")})
     add_on_dict.update({"IsGloablPolicyConfigurationChanged": iner_dict.get("isGloablPolicyConfigurationChanged")})
-    
+
     capitlize_response.update(add_on_dict)
+    capitlize_response.pop('PendingChanges')
     readable_output = tableToMarkdown(
         name='Sensor Configuration', t=capitlize_response, removeNull=True
     )
