@@ -434,7 +434,7 @@ tasks:
       id: fffa1f2a-559c-4ae9-8ce2-ad5aaf5c5914
       version: -1
       name: Oh, Snap!!! - Where are all the other tasks that we need?
-      description: Seems like SecOps did it again? It seems someone forgot to add all the required items for us to go and check the image… Maybe running Optical Character Recognition (OCR) can help us here?
+      description: "Seems like SecOps did it again? It seems someone forgot to add all the required items for us to go and check the image… Maybe running Optical Character Recognition (OCR) can help us here?\n\n I remember we had an automation started with !image-ocr-ex.... for such scenario :wink: "
       type: regular
       iscommand: false
       brand: ""
