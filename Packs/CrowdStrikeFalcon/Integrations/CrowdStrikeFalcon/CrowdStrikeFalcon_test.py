@@ -4531,4 +4531,4 @@ def test_apply_quarantine_file_action_command(requests_mock):
     results = apply_quarantine_file_action_command({'hostname': 'INSTANCE-1', 'comment': 'Added a test comment.'})
 
     assert results.readable_output == "The Quarantined File with IDs ['121212', '171717'] was successfully updated."
-    assert mock_request.last_request.text == '{"id": ["121212", "171717"], "comment": "Added a test comment."}'
+    assert mock_request.last_request.text == '{"ids": ["121212", "171717"], "comment": "Added a test comment."}'

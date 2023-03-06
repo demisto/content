@@ -4399,7 +4399,7 @@ def search_ioa_exclusion_command(args):
                                      headerTransform=underscoreToCamelCase, removeNull=True, sort_headers=False)
 
     return CommandResults(
-        outputs_prefix='CrowdStrike.MLExclusion',
+        outputs_prefix='CrowdStrike.IOAExclusion',
         outputs_key_field='id',
         outputs=exclusions,
         readable_output=human_readable,
@@ -4427,7 +4427,7 @@ def list_quarantined_file_command(args):
                                      headerTransform=underscoreToCamelCase, sort_headers=False, removeNull=True)
 
     return CommandResults(
-        outputs_prefix='CrowdStrike.MLExclusion',
+        outputs_prefix='CrowdStrike.QuarantinedFile',
         outputs_key_field='id',
         outputs=files,
         readable_output=human_readable,

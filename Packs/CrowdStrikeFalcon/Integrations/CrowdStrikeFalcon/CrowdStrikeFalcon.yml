@@ -149,8 +149,8 @@ configuration:
   section: Collect
   advanced: true
 description: The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API), enables fetching and resolving detections, searching devices, getting behaviors by ID, containing hosts, and lifting host containment.
-display: CrowdStrike Falcon -dev
-name: CrowdstrikeFalcon -dev
+display: CrowdStrike Falcon
+name: CrowdstrikeFalcon
 script:
   commands:
   - arguments:
@@ -170,7 +170,7 @@ script:
       description: The host name of the device.
       name: hostname
       predefined:
-      - 
+      - ''
     - auto: PREDEFINED
       description: 'The platform name of the device. Possible values are: Windows, Mac, and Linux.'
       name: platform_name
@@ -2906,8 +2906,8 @@ script:
       required: true
       isArray: true
       predefined:
-        - blocking
-        - extraction
+      - blocking
+      - extraction
     - description: Comment describing why the exclusions was created.
       name: comment
       required: false
@@ -3083,18 +3083,18 @@ script:
       name: sort
       required: false
       predefined:
-        - applied_globally.asc
-        - applied_globally.desc
-        - created_by.asc
-        - created_by.desc
-        - created_on.asc
-        - created_on.desc
-        - last_modified.asc
-        - last_modified.desc
-        - modified_by.asc
-        - modified_by.desc
-        - value.asc
-        - value.desc
+      - applied_globally.asc
+      - applied_globally.desc
+      - created_by.asc
+      - created_by.desc
+      - created_on.asc
+      - created_on.desc
+      - last_modified.asc
+      - last_modified.desc
+      - modified_by.asc
+      - modified_by.desc
+      - value.asc
+      - value.desc
     description: Get a list of ML Exclusions by specifying their IDs, value, or a specific filter.
     name: cs-falcon-search-ml-exclusion
     outputs:
@@ -3532,9 +3532,9 @@ script:
       name: action
       required: true
       predefined:
-        - delete
-        - release
-        - unrelease
+      - delete
+      - release
+      - unrelease
     - description: Comment to list along with action taken.
       name: comment
       required: true
