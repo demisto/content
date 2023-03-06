@@ -109,6 +109,8 @@ configuration:
   name: comment_tag_from_servicenow
   required: false
   type: 0
+  hidden:
+    - marketplacev2
 - additionalinfo: Choose the tag to add to an entry to mirror it as a work note in ServiceNow.
   defaultvalue: work_notes
   display: Work Note Entry Tag To ServiceNow
@@ -123,6 +125,8 @@ configuration:
   name: work_notes_tag_from_servicenow
   required: false
   type: 0
+  hidden:
+    - marketplacev2
 - additionalinfo: Choose the tag to add to an entry to mirror it as a file in ServiceNow.
   defaultvalue: ForServiceNow
   display: File Entry Tag To ServiceNow
