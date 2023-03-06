@@ -40,6 +40,9 @@ parameters:
   gcs_market_bucket:
     type: string
     default: "marketplace-dist"
+  cache-version:
+    type: string
+    default: v1  # Change this parameter to clear cache.
 
 references:
   environment: &environment
@@ -55,6 +58,30 @@ references:
       PULL_REQUEST_NUMBER: << pipeline.parameters.pr_number >>
       NIGHTLY_PARAMETER: << pipeline.parameters.nightly >>
       GCS_MARKET_BUCKET: << pipeline.parameters.gcs_market_bucket >>
+  
+  install_poetry: &install_poetry
+    - run:
+        name: Install Poetry
+        command: |
+          # in old images we need to remove existing poetry
+          rm -rf $HOME/.poetry/bin/poetry
+          sudo curl -sSL https://install.python-poetry.org | python3 -
+          poetry --version
+
+  install_build_dependencies: &install_build_dependencies
+    - python/install-packages: 
+        pkg-manager: "poetry"
+        args: "--with ci"
+        cache-version: << pipeline.parameters.cache-version >>
+        pre-install-steps:
+          - run:
+              name: Check if pyproject.toml is consistent with poetry.lock
+              command: poetry lock --check
+
+  install_node_ci: &install_node_ci
+    - node/install-packages:
+        cache-version: << pipeline.parameters.cache-version >>
+
 
   install_neo4j: &install_neo4j
     run:
@@ -84,7 +111,7 @@ references:
 
   container_config: &container_config
     docker:
-      - image: devdemisto/content-build:3.0.0.49672  # disable-secrets-detection
+      - image: cimg/python:3.10-node # disable-secrets-detection
         auth:
           username: $DOCKERHUB_USER
           password: $DOCKERHUB_PASSWORD
@@ -108,12 +135,6 @@ references:
       when: always
       command: |
         poetry --version
-        echo "installing venv"
-        poetry install --with ci
-        npm ci
-        source ./.venv/bin/activate
-        poetry lock --check
-
         # Check if CircleCI's config file and poetry files files are up to date
         # if poetry isn't up-to-date, checkout from origin/master.
         ./Tests/scripts/is_file_up_to_date.sh .circleci/config.yml $CIRCLE_BRANCH
@@ -145,9 +166,7 @@ references:
         chmod +x ./Tests/scripts/*
         chmod +x ./Tests/Marketplace/*
 
-        echo "Checking if pyproject.toml is consistent with poetry.lock"
-
-        # we still need to install even if cached. if cached, `poetry` will handle it
+        source ./.venv/bin/activate
 
         # store in bash env so we load our venv in each step
         echo 'source /home/circleci/project/.venv/bin/activate' >> $BASH_ENV
@@ -160,10 +179,6 @@ references:
         node --version
         npm --version
         demisto-sdk --version
-
-  restore_cache: &restore_cache
-    restore_cache:
-      key: virtualenv-venv-{{ checksum "pyproject.toml" }}-{{ checksum "poetry.lock" }}-{{ checksum "package-lock.json" }}
 
   remote_docker: &remote_docker
     setup_remote_docker:
@@ -305,13 +320,10 @@ jobs:
     <<: *environment
     steps:
       - checkout
-      - *restore_cache
+      - *install_poetry
+      - *install_build_dependencies
+      - *install_node_ci
       - *prepare_environment
-      - save_cache:
-          paths:
-            - .venv
-            - node_modules
-          key: virtualenv-venv-{{ checksum "pyproject.toml" }}-{{ checksum "poetry.lock" }}-{{ checksum "package-lock.json" }}
       - *get_contribution_pack
       - *persist_to_workspace
 
