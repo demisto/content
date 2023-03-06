@@ -168,7 +168,7 @@ class RecoClient(BaseClient):
                 }),
             )
         except Exception as e:
-            demisto.error(f"Validate API key ReadTimeout error: {str(e)}")
+            demisto.error(f"Update incident timeline error: {str(e)}")
             raise e
 
         demisto.info(f"Comment added to timeline of incident {incident_id}")
@@ -197,7 +197,7 @@ class RecoClient(BaseClient):
                 }),
             )
         except Exception as e:
-            demisto.error(f"Validate API key ReadTimeout error: {str(e)}")
+            demisto.error(f"Resolve visibility event error: {str(e)}")
             raise e
 
         demisto.info(f"Visibility event {entity_id} resolved")
@@ -276,7 +276,7 @@ class RecoClient(BaseClient):
                 }]}),
             )
         except Exception as e:
-            demisto.error(f"Validate API key ReadTimeout error: {str(e)}")
+            demisto.error(f"Set entry label relations error: {str(e)}")
             raise e
         demisto.info(f"Label {label_name} set to {label_status} for event {entry_id}")
 
