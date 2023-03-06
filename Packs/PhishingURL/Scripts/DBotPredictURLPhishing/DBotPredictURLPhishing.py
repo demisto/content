@@ -502,8 +502,8 @@ def get_prediction_single_url(model, url, force_model, who_is_enabled, debug):
     if len(res_rasterize) > 0 and isinstance(res_rasterize[0]['Contents'], str):
         return create_dict_context(url, url, MSG_FAILED_RASTERIZE, {}, SCORE_INVALID_URL, is_white_listed, {})
 
-    if KEY_IMAGE_RASTERIZE not in res_rasterize[0]['Contents'].keys() or KEY_IMAGE_HTML \
-            not in res_rasterize[0]['Contents'].keys():
+    if not res_rasterize[0]['Contents'].get(KEY_IMAGE_RASTERIZE) or \
+            not res_rasterize[0]['Contents'].get(KEY_IMAGE_HTML):
         return create_dict_context(url, url, MSG_SOMETHING_WRONG_IN_RASTERIZE, {}, SCORE_INVALID_URL, is_white_listed,
                                    {})
 
