@@ -82,7 +82,6 @@ references:
     - node/install-packages:
         cache-version: << pipeline.parameters.cache-version >>
 
-
   install_neo4j: &install_neo4j
     run:
       name: Install Neo4j
