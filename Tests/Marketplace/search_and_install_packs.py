@@ -1,5 +1,6 @@
 from __future__ import print_function
 
+import ast
 from functools import lru_cache
 import glob
 import json
@@ -140,15 +141,14 @@ def get_pack_dependencies(client: demisto_client, pack_data: dict, lock: Lock):
             method='POST',
             body=[pack_data],
             accept='application/json',
-            _request_timeout=None,
-            response_type='object'
+            _request_timeout=None
         )
 
         if 200 <= status_code < 300:
             dependencies_data: list = []
             dependants_ids = [pack_id]
-            response_data = response_data.get('dependencies', [])
-            create_dependencies_data_structure(response_data, dependants_ids, dependencies_data, dependants_ids)
+            reseponse_data = ast.literal_eval(response_data).get('dependencies', [])
+            create_dependencies_data_structure(reseponse_data, dependants_ids, dependencies_data, dependants_ids)
             dependencies_str = ', '.join([dep['id'] for dep in dependencies_data])
             if dependencies_data:
                 logging.debug(f'Found the following dependencies for pack {pack_id}: {dependencies_str}')
@@ -157,7 +157,8 @@ def get_pack_dependencies(client: demisto_client, pack_data: dict, lock: Lock):
             logging.error(f'Unable to find dependencies for {pack_id}.')
             return []
         else:
-            msg = response_data.get('message', '')
+            result_object = ast.literal_eval(response_data)
+            msg = result_object.get('message', '')
             raise Exception(f'Failed to get pack {pack_id} dependencies - with status code {status_code}\n{msg}\n')
     except Exception:
         logging.exception(f'The request to get pack {pack_id} dependencies has failed.')
@@ -189,24 +190,25 @@ def search_pack(client: demisto_client,
                                                                             path=f'/contentpacks/marketplace/{pack_id}',
                                                                             method='GET',
                                                                             accept='application/json',
-                                                                            _request_timeout=None,
-                                                                            response_type='object')
+                                                                            _request_timeout=None)
 
         if 200 <= status_code < 300:
+            result_object = ast.literal_eval(response_data)
 
-            if response_data and response_data.get('currentVersion'):
+            if result_object and result_object.get('currentVersion'):
                 logging.debug(f'Found pack "{pack_display_name}" by its ID "{pack_id}" in bucket!')
 
                 pack_data = {
-                    'id': response_data.get('id'),
-                    'version': response_data.get('currentVersion')
+                    'id': result_object.get('id'),
+                    'version': result_object.get('currentVersion')
                 }
                 return pack_data
 
             else:
                 raise Exception(f'Did not find pack "{pack_display_name}" by its ID "{pack_id}" in bucket.')
         else:
-            msg = response_data.get('message', '')
+            result_object = ast.literal_eval(response_data)
+            msg = result_object.get('message', '')
             err_msg = f'Search request for pack "{pack_display_name}" with ID "{pack_id}", failed with status code ' \
                       f'{status_code}\n{msg}'
             raise Exception(err_msg)
@@ -351,11 +353,11 @@ def install_packs(client: demisto_client,
                                                                                 body={'packs': packs,
                                                                                       'ignoreWarnings': True},
                                                                                 accept='application/json',
-                                                                                _request_timeout=request_timeout,
-                                                                                response_type='object')
+                                                                                _request_timeout=request_timeout)
 
             if status_code in range(200, 300) and status_code != 204:
-                packs_data = [{'ID': pack.get('id'), 'CurrentVersion': pack.get('currentVersion')} for pack in response_data]
+                packs_data = [{'ID': pack.get('id'), 'CurrentVersion': pack.get('currentVersion')} for pack in
+                              ast.literal_eval(response_data)]
                 logging.success(f'Packs were successfully installed on server {host}')
                 logging.debug(f'The packs that were successfully installed on server {host}:\n{packs_data}')
 
@@ -614,13 +616,13 @@ def upload_zipped_packs(client: demisto_client,
         response_data, status_code, _ = client.api_client.call_api(resource_path='/contentpacks/installed/upload',
                                                                    method='POST',
                                                                    auth_settings=auth_settings,
-                                                                   header_params=header_params, files=files,
-                                                                   response_type='object')
+                                                                   header_params=header_params, files=files)
 
         if 200 <= status_code < 300:
             logging.info(f'All packs from file {pack_path} were successfully installed on server {host}')
         else:
-            message = response_data.get('message', '')
+            result_object = ast.literal_eval(response_data)
+            message = result_object.get('message', '')
             raise Exception(f'Failed to install packs - with status code {status_code}\n{message}')
     except Exception:
         logging.exception('The request to install packs has failed.')
