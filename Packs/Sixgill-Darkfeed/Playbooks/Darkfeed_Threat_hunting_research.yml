@@ -997,10 +997,12 @@ tasks:
       '#none#':
       - "37"
     scriptarguments:
-      Endpoint_id:
+      Endpoint_hostname:
         complex:
-          root: PaloAltoNetworksXDR.Endpoint
-          accessor: endpoint_id
+          root: Endpoint
+          accessor: Hostname
+          transformers:
+          - operator: uniq
     separatecontext: true
     loop:
       iscommand: false
