@@ -108,6 +108,12 @@ references:
       when: always
       command: |
         poetry --version
+        echo "installing venv"
+        poetry install --with ci
+        npm ci
+        source ./.venv/bin/activate
+        poetry lock --check
+
         # Check if CircleCI's config file and poetry files files are up to date
         # if poetry isn't up-to-date, checkout from origin/master.
         ./Tests/scripts/is_file_up_to_date.sh .circleci/config.yml $CIRCLE_BRANCH
@@ -142,11 +148,6 @@ references:
         echo "Checking if pyproject.toml is consistent with poetry.lock"
 
         # we still need to install even if cached. if cached, `poetry` will handle it
-        echo "installing venv"
-        poetry install --with ci
-        npm ci
-        source ./.venv/bin/activate
-        poetry lock --check
 
         # store in bash env so we load our venv in each step
         echo 'source /home/circleci/project/.venv/bin/activate' >> $BASH_ENV
