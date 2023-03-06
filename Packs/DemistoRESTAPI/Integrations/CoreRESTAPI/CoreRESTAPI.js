@@ -4,10 +4,12 @@ if (serverURL.slice(-1) === '/') {
 }
 
 if (params.auth_id || (params.creds_apikey && params.creds_apikey.identifier)) {
-    serverURL = serverURL + '/xsoar'
+    if (!serverURL.endsWith('/xsoar')){
+        serverURL = serverURL + '/xsoar'
+    }
 }
 
-var marketplace_url = params.marketplace_url? params.marketplace_url : 'https://storage.googleapis.com/marketplace-dist/content/packs/'
+var marketplace_url = params.marketplace_url? params.marketplace_url : 'https://marketplace.xsoar.paloaltonetworks.com/'
 
 getTenantAccountName = function () {
     // example: for 'https://account-testing-ysdkvou:443/acc_Test' will return 'acc_Test'
@@ -130,7 +132,7 @@ var sendRequest = function(method, uri, body, raw) {
     }
     else if (params.auth_method == 'Advanced') {
         if (!auth_id) {
-            throw 'Core REST APIs - please choose "Standard Authentication method" or provide the Auth ID.';
+            throw 'Core REST APIs - please choose "Standard Authentication method" or provide the API Key ID.';
         }
         headers = getAdvancedAuthMethodHeaders(key, auth_id, 'application/json')
     }

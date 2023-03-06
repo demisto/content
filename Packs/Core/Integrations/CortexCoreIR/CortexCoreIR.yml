@@ -391,6 +391,102 @@ script:
     - contextPath: Endpoint.Vendor
       description: The integration name of the endpoint vendor.
       type: String
+  - arguments:
+      - description: The status of the endpoint to use as a filter.
+        name: status
+        auto: PREDEFINED
+        predefined:
+          - connected
+          - disconnected
+      - description: A comma-separated list of endpoint IDs to use as a filter.
+        isArray: true
+        name: endpoint_id_list
+      - description: |-
+          A comma-separated list of distribution package names or installation package names to use as a filter.
+          Example: dist_name1,dist_name2
+        isArray: true
+        name: dist_name
+      - description: |-
+          A comma-separated list of IP addresses to use as a filter.
+          Example: 8.8.8.8,1.1.1.1
+        isArray: true
+        name: ip_list
+      - description: A comma-separated list of group names to which the agent belongs to use as a filter.
+        isArray: true
+        name: group_name
+      - description: The endpoint platform to use as a filter.
+        isArray: true
+        name: platform
+        auto: PREDEFINED
+        predefined:
+          - windows
+          - linux
+          - macos
+          - android
+      - description: |-
+          A comma-separated list of alias names to use as a filter.
+          Examples: alias_name1,alias_name2
+        isArray: true
+        name: alias_name
+      - auto: PREDEFINED
+        description: Specifies whether the endpoint was isolated or unisolated to use as a filter.
+        name: isolate
+        predefined:
+          - isolated
+          - unisolated
+      - description: A comma-separated list of hostnames to use as a filter.
+        isArray: true
+        name: hostname
+      - description: |-
+          All the agents that were first seen after {first_seen_gte} to use as a filter.
+          Supported values:
+          1579039377301 (time in milliseconds)
+          "3 days" (relative date)
+          "2019-10-21T23:45:00" (date)
+        name: first_seen_gte
+      - description: |-
+          All the agents that were first seen before {first_seen_lte} to use as a filter.
+          Supported values:
+          1579039377301 (time in milliseconds)
+          "3 days" (relative date)
+          "2019-10-21T23:45:00" (date)
+        name: first_seen_lte
+      - description: |-
+          All the agents that were last seen after {last_seen_gte} to use as a filter.
+          Supported values:
+          1579039377301 (time in milliseconds)
+          "3 days" (relative date)
+          "2019-10-21T23:45:00" (date)
+        name: last_seen_gte
+      - description: |-
+          All the agents that were last seen before {last_seen_lte} to use as a filter.
+          Supported values:
+          1579039377301 (time in milliseconds)
+          "3 days" (relative date)
+          "2019-10-21T23:45:00" (date)
+        name: last_seen_lte
+      - name: username
+        description: The usernames to use as a filter. Accepts a single user, or comma-separated list of usernames.
+        isArray: true
+      - name: new_alias_name
+        required: true
+        description: |-
+          The alias name to change to.
+          Note: If you send an empty field, (e.g new_alias_name=\"\") the current alias name is deleted.
+      - name: scan_status
+        description: The scan status of the endpoint to use as a filter.
+        auto: PREDEFINED
+        predefined:
+          - none
+          - pending
+          - in_progress
+          - canceled
+          - aborted
+          - pending_cancellation
+          - success
+          - error
+    description: Gets a list of endpoints according to the passed filters, and changes their alias name. Filtering by multiple fields will be concatenated using the AND condition (OR is not supported).
+    name: core-endpoint-alias-change
   - deprecated: false
     description: Gets a list of all the agent versions to use for creating a distribution list.
     execution: false
@@ -3533,7 +3629,7 @@ script:
   script: '-'
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.10.9.46807
+  dockerimage: demisto/python3:3.10.10.48392
 tests:
 - No tests
 fromversion: 6.2.0
