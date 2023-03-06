@@ -2439,18 +2439,17 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
         if 'Mirrored from Cortex XSOAR' not in note.get('value'):
             comments_context = {'comments_and_work_notes': note.get('value')}
 
-            tags = str(note.get('tags', 'none'))
-            if tags == 'none':
-                if str(note.get('element')) == 'comments':
-                    tags = [params.get('comment_tag_from_servicenow')]
+            if (tagsstr := note.get('tags', 'none')) == 'none':
+                if note.get('element') == 'comments':
+                    tags = [params.get('comment_tag_from_servicenow', 'CommentFromServiceNow')]
                 else:
-                    tags = [params.get('work_notes_tag_from_servicenow')]
+                    tags = [params.get('work_notes_tag_from_servicenow', 'WorkNoteFromServiceNow')]
             else:
                 if str(note.get('element')) == 'comments':
-                    tags = tags + params.get('comment_tag_from_servicenow')
+                    tags = tagsstr + params.get('comment_tag_from_servicenow', 'CommentFromServiceNow')
                     tags = argToList(tags)
                 else:
-                    tags = tags + params.get('work_notes_tag_from_servicenow')
+                    tags = tagsstr + params.get('work_notes_tag_from_servicenow', 'WorkNoteFromServiceNow')
                     tags = argToList(tags)
 
             entries.append({
