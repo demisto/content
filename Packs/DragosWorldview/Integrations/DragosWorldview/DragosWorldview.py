@@ -4,7 +4,7 @@ from typing import Any, Callable, Dict, Tuple
 
 import dateparser
 import demistomock as demisto  # noqa: F401
-import requests
+import urllib3
 from CommonServerPython import *  # noqa: F401
 
 
@@ -17,7 +17,7 @@ from CommonServerPython import *  # noqa: F401
 STATUS_TO_RETRY = [500, 501, 502, 503, 504]
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint:disable=no-member
+urllib3.disable_warnings()  # pylint:disable=no-member
 
 
 class Client(BaseClient):

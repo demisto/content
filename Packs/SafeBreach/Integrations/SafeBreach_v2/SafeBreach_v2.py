@@ -5,7 +5,9 @@ from typing import List, Dict, Optional, Any, Union
 from CommonServerPython import *
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+import urllib3
+urllib3.disable_warnings()
+
 """"" MAPPERS """
 CATEGORY_MAPPER: Dict[str, List[int]] = {
     'Network Access': [1, 2, 3, 4, 19, 20, 21, 22],
