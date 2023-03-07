@@ -1,4 +1,6 @@
-{"objects": [{"created": "2021-12-08T09:32:24.102219Z",
+{"more": true,
+ "next": "4",
+ "objects": [{"created": "2021-12-08T09:32:24.102219Z",
               "id": "ipv4-addr--cbd67181-b9f8-595b-8bc3-3971e34fa1cc",
               "modified": "2021-05-02T11:02:28.615431Z",
               "spec_version": "2.1",

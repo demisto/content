@@ -618,9 +618,7 @@ def test_taxii21_objects_with_relationships(mocker, taxii2_server_v21):
     mock_iocs = util_load_json('test_data/sort_ip_iocs.json')
     mock_entity_b_iocs = util_load_json('test_data/entity_b_iocs.json')
     mocker.patch.object(demisto, 'searchIndicators', side_effect=[mock_iocs,
-                                                                  mock_entity_b_iocs.get('entityB_1'),
-                                                                  mock_entity_b_iocs.get('entityB_2'),
-                                                                  mock_entity_b_iocs.get('entityB_3')])
+                                                                  mock_entity_b_iocs])
 
     mocker.patch.object(demisto, 'params', return_value={'res_size': '4'})
     with APP.test_client() as test_client:
