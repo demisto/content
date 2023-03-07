@@ -103,3 +103,9 @@ ignore=PB118
 
 [file:playbook-Retrieve_File_from_Endpoint_-_Generic_README.md]
 ignore=RM108
+
+[file:playbook-Get_File_Sample_From_Path_-_Generic_README.md]
+ignore=RM108
+
+[file:playbook-Get_File_Sample_By_Hash_-_Generic_v2_README.md]
+ignore=RM108
