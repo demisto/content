@@ -1,0 +1,24 @@
+{
+  "ContentsFormat": "text",
+  "HumanReadable": "### Parsed Data Table\nIPs |Domains |\n- |- |\nValue|Value|\nwww.example.com|www.example.com|\nwww.example.org|www.example.org|\n1.1.1.1|\n8.8.8.8|\n",
+  "EntryContext": {
+    "IP": [
+      {
+        "Address": "1.1.1.1"
+      },
+      {
+        "Address": "8.8.8.8"
+      }
+    ],
+    "Domain": [
+      {
+        "Name": "www.example.com"
+      },
+      {
+        "Name": "www.example.org"
+      }
+    ]
+  },
+  "Type": 1,
+  "Contents": "\ufeffType,Value\nDomain,www.example.com\nDomain,www.example.org\nIP,1.1.1.1\nIP,8.8.8.8\n"
+}
