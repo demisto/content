@@ -474,7 +474,7 @@ def test_list_incidents_command(mocker, requests_mock):
     ('1', '1.1.1.1', [{"host": {"host": "1.1.1.1"}}, {"host": {"host": "2.2.2.2"}}], [{"host": {"host": "1.1.1.1"}}]),
     ('1', '', [{"host": {"host": "1.1.1.1"}}, {"host": {"host": "2.2.2.2"}}],
      [{"host": {"host": "1.1.1.1"}}, {"host": {"host": "2.2.2.2"}}]),
-    ('1', '', [{}], [{}]),
+    ('1', '', [{}], []),
 ])
 def test_search_indicator_command(mocker, requests_mock, list_id_to_search, filter_to_apply, indicators_to_return,
                                   expected_result):
