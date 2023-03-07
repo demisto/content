@@ -767,7 +767,7 @@
             "integrations": "Cortex XDR - IR",
             "playbookID": "Test XDR Playbook execute script commands",
             "fromversion": "4.1.0",
-            "timeout": 2500
+            "timeout": 3000
         },
         {
             "integrations": "Cortex XDR - IR",
@@ -785,7 +785,7 @@
             "integrations": "Cortex XDR - IR",
             "playbookID": "Test XDR Playbook retrieve file command",
             "fromversion": "4.1.0",
-            "timeout": 2500
+            "timeout": 3500
         },
         {
             "integrations": "Cortex XDR - IOC",
@@ -1414,7 +1414,9 @@
         },
         {
             "integrations": "WildFire-v2",
-            "playbookID": "Detonate URL - WildFire-v2 - Test"
+            "playbookID": "Detonate URL - WildFire-v2 - Test",
+            "timeout": 200
+
         },
         {
             "integrations": "WildFire-v2",
@@ -2155,11 +2157,6 @@
             "timeout": 1000
         },
         {
-            "integrations": "carbonblack-v2",
-            "playbookID": "Carbon Black Response Test",
-            "fromversion": "5.0.0"
-        },
-        {
             "integrations": "VMware Carbon Black EDR v2",
             "playbookID": "Carbon Black Edr - Test",
             "is_mockable": false,
@@ -2350,7 +2347,7 @@
         },
         {
             "integrations": [
-                "carbonblack-v2",
+                "VMware Carbon Black EDR v2",
                 "carbonblackliveresponse",
                 "Cylance Protect v2"
             ],
@@ -3411,6 +3408,7 @@
         },
         {
             "playbookID": "EvaluateMLModllAtProduction-Test",
+            "timeout": 500,
             "fromversion": "5.5.0"
         },
         {
@@ -4474,7 +4472,7 @@
             "integrations": [
                 "CrowdStrike Falcon X"
             ],
-            "timeout": 1800
+            "timeout": 2000
         },
         {
             "playbookID": "CrowdStrike_Falcon_X_-Test-Detonate_File",

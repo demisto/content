@@ -5,10 +5,10 @@ from datetime import timezone
 from typing import List, Dict, Any
 
 import json
-import requests
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+import urllib3
+urllib3.disable_warnings()
 
 
 class Client(BaseClient):
