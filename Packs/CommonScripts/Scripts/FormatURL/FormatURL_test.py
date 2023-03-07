@@ -139,6 +139,7 @@ FORMAT_PATH = [
     ('https://test.co.uk/test.html', 'https://test.co.uk/test.html'),  # disable-secrets-detection
     ('www.test.com/check', 'www.test.com/check'),  # disable-secrets-detection
     ('https://test.test/Test\\"', 'https://test.test/Test'),  # disable-secrets-detection
+    ('https://www.test.com/a\\', 'https://www.test.com/a'),  # disable-secrets-detection
 ]
 
 FORMAT_QUERY = [
