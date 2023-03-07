@@ -376,14 +376,16 @@ jobs:
 workflows:
   version: 2
   commit:
+    when:
+      matches:
+        # matching the environment variable "CIRCLE_BRANCH" from the setup environment step.
+        pattern: /^pull.*/
+        value: $CIRCLE_BRANCH
     jobs:
       - Setup Environment
       - Run Unit Testing And Lint:
           requires:
             - Setup Environment
-          filters:
-            branches:
-              only: /^pull.*/
           matrix:
             parameters:
               dockerimageflag: [ "native:ga", "native:maintenance", "native:dev", "from-yml" ]
