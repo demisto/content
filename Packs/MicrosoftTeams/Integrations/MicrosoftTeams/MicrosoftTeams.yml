@@ -1,4 +1,4 @@
-category: Messaging
+category: Messaging and Conferencing
 sectionOrder:
 - Connect
 - Collect
@@ -738,7 +738,7 @@ script:
     execution: false
     name: microsoft-teams-generate-login-url
     arguments: []
-  dockerimage: demisto/teams:1.0.0.48817
+  dockerimage: demisto/teams:1.0.0.49653
   feed: false
   isfetch: false
   longRunning: true

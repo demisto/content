@@ -1,4 +1,4 @@
-category: Deception
+category: Deception & Breach Simulation
 commonfields:
   id: Smokescreen IllusionBLACK
   version: -1
@@ -38,10 +38,7 @@ configuration:
   name: incidentType
   required: false
   type: 13
-description: Smokescreen IllusionBLACK is a deception-based threat defense platform
-  designed to accurately and efficiently detect targeted threats including reconnaissance,
-  lateral movement, malware-less attacks, social engineering, Man-in-the-Middle attacks,
-  and ransomware in real-time.
+description: Smokescreen IllusionBLACK is a deception-based threat defense platform designed to accurately and efficiently detect targeted threats including reconnaissance, lateral movement, malware-less attacks, social engineering, Man-in-the-Middle attacks, and ransomware in real-time.
 display: Smokescreen IllusionBLACK
 name: Smokescreen IllusionBLACK
 script:
@@ -187,7 +184,7 @@ script:
     - contextPath: IllusionBlack.Event.type
       description: IllusionBLACK Event Attack Type.
       type: Unknown
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.10.48392
   feed: false
   isfetch: true
   longRunning: false
@@ -199,3 +196,5 @@ script:
 fromversion: 5.0.0
 defaultclassifier: Smokescreen IllusionBLACK
 defaultmapperin: Smokescreen IllusionBLACK-mapper
+tests:
+- No tests (auto formatted)

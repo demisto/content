@@ -1,4 +1,4 @@
-category: Network Security
+category: Email
 sectionOrder:
 - Connect
 - Collect
@@ -1606,7 +1606,7 @@ script:
     - contextPath: Proofpoint.URL.success
       description: Indicates whether the URL could successfully be decoded.
       type: Boolean
-  dockerimage: demisto/python3:3.10.9.45313
+  dockerimage: demisto/python3:3.10.10.48392
   feed: false
   isfetch: true
   longRunning: false
