@@ -1096,7 +1096,7 @@ def validate_url_template(url: str) -> str:
         str: The updated URL.
     """
     correct_prefix = 'http://'
-    correct_suffix = '.com:80'
+    correct_suffix = '.com:80/'
 
     if not url.startswith(correct_prefix):
         if url.startswith('www.'):
@@ -1105,10 +1105,11 @@ def validate_url_template(url: str) -> str:
             url = url.replace('https://', correct_prefix)
         else:
             url = correct_prefix + url
-    if not url.endswith(correct_suffix) and not url.endswith(
-            f'{correct_suffix}/'):
-        if url.endswith('.com'):
-            url += ':80'
+    if not url.endswith(correct_suffix):
+        if url.endswith('.com:80'):
+            url += '/'
+        elif url.endswith('.com'):
+            url += ':80/'
         else:
             raise ValueError(
                 "Threat Grid only supports for URL suffix '.com'. ")
