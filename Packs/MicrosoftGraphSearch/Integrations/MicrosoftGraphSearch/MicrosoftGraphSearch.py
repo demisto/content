@@ -32,11 +32,11 @@ def create_search_request_body(query_string: str, entity_type: str):
 
 
 class MsGraphClient:
-    def __init__(self, tenant_id, auth_and_token_url, enc_key, app_name, base_url, use_ssl, proxy,
+    def __init__(self, tenant_id, auth_and_token_url, enc_key, base_url, use_ssl, proxy,
                  ok_codes, refresh_token, auth_code, redirect_uri, certificate_thumbprint: Optional[str] = None,
                  private_key: Optional[str] = None):
         self.ms_client = MicrosoftClient(self_deployed=True, tenant_id=tenant_id, auth_id=auth_and_token_url,
-                                         enc_key=enc_key, app_name=app_name, base_url=base_url, verify=use_ssl,
+                                         enc_key=enc_key, base_url=base_url, verify=use_ssl,
                                          proxy=proxy, ok_codes=ok_codes, refresh_token=refresh_token,
                                          auth_code=auth_code, redirect_uri=redirect_uri,
                                          grant_type=AUTHORIZATION_CODE, certificate_thumbprint=certificate_thumbprint,
@@ -93,10 +93,9 @@ def main():     # pragma: no cover
     refresh_token = params.get('creds_refresh_token', {}).get('password')
     auth_and_token_url = params.get('creds_auth_id', {}).get('password')
     enc_key = params.get('creds_enc_key', {}).get('password')
-    certificate_thumbprint = params.get('creds_certificate', {}).get('identifier') or params.get('certificate_thumbprint')
+    certificate_thumbprint = params.get('creds_certificate', {}).get('identifier')
     private_key = replace_spaces_in_credential(params.get('creds_certificate', {}).get('password')) or params.get('private_key')
     auth_code = params.get('creds_auth_code', {}).get('password')
-    app_name = 'ms-graph-search'
 
     if not enc_key:
         raise DemistoException('Key must be provided. For further information see '
@@ -107,12 +106,11 @@ def main():     # pragma: no cover
     # params related to self deployed
     tenant_id = refresh_token
 
-    # params related to oproxy
     # In case the script is running for the first time, refresh token is retrieved from integration parameters,
     # in other case it's retrieved from integration context.
     refresh_token = get_integration_context().get('current_refresh_token') or refresh_token
 
-    client = MsGraphClient(tenant_id, auth_and_token_url, enc_key, app_name, base_url, use_ssl, proxy,
+    client = MsGraphClient(tenant_id, auth_and_token_url, enc_key, base_url, use_ssl, proxy,
                            ok_codes, refresh_token, auth_code=auth_code, private_key=private_key,
                            redirect_uri=params.get('redirect_uri', ''), certificate_thumbprint=certificate_thumbprint)
     try:
@@ -123,6 +121,8 @@ def main():     # pragma: no cover
             raise Exception("Please use !msgraph-search-test instead")
         if command == 'msgraph-search-test':
             return_results(client.test_connection())
+        elif command == 'msgraph-search-generate-login-url':
+            return_results(generate_login_url(client))
         elif command == 'msgraph-search-content':
             return_results(client.search_content_command(demisto.args()))
     except Exception as e:
