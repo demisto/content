@@ -1,4 +1,4 @@
-Deprecated. Use `Get File Sample By Hash - Generic v3` instead. Returns a file sample to the war-room from a path on an endpoint using one or more integrations
+Deprecated. Use `Get File Sample From Path - Generic V3` instead. Returns a file sample to the war-room from a path on an endpoint using one or more integrations
 
 inputs:
 * UseD2 - if "True", use Demisto Dissolvable Agent (D2) to return the file (default: False)
