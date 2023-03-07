@@ -170,3 +170,4 @@ ssh
 ParseYAML
 Parses
 YAML
+IndexError
