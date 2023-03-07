@@ -677,3 +677,18 @@ def test_parse_domain_indicator():
 
     assert result.outputs_key_field == 'domain'
     assert result.outputs_prefix == 'ThreatGrid.Domain'
+
+
+@pytest.mark.parametrize('url', [
+    'http://test.com:80',
+    'https://test.com:80',
+    'http://test.com',
+    'test.com',
+])
+def test_validate_url_template(url):
+    """ Parse domain indicator.
+    """
+    from ThreatGridv2 import validate_url_template
+    result = validate_url_template(url)
+
+    assert result == 'http://test.com:80'
