@@ -1284,9 +1284,11 @@ def is_bot_in_chat(chat_id):
     """
     check if the bot is already in the chat.
     """
-    url_suffix = f"v1.0/chats/{chat_id}/installedApps?$expand=teamsApp," \
-                 f"teamsAppDefinition&$filter=teamsApp/externalId eq '{BOT_ID}'"
-    res = http_request('GET', urljoin(GRAPH_BASE_URL, url_suffix))
+
+    url_suffix = f"v1.0/chats/{chat_id}/installedApps"
+    res = http_request('GET', urljoin(GRAPH_BASE_URL, url_suffix),
+                       params={"$expand": "teamsApp,teamsAppDefinition",
+                               "$filter": "teamsApp/externalId eq '{BOT_ID}'"})
     return True if res.get('value') else False      # type: ignore
 
 
@@ -1301,8 +1303,8 @@ def add_bot_to_chat(chat_id: str):  # pragma: no cover
     # bot is already part of the chat
     if is_bot_in_chat(chat_id):
         return
-
-    res = http_request('GET', f"{GRAPH_BASE_URL}/v1.0/appCatalogs/teamsApps?$filter=externalId eq '{BOT_ID}'")
+    res = http_request('GET', f"{GRAPH_BASE_URL}/v1.0/appCatalogs/teamsApps",
+                       params={"$filter": f"externalId eq '{BOT_ID}'"})
     app_data = res.get('value')[0]      # type: ignore
     bot_internal_id = app_data.get('id')
 
