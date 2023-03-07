@@ -376,7 +376,8 @@ jobs:
 workflows:
   version: 2
   commit:
-    if: '!(echo "$CIRCLE_BRANCH" | grep -E "pull/[0-9]+")'
+    when: 
+    condition: '(echo "$CIRCLE_BRANCH" | grep -E "pull/[0-9]+")'
     jobs:
       - Setup Environment
       - Run Unit Testing And Lint:
