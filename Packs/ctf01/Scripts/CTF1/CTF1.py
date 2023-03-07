@@ -94,7 +94,7 @@ def main():
         #General Error handeling
         else:
             if (args.get("question_ID") ==  "03"):
-                return_error(f'In case the playbook is in "Quite Mode", no output will be displayed in the war-room.\n\nYou can skip this task if you want or re-run it with <none>. To re-run this task -> Click on "Complete Task" -> fill out the Secret Value -> click on the \'Run script now\' :). ')
+                return_error(f'In case the playbook is in "Quiet Mode", no output will be displayed in the war-room.\n\nYou can skip this task if you want or re-run it with <none>. To re-run this task -> Click on "Complete Task" -> fill out the Secret Value -> click on the \'Run script now\' :). ')
             else:
                 #return_error(f'Nope... try again!!!\nRemember to overwrite the "secret" argument when you are re-running the task :)')
                     demisto.results({
