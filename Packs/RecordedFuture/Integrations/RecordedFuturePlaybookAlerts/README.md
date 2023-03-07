@@ -23,6 +23,26 @@ This integration was integrated and tested with version 1.0 of RecordedFuturePla
 
 4. Click **Test** to validate the URLs, token, and connection.
 
+## Pre-Process Rule
+
+The integration pulls in Playbook alerts from Recorded Future base on its updates, this creates the need for a preprocessing rule that updates existing incidents instead of creating duplicates. Follow the guidlines below to configure the preprocessing rule.
+
+1. Navigate to **Settings** > **Integrations** > **Pre-Process Rules**
+2. Click **New Rule**
+3. Enter a name for the rule
+4. In the Conditions for Incoming Incident section, enter the following:
+**Name** - **Includes** - **Recorded Future Playbook Alert**
+5. In the Action section, select: Drop and update
+6. In the Update section, choose:
+**Link to** - **Oldest incident** - **Created within the last** - *Your desired timeframe*
+7. In the rule for update, choose:
+**DbotMirrorId** - **Is identical (Incoming Incident)** - **to incoming incident**
+
+![Pre-process Rule](https://raw.githubusercontent.com/demisto/content/master/Packs/RecordedFuture/doc_files/playbook_alerts_pre_process_rule.png)
+
+> The configuration of the preprocessing rule is optional, but highly recommended.
+
+
 ## Commands
 
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
