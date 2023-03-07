@@ -36,7 +36,8 @@ def test_check_tld(address, valid):
     ('\\u003ctest@test.com', 'test@test.com'),
     ('"test@test.com"', 'test@test.com'),
     ('<test@test.com>', 'test@test.com'),
-    ('test', '')
+    ('test', ''),
+    ('co/ed/trn/update?a=b&email=user@test6.net', 'user@test6.net'),
 ])  # noqa: E124
 def test_extract_email(input, output):
     assert extract_email(input) == output

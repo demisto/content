@@ -20,6 +20,9 @@ def extract_email(email_address: str) -> str:
     """
     email_address = email_address.lower()
 
+    if {"=", "?"}.issubset(set(email_address)):
+        email_address = extract_email_from_url_query(email_address)
+
     email_format = re.compile("[<(\[{\"\'.]*"
                               "(?:(?:\\\\|\^{3})u[a-f\d]{4})?"
                               "([\w.!#$%&'*+/=?^_`{|}~-]{1,64}"
@@ -27,7 +30,7 @@ def extract_email(email_address: str) -> str:
                               "[A-Za-z]{2,}){1,2})", re.IGNORECASE)
 
     try:
-        return re.findall(email_format, email_address)[0]
+        return re.match(email_format, email_address).group(1)
 
     except IndexError:
         return ''
@@ -60,6 +63,28 @@ def refang_email(email_address: str) -> str:
 
     """
     return email_address.replace("[@]", "@").replace("[.]", ".") if check_tld(email_address) else ''
+
+
+def extract_email_from_url_query(email_address: str) -> str:
+    """
+    As most characters are valid in the content part of an email the regex can sometimes
+    catch a full URL path. This function will extract only the email from the path and query
+    that were returned.
+
+    Args:
+        email_address (str): extracted raw email address (with query and path)
+
+    Returns:
+        str: only the email address
+    """
+
+    try:
+        # We revert the string to be able to use a regex group from the end of the string
+        # to the first "=" that comes before it.
+        return re.match('(.*?)=', email_address[::-1]).group(1)[::-1]
+
+    except IndexError:
+        return ''
 
 
 def main():
