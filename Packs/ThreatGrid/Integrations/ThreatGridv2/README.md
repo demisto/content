@@ -664,7 +664,7 @@ Returns data regarding the annotations of the analysis
 
 ### threat-grid-url-search
 ***
-Search urls. Please provide the URL in the format http://example.com:80/ .
+Search urls. Please provide the URL in the format http://example.com:80/ (note that ThreatGris only support '.com' domains).
 
 
 #### Base Command
@@ -674,7 +674,7 @@ Search urls. Please provide the URL in the format http://example.com:80/ .
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| url | The URL to search for. | Required | 
+| url | The URL to search for (please provide the URL in the format http://example.com:80/. note that ThreatGris only support '.com' domains). | Required |
 
 
 #### Context Output
