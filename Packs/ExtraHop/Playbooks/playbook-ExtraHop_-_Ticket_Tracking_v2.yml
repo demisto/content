@@ -54,7 +54,7 @@ tasks:
       detection_id:
         complex:
           root: foundIncidents.CustomFields
-          accessor: extrahoprevealxetectionid
+          accessor: extrahoprevealxdetectionid
       incident_close_reason:
         complex:
           root: foundIncidents
