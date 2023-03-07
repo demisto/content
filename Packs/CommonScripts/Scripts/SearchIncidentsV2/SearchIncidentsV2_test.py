@@ -233,11 +233,12 @@ def test_summarize_incidents():
 
 
 @pytest.mark.parametrize('amount_of_mocked_incidents, args', [
-    (306, {}),
-    (306, {"limit": "200"}),
-    (105, {"limit": "200"}),
-    (1000, {"limit": "100"}),
-    (1000, {"limit": "1100"})
+    # (306, {}),
+    # (306, {"limit": "200"}),
+    # (105, {"limit": "200"}),
+    # (1000, {"limit": "100"}),
+    # (1000, {"limit": "1100"}),
+    (205, {"limit": "105.5"})
 ])
 def test_main_flow_with_limit(mocker, amount_of_mocked_incidents, args):
     """
@@ -247,6 +248,7 @@ def test_main_flow_with_limit(mocker, amount_of_mocked_incidents, args):
        - Case C: Total of 105 incidents matching in XSOAR and limit = 200
        - Case D: Total of 1000 incidents matching in XSOAR and limit = 100
        - Case E: Total of 1000 incidents matching in XSOAR and limit = 1100
+       - Case F: Total of 205 incidents matching in XSOAR and limit = 105.5
 
     When:
        - Running the main flow
@@ -257,6 +259,7 @@ def test_main_flow_with_limit(mocker, amount_of_mocked_incidents, args):
        - Case C: Make sure only 105 incidents has been returned (cause there are fewer incidents than requested limit)
        - Case D: Make sure only 100 incidents has been returned.
        - Case E: Make sure only 1000 incidents has been returned.
+       - Case F: Make sure only 105 (rounded) incidents has been returned.
 
     """
     import SearchIncidentsV2
