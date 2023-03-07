@@ -31,7 +31,7 @@ def executeCommand(command, args=None):
     elif command == 'rasterize':
         url = args.get('url')
         html_data = "" if url == "bad_url.com" else "html"
-        return [{'Contents': {KEY_IMAGE_RASTERIZE: "img",
+        return [{'Contents': {KEY_IMAGE_RASTERIZE: "iVBORwrkJggg==",
                               KEY_IMAGE_HTML: html_data,
                               KEY_CURRENT_URL_RASTERIZE: url},
                  'Type': 'note'}]
@@ -131,15 +131,10 @@ def test_missing_url(mocker):
 def test_no_html_data(mocker):
     """
     Given: URL without HTML data
-    When: 
+    When: Calling the script
+    Then: Make sure MSG_SOMETHING_WRONG_IN_RASTERIZE is retrieved
     """
     url = 'bad_url.com'
-    model_prediction = {MODEL_KEY_URL_SCORE: 0.01,
-                        MODEL_KEY_LOGO_FOUND: False,
-                        MODEL_KEY_SEO: False,
-                        MODEL_KEY_LOGO_IMAGE_BYTES: "",
-                        MODEL_KEY_LOGIN_FORM: True
-                        }
     model_mock = PhishingURLModelMock()
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
     mocker.patch.object(demisto, 'args', return_value={'urls': url, 'numberDetailedReports': '1'})
@@ -147,10 +142,8 @@ def test_no_html_data(mocker):
     mocker.patch.object(model_mock, 'top_domains', return_value=("", 0), create=True)
     mocker.patch.object(model_mock, 'major', return_value=0, create=True)
     mocker.patch.object(model_mock, 'minor', return_value=0, create=True)
-    mocker.patch.object(model_mock, 'predict', return_value=model_prediction, create=True)
-    mocker.patch.object(model_mock, 'logos_dict', return_value={}, create=True)
-    _, _, msg_list = main()
-    assert MSG_SOMETHING_WRONG_IN_RASTERIZE in msg_list
+    general_summary, _, _ = main()
+    assert MSG_SOMETHING_WRONG_IN_RASTERIZE in general_summary[0]['Final Verdict']
 
 
 def test_white_list_not_force(mocker):
