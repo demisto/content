@@ -866,7 +866,7 @@ class PackAutoBumper:
     def set_pr_changed_rn_related_data(self):
         """Opens release notes and bc changes files and saves its text."""
         self._rn_text = self._last_rn_file_path.read_text()
-        self._has_bc = self._bc_file.is_file()
+        self._has_bc = self._bc_file.exists()
         if self._has_bc:
             self._bc_text = self._bc_file.read_text()
 

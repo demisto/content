@@ -92,13 +92,13 @@ class Git:
         self.changed_metadata_files = [
             f.filename
             for f in self.files
-            if "pack_metadata.json" in Path(f.filename).parts
+            if Path(f.filename).name != "pack_metadata.json" 
         ]
         self.additional_files = [
             f.filename
             for f in self.files
             if "ReleaseNotes" not in Path(f.filename).parts
-            and "pack_metadata.json" not in Path(f.filename).parts
+            Path(f.filename).name != "pack_metadata.json" 
         ]
 
     def merge(self, *args):
@@ -584,11 +584,9 @@ def test_pack_auto_bumper(tmp_path, mocker):
         - Validate that new rn file created as expected.
     """
     pack = tmp_path / "Packs"
-    pack.mkdir()
     pack_path = pack / "MyPack"
-    pack_path.mkdir()
     rn_path = pack_path / "ReleaseNotes"
-    rn_path.mkdir()
+    rn_path.mkdir(parents=True)
     rn_file = rn_path / "1_0_5.md"
     bc_file = rn_path / "1_0_5.json"
     metadata_file = pack_path / "pack_metadata.json"
