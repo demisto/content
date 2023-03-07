@@ -26,12 +26,6 @@ configuration:
   name: creds_certificate
   required: false
   type: 9
-- additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
-  display: Certificate Thumbprint (optional for self-deployed Azure app)
-  hidden: true
-  name: certificate_thumbprint
-  required: false
-  type: 4
 - additionalinfo: Used for certificate authentication. The private key of the registered certificate.
   display: Private Key
   hidden: true
@@ -39,10 +33,10 @@ configuration:
   required: false
   type: 14
 - display: ""
-  displaypassword: Authorization code
+  displaypassword: Authorization code (run msgraph-generate-login-url command)
   hiddenusername: true
   name: creds_auth_code
-  required: true
+  required: false
   type: 9
 - display: Application redirect URI
   name: redirect_uri
@@ -87,6 +81,9 @@ script:
     outputs:
     - contextPath: SearchContent
       description: OneDrive or SharePoint content returned from the search
+  - name: msgraph-search-generate-login-url
+    arguments: []
+    description: Generate the login url used for Authorization code flow.
   dockerimage: demisto/crypto:1.0.0.49599
   runonce: false
   script: ''
