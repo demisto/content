@@ -36,11 +36,21 @@ PRODUCT = 'security'
 
 class Client(BaseClient):
 
-    def __init__(self, server_url: str, api_token: str, proxy: bool = False, verify: bool = False):
-        self.api_token = api_token
-        super().__init__(base_url=server_url, verify=verify, proxy=proxy)
+    def __init__(self, server_url: str, headers: Dict, proxy: bool = False, verify: bool = False):
+        super().__init__(base_url=server_url, verify=verify, proxy=proxy, headers=headers)
 
-    # def get_alerts(self):
+    def get_alerts(self, max_fetch: int):
+        """ Retrieve information about alerts.
+            Args:
+                max_fetch: int - Limit number of returned records.
+            Returns:
+                A dictionary with the alerts details.
+        """
+        params = {
+            'limit': max_fetch
+        }
+        url_suffix = '/alerts'
+        return self._http_request(method='GET', url_suffix=url_suffix, params=params)
 
 
 ''' HELPER FUNCTIONS '''
@@ -64,36 +74,22 @@ def test_module(client: Client) -> str:
     :rtype: ``str``
     """
 
-    message: str = ''
     try:
-        # TODO: ADD HERE some code to test connectivity and authentication to your service.
-        # This  should validate all the inputs given in the integration configuration panel,
-        # either manually or by using an API that uses them.
-        message = 'ok'
+        client.get_alerts()
+        return 'ok'
     except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
-            message = 'Authorization Error: make sure API Key is correctly set'
-        else:
-            raise e
-    return message
+        raise DemistoException(e.message)
 
 
-# TODO: REMOVE the following dummy command function
-def baseintegration_dummy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-
-    dummy = args.get('dummy', None)
-    if not dummy:
-        raise ValueError('dummy not specified')
-
-    # Call the Client function and get the raw response
-    result = client.baseintegration_dummy(dummy)
-
-    return CommandResults(
-        outputs_prefix='BaseIntegration',
-        outputs_key_field='',
-        outputs=result,
-    )
-# TODO: ADD additional command functions that translate XSOAR inputs/outputs to Client
+def get_alerts(client: Client, max_fetch: int):
+    """ Retrieve information about alerts.
+    Args:
+        client: client - An Orca client.
+        max_fetch: int - The maximum number of events per fetch
+    Returns:
+        A CommandResult object with the list of Firewall Policies defined in a particular domain.
+    """
+    response = client.get_alerts(max_fetch)
 
 
 ''' MAIN FUNCTION '''
@@ -106,30 +102,30 @@ def main() -> None:
     :rtype:
     """
 
-    # TODO: make sure you properly handle authentication
-    # api_key = demisto.params().get('credentials', {}).get('password')
-
-    # get the service API url
-    base_url = urljoin(demisto.params()['url'], '/api/v1')
-
-    # if your Client class inherits from BaseClient, SSL verification is
-    # handled out of the box by it, just pass ``verify_certificate`` to
-    # the Client constructor
+    api_token = demisto.params().get('credentials', {}).get('password')
+    server_url = demisto.params().get('server_url', 'https://app.eu.orcasecurity.io/api')
+    first_fetch = demisto.params().get('first_fetch', '3 days')
+    max_fetch = arg_to_number(demisto.params().get('max_fetch', 1000))
     verify_certificate = not demisto.params().get('insecure', False)
-
-    # if your Client class inherits from BaseClient, system proxy is handled
-    # out of the box by it, just pass ``proxy`` to the Client constructor
     proxy = demisto.params().get('proxy', False)
+
+    # How much time before the first fetch to retrieve events
+    first_fetch_time = arg_to_datetime(
+        arg=first_fetch,
+        arg_name='First fetch time',
+        required=True
+    )
+    first_fetch_timestamp = int(first_fetch_time.timestamp()) if first_fetch_time else None
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
 
-        # TODO: Make sure you add the proper headers for authentication
-        # (i.e. "Authorization": {api key})
-        headers: Dict = {}
+        headers: Dict = {
+            "Authorization": f'Token {api_token}'
+        }
 
         client = Client(
-            base_url=base_url,
+            server_url=server_url,
             verify=verify_certificate,
             headers=headers,
             proxy=proxy)
@@ -138,11 +134,8 @@ def main() -> None:
             # This is the call made when pressing the integration Test button.
             result = test_module(client)
             return_results(result)
+        # elif demisto.command() == 'fetch-events':
 
-        # TODO: REMOVE the following dummy command case:
-        elif demisto.command() == 'baseintegration-dummy':
-            return_results(baseintegration_dummy_command(client, demisto.args()))
-        # TODO: ADD command cases for the commands you will implement
 
     # Log exceptions and return errors
     except Exception as e:
