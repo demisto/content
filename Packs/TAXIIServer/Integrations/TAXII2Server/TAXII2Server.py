@@ -1215,7 +1215,7 @@ def create_relationships_objects(stix_iocs: list[dict[str, Any]], extensions: li
     """
     relationships_list: list[dict[str, Any]] = []
     iocs_value_to_id = {(stix_ioc.get('value') or stix_ioc.get('name')): stix_ioc.get('id') for stix_ioc in stix_iocs}
-    search_relationships = demisto.searchRelationships({'entities': list(iocs_value_to_id.keys())}).get('data', [])
+    search_relationships = demisto.searchRelationships({'entities': list(iocs_value_to_id.keys())}).get('data') or []
     demisto.debug(f"Found {len(search_relationships)} relationships for {len(iocs_value_to_id)} Stix IOC values.")
 
     relationships_list.extend(create_entity_b_stix_objects(search_relationships, iocs_value_to_id, extensions))
@@ -1271,7 +1271,7 @@ def create_entity_b_stix_objects(relationships: list[dict[str, Any]], iocs_value
     if not entity_b_values:
         return entity_b_objects
 
-    found_indicators = demisto.searchIndicators(query=f'value:({entity_b_values})').get('iocs', [])
+    found_indicators = demisto.searchIndicators(query=f'value:({entity_b_values})').get('iocs') or []
 
     extensions_dict: dict = {}
     for xsoar_indicator in found_indicators:
