@@ -284,8 +284,14 @@ def connection_test(client: boto3.client) -> str:
     :return: 'ok' if test passed, anything else will fail the test.
     :rtype: ``str``
     """
+    try:
+        client.list_ip_sets(args={'scope': 'REGIONAL'})
+    except Exception as e:
+        f'Failed to execute test module. Error: {e}'
 
-    pass
+    return 'ok'
+
+
 
 
 def create_ip_set_command(client: boto3.client, args) -> CommandResults:
@@ -830,7 +836,7 @@ def main() -> None:
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration test button.
-            return_results(connection_test(client))
+            result = connection_test(client)
 
         elif demisto.command() == 'aws-waf-ip-set-create':
             result = create_ip_set_command(client, args)
