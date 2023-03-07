@@ -858,7 +858,7 @@ class PackAutoBumper:
             is_force=True,
         )
         # Setting to default. Will be updated once we are checked out to the branch in set_pr_changed_rn_related_data.
-        self._bc_file = Path(str(self._last_rn_file_path).replace("md", "json"))
+        self._bc_file = self._last_rn_file_path.with_suffix(".json")
         self._has_bc = False
         self._rn_text = ""
         self._bc_text = ""
@@ -884,21 +884,19 @@ class PackAutoBumper:
         print(f"Update type: {self._update_type}, Previous RN path: {self._last_rn_file_path}, Is BC: {self._has_bc}.")
         new_version, metadata_dict = self._update_rn_obj.bump_version_number()
         self._update_rn_obj.write_metadata_to_file(metadata_dict=metadata_dict)
-        new_release_notes_path = self._update_rn_obj.get_release_notes_path(new_version)
+        new_release_notes_str = self._update_rn_obj.get_release_notes_path(new_version)
+        new_release_notes_path = Path(new_release_notes_str)
 
-        if Path(new_release_notes_path).stem != self._last_rn_file_path.stem:
-            with open(new_release_notes_path, "w") as fp:
-                fp.write(self._rn_text)
-                if Path(new_release_notes_path).read_text() == self._rn_text:
-                    os.remove(self._last_rn_file_path)
+        if new_release_notes_path.stem != self._last_rn_file_path.stem:
+            new_release_notes_path.write_text(self._rn_text)
+            if new_release_notes_path.read_text() == self._rn_text:
+                os.remove(self._last_rn_file_path)
 
             if self._has_bc:
-                with open(new_release_notes_path.replace("md", "json"), "w") as fp:
-                    fp.write(self._bc_text)
-
+                new_release_notes_path.with_suffix(".json").write_text(self._bc_text)
                 if self._bc_file.read_text() == self._bc_text:
                     # delete previous bc file, if it was not changed after merge from master
-                    os.remove(self._bc_file)
+                    self._bc_file.unlink()
         return new_version
 
 
