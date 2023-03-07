@@ -210,7 +210,6 @@ class TestRFClient:
         assert result.raw_response == dict()
         assert result.readable_output == 'No results found.'
 
-    # TODO REWRITE THIS TO WORK WITH PLAYBOOK ALERTS
     def test_fetch_incidents(self, mocker):
         import os
         import demistomock as demisto
@@ -252,7 +251,6 @@ class TestRFClient:
 
         assert response == mock_call_response
 
-    # TODO REWRITE THIS TO WORK WITH PLAYBOOK ALERTS (SEARCH)
     def test_playbook_alert_search(self, mocker):
         import os
         import demistomock as demisto
@@ -282,7 +280,6 @@ class TestRFClient:
 
         assert response == mock_call_response
 
-    # TODO REWRITE THIS TO WORK WITH PLAYBOOK ALERTS (DETAILS)
     def test_playbook_alert_details(self, mocker):
         import os
         import demistomock as demisto
@@ -434,7 +431,66 @@ class TestActions:
         assert r_a.readable_output == 'mock_readable_output'
         assert r_a.outputs_key_field == 'mock_outputs_key_field'
 
-    # TODO REWRITE THIS TO WORK WITH PLAYBOOK ALERTS
+    def test_fetch_incidents_with_attachment(self, mocker):
+        from RecordedFuturePlaybookAlerts import Actions
+        import demistomock as demisto
+        import json
+        import CommonServerPython as csp
+
+        client = create_client()
+        screenshot_dict = {
+            "panel_evidence_summary": {
+                "screenshots": [
+                    {
+                        "image_id": "an_id",
+                        "base64": 'YWJhc2U2NHN0cmluZw==',
+                        "description": "vivid description of image",
+                    }
+                ]
+            }
+        }
+        mock_incidents_value = {
+            'name': 'incident_name',
+            "rawJSON": json.dumps(screenshot_dict),
+        }
+
+        mock_demisto_last_run_value = 'mock_demisto_last_run'
+
+        mock_client_fetch_incidents_response = {
+            'incidents': [mock_incidents_value],
+            'demisto_last_run': mock_demisto_last_run_value,
+        }
+
+        mock_client_fetch_incidents = mocker.patch.object(
+            client, 'fetch_incidents', return_value=mock_client_fetch_incidents_response
+        )
+
+        mock_demisto_incidents = mocker.patch.object(demisto, 'incidents')
+        mock_demisto_set_last_run = mocker.patch.object(demisto, 'setLastRun')
+        mock_file_result = mocker.patch.object(
+            csp,
+            'fileResult',
+            return_value={"File": "mockfilepath", "FileID": "mock_file_id"},
+        )
+
+        mock_incidents_value.update(
+            {
+                "attachment": {
+                    "description": "vivid description of image",
+                    "showMediaFile": True,
+                }.update(mock_file_result)
+            }
+        )
+        actions = Actions(client)
+
+        actions.fetch_incidents()
+
+        mock_client_fetch_incidents.assert_called_once_with()
+
+        mock_demisto_incidents.assert_called_once_with([mock_incidents_value])
+
+        mock_demisto_set_last_run.assert_called_once_with(mock_demisto_last_run_value)
+
     def test_fetch_incidents_with_incidents_present(self, mocker):
         from RecordedFuturePlaybookAlerts import Actions
         import demistomock as demisto
