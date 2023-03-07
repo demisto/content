@@ -1055,6 +1055,7 @@ script:
           - "Challenge"
       - name: match_type
         description: The string match type.
+        required: true
         auto: PREDEFINED
         predefined:
           - "Exactly Matches String"
@@ -1265,7 +1266,6 @@ script:
     description: Adds a country statement to an existing rule.
     execution: false
     name: aws-waf-country-statement-add
-
   - arguments:
       - name: group_id
         description: The rule group id to associate the statement to.
@@ -1307,6 +1307,7 @@ script:
           - us-gov-west-1
       - name: match_type
         description: The string match type.
+        required: true
         auto: PREDEFINED
         predefined:
           - "Exactly Matches String"
@@ -1374,7 +1375,59 @@ script:
     description: Adds a string match statement to an existing rule.
     execution: false
     name: aws-waf-string-match-statement-add
-
+  - arguments:
+      - name: group_id
+        description: The rule group id to associate the statement to.
+        required: true
+      - name: group_name
+        description: The rule group name to associate the statement to.
+        required: true
+      - name: rule_name
+        description: The rule name to associate the statement to.
+        required: true
+      - name: scope
+        description: The rule scope.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - "CLOUDFRONT"
+          - "REGIONAL"
+      - name: region
+        description: The AWS Region. If not specified, the default region will be used.
+        auto: PREDEFINED
+        predefined:
+          - us-east-1
+          - us-east-2
+          - us-west-1
+          - us-west-2
+          - ca-central-1
+          - eu-west-1
+          - eu-central-1
+          - eu-west-2
+          - ap-northeast-1
+          - ap-northeast-2
+          - ap-southeast-1
+          - ap-southeast-2
+          - ap-south-1
+          - sa-east-1
+          - eu-north-1
+          - eu-west-3
+          - us-gov-east-1
+          - us-gov-west-1
+      - name: statement_json
+        description: A generic json statement to add to the rule. You can get the templates by running the aws-waf-statement-json-template-get command.
+        isArray: true
+        required: true
+      - name: condition_operator
+        description: The rule condition operator. If the rule contains only one statement, a value must be provided.
+        auto: PREDEFINED
+        predefined:
+          - "And"
+          - "Or"
+    deprecated: false
+    description: Adds a generic statement to an existing rule.
+    execution: false
+    name: aws-waf-statement-json-add
   isfetch: false
   runonce: false
   script: '-'
