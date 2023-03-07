@@ -305,10 +305,10 @@ class TestUpdateQueryCommands:
                                             update=update, update_one=update_one, upsert=upsert)
         assert return_value[0] == expected
 
-    case_invalid_filter_argument = (
-        "\"Name\": \"dummy\"}", "{\"$set\":{\"test\":0}}", MockResponse(True, 0, 0, 0), 'The `filter` argument is not a valid json. Valid input example: `{"key": "value"}`')
-    case_invalid_update_argument = (
-        "{\"Name\": \"dummy\"}", "\"$set\":{\"test\":0}}", MockResponse(True, 0, 0, 0), 'The `update` argument is not a valid json. Valid input example: `{"$set": {"key": "value"}`')
+    case_invalid_filter_argument = ("\"Name\": \"dummy\"}", "{\"$set\":{\"test\":0}}", MockResponse(
+        True, 0, 0, 0), 'The `filter` argument is not a valid json. Valid input example: `{"key": "value"}`')
+    case_invalid_update_argument = ("{\"Name\": \"dummy\"}", "\"$set\":{\"test\":0}}", MockResponse(
+        True, 0, 0, 0), 'The `update` argument is not a valid json. Valid input example: `{"$set": {"key": "value"}`')
     case_invalid_response = (
         "{\"Name\": \"dummy\"}", "{\"$set\":{\"test\":0}}", None, 'Error occurred when trying to enter update entries.')
 
