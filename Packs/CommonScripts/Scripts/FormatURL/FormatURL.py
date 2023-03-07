@@ -443,7 +443,8 @@ class URLCheck(object):
 
         elif char == '\\':
             # Edge case of the url ending with quotes and an escape char before them
-            if self.modified_url[index + 1] == "\"":
+
+            if index + 1 == len(self.modified_url) or self.modified_url[index + 1] == "\"":
                 return len(self.modified_url), part
 
         elif not char.isalnum() and not self.check_codepoint_validity(char):
