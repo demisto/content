@@ -510,7 +510,7 @@ script:
     arguments:
     - name: url
       required: true
-      description: The URL to search for.
+      description: The URL to search for (please provide the URL in the format http://example.com:80/).
       isArray: false
     outputs:
     - contextPath: ThreatGrid.search.url
