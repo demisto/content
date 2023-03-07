@@ -1,6 +1,6 @@
 name: Microsoft Windows Events
 id: Microsoft_Windows_Events
-fromversion: 6.10.0
+fromversion: 8.2.0
 tags: []
 rules: ''
 samples: ''
