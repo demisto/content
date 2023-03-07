@@ -55,6 +55,12 @@ args:
   name: channel
   required: false
   secret: false
+- default: false
+  description: The team in which to mirror the XSOAR investigation. If not specified, the default team configured in the integration parameters will be used.
+  isArray: false
+  name: team
+  required: false
+  secret: false
 comment: Send a team member or channel a question with predefined response options on Microsoft Teams. The response
   can be used to close a task (might be conditional) in a playbook.
 commonfields:
