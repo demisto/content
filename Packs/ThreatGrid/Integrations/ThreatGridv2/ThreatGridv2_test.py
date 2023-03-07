@@ -12,7 +12,7 @@ API_TOKEN = "api_token"
 BASE_URL = 'https://panacea.threatgrid.com'
 API_VERSION2_URL = 'api/v2'
 API_VERSION3_URL = 'api/v3'
-URL_SHA256 = hashlib.sha256('http://test.com:80'.encode('utf-8')).hexdigest()
+URL_SHA256 = hashlib.sha256('http://test.com:80/'.encode('utf-8')).hexdigest()
 
 DBOT_SCORE = Common.DBotScore(indicator='url_value',
                               indicator_type='url',
@@ -691,4 +691,4 @@ def test_validate_url_template(url):
     from ThreatGridv2 import validate_url_template
     result = validate_url_template(url)
 
-    assert result == 'http://test.com:80'
+    assert result == 'http://test.com:80/'
