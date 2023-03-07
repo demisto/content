@@ -381,6 +381,9 @@ workflows:
       - Run Unit Testing And Lint:
           requires:
             - Setup Environment
+          filters:
+            branches:
+              only: /^pull.*/
           matrix:
             parameters:
               dockerimageflag: [ "native:ga", "native:maintenance", "native:dev", "from-yml" ]
