@@ -73,7 +73,7 @@ PREFIX_OUTPUTS: Dict[str, Any] = {
 
 
 class Client(BaseClient):
-    """API Client to communicate with ThreatGris API."""
+    """API Client to communicate with ThreatGrid API."""
 
     def __init__(self, base_url: str, api_token: str, proxy: bool,
                  verify: bool):
