@@ -9445,7 +9445,8 @@ class IndicatorsSearcher:
                  to_date=None,
                  value='',
                  limit=None,
-                 sort=None,):
+                 sort=None,
+                 ):
         # searchAfter is available in searchIndicators from version 6.1.0
         self._can_use_search_after = is_demisto_version_ge('6.1.0')
         # populateFields merged in https://github.com/demisto/server/pull/18398
