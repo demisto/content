@@ -1,0 +1,6 @@
+fromversion: 6.10.0
+id: AWS-SecurityHub
+name: AWS-SecurityHub
+rules: ''
+schema: ''
+tags: AWS Security Hub
