@@ -292,7 +292,7 @@ class LabelCondition(BaseCondition):
         Returns: Reason why the condition failed, and pr skipped.
         """
         return SkipReason.NOT_UPDATE_RN_LABEL_EXIST.format(
-            ignore_label=self.NOT_UPDATE_RN_LABEL, pr_labels=labels
+            self.NOT_UPDATE_RN_LABEL, labels
         )
 
     def _check(
