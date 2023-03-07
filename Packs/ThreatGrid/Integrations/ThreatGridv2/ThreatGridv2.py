@@ -754,10 +754,10 @@ def associated_command(
         t=item_list,
         headerTransform=string_to_table_header,
     )
+    output_suffix = f'{arg_name.capitalize()}Associated{url_arg[:-1].capitalize()}'
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix=
-        f"ThreatGrid.{arg_name.capitalize()}Associated{url_arg[:-1].capitalize()}",
+        outputs_prefix=f"ThreatGrid.{output_suffix}",
         outputs_key_field=arg_name,
         outputs=response["data"],
         raw_response=response["data"],
