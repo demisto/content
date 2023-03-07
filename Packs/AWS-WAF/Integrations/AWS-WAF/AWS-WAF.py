@@ -2,7 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 from AWSApiModule import *  # noqa: E402
-from typing import Callable
+from typing import Callable, Tuple
 import urllib3.util
 import boto3
 import urllib3
@@ -97,18 +97,18 @@ def build_country_rule_object(args: dict) -> dict:
 
 
 def build_string_match_statement(args: dict) -> dict:
-    match_type = args.get('match_type')
+    match_type = args.get('match_type') or ''
     match_statement = REGEX_MATCH_STATEMENT if match_type == 'Matches Regex Pattern Set' \
         else BYTE_MATCH_STATEMENT
-    string_to_match = args.get('string_to_match')
-    regex_set_arn = args.get('regex_set_arn')
+    string_to_match = args.get('string_to_match') or ''
+    regex_set_arn = args.get('regex_set_arn') or ''
     if match_statement == REGEX_MATCH_STATEMENT and not regex_set_arn:
         raise DemistoException('regex_set_arn must be provided when using Matches Regex Pattern Set match_type')
 
     elif match_statement == BYTE_MATCH_STATEMENT and not string_to_match:
         raise DemistoException('string_to_match must be provided when using strings match_type')
-    web_request_component = args.get('web_request_component')
-    oversize_handling = args.get('oversize_handling')
+    web_request_component = args.get('web_request_component') or ''
+    oversize_handling = args.get('oversize_handling') or ''
     text_transformation = args.get('text_transformation') or 'NONE'
     if match_statement == BYTE_MATCH_STATEMENT:
         statement = build_byte_match_statement(web_request_component=web_request_component,
@@ -126,7 +126,7 @@ def build_string_match_statement(args: dict) -> dict:
     return {match_statement: statement}
 
 
-def update_rule_with_statement(rule, statement, condition_operator):
+def update_rule_with_statement(rule: dict, statement: dict, condition_operator: str):
     old_rule_statement = rule.get('Statement', {})
     if 'AndStatement' in old_rule_statement or 'OrStatement' in old_rule_statement:
         demisto.info('ignoring condition_operator argument as the statement already contains an operator.')
@@ -141,7 +141,7 @@ def update_rule_with_statement(rule, statement, condition_operator):
     rule['Statement'][condition]['Statements'].append(statement)
 
 
-def add_statement_to_rule(args: dict, statement: dict, rules: list):
+def add_statement_to_rule(args: dict, statement: dict, rules: list) -> list:
     new_rules = rules.copy()
     rule_name = args.get('rule_name', '')
     condition_operator = args.get('condition_operator', '')
@@ -149,11 +149,12 @@ def add_statement_to_rule(args: dict, statement: dict, rules: list):
         if rule.get('Name') == rule_name:
             update_rule_with_statement(rule, statement, condition_operator)
             return rules
+    raise DemistoException(f'Did not find any rule with name {rule_name}')
 
 
-def build_web_component_match_object(web_request_component, oversize_handling):
+def build_web_component_match_object(web_request_component: str, oversize_handling: str) -> dict:
     web_request_component_object = {}
-    if web_request_component in ('Headers', 'Cookies', 'Body'):
+    if web_request_component in {'Headers', 'Cookies', 'Body'}:
         if not oversize_handling:
             raise DemistoException(
                 'oversize_handling must be provided when using Headers, Cookies, Body web_request_component')
@@ -167,8 +168,11 @@ def build_web_component_match_object(web_request_component, oversize_handling):
     return web_request_component_object
 
 
-def build_byte_match_statement(web_request_component, oversize_handling, text_transformation, string_to_match,
-                               match_type) -> dict:
+def build_byte_match_statement(web_request_component: str,
+                               oversize_handling: str,
+                               text_transformation: str,
+                               string_to_match: str,
+                               match_type: str) -> dict:
     web_request_component_object = build_web_component_match_object(web_request_component, oversize_handling)
 
     return {
@@ -183,7 +187,10 @@ def build_byte_match_statement(web_request_component, oversize_handling, text_tr
         'PositionalConstraint': MATCH_TYPE_TO_POSITIONAL_CONSTRAIN[match_type]}
 
 
-def build_regex_match_statement(web_request_component, oversize_handling, text_transformation, regex_set_arn):
+def build_regex_match_statement(web_request_component: str,
+                                oversize_handling: str,
+                                text_transformation: str,
+                                regex_set_arn: str) -> dict:
     web_request_component_object = build_web_component_match_object(web_request_component, oversize_handling)
 
     return {
@@ -210,8 +217,8 @@ def build_new_rule_object(args: dict, rule_group_visibility_config: dict,
     name = args.get('rule_name', '')
     rule_visibility_config = build_visibility_config_object(
         metric_name=name,
-        cloud_watch_metrics_enabled=rule_group_visibility_config.get('CloudWatchMetricsEnabled'),
-        sampled_requests_enabled=rule_group_visibility_config.get('SampledRequestsEnabled'))
+        cloud_watch_metrics_enabled=rule_group_visibility_config.get('CloudWatchMetricsEnabled'),  # type: ignore
+        sampled_requests_enabled=rule_group_visibility_config.get('SampledRequestsEnabled'))  # type: ignore
 
     rule = {
         'Name': name,
@@ -250,7 +257,7 @@ def build_kwargs(args: dict) -> dict:
     }
 
 
-def get_required_response_fields_from_rule_group(client: boto3.client, kwargs: dict) -> (list, dict, str):
+def get_required_response_fields_from_rule_group(client: boto3.client, kwargs: dict) -> Tuple[list, dict, str]:
     response = client.get_rule_group(**kwargs)
 
     rule_group = response.get('RuleGroup', {})
@@ -708,7 +715,7 @@ def add_ip_statement_command(client: boto3.client, args) -> CommandResults:
     rules, rule_group_visibility_config, lock_token = get_required_response_fields_from_rule_group(client, kwargs)
 
     statement = build_ip_statement(args)
-    updated_rules = add_statement_to_rule(args, statement, rules)
+    updated_rules = add_statement_to_rule(args, statement, rules)  # type: ignore
 
     response = update_rule(client=client,
                            kwargs=kwargs,
