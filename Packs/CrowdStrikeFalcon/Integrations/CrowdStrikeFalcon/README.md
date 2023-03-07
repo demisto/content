@@ -23,6 +23,8 @@ The CrowdStrike Falcon OAuth 2 API integration (formerly Falcon Firehose API), e
     | Close Mirrored XSOAR Incident | When selected, closes the CrowdStrike Falcon incident or detection, which is mirrored in Cortex XSOAR. | False |
     | Close Mirrored CrowdStrike Falcon Incident or Detection | When selected, closes the XSOAR incident, which is mirrored in CrowdStrike Falcon. | False |
     | Fetch types | Choose what to fetch - incidents, detections, or both. | False |
+    | Advanced: Minutes to look back when fetching | Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created. | False |
+
 
 4.  Click **Test** to validate the URLs, token, and connection.
 
@@ -60,6 +62,9 @@ Newly fetched incidents or detections will be mirrored in the chosen direction. 
  - When *mirroring in* incidents from CrowdStrike Falcon to XSOAR:
    - For the `tags` field, tags can only be added from the remote system.
    - When enabling the *Close Mirrored XSOAR Incident* integration parameter, the field in CrowdStrike Falcon that determines whether the incident was closed is the `status` field.
+   - In case the **look-back** parameter is initialized with a certain value and during a time that incidents were fetched, if changing 
+   the look back to a number that is greater than the previous value, then in the initial incident fetching there will be incidents duplications.
+   If the integration was already set with look back > 0, and the look-back is not being increased at any point of time, then those incident duplications would not occur.
 
 ### 1. Search for a device
 
