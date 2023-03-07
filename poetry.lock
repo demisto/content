@@ -1010,7 +1010,7 @@ urllib3 = ">=1.26.7"
 
 [[package]]
 name = "demisto-sdk"
-version = "1.10.5"
+version = "1.10.6"
 description = "\"A Python library for the Demisto SDK\""
 category = "dev"
 optional = false
@@ -1109,8 +1109,8 @@ build = ["gsutil (==5.17)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "a5618a9a005238a197fa83657300988a4ff8c96e"
-resolved_reference = "a5618a9a005238a197fa83657300988a4ff8c96e"
+reference = "27dc116f166420e5748b086ecbb1bd0e3e7b8006"
+resolved_reference = "27dc116f166420e5748b086ecbb1bd0e3e7b8006"
 
 [[package]]
 name = "deprecated"
@@ -6406,4 +6406,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8,<3.11"
-content-hash = "02d4d6e7924b006a9950e8bd681b920cd204492475dd0feb6a1865f841296b60"
+content-hash = "943baec131e6e753c6dce5f92fb5ae4620259105990ae527ad3957021418e4ab"
