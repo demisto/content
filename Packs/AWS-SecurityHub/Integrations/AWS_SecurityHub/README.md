@@ -26,12 +26,10 @@ For detailed instructions about setting up authentication, see: [AWS Integration
 4. To ensure that fetch incidents works:
    1. Select the **Fetches incidents** radio button.
    2. Under **Incident type**, select AWS Security Hub Finding.
-<~XSOAR>
 5. To ensure that mirroring works, ensure that fetch incidents works and then:
    1. Under **Mapper (incoming)**, select AWS Security Hub - Incoming Mapper.
    2. Under **Mapper (outgoing)**, select AWS Security Hub - Outgoing Mapper. 
    3. Under **Incident Mirroring Direction**, select the desired mirroring direction. 
-</~XSOAR>
 
     | **Parameter** | **Description**                                                                                                                                                                                                                                                                                                                                   | **Required** |
     |---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- | --- |
