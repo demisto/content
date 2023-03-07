@@ -93,8 +93,7 @@ tasks:
           left:
             value:
               complex:
-                root: alert
-                accessor: hostip
+                root: inputs.scannerIP
             iscontext: true
           right:
             value:
@@ -1310,7 +1309,7 @@ inputs:
   value:
     complex:
       root: alert
-      accessor: hostip
+      accessor: localip
   required: false
   description: The scanner IP address.
   playbookInputQuery:

@@ -1275,12 +1275,20 @@ def search_text_for_entitlement(text: str, user: AsyncSlackResponse) -> str:
         return ''
 
 
-async def process_entitlement_reply(entitlement_reply: str, user_id: str, action_text: str, channel: str, message_ts: str):
+async def process_entitlement_reply(
+    entitlement_reply: str,
+    user_id: str,
+    action_text: str,
+    response_url: str | None = None,
+    channel: str | None = None,
+    message_ts: str | None = None
+):
     """
     Triggered when an entitlement reply is found, this function will update the original message with the reply message.
     :param entitlement_reply: str: The text to update the asking question with.
     :param user_id: str: ID of the user who answered the entitlement
     :param action_text: str: The text attached to the button, used for string replacement.
+    :param response_url: str: The response URL to use for the update.
     :param channel: str: The channel ID of where the question exists.
     :param message_ts: str: The timestamp of the message. Acts as a unique ID.
     :return: None
@@ -1289,13 +1297,16 @@ async def process_entitlement_reply(entitlement_reply: str, user_id: str, action
         entitlement_reply = entitlement_reply.replace('{user}', f'<@{user_id}>')
     if '{response}' in entitlement_reply and action_text:
         entitlement_reply = entitlement_reply.replace('{response}', str(action_text))
-    await send_slack_request_async(client=ASYNC_CLIENT, method='chat.update',
-                                   body={
-                                       'channel': channel,
-                                       'ts': message_ts,
-                                       'text': entitlement_reply,
-                                       'blocks': []
-                                   })
+    if response_url:
+        requests.post(response_url, json={'text': entitlement_reply, 'replace_original': True})
+    else:
+        await send_slack_request_async(client=ASYNC_CLIENT, method='chat.update',
+                                       body={
+                                           'channel': channel,
+                                           'ts': message_ts,
+                                           'text': entitlement_reply,
+                                           'blocks': []
+                                       })
 
 
 def is_dm(channel: str) -> bool:
@@ -1446,6 +1457,7 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
         message_ts = message.get('ts', '')
         actions = data.get('actions', [])
         state = data.get('state', {})
+        response_url = data.get('response_url', '')
         quick_check_payload = json.dumps(data)
 
         # Check if the message is from a bot so we can quit processing ASAP
@@ -1503,7 +1515,7 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
                         err_message = f'Error submitting context command to server. Check your API Key: {err}'
                         demisto.updateModuleHealth(err_message)
             if entitlement_reply:
-                await process_entitlement_reply(entitlement_reply, user_id, action_text, channel, message_ts)
+                await process_entitlement_reply(entitlement_reply, user_id, action_text, response_url=response_url)
                 reset_listener_health()
                 return
 
@@ -1535,7 +1547,7 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
             user = await get_user_details(user_id=user_id)
             entitlement_reply = await check_and_handle_entitlement(text, user, thread)  # type: ignore
             if entitlement_reply:
-                await process_entitlement_reply(entitlement_reply, user_id, action_text, channel, message_ts)
+                await process_entitlement_reply(entitlement_reply, user_id, action_text, channel=channel, message_ts=message_ts)
                 reset_listener_health()
                 return
 
