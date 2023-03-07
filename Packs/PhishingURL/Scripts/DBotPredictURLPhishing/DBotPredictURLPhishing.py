@@ -5,14 +5,14 @@ import urllib
 from typing import List, Dict, Tuple
 import pandas as pd
 import base64
-import requests
 import dill
 import copy
 import numpy as np
+import urllib3
 from tldextract import TLDExtract
 from bs4 import BeautifulSoup
 
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 dill.settings['recurse'] = True
 
