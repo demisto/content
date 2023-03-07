@@ -40,6 +40,8 @@ def getMetadata(strMeta):
     try:
         if strMeta:
             metadata = json.loads(strMeta)
+        else:
+            return None
     except Exception:
         demisto.debug('Metadata is null')
     if not metadata:
@@ -98,10 +100,11 @@ class Client(BaseClient):
 def test_module(client):
     try:
         path = 'sys/v1/session/auth'
-        client.send_request(path)
-        return 'ok'
+        res = client.send_request(path, 'post')
+        if res:
+            return 'ok'
     except Exception as e:
-        raise DemistoException(f"Error in API call - check the username/password or API Key. Error: {e}.")
+        raise DemistoException(f"Check the username/password or API Key. Error: {e}.")
 
 
 def list_secrets_command(client, args, gids=None):
@@ -139,10 +142,16 @@ def list_secrets_command(client, args, gids=None):
 
     res = client.send_request(path, 'get', params=params)
     if not res:
-        raise DemistoException('Secrets not found')
+        readable_output = tableToMarkdown('Found 0 Fortanix DSM Secrets', {})
+        return CommandResults(
+            outputs_prefix='No secrets found',
+            readable_output=readable_output,
+            outputs={},
+            raw_response={}
+        )
 
     if kid and res:
-        readable_output = tableToMarkdown(f'Fortanix DSM Secret {res}', res)
+        readable_output = tableToMarkdown('Fortanix DSM Secret', res)
         return CommandResults(
             outputs_prefix='Fortanix.Secret',
             readable_output=readable_output,
@@ -150,7 +159,7 @@ def list_secrets_command(client, args, gids=None):
             raw_response=res
         )
     elif len(res) == 1:
-        readable_output = tableToMarkdown(f'Fortanix DSM Secret {res[0]}', res[0])
+        readable_output = tableToMarkdown('Fortanix DSM Secret', res[0])
         return CommandResults(
             outputs_prefix='Fortanix.Secret',
             readable_output=readable_output,
@@ -201,7 +210,7 @@ def fetch_secret_command(client, args):
     mapped_value = [{
         'Value': value
     }]
-    readable_output = tableToMarkdown(f'Fortanix DSM Secret {mapped_value}', mapped_value)
+    readable_output = tableToMarkdown('Fortanix DSM Secret', mapped_value)
     return CommandResults(
         outputs_prefix='Fortanix.Secret.Value',
         readable_output=readable_output,
@@ -210,7 +219,7 @@ def fetch_secret_command(client, args):
     )
 
 
-def import_secret_command(client, args, gids, rotate=False):
+def import_secret_command(client, args, gids=None, rotate=False):
 
     path = 'crypto/v1/keys'
     method = 'put'
@@ -242,7 +251,7 @@ def import_secret_command(client, args, gids, rotate=False):
         msg = msg + 'created.' if rotate else msg + 'rotated.'
         raise DemistoException(msg)
 
-    readable_output = tableToMarkdown(f'Fortanix DSM Secret {res}', res)
+    readable_output = tableToMarkdown('Fortanix DSM Secret', res)
     return CommandResults(
         outputs_prefix='Fortanix.Secret',
         readable_output=readable_output,
@@ -264,7 +273,7 @@ def delete_secret_command(client, args):
     mapped_value = [{
         'Result': 'OK'
     }]
-    readable_output = tableToMarkdown(f'Fortanix DSM Secret {mapped_value}', mapped_value)
+    readable_output = tableToMarkdown('Fortanix DSM Secret', mapped_value)
     return CommandResults(
         outputs_prefix='Fortanix.Secret.Result',
         readable_output=readable_output,
@@ -295,7 +304,7 @@ def invoke_plugin_command(client, args):
     value: List[Dict[Any, Any]]
     if res and isinstance(res, dict):
         value = [res]
-    if res and isinstance(res, str):
+    elif res and isinstance(res, str):
         value = [{
             'Output': res
         }]
@@ -304,7 +313,7 @@ def invoke_plugin_command(client, args):
             'Output': 'OK'
         }]
 
-    readable_output = tableToMarkdown(f'Fortanix DSM Plugin {value}', value)
+    readable_output = tableToMarkdown('Fortanix DSM Plugin', value)
     return CommandResults(
         outputs_prefix='Fortanix.Plugin.Output',
         readable_output=readable_output,
@@ -349,7 +358,7 @@ def encrypt_command(client, args, pkey=None, pmode=None):
     mapped_value = [{
         'Cipher': value
     }]
-    readable_output = tableToMarkdown(f'Fortanix DSM Encryption {mapped_value}', mapped_value)
+    readable_output = tableToMarkdown('Fortanix DSM Encryption', mapped_value)
     return CommandResults(
         outputs_prefix='Fortanix.Data.Cipher',
         readable_output=readable_output,
@@ -358,7 +367,7 @@ def encrypt_command(client, args, pkey=None, pmode=None):
     )
 
 
-def decrypt_command(client, args, pkey, pmode):
+def decrypt_command(client, args, pkey=None, pmode=None):
 
     payload_cipher = None
     if raw_cipher := args.get('cipher'):
@@ -434,7 +443,7 @@ def decrypt_command(client, args, pkey, pmode):
     mapped_value = [{
         'Plain': value
     }]
-    readable_output = tableToMarkdown(f'Fortanix DSM Decryption {mapped_value}', mapped_value)
+    readable_output = tableToMarkdown('Fortanix DSM Decryption', mapped_value)
     return CommandResults(
         outputs_prefix='Fortanix.Data.Plain',
         readable_output=readable_output,
@@ -484,7 +493,7 @@ def main() -> None:
             proxy=proxy)
 
         if command == 'test-module':
-            test_module(client)
+            return_results(test_module(client))
 
         elif command == 'fortanix-list-secrets':
             return_results(list_secrets_command(client, args, group_ids))

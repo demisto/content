@@ -1,4 +1,3 @@
-!fortanix-test
 !fortanix-list-secrets
 !fortanix-list-secrets group_id=aedc4bd0-2880-4191-8f38-043fce5ee97
 !fortanix-get-secret-metadata name="Test Secret"
