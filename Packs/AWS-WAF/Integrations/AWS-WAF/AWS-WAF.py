@@ -250,7 +250,7 @@ def build_kwargs(args: dict) -> dict:
     }
 
 
-def get_required_response_fields_from_rule_group(client: boto3.client, kwargs):
+def get_required_response_fields_from_rule_group(client: boto3.client, kwargs: dict) -> (list, dict, str):
     response = client.get_rule_group(**kwargs)
 
     rule_group = response.get('RuleGroup', {})
@@ -823,7 +823,7 @@ def main() -> None:
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration test button.
-            result = connection_test(client)
+            return_results(connection_test(client))
 
         elif demisto.command() == 'aws-waf-ip-set-create':
             result = create_ip_set_command(client, args)
