@@ -377,7 +377,7 @@ workflows:
   version: 2
   commit:
     when: 
-    condition: '(echo "$CIRCLE_BRANCH" '
+    condition: 'echo "$CIRCLE_BRANCH"'
     jobs:
       - Setup Environment
       - Run Unit Testing And Lint:
