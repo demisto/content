@@ -67,8 +67,6 @@ def get_token_soap_request(user, password, instance, domain=None):
         root = ET.Element("soap:Envelope", {"xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
                                             "xmlns:xsd": "http://www.w3.org/2001/XMLSchema",
                                             "xmlns:soap": "http://schemas.xmlsoap.org/soap/envelope/"})
-        root.set("version", "1.0")
-        root.set("encoding", "UTF-8")
         # Create the soap:Body element
         body = ET.SubElement(root, "soap:Body")
         # Create the CreateUserSessionFromInstance element
@@ -168,80 +166,86 @@ def search_records_soap_request(
         field_to_search_by_id='', numeric_operator='', max_results=10, level_id='',
         sort_type: str = 'Ascending'
 ):
-    # create the root element
-    root = ET.Element("soap:Envelope", {"xmlns:soap": "http://schemas.xmlsoap.org/soap/envelope/",
-                                        "xmlns:xsd": "http://www.w3.org/2001/XMLSchema",
-                                        "xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance"})
-    # create the soap:Body element
-    body = ET.SubElement(root, "soap:Body")
-    # create the ExecuteSearch element
-    execute_search = ET.SubElement(body, "ExecuteSearch", {"xmlns": "http://archer-tech.com/webservices/"})
-    ET.SubElement(execute_search, "sessionToken").text = token
-    # create the searchOptions element
-    search_options = ET.SubElement(execute_search, "searchOptions")
-    search_report = ET.SubElement(search_options, "SearchReport")
-    ET.SubElement(search_report, "PageSize").text = str(max_results)
-    ET.SubElement(search_report, "PageNumber").text = "1"
-    ET.SubElement(search_report, "MaxRecordCount").text = str(max_results)
-    ET.SubElement(search_report, "ShowStatSummaries").text = "false"
-    display_field = ET.fromstring(display_fields)
-    display_fields_elem = ET.SubElement(search_report, "DisplayFields")
-    display_fields_elem.append(display_field)
-    # create the Criteria element
-    criteria = ET.SubElement(search_report, "Criteria")
-    module_criteria = ET.SubElement(criteria, "ModuleCriteria")
-    ET.SubElement(module_criteria, "Module", {"name": "appname"}).text = str(app_id)
+    # CDATA is not supported in Element Tree, therefore keeping original structure.
+    request_body = '<?xml version="1.0" encoding="UTF-8"?>' + \
+                   '<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" ' \
+                   'xmlns:xsd="http://www.w3.org/2001/XMLSchema"' \
+                   ' xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">' + \
+                   '    <soap:Body>' + \
+                   '        <ExecuteSearch xmlns="http://archer-tech.com/webservices/">' + \
+                   f'            <sessionToken>{token}</sessionToken>' + \
+                   '            <searchOptions>' + \
+                   '                <![CDATA[<SearchReport>' + \
+                   f'                <PageSize>{max_results}</PageSize>' + \
+                   '                 <PageNumber>1</PageNumber>' + \
+                   f'                <MaxRecordCount>{max_results}</MaxRecordCount>' + \
+                   '                <ShowStatSummaries>false</ShowStatSummaries>' + \
+                   f'                <DisplayFields>{display_fields}</DisplayFields>' + \
+                   f'             <Criteria><ModuleCriteria><Module name="appname">{app_id}</Module></ModuleCriteria>'
 
     if search_value:
-        # create the Filter element
-        filter = ET.SubElement(criteria, "Filter")
-        conditions = ET.SubElement(filter, "Conditions")
+        request_body += '<Filter><Conditions>'
 
         if date_operator:
-            date_comparison_filter_condition = ET.SubElement(conditions, "DateComparisonFilterCondition")
-            ET.SubElement(date_comparison_filter_condition, "Operator").text = date_operator
-            ET.SubElement(date_comparison_filter_condition, "Field", {"name": field_name}).text = field_id
-            ET.SubElement(date_comparison_filter_condition, "Value").text = search_value
-            ET.SubElement(date_comparison_filter_condition, "TimeZoneId").text = 'UTC Standard Time'
-            ET.SubElement(date_comparison_filter_condition, "IsTimeIncluded").text = 'TRUE'
+            request_body += '<DateComparisonFilterCondition>' + \
+                            f'        <Operator>{date_operator}</Operator>' + \
+                            f'        <Field name="{field_name}">{field_id}</Field>' + \
+                            f'        <Value>{search_value}</Value>' + \
+                            '        <TimeZoneId>UTC Standard Time</TimeZoneId>' + \
+                            '        <IsTimeIncluded>TRUE</IsTimeIncluded>' + \
+                            '</DateComparisonFilterCondition >'
         elif numeric_operator:
-            numeric_filter_condition = ET.SubElement(conditions, "NumericFilterCondition")
-            ET.SubElement(numeric_filter_condition, "Operator").text = numeric_operator
-            ET.SubElement(numeric_filter_condition, "Field", {"name": field_name}).text = field_id
-            ET.SubElement(numeric_filter_condition, "Value").text = search_value
+            request_body += '<NumericFilterCondition>' + \
+                            f'        <Operator>{numeric_operator}</Operator>' + \
+                            f'        <Field name="{field_name}">{field_id}</Field>' + \
+                            f'        <Value>{search_value}</Value>' + \
+                            '</NumericFilterCondition >'
         else:
 
             if field_to_search_by_id and field_to_search_by_id.lower() == field_name.lower():
-                content_filter_condition = ET.SubElement(conditions, "ContentFilterCondition")
-                ET.SubElement(content_filter_condition, "Level").text = str(level_id)
-                ET.SubElement(content_filter_condition, "Operator").text = 'Equals'
-                values = ET.SubElement(content_filter_condition, "Values")
-                ET.SubElement(values, "Value").text = search_value
+                request_body += '<ContentFilterCondition>' + \
+                                f'        <Level>{level_id}</Level>' + \
+                                '        <Operator>Equals</Operator>' + \
+                                f'        <Values><Value>{search_value}</Value></Values>' + \
+                                '</ContentFilterCondition>'
             else:
-                text_filter_condition = ET.SubElement(conditions, "TextFilterCondition")
-                ET.SubElement(text_filter_condition, "Operator").text = 'Contains'
-                ET.SubElement(text_filter_condition, "Field", {"name": field_name}).text = field_id
-                ET.SubElement(text_filter_condition, "Value").text = search_value
+                request_body += '<TextFilterCondition>' + \
+                                '        <Operator>Contains</Operator>' + \
+                                f'        <Field name="{field_name}">{field_id}</Field>' + \
+                                f'        <Value>{search_value}</Value>' + \
+                                '</TextFilterCondition >'
+
+        request_body += '</Conditions></Filter>'
 
     if date_operator:  # Fetch incidents must present date_operator
-        filter = ET.SubElement(criteria, "Filter")
-        conditions = ET.SubElement(filter, "Conditions")
-        date_comparison_filter_condition = ET.SubElement(conditions, "DateComparisonFilterCondition")
-        ET.SubElement(date_comparison_filter_condition, "Operator").text = date_operator
-        ET.SubElement(date_comparison_filter_condition, "Field", {"name": field_name}).text = field_id
-        ET.SubElement(date_comparison_filter_condition, "Value").text = search_value
-        ET.SubElement(date_comparison_filter_condition, "TimeZoneId").text = 'UTC Standard Time'
-        ET.SubElement(date_comparison_filter_condition, "IsTimeIncluded").text = 'TRUE'
+        request_body += '<Filter>' + \
+                        '<Conditions>' + \
+                        '    <DateComparisonFilterCondition>' + \
+                        f'        <Operator>{date_operator}</Operator>' + \
+                        f'        <Field name="{field_name}">{field_id}</Field>' + \
+                        f'        <Value>{search_value}</Value>' + \
+                        '        <TimeZoneId>UTC Standard Time</TimeZoneId>' + \
+                        '        <IsTimeIncluded>TRUE</IsTimeIncluded>' + \
+                        '    </DateComparisonFilterCondition >' + \
+                        '</Conditions>' + \
+                        '</Filter>'
 
     if field_id:
-        sort_fields = ET.SubElement(criteria, "SortFields")
-        sort_field = ET.SubElement(sort_fields, "SortField")
-        ET.SubElement(sort_field, "Field").text = field_id
-        ET.SubElement(sort_field, "SortType").text = sort_type
+        request_body += '<SortFields>' + \
+                        '    <SortField>' + \
+                        f'        <Field>{field_id}</Field>' + \
+                        f'        <SortType>{sort_type}</SortType>' + \
+                        '    </SortField >' + \
+                        '</SortFields>'
 
-    ET.SubElement(execute_search, "pageNumber").text = '1'
+    request_body += ' </Criteria></SearchReport>]]>' + \
+                    '</searchOptions>' + \
+                    '<pageNumber>1</pageNumber>' + \
+                    '</ExecuteSearch>' + \
+                    '</soap:Body>' + \
+                    '</soap:Envelope>'
 
-    return ET.tostring(root)
+    return request_body
 
 
 SOAP_COMMANDS = {
