@@ -50,6 +50,8 @@ XDR
 CoreIRApiModule
 CortexCoreIR
 XQL
+indicatorsValues
+setIndicators
 
 [file:classifier-PaloAltoNetworks_CortexXDR.json]
 ignore=BA101
