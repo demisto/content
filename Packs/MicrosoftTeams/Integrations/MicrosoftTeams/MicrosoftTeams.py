@@ -254,6 +254,7 @@ def urlify_hyperlinks(message: str) -> str:
     # URLify markdown hyperlinks
     urls = re.findall(URL_REGEX, message)
     for url in urls:
+        # is the url is a survey link coming from Data Collection task
         if EXTERNAL_FORM in url:
             formatted_message = formatted_message.replace(url, f'[Microsoft Teams Form]({url})')
         else:
@@ -2215,7 +2216,7 @@ def direct_message_handler(integration_context: dict, request_body: dict, conver
                                                                   or lowered_message.find('new') != -1)
     data = ""
     if not demisto_user:
-        data = handle_external_user(user_email if user_email else username,
+        data = handle_external_user(user_email or username,
                                     allow_external_incidents_creation, create_incident)
     # internal user or external who's trying to create incident
     if not data:
@@ -2318,6 +2319,7 @@ def message_handler(integration_context: dict, request_body: dict, channel_data:
                             demisto.debug(f"Adding Entry {message} to investigation {investigation_id}")
                             demisto.addEntry(
                                 id=investigation_id,
+                                # when pasting the message into the chat, it contains leading and trailing whitespaces
                                 entry=message.strip(),
                                 username=username,
                                 email=user_email,
@@ -2340,7 +2342,6 @@ def messages() -> Response:
             demisto.info(f'Authorization header failed: {str(headers)}')
         else:
             request_body: dict = request.json
-            demisto.debug(f"request body: {request_body}")
             integration_context: dict = get_integration_context()
             service_url: str = request_body.get('serviceUrl', '')
             if service_url:
