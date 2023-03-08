@@ -1,4 +1,4 @@
-category: Data Enrichment & Threat Intelligence
+category: Email
 sectionOrder:
 - Connect
 - Collect
@@ -169,7 +169,7 @@ script:
     outputs:
     - contextPath: Ironscales.OpenIncidents.incident_ids
       description: List of open incidents IDs.
-  dockerimage: demisto/python3:3.10.8.37233
+  dockerimage: demisto/python3:3.10.10.48392
   isFetchSamples: true
   isfetch: true
   runonce: false
