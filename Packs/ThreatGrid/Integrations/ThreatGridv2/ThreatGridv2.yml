@@ -510,13 +510,13 @@ script:
     arguments:
     - name: url
       required: true
-      description: The URL to search for.
+      description: The URL to search for (please provide the URL in the format http://example.com:80/. note that ThreatGrid only support '.com' domains).
       isArray: false
     outputs:
     - contextPath: ThreatGrid.search.url
       description: URL item
       type: String
-    description: Search urls. Please provide the URL in the format http://example.com:80/ .
+    description: Search urls. Please provide the URL in the format http://example.com:80/ (note that ThreatGrid only support '.com' domains).
     deprecated: false
     execution: false
   - name: threat-grid-feeds-artifact

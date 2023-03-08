@@ -294,7 +294,7 @@ tasks:
       - "10"
     scriptarguments:
       limit:
-        simple: "1"
+        simple: "10"
       offset:
         simple: "0"
       start_time:
@@ -329,7 +329,9 @@ tasks:
       - "11"
     scriptarguments:
       id:
-        simple: 5e73ecb3eff46f80a7cdc57a
+        complex:
+          root: PaloAltoNetworksIoT.Alerts
+          accessor: id
       reason:
         simple: XSOAR nightly integration test
       reason_type:
@@ -364,9 +366,17 @@ tasks:
       - "12"
     scriptarguments:
       full_name:
-        simple: CVE-2019-10960
+        complex:
+          root: PaloAltoNetworksIoT.Vulns
+          accessor: vulnerability_name
+          transformers:
+            - operator: FirstArrayElement
       id:
-        simple: vuln-b12d4f0a
+        complex:
+          root: PaloAltoNetworksIoT.Vulns
+          accessor: zb_ticketid
+          transformers:
+            - operator: FirstArrayElement
       reason:
         simple: XSOAR nightly integration test
     separatecontext: false
