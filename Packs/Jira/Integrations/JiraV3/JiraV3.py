@@ -13,7 +13,8 @@ urllib3.disable_warnings()
 DEFAULT_FETCH_LIMIT = 50
 DEFAULT_FIRST_FETCH_INTERVAL = '3 days'
 DEFAULT_FETCH_INTERVAL = 1  # Unit is in minutes
-
+DEFAULT_PAGE = 0
+DEFAULT_PAGE_SIZE = 50
 # Errors
 OAUTH2_AUTH_NOT_APPLICABLE_ERROR = ('This command is not applicable to run with a Jira On Prem instance since On Prem instances'
                                     ' do not use OAuth2 for authorization.')
@@ -201,7 +202,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def get_comments(self, issue_id_or_key: str, max_results: int) -> Dict[str, Any]:
+    def get_comments(self, issue_id_or_key: str, max_results: int = 50) -> Dict[str, Any]:
         pass
 
     @abstractmethod
@@ -394,7 +395,11 @@ class JiraCloudClient(JiraBaseClient):
 
     # Query Requests
     def run_query(self, query_params: Dict[str, Any]) -> Dict[str, Any]:
-        # query_params |= {'expand': 'renderedFields,transitions,names'}
+        # We supply the renderedFields query parameter to retrieve some content in HTML format, since Jira uses a format
+        # called ADF, and it is easier to parse the content in HTML format, rather than ADF.
+        # We also supply the fields: *all to return all the fields from an issue (specifically the field that holds
+        # data about the attachments in the issue), otherwise, it won't get returned in the query.
+        query_params |= {'expand': 'renderedFields,transitions,names', 'fields': ['*all']}
         return self.http_request_with_access_token(
             method='GET', url_suffix='rest/api/3/search', params=query_params
         )
@@ -853,15 +858,15 @@ class JiraIssueFieldsParser():
 # Utility functions
 def prepare_pagination_args(page: int | None = None, page_size: int | None = None, limit: int | None = None) -> Dict[str, int]:
     if page or page_size:
-        page = page or 0
-        page_size = page_size or 50
+        page = page or DEFAULT_PAGE
+        page_size = page_size or DEFAULT_PAGE_SIZE
         return {
             'start_at': page * page_size,
             'max_results': page_size,
         }
     else:
-        limit = limit or 50
-        return {'start_at': 0, 'max_results': limit}
+        limit = limit or DEFAULT_PAGE_SIZE
+        return {'start_at': DEFAULT_PAGE, 'max_results': limit}
 
 
 def str_to_number(arg: str, default_value: int) -> int:
@@ -877,9 +882,6 @@ def create_query_params(jql_query: str, start_at: int | None = None,
         'jql': jql_query,  # The Jira Query Language string, used to search for issues in a project using SQL-like syntax.
         'startAt': start_at,  # The index of the first item to return in a page of results (page offset).
         'maxResults': max_results,  # The maximum number of items to return per page.
-        # We supply this query parameter to retrieve some content in HTML format, since Jira uses a format called ADF,
-        # and it is easier to parse the content in HTML format, rather than ADF.
-        'expand': 'renderedFields,transitions,names',
     }
 
 
@@ -1485,16 +1487,16 @@ def get_comments_command(client: JiraBaseClient, args: Dict[str, str]) -> Comman
 def create_comments_command_results(response_comments: List[Dict[str, Any]],
                                     issue_id_or_key: str, res: Dict[str, Any]) -> CommandResults:
     is_id = is_issue_id(issue_id_or_key=issue_id_or_key)
-    comments = []
-    for comment in response_comments:
-        comment_body = BeautifulSoup(comment.get('renderedBody')).get_text(
-        ) if comment.get('renderedBody') else comment.get('body')
-        comments.append({
-            'Id': comment.get('id'),
-            'Comment': comment_body,
-            'User': demisto.get(comment, 'author.displayName'),
-            'Created': comment.get('created')
-        })
+    comments = extract_comments_entries_from_raw_response(response_comments=response_comments)
+    # for comment in response_comments:
+    #     comment_body = BeautifulSoup(comment.get('renderedBody')).get_text(
+    #     ) if comment.get('renderedBody') else comment.get('body')
+    #     comments.append({
+    #         'Id': comment.get('id'),
+    #         'Comment': comment_body,
+    #         'User': demisto.get(comment, 'author.displayName'),
+    #         'Created': comment.get('created')
+    #     })
     outputs: Dict[str, Any] = {'Comment': comments}
     if(is_id):
         outputs |= {'Id': issue_id_or_key}
@@ -1509,6 +1511,20 @@ def create_comments_command_results(response_comments: List[Dict[str, Any]],
         readable_output=human_readable,
         raw_response=res
     )
+
+
+def extract_comments_entries_from_raw_response(response_comments: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    comments: List[Dict[str, Any]] = []
+    for comment in response_comments:
+        comment_body = BeautifulSoup(comment.get('renderedBody')).get_text(
+        ) if comment.get('renderedBody') else comment.get('body')
+        comments.append({
+            'Id': comment.get('id'),
+            'Comment': comment_body,
+            'User': demisto.get(comment, 'author.displayName'),
+            'Created': comment.get('created')
+        })
+    return comments
 
 
 def edit_comment_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandResults:
@@ -1652,12 +1668,12 @@ def issue_get_attachment_command(client: JiraBaseClient, args: Dict[str, str]) -
     Returns:
         Dict[str, Any]: A dictionary the represents a file entry to be returned to the user
     """
-    attachments_id = argToList(args.get('attachment_id', ''))
+    attachments_ids = argToList(args.get('attachment_id', ''))
     files_result: List[Dict[str, Any]] = [
         create_file_info_from_attachment(
             client=client, attachment_id=attachment_id
         )
-        for attachment_id in attachments_id
+        for attachment_id in attachments_ids
     ]
     return files_result
 
@@ -1783,9 +1799,7 @@ def sprint_issues_list_command(client: JiraBaseClient, args: Dict[str, Any]) -> 
         if not board_id:
             sprint = issues[0].get('fields', {}).get('sprint', {}) or {}
             board_id = sprint.get(
-                'originBoardId', '') if not board_id else ''
-        # board_id = issues[0].get('fields', {}).get('sprint', {}).get(
-        #     'originBoardId', '') if (issues and not board_id) else board_id
+                'originBoardId', '') or ''
         markdown_list = []
         issues_list = []
         for issue in issues:
@@ -1794,11 +1808,12 @@ def sprint_issues_list_command(client: JiraBaseClient, args: Dict[str, Any]) -> 
             issues_list.append(outputs)
         context_data_outputs: Dict[str, Any] = {'Ticket': issues_list or []}
         board_id = str(board_id)
-        context_data_outputs |= {'id': board_id} if board_id else {}
+        context_data_outputs |= {'boardId': board_id} if board_id else {}
         context_data_outputs |= {'sprintId': sprint_id}
         return CommandResults(
             outputs_prefix='Jira.SprintIssues',
-            outputs_key_field=['id', 'sprintId'] if board_id else None,
+            outputs_key_field=['boardId', 'sprintId'] if board_id else [
+                'sprintId'],  # TODO Check if it is okay to use sprintID alone
             outputs=context_data_outputs or None,
             readable_output=tableToMarkdown(name=f'Sprint Issues in board {board_id}', t=markdown_list),
             raw_response=res
@@ -1831,13 +1846,13 @@ def epic_issues_list_command(client: JiraBaseClient, args: Dict[str, Any]) -> Co
     res = client.get_epic_issues(epic_id_or_key=epic_id_or_key, jql_query=jql_query, **pagination_args)
     if issues := res.get('issues', []):
         return create_epic_issues_command_results(
-            issues=issues, client=client, epic_id_or_key=epic_id_or_key, res=res
+            issues=issues, epic_id_or_key=epic_id_or_key, res=res
         )
     else:
         return CommandResults(readable_output=f'No child issues were found for epic {epic_id_or_key}')
 
 
-def create_epic_issues_command_results(issues: List[Dict[str, Any]], client: JiraBaseClient,
+def create_epic_issues_command_results(issues: List[Dict[str, Any]],
                                        epic_id_or_key: str, res: Dict[str, Any]):
     markdown_list = []
     issues_list = []
@@ -1847,13 +1862,15 @@ def create_epic_issues_command_results(issues: List[Dict[str, Any]], client: Jir
         issues_list.append(outputs_context_data)
     outputs: Dict[str, Any] = {'Ticket': issues_list}
     sprint = issues[0].get('fields', {}).get('sprint', {}) or {}
-    board_id = sprint.get(
-        'originBoardId', '')
-    board_id = str(board_id)
-    outputs |= {'id': board_id} if board_id else {}
+    board_id = str(sprint.get(
+        'originBoardId', '')) or ''
+    outputs |= {'boardId': board_id} if board_id else {}
+    epic = issues[0].get('fields', {}).get('epic') or {}
+    epic_id = str(epic.get('id', '')) or ''
+    outputs |= {'epicId': epic_id} if epic_id else {}
     return CommandResults(
         outputs_prefix='Jira.EpicIssues',
-        outputs_key_field='id' if board_id else None,
+        outputs_key_field=['epicId', 'boardId'] if board_id else ['epicId'],
         outputs=outputs,
         readable_output=tableToMarkdown(name=f'Child Issues in epic {epic_id_or_key}', t=markdown_list),
         raw_response=res
@@ -2055,24 +2072,25 @@ def board_epic_list_command(client: JiraBaseClient, args: Dict[str, Any]) -> Com
                                               limit=arg_to_number(arg=args.get('limit', None)))
     done = args.get('done', 'false')
     res = client.get_epics_from_board(board_id=board_id, done=done, **pagination_args)
-    epics = res.get('values', [])
-    md_dict = [
-        {
-            'ID': epic.get('id', ''),
-            'Name': epic.get('name', ''),
-            'Key': epic.get('key', ''),
-            'Summary': epic.get('summary', ''),
-            'Done': epic.get('done', ''),
-        }
-        for epic in epics
-    ]
-    return CommandResults(
-        outputs_prefix='Jira.BoardEpic',
-        outputs_key_field='id',
-        outputs={'id': board_id, 'Epics': epics},
-        readable_output=tableToMarkdown(name='Epics', t=md_dict),
-        raw_response=res
-    )
+    if epics := res.get('values', []):
+        md_dict = [
+            {
+                'ID': epic.get('id', ''),
+                'Name': epic.get('name', ''),
+                'Key': epic.get('key', ''),
+                'Summary': epic.get('summary', ''),
+                'Done': epic.get('done', ''),
+            }
+            for epic in epics
+        ]
+        return CommandResults(
+            outputs_prefix='Jira.BoardEpic',
+            outputs_key_field='id',
+            outputs={'id': board_id, 'Epics': epics},
+            readable_output=tableToMarkdown(name='Epics', t=md_dict),
+            raw_response=res
+        )
+    return CommandResults(readable_output=f'No epics were found on board {board_id} with the respective arguments.')
 
 # Fetch
 
@@ -2108,7 +2126,7 @@ def test_module(client: JiraBaseClient) -> str:
 
 
 # Fetch Incidents
-def fetch_incidents(client: JiraBaseClient, issue_field_to_fetch_from: str, fetch_query: str, id_offset: str,
+def fetch_incidents(client: JiraBaseClient, issue_field_to_fetch_from: str, fetch_query: str, id_offset: int,
                     fetch_attachments: bool, fetch_comments: bool, max_fetch_incidents: int, fetch_interval: int,
                     first_fetch_interval: str, incoming_mirror: bool, outgoing_mirror: bool,
                     comment_tag: str, attachment_tag: str) -> List[Dict[str, Any]]:
@@ -2128,12 +2146,17 @@ def fetch_incidents(client: JiraBaseClient, issue_field_to_fetch_from: str, fetc
     last_run = demisto.getLastRun()
     demisto.debug(f'last_run: {last_run}' if last_run else 'last_run is empty')
     # This set will hold all the issues ids that were fetched in the last fetch, to eliminate fetching duplicate incidents.
-    last_fetch_issue_ids = last_run.get('issue_ids', set())
+    # TODO Mention that if we use set(), then an EOF error in XSOAR will return
+    # Since when we get the list from the last run, all the values in the list are strings, and we may need them
+    # to be integers (if we want to use the issues' ids in the query, they must be passed on as integers and not strings),
+    # so we convert the list to hold integer values
+    last_fetch_issue_ids: List[int] = convert_list_of_str_to_int(last_run.get('issue_ids', []))
     last_fetch_id = last_run.get('id', id_offset)
     last_fetch_created_time = last_run.get('created_date', '')
     last_fetch_updated_time = last_run.get('updated_date', '')
     last_fetch_status_category_change_date = last_run.get('status_category_change_date', '')
     incidents: List[Dict[str, Any]] = []
+    demisto.debug('Creating the fetch query')
     fetch_incidents_query = create_fetch_incidents_query(
         issue_field_to_fetch_from=issue_field_to_fetch_from,
         fetch_interval=fetch_interval or DEFAULT_FETCH_INTERVAL,
@@ -2142,37 +2165,53 @@ def fetch_incidents(client: JiraBaseClient, issue_field_to_fetch_from: str, fetc
         last_fetch_created_time=last_fetch_created_time,
         last_fetch_updated_time=last_fetch_updated_time,
         last_fetch_status_category_change_date=last_fetch_status_category_change_date,
-        first_fetch_interval=first_fetch_interval)
+        first_fetch_interval=first_fetch_interval,
+        last_fetch_issue_ids=last_fetch_issue_ids)
+    demisto.debug(f'The fetch query: {fetch_incidents_query}' if fetch_incidents_query else 'No fetch query created')
     query_params = create_query_params(jql_query=fetch_incidents_query, max_results=max_fetch_incidents)
-    issue_ids = set()
+    issue_ids: List[int] = []
+    demisto.debug(f'Running the query with the following parameters {query_params}')
     if query_res := client.run_query(query_params=query_params):
         for issue in query_res.get('issues', []):
-            issue_id = issue.get('id', '') or ''
-            if issue_id not in last_fetch_issue_ids:
-                issue_ids.add(issue_id)
-                # Making sure that this issue was not fetched during the previous fetch
-                last_fetch_id = issue_id
-                last_fetch_created_time = demisto.get(issue, 'fields.created') or ''
-                last_fetch_updated_time = demisto.get(issue, 'fields.updated') or ''
-                last_fetch_status_category_change_date = demisto.get(issue, 'fields.statuscategorychangedate') or ''
-                incidents.append(create_incident_from_ticket(issue=issue, fetch_attachments=fetch_attachments, fetch_comments=fetch_comments,
-                                                             incoming_mirror=incoming_mirror, outgoing_mirror=outgoing_mirror,
-                                                             comment_tag=comment_tag,
-                                                             attachment_tag=attachment_tag))
+            issue_id: int = issue.get('id')  # The ID returned by the API is an integer
+            # if issue_id not in last_fetch_issue_ids:
+            issue_ids.append(issue_id)
+            # Making sure that this issue was not fetched during the previous fetch
+            last_fetch_id = issue_id
+            last_fetch_created_time = demisto.get(issue, 'fields.created') or ''
+            last_fetch_updated_time = demisto.get(issue, 'fields.updated') or ''
+            last_fetch_status_category_change_date = demisto.get(issue, 'fields.statuscategorychangedate') or ''
+            incidents.append(create_incident_from_ticket(
+                client=client, issue=issue, fetch_attachments=fetch_attachments, fetch_comments=fetch_comments,
+                incoming_mirror=incoming_mirror, outgoing_mirror=outgoing_mirror,
+                comment_tag=comment_tag,
+                attachment_tag=attachment_tag))
     demisto.setLastRun({
-        'issue_ids': issue_ids,
+        'issue_ids': issue_ids or last_fetch_issue_ids,
         'id': last_fetch_id,
         'created_date': last_fetch_created_time,
         'updated_date': last_fetch_updated_time,
-        'status_category_change_date': last_fetch_status_category_change_date
+        'status_category_change_date': last_fetch_status_category_change_date,
     })
     return incidents
 
 
+def convert_list_of_str_to_int(list_to_convert: List[str] | List[int]) -> List[int]:
+    converted_list: List[int] = []
+    for item in list_to_convert:
+        try:
+            converted_list.append(int(item))
+        except Exception as e:
+            raise DemistoException(
+                f'Could not convert list of strings to int, error message: {e}\n'
+            ) from e
+    return converted_list
+
+
 def create_fetch_incidents_query(issue_field_to_fetch_from: str, fetch_interval: int, fetch_query: str,
-                                 last_fetch_id: str, last_fetch_created_time: str, last_fetch_updated_time: str,
+                                 last_fetch_id: int, last_fetch_created_time: str, last_fetch_updated_time: str,
                                  last_fetch_status_category_change_date: str,
-                                 first_fetch_interval: str) -> str:
+                                 first_fetch_interval: str, last_fetch_issue_ids: List[int]) -> str:
     """_summary_
     NOTE: It is important to add 'ORDER BY {the issue field to fetch from} ASC' in order to retrieve the data in ascending order,
     so we could keep save the latest fetch incident (according to issue_field_to_fetch_from) and fetch only new incidents,
@@ -2193,8 +2232,9 @@ def create_fetch_incidents_query(issue_field_to_fetch_from: str, fetch_interval:
     Returns:
         str: _description_
     """
+    exclude_issue_ids_query = f'AND ID NOT IN {tuple(last_fetch_issue_ids)}' if last_fetch_issue_ids else ''
     if issue_field_to_fetch_from == 'id':
-        return f'{fetch_query} AND id >= {last_fetch_id} ORDER BY id ASC'
+        return f'{fetch_query} AND id >= {last_fetch_id} {exclude_issue_ids_query} ORDER BY id ASC'
     first_fetch_date = ''
     if parsed_first_fetch_interval := dateparser.parse(first_fetch_interval):
         first_fetch_date = parsed_first_fetch_interval.strftime('%Y-%m-%d %H:%M')
@@ -2204,15 +2244,17 @@ def create_fetch_incidents_query(issue_field_to_fetch_from: str, fetch_interval:
         interval_to_fetch_from = safe_get_last_interval_for_fetch(last_fetch_date=last_fetch_status_category_change_date,
                                                                   fetch_interval=fetch_interval)
         return (f'{fetch_query} AND statusCategoryChangedDate >= "{interval_to_fetch_from or first_fetch_date}"'
-                ' ORDER BY statusCategoryChangedDate ASC')
+                f' {exclude_issue_ids_query} ORDER BY statusCategoryChangedDate ASC')
     elif issue_field_to_fetch_from == 'created date':
         interval_to_fetch_from = safe_get_last_interval_for_fetch(last_fetch_date=last_fetch_created_time,
                                                                   fetch_interval=fetch_interval)
-        return f'{fetch_query} AND created >= "{interval_to_fetch_from or first_fetch_date}" ORDER BY created ASC'
+        return (f'{fetch_query} AND created >= "{interval_to_fetch_from or first_fetch_date}" {exclude_issue_ids_query}'
+                ' ORDER BY created ASC')
     elif issue_field_to_fetch_from == 'updated date':
         interval_to_fetch_from = safe_get_last_interval_for_fetch(last_fetch_date=last_fetch_updated_time,
                                                                   fetch_interval=fetch_interval)
-        return f'{fetch_query} AND updated >= "{interval_to_fetch_from or first_fetch_date}" ORDER BY updated ASC'
+        return (f'{fetch_query} AND updated >= "{interval_to_fetch_from or first_fetch_date}" {exclude_issue_ids_query}'
+                ' ORDER BY updated ASC')
     raise DemistoException('Could not create the proper fetch query')
 
 
@@ -2237,12 +2279,46 @@ def get_mirror_type(incoming_mirror: bool, outgoing_mirror: bool) -> str | None:
     return mirror_type
 
 
-def create_incident_from_ticket(issue: Dict[str, Any], fetch_attachments: bool, fetch_comments: bool,
+def get_comments_entries_for_fetched_incident(client: JiraBaseClient, issue_id_or_key: str) -> List[str]:
+    """Return the comment entries for a fetched incident
+
+    Args:
+        issue_id_or_key (str): The issue id or key
+
+    Returns:
+        List[Dict[str, Any]]: _description_
+    """
+    try:
+        get_comments_response = client.get_comments(issue_id_or_key=issue_id_or_key)
+        if response_comments := get_comments_response.get('comments', []):
+            comment_entries = extract_comments_entries_from_raw_response(response_comments=response_comments)
+            return [comment_entry.get('Comment', '') for comment_entry in comment_entries]
+    except Exception as e:
+        demisto.debug(f'Could not get attachments for {issue_id_or_key} while fetching this incident because: {str(e)}')
+    return []
+
+
+def get_attachments_entries_for_fetched_incident(client: JiraBaseClient, attachment_ids: List[str]) -> List[Dict[str, Any]]:
+    attachments_entries: List[Dict[str, Any]] = [
+        create_file_info_from_attachment(
+            client=client, attachment_id=attachment_id
+        )
+        for attachment_id in attachment_ids
+    ]
+    return attachments_entries
+
+
+def create_incident_from_ticket(client: JiraBaseClient, issue: Dict[str, Any], fetch_attachments: bool, fetch_comments: bool,
                                 incoming_mirror: bool, outgoing_mirror: bool,
                                 comment_tag: str, attachment_tag: str) -> Dict[str, Any]:
+    rendered_issue_fields = demisto.get(issue, 'renderedFields', {})
+    issue_description = BeautifulSoup(rendered_issue_fields.get('description')).get_text() \
+        if rendered_issue_fields \
+        else str(demisto.get(issue, 'fields.description'))
+    issue_id = str(issue.get('id'))
     labels = [
         {'type': 'issue', 'value': json.dumps(issue)},
-        {'type': 'id', 'value': str(issue.get('id'))},
+        {'type': 'id', 'value': issue_id},
         {'type': 'lastViewed', 'value': str(demisto.get(issue, 'fields.lastViewed'))},
         {'type': 'priority', 'value': str(demisto.get(issue, 'fields.priority.name'))},
         {'type': 'status', 'value': str(demisto.get(issue, 'fields.status.name'))},
@@ -2252,10 +2328,10 @@ def create_incident_from_ticket(issue: Dict[str, Any], fetch_attachments: bool, 
         {'type': 'reporteremail', 'value': str(demisto.get(issue, 'fields.reporter.emailAddress'))},
         {'type': 'created', 'value': str(demisto.get(issue, 'fields.created'))},
         {'type': 'summary', 'value': str(demisto.get(issue, 'fields.summary'))},
-        {'type': 'description', 'value': str(demisto.get(issue, 'fields.description'))},
+        {'type': 'description', 'value': issue_description},
 
     ]
-
+    issue['parsedDescription'] = issue_description
     name = demisto.get(issue, 'fields.summary')
     if name:
         name = f"Jira issue: {issue.get('id')}"
@@ -2272,19 +2348,27 @@ def create_incident_from_ticket(issue: Dict[str, Any], fetch_attachments: bool, 
             severity = 1
 
     file_names: list = []
-    # if should_get_attachments:
-    #     for file_result in get_entries_for_fetched_incident(issue.get('id'), False, True)['attachments']:
-    #         if file_result['Type'] != entryTypes['error']:
-    #             file_names.append({
-    #                 'path': file_result.get('FileID', ''),
-    #                 'name': file_result.get('File', '')
-    #             })
-
-    # if should_get_comments:
-    #     labels.append({'type': 'comments', 'value': str(get_entries_for_fetched_incident(issue.get('id'), True, False)
-    #                                                     ['comments'])})
-    # else:
-    #     labels.append({'type': 'comments', 'value': '[]'})
+    if fetch_attachments:
+        demisto.debug('Fetching attachments')
+        attachment_ids: List[str] = [attachment.get('id', '') for attachment in (demisto.get(issue, 'fields.attachment') or [])]
+        attachments_entries = get_attachments_entries_for_fetched_incident(client=client,
+                                                                           attachment_ids=attachment_ids)
+        file_names.extend(
+            {
+                'path': attachment_entry.get('FileID', ''),
+                'name': attachment_entry.get('File', ''),
+            }
+            for attachment_entry in attachments_entries
+            if attachment_entry['Type'] != entryTypes['error']
+        )
+    if fetch_comments:
+        extracted_comment_bodies = get_comments_entries_for_fetched_incident(client=client, issue_id_or_key=issue_id)
+        demisto.debug('Fetching comments')
+        demisto.debug(f'Fetched comments {extracted_comment_bodies}')
+        # issue['extractedComments'] = extracted_comment_bodies
+        labels.append({'type': 'comments', 'value': str(extracted_comment_bodies)})
+    else:
+        labels.append({'type': 'comments', 'value': '[]'})
 
     issue['mirror_direction'] = get_mirror_type(incoming_mirror, outgoing_mirror)
 
@@ -2297,7 +2381,7 @@ def create_incident_from_ticket(issue: Dict[str, Any], fetch_attachments: bool, 
     return {
         "name": name,
         "labels": labels,
-        "details": demisto.get(issue, "fields.description"),
+        "details": issue_description,
         "severity": severity,
         "attachment": file_names,
         "rawJSON": json.dumps(issue)
@@ -2325,7 +2409,8 @@ def safe_get_last_interval_for_fetch(last_fetch_date: str, fetch_interval: int) 
     if not last_fetch_date:
         return ''
     if parsed_last_fetch_date := dateparser.parse(last_fetch_date):
-        return (parsed_last_fetch_date - timedelta(minutes=fetch_interval + 1)).strftime('%Y-%m-%d %H:%M')
+        return parsed_last_fetch_date.strftime('%Y-%m-%d %H:%M')
+        # return (parsed_last_fetch_date - timedelta(minutes=fetch_interval + 1)).strftime('%Y-%m-%d %H:%M')
     raise DemistoException('Could not parse the time of the last fetch.')
 
 
@@ -2425,7 +2510,7 @@ def main() -> None:
                 client=client,
                 issue_field_to_fetch_from=issue_field_to_fetch_from,
                 fetch_query=fetch_query,
-                id_offset=id_offset,
+                id_offset=arg_to_number(id_offset) or 0,
                 fetch_attachments=fetch_attachments,
                 fetch_comments=fetch_comments,
                 max_fetch_incidents=arg_to_number(max_fetch) or DEFAULT_FETCH_LIMIT,

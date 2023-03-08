@@ -1630,9 +1630,12 @@ script:
     execution: false
     name: jira-sprint-issue-list
     outputs:
-    - contextPath: Jira.SprintIssues.id
-      description: The ID of the board.
-      type: number
+    - contextPath: Jira.SprintIssues.boardId
+      description: The ID of the board that the sprint belongs to.
+      type: string
+    - contextPath: Jira.SprintIssues.sprintId
+      description: The ID of the sprint.
+      type: string
     - contextPath: Jira.SprintIssues.Ticket.Id
       description: The ticket ID.
       type: number
@@ -1740,8 +1743,11 @@ script:
     execution: false
     name: jira-epic-issue-list
     outputs:
-    - contextPath: Jira.EpicIssues.id
+    - contextPath: Jira.EpicIssues.boardId
       description: The ID of the board that holds the issues.
+      type: string
+    - contextPath: Jira.EpicIssues.epicId
+      description: The ID of the epic that holds the issues.
       type: string
     - contextPath: Jira.EpicIssues.key
       description: The key of the epic.
