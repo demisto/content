@@ -1,0 +1,383 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+from datetime import datetime, timedelta
+from random import randrange, choice, randint
+from copy import deepcopy
+import json
+
+
+''' SAMPLE EVENTS '''
+
+SAMPLE_EVENT = {
+    "type": "url allowed",
+    "eventID": "007",
+    "urlCategory": "MALWARE",
+    "sourceIP": "10.8.8.8",
+                "occurred": "2023-01-01T00:00:01.000Z",
+                "sourceUser": "james.bond@xsoar.local",
+                "url": "https://notthedomainyouarelookingfor.com/login.zip",
+                "userAgent": "Mozilla/5.0(WindowsNT6.1;WOW64;rv:27.0)Gecko/20100101Firefox/27.0"
+}
+
+ALL_EVENTS = "All"
+BLOCKED_URLS = "Blocked URLs"
+ALLOWED_URLS = "Allowed URLs"
+
+TYPES = ["url allowed", "url blocked"]
+USERS = ["james.bond@xsoar.local", "eve.moneypenny@xsoar.local", "m@xsoar.local", "q@xsoar.local"]
+ALLOWED_CATEGORIES = ["PHISH", "MALWARE", "SPAM"]
+BLOCKED_CATEGORIES = ["PHISH", "MALWARE", "SPAM"]
+
+SOURCEIPS = ["10.8.8.8", "10.8.8.9", "10.8.8.10", "10.8.8.10", "10.8.8.10", "10.8.8.10", "10.8.8.10",
+             "10.8.8.10", "88.8.8.8", "88.8.8.9", "88.8.8.10", "88.8.8.11", "88.8.8.12", "88.8.8.13"]
+DEFAULT_LIMIT = 20
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+
+''' ACTIVE DIRECTORY QUERY V2 INTEGRATION '''
+
+# Lab version of AD. Simulate the ad-get-user, ad-expire-password, and ad-set-new-password responses.
+# Fun fact about data.  68% of all data is made up, but only 8% of people know that.
+
+USERS = [
+    {
+        "email": "james.bond@xsoar.local",
+        "displayname": "James Bond",
+        "samaccountname": "XSOAR007",
+        "dn": "CN=James Bond,CN=Users,DC=xsoar,DC=local",
+        "group": "CN=Agents,CN=Users,DC=xsoar,DC=local",
+        "manager": "CN=M,CN=Users,DC=xsoar,DC=local"
+    },
+    {
+        "email": "eve.moneypenny@xsoar.local",
+        "displayname": "Eve Moneypenny",
+        "samaccountname": "XSOAR002",
+        "dn": "CN=Eve Moneypenny,CN=Users,DC=xsoar,DC=local",
+        "group": "CN=Administration,CN=Users,DC=xsoar,DC=local",
+        "manager": "CN=M,CN=Users,DC=xsoar,DC=local"
+    },
+    {
+        "email": "m@xsoar.local",
+        "displayname": "M",
+        "samaccountname": "XSOAR001",
+        "dn": "CN=M,CN=Users,DC=xsoar,DC=local",
+        "group": "CN=Managers,CN=Users,DC=xsoar,DC=local",
+        "manager": "CN=James Bond,CN=Users,DC=xsoar,DC=local"
+    },
+    {
+        "email": "q@xsoar.local",
+        "displayname": "Q",
+        "samaccountname": "XSOAR003",
+        "dn": "CN=Q,CN=Users,DC=xsoar,DC=local",
+        "group": "CN=Gadgets,CN=Users,DC=xsoar,DC=local",
+        "manager": "CN=James Bond,CN=Users,DC=xsoar,DC=local"
+    }
+]
+
+
+""" Helper functions """
+
+
+def get_now():
+    """
+    A wrapper function of datetime.now
+    helps handle tests
+
+    Returns:
+        datetime: time right now
+    """
+    return datetime.now()
+
+
+def mock_data(total):
+    """
+    Changes mocks the data to randomize the alerts a bit. Pass in the total number of events to create for some fun.
+    """
+    now = get_now()
+    data = []
+    count = 0
+
+    users = [x['email'] for x in USERS]
+    while count < total:
+        item = deepcopy(SAMPLE_EVENT)
+        item['occurred'] = (now - timedelta(minutes=randrange(6, 60))).strftime('%Y-%m-%dT%H:%M:%SZ')
+        item['eventID'] = randrange(100, 10000)
+        item['type'] = choice(TYPES)
+        if item['type'] == 'url blocked':
+            item['urlCategory'] = choice(BLOCKED_CATEGORIES)
+        else:
+            item['urlCategory'] = choice(ALLOWED_CATEGORIES)
+        item['sourceUser'] = choice(users)
+        item['sourceIP'] = choice(SOURCEIPS)
+
+        if item["urlCategory"] == "MALWARE":
+            item["url"] = f"https://notthedomainyouarelookingfor{randrange(1,88)}.com/download.zip"
+        if item["urlCategory"] == "PHISH":
+            item["url"] = f"https://notthedomainyouarelookingfor{randrange(1,88)}.com/login.php"
+        if item["urlCategory"] == "SPAM":
+            item["url"] = f"https://nplusone{randrange(1,10)}.ca/getnewbike"
+
+        data.append(item)
+        count += 1
+    return data
+
+
+def lookup_ad_user(lookup, attribute):
+    """
+    Returns the user details from the USERS global var
+    """
+    found_user = False
+    for u in USERS:
+        if u[attribute] == lookup:
+            found_user = True
+            return u
+            break
+
+    if not found_user:
+        return []
+
+
+def create_ad_user_output(user):
+    """
+    returns the user object for using the USER_TEMPLATE
+    """
+    user_template = {
+        "attributes": {
+            "displayName": [
+                f"{user['displayname']}"
+            ],
+            "mail": [
+                f"{user['email']}"
+            ],
+            "manager": [
+                f"{user['manager']}"
+            ],
+            "memberOf": [
+                f"{user['group']}"
+            ],
+            "name": [
+                f"{user['displayname']}"
+            ],
+            "sAMAccountName": [
+                f"{user['samaccountname']}"
+            ],
+            "userAccountControl": [
+                512
+            ],
+            "dn": f"{user['dn']}"
+        },
+        "account": {
+            "DisplayName": [
+                f"{user['displayname']}"
+            ],
+            "Email": [
+                f"{user['email']}"
+            ],
+            "Manager": [
+                f"{user['manager']}"
+            ],
+            "Groups": [
+                f"{user['group']}"
+            ],
+            "Type": "AD",
+            "Username": [
+                f"{user['samaccountname']}"
+            ],
+            "ID": f"{user['dn']}"
+        }
+    }
+
+    return user_template
+
+
+""" Command functions """
+
+
+def get_events_command(args):
+    """
+    returns the events, in this case the mock data
+    """
+    event_type_filter = args.get("eventTypes")
+    total = randrange(10, 20)
+    events = mock_data(total)
+    readable = tableToMarkdown("Training Events", events)
+    results = CommandResults(readable_output=readable, ignore_auto_extract=True)
+    return results
+
+
+def ad_simple_response_command(command):
+    """
+    returns a text response for the Active Directory Commands
+    """
+    command_map = {
+        'ad-expire-password': 'Expired password successfully',
+        'ad-set-new-password': 'User password successfully set'
+    }
+    return CommandResults(readable_output=command_map[command], ignore_auto_extract=True)
+
+
+def ad_get_user_command(args):
+    """
+    Returns the user details from our simulated AD if the user is found
+    """
+
+    # error handing for Ori
+    if not args.get('username') and not args.get('email') and not args.get('dn'):
+        return_error("Need either a username, email, or dn")
+
+    # lookup the user
+    if args.get('email'):
+        username = args.get('email')
+        user = lookup_ad_user(username, 'email')
+    if args.get('username'):
+        username = args.get('username')
+        user = lookup_ad_user(username, 'samaccountname')
+    if args.get('dn'):
+        username = args.get('dn')
+        user = lookup_ad_user(username, 'dn')
+
+    # create the user response
+    if user:
+        user_output = create_ad_user_output(user)
+
+        # return results like AD query would.
+        demisto_entry = {
+            'ContentsFormat': formats['json'],
+            'Type': entryTypes['note'],
+            'Contents': user_output,
+            'ReadableContentsFormat': formats['markdown'],
+            'HumanReadable': tableToMarkdown("Active Directory - Get Users", user_output.get('attributes')),
+            'EntryContext': {
+                'ActiveDirectory.Users(obj.dn == val.dn)': user_output.get('attributes'),
+                'Account(obj.ID == val.ID)': user_output.get('account')
+            }
+        }
+
+        return demisto_entry
+    else:
+        return "No user found"
+
+
+def siem_search_command(args):
+    query = args.get('query')
+    result_type = args.get('result_type')
+    number = randint(1, 10)
+
+    # return results for demo of siem search in example playbook.
+    if result_type == "email" or query.startswith("email"):
+        result = [
+            {
+                "Username": "XSOAR007",
+                "Email": "james.bond@xsoar.local"
+            },
+            {
+                "Username": "XSOAR001",
+                "Email": "m@xsoar.local"
+            }
+        ]
+    # return some data if the number is right. Demonstrate Built-in looping in a sub-playbook.
+    elif number >= 7 or result_type == "hosts" or query.startswith("username"):
+        result = [
+            {
+                "Host": "crossiscoming01",
+                "Online": "Yes"
+            },
+            {
+                "Host": "crossiscoming02",
+                "Online": "No"
+            }
+        ]
+    # return some data if the number is right. Demonstrate Built-in looping in a sub-playbook.
+    elif query.startswith("ip"):
+        result = [
+            {
+                "Host": "crossiscoming01",
+                "Online": "Yes"
+            }
+        ]
+    else:
+        result = []
+
+    results = CommandResults(
+        readable_output=tableToMarkdown(f"SIEM Search results for query: {query}", result),
+        outputs_prefix="SIEM.Result",
+        outputs=result)
+
+    return results
+
+
+def fetch_incidents(limit=DEFAULT_LIMIT):
+    """
+    fetch!
+    """
+    incidents = []
+
+    # get last run, can be used to store the last fetch time.
+    last_run_object = demisto.getLastRun()
+    if 'time' in last_run_object.keys():
+        last_run = last_run_object.get('time')
+        demisto.info(f"XET - We have a last run object, previous last_run: {last_run}")
+    else:
+        last_run = get_now().strftime('%Y-%m-%dT%H:%M:%SZ')
+
+    count = randrange(10, limit)
+    events = mock_data(count)
+
+    for event in events:
+        if event.get("type") == "url allowed":
+            event_type = "URL Allowed"
+        else:
+            event_type = "URL Blocked"
+        event_user = event.get("sourceUser", "")
+        incident = {
+            "name": f"Alert - {event_type}- {event_user}",
+            "rawJSON": json.dumps(event),
+            "occurred": event["occurred"]
+        }
+        incidents.append(incident)
+
+    # set last run
+    next_run = {"time": get_now().strftime('%Y-%m-%dT%H:%M:%SZ')}
+    demisto.setLastRun(next_run)
+    demisto.info(f"XET - Setting LastRun: {next_run}")
+
+    # return our list of Incidents
+    return incidents[:limit]
+
+
+''' COMMANDS MANAGER / SWITCH PANEL '''
+
+
+def main():
+    """
+    main function to run things
+    """
+    params = demisto.params()
+    fetch_limit = 20
+
+    command = demisto.command()
+    LOG(f'Command being called is {command}')
+
+    try:
+        commands = {
+            'xsoar-engineer-get-events': get_events_command,
+            'ad-expire-password': ad_simple_response_command
+        }
+        if command == 'test-module':
+            demisto.results('ok')
+        elif demisto.command() == 'fetch-incidents':
+            demisto.incidents(fetch_incidents(limit=fetch_limit))
+        elif demisto.command() == 'xsoar-engineer-get-events':
+            return_results(get_events_command(demisto.args()))
+        elif demisto.command() == 'ad-get-user':
+            demisto.results(ad_get_user_command(demisto.args()))
+        elif demisto.command() == 'siem-search':
+            return_results(siem_search_command(demisto.args()))
+        elif command in commands:
+            return_results(commands[command](command))
+
+    except Exception as e:
+        return_error(str(e))
+
+
+if __name__ in ['__main__', 'builtin', 'builtins']:
+    main()

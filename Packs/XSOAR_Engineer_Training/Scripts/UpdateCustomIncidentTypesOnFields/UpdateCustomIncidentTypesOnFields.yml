@@ -1,0 +1,36 @@
+args:
+- description: 'Comma separated list of field machine names to add the Incident Type  to. (Example: emailto,emailfrom) '
+  name: fields
+  required: true
+- description: Comma separated list of Incident Types to add the field to. (e.g Custom Type,Custom Type 2)
+  name: incident_types
+  required: true
+- auto: PREDEFINED
+  defaultValue: add
+  description: Whether to add or remove the Incident Types from the field. Default is to add.
+  name: action
+  predefined:
+  - add
+  - remove
+comment: This will add  or remove custom Incident Types on Incident fields in XSOAR
+commonfields:
+  id: UpdateCustomIncidentTypesOnFields
+  version: -1
+dependson:
+  must:
+  - demisto-api-post
+  - demisto-api-get
+dockerimage: demisto/python3:3.10.10.48392
+enabled: true
+name: UpdateCustomIncidentTypesOnFields
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- xet
+type: python
+fromversion: 6.8.0
+tests:
+- No tests (auto formatted)
