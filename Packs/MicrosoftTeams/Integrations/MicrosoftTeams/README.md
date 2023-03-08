@@ -2,7 +2,7 @@ Use the Microsoft Teams integration to send messages and notifications to your t
 This integration was integrated and tested with version 1.0 of Microsoft Teams.
 
 **Note::** 
-- The integration has the ability to run builtin XSOAR commands, through a mirrored channel. make sure to pass the command in the chat exactly as typed in CORTEX XSOAR CLI. example: `!DeleteContext all=yes`. Use command `mirror-investigation` to mirror/create a mirrored channel.
+- The integration has the ability to run built-in Cortex XSOAR commands, through a mirrored channel. Make sure to pass the command in the chat exactly as typed in the CORTEX XSOAR CLI. For example: `!DeleteContext all=yes`. Use the command `mirror-investigation` to mirror/create a mirrored channel.
 
 - For use cases where it is only need to send messages to a specific channel, we recommend checking the [Microsoft Teams via Webhook Integration](https://xsoar.pan.dev/docs/reference/integrations/microsoft-teams-via-webhook), which has a simpler setup.
 
