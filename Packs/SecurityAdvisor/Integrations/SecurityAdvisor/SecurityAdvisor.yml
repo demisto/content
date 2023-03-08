@@ -2,9 +2,10 @@ commonfields:
   id: SecurityAdvisor
   version: -1
 name: SecurityAdvisor
-display: SecurityAdvisor
-category: Messaging
-description: Contextual coaching and awareness for end users
+display: SecurityAdvisor (Deprecated)
+category: Messaging and Conferencing
+description: Deprecated. No available replacement.
+deprecated: true
 configuration:
 - display: Use system proxy settings
   name: proxy
