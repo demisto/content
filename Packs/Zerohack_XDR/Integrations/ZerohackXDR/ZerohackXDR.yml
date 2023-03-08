@@ -7,14 +7,6 @@ category: Network Security
 description: |-
   The companion integration for Zerohack XDR.
   Current versions allow the user to collect data from the XDR and later versions will support data exfiltration to XDR.
-detaileddescription: |-
-  ### Whizhack Technologies - Zerohack XDR Integration\n ####
-
-  Integration Author: Lakshy Sharma
-  ## Zerohack XDR
-  The Cortex integration for the Zerohack XDR is currently capable of fetching incidents from the XDR.
-  The future releases will target the ability to ingest data from the cortex to XDR to enable a comprehensive view of security from the XDR dashboard.
-  [View Integration Documentation](https://xdr.zerohack.in)
 configuration:
 - display: Fetch incidents
   name: isFetch
@@ -72,7 +64,7 @@ script:
         severity.
     description: Fetch a single incident of your choice of severity level to study
       the incidents structure before you start continously fecthing incidents.
-  dockerimage: demisto/python3:3.10.9.46807
+  dockerimage: demisto/python3:3.10.10.48392
   isfetch: true
   runonce: false
   subtype: python3
