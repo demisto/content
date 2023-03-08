@@ -98,7 +98,6 @@ class Git:
             f.filename
             for f in self.files
             if "ReleaseNotes" not in Path(f.filename).parts
-            Path(f.filename).name != "pack_metadata.json" 
         ]
 
     def merge(self, *args):
