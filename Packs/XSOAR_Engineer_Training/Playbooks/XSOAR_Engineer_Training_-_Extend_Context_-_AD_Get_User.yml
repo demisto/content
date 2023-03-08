@@ -78,17 +78,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: c5552397-7cbb-4451-8acf-14e421d6d42d
+    taskid: 39aad8a0-a248-4c70-8011-b2ff324a5565
     type: regular
     task:
-      id: c5552397-7cbb-4451-8acf-14e421d6d42d
+      id: 39aad8a0-a248-4c70-8011-b2ff324a5565
       version: -1
       name: Get User Name  & Email (ad-get-user) with Extend Context
       description: Retrieves detailed information about a user account. The user can be specified by username, email address, or as an Active Directory Distinguished Name (DN).
-      script: '|||ad-get-user'
+      script: XSOAR Engineer Training|||ad-get-user
       type: regular
       iscommand: true
-      brand: ""
+      brand: XSOAR Engineer Training
     nexttasks:
       '#none#':
       - "6"
@@ -236,17 +236,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 82ebebfe-de84-441e-861f-f91cc6bf60e9
+    taskid: ce8322bf-e964-4a27-8e4d-9f12a42b975e
     type: regular
     task:
-      id: 82ebebfe-de84-441e-861f-f91cc6bf60e9
+      id: ce8322bf-e964-4a27-8e4d-9f12a42b975e
       version: -1
       name: Get User Name  & Mail (ad-get-user) with Extend Context (Advanced)
       description: Retrieves detailed information about a user account. The user can be specified by username, email address, or as an Active Directory Distinguished Name (DN).
-      script: '|||ad-get-user'
+      script: XSOAR Engineer Training|||ad-get-user
       type: regular
       iscommand: true
-      brand: ""
+      brand: XSOAR Engineer Training
     nexttasks:
       '#none#':
       - "8"
@@ -323,6 +323,6 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 6.8.0
 tests:
 - No tests (auto formatted)
-fromversion: 6.8.0

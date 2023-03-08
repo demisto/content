@@ -1,6 +1,6 @@
-id: XSOAR Engineer Training - Sub-Playbooks - On Call Notification
+id: XSOAR Engineer Training - On Call Notification (Sub-Playbook)
 version: -1
-name: XSOAR Engineer Training - Sub-Playbooks - On Call Notification
+name: XSOAR Engineer Training - On Call Notification (Sub-Playbook)
 description: "This sub-playbook can be used to send email notification if an Incidents severity is High or Critical.  By default it will take the current Incident severity as input, and requires a comma separated list of email addresses to send the notification to.\n\nInputs:\n\nemail: The email addresses to send the message to, can be comma separated. \nseverity: Defaults to the current incident severity in string format (critical, high, etc)\n\nOutputs:\n\nEscalationEmailSent: (Yes | No) : Whether a notification email was sent. "
 tags:
 - training
@@ -38,12 +38,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: f3b5d576-fc65-4cd4-8a55-e5e70b1baf1b
+    taskid: 6ab3d15f-53a0-4cf2-807d-75a83b6e42bc
     type: condition
     task:
-      id: f3b5d576-fc65-4cd4-8a55-e5e70b1baf1b
+      id: 6ab3d15f-53a0-4cf2-807d-75a83b6e42bc
       version: -1
       name: Is the Severity Critical or High?
+      description: Check the severity of the Incident.
       type: condition
       iscommand: false
       brand: ""
@@ -139,7 +140,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 720
+          "y": 895
         }
       }
     note: false
@@ -164,7 +165,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "6"
     scriptarguments:
       key:
         simple: EscalationEmailSent
@@ -221,7 +222,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 545
+          "y": 720
         }
       }
     note: false
@@ -231,12 +232,47 @@ tasks:
     quietmode: 1
     isoversize: false
     isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 968c2121-9fda-48f5-8409-59287f018bf7
+    type: regular
+    task:
+      id: 968c2121-9fda-48f5-8409-59287f018bf7
+      version: -1
+      name: 'Send Email '
+      description: Send an email (doesn't actually send an email)
+      script: XSOAR Engineer Training|||send-mail
+      type: regular
+      iscommand: true
+      brand: XSOAR Engineer Training
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      to:
+        simple: rickroll@xet.com
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 735,
+        "height": 910,
         "width": 810,
         "x": 50,
         "y": 50

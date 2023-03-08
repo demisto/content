@@ -121,10 +121,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: ad12c89f-8a4f-4abe-872b-efa2c38f1111
+    taskid: fefccbde-4063-4c11-8a3c-930aa137af07
     type: condition
     task:
-      id: ad12c89f-8a4f-4abe-872b-efa2c38f1111
+      id: fefccbde-4063-4c11-8a3c-930aa137af07
       version: -1
       name: Is there a Base64 Key to decode?
       description: 'Here we check if the data we are looping over has the key of Base64 that we want to decode. '
@@ -147,6 +147,8 @@ tasks:
                 root: inputs.data
                 accessor: Base64
             iscontext: true
+          right:
+            value: {}
       - - operator: isNotEmpty
           left:
             value:
@@ -299,6 +301,6 @@ outputs:
 - contextPath: LoopData
   description: The parsed data with decoded base64.
   type: unknown
+fromversion: 6.8.0
 tests:
 - No tests (auto formatted)
-fromversion: 6.8.0

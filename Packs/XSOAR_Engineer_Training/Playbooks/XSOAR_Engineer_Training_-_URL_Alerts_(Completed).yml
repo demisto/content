@@ -1,6 +1,6 @@
-id: XSOAR Engineer Training - URL Alerts Playbook (Completed)
+id: XSOAR Engineer Training - URL Alerts (Completed)
 version: -1
-name: XSOAR Engineer Training - URL Alerts Playbook (Completed)
+name: XSOAR Engineer Training - URL Alerts (Completed)
 description: "Example playbook for the Training - URL Clicks use case, for xsoar engineer training.  This is what it *could* look like when done. \n"
 tags:
 - training
@@ -38,17 +38,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 85fac598-1e32-4ddc-81c8-78d1ab66a1ee
+    taskid: 73fab278-32d9-40fb-844a-7a79c263232e
     type: regular
     task:
-      id: 85fac598-1e32-4ddc-81c8-78d1ab66a1ee
+      id: 73fab278-32d9-40fb-844a-7a79c263232e
       version: -1
       name: Get User details from AD
       description: Retrieves detailed information about a user account. The user can be specified by username, email address, or as an Active Directory Distinguished Name (DN).
-      script: '|||ad-get-user'
+      script: XSOAR Engineer Training|||ad-get-user
       type: regular
       iscommand: true
-      brand: ""
+      brand: XSOAR Engineer Training
     nexttasks:
       '#none#':
       - "34"
@@ -215,12 +215,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: d2a14339-653a-4a38-8fdf-2bc9f7e07e86
+    taskid: 8753642e-c211-447e-8530-e6d3ef0fa19f
     type: collection
     task:
-      id: d2a14339-653a-4a38-8fdf-2bc9f7e07e86
+      id: 8753642e-c211-447e-8530-e6d3ef0fa19f
       version: -1
       name: Ask user if they potentially exposed Credentials?
+      description: Data Collection Task
       type: collection
       iscommand: false
       brand: ""
@@ -285,12 +286,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: e9e18e1c-79e1-49a1-87e9-f8ab6a07a927
+    taskid: 2b1e015a-79a3-4878-8656-64f713e13c7b
     type: condition
     task:
-      id: e9e18e1c-79e1-49a1-87e9-f8ab6a07a927
+      id: 2b1e015a-79a3-4878-8656-64f713e13c7b
       version: -1
       name: Did user leak creds?
+      description: Conditional if they answered yes to leaking creds.
       type: condition
       iscommand: false
       brand: ""
@@ -434,10 +436,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: e5bc6556-5d1a-4276-87e9-19a19a2cd674
+    taskid: d0fbc72b-5605-483d-83de-a4ce721866dc
     type: regular
     task:
-      id: e5bc6556-5d1a-4276-87e9-19a19a2cd674
+      id: d0fbc72b-5605-483d-83de-a4ce721866dc
       version: -1
       name: Manual - Provide password to User!
       description: |-
@@ -711,12 +713,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: b3d55ba3-3fc6-4182-81db-6bfac48251cd
+    taskid: 6e26f7f0-f22b-44e7-8397-6fcfcb0851a7
     type: condition
     task:
-      id: b3d55ba3-3fc6-4182-81db-6bfac48251cd
+      id: 6e26f7f0-f22b-44e7-8397-6fcfcb0851a7
       version: -1
       name: Does the User exist in AD?
+      description: Does the user exist in AD?
       type: condition
       iscommand: false
       brand: ""
@@ -734,6 +737,8 @@ tasks:
             value:
               simple: ActiveDirectory.Users.sAMAccountName
             iscontext: true
+          right:
+            value: {}
       - - operator: isNotEmpty
           left:
             value:
@@ -856,12 +861,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: 7f8e0993-a9c7-4755-84df-0372f965dd61
+    taskid: a7a942c9-c8f9-4136-857b-f9de4172f6f1
     type: condition
     task:
-      id: 7f8e0993-a9c7-4755-84df-0372f965dd61
+      id: a7a942c9-c8f9-4136-857b-f9de4172f6f1
       version: -1
       name: Was the URL Blocked?
+      description: Was the type = url blocked
       type: condition
       iscommand: false
       brand: ""
@@ -989,6 +995,6 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 6.8.0
 tests:
 - No tests (auto formatted)
-fromversion: 6.8.0

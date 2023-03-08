@@ -29,6 +29,7 @@ script:
   commands:
   - arguments:
     - default: true
+      description: URL to check
       isArray: true
       name: url
       required: true
@@ -36,6 +37,7 @@ script:
     name: url
   - arguments:
     - default: true
+      description: 'Domain to check '
       isArray: true
       name: domain
       required: true
@@ -43,6 +45,7 @@ script:
     name: domain
   - arguments:
     - default: true
+      description: IP to check
       isArray: true
       name: ip
       required: true
@@ -50,6 +53,7 @@ script:
     name: ip
   - arguments:
     - default: true
+      description: File to check
       isArray: true
       name: file
       required: true

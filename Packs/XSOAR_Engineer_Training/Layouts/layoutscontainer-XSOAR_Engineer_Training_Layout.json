@@ -329,7 +329,7 @@
                         "minH": 1,
                         "moved": false,
                         "name": "Automation Scripts",
-                        "query": "XETAutomationScripts",
+                        "query": "XETAutomationOverview",
                         "queryType": "script",
                         "static": false,
                         "type": "dynamic",

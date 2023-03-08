@@ -38,17 +38,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: aacb12b5-e224-4879-89f9-c4cb132cf93a
+    taskid: b3810009-4db6-4aef-8dae-76ccc3d3b805
     type: regular
     task:
-      id: aacb12b5-e224-4879-89f9-c4cb132cf93a
+      id: b3810009-4db6-4aef-8dae-76ccc3d3b805
       version: -1
       name: ad-get-user
       description: Retrieves detailed information about a user account. The user can be specified by username, email address, or as an Active Directory Distinguished Name (DN).
-      script: '|||ad-get-user'
+      script: XSOAR Engineer Training|||ad-get-user
       type: regular
       iscommand: true
-      brand: ""
+      brand: XSOAR Engineer Training
     nexttasks:
       '#none#':
       - "2"
@@ -74,12 +74,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: ffaa3249-aa13-47f5-8a8d-cc8340c61f9e
+    taskid: 505456a0-dbcb-439a-8eb6-a24fbd679131
     type: condition
     task:
-      id: ffaa3249-aa13-47f5-8a8d-cc8340c61f9e
+      id: 505456a0-dbcb-439a-8eb6-a24fbd679131
       version: -1
       name: Does User Exist?
+      description: Check if the user exists.
       type: condition
       iscommand: false
       brand: ""
@@ -99,6 +100,8 @@ tasks:
                 root: ActiveDirectory.Users
                 accessor: mail
             iscontext: true
+          right:
+            value: {}
       - - operator: isEqualString
           left:
             value:
@@ -126,12 +129,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 343976dc-7507-4559-8c5d-2ac3dbaddb15
+    taskid: 30af5bd2-0190-4097-8a2f-e1fc95970109
     type: regular
     task:
-      id: 343976dc-7507-4559-8c5d-2ac3dbaddb15
+      id: 30af5bd2-0190-4097-8a2f-e1fc95970109
       version: -1
-      name: Set Exists
+      name: Set Exists Key
       description: Set a value in context under the key you entered.
       scriptName: Set
       type: regular
@@ -165,12 +168,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 41e9fa5f-e30a-471e-829e-c4e92dc93620
+    taskid: a4ac6b17-3f66-40ef-8183-f88d4860614c
     type: regular
     task:
-      id: 41e9fa5f-e30a-471e-829e-c4e92dc93620
+      id: a4ac6b17-3f66-40ef-8183-f88d4860614c
       version: -1
-      name: Set Doesn't Exists
+      name: Set NotExisted Key
       description: Set a value in context under the key you entered.
       scriptName: Set
       type: regular
@@ -318,13 +321,15 @@ inputs:
 - key: Users
   value: {}
   required: true
-  description: ""
+  description: Array of users email addresses to lookup
   playbookInputQuery:
 outputs:
 - contextPath: Exists
+  description: List of users who exist
   type: unknown
 - contextPath: NotExisted
+  description: List of users who don't exist
   type: unknown
+fromversion: 6.8.0
 tests:
 - No tests (auto formatted)
-fromversion: 6.8.0

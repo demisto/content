@@ -38,12 +38,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: ae0ab705-37f4-4c18-89da-f780a5aa1d35
+    taskid: 80b516cc-579e-4b52-82b6-edf90d3aceb6
     type: collection
     task:
-      id: ae0ab705-37f4-4c18-89da-f780a5aa1d35
+      id: 80b516cc-579e-4b52-82b6-edf90d3aceb6
       version: -1
       name: Query for an IP
+      description: Query for the IP to check.
       type: collection
       iscommand: false
       brand: ""
@@ -75,7 +76,7 @@ tasks:
         retriescount: 2
         retriesinterval: 360
         completeafterreplies: 1
-        completeafterv2: false
+        completeafterv2: true
         completeaftersla: false
     form:
       questions:
@@ -187,12 +188,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: f67d30ea-543d-4f05-8779-e24c3c417698
+    taskid: a03ac01c-6877-454f-8580-eda63eb475b6
     type: condition
     task:
-      id: f67d30ea-543d-4f05-8779-e24c3c417698
+      id: a03ac01c-6877-454f-8580-eda63eb475b6
       version: -1
       name: Is IP Internal?
+      description: Check if the IP is internal or external.
       type: condition
       iscommand: false
       brand: ""
@@ -340,6 +342,6 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 6.8.0
 tests:
 - No tests (auto formatted)
-fromversion: 6.8.0

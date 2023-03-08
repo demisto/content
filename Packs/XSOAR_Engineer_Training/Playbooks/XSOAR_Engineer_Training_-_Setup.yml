@@ -1,6 +1,6 @@
-id: XSOAR Engineer Training - Setup Playbook
+id: XSOAR Engineer Training - Setup
 version: -1
-name: XSOAR Engineer Training - Setup Playbook
+name: XSOAR Engineer Training - Setup
 description: This playbook walks you through setting up the XSOAR Training Pack
 tags:
 - training
@@ -38,12 +38,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: d99f44f9-7180-4c87-834a-51d85d2d58b4
+    taskid: 7e89b632-ca9b-41e0-8aa5-e7ca1eb6cc92
     type: condition
     task:
-      id: d99f44f9-7180-4c87-834a-51d85d2d58b4
+      id: 7e89b632-ca9b-41e0-8aa5-e7ca1eb6cc92
       version: -1
       name: Does the Internal IP Ranges list exist?
+      description: Check if the internal ranges list exists.
       type: condition
       iscommand: false
       brand: ""
@@ -61,6 +62,8 @@ tasks:
             value:
               simple: lists.Internal IP Ranges
             iscontext: true
+          right:
+            value: {}
       - - operator: isNotEmpty
           left:
             value:
@@ -356,12 +359,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 7fcfc716-90da-4532-846a-3aa936c0b94d
+    taskid: b5012da3-c9ff-4d09-81f8-5f550786cd46
     type: condition
     task:
-      id: 7fcfc716-90da-4532-846a-3aa936c0b94d
+      id: b5012da3-c9ff-4d09-81f8-5f550786cd46
       version: -1
       name: Does the Environment list exist?
+      description: Check if the environment list exists.
       type: condition
       iscommand: false
       brand: ""
@@ -379,6 +383,8 @@ tasks:
             value:
               simple: lists.environment
             iscontext: true
+          right:
+            value: {}
       - - operator: isNotEmpty
           left:
             value:
@@ -438,12 +444,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 8521d227-1dfd-41f8-8677-f5720da78a16
+    taskid: 0e966182-07a2-4228-86bd-7677d513b092
     type: condition
     task:
-      id: 8521d227-1dfd-41f8-8677-f5720da78a16
+      id: 0e966182-07a2-4228-86bd-7677d513b092
       version: -1
       name: Has the setup already been run?
+      description: Check if the setup has been done before, by checking if the list exists.
       type: condition
       iscommand: false
       brand: ""
@@ -461,6 +468,8 @@ tasks:
             value:
               simple: lists.training setup completed
             iscontext: true
+          right:
+            value: {}
       - - operator: isNotEmpty
           left:
             value:
@@ -557,10 +566,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 7828462f-4e83-4f58-818f-a33e05a83ab2
+    taskid: 8f078c8f-3b1c-43d4-898f-a3535da12fc2
     type: condition
     task:
-      id: 7828462f-4e83-4f58-818f-a33e05a83ab2
+      id: 8f078c8f-3b1c-43d4-898f-a3535da12fc2
       version: -1
       name: 'Do quick setup? '
       description: "Select **YES** to have the playbook walk you through setting up this content.  \n\nSelect **NO** if you don't want to go through this process at this time.\n\nYou can rerun the playbook if you want to complete this in the future. "

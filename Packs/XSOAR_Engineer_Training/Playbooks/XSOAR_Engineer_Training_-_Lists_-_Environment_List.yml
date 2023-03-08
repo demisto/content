@@ -38,12 +38,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 5cf8a5a2-126e-4943-80f7-4d3dd2308a0a
+    taskid: e299cf30-3239-4f4f-8ee1-bb17f56c672e
     type: condition
     task:
-      id: 5cf8a5a2-126e-4943-80f7-4d3dd2308a0a
+      id: e299cf30-3239-4f4f-8ee1-bb17f56c672e
       version: -1
       name: 'Check Environment '
+      description: Check which environment we have in the list.
       type: condition
       iscommand: false
       brand: ""
@@ -318,12 +319,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 61c665c5-a6c1-442b-83a1-bd555d25f827
+    taskid: 8d1174b8-b82d-4410-8983-41a84046e9c0
     type: condition
     task:
-      id: 61c665c5-a6c1-442b-83a1-bd555d25f827
+      id: 8d1174b8-b82d-4410-8983-41a84046e9c0
       version: -1
       name: Does the Environment list exist?
+      description: Check if the list exists.
       type: condition
       iscommand: false
       brand: ""
@@ -341,6 +343,8 @@ tasks:
             value:
               simple: lists.environment
             iscontext: true
+          right:
+            value: {}
       - - operator: isNotEmpty
           left:
             value:
@@ -410,6 +414,6 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 6.8.0
 tests:
 - No tests (auto formatted)
-fromversion: 6.8.0

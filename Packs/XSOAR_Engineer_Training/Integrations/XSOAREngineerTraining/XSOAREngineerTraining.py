@@ -204,13 +204,14 @@ def get_events_command(args):
     return results
 
 
-def ad_simple_response_command(command):
+def simple_response_command(command):
     """
-    returns a text response for the Active Directory Commands
+    returns a text response for the Active Directory and send mail Commands
     """
     command_map = {
         'ad-expire-password': 'Expired password successfully',
-        'ad-set-new-password': 'User password successfully set'
+        'ad-set-new-password': 'User password successfully set',
+        'send-mail': 'notification sent'
     }
     return CommandResults(readable_output=command_map[command], ignore_auto_extract=True)
 
@@ -360,7 +361,8 @@ def main():
     try:
         commands = {
             'xsoar-engineer-get-events': get_events_command,
-            'ad-expire-password': ad_simple_response_command
+            'ad-expire-password': simple_response_command,
+            'send-mail': simple_response_command
         }
         if command == 'test-module':
             demisto.results('ok')

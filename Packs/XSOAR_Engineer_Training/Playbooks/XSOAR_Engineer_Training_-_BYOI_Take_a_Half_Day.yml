@@ -76,10 +76,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: e14512a6-e9f6-4aa5-8bb8-3f0bf84cf989
+    taskid: 8840aae8-0122-4a7b-85ac-472b2ac9d082
     type: condition
     task:
-      id: e14512a6-e9f6-4aa5-8bb8-3f0bf84cf989
+      id: 8840aae8-0122-4a7b-85ac-472b2ac9d082
       version: -1
       name: Is Today a Good Day to Half Day?
       description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
@@ -236,12 +236,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: f9d88360-d762-4bd5-81a1-a9c3bb76d000
+    taskid: d52b552a-9d46-4d3a-8568-d11ed200786a
     type: collection
     task:
-      id: f9d88360-d762-4bd5-81a1-a9c3bb76d000
+      id: d52b552a-9d46-4d3a-8568-d11ed200786a
       version: -1
       name: What city do you want to check the weather for?
+      description: Prompt for the city.
       type: collection
       iscommand: false
       brand: ""
@@ -274,7 +275,7 @@ tasks:
         retriescount: 2
         retriesinterval: 360
         completeafterreplies: 1
-        completeafterv2: false
+        completeafterv2: true
         completeaftersla: false
     form:
       questions:
@@ -421,6 +422,6 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 6.8.0
 tests:
 - No tests (auto formatted)
-fromversion: 6.8.0

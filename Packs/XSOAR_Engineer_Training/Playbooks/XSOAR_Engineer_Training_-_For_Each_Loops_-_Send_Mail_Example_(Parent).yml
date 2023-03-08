@@ -160,12 +160,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 5a73e353-4875-4e8a-8b3d-df853293f39e
+    taskid: 493879c5-5efe-4dfc-8c65-6040def000a0
     type: collection
     task:
-      id: 5a73e353-4875-4e8a-8b3d-df853293f39e
+      id: 493879c5-5efe-4dfc-8c65-6040def000a0
       version: -1
       name: Query User for Email Addresses
+      description: Which emails to send.
       type: collection
       iscommand: false
       brand: ""
@@ -197,7 +198,7 @@ tasks:
         retriescount: 2
         retriesinterval: 360
         completeafterreplies: 1
-        completeafterv2: false
+        completeafterv2: true
         completeaftersla: false
     form:
       questions:
@@ -332,6 +333,6 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 6.8.0
 tests:
 - No tests (auto formatted)
-fromversion: 6.8.0

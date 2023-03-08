@@ -152,12 +152,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 830845e9-b2dc-4d2a-8148-164b013e5570
+    taskid: 45791781-4532-46ac-8cca-19cb7a79bb10
     type: collection
     task:
-      id: 830845e9-b2dc-4d2a-8148-164b013e5570
+      id: 45791781-4532-46ac-8cca-19cb7a79bb10
       version: -1
       name: Query for User Emails to lookup
+      description: Query for the users to lookup.
       type: collection
       iscommand: false
       brand: ""
@@ -309,6 +310,6 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 6.8.0
 tests:
 - No tests (auto formatted)
-fromversion: 6.8.0

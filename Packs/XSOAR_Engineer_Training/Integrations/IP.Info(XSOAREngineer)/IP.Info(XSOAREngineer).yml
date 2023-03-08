@@ -17,6 +17,7 @@ script:
     - description: The IP address to lookup! (e.g. 8.8.8.8)
       name: ip
       required: true
+    description: Lookup an IP
     name: xsoar-engineer-ipinfo
     outputs:
     - contextPath: IpInfo.ip

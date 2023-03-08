@@ -62,7 +62,7 @@
     "locked": false,
     "name": "XSOAR Engineer URL Alerts",
     "onChangeRepAlg": 2,
-    "playbookId": "XSOAR Engineer Training - URL Alerts Playbook (Completed)",
+    "playbookId": "XSOAR Engineer Training - URL Alerts (Completed)",
     "readonly": false,
     "reputationCalc": 2,
     "system": false,

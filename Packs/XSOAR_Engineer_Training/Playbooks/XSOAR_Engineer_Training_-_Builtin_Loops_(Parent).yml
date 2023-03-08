@@ -153,12 +153,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 9d12dd9c-2199-46b8-8858-7d1210a35cda
+    taskid: 31333517-973c-4dad-8c62-fdafcde2db2c
     type: condition
     task:
-      id: 9d12dd9c-2199-46b8-8858-7d1210a35cda
+      id: 31333517-973c-4dad-8c62-fdafcde2db2c
       version: -1
       name: Was there a SIEM Result?
+      description: Check if there was a result.
       type: condition
       iscommand: false
       brand: ""
@@ -176,6 +177,8 @@ tasks:
             value:
               simple: SIEM.Result
             iscontext: true
+          right:
+            value: {}
       - - operator: isNotEmpty
           left:
             value:
@@ -375,6 +378,6 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 6.8.0
 tests:
 - No tests (auto formatted)
-fromversion: 6.8.0

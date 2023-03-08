@@ -1,6 +1,6 @@
 category: Utilities
 commonfields:
-  id: XSOAR Engineer Training Integration
+  id: XSOAR Engineer Training
   version: -1
 configuration:
 - display: Events to fetch
@@ -30,8 +30,8 @@ configuration:
   required: false
   type: 19
 description: "This integration provides sample data to fetch events into XSOAR, and commands to build playbooks around.\n\nUse for training purposes only. "
-display: XSOAR Engineer Training Integration
-name: XSOAR Engineer Training Integration
+display: XSOAR Engineer Training
+name: XSOAR Engineer Training
 script:
   commands:
   - arguments: []
@@ -106,6 +106,12 @@ script:
     outputs:
     - contextPath: SIEM.Result
       description: The results of the SIEM search. The results are a JSON array, in which each item is a SIEM event.
+  - arguments:
+    - description: Who to send the fake email to.
+      name: to
+      required: true
+    description: Send an email (doesn't actually send an email)
+    name: send-mail
   dockerimage: demisto/python3:3.10.10.48392
   isfetch: true
   runonce: false

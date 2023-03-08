@@ -38,10 +38,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: aba5054e-a9bf-47a8-8103-d3206170cfce
+    taskid: a7a18bf8-06d4-4744-8fa2-260d11233407
     type: collection
     task:
-      id: aba5054e-a9bf-47a8-8103-d3206170cfce
+      id: a7a18bf8-06d4-4744-8fa2-260d11233407
       version: -1
       name: What Incident should we query?
       description: Data collection task, to grab the Incident we want to query for status.
@@ -76,7 +76,7 @@ tasks:
         retriescount: 2
         retriesinterval: 360
         completeafterreplies: 1
-        completeafterv2: false
+        completeafterv2: true
         completeaftersla: false
     form:
       questions:
@@ -392,6 +392,6 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 6.8.0
 tests:
 - No tests (auto formatted)
-fromversion: 6.8.0

@@ -1,7 +1,7 @@
 args:
-- name: value
+- description: The value to be transformed.
+  name: value
   required: true
-  description: The value to transform.
 comment: Transforms ServiceNow Severity value to XSOAR Severity values.
 commonfields:
   id: IncomingServiceNowSeverityMap

@@ -38,17 +38,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 5cf23b7a-cb05-4e7f-877e-109e4deacf9b
+    taskid: b2efd3e9-a73f-4a4a-8060-1ce8bc74ff5c
     type: regular
     task:
-      id: 5cf23b7a-cb05-4e7f-877e-109e4deacf9b
+      id: b2efd3e9-a73f-4a4a-8060-1ce8bc74ff5c
       version: -1
       name: Search SIEM for Results
       description: Searches the simulated SIEM for events.
-      script: '|||siem-search'
+      script: XSOAR Engineer Training|||siem-search
       type: regular
       iscommand: true
-      brand: ""
+      brand: XSOAR Engineer Training
     nexttasks:
       '#none#':
       - "3"
@@ -191,10 +191,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 9bb5b930-f159-49b7-8cf1-6787cb7704f5
+    taskid: 7084cdf1-ee72-4deb-8826-df7074ff65bb
     type: condition
     task:
-      id: 9bb5b930-f159-49b7-8cf1-6787cb7704f5
+      id: 7084cdf1-ee72-4deb-8826-df7074ff65bb
       version: -1
       name: Is Loop Counter equal to 5 and no SIEM Results?
       description: "Check to see if we've looped the number of times we told it, and if we still don't have Splunk Results. \n\n"
@@ -300,6 +300,6 @@ outputs:
 - contextPath: LoopCounter
   description: 'The number of loops that the sub-playbook went through. '
   type: unknown
+fromversion: 6.8.0
 tests:
 - No tests (auto formatted)
-fromversion: 6.8.0
