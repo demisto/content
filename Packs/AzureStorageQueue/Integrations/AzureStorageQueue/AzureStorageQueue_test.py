@@ -337,3 +337,40 @@ def test_azure_storage_queue_clear_queue_command(requests_mock):
     assert result.outputs is None
     assert result.outputs_prefix is None
     assert result.readable_output == f'{queue_name} was cleared of messages successfully.'
+
+
+@pytest.mark.parametrize(argnames='client_id', argvalues=['test_client_id', None])
+def test_test_module_command_with_managed_identities(mocker, requests_mock, client_id):
+    """
+        Given:
+            - Managed Identities client id for authentication.
+        When:
+            - Calling test_module.
+        Then:
+            - Ensure the output are as expected.
+    """
+
+    from AzureStorageQueue import main, MANAGED_IDENTITIES_TOKEN_URL
+    import demistomock as demisto
+    import AzureStorageQueue
+    import re
+
+    mock_token = {'access_token': 'test_token', 'expires_in': '86400'}
+    get_mock = requests_mock.get(MANAGED_IDENTITIES_TOKEN_URL, json=mock_token)
+    requests_mock.get(re.compile('.queue.core.windows.net/.*'))
+
+    params = {
+        'managed_identities_client_id': {'password': client_id},
+        'use_managed_identities': 'True',
+        'credentials': {'identifier': 'test_storage_account_name'},
+        'max_fetch': 20
+    }
+    mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(demisto, 'command', return_value='test-module')
+    mocker.patch.object(AzureStorageQueue, 'return_results', return_value=params)
+
+    main()
+
+    assert 'ok' in AzureStorageQueue.return_results.call_args[0][0]
+    qs = get_mock.last_request.qs
+    assert client_id and qs['client_id'] == [client_id] or 'client_id' not in qs

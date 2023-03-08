@@ -1,3 +1,6 @@
+[known_words]
+trendmicro-cas-email-sweep
+
 [file:README.md]
 ignore=RM104,RM106
 

@@ -1,0 +1,66 @@
+{
+  "/b.dat": {
+    "last-modified": 1669044167,
+    "data-id": "fec96279-e127-4d17-bbce-b82bd2ecd23b",
+    "size": 3,
+    "data-type": "base85",
+    "saved-size": 4
+  },
+  "/c.dat": {
+    "last-modified": 1669044167,
+    "data-id": "39b07866-d77c-4dc5-9aba-8833816e2fdc",
+    "size": 3,
+    "data-type": "base85",
+    "saved-size": 4
+  },
+  "/x/XYZ/\u30a2\u30a4\u30a6\u30a8\u30aa.txt": {
+    "last-modified": 1669044167,
+    "data-id": "fc5fa84d-4986-4f0f-aa0b-454fe316733e",
+    "size": 15,
+    "data-type": "base85",
+    "saved-size": 19
+  },
+  "/x/d.dat": {
+    "last-modified": 1669044167,
+    "data-id": "5e334374-8a07-4e95-9b5c-da37b01bb8f0",
+    "size": 3,
+    "data-type": "base85",
+    "saved-size": 4
+  },
+  "/x/\u3042\u3044\u3046\u3048\u304a/e.dat": {
+    "last-modified": 1669044167,
+    "data-id": "eb5ffc00-1a80-4326-9485-57c2e36223fb",
+    "size": 3,
+    "data-type": "base85",
+    "saved-size": 4
+  },
+  "/x/\u3042\u3044\u3046\u3048\u304a/f.dat": {
+    "last-modified": 1669044167,
+    "data-id": "2704f4a8-cc82-48fa-b4f9-f328b6a4b3dd",
+    "size": 3,
+    "data-type": "base85",
+    "saved-size": 4
+  },
+  "/y/g.dat": {
+    "last-modified": 1669044167,
+    "data-id": "08597087-62d7-42e0-955a-8aaada2e8f46",
+    "size": 3,
+    "data-type": "base85",
+    "saved-size": 4
+  },
+  "/z.dat": {
+    "last-modified": 1669044167,
+    "data-id": "1d62a08a-ffa9-426e-8b35-966ccca6acbf",
+    "size": 7198,
+    "data-type": "gzip+base85",
+    "saved-size": 99
+  },
+  "08597087-62d7-42e0-955a-8aaada2e8f46": "XJ=;",
+  "1d62a08a-ffa9-426e-8b35-966ccca6acbf": "ABzYG$CrC!0{?VvaB^aCb8~lSVgT*TF%19!2m`R61jAE56C50^fF>7q;_-Mq9*@W4@pwEQkH_Qjcsw4D$K&yMo<9Y|90s!<8~^|",
+  "2704f4a8-cc82-48fa-b4f9-f328b6a4b3dd": "W@cs",
+  "39b07866-d77c-4dc5-9aba-8833816e2fdc": "V`F0",
+  "5e334374-8a07-4e95-9b5c-da37b01bb8f0": "WMpI",
+  "eb5ffc00-1a80-4326-9485-57c2e36223fb": "Wo2a",
+  "fc5fa84d-4986-4f0f-aa0b-454fe316733e": "<AS2&f~4bursIOB<ASO",
+  "fec96279-e127-4d17-bbce-b82bd2ecd23b": "Vq#("
+}

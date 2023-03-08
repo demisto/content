@@ -12,8 +12,10 @@ import urllib3
 urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
+API_KEY = demisto.params().get('credentials', {}).get('password') or demisto.params().get('api_key')
 
-API_KEY = demisto.params()['api_key']
+if API_KEY is None:
+    raise ValueError('Missing API key.')
 
 # Remove trailing slash to prevent wrong URL path to service
 API_URL = demisto.params()['api_url'].rstrip('/')
@@ -65,7 +67,7 @@ def alert_to_demisto_result(alert):
 
     human_readable = tableToMarkdown(f'Alert ID {ec["Shodan"]["Alert"]["ID"]}', {
         'Name': alert.get('name', ''),
-        'IP': alert.get('filters', {'ip', ''})['ip'],
+        'IP': alert.get('filters', {'ip': ''})['ip'],
         'Expires': ec['Shodan']['Alert']['Expires']
     })
 

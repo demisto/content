@@ -1,0 +1,6 @@
+fromversion: 6.10.0
+id: CiscoFirepower_modeling_rule
+name: CiscoFirepower Modeling Rule
+rules: ''
+schema: ''
+tags: CiscoFirepower

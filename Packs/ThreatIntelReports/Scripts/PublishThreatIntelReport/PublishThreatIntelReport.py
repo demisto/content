@@ -14,7 +14,7 @@ def publish():
         {
             'id': object_id,
             'xsoarReadOnlyRoles': demisto.dt(
-                roles, 'DemistoRoles.name'
+                roles, 'name'
             ),
             'reportstatus': 'Published',
             'published': now_utc.isoformat(),

@@ -1,4 +1,4 @@
-This playbook provides response actions to Azure. The following are available for execution automatically/manually:
+This playbook provides response actions to AWS. The following are available for execution automatically/manually:
  - Resource remediation:
    - Terminate the instance
    - Stop the instance

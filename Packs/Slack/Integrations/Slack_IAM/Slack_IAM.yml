@@ -1,59 +1,83 @@
 category: Identity and Access Management
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: Slack IAM
   version: -1
 configuration:
+- name: credentials
+  required: false
+  type: 9
+  displaypassword: Access Token
+  hiddenusername: true
 - display: Access Token
   name: access_token
-  required: true
+  required: false
   type: 4
+  section: Connect
+  hidden: true
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
-- additionalinfo: If set to false, iam-create-user command will be skipped, and user
-    will not be created.
+  section: Connect
+  advanced: true
+- additionalinfo: If set to false, iam-create-user command will be skipped, and user will not be created.
   defaultvalue: 'true'
   display: Allow creating users
   name: create_user_enabled
   required: false
   type: 8
+  section: Collect
+  advanced: true
 - defaultvalue: 'true'
   display: Allow updating users
   name: update_user_enabled
   required: false
   type: 8
+  section: Collect
+  advanced: true
 - defaultvalue: 'true'
   display: Allow enabling users
   name: enable_user_enabled
   required: false
   type: 8
+  section: Collect
+  advanced: true
 - defaultvalue: 'true'
   display: Allow disabling users
   name: disable_user_enabled
   required: false
   type: 8
+  section: Collect
+  advanced: true
 - defaultvalue: 'true'
   display: Automatically create user if not found in update command
   name: create_if_not_exists
   required: false
   type: 8
+  section: Collect
+  advanced: true
 - defaultvalue: User Profile - SCIM (Incoming)
   display: Incoming Mapper
   name: mapper_in
   required: true
   type: 0
+  section: Connect
 - defaultvalue: User Profile - SCIM (Outgoing)
   display: Outgoing Mapper
   name: mapper_out
   required: true
   type: 0
-description: Integrate with Slack's services to execute CRUD operations for employee
-  lifecycle processes.
+  section: Connect
+description: Integrate with Slack's services to execute CRUD operations for employee lifecycle processes.
 display: Slack IAM
 name: Slack IAM
 script:
@@ -68,8 +92,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: When set to true, after the command execution the status of the
-        user in the 3rd-party integration will be active.
+      description: When set to true, after the command execution the status of the user in the 3rd-party integration will be active.
       isArray: false
       name: allow-enable
       predefined:
@@ -83,8 +106,7 @@ script:
     name: iam-create-user
     outputs:
     - contextPath: IAM.Vendor.active
-      description: When true, indicates that the employee's status is active in the
-        3rd-party integration.
+      description: When true, indicates that the employee's status is active in the 3rd-party integration.
       type: Boolean
     - contextPath: IAM.Vendor.brand
       description: Name of the integration.
@@ -123,8 +145,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'true'
-      description: When set to true, after the command execution the status of the
-        user in the 3rd-party integration will be active.
+      description: When set to true, after the command execution the status of the user in the 3rd-party integration will be active.
       isArray: false
       name: allow-enable
       predefined:
@@ -133,14 +154,12 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Updates an existing user with the data passed in the user-profile
-      argument.
+    description: Updates an existing user with the data passed in the user-profile argument.
     execution: true
     name: iam-update-user
     outputs:
     - contextPath: IAM.Vendor.active
-      description: When true, indicates that the employee's status is active in the
-        3rd-party integration.
+      description: When true, indicates that the employee's status is active in the 3rd-party integration.
       type: Boolean
     - contextPath: IAM.Vendor.brand
       description: Name of the integration.
@@ -182,8 +201,7 @@ script:
     name: iam-get-user
     outputs:
     - contextPath: IAM.Vendor.active
-      description: When true, indicates that the employee's status is active in the
-        3rd-party integration.
+      description: When true, indicates that the employee's status is active in the 3rd-party integration.
       type: Boolean
     - contextPath: IAM.Vendor.brand
       description: Name of the integration.
@@ -225,8 +243,7 @@ script:
     name: iam-disable-user
     outputs:
     - contextPath: IAM.Vendor.active
-      description: When true, indicates that the employee's status is active in the
-        3rd-party integration.
+      description: When true, indicates that the employee's status is active in the 3rd-party integration.
       type: Boolean
     - contextPath: IAM.Vendor.brand
       description: Name of the integration.
@@ -256,8 +273,7 @@ script:
       description: The employee's username in the app.
       type: String
   - deprecated: false
-    description: Retrieves a User Profile schema, which holds all of the user fields
-      within the application. Used for outgoing-mapping through the Get Schema option.
+    description: Retrieves a User Profile schema, which holds all of the user fields within the application. Used for outgoing-mapping through the Get Schema option.
     execution: false
     name: get-mapping-fields
   - arguments:
@@ -366,23 +382,19 @@ script:
       required: true
       secret: false
     - default: false
-      description: List of members ids to add. A maximum of 15,000 users per call
-        can be modified using this command
+      description: List of members ids to add. A maximum of 15,000 users per call can be modified using this command
       isArray: true
       name: memberIdsToAdd
       required: false
       secret: false
     - default: false
-      description: List of members ids to be deleted from the group. A maximum of
-        15,000 users per call can be modified using this command
+      description: List of members ids to be deleted from the group. A maximum of 15,000 users per call can be modified using this command
       isArray: true
       name: memberIdsToDelete
       required: false
       secret: false
     deprecated: false
-    description: Updates an existing group resource. This command allows individual
-      (or groups of) users to be added or removed from the group with a single operation.
-      A max of 15,000 users can be modified in 1 call
+    description: Updates an existing group resource. This command allows individual (or groups of) users to be added or removed from the group with a single operation. A max of 15,000 users can be modified in 1 call
     execution: false
     name: iam-update-group
     outputs:
@@ -401,7 +413,7 @@ script:
     - contextPath: UpdateGroup.errorMessage
       description: Reason why the API failed.
       type: String
-  dockerimage: demisto/python3:3.10.5.31797
+  dockerimage: demisto/python3:3.10.9.42476
   feed: false
   isfetch: false
   longRunning: false

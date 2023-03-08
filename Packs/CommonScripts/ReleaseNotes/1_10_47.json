@@ -1,0 +1,1 @@
+{"breakingChanges":true,"breakingChangesNotes":"The scripts: FormattedDateToEpoch, EmailDomainBlacklist, EmailDomainWhitelist, FirstArrayElement, ExtractInbetween moved to **FiltersAndTransformers** pack. Make sure to update the **FiltersAndTransformers** pack to the latest version in order to use these scripts."}

@@ -54,7 +54,8 @@ Use Cases
     | NTLM authentication | Indicates whether to use NTLM authentication.                                                                                                 | False |
     | Base DN (for example "dc=company,dc=com") | The basic hierarchical path of objects in the active directory.                                                                                                 | True |
     | Page size | The number of results to be returned, per page (page - response content from AD server), from a query. This may effect query run time.                                                                                                 | True |
-    | Secure Connection |  Use SSL secure connection or ‘None’ (communication over clear-text).                                                                                                | True |
+    | Secure Connection |  Use SSL or Start TLS for secure connection or ‘None’ for communication over clear-text.                                                                                                | True |
+    | SSL Version | The SSL\TLS version to use in SSL or Start TLS connections types. It is recommended to select the TLS_CLIENT option, which auto-negotiate the highest protocol version that both the client and server support, and configure the context client-side connections. For more information please see: [ssl.PROTOCOLS](https://docs.python.org/3/library/ssl.html#ssl.PROTOCOL_TLS_CLIENT)). | False |
     | Trust any certificate (not secure) | Select to avoid server certification validation. You may want to do this in case Cortex XSOAR cannot validate the integration server certificate (due to a missing CA certificate)                                                                                                 | False |
     | Incoming Mapper | Used in the IAM commands.                                                                        | True |
     | Outgoing Mapper | Used in the IAM commands.                                                                        | True |
@@ -568,6 +569,35 @@ There is no context output for this command.
 ##### Human Readable Output
 ```
 "mike" was successfully moved to "OU=Sarah,DC=demisto,DC=int"
+```
+
+### ad-modify-user-ou
+***
+Modifies the user organizational unit within a domain.
+
+#### Base Command
+
+`ad-modify-user-ou`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user-name | The name of the user to modify. | Required | 
+| full-superior-dn | Superior DN. For example, OU=users,DC=domain,DC=com (the specified domain must be the same as the current user domain). | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+##### Command Example
+```
+!ad-modify-user-ou user-name=username full-superior-dn=OU=users,DC=demisto,DC=int
+```
+
+##### Human Readable Output
+```
+"username" was successfully moved to "OU=users,DC=demisto,DC=int"
 ```
 
 ### ad-get-user

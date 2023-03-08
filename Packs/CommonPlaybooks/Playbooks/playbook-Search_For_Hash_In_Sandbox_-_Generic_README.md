@@ -1,4 +1,4 @@
-This playbook searches for a specific hash in the supported sandboxes. If the hash is known the playbook provides a detailed analysis of the sandbox report. Currently, supported sandboxes are Falcon X, Wildfire and Joe Sandbox.
+This playbook searches for a specific hash in the supported sandboxes. If the hash is known the playbook provides a detailed analysis of the sandbox report. Currently, supported sandboxes are Falcon Intelligence Sandbox, Wildfire and Joe Sandbox.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -35,7 +35,7 @@ This playbook does not use any integrations.
 | AttackPattern.KillChainPhases | The kill chain phases of the attack pattern. | string |
 | NonFoundHashes | A list of hashes that are not found in the sandboxes. | string |
 | WildFire.Report | The results of the Wildfire report. | string |
-| csfalconx.resource.sandbox | The results of the Falcon X report. | string |
+| csfalconx.resource.sandbox | The results of the Falcon Intelligence Sandbox report. | string |
 
 ## Playbook Image
 ---

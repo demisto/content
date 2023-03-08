@@ -473,4 +473,107 @@ Disable an active user.
 | Slack IAM | Slack IAM_instance_1 | true | false | U01KHS7J7U1 | powershelly10 | testdemistomock@paloaltonetworks.com | schemas: urn:scim:schemas:core:1.0<br/>id: U01KHS7J7U1<br/>externalId: <br/>meta: {"created": "2021-01-19T07:46:20-08:00", "location": "https://api.slack.com/scim/v1/Users/U01KHS7J7U1"}<br/>userName: powershelly10<br/>nickName: powershelly10<br/>name: {"givenName": "powershelly10", "familyName": ""}<br/>displayName: powershelly10<br/>profileUrl: https://panwtest.enterprise.slack.com/team/powershelly10<br/>title: <br/>timezone: America/Los_Angeles<br/>active: false<br/>emails: {'value': 'testdemistomock@paloaltonetworks.com', 'primary': True}<br/>photos: {'value': 'https://secure.gravatar.com/avatar/e14bda84be03871922c78d0d03caa901.jpg?s=192&d=https%3A%2F%2Fa.slack-edge.com%2Fdf10d%2Fimg%2Favatars%2Fava_0006-192.png', 'type': 'photo'}<br/>groups:  |
 
 
+### iam-create-group
+***
+Creates an empty group
 
+
+#### Base Command
+
+`iam-create-group`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| scim | Group SCIM data with displayName. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CreateGroup.id | String | ID of the group. | 
+| CreateGroup.displayName | String | The display name of the group. | 
+| CreateGroup.success | Boolean | Indicates whether the command succeeded. | 
+| CreateGroup.errorCode | Number | HTTP error response code. | 
+| CreateGroup.errorMessage | String | Reason why the API failed. | 
+
+### iam-get-group
+***
+Retrieves the group information including members
+
+
+#### Base Command
+
+`iam-get-group`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| scim | Group SCIM Data. | Required | 
+| includeMembers | Wheather to include group's members. Possible values are: true, false. Default is false. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GetGroup.id | String | ID of the group. | 
+| GetGroup.displayName | String | The display name of the group. | 
+| GetGroup.members.display | String | The display name of the group member. | 
+| GetGroup.members.value | String | ID of the group member. | 
+| GetGroup.success | Boolean | Indicates whether the command succeeded. | 
+| GetGroup.errorCode | Number | HTTP error response code. | 
+| GetGroup.errorMessage | String | Reason why the API failed. | 
+
+### iam-delete-group
+***
+Permanently removes a group.
+
+
+#### Base Command
+
+`iam-delete-group`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| scim | Group SCIM with id in it. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| DeleteGroup.id | String | ID of the group. | 
+| DeleteGroup.displayName | String | The display name of the group. | 
+| DeleteGroup.success | Boolean | Indicates whether the command succeeded. | 
+| DeleteGroup.errorCode | Number | HTTP error response code. | 
+| DeleteGroup.errorMessage | String | Reason why the API failed. | 
+
+### iam-update-group
+***
+Updates an existing group resource. This command allows individual (or groups of) users to be added or removed from the group with a single operation. A max of 15,000 users can be modified in 1 call
+
+
+#### Base Command
+
+`iam-update-group`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| scim | Group SCIM data. | Required | 
+| memberIdsToAdd | List of members ids to add. A maximum of 15,000 users per call can be modified using this command. | Optional | 
+| memberIdsToDelete | List of members ids to be deleted from the group. A maximum of 15,000 users per call can be modified using this command. | Optional | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| UpdateGroup.id | String | ID of the group. | 
+| UpdateGroup.displayName | String | The display name of the group. | 
+| UpdateGroup.success | Boolean | Indicates whether the command succeeded. | 
+| UpdateGroup.errorCode | Number | HTTP error response code. | 
+| UpdateGroup.errorMessage | String | Reason why the API failed. |

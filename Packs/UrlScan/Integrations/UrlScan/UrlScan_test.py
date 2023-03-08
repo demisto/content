@@ -99,3 +99,23 @@ def test_urlscan_submit_url(requests_mock, mocker):
 
     metrics = response[1]
     assert metrics.execution_metrics == [{'Type': 'QuotaError', 'APICallsCount': 2}]
+
+
+def test_format_results_check_lists(mocker):
+    from UrlScan import format_results, Client
+    client = Client()
+
+    with open('./test_data/capitalne.json', 'r') as f:
+        response_data = json.loads(f.read())
+
+    mocker.patch('UrlScan.urlscan_submit_request', return_value=(response_data, '', ''))
+    mocker.patch.object(demisto, 'results', return_value='')
+    command_results_inputs = mocker.patch('UrlScan.CommandResults')
+
+    format_results(client, 'uuid', '')
+    outputs = command_results_inputs.call_args[1]['outputs']['URLScan(val.URL && val.URL == obj.URL)']
+    assert outputs.get('links') == [
+        "http://capitalne.com/home",
+        "http://capitalne.com/about",
+        "https://urlscan.io/"
+    ]

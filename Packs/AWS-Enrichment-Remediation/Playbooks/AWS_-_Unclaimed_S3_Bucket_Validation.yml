@@ -1,0 +1,303 @@
+id: AWS - Unclaimed S3 Bucket Validation
+version: -1
+name: AWS - Unclaimed S3 Bucket Validation
+description: 'The playbook sends a HTTP get response to the hostname and validates if there is missing bucket information. '
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b2ceb86f-6ced-4a14-89e5-41a0962301e2
+    type: start
+    task:
+      id: b2ceb86f-6ced-4a14-89e5-41a0962301e2
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 85d3a4fc-9007-4df5-8ff4-53a9bcadde5a
+    type: regular
+    task:
+      id: 85d3a4fc-9007-4df5-8ff4-53a9bcadde5a
+      version: -1
+      name: Get request to the RemoteHostname
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      method:
+        simple: GET
+      url:
+        complex:
+          root: inputs.RemoteHostname
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: http://
+              suffix: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: f415235a-3b49-4d7d-8e9f-5f8d95d9d743
+    type: title
+    task:
+      id: f415235a-3b49-4d7d-8e9f-5f8d95d9d743
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: bafc447d-6203-402f-8769-6c630454c5d7
+    type: condition
+    task:
+      id: bafc447d-6203-402f-8769-6c630454c5d7
+      version: -1
+      name: Was there a 404 and S3 bucket not found?
+      description: Checks where the response was a 404 error and the html body of the response has S3 bucket not found.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: HttpRequest.Response
+                accessor: StatusCode
+                transformers:
+                - operator: uniq
+            iscontext: true
+          right:
+            value:
+              simple: "404"
+      - - operator: containsString
+          left:
+            value:
+              complex:
+                root: HttpRequest.Response
+                accessor: Body
+                transformers:
+                - operator: uniq
+                - operator: toLowerCase
+            iscontext: true
+          right:
+            value:
+              simple: nosuchbucket
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: bfd287d9-04c5-4ef2-8e02-73a9581e5e99
+    type: condition
+    task:
+      id: bfd287d9-04c5-4ef2-8e02-73a9581e5e99
+      version: -1
+      name: Was there S3 bucket name mentioned?
+      description: Checks if there was an S3 bucket mentioned in the http response body.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: HttpRequest.Response
+                accessor: Body
+                transformers:
+                - operator: RegexExtractAll
+                  args:
+                    error_if_no_match: {}
+                    ignore_case: {}
+                    multi_line: {}
+                    period_matches_newline: {}
+                    regex:
+                      value:
+                        simple: \<li\>BucketName:\s+(.*?)\<\/li\>
+                    unpack_matches: {}
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: f3f7ba7c-a15a-4d5f-8ce6-3f17fe9ddd45
+    type: regular
+    task:
+      id: f3f7ba7c-a15a-4d5f-8ce6-3f17fe9ddd45
+      version: -1
+      name: Set bucket name from HTTP response
+      description: Set a bucket name in context under BucketName
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      key:
+        simple: S3BucketName
+      value:
+        complex:
+          root: HttpRequest.Response
+          accessor: Body
+          transformers:
+          - operator: RegexExtractAll
+            args:
+              error_if_no_match: {}
+              ignore_case: {}
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: \<li\>BucketName:\s+(.*?)\<\/li\>
+              unpack_matches: {}
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 975,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: RemoteHostname
+  value:
+    complex:
+      root: alert
+      accessor: hostname
+  required: true
+  description: 'Remote hostname in an incident/alert. '
+  playbookInputQuery:
+outputs:
+- contextPath: S3BucketName
+  description: This is the bucket name extracted from HTTP response body.
+  type: unknown
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0

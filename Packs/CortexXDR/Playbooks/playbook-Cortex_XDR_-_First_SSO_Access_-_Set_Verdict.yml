@@ -1,0 +1,1227 @@
+id: Cortex XDR - First SSO Access - Set Verdict
+version: -1
+name: Cortex XDR - First SSO Access - Set Verdict
+description: |-
+  This playbook determines the alert’s verdict based on the results of multiple checks.
+  By default, if at least two of the checks' results are true, the verdict is set to malicious.
+  else if only one check's results are true, the verdict is set to suspicious.
+  If none of the conditions is true, the verdict is set to non-malicious.
+  It is possible to change the threshold value of the inputs to change the sensitivity of the verdict.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 8b3d8be4-0512-4fdf-8815-bf3c4f883759
+    type: start
+    task:
+      id: 8b3d8be4-0512-4fdf-8815-bf3c4f883759
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "100"
+      - "101"
+      - "104"
+      - "106"
+      - "105"
+      - "108"
+      - "109"
+      - "107"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2340,
+          "y": 90
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "67":
+    id: "67"
+    taskid: d930684c-2209-4fcc-8da4-1b044d930b05
+    type: regular
+    task:
+      id: d930684c-2209-4fcc-8da4-1b044d930b05
+      version: -1
+      name: SetIncident Grid field
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "111"
+    scriptarguments:
+      ignore-outputs:
+        simple: "false"
+      xdrinvestigationresults:
+        complex:
+          root: VerdictResult
+    reputationcalc: 1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2340,
+          "y": 620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "69":
+    id: "69"
+    taskid: df940bbc-9ee5-454c-8661-410fcc7651e1
+    type: title
+    task:
+      id: df940bbc-9ee5-454c-8661-410fcc7651e1
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2340,
+          "y": 1960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "70":
+    id: "70"
+    taskid: 29732c87-4ee2-422d-8b23-6482914e5580
+    type: regular
+    task:
+      id: 29732c87-4ee2-422d-8b23-6482914e5580
+      version: -1
+      name: Set Verdict Suspicious
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "69"
+    scriptarguments:
+      key:
+        simple: Verdict
+      value:
+        simple: Suspicious
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2540,
+          "y": 1780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Verdict
+      output:
+        simple: Suspicious
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "71":
+    id: "71"
+    taskid: d46a72a0-4ac8-40c9-838c-f24616af48de
+    type: regular
+    task:
+      id: d46a72a0-4ac8-40c9-838c-f24616af48de
+      version: -1
+      name: Set Verdict Non-malicious
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "69"
+    scriptarguments:
+      key:
+        simple: Verdict
+      value:
+        simple: Non-malicious
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1740,
+          "y": 1780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Verdict
+      output:
+        simple: Non-malicious
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "95":
+    id: "95"
+    taskid: e2087b45-f36f-4b3a-8800-2cb841b059ec
+    type: condition
+    task:
+      id: e2087b45-f36f-4b3a-8800-2cb841b059ec
+      version: -1
+      name: Verdict
+      description: A conditional task whose action path is determined by the verdict results.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Malicious:
+      - "96"
+      Non-Malicious:
+      - "71"
+      Suspicious:
+      - "70"
+      Suspicious - Ask The Manager:
+      - "116"
+    separatecontext: false
+    conditions:
+    - label: Malicious
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              complex:
+                root: NumOfVerdictResult
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: inputs.MaliciousVerdictThreshold
+            iscontext: true
+    - label: Suspicious
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: NumOfVerdictResult
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: inputs.SuspiciousVerdictThreshold
+            iscontext: true
+    - label: Suspicious - Ask The Manager
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: NumOfVerdictResult
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: inputs.SuspiciousVerdictThreshold
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: VerdictResult
+                accessor: The user work from an unusual country?
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    - label: Non-Malicious
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: NumOfVerdictResult
+            iscontext: true
+          right:
+            value:
+              simple: "0"
+          ignorecase: true
+        - operator: isEmpty
+          left:
+            value:
+              complex:
+                root: NumOfVerdictResult
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2340,
+          "y": 1590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "96":
+    id: "96"
+    taskid: ba26768b-c0b2-41de-8561-819616eb1b7a
+    type: regular
+    task:
+      id: ba26768b-c0b2-41de-8561-819616eb1b7a
+      version: -1
+      name: Set Verdict Malicious
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "69"
+    scriptarguments:
+      key:
+        simple: Verdict
+      value:
+        simple: Malicious
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2940,
+          "y": 1780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Verdict
+      output:
+        simple: Malicious
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "100":
+    id: "100"
+    taskid: 5792a80d-2baf-4121-85b1-17c804ebd21f
+    type: regular
+    task:
+      id: 5792a80d-2baf-4121-85b1-17c804ebd21f
+      version: -1
+      name: Check if the user work from an unusual country
+      description: Set multiple keys/values to the context.
+      scriptName: SetMultipleValues
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "118"
+    scriptarguments:
+      keys:
+        simple: The user work from an unusual country?
+      parent:
+        simple: VerdictResult
+      values:
+        complex:
+          root: PaloAltoNetworksXDR.Incident.alerts
+          accessor: name
+          transformers:
+          - operator: If-Then-Else
+            args:
+              condition:
+                value:
+                  simple: lhs==rhs
+              else:
+                value:
+                  simple: "False"
+              equals: {}
+              lhs:
+                value:
+                  simple: inputs.PermanentCountry
+                iscontext: true
+              options: {}
+              rhs:
+                value:
+                  simple: "False"
+              then:
+                value:
+                  simple: "True"
+          - operator: If-Then-Else
+            args:
+              condition:
+                value:
+                  simple: lhs==rhs
+              else:
+                value:
+                  simple: "False"
+              equals: {}
+              lhs:
+                value:
+                  simple: First successful SSO connection from a country in organization
+              options: {}
+              rhs:
+                value:
+                  simple: inputs.AlertName
+                iscontext: true
+              then:
+                value:
+                  simple: "True"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -900,
+          "y": 290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "101":
+    id: "101"
+    taskid: 6a09f954-2b06-4ffb-8b77-0c12f58796b3
+    type: regular
+    task:
+      id: 6a09f954-2b06-4ffb-8b77-0c12f58796b3
+      version: -1
+      name: Check for suspicious activities by the user
+      description: Set multiple keys/values to the context.
+      scriptName: SetMultipleValues
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "118"
+    scriptarguments:
+      keys:
+        simple: The user performs suspicious activities
+      parent:
+        simple: VerdictResult
+      values:
+        complex:
+          root: PaloAltoNetworksXDR.Incident.alerts
+          accessor: name
+          transformers:
+          - operator: If-Then-Else
+            args:
+              condition:
+                value:
+                  simple: lhs!=rhs
+              else:
+                value:
+                  simple: "False"
+              equals: {}
+              lhs:
+                value:
+                  simple: inputs.NumOfOktaSuspiciousActivities
+                iscontext: true
+              options: {}
+              rhs: {}
+              then:
+                value:
+                  simple: "True"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1310,
+          "y": 290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "104":
+    id: "104"
+    taskid: b9442923-37c5-4512-8ccf-3bdd9329a983
+    type: regular
+    task:
+      id: b9442923-37c5-4512-8ccf-3bdd9329a983
+      version: -1
+      name: |
+        Check for massive failed logon
+      description: Set multiple keys/values to the context.
+      scriptName: SetMultipleValues
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "118"
+    scriptarguments:
+      keys:
+        simple: massively failed logon by the user?
+      parent:
+        simple: VerdictResult
+      values:
+        complex:
+          root: PaloAltoNetworksXDR.Incident.alerts
+          accessor: name
+          transformers:
+          - operator: If-Then-Else
+            args:
+              condition:
+                value:
+                  simple: lhs>=rhs
+              else:
+                value:
+                  simple: "False"
+              equals: {}
+              lhs:
+                value:
+                  simple: inputs.NumOfFailedLogon
+                iscontext: true
+              options: {}
+              rhs:
+                value:
+                  simple: inputs.FailedlogonUserThreshold
+                iscontext: true
+              then:
+                value:
+                  simple: "True"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2130,
+          "y": 290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "105":
+    id: "105"
+    taskid: 1384bd62-4969-4e62-8ecd-a47fd698053e
+    type: regular
+    task:
+      id: 1384bd62-4969-4e62-8ecd-a47fd698053e
+      version: -1
+      name: Check for XDR related alerts
+      description: Set multiple keys/values to the context.
+      scriptName: SetMultipleValues
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "118"
+    scriptarguments:
+      keys:
+        simple: XDR related alerts exist?
+      parent:
+        simple: VerdictResult
+      values:
+        complex:
+          root: PaloAltoNetworksXDR.Incident.alerts
+          accessor: name
+          transformers:
+          - operator: If-Then-Else
+            args:
+              condition:
+                value:
+                  simple: lhs>=rhs
+              else:
+                value:
+                  simple: "False"
+              equals: {}
+              lhs:
+                value:
+                  simple: inputs.NumOfXDRAlerts
+                iscontext: true
+              options: {}
+              rhs:
+                value:
+                  simple: inputs.XDRRelatedAlertsThreshold
+                iscontext: true
+              then:
+                value:
+                  simple: "True"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2960,
+          "y": 290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "106":
+    id: "106"
+    taskid: cc30940e-6bff-4cac-8296-13d02f448f51
+    type: regular
+    task:
+      id: cc30940e-6bff-4cac-8296-13d02f448f51
+      version: -1
+      name: Check DBot Score
+      description: Set multiple keys/values to the context.
+      scriptName: SetMultipleValues
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "118"
+    scriptarguments:
+      keys:
+        simple: Suspicious according to DBot Score?
+      parent:
+        simple: VerdictResult
+      values:
+        complex:
+          root: PaloAltoNetworksXDR.Incident.alerts
+          accessor: name
+          transformers:
+          - operator: If-Then-Else
+            args:
+              condition:
+                value:
+                  simple: lhs>=rhs
+              else:
+                value:
+                  simple: "False"
+              equals: {}
+              lhs:
+                value:
+                  simple: |
+                    DBotScore.Score
+                iscontext: true
+              options: {}
+              rhs:
+                value:
+                  simple: "2"
+              then:
+                value:
+                  simple: "True"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2550,
+          "y": 290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "107":
+    id: "107"
+    taskid: 6e2bc53f-cd1d-4b5f-8384-05528442343d
+    type: regular
+    task:
+      id: 6e2bc53f-cd1d-4b5f-8384-05528442343d
+      version: -1
+      name: Check for related campaigns
+      description: Set multiple keys/values to the context.
+      scriptName: SetMultipleValues
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "118"
+    scriptarguments:
+      keys:
+        simple: Has related campaigns?
+      parent:
+        simple: VerdictResult
+      values:
+        complex:
+          root: PaloAltoNetworksXDR.Incident.alerts
+          accessor: name
+          transformers:
+          - operator: If-Then-Else
+            args:
+              condition:
+                value:
+                  simple: lhs!=rhs
+              else:
+                value:
+                  simple: "False"
+              equals: {}
+              lhs:
+                value:
+                  simple: inputs.RelatedCampaign
+                iscontext: true
+              options: {}
+              rhs: {}
+              then:
+                value:
+                  simple: "True"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -3370,
+          "y": 290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "108":
+    id: "108"
+    taskid: 079d8c26-24f5-4449-88a7-35670e51eac9
+    type: regular
+    task:
+      id: 079d8c26-24f5-4449-88a7-35670e51eac9
+      version: -1
+      name: Check for massive failed logon from the ASN
+      description: Set multiple keys/values to the context.
+      scriptName: SetMultipleValues
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "118"
+    scriptarguments:
+      keys:
+        simple: massively failed logon from the ASN?
+      parent:
+        simple: VerdictResult
+      values:
+        complex:
+          root: PaloAltoNetworksXDR.Incident.alerts
+          accessor: name
+          transformers:
+          - operator: If-Then-Else
+            args:
+              condition:
+                value:
+                  simple: lhs>=rhs
+              else:
+                value:
+                  simple: "False"
+              equals: {}
+              lhs:
+                value:
+                  simple: inputs.NumOfFailedLogonASN
+                iscontext: true
+              options: {}
+              rhs:
+                value:
+                  simple: inputs.FailedlogonFromASNThreshold
+                iscontext: true
+              then:
+                value:
+                  simple: "True"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -3790,
+          "y": 290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "109":
+    id: "109"
+    taskid: bc647fb8-7ed5-4e7a-849d-469e0135c811
+    type: regular
+    task:
+      id: bc647fb8-7ed5-4e7a-849d-469e0135c811
+      version: -1
+      name: Check for suspicious user agent access
+      description: Set multiple keys/values to the context.
+      scriptName: SetMultipleValues
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "118"
+    scriptarguments:
+      keys:
+        simple: Does the user perform login to an unusual application?
+      parent:
+        simple: VerdictResult
+      values:
+        complex:
+          root: PaloAltoNetworksXDR.Incident.alerts
+          accessor: name
+          transformers:
+          - operator: If-Then-Else
+            args:
+              condition:
+                value:
+                  simple: lhs!=rhs
+              else:
+                value:
+                  simple: "False"
+              equals: {}
+              lhs:
+                value:
+                  simple: inputs.NumOfOktaSuspiciousUserAgent
+                iscontext: true
+              options: {}
+              rhs:
+                iscontext: true
+              then:
+                value:
+                  simple: "True"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1720,
+          "y": 290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "110":
+    id: "110"
+    taskid: 59e2df11-90f3-4b93-8191-19d4fa6519b3
+    type: regular
+    task:
+      id: 59e2df11-90f3-4b93-8191-19d4fa6519b3
+      version: -1
+      name: Set positive verdict results
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "115"
+    scriptarguments:
+      ignore-outputs:
+        simple: "false"
+      key:
+        simple: PositiveVerdictResult
+      value:
+        complex:
+          root: incident
+          accessor: xdrinvestigationresults
+          transformers:
+          - operator: WhereFieldEquals
+            args:
+              equalTo:
+                value:
+                  simple: "True"
+              field:
+                value:
+                  simple: result
+              getField: {}
+              stringify: {}
+    reputationcalc: 1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2340,
+          "y": 1110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "111":
+    id: "111"
+    taskid: 3b62f061-e8f0-424b-8293-7c2bf0f7430d
+    type: regular
+    task:
+      id: 3b62f061-e8f0-424b-8293-7c2bf0f7430d
+      version: -1
+      name: Set Grid
+      description: Creates a grid table from items or key-value pairs.
+      scriptName: SetGridField
+      type: regular
+      iscommand: false
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "119"
+    scriptarguments:
+      columns:
+        simple: Check,Result
+      context_path:
+        simple: VerdictResult
+      grid_id:
+        simple: xdrinvestigationresults
+      ignore-outputs:
+        simple: "false"
+    reputationcalc: 1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2340,
+          "y": 790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "115":
+    id: "115"
+    taskid: 2be36400-d0b7-403f-841d-8be5751bbccf
+    type: regular
+    task:
+      id: 2be36400-d0b7-403f-841d-8be5751bbccf
+      version: -1
+      name: Count Positive verdict results
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "117"
+    scriptarguments:
+      key:
+        simple: NumOfVerdictResult
+      value:
+        complex:
+          root: PositiveVerdictResult
+          transformers:
+          - operator: count
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2340,
+          "y": 1290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "116":
+    id: "116"
+    taskid: 0baeb447-f4b3-41e5-8d3c-f19ce9ace008
+    type: regular
+    task:
+      id: 0baeb447-f4b3-41e5-8d3c-f19ce9ace008
+      version: -1
+      name: Set Verdict Suspicious - Ask the Manager
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "69"
+    scriptarguments:
+      key:
+        simple: Verdict
+      value:
+        simple: Suspicious - Ask the Manager
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2140,
+          "y": 1780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Verdict
+      output:
+        simple: Suspicious
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "117":
+    id: "117"
+    taskid: 0ba35e93-e1eb-48a4-8f46-545221417c7a
+    type: title
+    task:
+      id: 0ba35e93-e1eb-48a4-8f46-545221417c7a
+      version: -1
+      name: Set Verdict
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "95"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2340,
+          "y": 1455
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "118":
+    id: "118"
+    taskid: 60e6468a-0f38-4ff8-862b-d82c81df94e0
+    type: title
+    task:
+      id: 60e6468a-0f38-4ff8-862b-d82c81df94e0
+      version: -1
+      name: Set Fields to Layout
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "67"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2340,
+          "y": 475
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "119":
+    id: "119"
+    taskid: 2d1d85aa-9a67-4b9c-8b4e-1aaad791ddc7
+    type: title
+    task:
+      id: 2d1d85aa-9a67-4b9c-8b4e-1aaad791ddc7
+      version: -1
+      name: Calc of results
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "110"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -2340,
+          "y": 965
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "95_116_Suspicious - Ask The Manager": 0.86,
+      "95_70_Suspicious": 0.62
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1935,
+        "width": 3270,
+        "x": -3790,
+        "y": 90
+      }
+    }
+  }
+inputs:
+- key: FailedlogonUserThreshold
+  value: {}
+  required: false
+  description: |-
+    This is the minimum threshold for failed login attempts by the user.
+    example: If this input is set to '30', and the playbook has found 31 failed login attempts - It will classify this check as suspicious activity.
+  playbookInputQuery:
+- key: FailedlogonFromASNThreshold
+  value: {}
+  required: false
+  description: |-
+    This is the minimum threshold for failed login attempts from ASN.
+    example: If this input is set to '20', and the playbook has found 21 failed login attempts from ASN - It will classify this check as suspicious activity.
+  playbookInputQuery:
+- key: XDRRelatedAlertsThreshold
+  value: {}
+  required: false
+  description: |-
+    This is the minimum threshold for XDR related alerts based on user activity to identify suspicious activity.
+    example: If this input is set to '3', and the playbook has found 4 XDR related alerts - It will classify this check as suspicious activity.
+  playbookInputQuery:
+- key: MaliciousVerdictThreshold
+  value: {}
+  required: false
+  description: |-
+    The 'Malicious verdict' threshold to determine a malicious verdict.
+    Should be Greater than the "SuspiciousVerdictThreshold" input.
+  playbookInputQuery:
+- key: SuspiciousVerdictThreshold
+  value: {}
+  required: false
+  description: |-
+    The 'Suspicious verdict' threshold to determine a suspicious verdict.
+    Should be lower than the "MaliciousVerdictThreshold" input.
+  playbookInputQuery:
+- key: AlertName
+  value: {}
+  required: false
+  description: Alert Name.
+  playbookInputQuery:
+- key: NumOfFailedLogonASN
+  value: {}
+  required: false
+  description: The number of failed logins from the ASN.
+  playbookInputQuery:
+- key: RelatedCampaign
+  value: {}
+  required: false
+  description: Campaign related to the indicator.
+  playbookInputQuery:
+- key: NumOfXDRAlerts
+  value: {}
+  required: false
+  description: The number of XDR alerts for the user.
+  playbookInputQuery:
+- key: NumOfFailedLogon
+  value: {}
+  required: false
+  description: The number of failed logins.
+  playbookInputQuery:
+- key: NumOfOktaSuspiciousUserAgent
+  value: {}
+  required: false
+  description: The number of suspicious user agents from Okta.
+  playbookInputQuery:
+- key: NumOfOktaSuspiciousActivities
+  value: {}
+  required: false
+  description: The number of suspicious activities for the user from Okta.
+  playbookInputQuery:
+- key: PermanentCountry
+  value: {}
+  required: false
+  description: True if the user works from a permanent country from Okta. Otherwise, false.
+  playbookInputQuery:
+outputs:
+- contextPath: Verdict
+  description: The verdict based on the results of multiple checks.
+  type: unknown
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0

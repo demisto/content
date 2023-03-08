@@ -6,3 +6,6 @@ ignore=BA108,BA109
 
 [file:CheckPointFirewallV2_image.png]
 ignore=IM111
+
+[file:CheckPoint_image.png]
+ignore=IM111

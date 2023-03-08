@@ -1981,6 +1981,43 @@ def fetch_incidents_command():
     demisto.incidents(incidents)
 
 
+def github_add_assignee_command():
+    """
+    Assigns Github user to a PR
+
+        Args:
+            assignee (str): Github username.
+            pull_request_number (str): the pull request/issue number.
+
+        Returns:
+            CommandResults object with informative printout if adding user was successfull or not
+    """
+    assigned_users = []
+    not_assigned_users = []
+    args = demisto.args()
+    assignee = args.get('assignee')
+    pr_number = args.get('pull_request_number')
+    assignee_list = argToList(assignee)
+    suffix = f'{USER_SUFFIX}/issues/{pr_number}/assignees'
+    post_data = {"assignees": assignee_list}
+    response = http_request('POST', url_suffix=suffix, data=post_data)
+    assignees_response = response.get("assignees")
+    assigned_users_from_pr = [user.get("login") for user in assignees_response]
+    for user in assignee_list:
+        if user in assigned_users_from_pr:
+            assigned_users.append(user)
+        else:
+            not_assigned_users.append(user)
+    message = ''
+    if assigned_users:
+        message = f'The following users were assigned successfully to PR #{pr_number}: \n{assigned_users}'
+    if not_assigned_users:
+        message += f'\nThe following users were not assigned to #{pr_number}: \n{not_assigned_users} \n' \
+                   f'Verify that the users exist and that you have the right permissions.'
+    return_results(CommandResults(outputs_prefix='GitHub.Assignees', outputs_key_field='login', outputs=assignees_response,
+                                  raw_response=response, readable_output=message))
+
+
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 COMMANDS = {
@@ -2026,6 +2063,7 @@ COMMANDS = {
     'GitHub-releases-list': github_releases_list_command,
     'GitHub-update-comment': github_update_comment_command,
     'GitHub-delete-comment': github_delete_comment_command,
+    'GitHub-add-assignee': github_add_assignee_command,
 }
 
 

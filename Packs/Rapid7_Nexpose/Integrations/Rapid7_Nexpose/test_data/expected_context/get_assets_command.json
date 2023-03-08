@@ -1,0 +1,53 @@
+[
+    {
+        "AssetId": 2,
+        "Address": "192.0.2.0",
+        "Addresses": [
+            "192.0.2.0"
+        ],
+        "Name": null,
+        "Site": "Test",
+        "Exploits": 0,
+        "Malware": 0,
+        "OperatingSystem": "Linux 3.10",
+        "Vulnerabilities": 7,
+        "RiskScore": 1728.056884765625,
+        "Assessed": true,
+        "LastScanDate": "2022-11-02T14:54:19.040Z",
+        "LastScanId": "-"
+    },
+    {
+        "AssetId": 3,
+        "Address": "192.0.2.0",
+        "Addresses": [
+            "192.0.2.0"
+        ],
+        "Name": null,
+        "Site": "Test",
+        "Exploits": 0,
+        "Malware": 0,
+        "OperatingSystem": null,
+        "Vulnerabilities": 0,
+        "RiskScore": 0.0,
+        "Assessed": true,
+        "LastScanDate": "2020-07-27T12:40:34.550Z",
+        "LastScanId": 402
+    },
+    {
+        "AssetId": 4,
+        "Address": "192.0.2.0",
+        "Addresses": [
+            "192.0.2.0"
+        ],
+        "Name": null,
+        "Site": "Test",
+        "Exploits": 0,
+        "Malware": 0,
+        "OperatingSystem": null,
+        "Vulnerabilities": 0,
+        "RiskScore": 0.0,
+        "Assessed": false,
+        "LastScanDate": "2020-07-29T11:11:57.552Z",
+        "LastScanId": "-"
+    }
+]

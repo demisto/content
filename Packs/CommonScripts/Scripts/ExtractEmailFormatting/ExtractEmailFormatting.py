@@ -20,13 +20,21 @@ def extract_email(email_address: str) -> str:
     """
     email_address = email_address.lower()
 
+    if {"=", "?"}.issubset(set(email_address)):
+        email_address = extract_email_from_url_query(email_address)
+
     email_format = re.compile("[<(\[{\"\'.]*"
                               "(?:(?:\\\\|\^{3})u[a-f\d]{4})?"
                               "([\w.!#$%&'*+/=?^_`{|}~-]{1,64}"
-                              "\[?@]?[\w.-]{1,255}\[?\.]?"
-                              "[A-Za-z]{2,})", re.IGNORECASE)
+                              "\[?@]?[\w.-]{1,255}(?:\[?\.]?"
+                              "[A-Za-z]{2,}){1,2})", re.IGNORECASE)
 
-    return re.findall(email_format, email_address)[0]
+    email_address = re.match(email_format, email_address)
+
+    if email_address:
+        return email_address.group(1)
+    else:
+        return ''
 
 
 def check_tld(email_address: str) -> bool:
@@ -58,6 +66,28 @@ def refang_email(email_address: str) -> str:
     return email_address.replace("[@]", "@").replace("[.]", ".") if check_tld(email_address) else ''
 
 
+def extract_email_from_url_query(email_address: str) -> str:
+    """
+    As most characters are valid in the content part of an email the regex can sometimes
+    catch a full URL path. This function will extract only the email from the path and query
+    that were returned.
+
+    Args:
+        email_address (str): extracted raw email address (with query and path)
+
+    Returns:
+        str: only the email address
+    """
+
+    extracted_email = re.match('(.*?)=', email_address[::-1])
+
+    if extracted_email:
+        return extracted_email.group(1)[::-1]
+
+    else:
+        return ''
+
+
 def main():
     list_results = []
 
@@ -71,8 +101,8 @@ def main():
         {
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
-            'Contents': email_address,
-            'EntryContext': {'Email': email_address},
+            'Contents': [email_address] if email_address else [],
+            'EntryContext': {'Email': email_address} if email_address else {},
         } for email_address in list_results]
 
     if output:

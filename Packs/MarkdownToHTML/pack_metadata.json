@@ -1,8 +1,8 @@
 {
-    "name": "MarkdownToHTML",
-    "description": "Converts Markdown to HTML.",
+    "name": "MarkdownToHTML (Deprecated)",
+    "description": "Deprecated. please use Community Common Scripts instead.",
     "support": "community",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.1",
     "author": "Winultimatum",
     "url": "",
     "email": "",
@@ -17,5 +17,6 @@
     "marketplaces": [
         "xsoar",
         "marketplacev2"
-    ]
+    ],
+    "hidden": true
 }

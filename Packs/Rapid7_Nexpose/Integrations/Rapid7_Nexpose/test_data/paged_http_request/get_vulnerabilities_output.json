@@ -1,0 +1,558 @@
+[
+    {
+        "added": "2018-05-16",
+        "categories": [
+            "7-Zip"
+        ],
+        "cves": [
+            "CVE-2008-6536"
+        ],
+        "cvss": {
+            "v2": {
+                "accessComplexity": "L",
+                "accessVector": "N",
+                "authentication": "N",
+                "availabilityImpact": "C",
+                "confidentialityImpact": "C",
+                "exploitScore": 9.9968,
+                "impactScore": 10.0008,
+                "integrityImpact": "C",
+                "score": 10.0,
+                "vector": "AV:N/AC:L/Au:N/C:C/I:C/A:C"
+            }
+        },
+        "denialOfService": false,
+        "description": {
+            "html": "<p>Unspecified vulnerability in 7-zip before 4.5.7 has unknown impact and remote attack vectors, as demonstrated by the PROTOS GENOME test suite for Archive Formats (c10).</p>",
+            "text": "Unspecified vulnerability in 7-zip before 4.5.7 has unknown impact and remote attack vectors, as demonstrated by the PROTOS GENOME test suite for Archive Formats (c10)."
+        },
+        "exploits": 0,
+        "id": "7-zip-cve-2008-6536",
+        "malwareKits": 0,
+        "modified": "2018-06-08",
+        "pci": {
+            "adjustedCVSSScore": 10,
+            "adjustedSeverityScore": 5,
+            "fail": true,
+            "status": "Fail"
+        },
+        "published": "2009-03-29",
+        "riskScore": 898.52,
+        "severity": "Critical",
+        "severityScore": 10,
+        "title": "7-Zip: CVE-2008-6536: Unspecified vulnerability in 7-zip before 4.5.7"
+    },
+    {
+        "added": "2018-05-16",
+        "categories": [
+            "7-Zip",
+            "Remote Execution"
+        ],
+        "cves": [
+            "CVE-2016-2334"
+        ],
+        "cvss": {
+            "v2": {
+                "accessComplexity": "M",
+                "accessVector": "N",
+                "authentication": "N",
+                "availabilityImpact": "C",
+                "confidentialityImpact": "C",
+                "exploitScore": 8.5888,
+                "impactScore": 10.0008,
+                "integrityImpact": "C",
+                "score": 9.3,
+                "vector": "AV:N/AC:M/Au:N/C:C/I:C/A:C"
+            },
+            "v3": {
+                "attackComplexity": "L",
+                "attackVector": "L",
+                "availabilityImpact": "H",
+                "confidentialityImpact": "H",
+                "exploitScore": 1.8346,
+                "impactScore": 5.8731,
+                "integrityImpact": "H",
+                "privilegeRequired": "N",
+                "scope": "U",
+                "score": 7.8,
+                "userInteraction": "R",
+                "vector": "CVSS:3.0/AV:L/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H"
+            }
+        },
+        "denialOfService": false,
+        "description": {
+            "html": "<p>Heap-based buffer overflow in the NArchive::NHfs::CHandler::ExtractZlibFile method in 7zip before 16.00 and p7zip allows remote attackers to execute arbitrary code via a crafted HFS+ image.</p>",
+            "text": "Heap-based buffer overflow in the NArchive::NHfs::CHandler::ExtractZlibFile method in 7zip before 16.00 and p7zip allows remote attackers to execute arbitrary code via a crafted HFS+ image."
+        },
+        "exploits": 0,
+        "id": "7-zip-cve-2016-2334",
+        "malwareKits": 0,
+        "modified": "2018-06-08",
+        "pci": {
+            "adjustedCVSSScore": 9,
+            "adjustedSeverityScore": 5,
+            "fail": true,
+            "status": "Fail"
+        },
+        "published": "2016-12-13",
+        "riskScore": 716.46,
+        "severity": "Critical",
+        "severityScore": 9,
+        "title": "7-Zip: CVE-2016-2334: Heap-based buffer overflow vulnerability"
+    },
+    {
+        "added": "2018-05-16",
+        "categories": [
+            "7-Zip",
+            "Trojan"
+        ],
+        "cves": [
+            "CVE-2016-7804"
+        ],
+        "cvss": {
+            "v2": {
+                "accessComplexity": "M",
+                "accessVector": "N",
+                "authentication": "N",
+                "availabilityImpact": "P",
+                "confidentialityImpact": "P",
+                "exploitScore": 8.5888,
+                "impactScore": 6.443,
+                "integrityImpact": "P",
+                "score": 6.8,
+                "vector": "AV:N/AC:M/Au:N/C:P/I:P/A:P"
+            },
+            "v3": {
+                "attackComplexity": "L",
+                "attackVector": "L",
+                "availabilityImpact": "H",
+                "confidentialityImpact": "H",
+                "exploitScore": 1.8346,
+                "impactScore": 5.8731,
+                "integrityImpact": "H",
+                "privilegeRequired": "N",
+                "scope": "U",
+                "score": 7.8,
+                "userInteraction": "R",
+                "vector": "CVSS:3.0/AV:L/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H"
+            }
+        },
+        "denialOfService": false,
+        "description": {
+            "html": "<p>Untrusted search path vulnerability in 7 Zip for Windows 16.02 and earlier allows remote attackers to gain privileges via a Trojan horse DLL in an unspecified directory.</p>",
+            "text": "Untrusted search path vulnerability in 7 Zip for Windows 16.02 and earlier allows remote attackers to gain privileges via a Trojan horse DLL in an unspecified directory."
+        },
+        "exploits": 0,
+        "id": "7-zip-cve-2016-7804",
+        "malwareKits": 0,
+        "modified": "2018-06-08",
+        "pci": {
+            "adjustedCVSSScore": 6,
+            "adjustedSeverityScore": 4,
+            "fail": true,
+            "specialNotes": "The presence of malware, including rootkits, backdoors, or trojan horse programs are a violation of PCI DSS, and result in an automatic failure. ",
+            "status": "Fail"
+        },
+        "published": "2017-05-22",
+        "riskScore": 577.92,
+        "severity": "Severe",
+        "severityScore": 7,
+        "title": "7-Zip: CVE-2016-7804: Untrusted search path vulnerability"
+    },
+    {
+        "added": "2018-05-16",
+        "categories": [
+            "7-Zip",
+            "Denial of Service"
+        ],
+        "cves": [
+            "CVE-2016-9296"
+        ],
+        "cvss": {
+            "v2": {
+                "accessComplexity": "L",
+                "accessVector": "N",
+                "authentication": "N",
+                "availabilityImpact": "P",
+                "confidentialityImpact": "N",
+                "exploitScore": 9.9968,
+                "impactScore": 2.8627,
+                "integrityImpact": "N",
+                "score": 5.0,
+                "vector": "AV:N/AC:L/Au:N/C:N/I:N/A:P"
+            },
+            "v3": {
+                "attackComplexity": "L",
+                "attackVector": "N",
+                "availabilityImpact": "H",
+                "confidentialityImpact": "N",
+                "exploitScore": 3.887,
+                "impactScore": 3.5952,
+                "integrityImpact": "N",
+                "privilegeRequired": "N",
+                "scope": "U",
+                "score": 7.5,
+                "userInteraction": "N",
+                "vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+            }
+        },
+        "denialOfService": true,
+        "description": {
+            "html": "<p>A null pointer dereference bug affects the 16.02 and many old versions of p7zip. A lack of null pointer check for the variable folders.PackPositions in function CInArchive::ReadAndDecodePackedStreams in CPP/7zip/Archive/7z/7zIn.cpp, as used in the 7z.so library and in 7z applications, will cause a crash and a denial of service when decoding malformed 7z files.</p>",
+            "text": "A null pointer dereference bug affects the 16.02 and many old versions of p7zip. A lack of null pointer check for the variable folders.PackPositions in function CInArchive::ReadAndDecodePackedStreams in CPP/7zip/Archive/7z/7zIn.cpp, as used in the 7z.so library and in 7z applications, will cause a crash and a denial of service when decoding malformed 7z files."
+        },
+        "exploits": 0,
+        "id": "7-zip-cve-2016-9296",
+        "malwareKits": 0,
+        "modified": "2018-06-08",
+        "pci": {
+            "adjustedCVSSScore": 5,
+            "adjustedSeverityScore": 2,
+            "fail": false,
+            "specialNotes": "Denial-of-Service-only vulnerability marked as compliant. ",
+            "status": "Pass"
+        },
+        "published": "2016-11-11",
+        "riskScore": 180.86,
+        "severity": "Severe",
+        "severityScore": 5,
+        "title": "7-Zip: CVE-2016-9296: Null pointer dereference bug"
+    },
+    {
+        "added": "2018-05-16",
+        "categories": [
+            "7-Zip",
+            "Denial of Service",
+            "Remote Execution"
+        ],
+        "cves": [
+            "CVE-2017-17969"
+        ],
+        "cvss": {
+            "v2": {
+                "accessComplexity": "M",
+                "accessVector": "N",
+                "authentication": "N",
+                "availabilityImpact": "P",
+                "confidentialityImpact": "P",
+                "exploitScore": 8.5888,
+                "impactScore": 6.443,
+                "integrityImpact": "P",
+                "score": 6.8,
+                "vector": "AV:N/AC:M/Au:N/C:P/I:P/A:P"
+            },
+            "v3": {
+                "attackComplexity": "L",
+                "attackVector": "L",
+                "availabilityImpact": "H",
+                "confidentialityImpact": "H",
+                "exploitScore": 1.8346,
+                "impactScore": 5.8731,
+                "integrityImpact": "H",
+                "privilegeRequired": "N",
+                "scope": "U",
+                "score": 7.8,
+                "userInteraction": "R",
+                "vector": "CVSS:3.0/AV:L/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H"
+            }
+        },
+        "denialOfService": false,
+        "description": {
+            "html": "<p>Heap-based buffer overflow in the NCompress::NShrink::CDecoder::CodeReal method in 7-Zip before 18.00 and p7zip allows remote attackers to cause a denial of service (out-of-bounds write) or potentially execute arbitrary code via a crafted ZIP archive.</p>",
+            "text": "Heap-based buffer overflow in the NCompress::NShrink::CDecoder::CodeReal method in 7-Zip before 18.00 and p7zip allows remote attackers to cause a denial of service (out-of-bounds write) or potentially execute arbitrary code via a crafted ZIP archive."
+        },
+        "exploits": 0,
+        "id": "7-zip-cve-2017-17969",
+        "malwareKits": 0,
+        "modified": "2018-06-08",
+        "pci": {
+            "adjustedCVSSScore": 6,
+            "adjustedSeverityScore": 4,
+            "fail": true,
+            "status": "Fail"
+        },
+        "published": "2018-01-30",
+        "riskScore": 551.91,
+        "severity": "Severe",
+        "severityScore": 7,
+        "title": "7-Zip: CVE-2017-17969: Heap-based buffer overflow vulnerability"
+    },
+    {
+        "added": "2018-05-16",
+        "categories": [
+            "7-Zip",
+            "Denial of Service",
+            "Remote Execution"
+        ],
+        "cves": [
+            "CVE-2018-10115"
+        ],
+        "cvss": {
+            "v2": {
+                "accessComplexity": "M",
+                "accessVector": "N",
+                "authentication": "N",
+                "availabilityImpact": "P",
+                "confidentialityImpact": "P",
+                "exploitScore": 8.5888,
+                "impactScore": 6.443,
+                "integrityImpact": "P",
+                "score": 6.8,
+                "vector": "AV:N/AC:M/Au:N/C:P/I:P/A:P"
+            },
+            "v3": {
+                "attackComplexity": "L",
+                "attackVector": "L",
+                "availabilityImpact": "H",
+                "confidentialityImpact": "H",
+                "exploitScore": 1.8346,
+                "impactScore": 5.8731,
+                "integrityImpact": "H",
+                "privilegeRequired": "N",
+                "scope": "U",
+                "score": 7.8,
+                "userInteraction": "R",
+                "vector": "CVSS:3.0/AV:L/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H"
+            }
+        },
+        "denialOfService": false,
+        "description": {
+            "html": "<p>Incorrect initialization logic of RAR decoder objects in 7-Zip 18.03 and before can lead to usage of uninitialized memory, allowing remote attackers to cause a denial of service (segmentation fault) or execute arbitrary code via a crafted RAR archive.</p>",
+            "text": "Incorrect initialization logic of RAR decoder objects in 7-Zip 18.03 and before can lead to usage of uninitialized memory, allowing remote attackers to cause a denial of service (segmentation fault) or execute arbitrary code via a crafted RAR archive."
+        },
+        "exploits": 0,
+        "id": "7-zip-cve-2018-10115",
+        "malwareKits": 0,
+        "modified": "2018-06-14",
+        "pci": {
+            "adjustedCVSSScore": 6,
+            "adjustedSeverityScore": 4,
+            "fail": true,
+            "status": "Fail"
+        },
+        "published": "2018-05-13",
+        "riskScore": 540.28,
+        "severity": "Severe",
+        "severityScore": 7,
+        "title": "7-Zip: CVE-2018-10115: Denial of Service and Remote Code Execution vuln via crafted RAR archive"
+    },
+    {
+        "added": "2018-06-08",
+        "categories": [
+            "7-Zip",
+            "Denial of Service",
+            "Remote Execution"
+        ],
+        "cves": [
+            "CVE-2018-10172"
+        ],
+        "cvss": {
+            "v2": {
+                "accessComplexity": "L",
+                "accessVector": "L",
+                "authentication": "N",
+                "availabilityImpact": "C",
+                "confidentialityImpact": "C",
+                "exploitScore": 3.9487,
+                "impactScore": 10.0008,
+                "integrityImpact": "C",
+                "score": 7.2,
+                "vector": "AV:L/AC:L/Au:N/C:C/I:C/A:C"
+            },
+            "v3": {
+                "attackComplexity": "L",
+                "attackVector": "L",
+                "availabilityImpact": "H",
+                "confidentialityImpact": "H",
+                "exploitScore": 2.0121,
+                "impactScore": 6.0477,
+                "integrityImpact": "H",
+                "privilegeRequired": "L",
+                "scope": "C",
+                "score": 8.8,
+                "userInteraction": "N",
+                "vector": "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:C/C:H/I:H/A:H"
+            }
+        },
+        "denialOfService": false,
+        "description": {
+            "html": "<p>7-Zip through 18.01 on Windows implements the &quot;Large memory pages&quot; option by calling the LsaAddAccountRights function to add the SeLockMemoryPrivilege privilege to the user&#39;s account, which makes it easier for attackers to bypass intended access restrictions by using this privilege in the context of a sandboxed process.</p>",
+            "text": "7-Zip through 18.01 on Windows implements the \"Large memory pages\" option by calling the LsaAddAccountRights function to add the SeLockMemoryPrivilege privilege to the user's account, which makes it easier for attackers to bypass intended access restrictions by using this privilege in the context of a sandboxed process."
+        },
+        "exploits": 0,
+        "id": "7-zip-cve-2018-10172",
+        "malwareKits": 0,
+        "modified": "2018-06-11",
+        "pci": {
+            "adjustedCVSSScore": 7,
+            "adjustedSeverityScore": 5,
+            "fail": true,
+            "status": "Fail"
+        },
+        "published": "2018-04-16",
+        "riskScore": 625.88,
+        "severity": "Severe",
+        "severityScore": 7,
+        "title": "7-Zip: CVE-2018-10172: Denial of Service and Remote Code Execution vuln via crafted RAR archive"
+    },
+    {
+        "added": "2018-05-16",
+        "categories": [
+            "7-Zip",
+            "Denial of Service",
+            "Remote Execution"
+        ],
+        "cves": [
+            "CVE-2018-5996"
+        ],
+        "cvss": {
+            "v2": {
+                "accessComplexity": "M",
+                "accessVector": "N",
+                "authentication": "N",
+                "availabilityImpact": "P",
+                "confidentialityImpact": "P",
+                "exploitScore": 8.5888,
+                "impactScore": 6.443,
+                "integrityImpact": "P",
+                "score": 6.8,
+                "vector": "AV:N/AC:M/Au:N/C:P/I:P/A:P"
+            },
+            "v3": {
+                "attackComplexity": "L",
+                "attackVector": "L",
+                "availabilityImpact": "H",
+                "confidentialityImpact": "H",
+                "exploitScore": 1.8346,
+                "impactScore": 5.8731,
+                "integrityImpact": "H",
+                "privilegeRequired": "N",
+                "scope": "U",
+                "score": 7.8,
+                "userInteraction": "R",
+                "vector": "CVSS:3.0/AV:L/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H"
+            }
+        },
+        "denialOfService": false,
+        "description": {
+            "html": "<p>Insufficient exception handling in the method NCompress::NRar3::CDecoder::Code of 7-Zip before 18.00 and p7zip can lead to multiple memory corruptions within the PPMd code, allows remote attackers to cause a denial of service (segmentation fault) or execute arbitrary code via a crafted RAR archive.</p>",
+            "text": "Insufficient exception handling in the method NCompress::NRar3::CDecoder::Code of 7-Zip before 18.00 and p7zip can lead to multiple memory corruptions within the PPMd code, allows remote attackers to cause a denial of service (segmentation fault) or execute arbitrary code via a crafted RAR archive."
+        },
+        "exploits": 0,
+        "id": "7-zip-cve-2018-5996",
+        "malwareKits": 0,
+        "modified": "2018-06-08",
+        "pci": {
+            "adjustedCVSSScore": 6,
+            "adjustedSeverityScore": 4,
+            "fail": true,
+            "status": "Fail"
+        },
+        "published": "2018-01-31",
+        "riskScore": 551.8,
+        "severity": "Severe",
+        "severityScore": 7,
+        "title": "7-Zip: CVE-2018-5996: Denial of Service and Remote Code Execution vuln via crafted RAR archive"
+    },
+    {
+        "added": "2017-11-14",
+        "categories": [
+            "Adobe",
+            "Adobe Acrobat/Reader"
+        ],
+        "cvss": {
+            "v2": {
+                "accessComplexity": "M",
+                "accessVector": "L",
+                "authentication": "N",
+                "availabilityImpact": "P",
+                "confidentialityImpact": "P",
+                "exploitScore": 3.3926,
+                "impactScore": 6.443,
+                "integrityImpact": "P",
+                "score": 4.4,
+                "vector": "AV:L/AC:M/Au:N/C:P/I:P/A:P"
+            }
+        },
+        "denialOfService": false,
+        "description": {
+            "html": "<p>Adobe has released security updates for Adobe Acrobat and Reader for Windows and Macintosh. These updates addresscriticalvulnerabilities that could potentially allow an attacker to take control of the affected system. </p>",
+            "text": "Adobe has released security updates for Adobe Acrobat and Reader for Windows and Macintosh. These updates addresscriticalvulnerabilities that could potentially allow an attacker to take control of the affected system."
+        },
+        "exploits": 0,
+        "id": "acrobat-apsb17-36",
+        "malwareKits": 0,
+        "modified": "2017-11-14",
+        "pci": {
+            "adjustedCVSSScore": 4,
+            "adjustedSeverityScore": 3,
+            "fail": true,
+            "status": "Fail"
+        },
+        "published": "2017-11-14",
+        "riskScore": 510.64,
+        "severity": "Severe",
+        "severityScore": 4,
+        "title": "Adobe Acrobat: APSB17-36: Security Updates Available for Adobe Acrobat and Reader | APSB17-36"
+    },
+    {
+        "added": "2016-03-04",
+        "categories": [
+            "Adobe",
+            "Adobe Acrobat/Reader",
+            "Denial of Service",
+            "Remote Execution"
+        ],
+        "cves": [
+            "CVE-2016-0931"
+        ],
+        "cvss": {
+            "v2": {
+                "accessComplexity": "M",
+                "accessVector": "N",
+                "authentication": "N",
+                "availabilityImpact": "P",
+                "confidentialityImpact": "P",
+                "exploitScore": 8.5888,
+                "impactScore": 6.443,
+                "integrityImpact": "P",
+                "score": 6.8,
+                "vector": "AV:N/AC:M/Au:N/C:P/I:P/A:P"
+            },
+            "v3": {
+                "attackComplexity": "L",
+                "attackVector": "N",
+                "availabilityImpact": "H",
+                "confidentialityImpact": "H",
+                "exploitScore": 2.8353,
+                "impactScore": 5.8731,
+                "integrityImpact": "H",
+                "privilegeRequired": "N",
+                "scope": "U",
+                "score": 8.8,
+                "userInteraction": "R",
+                "vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:R/S:U/C:H/I:H/A:H"
+            }
+        },
+        "denialOfService": false,
+        "description": {
+            "html": "<p>Adobe Reader and Acrobat before 11.0.14, Acrobat and Acrobat Reader DC Classic before 15.006.30119, and Acrobat and Acrobat Reader DC Continuous before 15.010.20056 on Windows and OS X allow attackers to execute arbitrary code or cause a denial of service (memory corruption) via a crafted FileAttachment annotation, a different vulnerability than CVE-2016-0933, CVE-2016-0936, CVE-2016-0938, CVE-2016-0939, CVE-2016-0942, CVE-2016-0944, CVE-2016-0945, and CVE-2016-0946.</p>",
+            "text": "Adobe Reader and Acrobat before 11.0.14, Acrobat and Acrobat Reader DC Classic before 15.006.30119, and Acrobat and Acrobat Reader DC Continuous before 15.010.20056 on Windows and OS X allow attackers to execute arbitrary code or cause a denial of service (memory corruption) via a crafted FileAttachment annotation, a different vulnerability than CVE-2016-0933, CVE-2016-0936, CVE-2016-0938, CVE-2016-0939, CVE-2016-0942, CVE-2016-0944, CVE-2016-0945, and CVE-2016-0946."
+        },
+        "exploits": 0,
+        "id": "acrobat-cve-2016-0931",
+        "malwareKits": 0,
+        "modified": "2019-12-02",
+        "pci": {
+            "adjustedCVSSScore": 6,
+            "adjustedSeverityScore": 4,
+            "fail": true,
+            "status": "Fail"
+        },
+        "published": "2016-01-07",
+        "riskScore": 620.23,
+        "severity": "Severe",
+        "severityScore": 7,
+        "title": "Adobe Acrobat: APSB16-02 (CVE-2016-0931): Security Updates Available for Adobe Acrobat and Reader"
+    }
+]

@@ -21,8 +21,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 592.5,
-          "y": 30
+          "x": 540,
+          "y": -240
         }
       }
     note: false
@@ -30,23 +30,28 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 48616210-819b-4048-87fa-01814beece76
+    taskid: 9e439bc0-d507-47a2-81b6-2a03648f15f2
     type: condition
     task:
-      id: 48616210-819b-4048-87fa-01814beece76
+      id: 9e439bc0-d507-47a2-81b6-2a03648f15f2
       version: -1
       name: Which Proofpoint Event?
       type: condition
       iscommand: false
       brand: ""
-      description: ''
+      description: 'Determine the type of event that has been triggered.'
     nexttasks:
       Clicks:
-      - "3"
+      - "26"
       Message:
-      - "2"
+      - "25"
+      '#default#':
+      - "28"
     separatecontext: false
     conditions:
     - label: Message
@@ -76,8 +81,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 592.5,
-          "y": 195
+          "x": 540,
+          "y": -100
         }
       }
     note: false
@@ -85,18 +90,21 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 9c5be5b3-a31f-4d3a-84a5-213eebe31da2
+    taskid: ef809bf9-0ff6-4c9f-8125-0fd4b6a1df87
     type: condition
     task:
-      id: 9c5be5b3-a31f-4d3a-84a5-213eebe31da2
+      id: ef809bf9-0ff6-4c9f-8125-0fd4b6a1df87
       version: -1
       name: Check if Campaign ID Exists
       type: condition
       iscommand: false
       brand: ""
-      description: ''
+      description: 'Verifies whether a campaign ID exists in the incident data.'
     nexttasks:
       '#default#':
       - "10"
@@ -113,11 +121,22 @@ tasks:
                 root: incident.proofpointtapthreatinfomap
                 accessor: campaignid
             iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: incident.proofpointtapthreatinfomap.campaignid
+            iscontext: true
+          right:
+            value:
+              simple: "null"
+          ignorecase: true
     view: |-
       {
         "position": {
-          "x": 377.5,
-          "y": 370
+          "x": 320,
+          "y": 200
         }
       }
     note: false
@@ -125,23 +144,26 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 3e9a3555-0065-4ae1-8102-f853013de3de
+    taskid: 13e328af-657a-4dd0-82a0-ed4f85588d7c
     type: condition
     task:
-      id: 3e9a3555-0065-4ae1-8102-f853013de3de
+      id: 13e328af-657a-4dd0-82a0-ed4f85588d7c
       version: -1
       name: Check if Campaign ID Exists
       type: condition
       iscommand: false
       brand: ""
-      description: ''
+      description: 'Verifies whether a campaign ID exists in the incident data.'
     nexttasks:
       '#default#':
-      - "12"
+      - "21"
       'Campiagn ID Found ':
-      - "9"
+      - "20"
     separatecontext: false
     conditions:
     - label: 'Campiagn ID Found '
@@ -153,11 +175,22 @@ tasks:
                 root: incident
                 accessor: proofpointtapcampaignid
             iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: incident.proofpointtapcampaignid
+            iscontext: true
+          right:
+            value:
+              simple: "null"
+          ignorecase: true
     view: |-
       {
         "position": {
-          "x": 807.5,
-          "y": 370
+          "x": 760,
+          "y": 200
         }
       }
     note: false
@@ -165,12 +198,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: b6080c55-d2fe-4644-8cc1-50082789585d
+    taskid: e18da134-5586-4335-83de-5a41e78bbcde
     type: regular
     task:
-      id: b6080c55-d2fe-4644-8cc1-50082789585d
+      id: e18da134-5586-4335-83de-5a41e78bbcde
       version: -1
       name: No Threat ID or Campaign ID Retrieved
       description: Prints text to War Room (Markdown supported)
@@ -187,8 +223,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 895
+          "x": 1260,
+          "y": 720
         }
       }
     note: false
@@ -196,12 +232,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: befc1e11-e334-4f6e-8318-e21f3f47f31f
+    taskid: dc9751ab-8580-40a7-8915-cb58110df9ae
     type: regular
     task:
-      id: befc1e11-e334-4f6e-8318-e21f3f47f31f
+      id: dc9751ab-8580-40a7-8915-cb58110df9ae
       version: -1
       name: Get Campaign Information given ID
       description: Get details for a given campaign.
@@ -226,8 +265,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 817.5,
-          "y": 1740
+          "x": 310,
+          "y": 1520
         }
       }
     note: false
@@ -235,12 +274,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 69368a3a-c9c4-4f8d-8794-2d8710907a27
+    taskid: a5fcdcc0-0934-41d8-8f5c-5f0735032993
     type: regular
     task:
-      id: 69368a3a-c9c4-4f8d-8794-2d8710907a27
+      id: a5fcdcc0-0934-41d8-8f5c-5f0735032993
       version: -1
       name: Get Forensics given Campaign ID
       description: Returns forensics evidence.
@@ -260,15 +302,13 @@ tasks:
           accessor: campaignid
           transformers:
           - operator: uniq
-      includeCampaignForensics: {}
-      threatId: {}
     reputationcalc: 2
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 817.5,
-          "y": 1565
+          "x": 310,
+          "y": 1360
         }
       }
     note: false
@@ -276,12 +316,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: b9734d02-8df3-4459-8978-f1b2522996c4
+    taskid: ea01903c-cfa4-43bc-8193-73526c49a367
     type: regular
     task:
-      id: b9734d02-8df3-4459-8978-f1b2522996c4
+      id: ea01903c-cfa4-43bc-8193-73526c49a367
       version: -1
       name: Get Forensics Information given Threat ID
       description: Returns forensics evidence.
@@ -295,8 +338,8 @@ tasks:
       '#none#':
       - "19"
     scriptarguments:
-      campaignId: {}
-      includeCampaignForensics: {}
+      includeCampaignForensics:
+        simple: "true"
       threatId:
         complex:
           root: Proofpoint
@@ -308,8 +351,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1257.5,
-          "y": 1740
+          "x": 770,
+          "y": 1195
         }
       }
     note: false
@@ -317,22 +360,30 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 715f3623-1813-4465-85d8-6a32f92aa512
+    taskid: a22d7083-0b03-4fa7-80f5-79d76501e77b
     type: regular
     task:
-      id: 715f3623-1813-4465-85d8-6a32f92aa512
+      id: a22d7083-0b03-4fa7-80f5-79d76501e77b
       version: -1
       name: Extract Campaign ID to Context
-      description: Sets key/value pair in incident's context.
-      scriptName: SetContext
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "14"
+      - "10"
     scriptarguments:
       key:
         simple: Proofpoint.campaignid
@@ -346,8 +397,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1002.5,
-          "y": 545
+          "x": -60,
+          "y": 370
         }
       }
     note: false
@@ -355,61 +406,26 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "9":
-    id: "9"
-    taskid: 2204be9e-f4e2-4e4a-8822-782cfa238320
-    type: regular
-    task:
-      id: 2204be9e-f4e2-4e4a-8822-782cfa238320
-      version: -1
-      name: Extract Campaign ID to Context
-      description: Sets key/value pair in incident's context.
-      scriptName: SetContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "16"
-    scriptarguments:
-      key:
-        simple: Proofpoint.campaignid
-      value:
-        complex:
-          root: incident
-          accessor: proofpointtapcampaignid
-          transformers:
-          - operator: uniq
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1432.5,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: e8fcc011-af74-408f-8b89-85b1f8d329c7
+    taskid: 0a29535c-be88-4006-831c-452f37c74488
     type: condition
     task:
-      id: e8fcc011-af74-408f-8b89-85b1f8d329c7
+      id: 0a29535c-be88-4006-831c-452f37c74488
       version: -1
       name: Check if Threat ID Exists
       type: condition
       iscommand: false
       brand: ""
-      description: ''
+      description: 'Verifies whether a threat ID exists in the incident data.'
     nexttasks:
       '#default#':
       - "4"
       Threat ID Found:
-      - "11"
+      - "22"
     separatecontext: false
     conditions:
     - label: Threat ID Found
@@ -421,11 +437,13 @@ tasks:
                 root: incident.proofpointtapthreatinfomap
                 accessor: threatid
             iscontext: true
+          right:
+            value: {}
     view: |-
       {
         "position": {
-          "x": 60,
-          "y": 720
+          "x": 320,
+          "y": 540
         }
       }
     note: false
@@ -433,303 +451,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "11":
-    id: "11"
-    taskid: 749e8a02-2629-4df3-889a-2aef645c7923
-    type: regular
-    task:
-      id: 749e8a02-2629-4df3-889a-2aef645c7923
-      version: -1
-      name: Extract Threat ID to Context
-      description: Sets key/value pair in incident's context.
-      scriptName: SetContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "15"
-    scriptarguments:
-      key:
-        simple: Proofpoint.threatid
-      value:
-        complex:
-          root: incident.proofpointtapthreatinfomap
-          accessor: threatid
-          transformers:
-          - operator: uniq
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 490,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "12":
-    id: "12"
-    taskid: b6934d1a-597f-4db0-896c-3b965d654714
-    type: condition
-    task:
-      id: b6934d1a-597f-4db0-896c-3b965d654714
-      version: -1
-      name: Check if Threat ID Exists
-      type: condition
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#default#':
-      - "4"
-      'Threat ID Found ':
-      - "13"
-    separatecontext: false
-    conditions:
-    - label: 'Threat ID Found '
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: incident
-                accessor: proofpointtapthreatid
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 490,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "13":
-    id: "13"
-    taskid: d6d7e345-7742-401e-8095-1d641d27d4e6
-    type: regular
-    task:
-      id: d6d7e345-7742-401e-8095-1d641d27d4e6
-      version: -1
-      name: Extract Threat ID to Context
-      description: Sets key/value pair in incident's context.
-      scriptName: SetContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "15"
-    scriptarguments:
-      key:
-        simple: Proofpoint.threatid
-      value:
-        complex:
-          root: incident
-          accessor: proofpointtapthreatid
-          transformers:
-          - operator: uniq
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 920,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "14":
-    id: "14"
-    taskid: ca494bb6-4186-4cc2-822a-8795ec2b3c47
-    type: condition
-    task:
-      id: ca494bb6-4186-4cc2-822a-8795ec2b3c47
-      version: -1
-      name: Check if Threat ID Exists
-      type: condition
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#default#':
-      - "15"
-      Threat ID Found:
-      - "11"
-    separatecontext: false
-    conditions:
-    - label: Threat ID Found
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: incident.proofpointtapthreatinfomap
-                accessor: threatid
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 1002.5,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "15":
-    id: "15"
-    taskid: 0bac57c8-4807-4da9-8599-2971334011c1
-    type: title
-    task:
-      id: 0bac57c8-4807-4da9-8599-2971334011c1
-      version: -1
-      name: Enrichment
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "17"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 1032.5,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "16":
-    id: "16"
-    taskid: 6627bc6e-175a-4d83-8162-c2e8bb519454
-    type: condition
-    task:
-      id: 6627bc6e-175a-4d83-8162-c2e8bb519454
-      version: -1
-      name: Check if Threat ID Exists
-      type: condition
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#default#':
-      - "15"
-      'Threat ID Found ':
-      - "13"
-    separatecontext: false
-    conditions:
-    - label: 'Threat ID Found '
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: incident
-                accessor: proofpointtapthreatid
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 1432.5,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "17":
-    id: "17"
-    taskid: 114b02d4-48e8-4458-859d-7b70279b473f
-    type: condition
-    task:
-      id: 114b02d4-48e8-4458-859d-7b70279b473f
-      version: -1
-      name: What Information has been Fetched?
-      type: condition
-      iscommand: false
-      brand: ""
-      description: ""
-    nexttasks:
-      'Campaign ID ':
-      - "6"
-      Campaign ID and ThreatID:
-      - "18"
-      ThreatID:
-      - "7"
-    separatecontext: false
-    conditions:
-    - label: Campaign ID and ThreatID
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: Proofpoint
-                accessor: threatid
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: Proofpoint
-                accessor: campaignid
-            iscontext: true
-    - label: 'Campaign ID '
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: Proofpoint
-                accessor: campaignid
-            iscontext: true
-    - label: ThreatID
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: Proofpoint
-                accessor: threatid
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 1032.5,
-          "y": 1215
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: fbc5a4bb-37f7-4d22-874a-27f2be8d99cf
+    taskid: 61afbde2-5346-4987-8d24-ef91c7ee79aa
     type: regular
     task:
-      id: fbc5a4bb-37f7-4d22-874a-27f2be8d99cf
+      id: 61afbde2-5346-4987-8d24-ef91c7ee79aa
       version: -1
       name: Get Forensics Information given Threat ID
       description: Returns forensics evidence.
@@ -743,8 +473,8 @@ tasks:
       '#none#':
       - "6"
     scriptarguments:
-      campaignId: {}
-      includeCampaignForensics: {}
+      includeCampaignForensics:
+        simple: "true"
       threatId:
         complex:
           root: Proofpoint
@@ -756,8 +486,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 550,
-          "y": 1390
+          "x": 310,
+          "y": 1195
         }
       }
     note: false
@@ -765,6 +495,9 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "19":
     id: "19"
     taskid: 95e67cf0-0f94-4a5d-84a2-1a2be7dd4977
@@ -781,8 +514,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1032.5,
-          "y": 1915
+          "x": 540,
+          "y": 1695
         }
       }
     note: false
@@ -790,27 +523,855 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 7cb6f7b6-3f59-470a-8a63-c483f182ffc9
+    type: regular
+    task:
+      id: 7cb6f7b6-3f59-470a-8a63-c483f182ffc9
+      version: -1
+      name: Extract Campaign ID to Context
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      key:
+        simple: Proofpoint.campaignid
+      value:
+        complex:
+          root: incident
+          accessor: proofpointtapcampaignid
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1150,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 6e9097a2-1f5c-43e5-83e5-1422cd0fb645
+    type: condition
+    task:
+      id: 6e9097a2-1f5c-43e5-83e5-1422cd0fb645
+      version: -1
+      name: Check if Threat ID Exists
+      description: Verifies whether a threat ID exists in the incident data.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      Threat ID Found:
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: Threat ID Found
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: proofpointtapthreatid
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 6c14be7c-81f6-4b79-89cb-9f94b01f932c
+    type: regular
+    task:
+      id: 6c14be7c-81f6-4b79-89cb-9f94b01f932c
+      version: -1
+      name: Extract Threat ID to Context
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      key:
+        simple: Proofpoint.threatid
+      value:
+        complex:
+          root: incident.proofpointtapthreatinfomap
+          accessor: threatid
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 320,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 50cbc688-45b4-4760-852e-997e82d0ac73
+    type: regular
+    task:
+      id: 50cbc688-45b4-4760-852e-997e82d0ac73
+      version: -1
+      name: Extract Threat ID to Context
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      key:
+        simple: Proofpoint.threatid
+      value:
+        complex:
+          root: incident
+          accessor: proofpointtapthreatid
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 3284ae9f-6610-4455-8442-9ca77569cebd
+    type: title
+    task:
+      id: 3284ae9f-6610-4455-8442-9ca77569cebd
+      version: -1
+      name: Enrichment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "27"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 540,
+          "y": 890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 2784076f-d470-483f-82a8-17c7a03c465d
+    type: title
+    task:
+      id: 2784076f-d470-483f-82a8-17c7a03c465d
+      version: -1
+      name: Message Events
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 320,
+          "y": 70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 401e49ee-717d-4d26-8b1b-876978b22a77
+    type: title
+    task:
+      id: 401e49ee-717d-4d26-8b1b-876978b22a77
+      version: -1
+      name: Click Events
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 760,
+          "y": 70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 3735b5e0-33f2-4cc7-8f34-48a5fbd4e85c
+    type: condition
+    task:
+      id: 3735b5e0-33f2-4cc7-8f34-48a5fbd4e85c
+      version: -1
+      name: What Information has been Fetched?
+      description: Determine whether campaign ID and/or threat ID were extracted from the incident data.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "19"
+      'Campaign ID ':
+      - "6"
+      Campaign ID and ThreatID:
+      - "18"
+      ThreatID:
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: Campaign ID and ThreatID
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Proofpoint
+                accessor: campaignid
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Proofpoint.threatid
+            iscontext: true
+          ignorecase: true
+    - label: 'Campaign ID '
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Proofpoint
+                accessor: campaignid
+            iscontext: true
+    - label: ThreatID
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: Proofpoint
+                accessor: threatid
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 540,
+          "y": 1020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 90d452b9-2684-42b9-8cc1-d69c5e092053
+    type: regular
+    task:
+      id: 90d452b9-2684-42b9-8cc1-d69c5e092053
+      version: -1
+      name: Irrelevant Event Type
+      description: Prints an error entry with a given message
+      tags:
+      - ProofPoint Event Enrichment
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: The detected event type cannot be enriched with forensic evidence.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1250,
+          "y": 70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "10_22_Threat ID Found": 0.65,
+      "1_25_Message": 0.41,
+      "1_26_Clicks": 0.4,
+      "27_18_Campaign ID and ThreatID": 0.59,
+      "27_7_ThreatID": 0.65,
+      "2_8_Campaign ID Found": 0.52
+    },
     "paper": {
       "dimensions": {
-        "height": 1950,
-        "width": 1762.5,
-        "x": 50,
-        "y": 30
+        "height": 2000,
+        "width": 1700,
+        "x": -60,
+        "y": -240
       }
     }
   }
 inputs: []
 outputs:
-- contextPath: Proofpoint.Report
-  description: Proofpoint Report
-  type: unknown
 - contextPath: Proofpoint.Campaign
-  description: 'Proofpoint Campaign'
-  type: unknown
+  description: Retrieved Campaign objects
+  type: string
+- contextPath: Proofpoint.Campaign.info
+  description: 'The campaign information - ID,name, description, startDate, and notable.'
+  type: string
+- contextPath: Proofpoint.Campaign.actors
+  description: A list of actor objects.
+  type: string
+- contextPath: Proofpoint.Campaign.families
+  description: A list of family objects.
+  type: string
+- contextPath: Proofpoint.Campaign.malware
+  description: A list of malware objects.
+  type: string
+- contextPath: Proofpoint.Campaign.techniques
+  description: A list of technique objects.
+  type: string
+- contextPath: Proofpoint.Campaign.brands
+  description: A list of brand objects.
+  type: string
+- contextPath: Proofpoint.Campaign.campaignMembers
+  description: A list of campaign member objects.
+  type: string
+- contextPath: Proofpoint.Report
+  description: Retrieved Report object identifies
+  type: string
+- contextPath: Proofpoint.Report.ID
+  description: The ID of the report.
+  type: string
+- contextPath: Proofpoint.Report.Type
+  description: 'The threat type. Can be: "attachment", "url", or "hybrid".'
+  type: string
+- contextPath: Proofpoint.Report.Scope
+  description: Whether the report scope covers a campaign or an individual threat.
+  type: string
+- contextPath: Proofpoint.Report.Attachment
+  description: Attachments evidence type objects retrieved from Proofpoint TAP.
+  type: string
+- contextPath: Proofpoint.Report.Attachment.Time
+  description: The relative time at which the evidence was observed during sandboxing.
+  type: date
+- contextPath: Proofpoint.Report.Attachment.Malicious
+  description: Whether the evidence was used to reach a malicious verdict.
+  type: string
+- contextPath: Proofpoint.Report.Attachment.Display
+  description: A friendly display string.
+  type: string
+- contextPath: Proofpoint.Report.Attachment.SHA256
+  description: The SHA256 hash of the attachment's contents.
+  type: string
+- contextPath: Proofpoint.Report.Attachment.MD5
+  description: The MD5 hash of the attachment's contents.
+  type: string
+- contextPath: Proofpoint.Report.Attachment.Blacklisted
+  description: Optional. Whether the file was block listed.
+  type: string
+- contextPath: Proofpoint.Report.Attachment.Offset
+  description: Optional. The offset in bytes where the malicious content was found.
+  type: string
+- contextPath: Proofpoint.Report.Attachment.Size
+  description: Optional. The size in bytes of the attachment's contents.
+  type: string
+- contextPath: Proofpoint.Report.Attachment.Platform.Name
+  description: The name of the platform.
+  type: string
+- contextPath: Proofpoint.Report.Attachment.Platform.OS
+  description: The operating system of the platform.
+  type: string
+- contextPath: Proofpoint.Report.Attachment.Platform.Version
+  description: The version of the platform.
+  type: string
+- contextPath: Proofpoint.Report.Cookie
+  description: Cookies evidence type objects retrieved from Proofpoint TAP.
+  type: string
+- contextPath: Proofpoint.Report.Cookie.Time
+  description: The relative time at which the evidence was observed during sandboxing.
+  type: date
+- contextPath: Proofpoint.Report.Cookie.Malicious
+  description: Whether the evidence was used to reach a malicious verdict.
+  type: string
+- contextPath: Proofpoint.Report.Cookie.Display
+  description: A friendly display string.
+  type: string
+- contextPath: Proofpoint.Report.Cookie.Action
+  description: Whether the cookie was set or deleted.
+  type: string
+- contextPath: Proofpoint.Report.Cookie.Domain
+  description: The domain that set the cookie.
+  type: string
+- contextPath: Proofpoint.Report.Cookie.Key
+  description: The name of the cookie being set or deleted.
+  type: string
+- contextPath: Proofpoint.Report.Cookie.Value
+  description: Optional. The content of the cookie being set.
+  type: string
+- contextPath: Proofpoint.Report.Cookie.Platform.Name
+  description: Name of the platform.
+  type: string
+- contextPath: Proofpoint.Report.Cookie.Platform.OS
+  description: The operating system of the platform.
+  type: string
+- contextPath: Proofpoint.Report.Cookie.Platform.Version
+  description: The version of the platform.
+  type: string
+- contextPath: Proofpoint.Report.DNS
+  description: DNS evidence type objects retrieved from Proofpoint TAP.
+  type: string
+- contextPath: Proofpoint.Report.DNS.Time
+  description: The relative time at which the evidence was observed during sandboxing.
+  type: date
+- contextPath: Proofpoint.Report.DNS.Malicious
+  description: Whether the evidence was used to reach a malicious verdict.
+  type: string
+- contextPath: Proofpoint.Report.DNS.Display
+  description: A friendly display string.
+  type: string
+- contextPath: Proofpoint.Report.DNS.Host
+  description: The hostname being resolved.
+  type: string
+- contextPath: Proofpoint.Report.DNS.CNames
+  description: Optional. An array of CNames, which were associated with the hostname.
+  type: string
+- contextPath: Proofpoint.Report.DNS.IP
+  description: Optional. An array of IP addresses that were resolved to the hostname.
+  type: string
+- contextPath: Proofpoint.Report.DNS.NameServers
+  description: Optional. The nameservers responsible for the hostname's domain.
+  type: string
+- contextPath: Proofpoint.Report.DNS.NameServersList
+  description: Optional. The nameservers responsible for the hostnames.
+  type: string
+- contextPath: Proofpoint.Report.DNS.Platform.Name
+  description: The name of the platform.
+  type: string
+- contextPath: Proofpoint.Report.DNS.Platform.OS
+  description: The operating system of the platform.
+  type: string
+- contextPath: Proofpoint.Report.DNS.Platform.Version
+  description: The version of the platform.
+  type: string
+- contextPath: Proofpoint.Report.Dropper
+  description: Droppers evidence type objects retrieved from Proofpoint TAP.
+  type: string
+- contextPath: Proofpoint.Report.Dropper.Time
+  description: The relative time at which the evidence was observed during sandboxing.
+  type: date
+- contextPath: Proofpoint.Report.Dropper.Malicious
+  description: Whether the evidence was used to reach a malicious verdict.
+  type: string
+- contextPath: Proofpoint.Report.Dropper.Display
+  description: A friendly display string.
+  type: string
+- contextPath: Proofpoint.Report.Dropper.Path
+  description: The location of the dropper file.
+  type: string
+- contextPath: Proofpoint.Report.Dropper.URL
+  description: Optional. The name of the static rule inside the sandbox that identified the dropper.
+  type: string
+- contextPath: Proofpoint.Report.Dropper.Rule
+  description: Optional. The URL the dropper contacted.
+  type: string
+- contextPath: Proofpoint.Report.Dropper.Platform.Name
+  description: The name of the platform.
+  type: string
+- contextPath: Proofpoint.Report.Dropper.Platform.OS
+  description: The operating system of the platform.
+  type: string
+- contextPath: Proofpoint.Report.Dropper.Platform.Version
+  description: The version of the platform.
+  type: string
+- contextPath: Proofpoint.Report.File
+  description: Files evidence type objects retrieved from Proofpoint TAP.
+  type: string
+- contextPath: Proofpoint.Report.File.Time
+  description: The relative time at which the evidence was observed during sandboxing.
+  type: date
+- contextPath: Proofpoint.Report.File.Malicious
+  description: Whether the evidence was used to reach a malicious verdict.
+  type: string
+- contextPath: Proofpoint.Report.File.Display
+  description: A friendly display string.
+  type: string
+- contextPath: Proofpoint.Report.File.Path
+  description: Optional. The location of the file operated on.
+  type: string
+- contextPath: Proofpoint.Report.File.Action
+  description: Optional. The filesystem call made (create, modify, or delete).
+  type: string
+- contextPath: Proofpoint.Report.File.Rule
+  description: Optional. The name of the static rule inside the sandbox that identified the suspicious file.
+  type: string
+- contextPath: Proofpoint.Report.File.SHA256
+  description: Optional. The SH256 hash of the file's contents.
+  type: string
+- contextPath: Proofpoint.Report.File.MD5
+  description: Optional. The MD5 hash of the file's contents.
+  type: string
+- contextPath: Proofpoint.Report.File.Size
+  description: Optional. The size in bytes of the file's contents.
+  type: string
+- contextPath: Proofpoint.Report.File.Platform.Name
+  description: The name of the platform.
+  type: string
+- contextPath: Proofpoint.Report.File.Platform.OS
+  description: The operating system of the platform.
+  type: string
+- contextPath: Proofpoint.Report.File.Platform.Version
+  description: The version of the platform.
+  type: string
+- contextPath: Proofpoint.Report.IDS
+  description: IDS evidence type objects retrieved from Proofpoint TAP.
+  type: string
+- contextPath: Proofpoint.Report.IDS.Time
+  description: The relative time at which the evidence was observed during sandboxing.
+  type: date
+- contextPath: Proofpoint.Report.IDS.Malicious
+  description: Whether the evidence was used to reach a malicious verdict.
+  type: string
+- contextPath: Proofpoint.Report.IDS.Display
+  description: A friendly display string.
+  type: string
+- contextPath: Proofpoint.Report.IDS.Name
+  description: The friendly name of the IDS rule that observed the malicious traffic.
+  type: string
+- contextPath: Proofpoint.Report.IDS.SignatureID
+  description: The identifier of the IDS rule that observed the malicious traffic.
+  type: string
+- contextPath: Proofpoint.Report.IDS.Platform.Name
+  description: The name of the platform.
+  type: string
+- contextPath: Proofpoint.Report.IDS.Platform.OS
+  description: The operating system of the platform.
+  type: string
+- contextPath: Proofpoint.Report.IDS.Platform.Version
+  description: The version of the platform.
+  type: string
+- contextPath: Proofpoint.Report.Mutex
+  description: Mutex evidence type objects retrieved from Proofpoint TAP.
+  type: string
+- contextPath: Proofpoint.Report.Mutex.Time
+  description: The relative time at which the evidence was observed during sandboxing.
+  type: date
+- contextPath: Proofpoint.Report.Mutex.Malicious
+  description: Whether the evidence was used to reach a malicious verdict.
+  type: string
+- contextPath: Proofpoint.Report.Mutex.Display
+  description: A friendly display string.
+  type: string
+- contextPath: Proofpoint.Report.Mutex.Name
+  description: The name of the mutex.
+  type: string
+- contextPath: Proofpoint.Report.Mutex.Path
+  description: Optional. The path to the process which spawned the mutex.
+  type: string
+- contextPath: Proofpoint.Report.Mutex.Platform.Name
+  description: The name of the platform.
+  type: string
+- contextPath: Proofpoint.Report.Mutex.Platform.OS
+  description: The operating system of the platform.
+  type: string
+- contextPath: Proofpoint.Report.Mutex.Platform.Version
+  description: The version of the platform.
+  type: string
+- contextPath: Proofpoint.Report.Network
+  description: Network evidence type objects retrieved from Proofpoint TAP.
+  type: string
+- contextPath: Proofpoint.Report.Network.Time
+  description: The relative time at which the evidence was observed during sandboxing.
+  type: date
+- contextPath: Proofpoint.Report.Network.Malicious
+  description: Whether the evidence was used to reach a malicious verdict.
+  type: string
+- contextPath: Proofpoint.Report.Network.Display
+  description: A friendly display string.
+  type: string
+- contextPath: Proofpoint.Report.Network.Action
+  description: The type of network activity being initiated (connect or listen).
+  type: string
+- contextPath: Proofpoint.Report.Network.IP
+  description: The remote IP address being contacted.
+  type: string
+- contextPath: Proofpoint.Report.Network.Port
+  description: The remote IP port being contacted.
+  type: string
+- contextPath: Proofpoint.Report.Network.Type
+  description: The protocol being used (tcp or udp).
+  type: string
+- contextPath: Proofpoint.Report.Network.Platform.Name
+  description: The name of the platform.
+  type: string
+- contextPath: Proofpoint.Report.Network.Platform.OS
+  description: The operating system of the platform.
+  type: string
+- contextPath: Proofpoint.Report.Network.Platform.Version
+  description: The version of the platform.
+  type: string
+- contextPath: Proofpoint.Report.Process
+  description: Processes evidence type objects retrieved from Proofpoint TAP.
+  type: string
+- contextPath: Proofpoint.Report.Process.Time
+  description: The relative time at which the evidence was observed during sandboxing.
+  type: date
+- contextPath: Proofpoint.Report.Process.Malicious
+  description: Whether the evidence was used to reach a malicious verdict.
+  type: string
+- contextPath: Proofpoint.Report.Process.Display
+  description: A friendly display string.
+  type: string
+- contextPath: Proofpoint.Report.Process.Action
+  description: The action performed on the process. Relevant when create is produced.
+  type: string
+- contextPath: Proofpoint.Report.Process.Path
+  description: The location of the executable that spawned the process.
+  type: string
+- contextPath: Proofpoint.Report.Process.Platform.Name
+  description: The name of the platform.
+  type: string
+- contextPath: Proofpoint.Report.Process.Platform.OS
+  description: The operating system of the platform.
+  type: string
+- contextPath: Proofpoint.Report.Process.Platform.Version
+  description: The version of the platform.
+  type: string
+- contextPath: Proofpoint.Report.Registry
+  description: Registry evidence type objects retrieved from Proofpoint TAP.
+  type: string
+- contextPath: Proofpoint.Report.Registry.Time
+  description: The relative time at which the evidence was observed during sandboxing.
+  type: date
+- contextPath: Proofpoint.Report.Registry.Malicious
+  description: Whether the evidence was used to reach a malicious verdict.
+  type: string
+- contextPath: Proofpoint.Report.Registry.Display
+  description: A friendly display string.
+  type: string
+- contextPath: Proofpoint.Report.Registry.Name
+  description: Optional. The name of the registry entry being created or set.
+  type: string
+- contextPath: Proofpoint.Report.Registry.Action
+  description: The registry change made (create or set).
+  type: string
+- contextPath: Proofpoint.Report.Registry.Key
+  description: The location of the registry key being modified.
+  type: string
+- contextPath: Proofpoint.Report.Registry.Value
+  description: Optional. The contents of the key being created or set.
+  type: string
+- contextPath: Proofpoint.Report.Registry.Platform.Name
+  description: The name of the platform.
+  type: string
+- contextPath: Proofpoint.Report.Registry.Platform.OS
+  description: The operating system of the platform.
+  type: string
+- contextPath: Proofpoint.Report.Registry.Platform.Version
+  description: The version of the platform.
+  type: string
+- contextPath: Proofpoint.Report.URL
+  description: URL evidence type objects retrieved from Proofpoint TAP.
+  type: string
+- contextPath: Proofpoint.Report.URL.Time
+  description: The relative time at which the evidence was observed during sandboxing.
+  type: date
+- contextPath: Proofpoint.Report.URL.Malicious
+  description: Whether the evidence was used to reach a malicious verdict.
+  type: string
+- contextPath: Proofpoint.Report.URL.Display
+  description: A friendly display string.
+  type: string
+- contextPath: Proofpoint.Report.URL.URL
+  description: The URL which was observed.
+  type: string
+- contextPath: Proofpoint.Report.URL.Blacklisted
+  description: Optional. Whether the URL appeared on a block list.
+  type: boolean
+- contextPath: Proofpoint.Report.URL.SHA256
+  description: Optional. The SHA256 hash of the file downloaded from the URL.
+  type: string
+- contextPath: Proofpoint.Report.URL.MD5
+  description: Optional. The MD5 hash of the file downloaded from the URL.
+  type: string
+- contextPath: Proofpoint.Report.URL.Size
+  description: Optional. The size in bytes of the file retrieved from the URL.
+  type: string
+- contextPath: Proofpoint.Report.URL.HTTPStatus
+  description: Optional. The HTTP status code that was produced when our sandbox visited the URL.
+  type: string
+- contextPath: Proofpoint.Report.URL.IP
+  description: Optional. The IP address that was resolved to the hostname by the sandbox.
+  type: string
+- contextPath: Proofpoint.Report.URL.Platform.Name
+  description: The name of the platform.
+  type: string
+- contextPath: Proofpoint.Report.URL.Platform.OS
+  description: The operating system of the platform.
+  type: string
+- contextPath: Proofpoint.Report.URL.Platform.Version
+  description: The version of the platform.
+  type: string
+- contextPath: Proofpoint.Report.Behavior
+  description: Behavior evidence type objects retrieved from Proofpoint TAP.
+  type: string
+- contextPath: Proofpoint.Report.Behavior.Time
+  description: The relative time at which the evidence was observed during sandboxing.
+  type: date
+- contextPath: Proofpoint.Report.Behavior.Malicious
+  description: Whether the evidence was used to reach a malicious verdict.
+  type: string
+- contextPath: Proofpoint.Report.Behavior.Display
+  description: A friendly display string.
+  type: string
+- contextPath: Proofpoint.Report.Behavior.URL
+  description: The URL that was observed.
+  type: string
+- contextPath: Proofpoint.Report.Behavior.Path
+  description: The location of the executable which spawned the behavior.
+  type: string
+- contextPath: Proofpoint.Report.Behavior.Platform.Name
+  description: The name of the platform.
+  type: string
+- contextPath: Proofpoint.Report.Behavior.Platform.OS
+  description: The operating system of the platform.
+  type: string
+- contextPath: Proofpoint.Report.Behavior.Platform.Version
+  description: The version of the platform.
+  type: string
+- contextPath: Proofpoint.Report.Screenshot
+  description: Screenshot evidence type objects retrieved from Proofpoint TAP.
+  type: string
+- contextPath: Proofpoint.Report.Screenshot.Time
+  description: The relative time at which the evidence was observed during sandboxing.
+  type: date
+- contextPath: Proofpoint.Report.Screenshot.Malicious
+  description: Whether the evidence was used to reach a malicious verdict.
+  type: string
+- contextPath: Proofpoint.Report.Screenshot.Display
+  description: A friendly display string.
+  type: string
+- contextPath: Proofpoint.Report.Screenshot.URL
+  description: The URL hosting the screenshot image.
+  type: string
 tests:
 - ProofpointTAP-Test
 fromversion: 5.0.0
-description: ''
+description: "This playbook enriches Proofpoint Targeted Attack Protection (TAP) incidents with forensic evidence. \nBy utilizing the 'proofpoint-get-forensics' command, the playbook retrieves forensic evidence based on the campaign ID and threat ID detected in the Proofpoint TAP incidents."
+contentitemexportablefields:
+  contentitemfields: {}

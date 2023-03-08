@@ -106,3 +106,19 @@ def test_build_report(mocker):
     result = build_report(template, 1234)
     assert isinstance(result, dict)
     assert result["Type"] == EntryType.ENTRY_INFO_FILE
+
+
+def test_RPR_criteria(mocker):
+    """Tests RPR_criteria helper function.
+
+        Given:
+            - Mock criteria_str (string).
+        When:
+            - Sending criteria_str (string) to RPR_criteria helper function.
+        Then:
+            - Checks the output of the helper function with the expected output.
+    """
+    from GenerateASMReport import RPR_criteria
+
+    result = RPR_criteria("""[{"field": "provider", "value": "amazon web services", "operator": "eq"}]""")
+    assert result == "(provider = amazon web services)"

@@ -6,15 +6,17 @@ Collects Auth and Audit events for Duo using the API.
 2. Search for Duo Event Collector.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Server Host | True |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, for example, 12 hours, 7 days, 3 months, 1 year) | True |
-    | Integration key | True |
-    | Secret key | True |
-    | XSIAM request limit | True |
-    | Request retries | False |
-    | Use system proxy settings | False |
+    | **Parameter** | **Description**                                                                                          | **Required**  |  
+    |----------------------------------------------------------------------------------------------------------|---------------| --- |  
+    | Server Host               | The URL for the API.                                                                                     | True          |
+    | First fetch timestamps    | The first time fetch date range, for example: 2 days, 1 month, 3 years.                                  | True          |
+    | Integration key           | The integration key for the admin API from Duo.                                                           | True          |
+    | Secret key                | The secret key for the admin API from Duo.                                                               | True          |
+    | XSIAM request limit       | The maximum number of events to collect from the API in each cycle.                                      | True          |
+    | Request retries           | The number of times to retry a failed too many requests 429 HTTP error.                                   | False         |
+    | Use system proxy settings | Enable proxy support for running the collector.                                                          | False         |
+    | auth_api_version          | The version of th Authentication API. Possible values are 1, 2. | False         |
+    | logs_type_array           | The type of APIs that this instance will use in the collector.            | False         |  
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands

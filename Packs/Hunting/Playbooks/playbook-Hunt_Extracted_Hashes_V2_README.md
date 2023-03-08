@@ -22,7 +22,7 @@ This playbook does not use any scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| File | The file from which to extract indicators. | File.None | Optional |
+| File | The file from which to extract indicators. | File | Optional |
 
 ## Playbook Outputs
 ---

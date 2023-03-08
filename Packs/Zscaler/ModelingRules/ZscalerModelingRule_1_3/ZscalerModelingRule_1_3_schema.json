@@ -100,17 +100,10 @@
           "type": "string",
           "is_array": false
         },
-        "_product": {
-          "type": "string",
-          "is_array": false
-        },
-        "_vendor": {
-          "type": "string",
-          "is_array": false
-        },
         "fileType": {
           "type": "string",
           "is_array": false
         }
     }
-  }
+}
+ 

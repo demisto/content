@@ -1,0 +1,7 @@
+{
+  "requested_url": "https://short.url/a",
+  "success": true,
+  "resolved_url": "https://short.url/b",
+  "usage_count": 0,
+  "remaining_calls": 10
+}

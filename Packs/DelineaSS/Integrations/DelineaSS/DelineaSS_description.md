@@ -18,6 +18,11 @@ Use check box **Trust any certificate (not secure)** for insecure connections.
 
 Use check box **Use system proxy settings** for proxy.
 
+If you want to use the function of synchronizing secrets stored in Delinea server, check the box **Fetches Credentials** and fill in the field with a list of the secret id(s) of the secrets separated by commas.
+
+You can find the more deatil about Fetches Credentials and sync credentials from below link:
+https://docs.delinea.com/online-help/products/integrations/current/pan/xsoar-secret-server
+
 Use the **TEST** button to check if the parameters for integration are correct. In case of successful authentication on the Delinea server and correct filling of all other parameters, you will receive a response **Success**.
 
 This integration performs some REST API transfers to the Delinea server, the full description of which is given in the server documentation.

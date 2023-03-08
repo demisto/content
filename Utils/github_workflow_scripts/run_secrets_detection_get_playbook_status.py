@@ -15,7 +15,6 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 # ----- Constants ----- #
 DEFAULT_TIMEOUT = 60 * 12
 SLEEP_WAIT_SECONDS = 10
-GOLD_SERVER_URL = "https://content-gold.paloaltonetworks.com"
 
 
 def get_playbook_state(client: demisto_client, inv_id: str):
@@ -31,8 +30,8 @@ def get_playbook_state(client: demisto_client, inv_id: str):
     return investigation_playbook.get('state', PB_Status.NOT_SUPPORTED_VERSION)
 
 
-def wait_for_playbook_to_complete(investigation_id, client):
-    investigation_url = f'{GOLD_SERVER_URL}/#/Custom/caseinfoid/{investigation_id}'
+def wait_for_playbook_to_complete(investigation_id, client, gold_server_url):
+    investigation_url = f'{gold_server_url}/#/Custom/caseinfoid/{investigation_id}'
     print(f'Investigation URL: {investigation_url}')
 
     timeout = time.time() + DEFAULT_TIMEOUT
@@ -71,6 +70,7 @@ def arguments_handler():
     parser = argparse.ArgumentParser(description='Get playbook status.')
     parser.add_argument('-i', '--investigation_id', help='The investigation id of the secrets detection playbook.')
     parser.add_argument('-k', '--api_key', help='Gold Api key')
+    parser.add_argument('-gs', '--gold_server_url', help='The content gold instance url.')
     return parser.parse_args()
 
 
@@ -78,9 +78,10 @@ def main():
     options = arguments_handler()
     investigation_id = options.investigation_id
     api_key = options.api_key
+    gold_server_url = options.gold_server_url
     if investigation_id and api_key:
-        client = demisto_client.configure(base_url=GOLD_SERVER_URL, api_key=api_key, verify_ssl=False)
-        wait_for_playbook_to_complete(investigation_id, client)
+        client = demisto_client.configure(base_url=gold_server_url, api_key=api_key, verify_ssl=False)
+        wait_for_playbook_to_complete(investigation_id, client, gold_server_url)
     else:
         print("Secrets detection step failed - API key or investigation ID were not supplied.")
         sys.exit(1)

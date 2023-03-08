@@ -90,7 +90,8 @@ def test_list_activities_command(requests_mock):
                       '97134000_15600_97ee2049-893e-4c9d-a312-08d82b46faf7',
                       json=activities["ACTIVITIES_BY_ID_DATA"])
     res = list_activities_command(client_mocker, {'activity_id': '97134000_15600_97ee2049-893e-4c9d-a312-08d82b46faf7'})
-    assert res[0].outputs[0] == activities["ACTIVITIES_BY_ID_DATA_CONTEXT"]
+    assert not isinstance(res[0].outputs, list)
+    assert res[0].outputs == activities["ACTIVITIES_BY_ID_DATA_CONTEXT"]
     assert isinstance(res[0].indicator, Common.IP)
     assert res[0].indicator.ip == '8.8.8.8'
     assert float(res[0].indicator.geo_latitude) == 32.0679

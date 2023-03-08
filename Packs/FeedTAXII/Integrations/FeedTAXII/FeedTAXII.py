@@ -508,8 +508,8 @@ class Taxii11(object):
 class TAXIIClient(object):
     def __init__(self, insecure: bool = True, polling_timeout: int = 20, initial_interval: str = '1 day',
                  discovery_service: str = '', poll_service: str = None, collection: str = None,
-                 credentials: dict = None, cert_text: str = None, key_text: str = None, feedTags: str = None,
-                 tlp_color: Optional[str] = None, **kwargs):
+                 credentials: dict = None, creds_certificate: dict = {}, cert_text: str = None, key_text: str = None,
+                 feedTags: str = None, tlp_color: Optional[str] = None, **kwargs):
         """
         TAXII Client
         :param insecure: Set to true to ignore https certificate
@@ -520,7 +520,8 @@ class TAXIIClient(object):
         :param collection: TAXII collection
         :param credentials: Username and password dict for basic auth
         :param cert_text: Certificate File as Text
-        :param cert_Key: Key File as Text
+        :param cert_key_text: Key File as Text - type 9 (credentials)
+        :param key_text: Key File as Text - type 4 (secret) - deprecated
         :param kwargs:
         """
         self.discovered_poll_service = None
@@ -561,6 +562,8 @@ class TAXIIClient(object):
                 self.username = credentials.get('identifier', None)
                 self.password = credentials.get('password', None)
 
+        cert_text = replace_spaces_in_credential(creds_certificate.get('identifier')) or cert_text
+        key_text = creds_certificate.get('password') or key_text
         if (cert_text and not key_text) or (not cert_text and key_text):
             raise Exception('You can not configure either certificate text or key, both are required.')
         if cert_text and key_text:

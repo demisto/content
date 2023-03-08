@@ -36,12 +36,12 @@ PROXIES = handle_proxy()
 DISABLE_SSL = params.get('insecure', False)
 FETCH_TIME = params.get('fetch_time', '1 days')
 MAX_FETCH = int(params.get('fetch_limit') or 50)
-AUTH_CODE = params.get('code')
+AUTH_CODE = params.get('auth_code_creds', {}).get('password') or params.get('code')
 AUTH_CODE_UNQUOTE_PREFIX = 'code='
 
 OOB_CLIENT_ID = "391797357217-pa6jda1554dbmlt3hbji2bivphl0j616.apps.googleusercontent.com"  # guardrails-disable-line
-CLIENT_ID = params.get('client_id') or OOB_CLIENT_ID
-CLIENT_SECRET = params.get('client_secret')
+CLIENT_ID = params.get('credentials', {}).get('identifier') or params.get('client_id') or OOB_CLIENT_ID
+CLIENT_SECRET = params.get('credentials', {}).get('password') or params.get('client_secret')
 REDIRECT_URI = params.get('redirect_uri')
 TOKEN_URL = "https://www.googleapis.com/oauth2/v4/token"
 TOKEN_FORM_HEADERS = {

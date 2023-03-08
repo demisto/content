@@ -1,6 +1,8 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+DEFAULT_PWD_GENERATION_SCRIPT = "GeneratePassword"
+
 
 def main():
     outputs: Dict[str, Any] = {}
@@ -15,11 +17,30 @@ def main():
     to_email = args.get("to_email")
     inc_id = args.get("inc_id")
     email_subject = args.get("email_subject")
+    min_lcase = args.get("min_lcase", 0)
+    max_lcase = args.get("max_lcase", 10)
+    min_ucase = args.get("min_ucase", 0)
+    max_ucase = args.get("max_ucase", 10)
+    min_digits = args.get("min_digits", 0)
+    max_digits = args.get("max_digits", 10)
+    min_symbols = args.get("min_symbols", 0)
+    max_symbols = args.get("max_symbols", 10)
     password = None
 
     try:
         # Generate a random password
-        pwd_generation_script_output = demisto.executeCommand(pwd_generation_script, {})
+        if pwd_generation_script == DEFAULT_PWD_GENERATION_SCRIPT:
+            pwd_generation_script_output = demisto.executeCommand(pwd_generation_script,
+                                                                  {"min_lcase": min_lcase,
+                                                                   "max_lcase": max_lcase,
+                                                                   "min_ucase": min_ucase,
+                                                                   "max_ucase": max_ucase,
+                                                                   "min_digits": min_digits,
+                                                                   "max_digits": max_digits,
+                                                                   "min_symbols": min_symbols,
+                                                                   "max_symbols": max_symbols})
+        else:
+            pwd_generation_script_output = demisto.executeCommand(pwd_generation_script, {})
         if is_error(pwd_generation_script_output):
             raise Exception(f'An error occurred while trying to generate a new password for the user. '
                             f'Error is:\n{get_error(pwd_generation_script_output)}')

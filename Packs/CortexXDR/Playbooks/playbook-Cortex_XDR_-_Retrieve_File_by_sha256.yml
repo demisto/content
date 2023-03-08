@@ -6,6 +6,11 @@ name: Cortex XDR - Retrieve File by sha256
 description: |-
   This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response.
   This playbook is a sub-playbook for the Cortex XDR malware investigation flow. In this playbook, we retrieve multiple files from the investigated device (using the Device ID incident field), based on their SHA256 hash.
+  To run the playbook always remember to make it shared with the global context and set the Sha256 input to run in a loop ( in case there are multiple SHA256s that needs to be retrieved).
+
+  How does this playbook works:
+  The playbook sets all SHA256 paths from the alert to be retreived from the endpoint. Once the playbook checked the relevent paths (Actor,Action and Cusallity paths) it will run all the mathced pats agains all the endpoints ids that are
+  associated with the incident.
 starttaskid: '0'
 tasks:
   '0':
@@ -249,7 +254,7 @@ tasks:
       - '4'
     scriptarguments:
       value:
-        simple: No Path was provided for $(inputs.Sha256). Cannot retrieve the file without a proper path.
+        simple: No Path was provided for ${inputs.Sha256}. Cannot retrieve the file without a proper path.
     separatecontext: false
     view: |-
       {

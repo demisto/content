@@ -2,7 +2,6 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 
-import requests
 from typing import Dict, Any, Tuple
 import base64
 import json
@@ -10,7 +9,8 @@ from dateparser import parse
 from pytz import utc
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 ''' CONSTANTS '''
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
@@ -333,18 +333,21 @@ def fetch_incidents(client: Client, args: Dict[str, Any]) -> \
             demisto.debug(
                 f'{INTEGRATION_NAME} - Fetch incidents: skipped fetched incident because no start time or id')
             continue
-
-        incident = {
-            'name': f"{INTEGRATION_CONTEXT_NAME} Incident (INC-{id.split('-')[0].upper()})",
-            'occurred': timestamp_to_datestring(start_time, DATE_FORMAT),
-            'severity': incident_severity_to_dbot_score(severity),
-            'rawJSON': json.dumps(inc)
-        }
-        incidents.append(incident)
-
+        demisto.debug(
+            f"Fetch incident checking id: {id} with start time of:"
+            f" {start_time}. LastRun time was: {current_fetch}")
         if current_fetch < start_time:
+            demisto.debug(f"The new lastRun is: {id} with time of {start_time}")
             current_fetch = start_time
-
+            incident = {
+                'name': f"{INTEGRATION_CONTEXT_NAME} Incident (INC-{id.split('-')[0].upper()})",
+                'occurred': timestamp_to_datestring(start_time, DATE_FORMAT),
+                'severity': incident_severity_to_dbot_score(severity),
+                'rawJSON': json.dumps(inc)
+            }
+            incidents.append(incident)
+        else:
+            demisto.debug(f"Did not add a new incident {id} time: {start_time}")
     demisto.debug(
         f'{INTEGRATION_NAME} - Fetch incidents: fetch time finished at: {current_fetch}')
     return incidents, current_fetch

@@ -1,4 +1,8 @@
 {
   "name": "Whois",
-  "support": "xsoar"
+  "support": "xsoar",
+  "marketplaces": [
+      "xsoar",
+      "marketplacev2"
+  ]
 }

@@ -1,0 +1,1 @@
+To configure the ingestion of data from Google Workspace, see the information [here](https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-pro-admin/external-data-ingestion/ingest-authentication-logs-and-data/ingest-logs-and-data-from-google-workspace).

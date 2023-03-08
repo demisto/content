@@ -101,7 +101,7 @@ script:
     description: Gets the feed indicators.
     execution: false
     name: dshield-get-indicators
-  dockerimage: demisto/python3:3.10.8.37233
+  dockerimage: demisto/python3:3.10.9.42476
   feed: true
   isfetch: false
   longRunning: false

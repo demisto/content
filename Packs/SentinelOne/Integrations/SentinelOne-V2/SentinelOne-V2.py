@@ -1,12 +1,12 @@
 import io
 import json
 import traceback
-from datetime import datetime
 import zipfile
+from datetime import datetime
 from typing import Callable, List, Optional, Tuple
 
 import demistomock as demisto  # noqa: F401
-import requests
+import urllib3
 from CommonServerPython import *  # noqa: F401
 from dateutil.parser import parse
 
@@ -14,11 +14,12 @@ from dateutil.parser import parse
 
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' GLOBALS '''
 
 IS_VERSION_2_1: bool
+OS_COUNT = 4
 
 ''' HELPER FUNCTIONS '''
 
@@ -81,10 +82,11 @@ def get_agents_outputs(agents):
 
 
 class Client(BaseClient):
-    """
-    Client will implement the service API, and should not contain any Demisto logic.
-    Should only do requests and return data.
-    """
+
+    def __init__(self, base_url, verify=True, proxy=False, headers=None, global_block=None, block_site_ids=None):
+        super().__init__(base_url, verify, proxy, headers=headers)
+        self.block_site_ids = block_site_ids
+        self.global_block = global_block == 'None'
 
     def remove_hash_from_blocklist_request(self, hash_id) -> dict:
         body = {
@@ -120,6 +122,35 @@ class Client(BaseClient):
         }
 
         response = self._http_request(method='POST', url_suffix='restrictions', json_data=body)
+        return response.get('data') or {}
+
+    def add_hash_to_blocklists_request(self, value, os_type, site_ids, description='', source='') -> dict:
+        """
+        Supports adding hashes to multiple scoped site blocklists
+        """
+        demisto.debug(f'Site ids: {site_ids}')
+        # We do not use the assign_params function, because if these values are empty or None, we still want them
+        # sent to the server
+        for site_id in site_ids:
+            data = {
+                'value': value,
+                'source': source,
+                'osType': os_type,
+                'type': "black_hash",
+                'description': description
+            }
+
+            filt = {
+                'siteIds': [site_id],
+                'tenant': True
+            }
+
+            body = {
+                'data': data,
+                'filter': filt
+            }
+            demisto.debug(f'Site id: {site_id}')
+            response = self._http_request(method='POST', url_suffix='restrictions', json_data=body, ok_codes=[200])
         return response.get('data') or {}
 
     def get_blocklist_request(self, tenant: bool, group_ids: str = None, site_ids: str = None, account_ids: str = None,
@@ -212,7 +243,7 @@ class Client(BaseClient):
             rank=int(rank) if rank else None,
             keys_to_ignore=keys_to_ignore,
         )
-        response = self._http_request(method='GET', url_suffix='threats', params=params)
+        response = self._http_request(method='GET', url_suffix='threats', params=params, ok_codes=[200])
         return response.get('data', {})
 
     def mark_as_threat_request(self, threat_ids, target_scope):
@@ -404,16 +435,19 @@ class Client(BaseClient):
         response = self._http_request(method='POST', url_suffix=endpoint_url, json_data=payload)
         return response.get('data', {}).get('queryId')
 
-    def get_events_request(self, query_id=None, limit=None):
+    def get_events_request(self, query_id=None, limit=None, cursor=None):
         endpoint_url = 'dv/events'
 
         params = {
             'query_id': query_id,
+            'cursor': cursor,
             'limit': limit
         }
 
         response = self._http_request(method='GET', url_suffix=endpoint_url, params=params)
-        return response.get('data', {})
+        events = response.get('data', {})
+        pagination = response.get('pagination')
+        return events, pagination
 
     def get_processes_request(self, query_id=None, limit=None):
         endpoint_url = 'dv/events/process'
@@ -438,40 +472,79 @@ class Client(BaseClient):
         response = self._http_request(method='GET', url_suffix=endpoint_url)
         return response
 
-    def get_exclusions_request(self, item_ids=None, os_types=None, exclusion_type: str = None, limit: int = 10):
+    def get_exclusions_request(self, item_ids=None,
+                               os_types=None,
+                               exclusion_type: str = None,
+                               limit: int = 10,
+                               value_contains: Optional[str] = None,
+                               ok_codes: list = [200],
+                               include_children: Optional[bool] = None,
+                               include_parents: Optional[bool] = None):
+        """
+        When includeChildren and includeParents are set to True in API request-
+        it will return all items in the exclusion list.
+        If left blank they default to false and the API call will return a subset of the exclusion list.
+        """
         endpoint_url = 'exclusions'
 
-        params = {
-            "ids": item_ids,
-            "osTypes": os_types,
-            "type": exclusion_type,
-            "limit": limit
-        }
+        params = assign_params(
+            ids=item_ids,
+            osTypes=os_types,
+            type=exclusion_type,
+            value__contains=value_contains,
+            includeChildren=include_children,
+            includeParents=include_parents,
+            limit=limit
+        )
 
-        response = self._http_request(method='GET', url_suffix=endpoint_url, params=params)
+        response = self._http_request(method='GET', url_suffix=endpoint_url, params=params, ok_codes=ok_codes)
         return response.get('data', {})
 
     def create_exclusion_item_request(self, exclusion_type, exclusion_value, os_type, description=None,
                                       exclusion_mode=None, path_exclusion_type=None, group_ids=None, site_ids=None):
-        payload = {
-            "filter": {
-                "groupIds": group_ids,
-                "siteIds": site_ids
-            },
-            "data": assign_params(
-                type=exclusion_type,
-                value=exclusion_value,
-                osType=os_type,
-                description=description,
-                mode=exclusion_mode,
-                pathExclusionType=path_exclusion_type
-            )
-        }
-
+        if group_ids != []:
+            demisto.debug(f'Group IDs: {group_ids}')
+            payload = {
+                "filter": {
+                    "groupIds": group_ids,
+                    "siteIds": site_ids
+                },
+                "data": assign_params(
+                    type=exclusion_type,
+                    value=exclusion_value,
+                    osType=os_type,
+                    description=description,
+                    mode=exclusion_mode,
+                    pathExclusionType=path_exclusion_type
+                )
+            }
+        else:
+            payload = {
+                "filter": {
+                    "siteIds": site_ids
+                },
+                "data": assign_params(
+                    type=exclusion_type,
+                    value=exclusion_value,
+                    osType=os_type,
+                    description=description,
+                    mode=exclusion_mode,
+                    pathExclusionType=path_exclusion_type
+                )
+            }
         response = self._http_request(method='POST', url_suffix='exclusions', json_data=payload)
         if 'data' in response:
             return response.get('data')[0]
         return {}
+
+    def remove_exclusion_item_request(self, item_id) -> dict:
+        body = {
+            "data": {
+                "ids": [item_id]
+            }
+        }
+        response = self._http_request(method='DELETE', url_suffix='exclusions', json_data=body, ok_codes=[200])
+        return response.get('data') or {}
 
     def update_threat_analyst_verdict_request(self, threat_ids, action):
         endpoint_url = 'threats/analyst-verdict'
@@ -1950,9 +2023,13 @@ def get_white_list_command(client: Client, args: dict) -> CommandResults:
     os_types = argToList(args.get('os_types', []))
     exclusion_type = args.get('exclusion_type')
     limit = int(args.get('limit', 10))
+    should_include_parent = argToBoolean(args.get('include_parent', False))
+    should_include_children = argToBoolean(args.get('include_children', False))
 
     # Make request and get raw response
-    exclusion_items = client.get_exclusions_request(item_ids, os_types, exclusion_type, limit)
+    exclusion_items = client.get_exclusions_request(item_ids, os_types, exclusion_type, limit,
+                                                    include_parents=should_include_parent,
+                                                    include_children=should_include_children)
 
     # Parse response into context & content entries
     for exclusion_item in exclusion_items:
@@ -1979,6 +2056,72 @@ def get_white_list_command(client: Client, args: dict) -> CommandResults:
         raw_response=exclusion_items)
 
 
+def get_item_ids_from_whitelist(client: Client, item: str, exclusion_type: str, os_type: str = None) -> List[Optional[str]]:
+    """
+    Return the IDs of the hash from the white. Helper function for remove_item_from_whitelist
+    Limit is set to OS_COUNT here where is OS_COUNT is set to the number of Operating Systems a hash can be blocked.
+    Currently there are only three platforms it is acceptable for a hash to be blocked 3 times.
+    If more results are returned, an error will be thrown.
+    A hash can occur more than once if it is blocked on more than one platform (Windwos, MacOS, Linux)
+    """
+    item_ids: list = []
+    limit = OS_COUNT + 1
+    white_list = client.get_exclusions_request(item_ids, os_type, exclusion_type, limit, item, include_children=True,
+                                               include_parents=True)
+    demisto.debug(f'white_list: {white_list}')
+
+    ret = []
+
+    # Validation check first
+    if len(white_list) > limit:
+        raise DemistoException("Recieved More than 3 results when querying by hash. This condition should not occur")
+
+    for entry in white_list:
+        # Second validation. E.g. if user passed in a hash value shorter than SHA1 length
+        if (value := entry.get('value')) and value.lower() == item.lower():
+            ret.append(entry.get('id'))
+
+    return ret
+
+
+def remove_item_from_whitelist(client: Client, args: dict) -> CommandResults:
+    """
+    Remove a hash from the blocklist (SentinelOne Term: Blacklist)
+    """
+    item = args.get('item')
+    if not item:
+        raise DemistoException("You must specify a valid item to be removed")
+    os_type = args.get('os_type', None)
+    exclusion_type = args.get('exclusion_type', None)
+
+    item_ids = get_item_ids_from_whitelist(client, item, exclusion_type, os_type)
+
+    if not item_ids:
+        status = {
+            'item': item,
+            'status': "Not on whitelist"
+        }
+        result = None
+    else:
+        result = []
+        numRemoved = 0
+        for item_id in item_ids:
+            numRemoved += 1
+            result.append(client.remove_exclusion_item_request(item_id=item_id))
+
+        status = {
+            'item': item,
+            'status': f"Removed {numRemoved} entries from whitelist"
+        }
+
+    return CommandResults(
+        readable_output=f"{item}: {status['status']}.",
+        outputs_prefix='SentinelOne.RemoveItemFromWhitelist',
+        outputs_key_field='Value',
+        outputs=status,
+        raw_response=result)
+
+
 def create_white_item_command(client: Client, args: dict):
     """
     Create white item.
@@ -1995,8 +2138,8 @@ def create_white_item_command(client: Client, args: dict):
     exclusion_mode = args.get('exclusion_mode')
     path_exclusion_type = args.get('path_exclusion_type')
 
-    if not group_ids or not site_ids:
-        raise DemistoException("You must provide group_ids and site_ids.")
+    if not site_ids:
+        raise DemistoException("You must provide site_ids.")
 
     # Make request and get raw response
     new_item = client.create_exclusion_item_request(exclusion_type, exclusion_value, os_type, description,
@@ -2207,14 +2350,21 @@ def list_agents_command(client: Client, args: dict) -> CommandResults:
     List all agents matching the input filter
     """
     # Get arguments
-    query_params = assign_params(
+    query_params = {}
+    if args.get('params'):
+        param_list = argToList(args.get('params', ''))
+        for field_value in param_list:
+            f = field_value.split('=')[0]
+            v = field_value.split('=')[1]
+        query_params.update({f: v})
+    query_params.update(assign_params(
         active_threats=args.get('min_active_threats'),
         computer_name=args.get('computer_name'),
         scan_status=args.get('scan_status'),
         osTypes=args.get('os_type'),
         created_at=args.get('created_at'),
         limit=int(args.get('limit', 10)),
-    )
+    ))
 
     # Make request and get raw response
     agents = client.list_agents_request(query_params)
@@ -2420,8 +2570,13 @@ def get_events(client: Client, args: dict) -> Union[CommandResults, str]:
     event_standards = []
     query_id = args.get('query_id')
     limit = int(args.get('limit', 50))
+    cursor = args.get('cursor', None)
 
-    events = client.get_events_request(query_id, limit)
+    events, pagination = client.get_events_request(query_id, limit, cursor)
+    context = {}
+    if pagination and pagination.get('nextCursor') is not None:
+        demisto.results("Use the below cursor value to get the next page events \n {}". format(pagination['nextCursor']))
+        context.update({'SentinelOne.Cursor.Event': pagination['nextCursor']})
     for event in events:
         contents.append({
             'EventType': event.get('eventType'),
@@ -2433,8 +2588,20 @@ def get_events(client: Client, args: dict) -> Union[CommandResults, str]:
             'ProcessID': event.get('pid'),
             'ProcessUID': event.get('srcProcUid') if IS_VERSION_2_1 else event.get('processUniqueKey'),
             'ProcessName': event.get('processName'),
+            'FilePath': event.get('fileFullName'),
+            'IPAddress': event.get('agentIp'),
             'MD5': event.get('md5'),
             'SHA256': event.get('sha256'),
+            'SourceIP': event.get('srcIp'),
+            'SourcePort': event.get('srcPort'),
+            'DestinationIP': event.get('dstIp'),
+            'DestinationPort': event.get('dstPort'),
+            'SourceProcessUser': event.get('srcProcUser'),
+            'SourceProcessCommandLine': event.get('srcProcCmdLine'),
+            'DNSRequest': event.get('dnsRequest'),
+            'FileFullName': event.get('fileFullName'),
+            'EventTime': event.get('eventTime'),
+            'EventID': event.get('id'),
         })
 
         event_standards.append({
@@ -2442,11 +2609,14 @@ def get_events(client: Client, args: dict) -> Union[CommandResults, str]:
             'Name': event.get('processName'),
             'ID': event.get('pid'),
         })
+    # using the CommandResults.to_context in order to get the correct outputs key
+    context.update(CommandResults(
+        outputs_prefix='SentinelOne.Event',
+        outputs_key_field=['ProcessID', 'EventID'],
+        outputs=contents).to_context().get('EntryContext', {}))
 
-    context = {
-        'SentinelOne.Event(val.ProcessID && val.ProcessID === obj.ProcessID)': contents,
-        'Event(val.ID && val.ID === obj.ID)': event_standards
-    }
+    context.update({'Event(val.ID && val.ID === obj.ID)': event_standards})
+
     return CommandResults(
         readable_output=tableToMarkdown('SentinelOne Events', contents, removeNull=True),
         outputs=context,
@@ -2503,12 +2673,22 @@ def add_hash_to_blocklist(client: Client, args: dict) -> CommandResults:
         raise DemistoException("You must specify a valid SHA1 hash")
 
     try:
-        result = client.add_hash_to_blocklist_request(value=sha1, description=args.get('description'),
-                                                      os_type=args.get('os_type'), source=args.get('source'))
-        status = {
-            'hash': sha1,
-            'status': "Added to blocklist"
-        }
+        if not client.global_block:
+            sites = client.block_site_ids.split(',')
+            demisto.debug(f'Sites: {sites}')
+            result = client.add_hash_to_blocklists_request(value=sha1, description=args.get('description'),
+                                                           os_type=args.get('os_type'), site_ids=sites, source=args.get('source'))
+            status = {
+                'hash': sha1,
+                'status': "Added to scoped blocklist"
+            }
+        else:
+            result = client.add_hash_to_blocklist_request(value=sha1, description=args.get('description'),
+                                                          os_type=args.get('os_type'), source=args.get('source'))
+            status = {
+                'hash': sha1,
+                'status': "Added to global blocklist"
+            }
     except DemistoException as e:
         # When adding a hash to the blocklist that is already on the blocklist,
         # SentinelOne returns an error code, resuliting in the request raising an exception
@@ -2537,21 +2717,30 @@ def add_hash_to_blocklist(client: Client, args: dict) -> CommandResults:
         raw_response=result)
 
 
-def get_hash_ids_from_blocklist(client: Client, sha1: str, os_type: str = None) -> List[Optional[str]]:
+def get_hash_ids_from_blocklist(client: Client, sha1: str, os_type: str = None, get_global: bool = True) -> List[Optional[str]]:
     """
     Return the IDs of the hash from the blocklist. Helper function for remove_hash_from_blocklist
 
     A hash can occur more than once if it is blocked on more than one platform (Windwos, MacOS, Linux)
     """
-    PAGE_SIZE = 4
-    block_list = client.get_blocklist_request(tenant=True, skip=0, limit=PAGE_SIZE, os_type=os_type,
-                                              sort_by="updatedAt", sort_order="asc", value_contains=sha1)
+    if get_global:
+        PAGE_SIZE = 4
+        block_list = client.get_blocklist_request(tenant=True, skip=0, limit=PAGE_SIZE, os_type=os_type,
+                                                  sort_by="updatedAt", sort_order="asc", value_contains=sha1)
 
-    ret = []
+        ret: list = []
 
-    # Validation check first
-    if len(block_list) > 3:
-        raise DemistoException("Recieved More than 3 results when querying by hash. This condition should not occur")
+        # Validation check first
+        if len(block_list) > 3:
+            raise DemistoException("Recieved More than 3 results when querying by hash. This condition should not occur")
+    else:
+        PAGE_SIZE = 20
+        block_list = client.get_blocklist_request(tenant=False, skip=0, limit=PAGE_SIZE, os_type=os_type,
+                                                  sort_by="updatedAt", sort_order="asc", value_contains=sha1)
+
+        ret = []
+
+        # Validation check first
 
     for block_entry in block_list:
         # Second validation. E.g. if user passed in a hash value shorter than SHA1 length
@@ -2569,8 +2758,9 @@ def remove_hash_from_blocklist(client: Client, args: dict) -> CommandResults:
     if not sha1:
         raise DemistoException("You must specify a valid Sha1 hash")
     os_type = args.get('os_type', None)
-
-    hash_ids = get_hash_ids_from_blocklist(client, sha1, os_type)
+    get_global = args.get('global', True)
+    demisto.debug(f'Global input: {get_global}')
+    hash_ids = get_hash_ids_from_blocklist(client, sha1, os_type, get_global)
 
     if not hash_ids:
         status = {
@@ -2613,12 +2803,13 @@ def get_blocklist(client: Client, args: dict) -> CommandResults:
     group_ids = args.get('group_ids', None)
     site_ids = args.get('site_ids', None)
     account_ids = args.get('account_ids', None)
+    value = args.get('hash', None)
 
     contents = []
 
     block_list = client.get_blocklist_request(tenant=tenant, group_ids=group_ids, site_ids=site_ids,
                                               account_ids=account_ids, skip=offset, limit=limit,
-                                              sort_by=sort_by, sort_order=sort_order)
+                                              sort_by=sort_by, sort_order=sort_order, value_contains=value)
     for block in block_list:
         contents.append({
             'CreatedAt': block.get('createdAt'),
@@ -2640,6 +2831,7 @@ def get_blocklist(client: Client, args: dict) -> CommandResults:
         outputs_key_field='Value',
         outputs=contents,
         raw_response=block_list)
+
 
 # File Fetch Commands
 
@@ -2764,6 +2956,8 @@ def main():
     fetch_threat_rank = int(params.get('fetch_threat_rank', 0))
     fetch_limit = int(params.get('fetch_limit', 10))
     fetch_site_ids = params.get('fetch_site_ids', None)
+    block_site_ids = params.get('block_site_ids', 'None') or 'None'
+    global_block = block_site_ids == 'None'
 
     headers = {
         'Authorization': 'ApiToken ' + token if token else 'ApiToken',
@@ -2829,6 +3023,7 @@ def main():
             'sentinelone-update-threats-status': update_threat_status,
             'sentinelone-update-alerts-status': update_alert_status,
             'sentinelone-get-alerts': get_alerts,
+            'sentinelone-remove-item-from-whitelist': remove_item_from_whitelist,
         },
     }
 
@@ -2842,6 +3037,8 @@ def main():
             verify=use_ssl,
             headers=headers,
             proxy=proxy,
+            block_site_ids=block_site_ids,
+            global_block=global_block
         )
 
         if command == 'test-module':

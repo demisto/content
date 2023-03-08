@@ -1960,13 +1960,38 @@ function getDemistoVersion() {
         throw 'Failed retriving server version - ' + ex;
     }
 }
+/**
+ * Compare between two versions.
+ * @param {string} a - version.
+ * @param {string} b - version.
+ * @return {Integer} if A is bigger returns 1, if B is bigger returns -1,
+ * if they are equal returns 0.
+ */
+function compareVersions(a, b) {
+  if (a === b) {
+    return 0;
+  }
+  a_version = a.split('.')
+  b_version = b.split('.')
+  for (var i=0; i < a_version.length; i++) {
+      // A bigger than B
+      if (parseInt(a_version[i]) > parseInt(b_version[i])) {
+          return 1;
+      }
+      // B bigger than A
+      if (parseInt(a_version[i]) < parseInt(b_version[i])) {
+          return -1;
+      }
+  }
+}
 function isDemistoVersionGE(version, buildNumber) {
     var serverVersion = {};
     try {
         serverVersion = getDemistoVersion();
-        if (serverVersion.version > version) {
+        var versionComparison = compareVersions(serverVersion.version, version)
+        if (versionComparison > 0) {
             return true;
-        } else if (serverVersion.version === version) {
+        } else if (versionComparison === 0) {
             if (buildNumber) {
                 var intBuildNumber = parseInt(serverVersion.buildNumber);
                 if (isNaN(intBuildNumber)) {

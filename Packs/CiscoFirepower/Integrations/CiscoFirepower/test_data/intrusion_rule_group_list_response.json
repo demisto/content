@@ -1,0 +1,517 @@
+{
+    "links": {
+        "self": "links_self"
+    },
+    "items": [
+        {
+            "name": "Local Rules",
+            "id": "items[0]_id",
+            "type": "IntrusionRuleGroup",
+            "isSystemDefined": true,
+            "description": "Contains the user defined rules",
+            "links": {
+                "self": "items[0]_links_self"
+            },
+            "childGroups": [
+                {
+                    "name": "TestGroup",
+                    "id": "items[0]_childGroups[0]_id",
+                    "type": "IntrusionRuleGroup",
+                    "isSystemDefined": false,
+                    "description": "TestGroup",
+                    "metadata": {
+                        "domain": {
+                            "id": "items[0]_childGroups[0]_metadata_domain_id",
+                            "type": "Domain"
+                        }
+                    }
+                }
+            ],
+            "metadata": {
+                "domain": {
+                    "name": "Global",
+                    "id": "items[0]_metadata_domain_id",
+                    "type": "Domain"
+                }
+            }
+        },
+        {
+            "name": "Browser",
+            "id": "items[1]_id",
+            "type": "IntrusionRuleGroup",
+            "isSystemDefined": true,
+            "description": "Rules for detecting exploits targeting Web browsers",
+            "links": {
+                "self": "items[1]_links_self"
+            },
+            "childGroups": [
+                {
+                    "name": "Browser/WebKit",
+                    "id": "items[1]_childGroups[0]_id",
+                    "type": "IntrusionRuleGroup",
+                    "isSystemDefined": true,
+                    "description": "Rules for detecting exploits against the WebKit framework",
+                    "metadata": {
+                        "domain": {
+                            "id": "items[1]_childGroups[0]_metadata_domain_id",
+                            "type": "Domain"
+                        }
+                    }
+                },
+                {
+                    "name": "Browser/Plugins",
+                    "id": "items[1]_childGroups[1]_id",
+                    "type": "IntrusionRuleGroup",
+                    "isSystemDefined": true,
+                    "description": "Rules for detecting exploits against Web browser plugins",
+                    "metadata": {
+                        "domain": {
+                            "id": "items[1]_childGroups[1]_metadata_domain_id",
+                            "type": "Domain"
+                        }
+                    }
+                },
+                {
+                    "name": "Browser/Firefox",
+                    "id": "items[1]_childGroups[2]_id",
+                    "type": "IntrusionRuleGroup",
+                    "isSystemDefined": true,
+                    "description": "Rules for detecting exploits against the Firefox Web browser",
+                    "metadata": {
+                        "domain": {
+                            "id": "items[1]_childGroups[2]_metadata_domain_id",
+                            "type": "Domain"
+                        }
+                    }
+                },
+                {
+                    "name": "Browser/Other",
+                    "id": "items[1]_childGroups[3]_id",
+                    "type": "IntrusionRuleGroup",
+                    "isSystemDefined": true,
+                    "description": "Rules for detecting exploits against general Web browsers",
+                    "metadata": {
+                        "domain": {
+                            "id": "items[1]_childGroups[3]_metadata_domain_id",
+                            "type": "Domain"
+                        }
+                    }
+                },
+                {
+                    "name": "Browser/Chrome",
+                    "id": "items[1]_childGroups[4]_id",
+                    "type": "IntrusionRuleGroup",
+                    "isSystemDefined": true,
+                    "description": "Rules for detecting exploits against the Chrome Web browser",
+                    "metadata": {
+                        "domain": {
+                            "id": "items[1]_childGroups[4]_metadata_domain_id",
+                            "type": "Domain"
+                        }
+                    }
+                },
+                {
+                    "name": "Browser/Internet Explorer",
+                    "id": "items[1]_childGroups[5]_id",
+                    "type": "IntrusionRuleGroup",
+                    "isSystemDefined": true,
+                    "description": "Rules for detecting exploits against the Internet Explorer Web browser",
+                    "metadata": {
+                        "domain": {
+                            "id": "items[1]_childGroups[5]_metadata_domain_id",
+                            "type": "Domain"
+                        }
+                    }
+                }
+            ],
+            "metadata": {
+                "domain": {
+                    "name": "Global",
+                    "id": "items[1]_metadata_domain_id",
+                    "type": "Domain"
+                }
+            }
+        },
+        {
+            "name": "Server",
+            "id": "items[2]_id",
+            "type": "IntrusionRuleGroup",
+            "isSystemDefined": true,
+            "description": "Rules for detecting exploits targeting network servers",
+            "links": {
+                "self": "items[2]_links_self"
+            },
+            "childGroups": [
+                {
+                    "name": "Server/Other",
+                    "id": "items[2]_childGroups[0]_id",
+                    "type": "IntrusionRuleGroup",
+                    "isSystemDefined": true,
+                    "description": "Rules for detecting attacks against miscellaneous servers",
+                    "metadata": {
+                        "domain": {
+                            "id": "items[2]_childGroups[0]_metadata_domain_id",
+                            "type": "Domain"
+                        }
+                    }
+                },
+                {
+                    "name": "Server/Apache",
+                    "id": "items[2]_childGroups[1]_id",
+                    "type": "IntrusionRuleGroup",
+                    "isSystemDefined": true,
+                    "description": "Rules for detecting attacks against Apache servers",
+                    "metadata": {
+                        "domain": {
+                            "id": "items[2]_childGroups[1]_metadata_domain_id",
+                            "type": "Domain"
+                        }
+                    }
+                },
+                {
+                    "name": "Server/Microsoft IIS",
+                    "id": "items[2]_childGroups[2]_id",
+                    "type": "IntrusionRuleGroup",
+                    "isSystemDefined": true,
+                    "description": "Rules for detecting attacks against Microsoft Internet Information Systems servers",
+                    "metadata": {
+                        "domain": {
+                            "id": "items[2]_childGroups[2]_metadata_domain_id",
+                            "type": "Domain"
+                        }
+                    }
+                },
+                {
+                    "name": "Server/Oracle",
+                    "id": "items[2]_childGroups[3]_id",
+                    "type": "IntrusionRuleGroup",
+                    "isSystemDefined": true,
+                    "description": "Rules for detecting attacks against Oracle servers",
+                    "metadata": {
+                        "domain": {
+                            "id": "items[2]_childGroups[3]_metadata_domain_id",
+                            "type": "Domain"
+                        }
+                    }
+                },
+                {
+                    "name": "Server/Web Applications",
+                    "id": "items[2]_childGroups[4]_id",
+                    "type": "IntrusionRuleGroup",
+                    "isSystemDefined": true,
+                    "description": "Rules for detecting attacks against miscellaneous Web applications",
+                    "metadata": {
+                        "domain": {
+                            "id": "items[2]_childGroups[4]_metadata_domain_id",
+                            "type": "Domain"
+                        }
+                    }
+                },
+                {
+                    "name": "Server/Samba",
+                    "id": "items[2]_childGroups[5]_id",
+                    "type": "IntrusionRuleGroup",
+                    "isSystemDefined": true,
+                    "description": "Rules for detecting attacks against SAMBA servers",
+                    "metadata": {
+                        "domain": {
+                            "id": "items[2]_childGroups[5]_metadata_domain_id",
+                            "type": "Domain"
+                        }
+                    }
+                },
+                {
+                    "name": "Server/Mail",
+                    "id": "items[2]_childGroups[6]_id",
+                    "type": "IntrusionRuleGroup",
+                    "isSystemDefined": true,
+                    "description": "Rules for detecting attacks against mail servers",
+                    "metadata": {
+                        "domain": {
+                            "id": "items[2]_childGroups[6]_metadata_domain_id",
+                            "type": "Domain"
+                        }
+                    }
+                },
+                {
+                    "name": "Server/MySQL",
+                    "id": "items[2]_childGroups[7]_id",
+                    "type": "IntrusionRuleGroup",
+                    "isSystemDefined": true,
+                    "description": "Rules for detecting attacks against MySQL servers",
+                    "metadata": {
+                        "domain": {
+                            "id": "items[2]_childGroups[7]_metadata_domain_id",
+                            "type": "Domain"
+                        }
+                    }
+                },
+                {
+                    "name": "Server/SQL Server",
+                    "id": "items[2]_childGroups[8]_id",
+                    "type": "IntrusionRuleGroup",
+                    "isSystemDefined": true,
+                    "description": "Rules for detecting attacks against Microsoft SQL servers",
+                    "metadata": {
+                        "domain": {
+                            "id": "items[2]_childGroups[8]_metadata_domain_id",
+                            "type": "Domain"
+                        }
+                    }
+                }
+            ],
+            "metadata": {
+                "domain": {
+                    "name": "Global",
+                    "id": "items[2]_metadata_domain_id",
+                    "type": "Domain"
+                }
+            }
+        },
+        {
+            "name": "Policy",
+            "id": "items[3]_id",
+            "type": "IntrusionRuleGroup",
+            "isSystemDefined": true,
+            "description": "Rules for detecting activities that may not be malicious, but may be against network or corporate policy",
+            "links": {
+                "self": "items[3]_links_self"
+            },
+            "childGroups": [
+                {
+                    "name": "Policy/Multimedia",
+                    "id": "items[3]_childGroups[0]_id",
+                    "type": "IntrusionRuleGroup",
+                    "isSystemDefined": true,
+                    "description": "Rules for detecting multimedia traffic that may be against network policies",
+                    "metadata": {
+                        "domain": {
+                            "id": "items[3]_childGroups[0]_metadata_domain_id",
+                            "type": "Domain"
+                        }
+                    }
+                },
+                {
+                    "name": "Policy/Social Media",
+                    "id": "items[3]_childGroups[1]_id",
+                    "type": "IntrusionRuleGroup",
+                    "isSystemDefined": true,
+                    "description": "Rules for detecting social media traffic that may be against network policies",
+                    "metadata": {
+                        "domain": {
+                            "id": "items[3]_childGroups[1]_metadata_domain_id",
+                            "type": "Domain"
+                        }
+                    }
+                },
+                {
+                    "name": "Policy/Other",
+                    "id": "items[3]_childGroups[2]_id",
+                    "type": "IntrusionRuleGroup",
+                    "isSystemDefined": true,
+                    "description": "Rules for detecting miscellaneous traffic that may be against network policies",
+                    "metadata": {
+                        "domain": {
+                            "id": "items[3]_childGroups[2]_metadata_domain_id",
+                            "type": "Domain"
+                        }
+                    }
+                },
+                {
+                    "name": "Policy/Spam",
+                    "id": "items[3]_childGroups[3]_id",
+                    "type": "IntrusionRuleGroup",
+                    "isSystemDefined": true,
+                    "description": "Rules for detecting spam traffic",
+                    "metadata": {
+                        "domain": {
+                            "id": "items[3]_childGroups[3]_metadata_domain_id",
+                            "type": "Domain"
+                        }
+                    }
+                }
+            ],
+            "metadata": {
+                "domain": {
+                    "name": "Global",
+                    "id": "items[3]_metadata_domain_id",
+                    "type": "Domain"
+                }
+            }
+        },
+        {
+            "name": "Indicator",
+            "id": "items[4]_id",
+            "type": "IntrusionRuleGroup",
+            "isSystemDefined": true,
+            "description": "Rules that indicate potential malicious activity, whether in progress or performed previously",
+            "links": {
+                "self": "items[4]_links_self"
+            },
+            "childGroups": [
+                {
+                    "name": "Indicator/Compromise",
+                    "id": "items[4]_childGroups[0]_id",
+                    "type": "IntrusionRuleGroup",
+                    "isSystemDefined": true,
+                    "description": "Rules for detecting indicators that a device has already been compromised",
+                    "metadata": {
+                        "domain": {
+                            "id": "items[4]_childGroups[0]_metadata_domain_id",
+                            "type": "Domain"
+                        }
+                    }
+                },
+                {
+                    "name": "Indicator/Shellcode",
+                    "id": "items[4]_childGroups[1]_id",
+                    "type": "IntrusionRuleGroup",
+                    "isSystemDefined": true,
+                    "description": "Rules for detecting suspected shellcode, which could be part of attack traffic",
+                    "metadata": {
+                        "domain": {
+                            "id": "items[4]_childGroups[1]_metadata_domain_id",
+                            "type": "Domain"
+                        }
+                    }
+                },
+                {
+                    "name": "Indicator/Scan",
+                    "id": "items[4]_childGroups[2]_id",
+                    "type": "IntrusionRuleGroup",
+                    "isSystemDefined": true,
+                    "description": "Rules for detecting traffic that may be part of a network scan",
+                    "metadata": {
+                        "domain": {
+                            "id": "items[4]_childGroups[2]_metadata_domain_id",
+                            "type": "Domain"
+                        }
+                    }
+                },
+                {
+                    "name": "Indicator/Obfuscation",
+                    "id": "items[4]_childGroups[3]_id",
+                    "type": "IntrusionRuleGroup",
+                    "isSystemDefined": true,
+                    "description": "Rules for detecting indicators that traffic has been obfuscated, potentially indicating compromise",
+                    "metadata": {
+                        "domain": {
+                            "id": "items[4]_childGroups[3]_metadata_domain_id",
+                            "type": "Domain"
+                        }
+                    }
+                }
+            ],
+            "metadata": {
+                "domain": {
+                    "name": "Global",
+                    "id": "items[4]_metadata_domain_id",
+                    "type": "Domain"
+                }
+            }
+        },
+        {
+            "name": "Potentially Unwanted Applications",
+            "id": "items[5]_id",
+            "type": "IntrusionRuleGroup",
+            "isSystemDefined": true,
+            "description": "Rules for detecting applications that may be present on the network that is against network policy",
+            "links": {
+                "self": "items[5]_links_self"
+            },
+            "childGroups": [
+                {
+                    "name": "Potentially Unwanted Applications/Application Detection",
+                    "id": "items[5]_childGroups[0]_id",
+                    "type": "IntrusionRuleGroup",
+                    "isSystemDefined": true,
+                    "description": "Rules for detecting potentially unwanted applications",
+                    "metadata": {
+                        "domain": {
+                            "id": "items[5]_childGroups[0]_metadata_domain_id",
+                            "type": "Domain"
+                        }
+                    }
+                },
+                {
+                    "name": "Potentially Unwanted Applications/Content Replace",
+                    "id": "items[5]_childGroups[1]_id",
+                    "type": "IntrusionRuleGroup",
+                    "isSystemDefined": true,
+                    "description": "Rules that replace traffic in an attempt to prevent certain types of network traffic",
+                    "metadata": {
+                        "domain": {
+                            "id": "items[5]_childGroups[1]_metadata_domain_id",
+                            "type": "Domain"
+                        }
+                    }
+                },
+                {
+                    "name": "Potentially Unwanted Applications/Toolbars",
+                    "id": "items[5]_childGroups[2]_id",
+                    "type": "IntrusionRuleGroup",
+                    "isSystemDefined": true,
+                    "description": "Rules for detecting toolbars that may be against network policy",
+                    "metadata": {
+                        "domain": {
+                            "id": "items[5]_childGroups[2]_metadata_domain_id",
+                            "type": "Domain"
+                        }
+                    }
+                },
+                {
+                    "name": "Potentially Unwanted Applications/Peer-to-Peer",
+                    "id": "items[5]_childGroups[3]_id",
+                    "type": "IntrusionRuleGroup",
+                    "isSystemDefined": true,
+                    "description": "Rules for detecting peer-to-peer application network traffic",
+                    "metadata": {
+                        "domain": {
+                            "id": "items[5]_childGroups[3]_metadata_domain_id",
+                            "type": "Domain"
+                        }
+                    }
+                },
+                {
+                    "name": "Potentially Unwanted Applications/Other",
+                    "id": "items[5]_childGroups[4]_id",
+                    "type": "IntrusionRuleGroup",
+                    "isSystemDefined": true,
+                    "description": "Rules for detecting miscellaneous potentially unwanted applications",
+                    "metadata": {
+                        "domain": {
+                            "id": "items[5]_childGroups[4]_metadata_domain_id",
+                            "type": "Domain"
+                        }
+                    }
+                },
+                {
+                    "name": "Potentially Unwanted Applications/Adware",
+                    "id": "items[5]_childGroups[5]_id",
+                    "type": "IntrusionRuleGroup",
+                    "isSystemDefined": true,
+                    "description": "Rules for detecting adware and malicious advertising",
+                    "metadata": {
+                        "domain": {
+                            "id": "items[5]_childGroups[5]_metadata_domain_id",
+                            "type": "Domain"
+                        }
+                    }
+                }
+            ],
+            "metadata": {
+                "domain": {
+                    "name": "Global",
+                    "id": "items[5]_metadata_domain_id",
+                    "type": "Domain"
+                }
+            }
+        }
+    ],
+    "paging": {
+        "offset": 0,
+        "limit": 6,
+        "count": 78,
+        "pages": 1
+    }
+}

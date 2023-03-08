@@ -1602,12 +1602,11 @@ tasks:
     task:
       id: b69262ea-4383-4218-824b-e13233a2c5a1
       version: -1
-      name: Isolate Endpoint - Generic
+      name: Isolate Endpoint - Generic V2
       description: |-
-        This playbook isolates a given endpoint using the following integrations:
-        - Carbon Black Enterprise Response
-        - Palo Alto Networks Traps
-      playbookName: Isolate Endpoint - Generic
+        This playbook isolates a given endpoint using various endpoint product integrations.
+        Make sure to provide valid playbook inputs for the integration you are using.
+      playbookName: Isolate Endpoint - Generic V2
       type: playbook
       iscommand: false
       brand: ""
@@ -1615,7 +1614,12 @@ tasks:
       '#none#':
       - "61"
     scriptarguments:
-      EndpointId:
+      Endpoint_hostname:
+        complex:
+          root: AttackerHostnames
+          transformers:
+          - operator: uniq
+      Endpoint_id:
         complex:
           root: PaloAltoNetworksXDREndpoint
           filters:
@@ -1629,11 +1633,6 @@ tasks:
                   simple: AttackerHostnames
                 iscontext: true
           accessor: endpoint_id
-          transformers:
-          - operator: uniq
-      Hostname:
-        complex:
-          root: AttackerHostnames
           transformers:
           - operator: uniq
     separatecontext: true
@@ -2456,7 +2455,7 @@ inputs:
   description: Set to true to assign only the users that are currently on shift.
   playbookInputQuery:
 outputs: []
-fromversion: 5.0.0
+fromversion: 6.0.0
 tests:
 - no test
 contentitemexportablefields:

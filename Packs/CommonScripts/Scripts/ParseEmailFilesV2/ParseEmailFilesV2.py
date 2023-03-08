@@ -87,12 +87,12 @@ def extract_file_info(entry_id: str) -> tuple:
 
         file_path = result[0]['Contents']['path']
         file_name = result[0]['Contents']['name']
-        result = demisto.executeCommand('getEntry', {'id': entry_id})
-        if is_error(result):
-            return_error(get_error(result))
 
-        file_metadata = result[0]['FileMetadata']
-        file_type = file_metadata.get('info', '') or file_metadata.get('type', '')
+        dt_file_type = demisto.dt(demisto.context(), f"File(val.EntryID=='{entry_id}').Type")
+        if isinstance(dt_file_type, list):
+            file_type = dt_file_type[0]
+        else:
+            file_type = dt_file_type
 
     except Exception as ex:
         return_error(
@@ -143,9 +143,13 @@ def main():
         for email in output:
             if email.get('AttachmentsData'):
                 for attachment in email.get('AttachmentsData'):
-                    if (name := attachment.get('Name')) and (content := attachment.get('FileData')):
-                        del attachment['FileData']
-                        attachment['FilePath'] = save_file(name, content)
+                    if name := attachment.get('Name'):
+                        if content := attachment.get('FileData'):
+                            attachment['FilePath'] = save_file(name, content)
+                            del attachment['FileData']
+                        else:
+                            attachment['FileData'] = None
+
             results.append(CommandResults(
                 outputs_prefix='Email',
                 outputs=email,

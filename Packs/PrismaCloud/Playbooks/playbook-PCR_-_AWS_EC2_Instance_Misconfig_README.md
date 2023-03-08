@@ -32,7 +32,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Integrations
 * Builtin
-* RedLock
+* PrismaCloud v2
 
 ### Scripts
 This playbook does not use any scripts.

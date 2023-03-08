@@ -1,0 +1,12 @@
+{"caps": ["write", "provision"],
+ "created_at": "2022-08-17T11:56:38.215Z",
+ "created_by": {"href": "/users/68"},
+ "enabled": true,
+ "href": "/orgs/1/sec_policy/draft/rule_sets/1667",
+ "ip_tables_rules": [],
+ "name": "Trial ruleset from test case - 1",
+ "rules": [],
+ "scopes": [[]],
+ "update_type": "create",
+ "updated_at": "2022-08-17T11:56:38.215Z",
+ "updated_by": {"href": "/users/68"}}

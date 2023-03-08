@@ -1,0 +1,55 @@
+{
+    "AssetId": 13,
+    "Address": "192.0.2.0",
+    "Addresses": [
+        "192.0.2.0"
+    ],
+    "Hardware": [],
+    "Aliases": [
+        "test.com"
+    ],
+    "HostType": null,
+    "Site": "Test",
+    "OperatingSystem": "Linux 2.6.18",
+    "Vulnerabilities": 2,
+    "CPE": null,
+    "RiskScore": 1321.88427734375,
+    "LastScanDate": "2021-06-29T07:06:35.829Z",
+    "LastScanId": 763,
+    "Software": null,
+    "Service": [
+        {
+            "Name": "HTTP",
+            "Port": 80,
+            "Product": "nginx",
+            "Protocol": "tcp"
+        },
+        {
+            "Name": "HTTPS",
+            "Port": 443,
+            "Product": "nginx",
+            "Protocol": "tcp"
+        },
+        {
+            "Name": "SSH",
+            "Port": 2222,
+            "Product": null,
+            "Protocol": "tcp"
+        }
+    ],
+    "User": null,
+    "Vulnerability": [
+        {
+            "Id": "certificate-common-name-mismatch",
+            "Title": "X.509 Certificate Subject CN Does Not Match the Entity Name",
+            "Malware": 0,
+            "Exploit": 0,
+            "CVSS": 7.1,
+            "Risk": 835.84,
+            "PublishedOn": "2007-08-03",
+            "ModifiedOn": "2019-04-25",
+            "Severity": "Severe",
+            "Instances": 1
+        }
+    ]
+}
