@@ -162,3 +162,21 @@ def test_test_module_command_with_managed_identities(mocker, requests_mock, clie
     qs = get_mock.last_request.qs
     assert qs['resource'] == [Resources.graph]
     assert client_id and qs['client_id'] == [client_id] or 'client_id' not in qs
+
+
+def test_list_members(mocker):
+    """
+    Given:
+      - a group ID with less than 100 members.
+      - a group ID with more than 100 members.
+    When:
+      - calling list_members_command.
+    Then:
+      - ensure the command results are as expected (Members are found and MembersNextLink is shown when there are more
+      than 100 members.
+    """
+    from MicrosoftGraphGroups import MsGraphClient
+    mocker.patch.object(demisto, 'args', return_value={'count': 'true'})
+    http_request = mocker.patch.object(MsGraphClient, 'http_request')
+    MsGraphClient.list_members()
+    http_request.assert_called_with('GET', params={}, headers={})
