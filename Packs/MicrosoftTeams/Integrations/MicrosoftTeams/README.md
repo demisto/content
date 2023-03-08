@@ -712,7 +712,7 @@ Retrieves a list of members from a channel.
 ```!microsoft-teams-channel-user-list channel_name="example channel" team=DemistoTeam```
 
 ##### Human Readable Output
-### Channel 'example channel' Members List:
+##### Channel 'example channel' Members List:
 | User Id                              | Email          | Tenant Id                            | Membership id                                                                                        | User roles | Display Name | Start DateTime       |
 |--------------------------------------|----------------|--------------------------------------|------------------------------------------------------------------------------------------------------|------------|--------------|----------------------|
 | 359d2c3c-162b-414c-b2eq-386461e5l050 | test@gmail.com | pbae9ao6-01ql-249o-5me3-4738p3e1m941 | MmFiOWM3OTYtMjkwMi00NWY4LWI3MTItN2M1YTYzY2Y0MWM0IyNlZWY5Y2IzNi0wNmRlLTQ2OWItODdjZC03MGY0Y2JlMzJkMTQ= | owner      | itayadmin    | 0001-01-01T00:00:00Z |
@@ -762,7 +762,7 @@ Note: Only one oneOnOne chat can exist between two members. If a oneOnOne chat a
 ```!microsoft-teams-chat-create chat_type=group member="itayadmin, Bruce Willis" chat_name="example chat"```
 
 ##### Human Readable Output
-### The chat 'example chat' was created successfully
+##### The chat 'example chat' was created successfully
 | Chat Id                                       | Chat name    | Created Date Time       | Last Updated Date Time  | webUrl | Tenant Id                            |
 |-----------------------------------------------|--------------|-------------------------|-------------------------|--------|--------------------------------------|
 | 19:2da4c29f6d7041eca70b638b43d45437@thread.v2 | example chat | 2023-01-08T07:51:53.07Z | 2023-01-08T07:51:53.07Z | webUrl | pbae9ao6-01ql-249o-5me3-4738p3e1m941 |
