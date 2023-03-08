@@ -373,6 +373,12 @@ class TestBulkUpdateQueryCommands:
           {"Name": "dummy2"}],
          [{"$set": {"test": 1, "value": 2, "another_value": {"sub_value": 4}}},
           {"$set": {"test": 2}}]))
+    case_bulk_update_context_args = ([{"Name": "dummy1"}, {"Name": "dummy2"}],
+                                     [{"$set": {"test": 1}}, {"$set": {"test": 2}}],
+                                     ([{"Name": "dummy1"},
+                                      {"Name": "dummy2"}],
+                                      [{"$set": {"test": 1}},
+                                         {"$set": {"test": 2}}]))
 
     # invalid command arguments
     case_missing_brackets = ("{\"Name\": \"dummy1\"},{\"Name\": \"dummy2\"}]",
@@ -389,7 +395,8 @@ class TestBulkUpdateQueryCommands:
         case_single_update_args,
         case_simple_bulk_update_args,
         case_bulk_update_complex_filter,
-        case_bulk_update_complex_update
+        case_bulk_update_complex_update,
+        case_bulk_update_context_args
     ])
     def test_parse_and_validate_bulk_update_arguments(self, filter, update, expected_output):
         """
