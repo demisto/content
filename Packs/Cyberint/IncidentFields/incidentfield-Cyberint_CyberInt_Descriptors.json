@@ -1,11 +1,10 @@
 {
-    "id": "incident_cyberintimpact",
+    "id": "incident_cyberintdescriptors",
     "version": -1,
-    "modified": "2021-02-22T21:52:17.469378817+02:00",
-    "name": "CyberInt Impact",
+    "name": "CyberInt Descriptors",
     "ownerOnly": false,
-    "cliName": "cyberintimpact",
-    "type": "shortText",
+    "cliName": "cyberintdescriptors",
+    "type": "multiSelect",
     "closeForm": false,
     "editForm": true,
     "required": false,
@@ -22,9 +21,10 @@
     ],
     "associatedToAll": false,
     "unmapped": false,
-    "unsearchable": false,
+    "unsearchable": true,
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72,
-    "fromVersion": "6.0.0"
+    "fromVersion": "6.0.0",
+    "openEnded": true
 }
