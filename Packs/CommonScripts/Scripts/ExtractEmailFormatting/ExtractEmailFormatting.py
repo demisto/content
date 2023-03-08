@@ -32,7 +32,7 @@ def extract_email(email_address: str) -> str:
     try:
         return re.match(email_format, email_address).group(1)
 
-    except IndexError:
+    except AttributeError:
         return ''
 
 
@@ -83,7 +83,7 @@ def extract_email_from_url_query(email_address: str) -> str:
         # to the first "=" that comes before it.
         return re.match('(.*?)=', email_address[::-1]).group(1)[::-1]
 
-    except IndexError:
+    except AttributeError:
         return ''
 
 
