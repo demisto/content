@@ -20,6 +20,7 @@
     "Palo_Alto_Networks_WildFire",
     "ThreatIntelligenceManagement",
     "Unit42Intel",
+    "VirusTotal",
     "Whois",
     "rasterize"
   ],
@@ -44,6 +45,7 @@
     "Palo_Alto_Networks_WildFire",
     "ThreatIntelligenceManagement",
     "Unit42Intel",
+    "VirusTotal",
     "Whois",
     "rasterize"
   ]
