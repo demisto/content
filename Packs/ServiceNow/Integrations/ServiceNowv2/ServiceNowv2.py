@@ -2180,7 +2180,7 @@ def fetch_incidents(client: Client) -> list:
         count += 1
 
     # remove duplicate incidents which were already fetched
-    incidents = filter_incidents_by_duplicates_and_limit(
+    incidents, filtered_incidents = filter_incidents_by_duplicates_and_limit(
         incidents_res=incidents, last_run=last_run, fetch_limit=client.sys_param_limit, id_field='name'
     )
 
@@ -2193,6 +2193,7 @@ def fetch_incidents(client: Client) -> list:
         look_back=client.look_back,
         created_time_field='occurred',
         id_field='name',
+        filtered_incidents=filtered_incidents,
         date_format=DATE_FORMAT
     )
     demisto.debug(f'last run at the end of the incidents fetching {last_run}')

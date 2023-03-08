@@ -10422,12 +10422,16 @@ def filter_incidents_by_duplicates_and_limit(incidents_res, last_run, fetch_limi
     """
     found_incidents = last_run.get('found_incident_ids', {})
 
+    filtered_incidents = False
     incidents = []
     for incident in incidents_res:
         if incident[id_field] not in found_incidents:
             incidents.append(incident)
+    
+    if len(incidents) < len(incidents_res):
+        filtered_incidents = True
 
-    return incidents[:fetch_limit]
+    return incidents[:fetch_limit], filtered_incidents
 
 
 def get_latest_incident_created_time(incidents, created_time_field, date_format='%Y-%m-%dT%H:%M:%S',
@@ -10523,7 +10527,7 @@ def get_found_incident_ids(last_run, incidents, look_back, id_field, remove_inci
 
 
 def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, start_fetch_time, end_fetch_time,
-                                   created_time_field, date_format='%Y-%m-%dT%H:%M:%S', increase_last_run_time=False):
+                                   created_time_field, filtered_incidents, date_format='%Y-%m-%dT%H:%M:%S', increase_last_run_time=False):
     """
     Calculates the next fetch time and limit depending the incidents result and creates an updated LastRun object
     with the new time and limit.
@@ -10558,15 +10562,23 @@ def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, 
     :return: The new LastRun object
     :rtype: ``Dict``
     """
-
+    demisto.debug("Starting create_updated_last_run_object")
     remove_incident_ids = True
 
-    if len(incidents) == 0:
+    if len(incidents) == 0 and not filtered_incidents:
+        demisto.debug("len(incidents) == 0 and not filtered_incidents")
         new_last_run = {
             'time': end_fetch_time,
             'limit': fetch_limit,
         }
+    elif len(incidents) == 0 and filtered_incidents:
+        demisto.debug("len(incidents) == 0 and filtered_incidents")
+        new_last_run = {
+            'time': end_fetch_time,
+            'limit': last_run.get('limit', fetch_limit) + 1,
+        }
     elif len(incidents) < fetch_limit or look_back == 0:
+        demisto.debug("look_back == 0 or len(incidents) < fetch_limit")
         latest_incident_fetched_time = get_latest_incident_created_time(incidents, created_time_field, date_format,
                                                                         increase_last_run_time)
         new_last_run = {
@@ -10574,17 +10586,20 @@ def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, 
             'limit': fetch_limit,
         }
     else:
+        demisto.debug("going into the else part")
         remove_incident_ids = False
         new_last_run = {
             'time': start_fetch_time,
             'limit': last_run.get('limit', fetch_limit) + fetch_limit,
         }
 
+    demisto.debug(f"{new_last_run=}")
+    demisto.debug(f"{remove_incident_ids=}")
     return new_last_run, remove_incident_ids
 
 
 def update_last_run_object(last_run, incidents, fetch_limit, start_fetch_time, end_fetch_time, look_back,
-                           created_time_field, id_field, date_format='%Y-%m-%dT%H:%M:%S', increase_last_run_time=False):
+                           created_time_field, id_field, filtered_incidents, date_format='%Y-%m-%dT%H:%M:%S', increase_last_run_time=False):
     """
     Updates the LastRun object with the next fetch time and limit and with the new fetched incident IDs.
 
@@ -10631,6 +10646,7 @@ def update_last_run_object(last_run, incidents, fetch_limit, start_fetch_time, e
                                                                            start_fetch_time,
                                                                            end_fetch_time,
                                                                            created_time_field,
+                                                                           filtered_incidents,
                                                                            date_format,
                                                                            increase_last_run_time,
                                                                            )
