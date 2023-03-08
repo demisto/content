@@ -1642,7 +1642,8 @@ class Pack(object):
                                 version_display_name=latest_release_notes,
                                 build_number=build_number,
                                 new_version=False,
-                                pull_request_numbers=changelog.get(latest_release_notes, {}).get(Changelog.PULL_REQUEST_NUMBERS, []),
+                                pull_request_numbers=changelog.get(latest_release_notes,
+                                                                   {}).get(Changelog.PULL_REQUEST_NUMBERS, []),
                                 marketplace=marketplace,
                                 id_set=id_set,
                             )
