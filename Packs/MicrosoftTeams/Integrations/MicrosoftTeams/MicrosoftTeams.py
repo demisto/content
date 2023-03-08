@@ -21,13 +21,17 @@ requests.packages.urllib3.disable_warnings()  # type: ignore
 
 ''' GLOBAL VARIABLES'''
 PARAMS: dict = demisto.params()
-BOT_ID: str = PARAMS.get('credentials', {}).get('identifier') or PARAMS.get('bot_id', '')
-BOT_PASSWORD: str = PARAMS.get('credentials', {}).get('password') or PARAMS.get('bot_password', '')
+BOT_ID: str = PARAMS.get('credentials', {}).get('identifier', '') or PARAMS.get('bot_id', '')
+BOT_PASSWORD: str = PARAMS.get('credentials', {}).get('password', '') or PARAMS.get('bot_password', '')
 TENANT_ID: str = PARAMS.get('tenant_id', '')
 USE_SSL: bool = not PARAMS.get('insecure', False)
 APP: Flask = Flask('demisto-teams')
 PLAYGROUND_INVESTIGATION_TYPE: int = 9
 GRAPH_BASE_URL: str = 'https://graph.microsoft.com'
+CERTIFICATE = replace_spaces_in_credential(PARAMS.get('creds_certificate', {}).get('identifier', '')) \
+    or demisto.params().get('certificate', '')
+PRIVATE_KEY = replace_spaces_in_credential(PARAMS.get('creds_certificate', {}).get('password', '')) \
+    or demisto.params().get('key', '')
 
 INCIDENT_TYPE: str = PARAMS.get('incidentType', '')
 
@@ -765,7 +769,7 @@ def validate_auth_header(headers: dict) -> bool:
     decoded_payload = jwt.decode(jwt_token, public_key, options=options)
 
     audience_claim: str = decoded_payload.get('aud', '')
-    if audience_claim != demisto.params().get('bot_id'):
+    if audience_claim != BOT_ID:
         demisto.info('Authorization header validation - failed to verify audience_claim')
         return False
 
@@ -1752,7 +1756,7 @@ def create_personal_conversation(integration_context: dict, team_member_id: str)
     :param team_member_id: ID of team member to create a conversation with
     :return: ID of created conversation
     """
-    bot_id: str = demisto.params().get('bot_id', '')
+    bot_id: str = BOT_ID
     bot_name: str = integration_context.get('bot_name', '')
     tenant_id: str = integration_context.get('tenant_id', '')
     conversation: dict = {
@@ -2058,7 +2062,7 @@ def member_added_handler(integration_context: dict, request_body: dict, channel_
     :param channel_data: Microsoft Teams tenant, team and channel details
     :return: None
     """
-    bot_id = demisto.params().get('bot_id')
+    bot_id = BOT_ID
 
     team: dict = channel_data.get('team', {})
     team_id: str = team.get('id', '')
@@ -2336,7 +2340,7 @@ def ring_user():
         raise DemistoException("In order to use the 'microsoft-teams-ring-user' command, you need to use "
                                "the 'Client Credentials flow'.")
 
-    bot_id = demisto.params().get('bot_id')
+    bot_id = BOT_ID
     integration_context: dict = get_integration_context()
     tenant_id: str = integration_context.get('tenant_id', '')
     if not tenant_id:
@@ -2395,8 +2399,8 @@ def long_running_loop():
     The infinite loop which runs the mirror loop and the bot app in two different threads
     """
     while True:
-        certificate: str = demisto.params().get('certificate', '')
-        private_key: str = demisto.params().get('key', '')
+        certificate: str = CERTIFICATE
+        private_key: str = PRIVATE_KEY
 
         certificate_path = str()
         private_key_path = str()
@@ -2498,6 +2502,21 @@ def test_module():
     return_results('ok')
 
 
+def generate_login_url_command():
+    login_url = f'https://login.microsoftonline.com/{TENANT_ID}/oauth2/v2.0/authorize?' \
+                f'response_type=code&scope=offline_access%20https://graph.microsoft.com/.default' \
+                f'&client_id={BOT_ID}&redirect_uri={REDIRECT_URI}'
+
+    result_msg = f"""### Authorization instructions
+1. Click on the [login URL]({login_url}) to sign in and grant Cortex XSOAR permissions for your Azure Service Management.
+You will be automatically redirected to a link with the following structure:
+```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```
+2. Copy the `AUTH_CODE` (without the `code=` prefix, and the `session_state` parameter)
+and paste it in your instance configuration under the **Authorization code** parameter.
+    """
+    return_results(CommandResults(readable_output=result_msg))
+
+
 def main():
     """ COMMANDS MANAGER / SWITCH PANEL """
     demisto.debug("Main started...")
@@ -2517,7 +2536,8 @@ def main():
         'microsoft-teams-add-user-to-channel': add_user_to_channel_command,
         'microsoft-teams-create-meeting': create_meeting_command,
         'microsoft-teams-channel-user-list': channel_user_list_command,
-        'microsoft-teams-user-remove-from-channel': user_remove_from_channel_command
+        'microsoft-teams-user-remove-from-channel': user_remove_from_channel_command,
+        'microsoft-teams-generate-login-url': generate_login_url_command
 
     }
 

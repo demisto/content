@@ -227,3 +227,5 @@ YAML
 Oproxy
 linter
 pylint
+delimiter
+GCP

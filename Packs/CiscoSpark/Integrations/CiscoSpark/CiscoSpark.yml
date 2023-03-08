@@ -4,7 +4,7 @@ commonfields:
   version: -1
 name: Cisco Spark
 display: Cisco Webex Teams
-category: Messaging
+category: Messaging and Conferencing
 description: Send messages, create rooms and more, via the Cisco Spark API.
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)

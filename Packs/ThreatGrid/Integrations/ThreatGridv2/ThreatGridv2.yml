@@ -21,7 +21,7 @@ configuration:
   type: 15
   required: true
   additionalinfo: Reliability of the source providing the intelligence data.
-  defaultvalue: B - Usually Reliable
+  defaultvalue: B - Usually reliable
   options:
   - A+ - 3rd party enrichment
   - A - Completely reliable
@@ -510,13 +510,13 @@ script:
     arguments:
     - name: url
       required: true
-      description: The URL to search for.
+      description: The URL to search for (please provide the URL in the format http://example.com:80/. note that ThreatGrid only support '.com' domains).
       isArray: false
     outputs:
     - contextPath: ThreatGrid.search.url
       description: URL item
       type: String
-    description: Search urls. Please provide the URL in the format http://example.com:80/ .
+    description: Search urls. Please provide the URL in the format http://example.com:80/ (note that ThreatGrid only support '.com' domains).
     deprecated: false
     execution: false
   - name: threat-grid-feeds-artifact
@@ -1705,7 +1705,7 @@ script:
       description: The associated IP.
       type: String
   runonce: false
-  dockerimage: demisto/python3:3.10.10.47713
+  dockerimage: demisto/python3:3.10.10.48392
   feed: false
   isfetch: false
   longRunning: false

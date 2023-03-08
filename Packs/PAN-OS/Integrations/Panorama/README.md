@@ -1,7 +1,7 @@
 This integration supports both Palo Alto Networks Panorama and Palo Alto Networks Firewall. You can create separate instances of each integration, and they are not necessarily related or dependent on one another.
 
 This integration enables you to manage the Palo Alto Networks Firewall and Panorama. For more information see the [PAN-OS documentation](https://docs.paloaltonetworks.com/pan-os.html).
-This integration was integrated and tested with version 8.1.0 and 9.0.1 of Palo Alto Firewall, Palo Alto Panorama.
+This integration was integrated and tested with versions 8.xx, 9.xx, and 10.xx of Palo Alto Firewall and Palo Alto Panorama.
 
 
 ## Use Cases
@@ -2561,21 +2561,33 @@ Returns a list of applications.
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
-|-------------------| --- | --- |
-| predefined        | Whether to list predefined applications or not. | Optional | 
-| device-group      | The device group for which to return applications. | Optional |
+| --- | --- | --- |
+| predefined | Whether to list predefined applications. Possible values are: true, false. Default is false. | Optional | 
+| device-group | The device group for which to return applications. | Optional | 
+| name_match | When specified, the results returned in the list are limited to applications whose names match the specified string. | Optional | 
+| name_contain | When specified, the results returned in the list are limited to applications whose names contain the specified string. | Optional | 
+| risk | The application risk (1 to 5). Possible values are: 1, 2, 3, 4, 5. | Optional | 
+| category | The application category. Possible values are: collaboration, business-systems, networking, media. | Optional | 
+| sub_category | The application sub-category. | Optional | 
+| technology | The application technology. Possible values are: browser-based, client-server, network-protocol, peer-to-peer. | Optional | 
+| characteristics | A comma-separated list of characteristics. Possible values are: 'virus-ident', 'evasive-behavior', 'file-type-ident', 'consume-big-bandwidth', 'used-by-malware', 'able-to-transfer-file', 'has-known-vulnerability', 'tunnel-other-application', 'prone-to-misuse', 'pervasive-use', 'file-forward', 'is-saas'. | Optional | 
+| limit | The maximum number of rules to retrieve. Will be used by default if page argument was not provided. Default is 50. | Optional | 
+| page_size | The page size of the applications to return. Default is 50. | Optional | 
+| page | The page at which to start listing applications. Must be a positive number. | Optional | 
+
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Panorama.Applications.Name | string | Application name. | 
-| Panorama.Applications.Id | number | Application ID. | 
-| Panorama.Applications.Category | string | Application category. | 
-| Panorama.Applications.SubCategory | string | Application sub-category. | 
-| Panorama.Applications.Technology | string | Application technology. | 
-| Panorama.Applications.Risk | number | Application risk \(1 to 5\). | 
-| Panorama.Applications.Description | string | Application description. | 
+| Panorama.Applications.Name | string | The application name. | 
+| Panorama.Applications.Id | number | The application ID. | 
+| Panorama.Applications.Category | string | The application category. | 
+| Panorama.Applications.SubCategory | string | The application sub-category. | 
+| Panorama.Applications.Technology | string | The application technology. | 
+| Panorama.Applications.Risk | number | The application risk \(1 to 5\). | 
+| Panorama.Applications.Description | string | The application description. | 
+| Panorama.Applications.Characteristics | string | The application characteristics. | 
 
 
 #### Command Example
@@ -2712,10 +2724,28 @@ Returns the push status for a configuration.
 ***
 Returns information for a Panorama PCAP file. The recommended maximum file size is 5 MB. If the limit is exceeded, you might need to SSH the firewall and run the scp export command to export the PCAP file. For more information, see the Palo Alto Networks documentation.
 
+When trying to retrieve threat-PCAPs of a firewall through a panorama instance, be sure to forward the log containing the threat PCAP file from the firewall to the panorama instance. 
+
+For more information follow instructions from [here](https://docs.paloaltonetworks.com/panorama/10-2/panorama-admin/manage-log-collection/configure-log-forwarding-to-panorama).
+
 
 #### Base Command
 
 `pan-os-get-pcap`
+
+
+#### PCAPs api docs
+You can find information about required/optional arguments for each pcap type here:
+
+![filter pcap api](../../doc_files/fliter-pcap-api.png)
+
+![dlp pcap api](../../doc_files/dlp-pcap-api.png)
+
+![application pcap api](../../doc_files/application-pcap-api.png)
+
+![threat pcap api](../../doc_files/threat-pcap-api.png)
+
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2755,7 +2785,7 @@ Returns information for a Panorama PCAP file. The recommended maximum file size 
 
 ### pan-os-list-pcaps
 ***
-Returns a list of all PCAP files by PCAP type. Not available for threat PCAPs.
+Returns a list of all PCAP files by PCAP type. **Not available for threat PCAPs.**
 
 #### Base Command
 
