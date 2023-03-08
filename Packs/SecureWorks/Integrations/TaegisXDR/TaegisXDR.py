@@ -15,6 +15,18 @@ ENV_URLS = {
     "eu": {"api": "https://api.echo.taegis.secureworks.com", "xdr": "https://echo.taegis.secureworks.com"},
 }
 
+ASSET_SEARCH_FIELDS = ((
+    "endpoint_type",
+    "host_id",
+    "hostname",
+    "investigation_id",
+    "ip_address",
+    "mac_address",
+    "os_family",
+    "os_version",
+    "sensor_version",
+    "username",
+))
 COMMENT_TYPES = set((
     "investigation",
 ))
@@ -370,6 +382,84 @@ def fetch_alerts_command(client: Client, env: str, args=None):
             alerts,
             removeNull=True,
             url_keys=("url"),
+        ),
+        raw_response=result,
+    )
+
+    return results
+
+
+def fetch_assets_command(client: Client, env: str, args=None):
+    page = int(args.get("page", 0))
+    page_size = int(args.get("page_size", 10))
+
+    variables: Dict[str, Any] = {
+        "input": {},
+        "pagination_input": {
+            "limit": page_size,
+            "offset": page_size * page,
+        }
+    }
+
+    # Loop over allowed search fields and add valid search options to the query variables
+    for field in ASSET_SEARCH_FIELDS:
+        if not args.get(field):
+            continue
+        variables["input"][field] = args.get(field).strip()
+
+    query = """
+    query searchAssetsV2($input: SearchAssetsInput!, $pagination_input: SearchAssetsPaginationInput!) {
+         searchAssetsV2(input: $input, paginationInput:$pagination_input) {
+           assets {
+              id
+              ingestTime
+              createdAt
+              updatedAt
+              deletedAt
+              biosSerial
+              firstDiskSerial
+              systemVolumeSerial
+              sensorVersion
+              endpointPlatform
+              architecture
+              osFamily
+              osVersion
+              osDistributor
+              osRelease
+              systemType
+              osCodename
+              kernelRelease
+              kernelVersion
+              hostnames {
+                id
+                hostname
+              },
+              tags {
+                key
+                tag
+              }
+              endpointType
+              hostId
+              sensorId
+            }
+          }
+        }
+    """
+
+    result = client.graphql_run(query=query, variables=variables)
+    try:
+        assets = result["data"]["searchAssetsV2"]["assets"]
+    except (KeyError, TypeError):
+        raise ValueError(f"Failed to fetch assets: {result['errors'][0]['message']}")
+
+    results = CommandResults(
+        outputs_prefix="TaegisXDR.Assets",
+        outputs_key_field="id",
+        outputs=assets,
+        readable_output=tableToMarkdown(
+            "Taegis Assets",
+            assets,
+            removeNull=True,
         ),
         raw_response=result,
     )
@@ -1106,6 +1196,7 @@ def main():
         "taegis-create-investigation": create_investigation_command,
         "taegis-execute-playbook": execute_playbook_command,
         "taegis-fetch-alerts": fetch_alerts_command,
+        "taegis-fetch-assets": fetch_assets_command,
         "taegis-fetch-comment": fetch_comment_command,
         "taegis-fetch-comments": fetch_comments_command,
         "taegis-fetch-investigation": fetch_investigation_command,

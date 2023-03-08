@@ -6,6 +6,7 @@ from TaegisXDR import (
     Client,
     execute_playbook_command,
     fetch_alerts_command,
+    fetch_assets_command,
     create_comment_command,
     fetch_comment_command,
     fetch_comments_command,
@@ -100,6 +101,33 @@ def test_fetch_alerts_by_id(requests_mock):
     response = fetch_alerts_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
     assert response.outputs[0] == TAEGIS_ALERT
     assert len(response.outputs) == len([TAEGIS_ALERT])
+
+
+def test_fetch_assets(requests_mock):
+    """Tests taegis-fetch-assets command function
+    """
+
+    client = mock_client(requests_mock, FETCH_ASSETS_RESPONSE)
+    args = {
+        "page": 0,
+        "page_size": 1,
+    }
+
+    response = fetch_assets_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+    assert response.outputs == [TAEGIS_ASSET]
+
+    # Test allowed search fields
+    args = {
+        "host_id": TAEGIS_ASSET["hostId"]
+    }
+    response = fetch_assets_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+    assert response.outputs[0] == TAEGIS_ASSET
+    assert len(response.outputs) == len([TAEGIS_ASSET])
+
+    # Asset Query Failure
+    client = mock_client(requests_mock, FETCH_ASSETS_BAD_RESPONSE)
+    with pytest.raises(ValueError, match="Failed to fetch assets:"):
+        assert fetch_assets_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
 
 
 def test_create_comment(requests_mock):

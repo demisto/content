@@ -184,6 +184,76 @@ After you successfully execute a command, a DBot message appears in the War Room
 ```
 
 
+### taegis-fetch-assets
+
+#### Base Command
+
+`!taegis-fetch-assets`
+
+#### Input
+
+| **Argument Name** | **Description** | Default | **Required** |
+| --- | --- | --- | --- |
+| page | | `0` | False |
+| page_size | | `10` | False |
+| endpoint_type | | | False |
+| host_id | ID of the asset to fetch | `e43b545a-580a-4047-b489-4338c1cc4ba1` | False |
+| hostname | | | False |
+| investigation_id | | | False |
+| ip_address | | | False |
+| mac_address | | | False |
+| os_family | | | False |
+| os_version | | | False |
+| sensor_version | | | False |
+| username | | | False |
+
+#### Command Examples
+
+```
+!taegis-fetch-assets
+!taegis-fetch-assets page=1 page_size=5
+!taegis-fetch-assets hostname=MyHostname01
+!taegis-fetch-assets host_id=e43b545a-580a-4047-b489-4338c1cc4ba1
+```
+
+#### Context Example
+
+```
+{
+    "TaegisXDR": {
+        "Assets": [
+            {
+              "id": "",
+              "ingestTime": "",
+              "createdAt": "",
+              "updatedAt": "",
+              "deletedAt": "",
+              "biosSerial": "",
+              "firstDiskSerial": "",
+              "systemVolumeSerial": "",
+              "sensorVersion": "",
+              "endpointPlatform": "",
+              "hostnames": [{"id": ", "hostname": ""],
+              "architecture": "",
+              "osFamily": "",
+              "osVersion": "",
+              "osDistributor": "",
+              "osRelease": "",
+              "systemType": "",
+              "osCodename": "",
+              "kernelRelease": "",
+              "kernelVersion": "",
+              "tags": [ "key": "", "tag": ""],
+              "endpointType": "",
+              "hostId": "",
+              "sensorId": "",
+            }
+        ]
+    }
+}
+```
+
+
 ### taegis-fetch-comment
 
 #### Base Command
