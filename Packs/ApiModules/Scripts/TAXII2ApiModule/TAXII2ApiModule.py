@@ -461,6 +461,16 @@ class Taxii2FeedClient:
 
     """ PARSING FUNCTIONS"""
 
+    @staticmethod
+    def get_tlp(indicator_json: dict) -> str:
+        object_marking_definition_list = indicator_json.get('object_marking_refs', '')
+        tlp_color: str = ''
+        for object_marking_definition in object_marking_definition_list:
+            if tlp := MARKING_DEFINITION_TO_TLP.get(object_marking_definition):
+                tlp_color = tlp
+                break
+        return tlp_color
+
     def set_default_fields(self, obj_to_parse):
         fields = {
             'stixid': obj_to_parse.get('id', ''),
@@ -469,11 +479,9 @@ class Taxii2FeedClient:
             'description': obj_to_parse.get('description', ''),
         }
 
-        tlp_color = self.tlp_color
-        for object_marking in obj_to_parse.get('object_marking_refs', []):
-            if tlp := MARKING_DEFINITION_TO_TLP.get(object_marking):
-                tlp_color = tlp
-                break
+        tlp_from_marking_refs = self.get_tlp(obj_to_parse)
+        tlp_color = tlp_from_marking_refs if tlp_from_marking_refs else self.tlp_color
+
         if tlp_color:
             fields['trafficlightprotocol'] = tlp_color
 
@@ -1222,9 +1230,9 @@ class Taxii2FeedClient:
                 tags.append(field_tag)
 
         fields["tags"] = tags
-
-        if self.tlp_color and not fields.get('trafficlightprotocol'):
-            fields["trafficlightprotocol"] = self.tlp_color
+        if not fields.get('trafficlightprotocol'):
+            tlp_from_marking_refs = self.get_tlp(ioc_obj_copy)
+            fields["trafficlightprotocol"] = tlp_from_marking_refs if tlp_from_marking_refs else self.tlp_color
 
         indicator["fields"] = fields
         return indicator
