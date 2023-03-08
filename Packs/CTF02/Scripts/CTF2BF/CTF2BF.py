@@ -69,8 +69,8 @@ answers = {
     "01" : ["no","no errors","nothing","none"],
     "02" : ["ip address","ip","address"],
     "03" : ["12","twelve"],
-    "04" : ["2017","two thousand seventeen"],
-    "05" : ["29","twenty nine"],
+    "04" : ["2017","two thousand seventeen","two-thousand-seventeen"],
+    "05" : ["29","twenty nine","twenty-nine"],
     "06" : ["true","true positive"],
     "07" : ["blocked"],
     "08" : ["137.184.208.116"]
