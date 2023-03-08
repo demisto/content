@@ -1,10 +1,11 @@
 {
     "id": "incident_cyberinttargetedvector",
     "version": -1,
+    "modified": "2021-02-22T21:55:03.293330019+02:00",
     "name": "CyberInt Targeted Vector",
     "ownerOnly": false,
     "cliName": "cyberinttargetedvector",
-    "type": "multiSelect",
+    "type": "shortText",
     "closeForm": false,
     "editForm": true,
     "required": false,
@@ -21,10 +22,9 @@
     ],
     "associatedToAll": false,
     "unmapped": false,
-    "unsearchable": true,
+    "unsearchable": false,
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72,
-    "fromVersion": "6.0.0",
-    "openEnded": true
+    "fromVersion": "6.0.0"
 }
