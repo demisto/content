@@ -343,7 +343,7 @@ def get_risky_users_from_reco(reco_client: RecoClient) -> CommandResults:
         users.append(user_as_dict)
     return CommandResults(
         readable_output=tableToMarkdown(
-            "Risky Users", users),
+            "Risky Users", users, headers=["email_account", "risk_level", "labels", "status"]),
         outputs_prefix="Reco.RiskyUsers",
         outputs_key_field="email_account",
         outputs=users,
