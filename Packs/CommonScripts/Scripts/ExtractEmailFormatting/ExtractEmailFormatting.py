@@ -29,10 +29,11 @@ def extract_email(email_address: str) -> str:
                               "\[?@]?[\w.-]{1,255}(?:\[?\.]?"
                               "[A-Za-z]{2,}){1,2})", re.IGNORECASE)
 
-    try:
-        return re.match(email_format, email_address).group(1)
+    email_address = re.match(email_format, email_address)
 
-    except AttributeError:
+    if email_address:
+        return email_address.group(1)
+    else:
         return ''
 
 
@@ -78,13 +79,14 @@ def extract_email_from_url_query(email_address: str) -> str:
         str: only the email address
     """
 
-    try:
-        # We revert the string to be able to use a regex group from the end of the string
-        # to the first "=" that comes before it.
-        return re.match('(.*?)=', email_address[::-1]).group(1)[::-1]
+    extracted_email = re.match('(.*?)=', email_address[::-1])
 
-    except AttributeError:
+    if extracted_email:
+        return extracted_email.group(1)[::-1]
+
+    else:
         return ''
+
 
 
 def main():
