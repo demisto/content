@@ -635,6 +635,85 @@ def test_list_detections_command_successful_execution(on_cloud, requests_mock):
     assert results.outputs_prefix == "ExtraHop.Detections"
 
 
+@pytest.mark.parametrize("on_cloud", [False, True])
+def test_list_detections_command_when_description_has_metric_link(on_cloud, requests_mock):
+    """Test case scenario for successful execution of detections-list command when description has metrics link.
+
+    Given:
+     - User has provided valid credentials.
+    When:
+     - detections_list_command is called.
+    Then:
+     - Ensure human-readable output is correct.
+     - Ensure outputs prefix is correct.
+    """
+    requests_mock.get(
+        f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.1.2.64150"}
+    )
+    client = init_mock_client(requests_mock, on_cloud)
+    args = {
+        "limit": "1",
+        "filter": """{
+        \"category\": \"sec\",
+        \"risk_score_min\": 30
+    }""",
+        "from": "1573500360001",
+        "offset": "2",
+        "sort": "end_time asc,id desc",
+        "until": "1673569370001",
+    }
+    response = load_mock_response("list_detections_with_description_url.json")
+
+    expected_hr = load_file("list_detections_with_description_url.md")
+
+    requests_mock.post(f"{BASE_URL}/api/v1/detections/search", json=response)
+
+    results = ExtraHop_v2.detections_list_command(client, args)
+
+    assert results.readable_output == expected_hr
+    assert results.outputs_prefix == "ExtraHop.Detections"
+
+
+@pytest.mark.parametrize("on_cloud", [False, True])
+def test_list_detections_command_when_description_has_complete_metric_link(on_cloud, requests_mock):
+    """Test case scenario for successful execution of detections-list command when description has metrics link which
+    has only base url missing.
+
+    Given:
+     - User has provided valid credentials.
+    When:
+     - detections_list_command is called.
+    Then:
+     - Ensure human-readable output is correct.
+     - Ensure outputs prefix is correct.
+    """
+    requests_mock.get(
+        f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.1.2.64150"}
+    )
+    client = init_mock_client(requests_mock, on_cloud)
+    args = {
+        "limit": "1",
+        "filter": """{
+        \"category\": \"sec\",
+        \"risk_score_min\": 30
+    }""",
+        "from": "1573500360001",
+        "offset": "2",
+        "sort": "end_time asc,id desc",
+        "until": "1673569370001",
+    }
+    response = load_mock_response("list_detections_with_complete_description_url.json")
+
+    expected_hr = load_file("list_detections_with_complete_description_url.md")
+
+    requests_mock.post(f"{BASE_URL}/api/v1/detections/search", json=response)
+
+    results = ExtraHop_v2.detections_list_command(client, args)
+
+    assert results.readable_output == expected_hr
+    assert results.outputs_prefix == "ExtraHop.Detections"
+
+
 def test_list_detections_command_using_advanced_filter(requests_mock):
     """Test case scenario for successful execution of detections list using advanced_filter argument.
 

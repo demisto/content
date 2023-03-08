@@ -513,7 +513,10 @@ def modify_description(base_url, description):
 
     for markdown in markdown_data:
         # Replacing the '#' to the extrahop platform url
-        new_markdown = markdown.replace("#", new_link)
+        if "/extrahop/#" in markdown:
+            new_markdown = markdown.replace("#/extrahop", base_url)
+        else:
+            new_markdown = markdown.replace("#", new_link)
         description = description.replace(markdown, new_markdown)
     return description
 
