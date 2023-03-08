@@ -88,7 +88,6 @@ def extract_email_from_url_query(email_address: str) -> str:
         return ''
 
 
-
 def main():
     list_results = []
 
