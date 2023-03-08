@@ -8,7 +8,6 @@ type: python
 tags: []
 comment: |-
   This should provide answers to the CTF_3
-  ONLY 1 option for the flag!!!
 enabled: true
 args:
 - name: secret
