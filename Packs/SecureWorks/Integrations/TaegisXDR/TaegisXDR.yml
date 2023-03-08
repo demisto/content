@@ -315,6 +315,17 @@ script:
     - contextPath: TaegisXDR.Assets
       description: A list of located assets
     description: Fetch assets based on search criteria
+  - name: taegis-isolate-asset
+    arguments:
+    - name: id
+      required: true
+      description: Asset ID to isolate
+    - name: reason
+      required: true
+      description: A reason for the isolation
+    outputs:
+    - contextPath: TaegisXDR.AssetIsolation
+    description: Isolate a specific asset
   - name: taegis-fetch-endpoint
     arguments:
     - name: id

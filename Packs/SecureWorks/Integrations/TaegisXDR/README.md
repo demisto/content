@@ -603,6 +603,38 @@ After you successfully execute a command, a DBot message appears in the War Room
 ```
 
 
+### taegis-isolate-asset
+
+#### Base Command
+
+`!taegis-isolate-asset`
+
+#### Input
+
+| **Argument Name** | **Description** | Default | **Required** |
+| --- | --- | --- | --- |
+| id | ID of the asset to isolate | `e43b545a-580a-4047-b489-4338c1cc4ba1` | True |
+| reason | The reason for the isolation | `See ticket 12345` | True |
+
+#### Command Examples
+
+```
+!taegis-isolate-asset id="e43b545a-580a-4047-b489-4338c1cc4ba1" reason="See ticket 12345"
+```
+
+#### Context Example
+
+```
+{
+    "TaegisXDR": {
+        "AssetIsolation": {
+            "id": "e43b545a-580a-4047-b489-4338c1cc4ba1"
+        }
+    }
+}
+```
+
+
 ### taegis-update-comment
 
 #### Base Command

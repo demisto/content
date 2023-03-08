@@ -17,6 +17,7 @@ from TaegisXDR import (
     fetch_investigation_alerts_command,
     fetch_users_command,
     fetch_playbook_execution_command,
+    isolate_asset_command,
     create_investigation_command,
     update_investigation_command,
     archive_investigation_command,
@@ -484,6 +485,31 @@ def test_unarchive_investigation(requests_mock):
     client = mock_client(requests_mock, INVESTIGATION_NOT_ARCHIVED_RESPONSE)
     with pytest.raises(ValueError, match="Could not locate investigation with id:.*"):
         assert unarchive_investigation_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+
+
+def test_isolate_asset(requests_mock):
+    """Tests taegis-isolate-asset command function
+    """
+    client = mock_client(requests_mock, ISOLATE_ASSET_RESPONSE)
+
+    # asset id not set
+    with pytest.raises(ValueError, match="Cannot isolate asset, missing id"):
+        assert isolate_asset_command(client=client, env=TAEGIS_ENVIRONMENT, args={})
+    args = {"id": TAEGIS_ASSET["id"]}
+
+    # reason not set
+    with pytest.raises(ValueError, match="Cannot isolate asset, missing reason"):
+        assert isolate_asset_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+    args["reason"] = "My isolation reason"
+
+    # Successful isolation
+    response = isolate_asset_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+    assert response.outputs == ISOLATE_ASSET_RESPONSE["data"]["isolateAsset"]
+
+    # Endpoint not found
+    client = mock_client(requests_mock, ISOLATE_ASSET_BAD_RESPONSE)
+    with pytest.raises(ValueError, match="Failed to isolate asset"):
+        assert isolate_asset_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
 
 
 def test_fetch_users(requests_mock):

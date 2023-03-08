@@ -1023,6 +1023,47 @@ def fetch_users_command(client: Client, env: str, args=None):
     return results
 
 
+def isolate_asset_command(client: Client, env: str, args=None):
+    if not args.get("id"):
+        raise ValueError("Cannot isolate asset, missing id")
+    if not args.get("reason"):
+        raise ValueError("Cannot isolate asset, missing reason")
+
+    variables: Dict[str, Any] = {
+        "id": args.get("id"),
+        "reason": args.get("reason")
+    }
+
+    query = """
+    mutation isolateAsset ($id: ID!, $reason: String!) {
+      isolateAsset (id: $id, reason: $reason) {
+        id
+      }
+    }
+    """
+
+    result = client.graphql_run(query=query, variables=variables)
+
+    try:
+        isolation = result["data"]["isolateAsset"]
+    except (KeyError, TypeError):
+        raise ValueError(f"Failed to isolate asset: {result['errors'][0]['message']}")
+
+    results = CommandResults(
+        outputs_prefix="TaegisXDR.AssetIsolation",
+        outputs_key_field="id",
+        outputs=isolation,
+        readable_output=tableToMarkdown(
+            "Taegis Asset Isolation",
+            isolation,
+            removeNull=True,
+        ),
+        raw_response=result,
+    )
+
+    return results
+
+
 def update_comment_command(client: Client, env: str, args=None):
     if not args.get("id"):
         raise ValueError("Cannot update comment, comment id cannot be empty")
@@ -1254,6 +1295,7 @@ def main():
         "taegis-fetch-investigation-alerts": fetch_investigation_alerts_command,
         "taegis-fetch-playbook-execution": fetch_playbook_execution_command,
         "taegis-fetch-users": fetch_users_command,
+        "taegis-isolate-asset": isolate_asset_command,
         "taegis-update-comment": update_comment_command,
         "taegis-update-investigation": update_investigation_command,
         "taegis-archive-investigation": archive_investigation_command,

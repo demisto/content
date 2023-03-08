@@ -388,3 +388,24 @@ INVESTIGATION_UNARCHIVE_RESPONSE = {
         }
     }
 }
+
+ISOLATE_ASSET_RESPONSE = {
+    "data": {
+        "isolateAsset": {
+            "id": TAEGIS_ASSET["id"],
+        }
+    }
+}
+
+ISOLATE_ASSET_BAD_RESPONSE = {
+    "data": {},
+    "errors": [
+        {
+            "message": "invalid format",
+            "path": [
+                "variables",
+                "id"
+            ]
+        }
+    ]
+}
