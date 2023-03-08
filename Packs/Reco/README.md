@@ -14,7 +14,7 @@ The integration pack allows:
 - ***update-reco-incident-timeline*** - Update Reco incident timeline
 - ***resolve-visibility-event*** - Resolve Reco visibility event
 - ***reco-get-risky-users*** - Get risky users
-- ***reco-add-risky-user*** - Add risky user
+- ***reco-add-risky-user-label*** - Add risky user
 
 
 For more information on Reco, please visit www.reco.ai

@@ -9,7 +9,7 @@ import pytest
 import datetime
 
 from Reco import RecoClient, fetch_incidents, map_reco_score_to_demisto_score, get_max_fetch, get_risky_users_from_reco, \
-    add_risky_user
+    add_risky_user_label
 
 from test_data.structs import (
     TableData,
@@ -312,7 +312,7 @@ def test_get_risky_users_bad_response(capfd, requests_mock, reco_client: RecoCli
             get_risky_users_from_reco(reco_client=reco_client)
 
 
-def test_risky_user_to_reco(requests_mock, reco_client: RecoClient) -> None:
+def test_add_risky_user_label(requests_mock, reco_client: RecoClient) -> None:
     requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/entry-label-relations",
                       json={}, status_code=200)
-    add_risky_user(reco_client=reco_client, email_address=f"{uuid.uuid1()}@gmail.com")
+    add_risky_user_label(reco_client=reco_client, email_address=f"{uuid.uuid1()}@gmail.com")

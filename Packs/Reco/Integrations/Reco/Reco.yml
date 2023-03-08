@@ -121,9 +121,9 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Add a user to the risky users list in Reco
+    description: Tag a user as risky in Reco
     execution: false
-    name: reco-add-risky-user
+    name: reco-add-risky-user-label
 tests:
 - No tests
 fromversion: 6.5.0

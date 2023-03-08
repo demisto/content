@@ -243,7 +243,7 @@ class RecoClient(BaseClient):
             demisto.error(f"Validate API key ReadTimeout error: {str(e)}")
             raise e
 
-    def set_entry_label_relations(self, entry_id: str, label_name: str, label_status: str, entry_type: str) -> None:
+    def set_entry_label_relations(self, entry_id: str, label_name: str, label_status: str, entry_type: str) -> Any:
         """Set entry label relations.
         :param entry_id: The entry id to set (email_address, asset_id etc.)
         :param label_name: The label name to set
@@ -261,7 +261,7 @@ class RecoClient(BaseClient):
         ENTRY_TYPE_PLAYBOOK
         """
         try:
-            self._http_request(
+            response = self._http_request(
                 method="PUT",
                 url_suffix="/entry-label-relations",
                 timeout=RECO_API_TIMEOUT_IN_SECONDS,
@@ -279,6 +279,7 @@ class RecoClient(BaseClient):
             demisto.error(f"Set entry label relations error: {str(e)}")
             raise e
         demisto.info(f"Label {label_name} set to {label_status} for event {entry_id}")
+        return response
 
     def validate_api_key(self) -> str:
         """
@@ -351,10 +352,11 @@ def get_risky_users_from_reco(reco_client: RecoClient) -> CommandResults:
     )
 
 
-def add_risky_user(reco_client: RecoClient, email_address: str) -> None:
+def add_risky_user_label(reco_client: RecoClient, email_address: str) -> CommandResults:
     """Add a risky user to Reco.
     """
-    reco_client.set_entry_label_relations(email_address, RISKY_USER, LABEL_STATUS_ACTIVE, ENTRY_TYPE_USER)
+    raw_response = reco_client.set_entry_label_relations(email_address, RISKY_USER, LABEL_STATUS_ACTIVE, ENTRY_TYPE_USER)
+    return CommandResults(raw_response=raw_response, readable_output=f"User {email_address} labeled as risky")
 
 
 def enrich_incident(
@@ -522,9 +524,10 @@ def main() -> None:
         elif command == "reco-get-risky-users":
             result = get_risky_users_from_reco(reco_client)
             return_results(result)
-        elif command == "reco-add-risky-user":
+        elif command == "reco-add-risky-user-label":
             email_address = demisto.args()["email_address"]
-            add_risky_user(reco_client, email_address)
+            result = add_risky_user_label(reco_client, email_address)
+            return_results(result)
         else:
             raise NotImplementedError(f"{command} is not an existing reco command")
     except Exception as e:
