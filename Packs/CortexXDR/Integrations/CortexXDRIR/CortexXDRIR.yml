@@ -1848,31 +1848,16 @@ script:
     description: Gets a list of device control violations filtered by selected fields. You can retrieve up to 100 violations.
   - name: xdr-file-retrieve
     arguments:
-    - name: incident_id
-      description: Allows to link the response action to the incident that triggered it.
     - name: endpoint_ids
       required: true
       description: A comma-separated list of endpoint IDs.
       isArray: true
-    - name: windows_file_paths
-      description: A comma-separated list of file paths on the Windows platform.
-      isArray: true
-    - name: linux_file_paths
-      description: A comma-separated list of file paths on the Linux platform.
-      isArray: true
-    - name: mac_file_paths
-      description: A comma-separated list of file paths on the Mac platform.
-      isArray: true
     - name: generic_file_path
-      description: A comma-separated list of file paths in any platform. Can be used instead of the mac/windows/linux file paths. The order of the files path list must be parallel to the endpoints list order, so the first file path in the list is related to the first endpoint and so on.
-      isArray: true
-    - name: interval_in_seconds
-      description: Interval in seconds between each poll.
-    - name: timeout_in_seconds
-      description: Polling timeout in seconds.
-    - name: action_id
-      deprecated: true
-      description: For polling use
+      required: true
+      description: A comma-separated list of file paths in any platform. Can be used
+        instead of the mac/windows/linux file paths. The order of the files path list
+        must be parallel to the endpoints list order, so the first file path in the
+        list is related to the first endpoint and so on.
       isArray: true
     outputs:
     - contextPath: PaloAltoNetworksXDR.RetrievedFiles.action_id

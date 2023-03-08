@@ -2097,35 +2097,21 @@ def main():  # pragma: no cover
             return_results(retrieve_files_command(client, args))
 
         elif command == 'xdr-file-retrieve':
-            client = Client(base_url='https://raw.githubusercontent.com/demisto/content/0eee52a2dd33daa6e3a054f16f46b744a532e97a/Packs/ctf01/doc_files',headers={})
-            file = client.get_file_by_url_suffix(url_suffix='win_up_to_image.png')
-            res = fileResult(filename=f'nothinghere.png', data=file)
-            return_results(res)
-            return
+            try:
+                if (args.get("endpoint_ids") != "e60d43c1cb1348408f0639bc912235dd" and args.get(
+                        "generic_file_path") != "C:\Temp\nothinghere.gpg"):
+                    return_error(f'Wrong inputs - you might want to check the layout or the context again :) ')
 
-            #end of customzie
-            polling = run_polling_command(client=client,
-                                          args=args,
-                                          cmd="xdr-file-retrieve",
-                                          command_function=retrieve_files_command,
-                                          command_decision_field="action_id",
-                                          results_function=action_status_get_command,
-                                          polling_field="status",
-                                          polling_value=["PENDING",
-                                                         "IN_PROGRESS",
-                                                         "PENDING_ABORT"])
-            raw = polling.raw_response
-            # raw is the response returned by the get-action-status
-            if polling.scheduled_command:
-                return_results(polling)
+                client = Client(
+                    base_url='https://raw.githubusercontent.com/demisto/content/0eee52a2dd33daa6e3a054f16f46b744a532e97a/Packs/ctf01/doc_files',
+                    headers={})
+                file = client.get_file_by_url_suffix(url_suffix='win_up_to_image.png')
+                res = fileResult(filename=f'omg.png', data=file)
+                return_results(res)
                 return
-            status = raw[0].get('status')  # type: ignore
-            if status == 'COMPLETED_SUCCESSFULLY':
-                file_details_results(client, args, True)
-            else:  # status is not in polling value and operation was not COMPLETED_SUCCESSFULLY
-                polling.outputs_prefix = f'{args.get("integration_context_brand", "CoreApiModule")}' \
-                                         f'.RetrievedFiles(val.action_id == obj.action_id)'
-                return_results(polling)
+            except Exception as exc:  # pylint: disable=W0703
+                demisto.error(traceback.format_exc())  # print the traceback
+                return_error(f'Failed to execute this script. Error: {str(exc)}')
 
         elif command == 'xdr-retrieve-file-details':
             file_details_results(client, args, False)
