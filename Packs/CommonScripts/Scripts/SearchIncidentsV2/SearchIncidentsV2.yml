@@ -101,6 +101,7 @@ args:
   name: page
   required: false
   secret: false
+  deprecated: true
 - default: false
   description: |-
     The number of events to return from the alert JSON. The default is 0, which returns all events.
@@ -116,6 +117,14 @@ args:
   name: size
   required: false
   secret: false
+  deprecated: true
+- default: false
+  description: The maximum number of incidents to be returned.
+  isArray: false
+  name: limit
+  required: false
+  secret: false
+  defaultValue: '100'
 - default: false
   description: Sort in format of field.asc,field.desc,...
   isArray: false
