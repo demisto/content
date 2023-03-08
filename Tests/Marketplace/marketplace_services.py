@@ -820,7 +820,8 @@ class Pack(object):
         return changelog_entry
 
     def _create_changelog_entry(self, release_notes, version_display_name, build_number,
-                                new_version=True, initial_release=False, marketplace='xsoar', id_set=None):
+                                new_version=True, initial_release=False, pull_request_numbers=None,
+                                marketplace='xsoar', id_set=None):
         """ Creates dictionary entry for changelog.
 
         Args:
@@ -837,9 +838,9 @@ class Pack(object):
         """
         id_set = id_set if id_set else {}
         entry_result = {}
-        pull_request_numbers = self.get_version_to_pr_numbers(version_display_name)
 
         if new_version:
+            pull_request_numbers = self.get_version_to_pr_numbers(version_display_name)
             entry_result = {Changelog.RELEASE_NOTES: release_notes,
                             Changelog.DISPLAY_NAME: f'{version_display_name} - {build_number}',
                             Changelog.RELEASED: datetime.utcnow().strftime(Metadata.DATE_FORMAT),
@@ -1641,6 +1642,7 @@ class Pack(object):
                                 version_display_name=latest_release_notes,
                                 build_number=build_number,
                                 new_version=False,
+                                pull_request_numbers=changelog.get(latest_release_notes, {}).get(Changelog.PULL_REQUEST_NUMBERS, []),
                                 marketplace=marketplace,
                                 id_set=id_set,
                             )
@@ -3630,6 +3632,8 @@ class Pack(object):
         Returns:
             List[Pull Request Numbers]: A list of pr numbers of the pack version
         """
+        if not os.path.exists(f"{self._pack_path}/{self.RELEASE_NOTES}"):
+            return {}
 
         pack_version_rn_file_path = f"Packs/{self.name}/{self.RELEASE_NOTES}/{version.replace('.', '_')}.md"
         packs_version_pr_numbers = get_pull_request_numbers_from_file(pack_version_rn_file_path)
