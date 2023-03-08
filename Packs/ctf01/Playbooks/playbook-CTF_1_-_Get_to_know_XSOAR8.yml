@@ -635,8 +635,11 @@ tasks:
 
          This treasure hunt will prepare you with familiarity with the new interface and demonstrate that XSOAR 8 is still just XSOAR. We are excited to have you here and look forward to you starting the first challenge (CTF1). Once you proceed from this step, the clock starts. Good luck!
 
-
+        In case you answered wrong, please look at the gif below, on how to re-run a task with the right answer.
         (If you feel that you are stuck with a question - look for the (:question:) before you submit the answer)
+        ![myfile](https://raw.githubusercontent.com/demisto/content/8ff17a54ce49fe7bc5f4587f880cbb16e69fdccc/Packs/ctf01/doc_files/demo.gif)
+
+        Ready?? Let's go!
 
         ![myfile](https://github.com/demisto/content/raw/8b7d8c69aad403ae2158cf9798ce2661f5ed08ba/Packs/EscapeRoomTier1/images/incident_Snooping.gif)
       type: regular
