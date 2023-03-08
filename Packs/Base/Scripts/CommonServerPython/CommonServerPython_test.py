@@ -6748,12 +6748,14 @@ class TestIndicatorsSearcher:
           - Ensure that the searchIndicators function is called with the expected arguments.
         """
         from CommonServerPython import IndicatorsSearcher
+        get_demisto_version._version = None  # clear cache between runs of the test
+        mocker.patch.object(demisto, 'demistoVersion', return_value={'version': '6.6.0'})
 
         mocker.patch.object(demisto, 'searchIndicators')
         sort_param = [{"field": "created", "asc": False}]
         search_indicators_obj_search_after = IndicatorsSearcher(sort=sort_param)
         search_indicators_obj_search_after.search_indicators_by_version()
-        expected_args = {'page': 0, 'size': 100, 'sort': [{'asc': False, 'field': 'created'}]}
+        expected_args = {'size': 100, 'sort': [{'asc': False, 'field': 'created'}]}
         assert search_indicators_obj_search_after._sort == sort_param
         demisto.searchIndicators.assert_called_once_with(**expected_args)
 

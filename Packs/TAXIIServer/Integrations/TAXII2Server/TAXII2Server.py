@@ -608,7 +608,7 @@ def find_indicators(query: str, types: list, added_after, limit: int, offset: in
                         extensions.append(extension_definition)
                 elif stix_ioc:
                     iocs.append(stix_ioc)
-    if not is_manifest and iocs:
+    if not is_manifest and iocs and is_demisto_version_ge('6.6.0'):
         if relationships := create_relationships_objects(iocs, extensions):
             total += len(relationships)
             iocs.extend(relationships)

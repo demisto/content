@@ -9557,8 +9557,9 @@ class IndicatorsSearcher:
             populateFields=self._filter_fields if self._can_use_filter_fields else None,
             # use paging as fallback when cannot use search_after
             page=self.page if not self._can_use_search_after else None,
-            sort=self._sort,
         )
+        if is_demisto_version_ge('6.6.0'):
+            search_args['sort'] = self._sort
         res = demisto.searchIndicators(**search_args)
         if isinstance(self._page, int):
             self._page += 1  # advance pages
