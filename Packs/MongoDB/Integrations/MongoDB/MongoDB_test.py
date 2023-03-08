@@ -274,6 +274,7 @@ class MockResponse:
 
 
 class TestUpdateQueryCommands:
+    """Class for update_query_command UTs."""    
     client = Client(['aaaaa'], 'a', 'b', 'd')
     case_upsert_with_no_matching_entry = (
         "{\"Name\": \"dummy\"}", "{\"$set\":{\"test\":0}}", True, True, MockResponse(True, 0, 0, 1),
@@ -300,6 +301,16 @@ class TestUpdateQueryCommands:
 
     @pytest.mark.parametrize('filter, update, update_one, upsert, response, expected', update_query_cases)
     def test_update_entry_command(self, mocker, filter, update, update_one, upsert, response, expected, client=client):
+        """
+        Given:
+            valid arguments
+
+        When:
+            running mongodb-update command in XSOAR
+
+        Then:
+            the expected human readable is returned
+        """
         mocker.patch.object(client, 'update_entry', return_value=response)
         return_value = update_entry_command(client, "test_collection", filter=filter,
                                             update=update, update_one=update_one, upsert=upsert)
@@ -316,6 +327,16 @@ class TestUpdateQueryCommands:
 
     @pytest.mark.parametrize('filter, update, response, expected', invalid_cases)
     def test_update_entry_command_fail(self, mocker, filter, update, response, expected, client=client):
+        """
+        Given:
+            invalid arguments
+
+        When:
+            running mongodb-update command in XSOAR
+
+        Then:
+            the expected error message is raised
+        """
         mocker.patch.object(client, 'update_entry', return_value=response)
         try:
             update_entry_command(client, "test_collection", filter=filter, update=update)
@@ -324,6 +345,7 @@ class TestUpdateQueryCommands:
 
 
 class TestBulkUpdateQueryCommands:
+    """ Class for bulk_update_query_command UTs. """
     client = Client(['aaaaa'], 'a', 'b', 'd')
     # valid command arguments
     case_single_update_args = ("[{\"Name\": \"dummy\"}]", "[{\"$set\":{\"test\":0}}]",
@@ -372,13 +394,13 @@ class TestBulkUpdateQueryCommands:
     def test_parse_and_validate_bulk_update_arguments(self, filter, update, expected_output):
         """
         Given:
-            arguments for bulk update command
+            valid arguments for bulk update command
 
         When:
-            calling `parse_and_validate_bulk_update_arguments`
+            running mongodb-bulk-update command in XSOAR
 
         Then:
-            validate the returned arguments
+            parse_and_validate_bulk_update_arguments will parse validate the filter and update arguments
         """
         filter_list, update_list = parse_and_validate_bulk_update_arguments(filter, update)
         assert filter_list == expected_output[0]
@@ -392,13 +414,13 @@ class TestBulkUpdateQueryCommands:
     def test_parse_and_validate_bulk_update_arguments_fail(self, filter, update, error_message):
         """
         Given:
-            arguments for bulk update command
+            invalid arguments for bulk update command
 
         When:
-            calling `parse_and_validate_bulk_update_arguments`
+            running mongodb-bulk-update command in XSOAR
 
         Then:
-            validate the returned arguments
+            parse_and_validate_bulk_update_arguments will raise an error
         """
         with pytest.raises(DemistoException) as e:
             parse_and_validate_bulk_update_arguments(filter, update)
@@ -406,6 +428,16 @@ class TestBulkUpdateQueryCommands:
 
     def test_bulk_update_command(
             self, mocker, client=client, case_simple_bulk_update_args=case_simple_bulk_update_args):
+        """
+        Given:
+            valid arguments for bulk update command
+
+        When:
+            running mongodb-bulk-update command in XSOAR
+
+        Then:
+            the expected human readable is returned
+        """
         response = MockResponse(acknowledged=True, modified_count=1, upserted_count=1)
         mocker.patch.object(client, 'bulk_update_entries', return_value=response)
         return_value = bulk_update_command(

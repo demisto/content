@@ -264,6 +264,8 @@ def handle_bulk_update_string_query_arguments(
 
     Args:
         argument (Tuple[str, str]): a tuple containing the argument name and value.
+        filter_valid_input_example (str): a string representing a valid filter argument.
+        update_valid_input_example (str): a string representing a valid update argument.
 
     Raises:
         DemistoException: if the filter or update argument is not a json array.
