@@ -321,7 +321,7 @@ class SimpleDebugger:
             return True
         return False
 
-    def SdbgTrace(self, frame: FrameType, event: str, arg: Any): # pylint: disable=unused-argument
+    def SdbgTrace(self, frame: FrameType, event: str, arg: Any):    # vulture: ignore
         if event == "exception":
             self.SdbgException()
             return None
@@ -334,10 +334,9 @@ class SimpleDebugger:
         if self.excdepth > 0:
             return self.SdbgTrace
 
-        breakpnt = self.SdbgBreak(frame, event)
-        count = 0
-        if breakpnt:
+        if breakpnt := self.SdbgBreak(frame, event):
             self.SdbgPrintLocals()
+            count = 0
             while breakpnt:
                 breakpnt = self.SdbgCommand(frame, breakpnt)
                 if not breakpnt:
@@ -347,20 +346,19 @@ class SimpleDebugger:
                 if count > 300:
                     self.SdbgLog("Timeout waiting for continue command, abandoning breakpoint")
                     break
+        elif self.lastcheck == 20:
+            self.SdbgCommand(frame, breakpnt)
+            self.lastcheck = 0
         else:
-            if self.lastcheck == 20:
-                self.SdbgCommand(frame, breakpnt)
-                self.lastcheck = 0
-            else:
-                self.lastcheck += 1
+            self.lastcheck += 1
 
         c = f"_{frame.f_lineno}: {self.indent}{event} {frame.f_code.co_name}"
         if event == "call":
             c = self.SdbgTraceCall(frame, event)
-        elif event == "return":
-            c = self.SdbgTraceReturn(frame, event)
         elif event == "line":
             c = self.SdbgTraceLine(frame, event)
+        elif event == "return":
+            c = self.SdbgTraceReturn(frame, event)
         newcode = self.SdbgSetCurrentLineno(frame, c)
 
         if self.profmode:
