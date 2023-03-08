@@ -87,7 +87,7 @@ script:
     deprecated: false
     description: Add a comment to an incident in Reco
     execution: false
-    name: update-reco-incident-timeline
+    name: reco-update-incident-timeline
   - arguments:
     - default: false
       description: entity id of the file to resolve

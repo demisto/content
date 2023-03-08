@@ -505,7 +505,7 @@ def main() -> None:
             )
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
-        elif command == "update-reco-incident-timeline":
+        elif command == "reco-update-incident-timeline":
             reco_client.update_reco_incident_timeline(
                 incident_id=demisto.args()["incident_id"],
                 comment=demisto.args()["comment"],
