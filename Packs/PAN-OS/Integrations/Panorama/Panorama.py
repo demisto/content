@@ -52,6 +52,7 @@ QUERY_DATE_FORMAT = '%Y/%m/%d %H:%M:%S'
 FETCH_DEFAULT_TIME = '1 day'
 MAX_INCIDENTS_TO_FETCH = 100
 FETCH_INCIDENTS_LOG_TYPES = ['Traffic', 'Threat', 'URL', 'Data', 'Correlation', 'System', 'Wildfire', 'Decryption']
+GET_JOB_ID_MAX_RETRIES = 15
 
 XPATH_SECURITY_RULES = ''
 DEVICE_GROUP = ''
@@ -1295,6 +1296,33 @@ def panorama_push_to_template_stack_command(args: dict):
     else:
         # no changes to commit
         return_results(result['response']['msg']['line'])
+
+
+def get_job_status(job_id: str, target: Optional[str] = None):
+    """Get Panorama job status.
+
+    Args:
+        job_id (str): Panorama job id.
+        target (Optional[str], optional): target command argument (if available). Default is None.
+
+    Returns:
+        string: a sting representing the job status.
+    """        
+    params = {
+        'type': 'op',
+        'cmd': f'<show><jobs><id>{job_id}</id></jobs></show>',
+        'key': API_KEY
+    }
+    if target:
+        params['target'] = target
+
+    result = http_request(
+        URL,
+        'GET',
+        params=params
+    )
+
+    return result.get('response', {}).get('result', {}).get('job', {}).get('status', '')
 
 
 @logger
@@ -13063,7 +13091,13 @@ def get_query_entries(log_type: str, query: str, max_fetch: int) -> List[Dict[An
     job_id = get_query_by_job_id_request(log_type, query, max_fetch)
     demisto.debug(f'{job_id=}')
 
-    # second http request: send request with job id, valid response will contain a dictionary of entries.
+    # verify the job is finished before proceeding
+    for _ in range(GET_JOB_ID_MAX_RETRIES):
+        if get_job_status(job_id) == 'FIN':
+            break
+        time.sleep(1)
+
+    # second http request: send request with job id, valid response will contain a dictionary of entries. 
     query_entries = get_query_entries_by_id_request(job_id)
 
     # extract all entries from response
