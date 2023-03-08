@@ -88,6 +88,7 @@
                                 "startCol": 0
                             }
                         ],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -101,6 +102,7 @@
                         "displayType": "ROW",
                         "h": 3,
                         "i": "caseinfoid-field-changed-caseinfoid-tzrvq6dwsu-caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -153,6 +155,7 @@
                                 "startCol": 0
                             }
                         ],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -168,6 +171,7 @@
                         "hideName": true,
                         "i": "caseinfoid-6d5e8bc0-ba0c-11ed-b1a3-1f68fbe4723c",
                         "items": [],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -325,8 +329,10 @@
                         "hideName": true,
                         "i": "caseinfoid-095a3a80-bca4-11ed-9217-e3f3167dc425",
                         "items": [],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
+                        "minW": 3,
                         "moved": false,
                         "name": "Automation Scripts",
                         "query": "XETAutomationOverview",
@@ -620,13 +626,12 @@
                 "sections": [
                     {
                         "description": "The following playbooks are part of this pack, and can be used as references for the techniques demonstrated.",
-                        "h": 25,
+                        "h": 4,
                         "i": "caseinfoid-p2jsv8wjmm-caseinfoid-56e99250-a2cf-11eb-9c8a-93150f77609d",
                         "items": [],
                         "maxH": null,
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 3,
                         "moved": false,
                         "name": "Example Playbooks",
                         "query": "GetTrainingPlaybooksList",
@@ -653,7 +658,6 @@
                         "maxH": null,
                         "maxW": 3,
                         "minH": 1,
-                        "minW": 3,
                         "moved": false,
                         "name": "Example Automations",
                         "query": "GetTrainingAutomationsList",
