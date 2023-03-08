@@ -1,7 +1,10 @@
 category: Analytics & SIEM
 commonfields:
-  id: OrcaEventColector
+  id: Orca Event Collector
   version: -1
+description: Agentless, Workload-Deep, Context-Aware Security and Compliance for AWS, Azure, and GCP.
+display: Orca Event Collector
+name: Orca Event Collector
 configuration:
 - displaypassword: API Token
   additionalinfo: The API Key to use for connection
@@ -32,34 +35,26 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: '[Enter a comprehensive, yet concise, description of what the integration does, what use cases it is designed for, etc.]'
-display: 'OrcaEventColector'
-name: OrcaEventColector
 script:
   commands:
-  - arguments:
-    - default: false
-      description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
+  - description: Manual command to fetch events from Orca Security.
+    name: orca-security-get-events
+    arguments:
+    - name: should_push_events
+      auto: PREDEFINED
+      defaultValue: 'False'
+      description: Set this argument to True in order to create events, otherwise the command will only display them.
       isArray: false
-      name: dummy
+      predefined:
+      - 'True'
+      - 'False'
       required: true
-      secret: false
-    deprecated: false
-    description: '[Enter a description of the command, including any important information users need to know, for example required permissions.]'
-    execution: false
-    name: baseintegration-dummy
-    outputs:
-    - contextPath: BaseIntegration.Output
-      description: '[Enter a description of the data returned in this output.]'
-      type: String
   isfetchevents: true
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.7.48392
-  marketplaces:
-    - marketplacev2
+  dockerimage: demisto/python3:3.10.10.48392
 fromversion: '6.8.0'
 tests:
 - No tests (auto formatted)
