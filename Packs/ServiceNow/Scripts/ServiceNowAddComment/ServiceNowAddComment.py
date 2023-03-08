@@ -42,11 +42,10 @@ def update_comment_or_worknote(args: Dict[str, Any]) -> CommandResults:
             output_results['Ticket Created on'] = result['sys_created_on']
 
             md = tableToMarkdown("ServiceNow Comment Added", [output_results])
-            return CommandResults(readable_output=md)
 
     except Exception as ex1:
         return_error(str(ex1))
-
+    return CommandResults(readable_output=md)
 
 def main():
     try:
