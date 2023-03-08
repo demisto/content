@@ -4,7 +4,6 @@ from CommonServerUserPython import *
 
 import json
 import urllib3
-import tempfile
 from base64 import b64encode, b64decode
 
 
@@ -45,10 +44,13 @@ def getMetadata(strMeta):
     except Exception:
         demisto.debug('Metadata is null')
     if not metadata:
-        raw_meta = strMeta.strip().split(',')
-        for attr in raw_meta:
-            k_v = attr.strip().split('=')
-            metadata[k_v[0]] = k_v[1]
+        if isinstance(strMeta, str):
+            raw_meta = strMeta.strip().split(',')
+            for attr in raw_meta:
+                k_v = attr.strip().split('=')
+                metadata[k_v[0]] = k_v[1]
+        if isinstance(strMeta, dict):
+            metadata = strMeta
     return metadata
 
 
@@ -66,20 +68,6 @@ def get_headers(username, password, apikey=None, bearer=None):
         headers['Authorization'] = f'Basic {apikey}'
 
     return headers
-
-
-def get_client_cert(username, password):
-    if username.find('CERTIFICATE') > 0 and password.find('PRIVATE KEY') > 0:
-        fBundle = tempfile.NamedTemporaryFile(delete=False)
-        fName = fBundle.name
-        fBundle.write(bytes(username.replace('\\n', '\n'), 'ascii'))
-        fBundle.write(bytes(password.replace('\\n', '\n'), 'ascii'))
-        fBundle.seek(0)
-        fBundle.flush()
-        fBundle.close()
-        return (fName)
-    else:
-        return None
 
 
 ''' CLIENT CLASS '''
@@ -114,10 +102,7 @@ def list_secrets_command(client, args, gids=None):
         page = int(args.get('page'))
 
     path = 'crypto/v1/keys'
-    params = {
-        'obj_type': 'SECRET',
-        'sort': 'name:asc'
-    }
+    params = {'obj_type': 'SECRET', 'sort': 'name:asc'}
     if state := args.get('state'):
         if state == 'enabled':
             state = True
@@ -127,6 +112,7 @@ def list_secrets_command(client, args, gids=None):
             params['show_deleted'] = 'true'
         elif state == 'destroyed':
             params['show_destroyed'] = 'true'
+        state = state.lower()
 
     if page and page > 1:
         params['offset'] = str((page - 1) * 100 + 1)
@@ -151,19 +137,14 @@ def list_secrets_command(client, args, gids=None):
         )
 
     if kid and res:
-        readable_output = tableToMarkdown('Fortanix DSM Secret', res)
+        output = res
+        if len(res) == 1:
+            output = res[0]
+        readable_output = tableToMarkdown('Fortanix DSM Secret', output)
         return CommandResults(
             outputs_prefix='Fortanix.Secret',
             readable_output=readable_output,
             outputs=res,
-            raw_response=res
-        )
-    elif len(res) == 1:
-        readable_output = tableToMarkdown('Fortanix DSM Secret', res[0])
-        return CommandResults(
-            outputs_prefix='Fortanix.Secret',
-            readable_output=readable_output,
-            outputs=res[0],
             raw_response=res
         )
     else:
@@ -184,14 +165,11 @@ def list_secrets_command(client, args, gids=None):
 
 
 def fetch_secret_command(client, args):
-
     if not (kid := args.get('kid')):
         raise DemistoException('Secret cannot be fetched without a key ID')
 
     path = 'crypto/v1/keys/export'
-    body = {
-        'kid': kid
-    }
+    body = {'kid': kid}
 
     res = client.send_request(path, "post", body)
     value = ''
@@ -207,9 +185,7 @@ def fetch_secret_command(client, args):
         except Exception:
             value = res['value']
 
-    mapped_value = [{
-        'Value': value
-    }]
+    mapped_value = [{'Value': value}]
     readable_output = tableToMarkdown('Fortanix DSM Secret', mapped_value)
     return CommandResults(
         outputs_prefix='Fortanix.Secret.Value',
@@ -270,9 +246,7 @@ def delete_secret_command(client, args):
     if res:
         raise DemistoException('Secret was not deleted.')
 
-    mapped_value = [{
-        'Result': 'OK'
-    }]
+    mapped_value = [{'Result': 'OK'}]
     readable_output = tableToMarkdown('Fortanix DSM Secret', mapped_value)
     return CommandResults(
         outputs_prefix='Fortanix.Secret.Result',
@@ -292,7 +266,7 @@ def invoke_plugin_command(client, args):
         try:
             if isBase64(args_input):
                 plugin_input = json.loads(b64decode(args_input))
-            elif isJSON(args_input):
+            if isJSON(args_input):
                 plugin_input = json.loads(args_input)
             else:
                 plugin_input = args_input
@@ -305,13 +279,9 @@ def invoke_plugin_command(client, args):
     if res and isinstance(res, dict):
         value = [res]
     elif res and isinstance(res, str):
-        value = [{
-            'Output': res
-        }]
+        value = [{'Output': res}]
     else:
-        value = [{
-            'Output': 'OK'
-        }]
+        value = [{'Output': 'OK'}]
 
     readable_output = tableToMarkdown('Fortanix DSM Plugin', value)
     return CommandResults(
@@ -324,9 +294,7 @@ def invoke_plugin_command(client, args):
 
 def encrypt_command(client, args, pkey=None, pmode=None):
 
-    if 'data' in args:
-        data = args.get('data')
-    else:
+    if not (data := args.get('data')):
         raise DemistoException('Protection requires data')
 
     key_name = pkey
@@ -355,9 +323,7 @@ def encrypt_command(client, args, pkey=None, pmode=None):
     except Exception:
         value = res
 
-    mapped_value = [{
-        'Cipher': value
-    }]
+    mapped_value = [{'Cipher': value}]
     readable_output = tableToMarkdown('Fortanix DSM Encryption', mapped_value)
     return CommandResults(
         outputs_prefix='Fortanix.Data.Cipher',
@@ -404,9 +370,7 @@ def decrypt_command(client, args, pkey=None, pmode=None):
 
     if not key_id:
         key_name = pkey
-        key_id = None
-        if 'key' in args:
-            key_id = args.get('key')
+        key_id = args.get('key')
 
     if not mode:
         mode = pmode
@@ -414,12 +378,7 @@ def decrypt_command(client, args, pkey=None, pmode=None):
             mode = args.get('mode')
 
     path = 'crypto/v1/decrypt'
-    body = {
-        'cipher': cipher,
-        'alg': 'AES',
-        'mode': mode,
-        'key': {}
-    }
+    body = {'cipher': cipher, 'alg': 'AES', 'mode': mode, 'key': {}}
     if key_name:
         body['key']['name'] = key_name
     else:
@@ -466,8 +425,8 @@ def main() -> None:
 
     if endpoint := dparams.get('server'):
         # guardrails-disable-line
-        endpoint = re.sub('/[\/]+$/', '', endpoint)
-        endpoint = re.sub('\/$', '', endpoint)
+        endpoint = re.sub(r'/[\/]+$/', '', endpoint)
+        endpoint = re.sub(r'\/$', '', endpoint)
 
     username = dparams.get('credentials', {}).get('identifier')
     password = dparams.get('credentials', {}).get('password')
