@@ -196,31 +196,36 @@
       - local: .gitlab/ci/slack-notify.yml
 
 
-.run-unittests-and-lint:
+.unittests-and-lint-settings:
   tags:
     - gce
-  needs: []
-  stage: unittests-and-validations
-  artifacts:
-    reports:
-      coverage_report:
-        coverage_format: cobertura
-        path: /builds/xsoar/content/artifacts/coverage_report/coverage.xml
-    expire_in: 30 days
-    paths:
-      - /builds/xsoar/content/unit-tests
-      - /builds/xsoar/content/artifacts/*
-      - /builds/xsoar/content/pipeline_jobs_folder/*
-    when: always
-  services:
-    - name: docker.art.code.pan.run/build-tools--image-dind:20.10.12-dind
-      alias: docker
-  variables:
-    DOCKER_HOST: tcp://docker:2375
-    DOCKER_DRIVER: overlay2
-    DOCKER_TLS_CERTDIR: ""
+    needs: [ ]
+    stage: unittests-and-validations
+    artifacts:
+      reports:
+        coverage_report:
+          coverage_format: cobertura
+          path: /builds/xsoar/content/artifacts/coverage_report/coverage.xml
+      expire_in: 30 days
+      paths:
+        - /builds/xsoar/content/unit-tests
+        - /builds/xsoar/content/artifacts/*
+        - /builds/xsoar/content/pipeline_jobs_folder/*
+      when: always
+    services:
+      - name: docker.art.code.pan.run/build-tools--image-dind:20.10.12-dind
+        alias: docker
+    variables:
+      DOCKER_HOST: tcp://docker:2375
+      DOCKER_DRIVER: overlay2
+      DOCKER_TLS_CERTDIR: ""
+    extends:
+      - .default-job-settings
+
+
+.run-unittests-and-lint:
   extends:
-    - .default-job-settings
+    - .unittests-and-lint-settings
   script:
     - section_start "Test Infrastructure"
     - python3 -m pytest ./Tests/scripts/infrastructure_tests/ -v
