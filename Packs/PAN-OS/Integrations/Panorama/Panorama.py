@@ -1324,6 +1324,20 @@ def get_job_status(job_id: str, target: Optional[str] = None):
 
     return result.get('response', {}).get('result', {}).get('job', {}).get('status', '')
 
+def verify_job_complete(job_id: str, max_tries: int):
+    """Verify a Panorama job is completed.
+    Will wait 1 second between each try and will try a maximum of max_tries.
+
+    Args:
+        job_id (str): Panorama job id.
+        max_tries (int): maximum number of tries to check the job status.
+    """    
+    for _ in range(max_tries):
+        if get_job_status(job_id) == 'FIN':
+            return
+        else:
+            time.sleep(1)
+
 
 @logger
 def panorama_push_status(job_id: str, target: Optional[str] = None):
@@ -13092,10 +13106,7 @@ def get_query_entries(log_type: str, query: str, max_fetch: int) -> List[Dict[An
     demisto.debug(f'{job_id=}')
 
     # verify the job is finished before proceeding
-    for _ in range(GET_JOB_ID_MAX_RETRIES):
-        if get_job_status(job_id) == 'FIN':
-            break
-        time.sleep(1)
+    verify_job_complete(job_id, GET_JOB_ID_MAX_RETRIES)
 
     # second http request: send request with job id, valid response will contain a dictionary of entries. 
     query_entries = get_query_entries_by_id_request(job_id)
