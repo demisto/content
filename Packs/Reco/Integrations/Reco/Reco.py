@@ -148,13 +148,13 @@ class RecoClient(BaseClient):
         )
         return result
 
-    def update_reco_incident_timeline(self, incident_id: str, comment: str) -> None:
+    def update_reco_incident_timeline(self, incident_id: str, comment: str) -> Any:
         """
         Update timeline of an incident.
         """
         demisto.info("Update incident timeline, enter")
         try:
-            self._http_request(
+            response = self._http_request(
                 method="PUT",
                 url_suffix=f"/incident-timeline/{incident_id}",
                 timeout=RECO_API_TIMEOUT_IN_SECONDS,
@@ -172,14 +172,15 @@ class RecoClient(BaseClient):
             raise e
 
         demisto.info(f"Comment added to timeline of incident {incident_id}")
+        return response
 
-    def resolve_visibility_event(self, entity_id: str, label_name: str) -> None:
+    def resolve_visibility_event(self, entity_id: str, label_name: str) -> Any:
         """Resolve visibility event.
         :param entity_id: The entry id of the visibility event to resolve
         :param label_name: The label name of the visibility event to resolve
         """
         try:
-            self._http_request(
+            response = self._http_request(
                 method="PUT",
                 url_suffix="/set-label-status",
                 timeout=RECO_API_TIMEOUT_IN_SECONDS,
@@ -201,6 +202,7 @@ class RecoClient(BaseClient):
             raise e
 
         demisto.info(f"Visibility event {entity_id} resolved")
+        return response
 
     def get_risky_users(self) -> List[Dict[str, Any]]:
         """Get risky users. Returns a list of risky users with analysis.
@@ -506,18 +508,23 @@ def main() -> None:
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
         elif command == "reco-update-incident-timeline":
-            reco_client.update_reco_incident_timeline(
-                incident_id=demisto.args()["incident_id"],
+            incident_id = demisto.args()["incident_id"]
+            response = reco_client.update_reco_incident_timeline(
+                incident_id=incident_id,
                 comment=demisto.args()["comment"],
             )
-            return_results("Incident timeline updated successfully")
+            return_results(CommandResults(
+                raw_response=response,
+                readable_output=f"Timeline updated successfully for incident {incident_id}"))
         elif command == "reco-resolve-visibility-event":
             entity_id = demisto.args()["entity_id"]
             label_name = demisto.args()["label_name"]
-            reco_client.resolve_visibility_event(
+            response = reco_client.resolve_visibility_event(
                 entity_id=entity_id,
                 label_name=label_name)
-            return_results(f"Visibility event {entity_id} resolved successfully")
+            return_results(CommandResults(
+                raw_response=response,
+                readable_output=f"Visibility event {entity_id} resolved successfully"))
         elif command == "test-module":
             test_res = reco_client.validate_api_key()
             return_results(test_res)
