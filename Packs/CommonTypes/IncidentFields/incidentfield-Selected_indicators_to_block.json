@@ -1,0 +1,47 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "selectedindicatorstoblock",
+    "closeForm": false,
+    "columns": [
+        {
+            "displayName": "Indicators",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "indicators",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        }
+    ],
+    "content": true,
+    "defaultRows": [
+        {},
+        {},
+        {}
+    ],
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_selectedindicatorstoblock",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Selected indicators to block",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "grid",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "5.0.0"
+}

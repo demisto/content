@@ -44,7 +44,7 @@
                     {
                         "description": "",
                         "displayType": "CARD",
-                        "h": 4,
+                        "h": 6,
                         "hideItemTitleOnlyOne": true,
                         "hideName": false,
                         "i": "swtuqptgvs-field-changed-swtuqptgvs-1vduzkpmlh-swtuqptgvs-1vduzkpmlh-swtuqptgvs-5a552190-97ee-11e9-b8bd-0b00be54d2d3",
@@ -219,7 +219,7 @@
                         "type": "invTimeline",
                         "w": 3,
                         "x": 0,
-                        "y": 12
+                        "y": 14
                     },
                     {
                         "displayType": "ROW",
@@ -436,7 +436,7 @@
                         "static": false,
                         "w": 1,
                         "x": 2,
-                        "y": 10
+                        "y": 12
                     },
                     {
                         "columns": [
@@ -497,7 +497,33 @@
                         "type": "linkedIncidents",
                         "w": 3,
                         "x": 0,
-                        "y": 16
+                        "y": 18
+                    },
+                    {
+                        "description": "A list of indicators that chosen to be blocked using \"Block Indicators - Generic v3\" sub-playbook.",
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "swtuqptgvs-5a3d4150-bd84-11ed-a0ad-dd2507a0d65f",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "selectedindicatorstoblock",
+                                "height": 22,
+                                "id": "a8afce20-bd84-11ed-a0ad-dd2507a0d65f",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Selected indicators to block",
+                        "static": false,
+                        "w": 1,
+                        "x": 2,
+                        "y": 10
                     }
                 ],
                 "type": "custom"
