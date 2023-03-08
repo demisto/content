@@ -574,6 +574,56 @@ def fetch_comments_command(client: Client, env: str, args=None):
     return results
 
 
+def fetch_endpoint_command(client: Client, env: str, args=None):
+    if not args.get("id"):
+        raise ValueError("Cannot fetch endpoint information, missing id")
+
+    variables: Dict[str, Any] = {
+        "id": args.get("id")
+    }
+
+    query = """
+    query assetEndpointInfo($id: ID!) {
+      assetEndpointInfo(id: $id) {
+        hostId
+        hostName
+        actualIsolationStatus
+        allowedDomain
+        desiredIsolationStatus
+        firstConnectTime
+        moduleHealth {
+            enabled
+            lastRunningTime
+            moduleDisplayName
+        }
+        lastConnectAddress
+        lastConnectTime
+        sensorVersion
+      }
+    }
+    """
+
+    result = client.graphql_run(query=query, variables=variables)
+    try:
+        endpoint = result["data"]["assetEndpointInfo"]
+    except (KeyError, TypeError):
+        raise ValueError(f"Failed to fetch endpoint information: {result['errors'][0]['message']}")
+
+    results = CommandResults(
+        outputs_prefix="TaegisXDR.Endpoint",
+        outputs_key_field="hostId",
+        outputs=endpoint,
+        readable_output=tableToMarkdown(
+            "Taegis Endpoint",
+            endpoint,
+            removeNull=True,
+        ),
+        raw_response=result,
+    )
+
+    return results
+
+
 def fetch_incidents(client: Client, max_fetch: int = 15, include_assets: bool = True):
     """
     Fetch Taegis Investigations for the use with "Fetch Incidents"
@@ -1199,6 +1249,7 @@ def main():
         "taegis-fetch-assets": fetch_assets_command,
         "taegis-fetch-comment": fetch_comment_command,
         "taegis-fetch-comments": fetch_comments_command,
+        "taegis-fetch-endpoint": fetch_endpoint_command,
         "taegis-fetch-investigation": fetch_investigation_command,
         "taegis-fetch-investigation-alerts": fetch_investigation_alerts_command,
         "taegis-fetch-playbook-execution": fetch_playbook_execution_command,

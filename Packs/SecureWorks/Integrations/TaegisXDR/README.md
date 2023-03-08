@@ -357,6 +357,49 @@ After you successfully execute a command, a DBot message appears in the War Room
 ```
 
 
+### taegis-fetch-endpoint
+
+#### Base Command
+`!taegis-fetch-endpoint`
+
+#### Inputs
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | Endpoint ID to fetch | True |
+
+#### Command Example
+
+```
+!taegis-fetch-endpoint id=ff9ca818-4749-4ccb-883a-2ccc6f6c9e0f
+```
+
+#### Context Example
+
+```
+{
+    "TaegisXDR": {
+        "assetEndpointInfo": {
+            "hostId": "",
+            "hostName": "",
+            "actualIsolationStatus": "",
+            "allowedDomain": "",
+            "desiredIsolationStatus": "",
+            "firstConnectTime": "",
+            "moduleHealth": {
+                "enabled": ""
+                "lastRunningTime": "",
+                "moduleDisplayName": "",
+            }
+            "lastConnectAddress": "",
+            "lastConnectTime": "",
+            "sensorVersion": ""
+        }
+    }
+}
+```
+
+
 ### taegis-fetch-investigation
 
 #### Base Command

@@ -64,6 +64,16 @@ TAEGIS_COMMENT = {
     "parent_type": "investigation",
 }
 
+TAEGIS_ENDPOINT = {
+    "hostId": "110d1fd3a23c95c0120d0d10451cb001",
+    "hostname": "WIN-DESKTOP",
+    "actualIsolationStatus": "",
+    "desiredIsolationStatus": "",
+    "firstConnectTime": "",
+    "lastConnectTime": "",
+    "sensorVersion": "2.8.5.0",
+}
+
 TAEGIS_ENVIRONMENT = "us1"
 
 TAEGIS_INVESTIGATION = {
@@ -237,6 +247,22 @@ UPDATE_COMMENT_RESPONSE = {
             "id": TAEGIS_COMMENT["id"],
         }
     }
+}
+
+FETCH_ENDPOINT_RESPONSE = {
+    "data": {
+        "assetEndpointInfo": TAEGIS_ENDPOINT
+    }
+}
+
+FETCH_ENDPOINT_BAD_RESPONSE = {
+    "data": {},
+    "errors": [
+        {
+            "message": "failed to fetch endpoint",
+            "path": []
+        }
+    ]
 }
 
 FETCH_INCIDENTS_RESPONSE = {

@@ -315,6 +315,14 @@ script:
     - contextPath: TaegisXDR.Assets
       description: A list of located assets
     description: Fetch assets based on search criteria
+  - name: taegis-fetch-endpoint
+    arguments:
+    - name: id
+      required: true
+      description: The endpoint ID to fetch
+    outputs:
+    - contextPath: TaegisXDR.Endpoint
+    description: Fetch endpoint information
   dockerimage: demisto/python3:3.10.10.48392
   runonce: false
   subtype: python3

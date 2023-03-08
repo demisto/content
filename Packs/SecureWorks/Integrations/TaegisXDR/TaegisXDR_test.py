@@ -11,6 +11,7 @@ from TaegisXDR import (
     fetch_comment_command,
     fetch_comments_command,
     update_comment_command,
+    fetch_endpoint_command,
     fetch_incidents,
     fetch_investigation_command,
     fetch_investigation_alerts_command,
@@ -241,6 +242,27 @@ def test_update_comment(requests_mock):
     client = mock_client(requests_mock, CREATE_UPDATE_COMMENT_BAD_RESPONSE)
     with pytest.raises(ValueError, match="Failed to locate/update comment:"):
         assert update_comment_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+
+
+def test_fetch_endpoint(requests_mock):
+    """Tests taegis-fetch-endpoint command function
+    """
+    client = mock_client(requests_mock, FETCH_ENDPOINT_RESPONSE)
+
+    # comment_id not set
+    with pytest.raises(ValueError, match="Cannot fetch endpoint information, missing id"):
+        assert fetch_endpoint_command(client=client, env=TAEGIS_ENVIRONMENT, args={})
+
+    args = {"id": "110d1fd3a23c95c0120d0d10451cb001"}
+
+    # Successful fetch - Endpoint found
+    response = fetch_endpoint_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+    assert response.outputs == FETCH_ENDPOINT_RESPONSE["data"]["assetEndpointInfo"]
+
+    # Endpoint not found
+    client = mock_client(requests_mock, FETCH_ENDPOINT_BAD_RESPONSE)
+    with pytest.raises(ValueError, match="Failed to fetch endpoint information"):
+        assert fetch_endpoint_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
 
 
 def test_connectivity(requests_mock):
