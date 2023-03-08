@@ -375,7 +375,7 @@ class HasConflictOnAllowedFilesCondition(BaseCondition):
             if f.status == "added" and RELEASE_NOTES_DIR in Path(f.filename).parts
         ]
         changed_metadata_files = [
-            f.filename for f in pr_files if PACK_METADATA_FILE != Path(f.filename).name
+            f.filename for f in pr_files if PACK_METADATA_FILE == Path(f.filename).name
         ]
         (
             conflict_only_rn_and_metadata,

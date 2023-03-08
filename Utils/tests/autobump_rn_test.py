@@ -43,11 +43,11 @@ class File:
 
 class PullRequest:
     def __init__(
-        self,
-        updated_at=None,
-        labels: Optional[Label] = None,
-        files: Optional[List[File]] = None,
-        branch_name: str = "branch",
+            self,
+            updated_at=None,
+            labels: Optional[Label] = None,
+            files: Optional[List[File]] = None,
+            branch_name: str = "branch",
     ):
         self.number = 1
         self.updated_at = updated_at or datetime.datetime.now()
@@ -92,7 +92,7 @@ class Git:
         self.changed_metadata_files = [
             f.filename
             for f in self.files
-            if Path(f.filename).name != "pack_metadata.json" 
+            if Path(f.filename).name == "pack_metadata.json"
         ]
         self.additional_files = [
             f.filename
@@ -203,358 +203,358 @@ CHANGED_FILES = [
     "cond_obj, pr_args, condition_result_attributes, cond_kwargs, prev_res",
     [
         (
-            LastModifiedCondition,
-            {
-                "updated_at": datetime.datetime.now() - datetime.timedelta(days=20),
-            },
-            {"should_skip": True},
-            {},
-            None,
-        ),
-        (
-            LastModifiedCondition,
-            {
-                "updated_at": datetime.datetime.now() - datetime.timedelta(days=1),
-            },
-            {"should_skip": False},
-            {},
-            None,
-        ),
-        (
-            LabelCondition,
-            {"labels": [Label("ignore-auto-bump-version"), Label("label1")]},
-            {
-                "reason": 'Label "ignore-auto-bump-version" exist in this PR. PR labels: ignore-auto-bump-version, label1.',
-                "should_skip": True,
-            },
-            {},
-            None,
-        ),
-        (
-            LabelCondition,
-            {"labels": [Label("label1"), Label("label2")]},
-            {"should_skip": False},
-            {},
-            None,
-        ),
-        (
-            AddedRNFilesCondition,
-            {
-                "files": [
-                    File(
-                        path="Packs/MyPack/Integrations/MyIntegration/MyIntegration.py"
-                    ),
-                    File(
-                        path="Packs/MyPack/Integrations/MyIntegration/MyIntegration.yml"
-                    ),
-                    File(path="Packs/MyPack/ReleaseNotes/1_0_1.md", status="modified"),
-                ]
-            },
-            {
-                "reason": "No new files were detected on ReleaseNotes directory.",
-                "should_skip": True,
-            },
-            {},
-            None,
-        ),
-        (
-            AddedRNFilesCondition,
-            {
-                "files": [
-                    File(
-                        path="Packs/MyPack/Integrations/MyIntegration/MyIntegration.py"
-                    ),
-                    File(path="Packs/MyPack/pack_metadata.json", status="modified"),
-                    File(path="Packs/MyPack/ReleaseNotes/1_0_1.md", status="added"),
-                ]
-            },
-            {"should_skip": False},
-            {},
-            None,
-        ),
-        (
-            HasConflictOnAllowedFilesCondition,
-            {
-                "files": CHANGED_FILES,
-                "branch_name": "no-conflicts",
-            },
-            {"should_skip": True, "reason": "No conflicts were detected."},
-            {},
-            None,
-        ),
-        (
-            HasConflictOnAllowedFilesCondition,
-            {
-                "files": CHANGED_FILES,
-                "branch_name": "allowed-conflicts",
-            },
-            {
-                "should_skip": False,
-                "conflicting_packs": {"MyPack"},
-            },
-            {},
-            None,
-        ),
-        (
-            HasConflictOnAllowedFilesCondition,
-            {
-                "files": CHANGED_FILES,
-                "branch_name": "not-allowed-conflicts",
-            },
-            {
-                "should_skip": True,
-                "reason": "The PR has conflicts not only at ReleaseNotes and pack_metadata.json. "
-                "The conflicting files are: ['Packs/MyPack/Integrations/MyIntegration/MyIntegration.py', "
-                "'Packs/MyPack/ReleaseNotes/1_0_1.md'].",
-            },
-            {},
-            None,
-        ),
-        (
-            PackSupportCondition,
-            {},
-            {
-                "should_skip": False,
-            },
-            {"branch_metadata": {"support": "xsoar"}},
-            None,
-        ),
-        (
-            PackSupportCondition,
-            {},
-            {
-                "should_skip": True,
-                "reason": "The pack is not xsoar supported. Pack MyPack support type is: partner.",
-            },
-            {
-                "branch_metadata": {"support": "partner"},
-            },
-            None,
-        ),
-        (
-            MajorChangeCondition,
-            {},
-            {
-                "should_skip": True,
-                "reason": "Pack: MyPack major version different in origin 3.0.0 and at the branch 2.1.0.",
-            },
-            {
-                "branch_metadata": {"currentVersion": "2.1.0"},
-                "origin_base_metadata": {"currentVersion": "3.0.0"},
-            },
-            None,
-        ),
-        (
-            MajorChangeCondition,
-            {},
-            {
-                "should_skip": False,
-            },
-            {
-                "branch_metadata": {"currentVersion": "2.1.1"},
-                "origin_base_metadata": {"currentVersion": "2.1.0"},
-            },
-            None,
-        ),
-        (
-            MaxVersionCondition,
-            {},
-            {
-                "should_skip": True,
-                "reason": "Pack: MyPack has not allowed version part 99. Versions: origin 2.1.99, branch 2.1.99.",
-            },
-            {
-                "branch_metadata": {"currentVersion": "2.1.99"},
-                "origin_base_metadata": {"currentVersion": "2.1.99"},
-            },
-            None,
-        ),
-        (
-            MaxVersionCondition,
-            {},
-            {
-                "should_skip": False,
-            },
-            {
-                "branch_metadata": {"currentVersion": "2.1.1"},
-                "origin_base_metadata": {"currentVersion": "2.1.0"},
-            },
-            None,
-        ),
-        (
-            OnlyVersionChangedCondition,
-            {},
-            {
-                "should_skip": True,
-                "reason": "Pack MyPack metadata file has different keys in master and branch: ['marketplaces'].",
-            },
-            {
-                "branch_metadata": {
-                    "currentVersion": "2.1.0",
-                    "support": "xsoar",
-                    "name": "PackName",
-                    "marketplaces": ["xsoar"],
+                LastModifiedCondition,
+                {
+                    "updated_at": datetime.datetime.now() - datetime.timedelta(days=20),
                 },
-                "origin_base_metadata": {
-                    "currentVersion": "2.1.0",
-                    "support": "xsoar",
-                    "name": "PackName",
-                    "marketplaces": ["xsoar", "marketplacev2"],
+                {"should_skip": True},
+                {},
+                None,
+        ),
+        (
+                LastModifiedCondition,
+                {
+                    "updated_at": datetime.datetime.now() - datetime.timedelta(days=1),
                 },
-            },
-            None,
+                {"should_skip": False},
+                {},
+                None,
         ),
         (
-            OnlyVersionChangedCondition,
-            {},
-            {
-                "should_skip": True,
-                "reason": "Pack MyPack metadata file has different keys in master and branch: ['newField'].",
-            },
-            {
-                "branch_metadata": {
-                    "currentVersion": "2.1.0",
-                    "support": "xsoar",
-                    "name": "PackName",
-                    "marketplaces": ["xsoar"],
-                    "newField": "new",
+                LabelCondition,
+                {"labels": [Label("ignore-auto-bump-version"), Label("label1")]},
+                {
+                    "reason": 'Label "ignore-auto-bump-version" exist in this PR. PR labels: ignore-auto-bump-version, label1.',
+                    "should_skip": True,
                 },
-                "origin_base_metadata": {
-                    "currentVersion": "2.1.0",
-                    "support": "xsoar",
-                    "name": "PackName",
-                    "marketplaces": ["xsoar"],
+                {},
+                None,
+        ),
+        (
+                LabelCondition,
+                {"labels": [Label("label1"), Label("label2")]},
+                {"should_skip": False},
+                {},
+                None,
+        ),
+        (
+                AddedRNFilesCondition,
+                {
+                    "files": [
+                        File(
+                            path="Packs/MyPack/Integrations/MyIntegration/MyIntegration.py"
+                        ),
+                        File(
+                            path="Packs/MyPack/Integrations/MyIntegration/MyIntegration.yml"
+                        ),
+                        File(path="Packs/MyPack/ReleaseNotes/1_0_1.md", status="modified"),
+                    ]
                 },
-            },
-            None,
-        ),
-        (
-            OnlyVersionChangedCondition,
-            {},
-            {
-                "should_skip": False,
-            },
-            {
-                "branch_metadata": {
-                    "currentVersion": "2.1.0",
-                    "support": "xsoar",
-                    "name": "PackName",
-                    "marketplaces": ["xsoar"],
+                {
+                    "reason": "No new files were detected on ReleaseNotes directory.",
+                    "should_skip": True,
                 },
-                "origin_base_metadata": {
-                    "currentVersion": "2.1.0",
-                    "support": "xsoar",
-                    "name": "PackName",
-                    "marketplaces": ["xsoar"],
+                {},
+                None,
+        ),
+        (
+                AddedRNFilesCondition,
+                {
+                    "files": [
+                        File(
+                            path="Packs/MyPack/Integrations/MyIntegration/MyIntegration.py"
+                        ),
+                        File(path="Packs/MyPack/pack_metadata.json", status="modified"),
+                        File(path="Packs/MyPack/ReleaseNotes/1_0_1.md", status="added"),
+                    ]
                 },
-            },
-            None,
+                {"should_skip": False},
+                {},
+                None,
         ),
         (
-            OnlyOneRNPerPackCondition,
-            {
-                "files": CHANGED_FILES,
-            },
-            {
-                "should_skip": False,
-                "pack_new_rn_file": Path("Packs/MyPack/ReleaseNotes/1_0_1.md"),
-            },
-            {},
-            None,
+                HasConflictOnAllowedFilesCondition,
+                {
+                    "files": CHANGED_FILES,
+                    "branch_name": "no-conflicts",
+                },
+                {"should_skip": True, "reason": "No conflicts were detected."},
+                {},
+                None,
         ),
         (
-            OnlyOneRNPerPackCondition,
-            {
-                "files": [
-                    File(
-                        path="Packs/MyPack/Integrations/MyIntegration/MyIntegration.py"
-                    ),
-                    File(path="Packs/MyPack/pack_metadata.json", status="modified"),
-                    File(path="Packs/MyPack/ReleaseNotes/1_0_1.md", status="added"),
-                    File(path="Packs/MyPack/ReleaseNotes/1_0_2.md", status="added"),
-                ],
-            },
-            {
-                "should_skip": True,
-                "reason": "Pack: MyPack has more than one added rn ['Packs/MyPack/ReleaseNotes/1_0_1.md', "
-                "'Packs/MyPack/ReleaseNotes/1_0_2.md'].",
-            },
-            {},
-            None,
+                HasConflictOnAllowedFilesCondition,
+                {
+                    "files": CHANGED_FILES,
+                    "branch_name": "allowed-conflicts",
+                },
+                {
+                    "should_skip": False,
+                    "conflicting_packs": {"MyPack"},
+                },
+                {},
+                None,
         ),
         (
-            SameRNMetadataVersionCondition,
-            {
-                "files": [
-                    File(path="Packs/MyPack/pack_metadata.json", status="modified"),
-                    File(path="Packs/MyPack/ReleaseNotes/1_0_1.md", status="added"),
-                ],
-            },
-            {
-                "should_skip": True,
-                "reason": "Pack: MyPack has different rn version 1.0.1, and metadata version 2.1.0.",
-            },
-            {"branch_metadata": {"currentVersion": "2.1.0"}},
-            ConditionResult(
-                pack_new_rn_file=Path("Packs/MyPack/ReleaseNotes/1_0_1.md"),
-                should_skip=False,
-            ),
+                HasConflictOnAllowedFilesCondition,
+                {
+                    "files": CHANGED_FILES,
+                    "branch_name": "not-allowed-conflicts",
+                },
+                {
+                    "should_skip": True,
+                    "reason": "The PR has conflicts not only at ReleaseNotes and pack_metadata.json. "
+                              "The conflicting files are: ['Packs/MyPack/Integrations/MyIntegration/MyIntegration.py', "
+                              "'Packs/MyPack/ReleaseNotes/1_0_1.md'].",
+                },
+                {},
+                None,
         ),
         (
-            SameRNMetadataVersionCondition,
-            {
-                "files": [
-                    File(path="Packs/MyPack/pack_metadata.json", status="modified"),
-                    File(path="Packs/MyPack/ReleaseNotes/1_0_1.md", status="added"),
-                ],
-            },
-            {
-                "should_skip": False,
-                "pr_rn_version": Version("1.0.1"),
-                "pack_new_rn_file": Path("Packs/MyPack/ReleaseNotes/1_0_1.md"),
-            },
-            {"branch_metadata": {"currentVersion": "1.0.1"}},
-            ConditionResult(
-                pack_new_rn_file=Path("Packs/MyPack/ReleaseNotes/1_0_1.md"),
-                should_skip=False,
-            ),
+                PackSupportCondition,
+                {},
+                {
+                    "should_skip": False,
+                },
+                {"branch_metadata": {"support": "xsoar"}},
+                None,
         ),
         (
-            AllowedBumpCondition,
-            {},
-            {
-                "should_skip": True,
-                "reason": "Pack MyPack version was updated from 2.1.0 to 2.1.2 version. Allowed bump only by + 1.",
-            },
-            {
-                "branch_metadata": {"currentVersion": "2.1.2"},
-                "pr_base_metadata": {"currentVersion": "2.1.0"},
-            },
-            None,
+                PackSupportCondition,
+                {},
+                {
+                    "should_skip": True,
+                    "reason": "The pack is not xsoar supported. Pack MyPack support type is: partner.",
+                },
+                {
+                    "branch_metadata": {"support": "partner"},
+                },
+                None,
         ),
         (
-            AllowedBumpCondition,
-            {},
-            {
-                "should_skip": False,
-                "pr_rn_version": Version("2.1.1"),
-                "update_type": UpdateType.REVISION,
-                "pack_new_rn_file": Path("Packs/MyPack/ReleaseNotes/2_1_1.md"),
-            },
-            {
-                "branch_metadata": {"currentVersion": "2.1.1"},
-                "pr_base_metadata": {"currentVersion": "2.1.0"},
-            },
-            ConditionResult(
-                pack_new_rn_file=Path("Packs/MyPack/ReleaseNotes/2_1_1.md"),
-                pr_rn_version=Version("2.1.1"),
-                should_skip=False,
-            ),
+                MajorChangeCondition,
+                {},
+                {
+                    "should_skip": True,
+                    "reason": "Pack: MyPack major version different in origin 3.0.0 and at the branch 2.1.0.",
+                },
+                {
+                    "branch_metadata": {"currentVersion": "2.1.0"},
+                    "origin_base_metadata": {"currentVersion": "3.0.0"},
+                },
+                None,
+        ),
+        (
+                MajorChangeCondition,
+                {},
+                {
+                    "should_skip": False,
+                },
+                {
+                    "branch_metadata": {"currentVersion": "2.1.1"},
+                    "origin_base_metadata": {"currentVersion": "2.1.0"},
+                },
+                None,
+        ),
+        (
+                MaxVersionCondition,
+                {},
+                {
+                    "should_skip": True,
+                    "reason": "Pack: MyPack has not allowed version part 99. Versions: origin 2.1.99, branch 2.1.99.",
+                },
+                {
+                    "branch_metadata": {"currentVersion": "2.1.99"},
+                    "origin_base_metadata": {"currentVersion": "2.1.99"},
+                },
+                None,
+        ),
+        (
+                MaxVersionCondition,
+                {},
+                {
+                    "should_skip": False,
+                },
+                {
+                    "branch_metadata": {"currentVersion": "2.1.1"},
+                    "origin_base_metadata": {"currentVersion": "2.1.0"},
+                },
+                None,
+        ),
+        (
+                OnlyVersionChangedCondition,
+                {},
+                {
+                    "should_skip": True,
+                    "reason": "Pack MyPack metadata file has different keys in master and branch: ['marketplaces'].",
+                },
+                {
+                    "branch_metadata": {
+                        "currentVersion": "2.1.0",
+                        "support": "xsoar",
+                        "name": "PackName",
+                        "marketplaces": ["xsoar"],
+                    },
+                    "origin_base_metadata": {
+                        "currentVersion": "2.1.0",
+                        "support": "xsoar",
+                        "name": "PackName",
+                        "marketplaces": ["xsoar", "marketplacev2"],
+                    },
+                },
+                None,
+        ),
+        (
+                OnlyVersionChangedCondition,
+                {},
+                {
+                    "should_skip": True,
+                    "reason": "Pack MyPack metadata file has different keys in master and branch: ['newField'].",
+                },
+                {
+                    "branch_metadata": {
+                        "currentVersion": "2.1.0",
+                        "support": "xsoar",
+                        "name": "PackName",
+                        "marketplaces": ["xsoar"],
+                        "newField": "new",
+                    },
+                    "origin_base_metadata": {
+                        "currentVersion": "2.1.0",
+                        "support": "xsoar",
+                        "name": "PackName",
+                        "marketplaces": ["xsoar"],
+                    },
+                },
+                None,
+        ),
+        (
+                OnlyVersionChangedCondition,
+                {},
+                {
+                    "should_skip": False,
+                },
+                {
+                    "branch_metadata": {
+                        "currentVersion": "2.1.0",
+                        "support": "xsoar",
+                        "name": "PackName",
+                        "marketplaces": ["xsoar"],
+                    },
+                    "origin_base_metadata": {
+                        "currentVersion": "2.1.0",
+                        "support": "xsoar",
+                        "name": "PackName",
+                        "marketplaces": ["xsoar"],
+                    },
+                },
+                None,
+        ),
+        (
+                OnlyOneRNPerPackCondition,
+                {
+                    "files": CHANGED_FILES,
+                },
+                {
+                    "should_skip": False,
+                    "pack_new_rn_file": Path("Packs/MyPack/ReleaseNotes/1_0_1.md"),
+                },
+                {},
+                None,
+        ),
+        (
+                OnlyOneRNPerPackCondition,
+                {
+                    "files": [
+                        File(
+                            path="Packs/MyPack/Integrations/MyIntegration/MyIntegration.py"
+                        ),
+                        File(path="Packs/MyPack/pack_metadata.json", status="modified"),
+                        File(path="Packs/MyPack/ReleaseNotes/1_0_1.md", status="added"),
+                        File(path="Packs/MyPack/ReleaseNotes/1_0_2.md", status="added"),
+                    ],
+                },
+                {
+                    "should_skip": True,
+                    "reason": "Pack: MyPack has more than one added rn ['Packs/MyPack/ReleaseNotes/1_0_1.md', "
+                              "'Packs/MyPack/ReleaseNotes/1_0_2.md'].",
+                },
+                {},
+                None,
+        ),
+        (
+                SameRNMetadataVersionCondition,
+                {
+                    "files": [
+                        File(path="Packs/MyPack/pack_metadata.json", status="modified"),
+                        File(path="Packs/MyPack/ReleaseNotes/1_0_1.md", status="added"),
+                    ],
+                },
+                {
+                    "should_skip": True,
+                    "reason": "Pack: MyPack has different rn version 1.0.1, and metadata version 2.1.0.",
+                },
+                {"branch_metadata": {"currentVersion": "2.1.0"}},
+                ConditionResult(
+                    pack_new_rn_file=Path("Packs/MyPack/ReleaseNotes/1_0_1.md"),
+                    should_skip=False,
+                ),
+        ),
+        (
+                SameRNMetadataVersionCondition,
+                {
+                    "files": [
+                        File(path="Packs/MyPack/pack_metadata.json", status="modified"),
+                        File(path="Packs/MyPack/ReleaseNotes/1_0_1.md", status="added"),
+                    ],
+                },
+                {
+                    "should_skip": False,
+                    "pr_rn_version": Version("1.0.1"),
+                    "pack_new_rn_file": Path("Packs/MyPack/ReleaseNotes/1_0_1.md"),
+                },
+                {"branch_metadata": {"currentVersion": "1.0.1"}},
+                ConditionResult(
+                    pack_new_rn_file=Path("Packs/MyPack/ReleaseNotes/1_0_1.md"),
+                    should_skip=False,
+                ),
+        ),
+        (
+                AllowedBumpCondition,
+                {},
+                {
+                    "should_skip": True,
+                    "reason": "Pack MyPack version was updated from 2.1.0 to 2.1.2 version. Allowed bump only by + 1.",
+                },
+                {
+                    "branch_metadata": {"currentVersion": "2.1.2"},
+                    "pr_base_metadata": {"currentVersion": "2.1.0"},
+                },
+                None,
+        ),
+        (
+                AllowedBumpCondition,
+                {},
+                {
+                    "should_skip": False,
+                    "pr_rn_version": Version("2.1.1"),
+                    "update_type": UpdateType.REVISION,
+                    "pack_new_rn_file": Path("Packs/MyPack/ReleaseNotes/2_1_1.md"),
+                },
+                {
+                    "branch_metadata": {"currentVersion": "2.1.1"},
+                    "pr_base_metadata": {"currentVersion": "2.1.0"},
+                },
+                ConditionResult(
+                    pack_new_rn_file=Path("Packs/MyPack/ReleaseNotes/2_1_1.md"),
+                    pr_rn_version=Version("2.1.1"),
+                    should_skip=False,
+                ),
         ),
     ],
 )
 def test_metadata_conditions(
-    cond_obj, pr_args, condition_result_attributes, cond_kwargs, prev_res
+        cond_obj, pr_args, condition_result_attributes, cond_kwargs, prev_res
 ):
     """
     Given:
