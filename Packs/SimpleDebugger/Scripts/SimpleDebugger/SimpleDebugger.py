@@ -321,7 +321,8 @@ class SimpleDebugger:
             return True
         return False
 
-    def SdbgTrace(self, frame: FrameType, event: str, arg: Any):    # vulture: ignore
+    # vulture: ignore
+    def SdbgTrace(self, frame: FrameType, event: str, arg: Any):
         if event == "exception":
             self.SdbgException()
             return None
