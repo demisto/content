@@ -677,7 +677,7 @@ def test_list_detections_command_when_description_has_metric_link(on_cloud, requ
 @pytest.mark.parametrize("on_cloud", [False, True])
 def test_list_detections_command_when_description_has_complete_metric_link(on_cloud, requests_mock):
     """Test case scenario for successful execution of detections-list command when description has metrics link which
-    has only base url missing.
+    has only the base url missing.
 
     Given:
      - User has provided valid credentials.
