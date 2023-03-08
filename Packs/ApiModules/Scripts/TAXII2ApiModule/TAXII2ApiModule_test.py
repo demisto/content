@@ -962,32 +962,15 @@ class TestParsingIndicators:
         Then:
          - Make sure all the fields are being parsed correctly.
         """
-        indicator_obj = {
-            "id": "indicator--1234",
-            "pattern": "[domain-name:value = 'test.org']",
-            "confidence": 85,
-            "lang": "en",
-            "type": "indicator",
-            "created": "2020-05-14T00:14:05.401Z",
-            "modified": "2020-05-14T00:14:05.401Z",
-            "name": "suspicious_domain: test.org",
-            "description": "TS ID: 55475482483; iType: suspicious_domain; ",
-            "valid_from": "2020-05-07T14:33:02.714602Z",
-            "pattern_type": "stix",
-            "object_marking_refs": [
-                "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
-            ],
-            "labels": [
-                "medium"
-            ],
-            "indicator_types": [
-                "anomalous-activity"
-            ],
-            "pattern_version": "2.1",
-            "spec_version": "2.1"
-        }
-        indicator_obj['type'] = 'Domain'
-        indicator_obj['value'] = 'test.org'
+        indicator_obj = {"id": "indicator--1234", "pattern": "[domain-name:value = 'test.org']", "confidence": 85,
+                         "lang": "en", "type": "indicator", "created": "2020-05-14T00:14:05.401Z",
+                         "modified": "2020-05-14T00:14:05.401Z", "name": "suspicious_domain: test.org",
+                         "description": "TS ID: 55475482483; iType: suspicious_domain; ",
+                         "valid_from": "2020-05-07T14:33:02.714602Z", "pattern_type": "stix",
+                         "object_marking_refs": ["marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"],
+                         "labels": ["medium"],
+                         "indicator_types": ["anomalous-activity"],
+                         "pattern_version": "2.1", "spec_version": "2.1", 'type': 'Domain', 'value': 'test.org'}
         xsoar_expected_response = [
             {
                 'fields': {
@@ -1002,12 +985,6 @@ class TestParsingIndicators:
             }
         ]
         taxii_2_client.tlp_color = None
-        test = taxii_2_client.parse_indicator(indicator_obj)
-        for key, val in test[0].items():
-            if key in xsoar_expected_response[0]:
-                val2 = xsoar_expected_response[0].get(key)
-                if val != val2:
-                    x = 2
         assert taxii_2_client.parse_indicator(indicator_obj) == xsoar_expected_response
 
     # Parsing SDO Indicators

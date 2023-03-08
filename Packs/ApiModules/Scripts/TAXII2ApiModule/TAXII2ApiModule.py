@@ -1281,14 +1281,11 @@ class Taxii2FeedClient:
         """
         ioc_obj = id_to_obj.get(ioc)
         if ioc_obj:
-            if ioc_obj.get('type') == 'report':
-                return ioc_obj.get('name')
-            elif ioc_obj.get('type') == 'attack-pattern':
-                return ioc_obj.get('name')
-            elif "file:hashes.'SHA-256' = '" in ioc_obj.get('name'):
+            name = ioc_obj.get('name', '')
+            if "file:hashes.'SHA-256' = '" in name:
                 return Taxii2FeedClient.get_ioc_value_from_ioc_name(ioc_obj)
             else:
-                return ioc_obj.get('name')
+                return name
 
     @staticmethod
     def get_ioc_value_from_ioc_name(ioc_obj):
