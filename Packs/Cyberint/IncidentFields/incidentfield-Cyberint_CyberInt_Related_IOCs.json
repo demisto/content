@@ -22,10 +22,9 @@
     ],
     "associatedToAll": false,
     "unmapped": false,
-    "unsearchable": true,
+    "unsearchable": false,
     "caseInsensitive": true,
-    "columns": [
-        {
+    "columns": [{
             "key": "type",
             "displayName": "Type",
             "type": "shortText",
@@ -50,10 +49,15 @@
             "selectValues": null
         }
     ],
-    "defaultRows": [
-        {},
-        {},
-        {}
+    "defaultRows": [{
+
+        },
+        {
+
+        },
+        {
+
+        }
     ],
     "sla": 0,
     "threshold": 72,

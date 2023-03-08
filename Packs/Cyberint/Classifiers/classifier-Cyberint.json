@@ -8,10 +8,13 @@
         "closed": "Cyberint Incident",
         "open": "Cyberint Incident"
     },
+    "propagationLabels": [
+        "all"
+    ],
     "transformer": {
+        "complex": null,
         "simple": "status"
     },
     "type": "classification",
-    "version": -1,
-    "feed": false
+    "version": -1
 }
