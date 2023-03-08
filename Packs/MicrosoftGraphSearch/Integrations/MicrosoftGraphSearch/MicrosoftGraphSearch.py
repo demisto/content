@@ -122,7 +122,7 @@ def main():     # pragma: no cover
         if command == 'msgraph-search-test':
             return_results(client.test_connection())
         elif command == 'msgraph-search-generate-login-url':
-            return_results(generate_login_url(client))
+            return_results(generate_login_url(client))
         elif command == 'msgraph-search-content':
             return_results(client.search_content_command(demisto.args()))
     except Exception as e:
