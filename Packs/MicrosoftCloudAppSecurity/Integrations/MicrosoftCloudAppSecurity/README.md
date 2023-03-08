@@ -6,11 +6,13 @@ This integration was integrated and tested with version 178 of MicrosoftCloudApp
 3. *By token (legacy method)*. 
 
 ### Device Code Flow
+
 ___
 
 To use a Device Code Flow, you need to add a new Azure App Registration in the Azure Portal. To add the registration, refer to the following [Microsoft article](https://docs.microsoft.com/en&#45;us/defender&#45;cloud&#45;apps/api&#45;authentication&#45;user).
 
 To connect to the Microsoft Cloud App Security:
+
 1. Fill in the required parameters.
 2. Run the ***!microsoft-cas-auth-start*** command. 
 3. Follow the instructions that appear.
@@ -20,6 +22,7 @@ At the end of the process you'll see a message that you've logged in successfull
 
 
 ### Client Credentials Flow
+
 ___
 Follow these steps for a self-deployed configuration:
 
@@ -30,11 +33,14 @@ Follow these steps for a self-deployed configuration:
 5. Enter your Tenant ID in the ***Tenant ID*** parameter.
 
 #### Required Permissions
+
 *Make sure to provide the following permissions for the app to work with Microsoft Cloud App Security:*
- - ***Discovery.manage*** - https://learn.microsoft.com/en-us/defender-cloud-apps/api-authentication-application#supported-permission-scopes
- - ***offline_access*** - when using the Device Code flow.
+
+- ***Discovery.manage***, ***Investigation.read*** - <https://learn.microsoft.com/en-us/defender-cloud-apps/api-authentication-application#supported-permission-scopes>
+- ***offline_access*** - when using the Device Code flow.
 
 ### By token (legacy method)
+
 To access the Microsoft Cloud App Security API, you need to grant authorization.
 See the [Microsoft documentation](https://docs.microsoft.com/en-us/cloud-app-security/api-authentication) to view a detailed explanation of how to create the Server URL and User key (token).
 
@@ -70,10 +76,12 @@ For more information about which permissions are required for the token owner in
 
 
 ## Look-back parameter note
+
 In case the **look-back** parameter is initialized with a certain value and during a time that incidents were fetched, if changing 
 the look back to a number that is greater than the previous value, then in the next fetch there might be incidents duplications.
 
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
@@ -103,6 +111,7 @@ There is no context output for this command.
 
 
 >###Authorization instructions
+>
 >1. To sign in, use a web browser to open the page {URL}
 >and enter the code {code} to authenticate.
 >2. Run the !microsoft-cas-auth-complete command in the War Room.
@@ -136,6 +145,7 @@ There is no context output for this command.
 
 
 ### microsoft-cas-auth-reset
+
 ***
 Run this command if you need to rerun the authentication process. (for device-code mode)
 
@@ -166,6 +176,7 @@ There is no context output for this command.
 
 
 ### microsoft-cas-auth-test
+
 ***
 Tests the connectivity to the Microsoft cas.
 
@@ -173,6 +184,7 @@ Tests the connectivity to the Microsoft cas.
 #### Base Command
 
 `microsoft-cas-auth-test`
+
 #### Input
 
 There are no input arguments for this command.
@@ -182,12 +194,15 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 #### Command Example
+
 ```!microsoft-cas-auth-test```
 
 #### Human Readable Output
+
 >✅ Success!
 
 ### microsoft-cas-alerts-list
+
 ***
 Returns a list of alerts that match the specified filters.
 
@@ -195,6 +210,7 @@ Returns a list of alerts that match the specified filters.
 #### Base Command
 
 `microsoft-cas-alerts-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -255,9 +271,11 @@ Returns a list of alerts that match the specified filters.
 
 
 #### Command Example
+
 ```!microsoft-cas-alerts-list custom_filter=`{"filters": {"date": {"gte_ndays":30}}, "limit": "3"}````
 
 #### Context Example
+
 ```json
 {
     "MicrosoftCloudAppSecurity": {
@@ -567,6 +585,7 @@ Returns a list of alerts that match the specified filters.
 #### Human Readable Output
 
 >### Microsoft CAS Alerts
+
 >|alert_id|alert_date|title|description|status_value|severity_value|is_open|
 >|---|---|---|---|---|---|---|
 >| 60edead2cdbeaf0b87e13377 | 2021-07-13T16:18:15.126000 | Impossible travel activity | <p>The user John Example (john@example.onmicrosoft.com) perform failed sign in activities from remote locations that are considered an impossible travel activity.<br/>The user performed failed sign in activities from 1.2.3.6 in Netherlands and 1.2.3.4 in Israel within 96 minutes.<br/>If these are IP addresses that are known and safe, add them in the <a href="#/subnet">IP address range page</a> to improve the accuracy of the alerts.</p> | N/A | Medium | true |
@@ -575,6 +594,7 @@ Returns a list of alerts that match the specified filters.
 
 
 ### microsoft-cas-alert-close-benign
+
 ***
 An alert on a suspicious but not malicious activity, such as a penetration test or other authorized suspicious action
 
@@ -582,6 +602,7 @@ An alert on a suspicious but not malicious activity, such as a penetration test 
 #### Base Command
 
 `microsoft-cas-alert-close-benign`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -601,6 +622,7 @@ An alert on a suspicious but not malicious activity, such as a penetration test 
 There is no context output for this command.
 
 #### Command Example
+
 ```!microsoft-cas-alert-close-benign alert_ids=60eaf3cccdbeaf0b87d1a775```
 
 #### Human Readable Output
@@ -608,6 +630,7 @@ There is no context output for this command.
 >1 alerts were closed as benign.
 
 ### microsoft-cas-alert-close-true-positive
+
 ***
 Cֹlose multiple alerts matching the specified filters as true positive (an alert on a confirmed malicious activity.
 
@@ -615,6 +638,7 @@ Cֹlose multiple alerts matching the specified filters as true positive (an aler
 #### Base Command
 
 `microsoft-cas-alert-close-true-positive`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -633,6 +657,7 @@ Cֹlose multiple alerts matching the specified filters as true positive (an aler
 There is no context output for this command.
 
 #### Command Example
+
 ```!microsoft-cas-alert-close-true-positive alert_ids=60ced07dcdbeaf0b876fc7d3```
 
 #### Human Readable Output
@@ -640,6 +665,7 @@ There is no context output for this command.
 >1 alerts were closed as true-positive.
 
 ### microsoft-cas-alert-close-false-positive
+
 ***
 Close multiple alerts matching the specified filters as false positive (an alert on a non-malicious activity).
 
@@ -647,6 +673,7 @@ Close multiple alerts matching the specified filters as false positive (an alert
 #### Base Command
 
 `microsoft-cas-alert-close-false-positive`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -666,6 +693,7 @@ Close multiple alerts matching the specified filters as false positive (an alert
 There is no context output for this command.
 
 #### Command Example
+
 ```!microsoft-cas-alert-close-false-positive alert_ids=60cf6d10cdbeaf0b87acdfa9 reason="Alert is not accurate"```
 
 #### Human Readable Output
@@ -673,13 +701,14 @@ There is no context output for this command.
 >1 alerts were closed as false-positive.
 
 ### microsoft-cas-activities-list
+
 ***
 Returns a list of activities that match the specified filters.
-
 
 #### Base Command
 
 `microsoft-cas-activities-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -749,9 +778,11 @@ Returns a list of activities that match the specified filters.
 
 
 #### Command Example
+
 ```!microsoft-cas-activities-list limit=4```
 
 #### Context Example
+
 ```json
 {
     "DBotScore": [
@@ -1712,12 +1743,14 @@ Returns a list of activities that match the specified filters.
 #### Human Readable Output
 
 >### Microsoft CAS Activity
+
 >|activity_id|activity_date|app_name|description|severity|
 >|---|---|---|---|---|
 >| 4b23b9daccf2604cec7fc8654bd98480707b0114450dac11c4a9feab98ca2499 | 2021-07-13T17:26:14.610000 | Office 365 | Failed log on (Failure message: Session information is not sufficient for single-sign-on.) | INFO |
 
 
 ### microsoft-cas-files-list
+
 ***
 Returns a list of files that match the specified filters. Filters include file type, file share value, file extension, file quarantine status, and a custom filter. If you pass the custom_filter argument it will override the other filters in this command.
 Note: This command is supported only when using the legacy authentication.
@@ -1725,6 +1758,7 @@ Note: This command is supported only when using the legacy authentication.
 #### Base Command
 
 `microsoft-cas-files-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1773,9 +1807,11 @@ Note: This command is supported only when using the legacy authentication.
 
 
 #### Command Example
+
 ```!microsoft-cas-files-list file_type=Text skip=4 limit=5```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftCloudAppSecurity": {
@@ -2623,6 +2659,7 @@ Note: This command is supported only when using the legacy authentication.
 #### Human Readable Output
 
 >### Microsoft CAS Files
+
 >|owner_name|file_id|file_type|file_name|file_access_level|file_status|app_name|
 >|---|---|---|---|---|---|---|
 >| John Example | 5f60838dc3b664209dab9a97 | TEXT | 20200525154133.JPG.txt | PRIVATE | EXISTS | Microsoft OneDrive for Business |
@@ -2633,6 +2670,7 @@ Note: This command is supported only when using the legacy authentication.
 
 
 ### microsoft-cas-users-accounts-list
+
 ***
 Returns a list of user accounts that match the specified filters. Filters include user account type, group ID, external/internal, user account status, and custom filter. The accounts object schema includes information about how users and accounts use your organization's cloud apps.
 
@@ -2640,6 +2678,7 @@ Returns a list of user accounts that match the specified filters. Filters includ
 #### Base Command
 
 `microsoft-cas-users-accounts-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2690,9 +2729,11 @@ Returns a list of user accounts that match the specified filters. Filters includ
 
 
 #### Command Example
+
 ```!microsoft-cas-users-accounts-list status=Active limit=3```
 
 #### Context Example
+
 ```json
 {
     "MicrosoftCloudAppSecurity": {
@@ -2829,6 +2870,7 @@ Returns a list of user accounts that match the specified filters. Filters includ
 #### Human Readable Output
 
 >### Microsoft CAS Users And Accounts
+
 >|display_name|is_admin|is_external|
 >|---|---|---|
 >| 365 Defender Dev | false | true |
