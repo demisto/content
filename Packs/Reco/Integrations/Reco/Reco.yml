@@ -104,7 +104,7 @@ script:
       deprecated: false
     description: Resolve an event in Reco Finding. Reco Findings contains aggregations of events. This command resolves the event in the Reco Finding.
     execution: false
-    name: resolve-visibility-event
+    name: reco-resolve-visibility-event
   - arguments: []
     deprecated: false
     description: Get Risky Users from Reco

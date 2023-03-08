@@ -511,7 +511,7 @@ def main() -> None:
                 comment=demisto.args()["comment"],
             )
             return_results("Incident timeline updated successfully")
-        elif command == "resolve-visibility-event":
+        elif command == "reco-resolve-visibility-event":
             entity_id = demisto.args()["entity_id"]
             label_name = demisto.args()["label_name"]
             reco_client.resolve_visibility_event(
