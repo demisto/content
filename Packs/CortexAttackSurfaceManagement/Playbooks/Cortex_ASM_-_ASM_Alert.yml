@@ -188,27 +188,26 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 322faa9a-3a45-476d-88ac-ba4cf2bcc9d5
-    type: regular
+    taskid: d68ae85e-28a9-4892-8f4c-c6349355a8f5
+    type: title
     task:
-      id: 322faa9a-3a45-476d-88ac-ba4cf2bcc9d5
+      id: d68ae85e-28a9-4892-8f4c-c6349355a8f5
       version: -1
-      name: Send remediation notification email to service owners
-      type: regular
-      iscommand: true
+      name: Validation Stage
+      type: title
+      iscommand: false
       brand: ""
-      description: 'Send an email to the service owner with remediation information.'
-      script: '|||send-mail'
+      description: 'Send an email'
     nexttasks:
       '#none#':
-      - "115"
+      - "86"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 90,
-          "y": 3930
+          "y": 4175
         }
       }
     note: false
@@ -218,27 +217,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    scriptarguments:
-      htmlBody:
-        simple: |-
-          <!DOCTYPE html>
-          <html lang="en">
-          <body>
-              <p>
-                  Infosec identified a security risk on an external service potentially owned by your
-                  team:<br><b>${alert.name}</b>
-              </p>
-              <p>
-                  <b>Alert Details:</b> ${alert.details}<br>
-                  <b>Action Taken:</b> ${alert.asmremediation.[0].Action}<br>
-                  <b>Action Outcome:</b> ${alert.asmremediation.[0].Outcome}<br>
-              </p>
-          </body>
-          </html>
-      subject:
-        simple: A new security risk was addressed on an external service owned by your team
-      to:
-        simple: ${alert.asmserviceowner.Email}
   "12":
     id: "12"
     taskid: 623323fb-2af2-465a-8af5-35deadd40e66
@@ -291,7 +269,7 @@ tasks:
       {
         "position": {
           "x": 90,
-          "y": 4805
+          "y": 4835
         }
       }
     note: false
@@ -367,7 +345,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1700,
+          "x": -1740,
           "y": 2340
         }
       }
@@ -404,7 +382,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -780,
+          "x": -910,
           "y": 5410
         }
       }
@@ -463,7 +441,7 @@ tasks:
       {
         "position": {
           "x": 90,
-          "y": 4430
+          "y": 4470
         }
       }
     note: false
@@ -493,8 +471,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 350,
-          "y": 4610
+          "x": 330,
+          "y": 4650
         }
       }
     note: false
@@ -1031,7 +1009,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 360,
+          "x": 440,
           "y": 3240
         }
       }
@@ -1372,8 +1350,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -390,
-          "y": 3425
+          "x": -480,
+          "y": 3245
         }
       }
     note: false
@@ -1400,7 +1378,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "11"
+      - "116"
     scriptarguments:
       gridfield:
         simple: asmremediation
@@ -1427,8 +1405,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -390,
-          "y": 3740
+          "x": -480,
+          "y": 3425
         }
       }
     note: false
@@ -1481,7 +1459,7 @@ tasks:
       {
         "position": {
           "x": 90,
-          "y": 3750
+          "y": 3860
         }
       }
     note: false
@@ -1637,7 +1615,7 @@ tasks:
       {
         "position": {
           "x": 870,
-          "y": 3750
+          "y": 3860
         }
       }
     note: false
@@ -1707,7 +1685,7 @@ tasks:
       {
         "position": {
           "x": 90,
-          "y": 5080
+          "y": 5110
         }
       }
     note: false
@@ -1759,7 +1737,7 @@ tasks:
       {
         "position": {
           "x": 90,
-          "y": 4250
+          "y": 4310
         }
       }
     note: false
@@ -1789,7 +1767,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -120,
+          "x": -50,
           "y": 3240
         }
       }
@@ -2015,7 +1993,7 @@ tasks:
       {
         "position": {
           "x": 90,
-          "y": 4930
+          "y": 4960
         }
       }
     note: false
@@ -2241,7 +2219,7 @@ tasks:
       {
         "position": {
           "x": -1250,
-          "y": 2525
+          "y": 2505
         }
       }
     note: false
@@ -2568,7 +2546,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 3750
+          "y": 3860
         }
       }
     note: false
@@ -2815,7 +2793,7 @@ tasks:
       {
         "position": {
           "x": 90,
-          "y": 5240
+          "y": 5270
         }
       }
     note: false
@@ -2852,7 +2830,7 @@ tasks:
       {
         "position": {
           "x": -80,
-          "y": 5600
+          "y": 5660
         }
       }
     note: false
@@ -2889,7 +2867,7 @@ tasks:
       {
         "position": {
           "x": 310,
-          "y": 5600
+          "y": 5660
         }
       }
     note: false
@@ -2935,7 +2913,7 @@ tasks:
       {
         "position": {
           "x": -310,
-          "y": 5410
+          "y": 5460
         }
       }
     note: false
@@ -2981,7 +2959,7 @@ tasks:
       {
         "position": {
           "x": 540,
-          "y": 5410
+          "y": 5460
         }
       }
     note: false
@@ -2991,28 +2969,95 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "115":
-    id: "115"
-    taskid: de84b61e-8047-4a48-823a-f60965658082
-    type: title
+  "116":
+    id: "116"
+    taskid: 98112215-f43b-4f78-875b-58f8da657f94
+    type: condition
     task:
-      id: de84b61e-8047-4a48-823a-f60965658082
+      id: 98112215-f43b-4f78-875b-58f8da657f94
       version: -1
-      name: Validation Stage
-      type: title
+      name: Are there service owners with emails?
+      description: Verifies if we have emails for service owners.
+      type: condition
       iscommand: false
       brand: ""
-      description: ''
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "117"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: alert.asmserviceowner
+                accessor: Email
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -480,
+          "y": 3600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "117":
+    id: "117"
+    taskid: 46a8e681-4479-415f-8e31-df37d4aada6c
+    type: regular
+    task:
+      id: 46a8e681-4479-415f-8e31-df37d4aada6c
+      version: -1
+      name: Send remediation notification email to service owners
+      description: Send an email to service owners about the status of automated remediation action taken.
+      script: '|||send-mail'
+      type: regular
+      iscommand: true
+      brand: ""
     nexttasks:
       '#none#':
-      - "86"
+      - "11"
+    scriptarguments:
+      htmlBody:
+        simple: |-
+          <!DOCTYPE html>
+          <html lang="en">
+          <body>
+              <p> THIS IS A TEST, PLEASE IGNORE <br><br>
+                  Infosec identified a security risk on an external service potentially owned by your
+                  team:<br><b>${alert.name}</b>
+              </p>
+              <p>
+                  <b>Alert Details:</b> ${alert.details}<br>
+                  <b>Action Taken:</b> ${alert.asmremediation.[0].Action}<br>
+                  <b>Action Outcome:</b> ${alert.asmremediation.[0].Outcome}<br>
+              </p>
+          </body>
+          </html>
+      subject:
+        simple: '[TESTING] A new security risk was addressed on an external service owned by your team'
+      to:
+        simple: ${alert.asmserviceowner.Email}
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 90,
-          "y": 4110
+          "x": -660,
+          "y": 3790
         }
       }
     note: false
@@ -3026,6 +3071,8 @@ view: |-
   {
     "linkLabelsPosition": {
       "102_12_Automated Remediation": 0.79,
+      "110_111_Close Now": 0.88,
+      "110_112_ Automated-Remediation": 0.88,
       "16_6_yes": 0.6,
       "48_10_ServiceNow ticket": 0.82,
       "48_12_Automated remediation": 0.87,
@@ -3035,8 +3082,8 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 6045,
-        "width": 3450,
-        "x": -1700,
+        "width": 3490,
+        "x": -1740,
         "y": -80
       }
     }
