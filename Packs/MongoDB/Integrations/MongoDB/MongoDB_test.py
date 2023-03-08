@@ -274,7 +274,7 @@ class MockResponse:
 
 
 class TestUpdateQueryCommands:
-    """Class for update_query_command UTs."""    
+    """Class for update_query_command UTs."""
     client = Client(['aaaaa'], 'a', 'b', 'd')
     case_upsert_with_no_matching_entry = (
         "{\"Name\": \"dummy\"}", "{\"$set\":{\"test\":0}}", True, True, MockResponse(True, 0, 0, 1),
