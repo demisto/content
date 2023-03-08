@@ -635,6 +635,49 @@ After you successfully execute a command, a DBot message appears in the War Room
 ```
 
 
+### taegis-update-alert-status
+
+#### Base Command
+
+`!taegis-update-alert-status`
+
+#### Input
+
+| **Argument Name** | **Description** | Default | **Required** |
+| --- | --- | --- | --- |
+| ids | A comma-separated list of alerts by IDs | `alert://priv:crowdstrike:11772:1666269058114:59284e28-4ec8-542b-a4a1-452c3688bc1a` | True |
+| status | The status to update the alert(s) with | `FALSE_POSITIVE` | True |
+| reason | A comment/reason for the alert status update | `See ticket 13245` | False |
+
+##### Permitted Status Values
+
+* FALSE_POSITIVE
+* NOT_ACTIONABLE
+* OPEN
+* TRUE_POSITIVE_BENIGN
+* TRUE_POSITIVE_MALICIOUS
+
+
+#### Command Examples
+
+```
+!taegis-update-alert-status ids="alert://priv:crowdstrike:11772:1677742145475:07e2d9cc-0a04-55ec-890a-97f39d63698e" status=NOT_ACTIONABLE reason="Test Reason"
+```
+
+#### Context Example
+
+```
+{
+    "TaegisXDR": {
+        "AlertStatusUpdate": {
+            "reason": "feedback updates successfully applied",
+            "resolution_status": "SUCCESS"
+        }
+    }
+}
+```
+
+
 ### taegis-update-comment
 
 #### Base Command

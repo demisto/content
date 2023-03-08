@@ -22,6 +22,7 @@ from TaegisXDR import (
     update_investigation_command,
     archive_investigation_command,
     unarchive_investigation_command,
+    update_alert_status_command,
     test_module as connectivity_test,
 )
 
@@ -547,3 +548,33 @@ def test_fetch_users(requests_mock):
     invalid_fields = r"id MUST be in 'auth0|12345' format"
     with pytest.raises(ValueError, match=invalid_fields):
         assert fetch_users_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+
+
+def test_update_alert_status(requests_mock):
+    """Tests taegis-update-alert-status command function
+    """
+    client = mock_client(requests_mock, UPDATE_ALERT_STATUS_RESPONSE)
+
+    args = {"ids": TAEGIS_ALERT['id']}
+
+    # alert ids not set
+    with pytest.raises(ValueError, match="Alert IDs must be defined"):
+        assert update_alert_status_command(client=client, env=TAEGIS_ENVIRONMENT, args={})
+
+    # status not set
+    with pytest.raises(ValueError, match="Alert status must be defined"):
+        assert update_alert_status_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+
+    args["status"] = "Bad Status"
+    with pytest.raises(ValueError, match="The provided status, Bad Status, is not valid for updating an alert"):
+        assert update_alert_status_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+
+    # Successful update
+    args["status"] = "NOT_ACTIONABLE"
+    response = update_alert_status_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)
+    assert response.outputs == UPDATE_ALERT_STATUS_RESPONSE["data"]["alertsServiceUpdateResolutionInfo"]
+
+    # Alert not updated
+    client = mock_client(requests_mock, UPDATE_ALERT_STATUS_BAD_RESPONSE)
+    with pytest.raises(ValueError, match="Failed to locate/update alert"):
+        assert update_alert_status_command(client=client, env=TAEGIS_ENVIRONMENT, args=args)

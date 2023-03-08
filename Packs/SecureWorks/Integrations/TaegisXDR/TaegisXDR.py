@@ -15,6 +15,13 @@ ENV_URLS = {
     "eu": {"api": "https://api.echo.taegis.secureworks.com", "xdr": "https://echo.taegis.secureworks.com"},
 }
 
+ALERT_STATUSES = set((
+    "FALSE_POSITIVE",
+    "NOT_ACTIONABLE",
+    "OPEN",
+    "TRUE_POSITIVE_BENIGN",
+    "TRUE_POSITIVE_MALICIOUS",
+))
 ASSET_SEARCH_FIELDS = ((
     "endpoint_type",
     "host_id",
@@ -1064,6 +1071,63 @@ def isolate_asset_command(client: Client, env: str, args=None):
     return results
 
 
+def update_alert_status_command(client: Client, env: str, args=None):
+    if not args.get("ids"):
+        raise ValueError("Alert IDs must be defined")
+    if not args.get("status"):
+        raise ValueError("Alert status must be defined")
+
+    if args.get("status").upper() not in ALERT_STATUSES:
+        raise ValueError((
+            f"The provided status, {args['status']}, is not valid for updating an alert. "
+            f"Supported Status Values: {ALERT_STATUSES}"))
+
+    variables = {
+        "alert_ids": args.get("ids"),
+        "reason": args.get("reason", ""),
+        "resolution_status": args.get("status"),
+    }
+
+    if type(variables["alert_ids"]) == str:
+        variables["alert_ids"] = variables["alert_ids"].split(",")  # alerts://id1,alerts://id2
+    variables["alert_ids"] = [x.strip() for x in variables["alert_ids"]]  # Ensure no whitespace
+
+    query = """
+    mutation alertsServiceUpdateResolutionInfo($alert_ids: [String!], $reason: String, $resolution_status: ResolutionStatus) {
+      alertsServiceUpdateResolutionInfo(
+        in: {
+          alert_ids: $alert_ids,
+            reason: $reason,
+            resolution_status: $resolution_status
+        }
+      ) {
+        resolution_status
+        reason
+      }
+    }
+    """
+    result = client.graphql_run(query=query, variables=variables)
+
+    try:
+        update_result = result["data"]["alertsServiceUpdateResolutionInfo"]
+    except (KeyError, TypeError):
+        raise ValueError(f"Failed to locate/update alert: {result['errors'][0]['message']}")
+
+    results = CommandResults(
+        outputs_prefix="TaegisXDR.AlertStatusUpdate",
+        outputs_key_field="status",
+        outputs=update_result,
+        readable_output=tableToMarkdown(
+            "Taegis Alert Update",
+            update_result,
+            removeNull=True,
+        ),
+        raw_response=result,
+    )
+
+    return results
+
+
 def update_comment_command(client: Client, env: str, args=None):
     if not args.get("id"):
         raise ValueError("Cannot update comment, comment id cannot be empty")
@@ -1296,6 +1360,7 @@ def main():
         "taegis-fetch-playbook-execution": fetch_playbook_execution_command,
         "taegis-fetch-users": fetch_users_command,
         "taegis-isolate-asset": isolate_asset_command,
+        "taegis-update-alert-status": update_alert_status_command,
         "taegis-update-comment": update_comment_command,
         "taegis-update-investigation": update_investigation_command,
         "taegis-archive-investigation": archive_investigation_command,

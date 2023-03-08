@@ -409,3 +409,25 @@ ISOLATE_ASSET_BAD_RESPONSE = {
         }
     ]
 }
+
+UPDATE_ALERT_STATUS_RESPONSE = {
+    "data": {
+        "alertsServiceUpdateResolutionInfo": {
+            "reason": "feedback updates successfully applied",
+            "resolution_status": "SUCCESS"
+        }
+    }
+}
+
+UPDATE_ALERT_STATUS_BAD_RESPONSE = {
+    "data": {},
+    "errors": [
+        {
+            "message": "invalid format",
+            "path": [
+                "variables",
+                "id"
+            ]
+        }
+    ]
+}

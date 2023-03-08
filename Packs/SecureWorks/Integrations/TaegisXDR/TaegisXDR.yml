@@ -283,6 +283,28 @@ script:
     - contextPath: TaegisXDR.UnarchivedInvestigation
       description: The results from unarchiving an investigation
     description: Unarchive an investigation
+  - name: taegis-update-alert-status
+    arguments:
+    - name: ids
+      required: true
+      description: A list of alert IDs or string of comma-separated alert IDs to return
+      isArray: true
+    - name: status
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - FALSE_POSITIVE
+      - NOT_ACTIONABLE
+      - OPEN
+      - TRUE_POSITIVE_BENIGN
+      - TRUE_POSITIVE_MALICIOUS
+      description: The status to update the alert with
+    - name: reason
+      description: A simple comment/reason for the status change
+    outputs:
+    - contextPath: TaegisXDR.AlertStatusUpdate
+      description: The result of the alert status update
+    description: Update the status of an alert
   - name: taegis-fetch-assets
     arguments:
     - name: page
