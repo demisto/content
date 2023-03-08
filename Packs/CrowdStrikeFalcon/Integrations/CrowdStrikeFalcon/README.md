@@ -62,9 +62,9 @@ Newly fetched incidents or detections will be mirrored in the chosen direction. 
  - When *mirroring in* incidents from CrowdStrike Falcon to XSOAR:
    - For the `tags` field, tags can only be added from the remote system.
    - When enabling the *Close Mirrored XSOAR Incident* integration parameter, the field in CrowdStrike Falcon that determines whether the incident was closed is the `status` field.
-   - In case the **look-back** parameter is initialized with a certain value and during a time that incidents were fetched, if changing 
+   - In case the *look-back* parameter is initialized with a certain value and during a time that incidents were fetched, if changing 
    the lookback to a number that is greater than the previous value, then in the initial incident fetching there will be incidents duplications.
-   If the integration was already set with look back > 0, and the look-back is not being increased at any point of time, then those incident duplications would not occur.
+   If the integration was already set with lookback > 0, and the lookback is not being increased at any point of time, then those incident duplications would not occur.
 
 ### 1. Search for a device
 
