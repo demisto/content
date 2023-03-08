@@ -23,7 +23,7 @@ The CrowdStrike Falcon OAuth 2 API integration (formerly Falcon Firehose API), e
     | Close Mirrored XSOAR Incident | When selected, closes the CrowdStrike Falcon incident or detection, which is mirrored in Cortex XSOAR. | False |
     | Close Mirrored CrowdStrike Falcon Incident or Detection | When selected, closes the XSOAR incident, which is mirrored in CrowdStrike Falcon. | False |
     | Fetch types | Choose what to fetch - incidents, detections, or both. | False |
-    | Advanced: Minutes to look back when fetching | Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created. | False |
+    | Advanced: Minutes to look back when fetching | Use this parameter to determine how far back to look in the search for incidents that were created before the last run time and did not match the query when they were created. | False |
 
 
 4.  Click **Test** to validate the URLs, token, and connection.
