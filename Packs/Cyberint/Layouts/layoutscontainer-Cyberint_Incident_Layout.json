@@ -753,7 +753,7 @@
                             },
                             {
                                 "endCol": 1,
-                                "fieldId": "cyberinttargetedbrand",
+                                "fieldId": "cyberinttargetedbrands",
                                 "height": 53,
                                 "id": "5cb5be00-9d5c-11ed-8f36-ab5d128aea6b",
                                 "index": 1,
@@ -764,7 +764,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "cyberintimpact",
+                                "fieldId": "cyberintimpacts",
                                 "height": 53,
                                 "id": "6cfacb30-9d60-11ed-b3d3-65a739574b9a",
                                 "index": 2,
@@ -773,7 +773,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "cyberintrelatedentities",
+                                "fieldId": "cyberintrelatedentity",
                                 "height": 53,
                                 "id": "7d622a40-9d60-11ed-b3d3-65a739574b9a",
                                 "index": 3,
@@ -791,7 +791,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "cyberinttags",
+                                "fieldId": "cyberintdescriptors",
                                 "height": 53,
                                 "id": "9d016d70-9d7e-11ed-b015-bb48fb7e22f0",
                                 "index": 5,
@@ -801,7 +801,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "cyberinttargetedvector",
+                                "fieldId": "cyberinttargetedvectors",
                                 "height": 53,
                                 "id": "73950280-9d60-11ed-b3d3-65a739574b9a",
                                 "index": 1,

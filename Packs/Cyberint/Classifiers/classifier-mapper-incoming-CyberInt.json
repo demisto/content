@@ -42,7 +42,7 @@
                 "CyberInt Expert Analysis": {
                     "simple": "analysis_report.name"
                 },
-                "CyberInt Impact": {
+                "CyberInt Impacts": {
                     "complex": {
                         "filters": [],
                         "root": "impacts",
@@ -70,7 +70,7 @@
                 "CyberInt Related IOCs": {
                     "simple": "iocs"
                 },
-                "CyberInt Related entities": {
+                "CyberInt Related entity": {
                     "simple": "related_entities"
                 },
                 "CyberInt Source": {
@@ -82,17 +82,17 @@
                 "CyberInt Status": {
                     "simple": "status"
                 },
-                "CyberInt Tags": {
+                "CyberInt Descriptors": {
                     "simple": "tags"
                 },
-                "CyberInt Targeted Brand": {
+                "CyberInt Targeted Brands": {
                     "complex": {
                         "filters": [],
                         "root": "targeted_brands",
                         "transformers": []
                     }
                 },
-                "CyberInt Targeted Vector": {
+                "CyberInt Targeted Vectors": {
                     "simple": "targeted_vectors"
                 },
                 "CyberInt Threat Actor": {
@@ -226,7 +226,7 @@
                 "CyberInt Expert Analysis": {
                     "simple": "analysis_report.name"
                 },
-                "CyberInt Impact": {
+                "CyberInt Impacts": {
                     "complex": {
                         "filters": [],
                         "root": "impacts",
@@ -253,7 +253,7 @@
                 "CyberInt Related IOCs": {
                     "simple": "iocs"
                 },
-                "CyberInt Related entities": {
+                "CyberInt Related entity": {
                     "complex": {
                         "filters": [],
                         "root": "related_entities",
@@ -269,14 +269,14 @@
                 "CyberInt Status": {
                     "simple": "status"
                 },
-                "CyberInt Tags": {
+                "CyberInt Descriptors": {
                     "complex": {
                         "filters": [],
                         "root": "tags",
                         "transformers": []
                     }
                 },
-                "CyberInt Targeted Brand": {
+                "CyberInt Targeted Brands": {
                     "complex": {
                         "filters": [],
                         "root": "targeted_brands",
@@ -287,7 +287,7 @@
                         ]
                     }
                 },
-                "CyberInt Targeted Vector": {
+                "CyberInt Targeted Vectors": {
                     "complex": {
                         "filters": [],
                         "root": "targeted_vectors",
