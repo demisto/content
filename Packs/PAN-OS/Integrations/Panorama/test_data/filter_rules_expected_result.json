@@ -1,0 +1,132 @@
+[
+    {
+        "@name": "Test_PBF",
+        "@uuid": "ab7cfbed-78b0-4e4d-9107-28770e90bafd",
+        "action": {
+            "forward": {
+                "egress-interface": "Test"
+            }
+        },
+        "from": {
+            "zone": {
+                "member": "Test_Zone"
+            }
+        },
+        "enforce-symmetric-return": {
+            "enabled": "no"
+        },
+        "target": {
+            "negate": "no"
+        },
+        "source": {
+            "member": "any"
+        },
+        "destination": {
+            "member": "bad-url.com"
+        },
+        "source-user": {
+            "member": "any"
+        },
+        "application": {
+            "member": "acronis-snapdeploy"
+        },
+        "service": {
+            "member": "service-https"
+        },
+        "description": "Test policy based forwarding rule with a twist",
+        "disabled": "yes",
+        "tag": {
+            "member": "test"
+        }
+    },
+    {
+        "@name": "Test_PBF4",
+        "@uuid": "3097a79d-707c-4a7a-9ac0-5bc725e3e119",
+        "action": {
+            "forward": {
+                "egress-interface": "ethernet1/1"
+            }
+        },
+        "from": {
+            "zone": {
+                "member": "internal"
+            }
+        },
+        "enforce-symmetric-return": {
+            "enabled": "yes",
+            "nexthop-address-list": {
+                "entry": [
+                    {
+                        "@name": "192.0.2.0"
+                    },
+                    {
+                        "@name": "192.0.2.1"
+                    }
+                ]
+            }
+        },
+        "source": {
+            "member": "any"
+        },
+        "destination": {
+            "member": "any"
+        },
+        "source-user": {
+            "member": "any"
+        },
+        "application": {
+            "member": "any"
+        },
+        "service": {
+            "member": "any"
+        },
+        "description": "TEst2",
+        "negate-source": "yes",
+        "negate-destination": "yes",
+        "disabled": "yes"
+    },
+    {
+        "@name": "Test_PBF4-1-1",
+        "@uuid": "436f36f0-7877-4358-9d06-bf9726496066",
+        "action": {
+            "no-pbf": null
+        },
+        "from": {
+            "zone": {
+                "member": "internal"
+            }
+        },
+        "enforce-symmetric-return": {
+            "enabled": "yes",
+            "nexthop-address-list": {
+                "entry": [
+                    {
+                        "@name": "192.0.2.0"
+                    },
+                    {
+                        "@name": "192.0.2.1"
+                    }
+                ]
+            }
+        },
+        "source": {
+            "member": "any"
+        },
+        "destination": {
+            "member": "any"
+        },
+        "source-user": {
+            "member": "any"
+        },
+        "application": {
+            "member": "any"
+        },
+        "service": {
+            "member": "any"
+        },
+        "description": "TEst2",
+        "negate-source": "yes",
+        "negate-destination": "yes",
+        "disabled": "yes"
+    }
+]

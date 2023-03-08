@@ -8,13 +8,18 @@
 	"Data Enrichment & Threat Intelligence",
 	"Database",
 	"Deception",
+	"Deception & Breach Simulation",
 	"Endpoint",
 	"Forensics & Malware Analysis",
 	"IT Services",
 	"Identity and Access Management",
 	"Messaging",
+	"Messaging and Conferencing",
 	"Network Security",
 	"Utilities",
-	"Vulnerability Management"
+	"Vulnerability Management",
+	"Messaging and Conferencing",
+	"Authentication & Identity Management",
+	"Email"
     ]
 }
