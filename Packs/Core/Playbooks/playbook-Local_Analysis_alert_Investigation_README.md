@@ -36,32 +36,38 @@ External resources:
 [Malware Protection Flow](https://docs.paloaltonetworks.com/traps/4-2/traps-endpoint-security-manager-admin/malware-protection/malware-protection-flow)
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Recovery Plan
-* Containment Plan
-* Wildfire Detonate and Analyze File
+
 * Enrichment for Verdict
-* Handle False Positive Alerts
 * Eradication Plan
+* Wildfire Detonate and Analyze File
+* Handle False Positive Alerts
 * Endpoint Investigation Plan
+* Containment Plan
+* Recovery Plan
 
 ### Integrations
+
 * CortexCoreIR
 
 ### Scripts
+
 * UnzipFile
 * GetTime
 
 ### Commands
-* core-report-incorrect-wildfire
-* internal-wildfire-get-report
-* core-retrieve-files
-* core-retrieve-file-details
+
 * closeInvestigation
+* core-report-incorrect-wildfire
+* core-retrieve-file-details
+* core-retrieve-files
+* internal-wildfire-get-report
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
@@ -74,11 +80,17 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | AutoCloseAlert | Whether to close the alert automatically or manually, after an analyst's review. | False | Optional |
 | ShouldRescanBenign | Whether to rescan \(Using WildFire detonate file\) benign files. | True | Optional |
 | ShouldManualReviewFP | Whether to ask for a manual review before false positive handling. Should be True or False | False | Optional |
+| SHA256 | The SHA256 hash of the file to respond to. | alert | Optional |
+| Path | The path of the file to respond to. | alert | Optional |
+| Query | The query for searching previous alerts based on the file we want to respond to. | alert | Optional |
 
 ## Playbook Outputs
+
 ---
 There are no outputs for this playbook.
 
 ## Playbook Image
+
 ---
+
 ![Local Analysis alert Investigation](../doc_files/Local_Analysis_alert_Investigation.png)
