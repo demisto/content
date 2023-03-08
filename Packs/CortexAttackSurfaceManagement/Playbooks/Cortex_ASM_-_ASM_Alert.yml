@@ -3036,7 +3036,7 @@ tasks:
           <!DOCTYPE html>
           <html lang="en">
           <body>
-              <p> THIS IS A TEST, PLEASE IGNORE <br><br>
+              <p>
                   Infosec identified a security risk on an external service potentially owned by your
                   team:<br><b>${alert.name}</b>
               </p>
@@ -3048,7 +3048,7 @@ tasks:
           </body>
           </html>
       subject:
-        simple: '[TESTING] A new security risk was addressed on an external service owned by your team'
+        simple: A new security risk was addressed on an external service owned by your team'
       to:
         simple: ${alert.asmserviceowner.Email}
     separatecontext: false
