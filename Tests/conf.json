@@ -5322,6 +5322,11 @@
             "playbookID": "TestXSOAREDLCheckerPlaybook"
         },
         {
+            "integrations": "CiscoWSAv2",
+            "playbookID": "playbook-CiscoWSA_Test",
+            "fromversion": "6.8.0"
+        },
+        {
             "playbookID": "Threat_Intel_Report_test",
             "fromversion": "6.5.0",
             "scripts": [
@@ -5329,7 +5334,7 @@
                 "UnpublishThreatIntelReport"
             ]
         },
-        {
+        {            
             "integrations": "Generic SQL",
             "playbookID": "generic-sql",
             "instance_names": "Microsoft SQL Server - MS ODBC Driver",
