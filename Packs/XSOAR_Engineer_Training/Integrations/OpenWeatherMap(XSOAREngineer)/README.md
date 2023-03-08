@@ -1,5 +1,5 @@
 This integration gets the current weather using the Open Weather Map API.  Use for training how to write not-as-simple integrations.
-This integration was integrated and tested with version xx of OpenWeatherMap (XSOAR Engineer)
+This integration was integrated and tested with version 1.0 of OpenWeatherMap (XSOAR Engineer)
 
 ## Configure OpenWeatherMap (XSOAR Engineer) on Cortex XSOAR
 

@@ -4,7 +4,6 @@ import requests
 import urllib3
 urllib3.disable_warnings()
 
-
 def get_ipinfo_command(params, args):
     token = params.get('token')
     ip = args.get('ip')
@@ -17,7 +16,6 @@ def get_ipinfo_command(params, args):
                             outputs=res.json())
     return result
 
-
 def main():
     params = demisto.params()
     args = demisto.args()
@@ -26,7 +24,6 @@ def main():
 
     if command == 'xsoar-engineer-ipinfo':
         return_results(get_ipinfo_command(params, args))
-
 
 if __name__ in ['__main__', 'builtin', 'builtins']:
     main()

@@ -1,6 +1,6 @@
 category: Utilities
 commonfields:
-  id: IP.Info (XSOAR Engineer)
+  id: IP Info (XSOAR Engineer)
   version: -1
 configuration:
 - additionalinfo: The API token from ipinfo.io
@@ -9,8 +9,8 @@ configuration:
   required: true
   type: 4
 description: Queries IpInfo.io for information about an IP.   Use for training how to write simple integrations.
-display: IP.Info (XSOAR Engineer)
-name: IP.Info (XSOAR Engineer)
+display: IP Info (XSOAR Engineer)
+name: IP Info (XSOAR Engineer)
 script:
   commands:
   - arguments:

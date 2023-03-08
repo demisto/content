@@ -1,10 +1,10 @@
 Queries IpInfo.io for information about an IP.   Use for training how to write simple integrations.
-This integration was integrated and tested with version xx of IP.Info (XSOAR Engineer)
+This integration was integrated and tested with version 1 of IP Info (XSOAR Engineer)
 
-## Configure IP.Info (XSOAR Engineer) on Cortex XSOAR
+## Configure IP Info (XSOAR Engineer) on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for IP.Info (XSOAR Engineer).
+2. Search for IP Info (XSOAR Engineer).
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |

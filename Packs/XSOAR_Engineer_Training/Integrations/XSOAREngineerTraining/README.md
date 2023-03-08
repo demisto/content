@@ -1,7 +1,7 @@
 This integration provides sample data to fetch events into XSOAR, and commands to build playbooks around.
 
 Use for training purposes only. 
-This integration was integrated and tested with version xx of XSOAR Engineer Training
+This integration was integrated and tested with version 1.0 of XSOAR Engineer Training
 
 ## Configure XSOAR Engineer Training on Cortex XSOAR
 

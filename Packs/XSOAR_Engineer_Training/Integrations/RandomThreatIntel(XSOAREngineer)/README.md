@@ -1,7 +1,7 @@
 This example integration randomly enriches file, ip, url, and domain indictors.  Useful for demos, DO NOT use this in any production environment.
 
 Basically any of these indicators types could come back as good, suspicious, or bad.   
-This integration was integrated and tested with version xx of RandomThreatIntel (XSOAR Engineer)
+This integration was integrated and tested with version 8.0 of RandomThreatIntel (XSOAR Engineer)
 
 ## Configure RandomThreatIntel (XSOAR Engineer) on Cortex XSOAR
 
