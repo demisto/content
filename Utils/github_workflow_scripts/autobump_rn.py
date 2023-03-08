@@ -889,7 +889,7 @@ class PackAutoBumper:
 
         if new_release_notes_path.stem != self._last_rn_file_path.stem:
             new_release_notes_path.write_text(self._rn_text)
-            if new_release_notes_path.read_text() == self._rn_text:
+            if self._last_rn_file_path.read_text() == self._rn_text:
                 os.remove(self._last_rn_file_path)
 
             if self._has_bc:
