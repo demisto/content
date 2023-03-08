@@ -214,11 +214,11 @@ class MetadataCondition(BaseCondition, ABC):
         """
         metadata_path = f"{PACKS_DIR}/{pack_id}/{PACK_METADATA_FILE}"
         origin_base_pack_metadata = load_json(metadata_path)
-        with checkout(git_repo, pr.head.ref):
+        with Checkout(git_repo, pr.head.ref):
             branch_pack_metadata = load_json(metadata_path)
             log = git_repo.git.log()
         base_sha = MetadataCondition.get_base_commit(branch_git_log=log, pr=pr)
-        with checkout(git_repo, base_sha):
+        with Checkout(git_repo, base_sha):
             pr_base_metadata = load_json(metadata_path)
         return origin_base_pack_metadata, branch_pack_metadata, pr_base_metadata
 
@@ -939,7 +939,7 @@ class BranchAutoBumper:
                                "conflicts-inaws"]:
             # todo: delete it, only for testing
             return "Pack MyPack version was automatically bumped to 1.0.2."
-        with checkout(self.git_repo, self.branch):
+        with Checkout(self.git_repo, self.branch):
             for pack_auto_bumper in self.packs_to_autobump:
                 pack_auto_bumper.set_pr_changed_rn_related_data()
             self.git_repo.git.merge(
@@ -1090,7 +1090,7 @@ class AutoBumperManager:
         return "AutoBumping Done."
 
 
-class checkout:  # pragma: no cover
+class Checkout:  # pragma: no cover
     """Checks out a given branch.
     When the context manager exits, the context manager checks out the
     previously current branch.

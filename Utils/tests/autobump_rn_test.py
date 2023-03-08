@@ -176,7 +176,7 @@ def test_get_metadata_files(mocker):
     origin_metadata = {"name": "MyPack", "currentVersion": "1.0.5"}
     branch_metadata = {"name": "MyPack", "currentVersion": "1.0.4"}
     base_metadata = {"name": "MyPack", "currentVersion": "1.0.3"}
-    mocker.patch("Utils.github_workflow_scripts.autobump_rn.checkout")
+    mocker.patch("Utils.github_workflow_scripts.autobump_rn.Checkout")
     mocker.patch.object(
         utils,
         "load_json",
@@ -628,7 +628,7 @@ def test_branch_auto_bumper(mocker):
     pack_auto_bumper = MagicMock()
     pack_auto_bumper.autobump.return_value = "1.0.2"
     pack_auto_bumper.pack_id = "MyPack"
-    mocker.patch("Utils.github_workflow_scripts.autobump_rn.checkout")
+    mocker.patch("Utils.github_workflow_scripts.autobump_rn.Checkout")
     branch_auto_bumper = BranchAutoBumper(
         pr=PullRequest(),
         git_repo=Repo(),
@@ -661,7 +661,7 @@ def test_autobump_manager(mocker):
         git_repo_obj=Repo(files=CHANGED_FILES),
         run_id="1",
     )
-    mocker.patch("Utils.github_workflow_scripts.autobump_rn.checkout")
+    mocker.patch("Utils.github_workflow_scripts.autobump_rn.Checkout")
     mocker.patch.object(BranchAutoBumper, "autobump")
     mocker.patch.object(
         MetadataCondition,
