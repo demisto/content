@@ -3,7 +3,7 @@ filter _collector_name = "intune-xdr-eventhub (demistodev.onmicrosoft.com)" and 
 |alter xdm.event.type=category,
 xdm.observer.unique_identifier=tenantId,
 xdm.event.operation_sub_type=operationName,
-xdm.event.outcome=resultType,
+xdm.event.outcome=if(resultType="Completed", XDM_CONST.OUTCOME_SUCCESS , resultType="Success", XDM_CONST.OUTCOME_SUCCESS , resultType="None", XDM_CONST.OUTCOME_UNKNOWN, resultType),
 xdm.source.ipv4=callerIpAddress,
 xdm.observer.name=_collector_name,
 xdm.source.host.hostname=json_extract_scalar(properties,"$.DeviceName"),
@@ -45,7 +45,7 @@ xdm.target.resource.value = arraystring(arraymap(ModifiedProperties, json_extrac
 filter _collector_name = "intune-xdr-eventhub (demistodev.onmicrosoft.com)" and category contains "OperationalLogs"
 |alter xdm.event.type=category,
 xdm.observer.unique_identifier=tenantId,
-xdm.event.outcome=resultType,
+xdm.event.outcome=if(resultType="Completed", XDM_CONST.OUTCOME_SUCCESS , resultType="Success", XDM_CONST.OUTCOME_SUCCESS , resultType="None", XDM_CONST.OUTCOME_UNKNOWN, resultType),
 xdm.source.ipv4=callerIpAddress,
 xdm.observer.name=_collector_name,
 xdm.intermediate.agent.identifier=json_extract_scalar(properties,"$.IntuneAccountId"),
