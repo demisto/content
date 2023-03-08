@@ -33,6 +33,7 @@ configuration:
 - additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
   display: Traffic Light Protocol Color
   name: tlp_color
+  defaultvalue: 'WHITE'
   options:
   - RED
   - AMBER
