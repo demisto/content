@@ -15,9 +15,10 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
-      - "4"
+      - "19"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -132,6 +133,93 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 333f85e0-ed76-4131-8ec8-ff26551bab91
+    type: playbook
+    task:
+      id: 333f85e0-ed76-4131-8ec8-ff26551bab91
+      version: -1
+      name: Dedup - Generic v4
+      description: "This playbook identifies duplicate incidents using the Cortex XSOAR machine learning method (script).\nIn this playbook, you can choose fields and/or indicators to be compared against other incidents in the Cortex XSOAR database. \n\nNote: To identify similar incidents you must *must* properly define the playbook inputs. "
+      playbookName: Dedup - Generic v4
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      closeReason:
+        simple: Closed by Dedup Playbook within inc ${incident.id}
+      fromDate:
+        simple: 1 months ago
+      handleSimilar:
+        simple: Link
+      limit:
+        simple: "200"
+      method:
+        simple: Fields and Indicators
+      minimunIncidentSimilarity:
+        simple: "0.2"
+      query:
+        simple: -status:closed -category:job
+      showIncidentSimilarityForAllFields:
+        simple: "True"
+      similarTextField:
+        simple: agnetsid,users,agentsid,CMDline,Hostnames,filenames,filepaths
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 8e2ad4b7-9bf2-464d-86d3-12f11b4c74b1
+    type: title
+    task:
+      id: 8e2ad4b7-9bf2-464d-86d3-12f11b4c74b1
+      version: -1
+      name: Dedup
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
     taskid: 64f89a11-fc58-4d2b-89de-ffa7e67df36e
@@ -143,6 +231,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -173,6 +262,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "6"
@@ -275,6 +365,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "11"
@@ -303,10 +394,7 @@ tasks:
       id: d51d1ca8-8cec-4df2-8169-b242c959dcf3
       version: -1
       name: Search For Hash In Sandbox - Generic
-      description: 'This playbook searches for a specific hash in the supported sandboxes.
-        If the hash is known, the playbook provides a detailed analysis of the sandbox
-        report. Currently, supported sandboxes are Falcon Intelligence Sandbox, Wildfire
-        and Joe Sandbox. '
+      description: 'This playbook searches for a specific hash in the supported sandboxes. If the hash is known, the playbook provides a detailed analysis of the sandbox report. Currently, supported sandboxes are Falcon Intelligence Sandbox, Wildfire and Joe Sandbox. '
       playbookName: Search For Hash In Sandbox - Generic
       type: playbook
       iscommand: false
@@ -346,9 +434,7 @@ tasks:
       id: fffa1f2a-559c-4ae9-8ce2-ad5aaf5c5914
       version: -1
       name: Oh, Snap!!! - Where are all the other tasks that we need?
-      description: Seems like SecOps did it again? It seems someone forgot to add
-        all the required items for us to go and check the image… Maybe running Optical
-        Character Recognition (OCR) can help us here?
+      description: "Seems like SecOps did it again? It seems someone forgot to add all the required items for us to go and check the image… Maybe running Optical Character Recognition (OCR) can help us here?\n\n I remember we had an automation started with !image-ocr-ex.... for such scenario :wink: "
       type: regular
       iscommand: false
       brand: ""
@@ -373,13 +459,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 416b8e87-13c7-42da-88a6-d2066409a88d
+    taskid: 13b79616-e678-4c83-86f2-a8b2296213fc
     type: regular
     task:
-      id: 416b8e87-13c7-42da-88a6-d2066409a88d
+      id: 13b79616-e678-4c83-86f2-a8b2296213fc
       version: -1
       name: R u Sure?
-      description: "Message from the outside...\n\n\nᗪ闩爪爪 ㄒ廾闩ㄒ 山闩丂 千闩丂ㄒ... 廾龱尸㠪 ㄒ廾闩ㄒ ㄚ龱ㄩ 工\U0001D4DDᐯ㠪丂ㄒ工Ꮆ闩ㄒ㠪ᗪ ㄒ廾㠪 工\U0001D4DDᗪ工⼕闩ㄒ龱尺. \n爪闩丫⻏\U0001F757 〸卄\U0001F757尺\U0001F757 闩尺\U0001F757 爪ㄖ尺\U0001F757 讠\U0001D4DD⼕讠ᗪ\U0001F757\U0001D4DDセ丂 讠\U0001D4DDᐯㄖ㇄ᐯ\U0001F757ᗪ?\n\n![my_file](https://raw.githubusercontent.com/demisto/content/7c4eb1780678929fac94695180de3537c0f56f23/Packs/ctf01/doc_files/yoda-8ball.gif)"
+      description: "Message from the outside...\n\n\nᗪ闩爪爪 ㄒ廾闩ㄒ 山闩丂 千闩丂ㄒ... 廾龱尸㠪 ㄒ廾闩ㄒ ㄚ龱ㄩ 工\U0001D4DDᐯ㠪丂ㄒ工Ꮆ闩ㄒ㠪ᗪ ㄒ廾㠪 工\U0001D4DDᗪ工⼕闩ㄒ龱尺. \n爪闩ㄚ乃㠪 ㄒ廾㠪尺㠪 闩尺㠪 龱ㄒ廾㠪尺 工\U0001D4DD⼕工ᗪ㠪\U0001D4DDㄒ丂 山工ㄒ廾 ㄒ廾工丂 工\U0001D4DDᗪ工⼕闩ㄒ龱尺?\n\n\n![my_file](https://raw.githubusercontent.com/demisto/content/7c4eb1780678929fac94695180de3537c0f56f23/Packs/ctf01/doc_files/yoda-8ball.gif)"
       type: regular
       iscommand: false
       brand: ""
@@ -410,8 +496,7 @@ tasks:
       id: d8abe179-60e4-4f0e-8c8c-517847d83785
       version: -1
       name: Soooooo who is the person behind this attack?
-      description: 'In order to answer this you will need to run the CTF #3 automation/script
-        with the provided answer'
+      description: 'In order to answer this you will need to run the CTF_3 automation/script with the provided answer'
       type: regular
       iscommand: false
       brand: ""
@@ -442,6 +527,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "12"
@@ -504,11 +590,7 @@ tasks:
       id: 131b98dd-40ee-4390-80c8-ad72fec4d70f
       version: -1
       name: Cortex XDR - Retrieve File
-      description: Retrieves files from selected endpoints. You can retrieve up to
-        20 files, from no more than 10 endpoints. At least one endpoint ID and one
-        file path are necessary in order to run the command. After running this command,
-        you can use the xdr-action-status-get command with returned action_id, to
-        check the action status.
+      description: Retrieves files from selected endpoints. You can retrieve up to 20 files, from no more than 10 endpoints. At least one endpoint ID and one file path are necessary in order to run the command. After running this command, you can use the xdr-action-status-get command with returned action_id, to check the action status.
       script: '|||xdr-file-retrieve'
       type: regular
       iscommand: true
@@ -582,36 +664,36 @@ tasks:
     isoversize: false
     isautoswitchedtoquietmode: false
   "19":
-      id: "19"
-      taskid: 633bd0fb-8eb4-4525-8af0-855bb1a55d1b
+    id: "19"
+    taskid: 633bd0fb-8eb4-4525-8af0-855bb1a55d1b
+    type: regular
+    task:
+      id: 633bd0fb-8eb4-4525-8af0-855bb1a55d1b
+      version: -1
+      name: 'Welcome to CTF #3'
+      description: "Welcome to the Final CTF -> AKA CTF #3\n\nUse all the knowledge & tools that you have gained from the previous Capture the Flag exercises. \nIn this CTF, you will need to fix errors in the playbook to continue with the challenge.\n\nWhen you have the answer you can complete the CTF by running the automation ‘CTF_3’ in the incident. Then check the answer in the war room. \n\nNote that this CTF is a bit more difficult than the others, but don't give up so quickly -> it's easier than you think.\nWe believe that you can do this!\n\nWhen you are ready -> complete this task to proceed.\n\n![myfile](https://raw.githubusercontent.com/demisto/content/1c8915d79a2dd62593c8d0e7f1a303973e44bbe1/Packs/ctf01/doc_files/do-this.gif)"
       type: regular
-      task:
-        id: 633bd0fb-8eb4-4525-8af0-855bb1a55d1b
-        version: -1
-        name: 'Welcome to CTF #3'
-        description: "Welcome to the Final CTF -> AKA CTF #3\n\nUse all the knowledge & tools that you have gained from the previous Capture the Flag exercises. \nIn this CTF, you will need to fix errors in the playbook to continue with the challenge.\n\nWhen you have the answer you can complete the CTF by running the automation ‘CTF_3’ in the incident. Then check the answer in the war room. \n\nNote that this CTF is a bit more difficult than the others, but don't give up so quickly -> it's easier than you think.\nWe believe that you can do this!\n\nWhen you are ready -> complete this task to proceed.\n\n![myfile](https://raw.githubusercontent.com/demisto/content/1c8915d79a2dd62593c8d0e7f1a303973e44bbe1/Packs/ctf01/doc_files/do-this.gif)"
-        type: regular
-        iscommand: false
-        brand: ""
-      nexttasks:
-        '#none#':
-          - "3"
-      separatecontext: false
-      continueonerrortype: ""
-      view: |-
-        {
-          "position": {
-            "x": 265,
-            "y": 30
-          }
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 30
         }
-      note: false
-      timertriggers: [ ]
-      ignoreworker: false
-      skipunavailable: false
-      quietmode: 0
-      isoversize: false
-      isautoswitchedtoquietmode: false
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 system: true
 view: |-
   {
@@ -628,7 +710,6 @@ view: |-
 inputs: []
 outputs: []
 tests:
-- Test XDR Playbook
-- Test XDR Playbook retrieve file command
+- No tests
 fromversion: 6.8.0
 description: ''
