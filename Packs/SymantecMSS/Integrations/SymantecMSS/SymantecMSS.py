@@ -199,8 +199,6 @@ def get_incidents_list_request(time, src_ip, severities, max_incidents):
     elem = ET.Element("soap12:Envelope", {"xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
                                           "xmlns:xsd": "http://www.w3.org/2001/XMLSchema",
                                           "xmlns:soap12": "http://www.w3.org/2003/05/soap-envelope"})
-    elem.set("version", "1.0")
-    elem.set("encoding", "UTF-8")
 
     body = ET.SubElement(elem, "soap12:Body")
     incident_get_list = ET.SubElement(body, "IncidentGetList", {"xmlns": "https://www.monitoredsecurity.com/"})
