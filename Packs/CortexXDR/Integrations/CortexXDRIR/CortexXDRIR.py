@@ -932,8 +932,8 @@ def createIncidentsListCTF3():
                             "actor_process_causality_id": "AdklBdr5uVIAABZIAAAAAA==",
                             "actor_process_command_line": "regedit",
                             "actor_process_image_md5": "999a30979f6195bf562068639ffc4426",
-                            "actor_process_image_name": "nothinghere.gpg",
-                            "actor_process_image_path": "C:\\Temp\\nothinghere.gpg",
+                            "actor_process_image_name": "nothinghere.png",
+                            "actor_process_image_path": "C:\\Temp\\nothinghere.png",
                             "actor_process_image_sha256": "92f24fs2927173aaa1f6e064aaa9815b117e8a7c4a0988ac918170",
                             "actor_process_instance_id": "AdklBdxb0K0AABcwAAAAAA==",
                             "actor_process_os_pid": 5936,
@@ -1558,8 +1558,8 @@ def xdr_generate_ctf3_command(client: Client, args: Dict):
                 "actor_process_causality_id": "AdklBdr5uVIAABZIAAAAAA==",
                 "actor_process_command_line": "regedit",
                 "actor_process_image_md5": "999a30979f6195bf562068639ffc4426",
-                "actor_process_image_name": "nothinghere.gpg",
-                "actor_process_image_path": "C:\\Temp\\nothinghere.gpg",
+                "actor_process_image_name": "nothinghere.png",
+                "actor_process_image_path": "C:\\Temp\\nothinghere.png",
                 "actor_process_image_sha256": "92f24fs2927173aaa1f6e064aaa9815b117e8a7c4a0988ac918170",
                 "actor_process_instance_id": "AdklBdxb0K0AABcwAAAAAA==",
                 "actor_process_os_pid": 5936,
@@ -2099,7 +2099,7 @@ def main():  # pragma: no cover
         elif command == 'xdr-file-retrieve':
             client = Client(base_url='https://raw.githubusercontent.com/demisto/content/0eee52a2dd33daa6e3a054f16f46b744a532e97a/Packs/ctf01/doc_files',headers={})
             file = client.get_file_by_url_suffix(url_suffix='win_up_to_image.png')
-            res = fileResult(filename=f'omg.png', data=file)
+            res = fileResult(filename=f'nothinghere.png', data=file)
             return_results(res)
             return
 
