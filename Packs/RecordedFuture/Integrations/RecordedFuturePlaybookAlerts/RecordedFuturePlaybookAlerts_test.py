@@ -280,6 +280,102 @@ class TestRFClient:
 
         assert response == mock_call_response
 
+    def test_playbook_alert_details_multi_input(self, mocker):
+        import os
+        import demistomock as demisto
+
+        os.environ['COMMON_SERVER_NO_AUTO_PARAMS_REMOVE_NULLS'] = 'True'
+
+        mock_command_name = 'command_name'
+        mock_alert_ids = "input1,mock_value"
+        mock_detail_sections = "input1,mock_value"
+        mock_command_args = {
+            'alert_ids': mock_alert_ids,
+            'detail_sections': mock_detail_sections,
+        }
+        mock_args_processed = {k: v.split(",") for k, v in mock_command_args.items()}
+
+        mocker.patch.object(demisto, 'command', return_value=mock_command_name)
+        mocker.patch.object(demisto, 'args', return_value=mock_command_args)
+
+        client = create_client()
+
+        mock_call_response = {"resonse": {"data": "mock respose"}}
+        mock_call = mocker.patch.object(
+            client, '_call', return_value=mock_call_response
+        )
+
+        response = client.details_playbook_alerts()
+
+        mock_call.assert_called_once_with(
+            demisto_args=mock_args_processed, url_suffix='/v2/playbook_alert/lookup'
+        )
+
+        assert response == mock_call_response
+
+    def test_playbook_alert_update_multi_input(self, mocker):
+        import os
+        import demistomock as demisto
+
+        os.environ['COMMON_SERVER_NO_AUTO_PARAMS_REMOVE_NULLS'] = 'True'
+
+        mock_command_name = 'command_name'
+        mock_alert_ids = "input1,input2"
+
+        mock_command_args = {'alert_ids': mock_alert_ids}
+        mock_args_processed = {k: v.split(",") for k, v in mock_command_args.items()}
+
+        mocker.patch.object(demisto, 'command', return_value=mock_command_name)
+        mocker.patch.object(demisto, 'args', return_value=mock_command_args)
+
+        client = create_client()
+
+        mock_call_response = {"resonse": {"data": "mock respose"}}
+        mock_call = mocker.patch.object(
+            client, '_call', return_value=mock_call_response
+        )
+
+        response = client.update_playbook_alerts()
+
+        mock_call.assert_called_once_with(
+            demisto_args=mock_args_processed, url_suffix='/v2/playbook_alert/update'
+        )
+
+        assert response == mock_call_response
+
+    def test_playbook_alert_search_multi_input(self, mocker):
+        import os
+        import demistomock as demisto
+
+        os.environ['COMMON_SERVER_NO_AUTO_PARAMS_REMOVE_NULLS'] = 'True'
+
+        mock_command_name = 'command_name'
+        mock_alert_ids = "ajdaojw,1woodaw"
+        mock_detail_sections = "sdadwa,adinhw0ijd"
+        mock_command_args = {
+            'category': mock_alert_ids,
+            'playbook_alert_status': mock_detail_sections,
+        }
+        mock_args_processed = {k: v.split(",") for k, v in mock_command_args.items()}
+
+        mocker.patch.object(demisto, 'command', return_value=mock_command_name)
+        mocker.patch.object(demisto, 'args', return_value=mock_command_args)
+
+        client = create_client()
+
+        mock_call_response = {"resonse": {"data": "mock respose"}}
+        mock_call = mocker.patch.object(
+            client, '_call', return_value=mock_call_response
+        )
+
+        response = client.search_playbook_alerts()
+
+        mock_call.assert_called_once_with(
+            demisto_args=mock_args_processed, url_suffix='/v2/playbook_alert/search'
+        )
+
+        assert response == mock_call_response
+
     def test_playbook_alert_details(self, mocker):
         import os
         import demistomock as demisto

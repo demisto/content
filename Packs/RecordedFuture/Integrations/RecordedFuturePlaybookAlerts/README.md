@@ -38,7 +38,7 @@ The integration pulls in Playbook alerts from Recorded Future base on its update
 7. In the rule for update, choose:
 **DbotMirrorId** - **Is identical (Incoming Incident)** - **to incoming incident**
 
-![Pre-process Rule](https://raw.githubusercontent.com/demisto/content/master/Packs/RecordedFuture/doc_files/playbook_alerts_pre_process_rule.png)
+![Pre-process Rule](../../doc_files/playbook_alerts_pre_process_rule.png)
 
 > The configuration of the preprocessing rule is optional, but highly recommended.
 

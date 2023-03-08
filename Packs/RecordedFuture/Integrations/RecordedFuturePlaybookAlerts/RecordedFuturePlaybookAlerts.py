@@ -20,6 +20,7 @@ __version__ = '1.0.0'
 # === === === === Recorded Future API Client === === === ====
 # === === === === === === === === === === === === === === ===
 
+
 class Client(BaseClient):
     def whoami(self) -> Dict[str, Any]:
 
@@ -30,25 +31,25 @@ class Client(BaseClient):
         )
 
     def _call(self, url_suffix, **kwargs):
-        
+
         json_data = {
             'demisto_command': demisto.command(),
-            'demisto_args' : demisto.args()
+            'demisto_args': demisto.args(),
         }
         if 'demisto_args' in kwargs.keys():
             if args := kwargs.get('demisto_args'):
-                json_data.update({'demisto_args': args}) 
+                json_data.update({'demisto_args': args})
             kwargs.pop('demisto_args')
-        
+
         method = kwargs.get('method', 'post')
-        
+
         request_kwargs = {
             'method': method,
             'url_suffix': url_suffix,
             'json_data': json_data,
             'timeout': 90,
             'retries': 3,
-            'status_list_to_retry': STATUS_TO_RETRY
+            'status_list_to_retry': STATUS_TO_RETRY,
         }
 
         request_kwargs.update(kwargs)
@@ -84,46 +85,55 @@ class Client(BaseClient):
                 'demisto_params': demisto.params(),
                 'demisto_last_run': demisto.getLastRun(),
             },
-            timeout=120
+            timeout=120,
         )
 
     #######################################################
     ################## Playbook alerts ####################
     #######################################################
-    
+
     def details_playbook_alerts(self) -> Dict[str, Any]:
         parsed_args = demisto.args()
-        if categories := parsed_args.get('alert_ids'):
-            parsed_args['alert_ids'] = categories.split(",")
+        if alert_ids := parsed_args.get('alert_ids'):
+            parsed_args['alert_ids'] = alert_ids.split(",")
         if sections := parsed_args.get('detail_sections'):
             parsed_args["detail_sections"] = sections.split(",")
         """Get details of a playbook alert"""
-        return self._call(url_suffix='/v2/playbook_alert/lookup', demisto_args = parsed_args)
-        
+        return self._call(
+            url_suffix='/v2/playbook_alert/lookup', demisto_args=parsed_args
+        )
+
     def update_playbook_alerts(self) -> Dict[str, Any]:
         parsed_args = demisto.args()
         if ids := parsed_args.get('alert_ids'):
             parsed_args["alert_ids"] = ids.split(",")
-        return self._call(url_suffix='/v2/playbook_alert/update', demisto_args = parsed_args)
-    
+        return self._call(
+            url_suffix='/v2/playbook_alert/update', demisto_args=parsed_args
+        )
+
     def search_playbook_alerts(self) -> Dict[str, Any]:
         parsed_args = demisto.args()
         if categories := parsed_args.get('category'):
             parsed_args["category"] = categories.split(",")
         if statuses := parsed_args.get('playbook_alert_status'):
             parsed_args["playbook_alert_status"] = statuses.split(",")
-        return self._call(url_suffix='/v2/playbook_alert/search', demisto_args = parsed_args)
+        return self._call(
+            url_suffix='/v2/playbook_alert/search', demisto_args=parsed_args
+        )
+
 
 # === === === === === === === === === === === === === === ===
 # === === === === === === ACTIONS === === === === === === ===
 # === === === === === === === === === === === === === === ===
 
-class Actions:
 
+class Actions:
     def __init__(self, rf_client: Client):
         self.client = rf_client
 
-    def _process_result_actions(self, response: Union[dict, CommandResults]) -> List[CommandResults]:
+    def _process_result_actions(
+        self, response: Union[dict, CommandResults]
+    ) -> List[CommandResults]:
 
         if isinstance(response, CommandResults):
             # Case when we got 404 on response, and it was processed in self.client._call() method.
@@ -140,9 +150,7 @@ class Actions:
         command_results: List[CommandResults] = list()
         for action in result_actions:
             if 'CommandResults' in action:
-                command_results.append(
-                    CommandResults(**action['CommandResults'])
-            )
+                command_results.append(CommandResults(**action['CommandResults']))
 
         return command_results
 
@@ -154,44 +162,45 @@ class Actions:
             # 404 case.
             return
 
-        for _key,_val in response.items():
+        for _key, _val in response.items():
             if _key == 'demisto_last_run':
                 demisto.setLastRun(_val)
             if _key == 'incidents':
                 for incident in _val:
                     attachments = list()
                     incident_json = json.loads(incident.get("rawJSON", "{}"))
-                    if incident_json.get("panel_evidence_summary",{}).get("screenshots"):
-                        for screenshot_data in incident_json["panel_evidence_summary"]["screenshots"]:
+                    if incident_json.get("panel_evidence_summary", {}).get(
+                        "screenshots"
+                    ):
+                        for screenshot_data in incident_json["panel_evidence_summary"][
+                            "screenshots"
+                        ]:
                             file_name = f'{screenshot_data.get("image_id").replace("img:","")}.png'
                             file_data = screenshot_data.get("base64")
-                            file = fileResult(
-                                file_name,
-                                base64.b64decode(file_data)
-                                )
+                            file = fileResult(file_name, base64.b64decode(file_data))
                             attachment = {
-                                "description" : screenshot_data.get('description'),
+                                "description": screenshot_data.get('description'),
                                 "name": file.get("File"),
                                 "path": file.get("FileID"),
-                                "showMediaFile" : True
+                                "showMediaFile": True,
                             }
                             attachments.append(attachment)
                         incident['attachment'] = attachments
-                
+
                 demisto.incidents(_val)
-            
+
         #######################################################
         ################## Playbook alerts ####################
         #######################################################
-        
+
     def playbook_alert_details_command(self) -> List[CommandResults]:
         response = self.client.details_playbook_alerts()
         return self._process_result_actions(response=response)
-    
+
     def playbook_alert_update_command(self) -> List[CommandResults]:
         response = self.client.update_playbook_alerts()
         return self._process_result_actions(response=response)
-    
+
     def playbook_alert_search_command(self) -> List[CommandResults]:
         response = self.client.search_playbook_alerts()
         return self._process_result_actions(response=response)
@@ -200,6 +209,7 @@ class Actions:
 # === === === === === === === === === === === === === === ===
 # === === === === === === === MAIN === === === === === === ==
 # === === === === === === === === === === === === === === ===
+
 
 def main() -> None:
     """Main method used to run actions."""
@@ -211,10 +221,11 @@ def main() -> None:
 
         headers = {
             'X-RFToken': demisto_params['token'],
-
-            'X-RF-User-Agent': (f'RecordedFuturePlaybookAlerts.py/{__version__} ({platform.platform()}) '
-                                f'XSOAR/{__version__} '
-                                f'RFClient/{__version__} (Cortex_XSOAR_{demisto.demistoVersion()["version"]})'),
+            'X-RF-User-Agent': (
+                f'RecordedFuturePlaybookAlerts.py/{__version__} ({platform.platform()}) '
+                f'XSOAR/{__version__} '
+                f'RFClient/{__version__} (Cortex_XSOAR_{demisto.demistoVersion()["version"]})'
+            ),
         }
         client = Client(
             base_url=base_url, verify=verify_ssl, headers=headers, proxy=proxy
@@ -247,20 +258,20 @@ def main() -> None:
 
         elif command == 'fetch-incidents':
             actions.fetch_incidents()
-            
+
         #######################################################
         ################## Playbook alerts ####################
         #######################################################
-        
+
         elif command == 'recordedfuture-playbook-alerts-details':
             return_results(actions.playbook_alert_details_command())
-        
+
         elif command == 'recordedfuture-playbook-alerts-update':
             return_results(actions.playbook_alert_update_command())
-        
+
         elif command == 'recordedfuture-playbook-alerts-search':
             return_results(actions.playbook_alert_search_command())
-        
+
     except Exception as e:
         return_error(message=f'Failed to execute {demisto.command()} command: {str(e)}')
 
