@@ -767,7 +767,7 @@
             "integrations": "Cortex XDR - IR",
             "playbookID": "Test XDR Playbook execute script commands",
             "fromversion": "4.1.0",
-            "timeout": 2500
+            "timeout": 3000
         },
         {
             "integrations": "Cortex XDR - IR",
@@ -785,7 +785,7 @@
             "integrations": "Cortex XDR - IR",
             "playbookID": "Test XDR Playbook retrieve file command",
             "fromversion": "4.1.0",
-            "timeout": 2500
+            "timeout": 3500
         },
         {
             "integrations": "Cortex XDR - IOC",
@@ -2157,11 +2157,6 @@
             "timeout": 1000
         },
         {
-            "integrations": "carbonblack-v2",
-            "playbookID": "Carbon Black Response Test",
-            "fromversion": "5.0.0"
-        },
-        {
             "integrations": "VMware Carbon Black EDR v2",
             "playbookID": "Carbon Black Edr - Test",
             "is_mockable": false,
@@ -2352,7 +2347,7 @@
         },
         {
             "integrations": [
-                "carbonblack-v2",
+                "VMware Carbon Black EDR v2",
                 "carbonblackliveresponse",
                 "Cylance Protect v2"
             ],
@@ -3413,6 +3408,7 @@
         },
         {
             "playbookID": "EvaluateMLModllAtProduction-Test",
+            "timeout": 500,
             "fromversion": "5.5.0"
         },
         {
@@ -5516,7 +5512,8 @@
         "Archer-Test-Playbook": "the integration is deprecated as we have ArcherV2",
         "O365-SecurityAndCompliance-Test": "Deprecated, consumes connection quota for V2",
         "ThreatGrid_v2_Test": "No instance, developed by Qmasters",
-        "Test-Detonate URL - ThreatGrid": "No instance, developed by Qmasters"
+        "Test-Detonate URL - ThreatGrid": "No instance, developed by Qmasters",
+        "awake_security_test_pb": "No instance, CRTX-77572"
     },
     "skipped_integrations": {
         "Lastline v2": "No instance - No license",
