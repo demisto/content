@@ -20,10 +20,10 @@ configuration:
 - display: Product Version
   name: version
   required: false
-  defaultvalue: V.9x
+  defaultvalue: V9x
   options:
-  - V.9x
-  - V.10x
+  - V9x
+  - V10x
   type: 15
   section: Connect  
 - display: Trust any certificate (not secure)
@@ -161,7 +161,7 @@ script:
       description: Rule object name.
       type: String
     - contextPath: NSM.Policy.MemberDetails.MemberRuleList.SourceAddressObjectList.RuleObjectType
-      description: Source or destination mode. Can be "Endpoint IP V.4" / "Range IP V.4" / "Network IP V.4" / "Endpoint IP V.6" / "Range IP V.6" / "Network IP V.6".
+      description: Source or destination mode. Can be "Endpoint IP V4" / "Range IP V4" / "Network IP V4" / "Endpoint IP V6" / "Range IP V6" / "Network IP V6".
       type: Unknown
     - contextPath: NSM.Policy.MemberDetails.MemberRuleList.DestinationAddressObjectList.RuleObjectId
       description: Unique rule object ID.
@@ -170,7 +170,7 @@ script:
       description: Rule object name.
       type: String
     - contextPath: NSM.Policy.MemberDetails.MemberRuleList.DestinationAddressObjectList.RuleObjectType
-      description: Source or destination mode. Can be "Endpoint IP V.4" / "Range IP V.4" / "Endpoint IP V.6" / "Range IP V.6" / "Network IP V.6".
+      description: Source or destination mode. Can be "Endpoint IP V4" / "Range IP V4" / "Endpoint IP V6" / "Range IP V6" / "Network IP V6".
       type: Unknown
     - contextPath: NSM.Policy.MemberDetails.MemberRuleList.SourceUserObjectList.RuleObjectId
       description: Unique rule object ID.
@@ -299,12 +299,12 @@ script:
       description: The type of the rule connected to the policy. To get the rule_object_type use the command '!nsm-list-domain-rule-object'.
       isArray: false
       predefined:
-      - Endpoint IP V.4
-      - Range IP V.4
-      - Network IP V.4
-      - Endpoint IP V.6
-      - Range IP V.6
-      - Network IP V.6
+      - Endpoint IP V4
+      - Range IP V4
+      - Network IP V4
+      - Endpoint IP V6
+      - Range IP V6
+      - Network IP V6
       required: false
     - name: destination_rule_object_id
       required: false
@@ -315,12 +315,12 @@ script:
       description: The type of the rule connected to the policy. To get the rule_object_type use the command '!nsm-list-domain-rule-object'.
       isArray: false
       predefined:
-      - Endpoint IP V.4
-      - Range IP V.4
-      - Network IP V.4
-      - Endpoint IP V.6
-      - Range IP V.6
-      - Network IP V.6
+      - Endpoint IP V4
+      - Range IP V4
+      - Network IP V4
+      - Endpoint IP V6
+      - Range IP V6
+      - Network IP V6
       required: false
     outputs:
     - contextPath: NSM.Policy.FirewallPolicyId
@@ -414,12 +414,12 @@ script:
       description: The type of the rule connected to the policy. To get the rule_object_type use the command '!nsm-list-domain-rule-object'.
       isArray: false
       predefined:
-      - Endpoint IP V.4
-      - Range IP V.4
-      - Network IP V.4
-      - Endpoint IP V.6
-      - Range IP V.6
-      - Network IP V.6
+      - Endpoint IP V4
+      - Range IP V4
+      - Network IP V4
+      - Endpoint IP V6
+      - Range IP V6
+      - Network IP V6
       required: false
     - name: destination_rule_object_id
       required: false
@@ -430,12 +430,12 @@ script:
       description: The type of the rule connected to the policy. To get the rule_object_type use the command '!nsm-list-domain-rule-object'.
       isArray: false
       predefined:
-      - Endpoint IP V.4
-      - Range IP V.4
-      - Network IP V.4
-      - Endpoint IP V.6
-      - Range IP V.6
-      - Network IP V.6
+      - Endpoint IP V4
+      - Range IP V4
+      - Network IP V4
+      - Endpoint IP V6
+      - Range IP V6
+      - Network IP V6
       required: false
     - name: is_overwrite
       required: false
@@ -464,12 +464,12 @@ script:
       description: The type of the rule.
       isArray: false
       predefined:
-      - Endpoint IP V.4
-      - Range IP V.4
-      - Network IP V.4
-      - Endpoint IP V.6
-      - Range IP V.6
-      - Network IP V.6
+      - Endpoint IP V4
+      - Range IP V4
+      - Network IP V4
+      - Endpoint IP V6
+      - Range IP V6
+      - Network IP V6
       - All
       required: false
       defaultValue: All
@@ -667,7 +667,7 @@ script:
       description: Host IPv4 address list.
       type: String
   - name: nsm-create-rule-object
-    description: Adds a new rule object. If the type is “Endpoint IP V.X” or “Network IP V.X”, only the argument “address_ip_v.X” must contain a value. If the type is “Range IP V.X”, only the arguments “from_address_ip_v.X”, “to_address_ip_v.X” must contain a value. Where X is 4 or 6 respectively.
+    description: Adds a new rule object. If the type is “Endpoint IP VX” or “Network IP VX”, only the argument “address_ip_VX” must contain a value. If the type is “Range IP VX”, only the arguments “from_address_ip_VX”, “to_address_ip_VX” must contain a value. Where X is 4 or 6 respectively.
     arguments:
     - name: domain
       required: true
@@ -675,15 +675,15 @@ script:
       isArray: false
     - name: rule_object_type
       auto: PREDEFINED
-      description: The type of the rule. If the type is “Endpoint IP V.X” or “Network IP V.X”, only the argument “address_ip_v.X” must contain a value. If the type is “Range IP V.X”, only the arguments “from_address_ip_v.X”, “to_address_ip_v.X” must contain a value, where X is 4 or 6 respectively.
+      description: The type of the rule. If the type is “Endpoint IP VX” or “Network IP VX”, only the argument “address_ip_VX” must contain a value. If the type is “Range IP VX”, only the arguments “from_address_ip_VX”, “to_address_ip_VX” must contain a value, where X is 4 or 6 respectively.
       isArray: false
       predefined:
-      - Endpoint IP V.4
-      - Range IP V.4
-      - Network IP V.4
-      - Endpoint IP V.6
-      - Range IP V.6
-      - Network IP V.6
+      - Endpoint IP V4
+      - Range IP V4
+      - Network IP V4
+      - Endpoint IP V6
+      - Range IP V6
+      - Network IP V6
       required: true
     - name: name
       required: true
@@ -702,27 +702,27 @@ script:
       required: false
       description: The description of the rule object.
       isArray: false
-    - name: address_ip_v.4
+    - name: address_ip_V4
       required: false
       description: List of IPv4 Host Address, separated by a comma.
       isArray: false
-    - name: from_address_ip_v.4
+    - name: from_address_ip_V4
       required: false
       description: Start of the IPv4 range.
       isArray: false
-    - name: to_address_ip_v.4
+    - name: to_address_ip_V4
       required: false
       description: End of the IPv4 range.
       isArray: false
-    - name: address_ip_v.6
+    - name: address_ip_V6
       required: false
       description: List of IPv6 host addresses, separated by a comma.
       isArray: false
-    - name: from_address_ip_v.6
+    - name: from_address_ip_V6
       required: false
       description: Start of the IPv6 range.
       isArray: false
-    - name: to_address_ip_v.6
+    - name: to_address_ip_V6
       required: false
       description: End of the IPv6 range.
       isArray: false
@@ -742,7 +742,7 @@ script:
       description: The ID of the newly created rule object.
       type: Number
   - name: nsm-update-rule-object
-    description: Updates a Rule object. In case of address rule update, if the rule type is “Endpoint IP V.X” or “Network IP V.X”, only the argument “address_ip_v.X” should contain a value. If the type is “Range IP V.X”, only the arguments “from_address_ip_v.X”, “to_address_ip_v.X” should contain a value, where X is 4 or 6 respectively.
+    description: Updates a Rule object. In case of address rule update, if the rule type is “Endpoint IP VX” or “Network IP VX”, only the argument “address_ip_VX” should contain a value. If the type is “Range IP VX”, only the arguments “from_address_ip_VX”, “to_address_ip_VX” should contain a value, where X is 4 or 6 respectively.
     arguments:
     - name: domain
       required: true
@@ -769,27 +769,27 @@ script:
       required: false
       description: The description of the rule object.
       isArray: false
-    - name: address_ip_v.4
+    - name: address_ip_V4
       required: false
       description: List of IPv4 host addresses, separated by a comma.
       isArray: false
-    - name: from_address_ip_v.4
+    - name: from_address_ip_V4
       required: false
       description: Start of the IPv4 range.
       isArray: false
-    - name: to_address_ip_v.4
+    - name: to_address_ip_V4
       required: false
       description: End of the IPv4 range.
       isArray: false
-    - name: address_ip_v.6
+    - name: address_ip_V6
       required: false
       description: List of IPv6 host addresses, separated by a comma.
       isArray: false
-    - name: from_address_ip_v.6
+    - name: from_address_ip_V6
       required: false
       description: Start of the IPv6 range.
       isArray: false
-    - name: to_address_ip_v.6
+    - name: to_address_ip_V6
       required: false
       description: End of the IPv6 range.
       isArray: false

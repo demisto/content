@@ -120,12 +120,12 @@ def test_response_cases(given_response_string, expected_response_string):
     assert result == expected_response_string
 
 
-test_rule_object_type_cases_params = [('Endpoint IP V.4', 'HOST_IPV_4', 'up'),
-                                      ('Endpoint IP V.4', 'hostipv4', 'low'),
-                                      ('Range IP V.4', 'IPV_4_ADDRESS_RANGE', 'up'),
-                                      ('Range IP V.4', 'ipv4addressrange', 'low'),
-                                      ('Network IP V.4', 'NETWORK_IPV_4', 'up'),
-                                      ('Network IP V.4', 'networkipv4', 'low')]
+test_rule_object_type_cases_params = [('Endpoint IP V4', 'HOST_IPV_4', 'up'),
+                                      ('Endpoint IP V4', 'hostipv4', 'low'),
+                                      ('Range IP V4', 'IPV_4_ADDRESS_RANGE', 'up'),
+                                      ('Range IP V4', 'ipv4addressrange', 'low'),
+                                      ('Network IP V4', 'NETWORK_IPV_4', 'up'),
+                                      ('Network IP V4', 'networkipv4', 'low')]
 
 
 @pytest.mark.parametrize('given_rule_object_type, expected_rule_object_type, case', test_rule_object_type_cases_params)
@@ -217,22 +217,22 @@ def test_create_body_create_rule(rule_type, address, number, from_to_list, expec
 check_args_create_rule_params = [('NETWORK_IPV_4', ['2001:db8::/32'], None, None, 6, 'The version of the IP in '
                                                                                      '"rule_object_type" should match '
                                                                                      'the addresses version.'),
-                                 ('NETWORK_IPV_4', None, None, None, 4, 'If the "rule_object_type" is “Endpoint IP V.4”'
-                                                                        ' or “Network IP V.4” than the argument '
-                                                                        '"address_ip_v.4” must contain a value.'),
+                                 ('NETWORK_IPV_4', None, None, None, 4, 'If the "rule_object_type" is “Endpoint IP V4”'
+                                                                        ' or “Network IP V4” than the argument '
+                                                                        '"address_ip_V4” must contain a value.'),
                                  ('HOST_IPV_4', ['1.1.1.1'], '1.1.1.1', None, 4, 'If the "rule_object_type" is Endpoint'
                                                                                  ' or Network than from_address and '
                                                                                  'to_addresses parameters should not '
                                                                                  'contain value.'),
                                  ('IPV_4_ADDRESS_RANGE', None, ['1.1.1.1'], None, 4, 'If the "rule_object_type" is '
-                                                                                     '“Range IP V.4” than the arguments'
-                                                                                     ' “from_address_ip_v.4” and '
-                                                                                     '“to_address_ip_v.4” must contain '
+                                                                                     '“Range IP V4” than the arguments'
+                                                                                     ' “from_address_ip_V4” and '
+                                                                                     '“to_address_ip_V4” must contain '
                                                                                      'a value.'),
                                  ('IPV_4_ADDRESS_RANGE', ['1.1.1.1'], '1.1.1.1', None, 4, 'If the "rule_object_type" '
-                                                                                          'is “Range IP V.4 than the '
-                                                                                          'both address_ip_v.4 and '
-                                                                                          'address_ip_v.6 should not '
+                                                                                          'is “Range IP V4 than the '
+                                                                                          'both address_ip_V4 and '
+                                                                                          'address_ip_V6 should not '
                                                                                           'contain a value')]
 
 
@@ -441,7 +441,7 @@ def test_create_firewall_policy_command(mocker, mcafeensmv2_client):
         'response': 'Scan',
         'direction': 'Either',
         'source_rule_object_id': '1',
-        'source_rule_object_type': 'Network IP V.6'
+        'source_rule_object_type': 'Network IP V6'
     }
     expected_body = {
         'Name': 'firewall policy name',
@@ -525,7 +525,7 @@ def test_update_firewall_policy_command(mocker, mcafeensmv2_client):
         'policy_id': '147',
         'domain': '0',
         'source_rule_object_id': '12',
-        'source_rule_object_type': 'Range IP V.4'
+        'source_rule_object_type': 'Range IP V4'
     }
     expected_body1 = {
         "Name": "n",
@@ -588,7 +588,7 @@ def test_update_firewall_policy_command(mocker, mcafeensmv2_client):
         'policy_id': '147',
         'domain': '0',
         'source_rule_object_id': '12',
-        'source_rule_object_type': 'Range IP V.4',
+        'source_rule_object_type': 'Range IP V4',
         'is_overwrite': 'true'
     }
     expected_body2 = {
@@ -648,7 +648,7 @@ def test_update_firewall_policy_command(mocker, mcafeensmv2_client):
         'policy_id': '147',
         'domain': '0',
         'destination_rule_object_id': '12',
-        'destination_rule_object_type': 'Range IP V.4'
+        'destination_rule_object_type': 'Range IP V4'
     }
     expected_body3 = {
         "Name": "n",
@@ -763,8 +763,8 @@ def test_list_domain_rule_objects_command(mocker, mcafeensmv2_client):
     expected_readable_output = '### List of Rule Objects\n' \
                                '|RuleId|Name|Description|VisibleToChild|RuleType|\n' \
                                '|---|---|---|---|---|\n' \
-                               '| 134 | testing |  | false | Endpoint IP V.4 |\n' \
-                               '| 129 | rule object | ddd | true | Range IP V.4 |\n'
+                               '| 134 | testing |  | false | Endpoint IP V4 |\n' \
+                               '| 129 | rule object | ddd | true | Range IP V4 |\n'
     assert result.readable_output == expected_readable_output
     assert result.raw_response == expected_result
 
@@ -788,7 +788,7 @@ def test_get_rule_object_command(mocker, mcafeensmv2_client):
     expected_readable_output = '### Rule Objects 113\n' \
                                '|RuleId|Name|VisibleToChild|RuleType|Addresses|\n' \
                                '|---|---|---|---|---|\n' \
-                               '| 113 | Network ip Test | false | Network IP V.4 | 3.3.3.3/33,<br>4.4.4.4/44 |\n'
+                               '| 113 | Network ip Test | false | Network IP V4 | 3.3.3.3/33,<br>4.4.4.4/44 |\n'
     assert result.readable_output == expected_readable_output
     assert result.raw_response == expected_result
 
@@ -807,10 +807,10 @@ def test_create_rule_object_command(mocker, mcafeensmv2_client):
     http_request = mocker.patch.object(mcafeensmv2_client, '_http_request')
     args = {
         'domain': '0',
-        'rule_object_type': 'Endpoint IP V.6',
+        'rule_object_type': 'Endpoint IP V6',
         'name': 'new rule',
         'description': "a new rule in the way",
-        'address_ip_v.6': '1111:1111:1111:1111:1111:1111:1111:1111'
+        'address_ip_V6': '1111:1111:1111:1111:1111:1111:1111:1111'
     }
     expected_body = {
         'RuleObjDef': {
@@ -838,7 +838,7 @@ def test_update_rule_object_command(mocker, mcafeensmv2_client):
     2. is_overwrite = true. In this case we want to delete the existing addresses from the rule object, and
         replace them with the new one. The result is a list of one address in networkIPV4List.
     Given:
-        - A domain id, rule_id, description, address_ip_v.4.
+        - A domain id, rule_id, description, address_ip_V4.
     When:
         - update-rule-object command is executed.
     Then:
@@ -852,7 +852,7 @@ def test_update_rule_object_command(mocker, mcafeensmv2_client):
         'rule_id': '113',
         'domain': '0',
         'description': 'updated description',
-        'address_ip_v.4': '5.5.5.5/55'
+        'address_ip_V4': '5.5.5.5/55'
     }
     expected_body1 = {
         'RuleObjDef': {
@@ -875,7 +875,7 @@ def test_update_rule_object_command(mocker, mcafeensmv2_client):
         'rule_id': '113',
         'domain': '0',
         'description': 'updated description',
-        'address_ip_v.4': '5.5.5.5/55',
+        'address_ip_V4': '5.5.5.5/55',
         'is_overwrite': 'true'
     }
     expected_body2 = {
