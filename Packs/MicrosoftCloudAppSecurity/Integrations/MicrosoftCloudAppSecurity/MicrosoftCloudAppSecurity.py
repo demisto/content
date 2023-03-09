@@ -662,7 +662,7 @@ def list_users_accounts_command(client: Client, args: dict):
 
 
 def format_fetch_start_time_to_timestamp(fetch_start_time: Optional[str]):
-    fetch_start_time_datetime = parse(fetch_start_time).replace(tzinfo=utc)
+    fetch_start_time_datetime = parse(fetch_start_time).replace(tzinfo=utc)  # type: ignore
     start_fetch_timestamp = fetch_start_time_datetime.timestamp()
     if fetch_start_time_datetime.microsecond == 0:
         return int(start_fetch_timestamp) * 1000
@@ -676,13 +676,16 @@ def format_fetch_start_time_to_timestamp(fetch_start_time: Optional[str]):
         return int(timestamp)
 
 
-def timestamp_to_datetime_string(timestamp: int):
-    timestamp_as_datetime = datetime.fromtimestamp(timestamp / 1000.0)
+def timestamp_to_datetime_string(timestamp: int, include_miliseconds: bool = True):
+    timestamp_as_datetime = datetime.fromtimestamp(timestamp / 1000.0)  # type: ignore
     iso_format_datetime = timestamp_as_datetime.isoformat()
-    if timestamp_as_datetime.microsecond != 0:
-        return iso_format_datetime[:-3]
+    if include_miliseconds:
+        if timestamp_as_datetime.microsecond != 0:
+            return iso_format_datetime[:-3]
+        else:
+            return f'{iso_format_datetime}.000'
     else:
-        return f'{iso_format_datetime}.000'
+        return iso_format_datetime.split('.0')[0]
 
 
 def arrange_alerts_by_incident_type(alerts: List[dict]):
@@ -707,7 +710,7 @@ def alerts_to_xsoar_incidents(alerts: List[dict]):
         demisto.debug(f"{alert_id=}, {alert_occurred_time=}, {alert_timestamp=}")
         incident = {
             'name': alert['title'],
-            'occurred': alert_occurred_time + 'Z',
+            'occurred': timestamp_to_datetime_string(alert_timestamp, include_miliseconds=False) + 'Z',
             'rawJSON': json.dumps(alert)
         }
         incidents.append(incident)

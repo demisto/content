@@ -655,7 +655,7 @@ class TestFetchIncidents:
         ]
     )
     def test_fetch_incidents_with_look_back_equals_zero(
-            self, mocker, params, incidents, phase2_incident, phase3_incident
+        self, mocker, params, incidents, phase2_incident, phase3_incident
     ):
         """
         Given
@@ -821,3 +821,58 @@ class TestFetchIncidents:
 
         assert self.LAST_RUN.get('time') == expected_time
         assert len(alerts) == 2
+
+
+@pytest.mark.parametrize(
+    "fetch_time",
+    [
+        "2022-05-15T10:50:00",
+        "2022-05-15T10:50:00.000",
+        "2022-05-15T10:50:15.123",
+        "2022-05-15T10:50:15.100",
+        "2022-05-15T10:50:15.120"
+    ]
+)
+def test_format_fetch_start_time_to_timestamp(mocker, fetch_time):
+    """
+    Given
+    - Case A: fetch time that does not have miliseconds
+    - Case B: fetch time that have miliseconds with zeros only
+    - Case C + D + E: fetch time that have miliseconds that are not zeros only
+
+    When
+    - running format_fetch_start_time_to_timestamp
+
+    Then
+    - make sure we create a timestamp that is only based on 13 digits
+    """
+    from MicrosoftCloudAppSecurity import format_fetch_start_time_to_timestamp
+    start_freeze_time(fetch_time)
+    mocker.patch('MicrosoftCloudAppSecurity.parse', return_value=datetime.now())
+    timestamp = format_fetch_start_time_to_timestamp(fetch_time)
+    assert len(str(timestamp)) == 13
+
+
+@pytest.mark.parametrize(
+    "timestamp, expected_datetime_string",
+    [
+        (1652611800000, "2022-05-15T10:50:00.000"),
+        (1652611812000, "2022-05-15T10:50:12.000"),
+        (1652611812100, "2022-05-15T10:50:12.100"),
+        (1652611812120, "2022-05-15T10:50:12.120"),
+        (1652611812123, "2022-05-15T10:50:12.123")
+    ]
+)
+def test_timestamp_to_datetime_string(mocker, timestamp, expected_datetime_string):
+    """
+    Given
+    - 13 characters timestamps
+
+    When
+    - running timestamp_to_datetime_string
+
+    Then
+    - make sure a valid datetime string is created
+    """
+    from MicrosoftCloudAppSecurity import timestamp_to_datetime_string
+    assert timestamp_to_datetime_string(timestamp) == expected_datetime_string
