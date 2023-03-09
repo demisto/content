@@ -1292,7 +1292,7 @@ def is_bot_in_chat(chat_id: str) -> bool:
     return bool(res.get('value'))   # type: ignore
 
 
-def add_bot_to_chat(chat_id: str):  # pragma: no cover
+def add_bot_to_chat(chat_id: str):
     """
     Add the Dbot to a chat.
     :param chat_id: chat id which to add the bot to.
