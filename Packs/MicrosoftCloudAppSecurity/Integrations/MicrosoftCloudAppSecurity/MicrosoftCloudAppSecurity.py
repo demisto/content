@@ -662,8 +662,6 @@ def list_users_accounts_command(client: Client, args: dict):
 
 
 def format_fetch_start_time_to_timestamp(fetch_start_time: Optional[str]):
-    # fetch_start_time = '2021-05-15T11:00:00.000'
-
     fetch_start_time_datetime = parse(fetch_start_time)
     start_fetch_timestamp = fetch_start_time_datetime.timestamp()
     if fetch_start_time_datetime.microsecond == 0:
@@ -698,7 +696,6 @@ def alerts_to_xsoar_incidents(alerts: List[dict]):
 
     for alert in alerts:
         alert_occurred_time = timestamp_to_datetime_string(alert['timestamp'])
-        # alert_occurred_time = datetime.fromtimestamp(incident_created_time / 1000.0).isoformat()[:-3]
         alert_id = alert.get('_id') or ''
         demisto.debug(f"{alert_id=}, {alert_occurred_time=}")
         incident = {
