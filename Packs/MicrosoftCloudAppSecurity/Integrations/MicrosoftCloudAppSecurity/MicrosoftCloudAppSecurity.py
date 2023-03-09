@@ -1,6 +1,4 @@
 from dateparser import parse
-from datetime import datetime
-from pytz import utc
 import urllib3
 
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
@@ -664,9 +662,23 @@ def list_users_accounts_command(client: Client, args: dict):
 
 
 def format_fetch_start_time_to_timestamp(fetch_start_time: Optional[str]):
-    first_fetch_dt = parse(fetch_start_time).replace(tzinfo=utc)  # type:ignore
-    # Changing 10-digits timestamp to 13-digits by padding with zeroes, since API supports 13-digits
-    return int(first_fetch_dt.timestamp()) * 1000
+    # fetch_start_time = '2021-05-15T11:00:00.000'
+
+    fetch_start_time_datetime = parse(fetch_start_time)
+    start_fetch_timestamp = fetch_start_time_datetime.timestamp()
+    if fetch_start_time_datetime.microsecond == 0:
+        return int(start_fetch_timestamp) * 1000
+    else:
+        return int(str(start_fetch_timestamp).replace('.', ''))
+
+
+def timestamp_to_datetime_string(timestamp: int):
+    timestamp_as_datetime = datetime.fromtimestamp(timestamp / 1000.0)
+    iso_format_datetime = timestamp_as_datetime.isoformat()
+    if timestamp_as_datetime.microsecond != 0:
+        return iso_format_datetime[:-3]
+    else:
+        return f'{iso_format_datetime}.000'
 
 
 def arrange_alerts_by_incident_type(alerts: List[dict]):
@@ -681,43 +693,28 @@ def arrange_alerts_by_incident_type(alerts: List[dict]):
     return alerts
 
 
-def is_the_first_alert_is_already_fetched_in_previous_fetch(alerts: List[dict], last_run: dict):
-    last_incident_in_previous_fetch = last_run.get('last_fetch_id')
-    alert = alerts[0]
-    return alert.get('_id') == last_incident_in_previous_fetch
-
-
-def alerts_to_incidents_and_fetch_start_from(alerts: List[dict], fetch_start_time: str, last_run: dict):
-    fetch_start_time = int(fetch_start_time)
+def alerts_to_xsoar_incidents(alerts: List[dict]):
     incidents = []
-    current_last_incident_fetched = ''
-    if alerts and is_the_first_alert_is_already_fetched_in_previous_fetch(alerts, last_run):
-        alerts = alerts[1:]
+
     for alert in alerts:
-        incident_created_time = (alert['timestamp'])
-        incident_created_datetime = datetime.fromtimestamp(incident_created_time / 1000.0).isoformat()
-        incident_occurred = incident_created_datetime.split('.')
-        occurred = incident_occurred[0]
-        demisto.debug("------ Alert occurred time is: " + occurred)
+        alert_occurred_time = timestamp_to_datetime_string(alert['timestamp'])
+        # alert_occurred_time = datetime.fromtimestamp(incident_created_time / 1000.0).isoformat()[:-3]
+        alert_id = alert.get('_id') or ''
+        demisto.debug(f"{alert_id=}, {alert_occurred_time=}")
         incident = {
             'name': alert['title'],
-            'occurred': occurred + 'Z',
+            'occurred': alert_occurred_time + 'Z',
             'rawJSON': json.dumps(alert)
         }
         incidents.append(incident)
-        alert['timestamp'] = occurred
-        if incident_created_time > fetch_start_time:
-            current_last_incident_fetched = str(alert.get('_id', ''))
+        alert['timestamp'] = alert_occurred_time
 
-    if not current_last_incident_fetched:
-        current_last_incident_fetched = str(last_run.get('last_fetch_id', ''))
-
-    return incidents, current_last_incident_fetched, alerts
+    return incidents
 
 
 def fetch_incidents(client: Client, max_results: Optional[str], last_run: dict, first_fetch: Optional[str],
                     filters: dict, look_back: int):
-    date_format = '%Y-%m-%dT%H:%M:%S'
+    date_format = '%Y-%m-%dT%H:%M:%S.%f'
     if not first_fetch:
         first_fetch = '3 days'
     max_results = int(max_results) if max_results else DEFAULT_INCIDENT_TO_FETCH
@@ -727,8 +724,11 @@ def fetch_incidents(client: Client, max_results: Optional[str], last_run: dict, 
         last_fetch_time = datetime.fromtimestamp(last_run.get("last_fetch", 0) / 1000.0).isoformat()
         last_run.update({"time": last_fetch_time})
 
-    fetch_start_time, fetch_end_time = get_fetch_run_time_range(last_run=last_run, first_fetch=first_fetch,
-                                                                look_back=look_back)
+    fetch_start_time, fetch_end_time = get_fetch_run_time_range(
+        last_run=last_run, first_fetch=first_fetch, look_back=look_back, date_format=date_format
+    )
+
+    fetch_start_time, fetch_end_time = fetch_start_time[:-3], fetch_end_time[:-3]
 
     formatted_fetch_start_time = format_fetch_start_time_to_timestamp(fetch_start_time)
     filters["date"] = {"gte": formatted_fetch_start_time}
@@ -741,8 +741,7 @@ def fetch_incidents(client: Client, max_results: Optional[str], last_run: dict, 
         incidents_res=alerts, last_run=last_run, fetch_limit=max_results, id_field='_id'
     )
 
-    incidents, last_fetch_id, alerts_to_incident = alerts_to_incidents_and_fetch_start_from(
-        alerts_to_incident, str(formatted_fetch_start_time), last_run)
+    incidents = alerts_to_xsoar_incidents(alerts_to_incident)
 
     last_run = update_last_run_object(
         last_run=last_run,
@@ -756,7 +755,8 @@ def fetch_incidents(client: Client, max_results: Optional[str], last_run: dict, 
         date_format=date_format,
         increase_last_run_time=True
     )
-    last_run.update({'last_fetch_id': last_fetch_id})
+    if 'last_fetch_id' in last_run:  # no need to save last fetch id, remove support from older versions of fetch
+        last_run.pop('last_fetch_id', None)
     demisto.debug(f'setting last run to: {last_run}')
     return last_run, incidents
 

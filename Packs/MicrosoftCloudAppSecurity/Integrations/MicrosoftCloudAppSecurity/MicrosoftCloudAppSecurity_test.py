@@ -141,20 +141,20 @@ def test_alerts_to_incidents_and_fetch_start_from(requests_mock):
     Then:
         We only fetched the one that does not exist in his system.
     """
-    from MicrosoftCloudAppSecurity import alerts_to_incidents_and_fetch_start_from
+    from MicrosoftCloudAppSecurity import alerts_to_xsoar_incidents
     incidents = get_fetch_data()
     requests_mock.get('https://demistodev.eu2.portal.cloudappsecurity.com/api/v1/alerts/',
                       json=incidents["incidents"])
     res_incidents, new_last_fetch_id, alert = \
-        alerts_to_incidents_and_fetch_start_from(incidents["incidents"], '1602771392519',
-                                                 {"last_fetch": 1603365903,
+        alerts_to_xsoar_incidents(incidents["incidents"], '1602771392519',
+                                  {"last_fetch": 1603365903,
                                                   "last_fetch_id": "5f919e55b0703c2f5a23d9d8"})
     assert new_last_fetch_id == "5f919e55b0703c2f5a23d9d7"
 
     requests_mock.get('https://demistodev.eu2.portal.cloudappsecurity.com/api/v1/alerts/',
                       json=[])
     res_incidents, new_last_fetch_id, alerts = \
-        alerts_to_incidents_and_fetch_start_from([], '1602771392519', {"last_fetch": 1603365903,
+        alerts_to_xsoar_incidents([], '1602771392519', {"last_fetch": 1603365903,
                                                                        "last_fetch_id": "5f919e55b0703c2f5a23d9d8"})
     assert new_last_fetch_id == "5f919e55b0703c2f5a23d9d8"
     assert res_incidents == []
@@ -432,10 +432,10 @@ class TestCloseFalsePositive:
             close_false_positive_command(client_mocker, args)
 
 
-class TestFetchIncidentsWithLookBack:
+class TestFetchIncidents:
     LAST_RUN = {}
-    API_TIME_FORMAT = '%Y-%m-%dT%H:%M:%S'
-    FREEZE_TIMESTAMP = '2022-05-15T11:00:00'
+    API_TIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%f'
+    FREEZE_TIMESTAMP = '2022-05-15T11:00:00.000'
 
     def set_last_run(self, new_last_run):
         self.LAST_RUN = new_last_run
@@ -553,7 +553,6 @@ class TestFetchIncidentsWithLookBack:
         self.LAST_RUN, alerts = fetch_incidents(client=client_mocker, max_results=max_results, last_run=self.LAST_RUN,
                                                 first_fetch=first_fetch, filters=filters, look_back=look_back)
         assert len(alerts) == 3
-        assert self.LAST_RUN.get('last_fetch_id') == '5'
         for expected_incident_id, alert in zip(['2', '4', '5'], alerts):
             assert alert.get('name') == f'test{expected_incident_id}'
 
@@ -720,7 +719,6 @@ class TestFetchIncidentsWithLookBack:
         self.LAST_RUN, alerts = fetch_incidents(client=client_mocker, max_results=max_results, last_run=self.LAST_RUN,
                                                 first_fetch=first_fetch, filters=filters, look_back=look_back)
         assert len(alerts) == 3
-        assert self.LAST_RUN.get('last_fetch_id') == '3'
         for expected_incident_id, ticket in zip(['1', '2', '3'], alerts):
             assert ticket.get('name') == f'test{expected_incident_id}'
 
@@ -742,7 +740,6 @@ class TestFetchIncidentsWithLookBack:
         self.LAST_RUN, alerts = fetch_incidents(client=client_mocker, max_results=max_results, last_run=self.LAST_RUN,
                                                 first_fetch=first_fetch, filters=filters, look_back=look_back)
         assert len(alerts) == 1
-        assert self.LAST_RUN.get('last_fetch_id') == '5'
         assert alerts[0].get('name') == 'test5'
 
         # forth fetch preparation
@@ -753,3 +750,102 @@ class TestFetchIncidentsWithLookBack:
         self.LAST_RUN, alerts = fetch_incidents(client=client_mocker, max_results=max_results, last_run=self.LAST_RUN,
                                                 first_fetch=first_fetch, filters=filters, look_back=look_back)
         assert len(alerts) == 0
+
+    @pytest.mark.parametrize(
+        "incidents, expected_time, last_run_start",
+        [
+            (
+                {
+                    'data': [
+                        {
+                            'title': 'test1',
+                            'timestamp': create_occur_timestamp(FREEZE_TIMESTAMP, timedelta(minutes=10)),
+                            '_id': '1',
+                            'entities': []
+                        },
+                        {
+                            'title': 'test2',
+                            'timestamp': create_occur_timestamp(FREEZE_TIMESTAMP, timedelta(minutes=10)),
+                            '_id': '2',
+                            'entities': []
+                        },
+                    ]
+                },
+                '2022-05-15T10:50:00.001000',
+                {}
+            ),
+            (
+                {
+                    'data': [
+                        {
+                            'title': 'test1',
+                            'timestamp': create_occur_timestamp(FREEZE_TIMESTAMP, timedelta(minutes=8)),
+                            '_id': '1',
+                            'entities': []
+                        },
+                        {
+                            'title': 'test2',
+                            'timestamp': create_occur_timestamp(FREEZE_TIMESTAMP, timedelta(minutes=8)),
+                            '_id': '2',
+                            'entities': []
+                        },
+                    ]
+                },
+                '2022-05-15T10:52:00.001000',
+                {'time': '2022-05-15T10:50:00.001000', "limit": 10}
+            ),
+            (
+                {
+                    'data': [
+                        {
+                            'title': 'test1',
+                            'timestamp': create_occur_timestamp(FREEZE_TIMESTAMP, timedelta(minutes=5)),
+                            '_id': '1',
+                            'entities': []
+                        },
+                        {
+                            'title': 'test2',
+                            'timestamp': create_occur_timestamp(FREEZE_TIMESTAMP, timedelta(minutes=5)),
+                            '_id': '2',
+                            'entities': []
+                        },
+                    ]
+                },
+                '2022-05-15T10:55:00.001000',
+                {'time': '2022-05-15T10:50:00', "limit": 10}
+            )
+        ]
+    )
+    def test_fetch_incidents_with_different_last_runs(self, mocker, incidents, expected_time, last_run_start):
+        """
+        Given
+        - Case A: fetching incidents without any last run
+        - Case B: fetching incidents with last run containing date in miliseconds
+        - Case C: fetching incidents with last run not containing date in miliseconds
+
+        When
+        - trying to fetch incidents only one round
+
+        Then
+        - make sure that the new time in the last run contains the date with miliseconds
+        - make sure that the new time in the last run is increased with one milisecond
+        - make sure incidents were returned and were parsed successfully
+        """
+        self.LAST_RUN = last_run_start
+
+        mocker.patch.object(demisto, 'getLastRun', return_value=self.LAST_RUN)
+        mocker.patch.object(demisto, 'setLastRun', side_effect=self.set_last_run)
+        mocker.patch(
+            'MicrosoftCloudAppSecurity.format_fetch_start_time_to_timestamp',
+            side_effect=create_occur_timestamp
+        )
+
+        mocker.patch.object(client_mocker, 'list_incidents', return_value=incidents)
+
+        self.LAST_RUN, alerts = fetch_incidents(
+            client=client_mocker, max_results='10', last_run=self.LAST_RUN,
+            first_fetch='1 year ago', filters={'severity': {'eq': []}, 'resolutionStatus': {'eq': []}}, look_back=0
+        )
+
+        assert self.LAST_RUN.get('time') == expected_time
+        assert len(alerts) == 2
