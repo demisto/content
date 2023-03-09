@@ -1343,7 +1343,7 @@ def chat_create_command():
     chat_data.pop('@odata.context', '')
     chat_data['chatId'] = chat_data.pop('id', '')
 
-    add_bot_to_chat(chat_data.get("chatId"))    # type: ignore
+    add_bot_to_chat(chat_data.get("chatId", ''))
 
     hr_title = f"The chat '{chat_name}' was created successfully" if chat_type == 'group' else \
         f'The chat with "{members[0]}" was created successfully'
