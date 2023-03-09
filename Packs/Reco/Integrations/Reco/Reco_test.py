@@ -270,7 +270,8 @@ def test_max_fetch():
 def test_update_reco_incident_timeline(requests_mock, reco_client: RecoClient) -> None:
     incident_id = uuid.uuid1()
     requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/incident-timeline/{str(incident_id)}", json={}, status_code=200)
-    reco_client.update_reco_incident_timeline(incident_id=incident_id, comment="test")
+    res = reco_client.update_reco_incident_timeline(incident_id=str(incident_id), comment="test")
+    assert res == {}
 
 
 def test_update_reco_incident_timeline_error(capfd, requests_mock, reco_client: RecoClient) -> None:
@@ -284,7 +285,8 @@ def test_update_reco_incident_timeline_error(capfd, requests_mock, reco_client: 
 def test_resolve_visibility_event(requests_mock, reco_client: RecoClient) -> None:
     entry_id = uuid.uuid1()
     requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/set-label-status", json={}, status_code=200)
-    reco_client.resolve_visibility_event(entity_id=entry_id, label_name="Accessible by all")
+    res = reco_client.resolve_visibility_event(entity_id=entry_id, label_name="Accessible by all")
+    assert res == {}
 
 
 def test_resolve_visibility_event_error(capfd, requests_mock, reco_client: RecoClient) -> None:
@@ -315,4 +317,5 @@ def test_get_risky_users_bad_response(capfd, requests_mock, reco_client: RecoCli
 def test_add_risky_user_label(requests_mock, reco_client: RecoClient) -> None:
     requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/entry-label-relations",
                       json={}, status_code=200)
-    add_risky_user_label(reco_client=reco_client, email_address=f"{uuid.uuid1()}@gmail.com")
+    res = add_risky_user_label(reco_client=reco_client, email_address=f"{uuid.uuid1()}@gmail.com")
+    assert 'labeled as risky' in res.readable_output
