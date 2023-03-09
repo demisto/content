@@ -4608,7 +4608,8 @@ def panorama_register_ip_tag(tag: str, ips: List, persistent: str, timeout: int)
         'type': 'user-id',
         'cmd': f'<uid-message><version>2.0</version><type>update</type><payload><register>{entry}'
                f'</register></payload></uid-message>',
-        'key': API_KEY
+        'key': API_KEY,
+        'vsys': VSYS
     }
     result = http_request(
         URL,
