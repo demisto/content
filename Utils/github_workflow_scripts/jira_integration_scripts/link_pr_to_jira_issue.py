@@ -8,7 +8,7 @@ import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 JIRA_URL_REGEX = \
-    r"(?:\[.+\]\()?(?P<url>https?:\/\/jira-hq\.paloaltonetworks\.local\/browse\/(?P<issue_id>[a-zA-Z][a-zA-Z0-9]+-[0-9]+))"
+    r"(?:\[.+\]\()?(?P<url>https?:\/\/jira-hq\.paloaltonetworks\.local\/browse\/(?P<issue_key>[a-zA-Z][a-zA-Z0-9]+-[0-9]+))"
 JIRA_FIXED_ISSUE_REGEX = rf"(?i)fixes:\s*{JIRA_URL_REGEX}"
 JIRA_RELATED_ISSUE_REGEX = rf"(?i)relates:\s*{JIRA_URL_REGEX}"
 GENERIC_WEBHOOK_NAME = "GenericWebhook_link_pr_to_jira"
