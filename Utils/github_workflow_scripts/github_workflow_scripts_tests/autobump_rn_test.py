@@ -5,27 +5,17 @@ from packaging.version import Version
 from typing import Optional, List
 from unittest.mock import MagicMock
 import pytest as pytest
-from Utils.github_workflow_scripts.autobump_rn import (
-    LastModifiedCondition,
-    LabelCondition,
-    AddedRNFilesCondition,
-    HasConflictOnAllowedFilesCondition,
-    PackSupportCondition,
-    MajorChangeCondition,
-    MaxVersionCondition,
-    OnlyVersionChangedCondition,
-    OnlyOneRNPerPackCondition,
-    SameRNMetadataVersionCondition,
-    ConditionResult,
-    AllowedBumpCondition,
-    UpdateType,
+from Utils.github_workflow_scripts.autobump_release_notes.autobump_rn import (
     PackAutoBumper,
-    BranchAutoBumper,
-    MetadataCondition,
+    BranchAutoBumper, AutoBumperManager,
 )
+from Utils.github_workflow_scripts.autobump_release_notes.skip_conditions import ConditionResult, MetadataCondition, \
+    LastModifiedCondition, LabelCondition, AddedRNFilesCondition, HasConflictOnAllowedFilesCondition, \
+    PackSupportCondition, MajorChangeCondition, MaxVersionCondition, OnlyVersionChangedCondition, \
+    OnlyOneRNPerPackCondition, SameRNMetadataVersionCondition, AllowedBumpCondition, UpdateType
 from git import GitCommandError
 from demisto_sdk.commands.update_release_notes.update_rn import UpdateRN
-import Utils.github_workflow_scripts.autobump_rn as utils
+import Utils.github_workflow_scripts.autobump_release_notes.skip_conditions as skip_conditions
 
 MERGE_STDOUT = "stdout: '\n Auto-merging {}\n failed.\n Auto-merging {}\n failed.\n"
 
@@ -176,9 +166,9 @@ def test_get_metadata_files(mocker):
     origin_metadata = {"name": "MyPack", "currentVersion": "1.0.5"}
     branch_metadata = {"name": "MyPack", "currentVersion": "1.0.4"}
     base_metadata = {"name": "MyPack", "currentVersion": "1.0.3"}
-    mocker.patch("Utils.github_workflow_scripts.autobump_rn.Checkout")
+    mocker.patch("Utils.github_workflow_scripts.autobump_release_notes.skip_conditions.Checkout")
     mocker.patch.object(
-        utils,
+        skip_conditions,
         "load_json",
         side_effect=[origin_metadata, branch_metadata, base_metadata],
     )
@@ -628,7 +618,7 @@ def test_branch_auto_bumper(mocker):
     pack_auto_bumper = MagicMock()
     pack_auto_bumper.autobump.return_value = "1.0.2"
     pack_auto_bumper.pack_id = "MyPack"
-    mocker.patch("Utils.github_workflow_scripts.autobump_rn.Checkout")
+    mocker.patch("Utils.github_workflow_scripts.autobump_release_notes.autobump_rn.Checkout")
     branch_auto_bumper = BranchAutoBumper(
         pr=PullRequest(),
         git_repo=Repo(),
@@ -656,12 +646,12 @@ def test_autobump_manager(mocker):
         files=CHANGED_FILES,
         branch_name="allowed-conflicts",
     )
-    manager = utils.AutoBumperManager(
+    manager = AutoBumperManager(
         github_repo_obj=Repository([pr]),
         git_repo_obj=Repo(files=CHANGED_FILES),
         run_id="1",
     )
-    mocker.patch("Utils.github_workflow_scripts.autobump_rn.Checkout")
+    mocker.patch("Utils.github_workflow_scripts.autobump_release_notes.autobump_rn.Checkout")
     mocker.patch.object(BranchAutoBumper, "autobump")
     mocker.patch.object(
         MetadataCondition,
