@@ -4617,6 +4617,8 @@ def panorama_register_ip_tag(tag: str, ips: List, persistent: str, timeout: int)
         body=params,
     )
 
+    demisto.debug(f'The params of register_ip_tag - {params}')
+
     return result
 
 
@@ -4639,6 +4641,7 @@ def panorama_register_ip_tag_command(args: dict):
         raise DemistoException('The timeout argument is only applicable on 9.x PAN-OS versions or higher.')
 
     result = panorama_register_ip_tag(tag, ips, persistent, timeout)
+    demisto.debug(f'The result of register_ip_tag - {result}')
 
     registered_ip: Dict[str, str] = {}
     # update context only if IPs are persistent
