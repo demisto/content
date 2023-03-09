@@ -220,7 +220,7 @@ def main():
                     no_spaces = ' ' not in row[parse_domain]
                     if has_dot and no_spaces:
                         domain_list.append(row[parse_domain])
-            
+
             for c in range(max(len(ip_list), len(domain_list), len(hash_list))):
                 md += ip_list[c] + '|' if len(ip_list) >= c + 1 else ' |'
                 md += domain_list[c] + '|' if len(domain_list) >= c + 1 else ' |'
