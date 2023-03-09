@@ -41,7 +41,6 @@
 	"systemAssociatedTypes": [
         "Symantec DLP Discover Incident"
     ],
-	"systemAssociatedTypes": null,
 	"threshold": 72,
 	"type": "shortText",
 	"unmapped": false,
