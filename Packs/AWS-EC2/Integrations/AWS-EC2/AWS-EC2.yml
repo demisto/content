@@ -6362,7 +6362,7 @@ script:
     description: Release on demand dedicated host.
     execution: false
     name: aws-ec2-release-hosts
-  dockerimage: demisto/boto3py3:1.0.0.43484
+  dockerimage: demisto/boto3py3:1.0.0.45936
   feed: false
   isfetch: false
   longRunning: false

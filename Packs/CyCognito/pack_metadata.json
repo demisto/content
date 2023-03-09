@@ -10,18 +10,10 @@
         "Data Enrichment & Threat Intelligence"
     ],
     "tags": [
-        "Best Practices",
-        "Courses of Action",
-        "Incident Mirroring",
-        "Security"
+        "Threat Intelligence Management"
     ],
-    "useCases": [
-        "Asset Management",
-        "Threat Intelligence Management",
-        "Vulnerability Management"
-    ],
+    "useCases": [],
     "keywords": [
-        "CyCognito",
         "Issue",
         "Asset",
         "Vulnerability",

@@ -5411,7 +5411,7 @@ def main():  # pragma: no cover
     proxy: bool = params.get('proxy', False)
     self_deployed: bool = params.get('self_deployed', False)
     certificate_thumbprint = params.get('creds_certificate', {}).get('identifier') or params.get('certificate_thumbprint')
-    private_key = params.get('creds_certificate', {}).get('password') or params.get('private_key')
+    private_key = replace_spaces_in_credential(params.get('creds_certificate', {}).get('password')) or params.get('private_key')
     alert_severities_to_fetch = params.get('fetch_severity')
     alert_status_to_fetch = params.get('fetch_status')
     alert_time_to_fetch = params.get('first_fetch_timestamp', '3 days')

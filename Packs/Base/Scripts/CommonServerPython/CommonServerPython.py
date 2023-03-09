@@ -10889,6 +10889,30 @@ def is_scheduled_command_retry():
     return True if sm.get('is_polling', False) else False
 
 
+def replace_spaces_in_credential(credential):
+    """
+    This function is used in case of credential from type: 9 is in the wrong format
+    of one line with spaces instead of multiple lines.
+
+    :type credential: ``str`` or ``None``
+    :param credential: the credential to replace spaces in.
+
+    :return: the credential with spaces replaced with new lines if the credential is in the correct format,
+             otherwise the credential will be returned as is.
+    :rtype: ``str`` or ``None``
+    """
+    if not credential:
+        return credential
+
+    match_begin = re.search("-----BEGIN(.*?)-----", credential)
+    match_end = re.search("-----END(.*?)-----", credential)
+
+    if match_begin and match_end:
+        return re.sub("(?<={0})(.*?)(?={1})".format(match_begin.group(0), match_end.group(0)),
+                      lambda match: match.group(0).replace(' ', '\n'), credential)
+    return credential
+
+
 ###########################################
 #     DO NOT ADD LINES AFTER THIS ONE     #
 ###########################################

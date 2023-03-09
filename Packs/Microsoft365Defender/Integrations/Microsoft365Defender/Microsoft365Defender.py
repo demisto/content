@@ -612,7 +612,8 @@ def main() -> None:
     certificate_thumbprint = params.get('creds_certificate', {}).get('identifier', '') or \
         params.get('certificate_thumbprint', '')
 
-    private_key = params.get('creds_certificate', {}).get('password', '') or params.get('private_key', '')
+    private_key = (replace_spaces_in_credential(params.get('creds_certificate', {}).get('password', ''))
+                   or params.get('private_key', ''))
 
     first_fetch_time = params.get('first_fetch', '3 days').strip()
     fetch_limit = arg_to_number(params.get('max_fetch', 10))

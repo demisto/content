@@ -349,10 +349,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: fed62f44-5266-44b0-828f-ce6a07ee38aa
+    taskid: 7f21a137-9c1a-4d38-8491-81bf80ba9f9b
     type: condition
     task:
-      id: fed62f44-5266-44b0-828f-ce6a07ee38aa
+      id: 7f21a137-9c1a-4d38-8491-81bf80ba9f9b
       version: -1
       name: Found results from Okta?
       description: Check if there are results from Okta
@@ -372,7 +372,7 @@ tasks:
           left:
             value:
               complex:
-                root: OktaFailedLogonLogs
+                root: OktaSuspiciousActivities
                 accessor: displayMessage
             iscontext: true
           right:

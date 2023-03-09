@@ -6673,7 +6673,7 @@ script:
       description: Troubleshooting information.
       type: String
     polling: true
-  dockerimage: demisto/crypto:1.0.0.44762
+  dockerimage: demisto/crypto:1.0.0.45575
   feed: false
   isfetch: true
   longRunning: false
