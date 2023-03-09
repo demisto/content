@@ -1,5 +1,43 @@
-This README contains the full documentation for your integration.
+Agentless, Workload-Deep, Context-Aware Security and Compliance for AWS, Azure, and GCP.
+This integration was integrated and tested with version xx of Orca Event Collector
 
-You auto-generate this README file from your integration YML file using the `demisto-sdk generate-docs` command.
+## Configure Orca Event Collector on Cortex XSOAR
 
-For more information see the [integration documentation](https://xsoar.pan.dev/docs/integrations/integration-docs).
+1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+2. Search for Orca Event Collector.
+3. Click **Add instance** to create and configure a new integration instance.
+
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | API Token | The API Key to use for connection | True |
+    | Server URL (for example: https://app.eu.orcasecurity.io/api) |  | True |
+    | First fetch time |  | False |
+    | The maximum number of events per fetch | The number of events to fetch. Maximum value is 1000 | False |
+    | Trust any certificate (not secure) |  | False |
+    | Use system proxy settings |  | False |
+
+4. Click **Test** to validate the URLs, token, and connection.
+
+## Commands
+
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
+### orca-security-get-events
+
+***
+Manual command to fetch events from Orca Security.
+
+#### Base Command
+
+`orca-security-get-events`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| should_push_events | Set this argument to True in order to create events, otherwise the command will only display them. Possible values are: True, False. Default is False. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
