@@ -19,7 +19,7 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 from CommonServerUserPython import *  # noqa
 
 import urllib3
-from typing import Dict, Any
+from typing import Dict
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -38,47 +38,28 @@ class Client(BaseClient):
     def __init__(self, server_url: str, headers: Dict, proxy: bool = False, verify: bool = False):
         super().__init__(base_url=server_url, verify=verify, proxy=proxy, headers=headers)
 
-    def get_alerts(self, max_fetch: int, last_fetch: str, next_page_token: str) -> Dict:
+    def get_alerts_request(self, max_fetch: int, last_fetch: str, next_page_token: Optional[str]) -> Dict:
         """ Retrieve information about alerts.
             Args:
                 max_fetch: int - Limit number of returned records.
                 last_fetch: str - the date and time of the last fetch
-                next_page_token: str - the token to the next page
+                next_page_token: Optional[str] - the token to the next page
             Returns:
                 A dictionary with the alerts details.
         """
         params = {
             'limit': max_fetch,
             'dsl_filter': "{\n\"filter\":\n[\n{\n\"field\": \"state.last_updated\",\n\"range\": {\n\"gt\": "
-                          "\""+last_fetch+"\"\n}\n}\n],\n"
-                                          "\"sort\":\n[\n{\"field\":\"state.last_updated\",\n\"order\":\"asc\"\n}\n]}"
+                          "\"" + last_fetch + "\"\n}\n}\n],\n"
+                                              "\"sort\":\n[\n{\"field\":\"state.last_updated\",\n\"order\":\"asc\"\n}\n]}"
         }
         if next_page_token:
             params['next_page_token'] = next_page_token
+        demisto.info(f'in get_alerts request {params=}')
         return self._http_request(method='GET', url_suffix='/query/alerts', params=params)
 
+
 ''' COMMAND FUNCTIONS '''
-
-
-# def test_module(client: Client) -> str:
-#     """Tests API connectivity and authentication'
-#
-#     Returning 'ok' indicates that the integration works like it is supposed to.
-#     Connection to the service is successful.
-#     Raises exceptions if something goes wrong.
-#
-#     :type client: ``Client``
-#     :param Client: client to use
-#
-#     :return: 'ok' if test passed, anything else will fail the test.
-#     :rtype: ``str``
-#     """
-#
-#     try:
-#         client.get_alerts(max_fetch=1)
-#         return 'ok'
-#     except DemistoException as e:
-#         raise DemistoException(e.message)
 
 
 def get_alerts(client: Client, max_fetch: int, last_fetch: str, next_page_token: str = None) -> tuple:
@@ -86,13 +67,13 @@ def get_alerts(client: Client, max_fetch: int, last_fetch: str, next_page_token:
     Args:
         client: client - An Orca client.
         max_fetch: int - The maximum number of events per fetch
-        last_fetch: int - the timestamp of the last fetch alert
+        last_fetch: int - the timeand date of the last fetch alert
         next_page_token: str - The token to the next page.
     Returns:
         - list of alerts
         - next_page_token if exist
     """
-    response = client.get_alerts(max_fetch, last_fetch, next_page_token)
+    response = client.get_alerts_request(max_fetch, last_fetch, next_page_token)
     next_page_token = response.get('next_page_token')
     alerts = response.get('data')
     return alerts, next_page_token
@@ -110,7 +91,7 @@ def main() -> None:
     command = demisto.command()
     api_token = demisto.params().get('credentials', {}).get('password')
     server_url = demisto.params().get('server_url', 'https://app.eu.orcasecurity.io/api')
-    first_fetch = demisto.params().get('first_fetch', '3 days')
+    first_fetch = demisto.params().get('first_fetch') or '3 days'
     max_fetch = arg_to_number(demisto.params().get('max_fetch')) or 1000
     verify_certificate = not demisto.params().get('insecure', False)
     proxy = demisto.params().get('proxy', False)
@@ -120,7 +101,8 @@ def main() -> None:
         arg=first_fetch,
         arg_name='First fetch time',
         required=True
-    ).strftime("%Y-%m-%dT%H:%M:%S")
+    )
+    first_fetch_time = first_fetch_time.strftime("%Y-%m-%dT%H:%M:%S") if first_fetch_time else ''
     demisto.info(f'{first_fetch_time=}')
     demisto.info(f'Orca Security. Command being called is {command}')
     try:
@@ -136,19 +118,24 @@ def main() -> None:
             proxy=proxy)
 
         last_run = demisto.getLastRun()
+        if last_run == {}:
+            demisto.info(f'first run {last_run=}')
+            last_fetch = first_fetch_time
+        else:
+            demisto.info('not the first run')
+            last_fetch = last_run.get('lastRun')
         next_page_token = last_run.get('next_page_token')
-        last_fetch = last_run.get('lastRun') or first_fetch_time
         demisto.info(f'before get alerts {last_fetch=} {next_page_token=}')
         alerts, next_page_token = get_alerts(client, max_fetch, last_fetch, next_page_token)
         num_alerts = len(alerts)
-        demisto.info(f'{last_run=} , {next_page_token=} , {num_alerts}')
+        demisto.info(f'after get alerts {next_page_token=} , {num_alerts=}\n {alerts=}')
 
         if command == 'test-module':
             return_results('ok')
         elif command in ('fetch-events', 'orca-security-get-events'):
             if command == 'fetch-events':
                 should_push_events = True
-
+                demisto.info('in fetch events command')
             else:  # command == 'orca-security-get-events'
                 should_push_events = argToBoolean(demisto.args().get('should_push_events', False))
                 return_results(CommandResults(
@@ -158,12 +145,13 @@ def main() -> None:
                     raw_response=alerts
                 ))
             if should_push_events:
-                current_last_run = {}
-                if num_alerts > 0:
-                    current_last_run['last_fetch_time'] = alerts[num_alerts - 1].get('state', {}).get('last_updated')[:-5]
-                if next_page_token:
-                    current_last_run['next_page_token'] = next_page_token
+                current_last_run = {
+                    'next_page_token': next_page_token,
+                    'lastRun': alerts[num_alerts - 1].get('state', {}).get('last_updated')[:-6] if num_alerts > 0
+                    else last_fetch
+                }
                 demisto.setLastRun(current_last_run)
+                demisto.info(f'{current_last_run=}')
                 send_events_to_xsiam(alerts, VENDOR, PRODUCT)
 
     # Log exceptions and return errors
