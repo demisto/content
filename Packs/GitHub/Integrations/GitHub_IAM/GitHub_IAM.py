@@ -323,7 +323,7 @@ def get_mapping_fields_command():
     return GetMappingFieldsResponse([incident_type_scheme])
 
 
-def main():
+def main():  # pragma: no cover
     params = demisto.params()
     args = demisto.args()
 
