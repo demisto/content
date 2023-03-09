@@ -35,7 +35,7 @@ class PullRequest:
     def __init__(
         self,
         updated_at=None,
-        labels: Optional[Label] = None,
+        labels: Optional[List[Label]] = None,
         files: Optional[List[File]] = None,
         branch_name: str = "branch",
     ):
