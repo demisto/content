@@ -487,7 +487,7 @@ def pagination(records_list: List, limit: int, page: Optional[int], page_size: O
     Args:
         records_list: List - The original list of objects.
         limit: str - The amount of records to be returned
-        page: Optional[int] - The page of the results(The results in page 1, 2 ...)
+        page: Optional[int] - The page of the results (The results in page 1, 2 ...)
         page_size: Optional[int] - the number of records that will be in the page.
     Returns:
         The wanted records.
@@ -507,7 +507,7 @@ def alerts_list_pagination(records_list: List, limit: int, page: Optional[int], 
     Args:
         records_list: List - The original list of objects.
         limit: int - The amount of records to be returned
-        page: Optional[int] - The page of the results(The results in page 1, 2 ...)
+        page: Optional[int] - The page of the results (The results in page 1, 2 ...)
         page_size: Optional[int] - The number of records in a page.
         time_period: str - The time period of the alert.
         start_time: str - The start time of the alert.
@@ -560,7 +560,7 @@ def response_cases(response_str: str) -> str:
         Ignore -> IGNORE
         Stateless Ignore -> STATELESS_IGNORE
         Stateless Drop -> STATELESS_DROP
-        Require Authentication -> REQUIRE_AUTHENTICATION
+        Require Authentication-> REQUIRE_AUTHENTICATION
     """
     split_str = response_str.upper().split()
     if len(split_str) == 1:
@@ -761,7 +761,8 @@ def create_body_create_rule_for_v10(rule_type: str, address: List, number: int,
         {"value": single_address, "state": STATE_TO_NUMBER.get(state)}
         for single_address in address]
     # for paremets with a range, we need to add the state to the dictionary
-    from_to_list.append({"state": STATE_TO_NUMBER.get(state)})
+    if from_to_list:
+        from_to_list[0].update({"state": STATE_TO_NUMBER.get(state)})
 
     if 'HOST' in rule_type:
         return f'HostIPv{number}', {
@@ -913,7 +914,7 @@ def update_filter(filter_arg: str) -> str:
         Returns:
             The updated filter, without special chars.
         Example:
-            - name: HTTP: IIS 6.0 (CVE - 0000 - 0000) -> name: HTTP  IIS 6 0  CVE 0000 0000
+            - name:HTTP: IIS 6.0 (CVE-0000-0000) -> name:HTTP  IIS 6 0  CVE 0000 0000
     """
     split_filter = filter_arg.split(';')
     for index, s in enumerate(split_filter):
@@ -927,7 +928,7 @@ def update_filter(filter_arg: str) -> str:
 
 
 def get_addresses_from_response(response: Dict) -> List:
-    """ Returns the addresses from the response, for the human - readable in the command get_rule_object.
+    """ Returns the addresses from the response, for the human-readable in the command get_rule_object.
         Args:
             response: Dict - The response from the API.
         Returns:
@@ -950,7 +951,7 @@ def test_module(client: Client, username_n_password: str) -> str:
     """ Test the connection to McAfee NSM.
     Args:
         client: Client - A McAfeeNSM client.
-        username_n_password: str - The string that contains username: password to be encoded.
+        username_n_password: str - The string that contains username:password to be encoded.
     Returns:
         'ok' if the connection was successful, else throws exception.
     """
@@ -1343,7 +1344,6 @@ def create_rule_object_command(client: Client, args: Dict) -> CommandResults:
 
     rule_obj_def = body.get('RuleObjDef', {})
     rule_obj_def[d_name] = extra_body
-
     response = client.create_rule_object_request(body)
     response = {
         'ruleobjId': response.get('createdResourceId')
@@ -1488,7 +1488,7 @@ def update_rule_object_command(client: Client, args: Dict) -> CommandResults:
     address = address_ip_v_4 if address_ip_v_4 else address_ip_v_6
     number = 4 if (address_ip_v_4 or from_to_address_ip_v_4) else 6
     from_to_list = from_to_address_ip_v_4 if from_to_address_ip_v_4 else from_to_address_ip_v_6
-    #create the body according to the version of the NSM
+    # create the body according to the version of the NSM
     if VERSION == "V.10x":
         d_name, extra_body = create_body_create_rule_for_v10(rule_type=rule_type, address=address,
                                                              number=number, from_to_list=from_to_list,
