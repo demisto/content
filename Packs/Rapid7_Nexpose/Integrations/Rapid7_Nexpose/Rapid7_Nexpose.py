@@ -1,12 +1,11 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import json
 import urllib3
 from copy import deepcopy
 from enum import Enum, EnumMeta
 from time import strptime, struct_time
 from typing import overload
-
-import demistomock as demisto
-from CommonServerPython import *
 
 
 VENDOR_NAME = "Rapid7 Nexpose"  # Vendor name to use for indicators.
@@ -471,6 +470,50 @@ class Client(BaseClient):
             method="POST",
             json_data=post_data,
             resp_type="json",
+        )
+
+    def get_site_included_targets(self, site_id: int) -> dict:
+        """
+        | Retrieves the included targets in a static site.
+        |
+        | For more information see:
+            https://help.rapid7.com/insightvm/en-us/api/index.html#operation/getIncludedTargets
+
+        Args:
+            site_id (str): ID of the site to create the credential for.
+
+        Returns:
+            dict: API response with information about included targets.
+        """
+        return self._http_request(
+            url_suffix=f"/sites/{site_id}/included_targets",
+            method="GET",
+            resp_type="json"
+        )
+
+    def update_site_included_targets(self, site_id: int, targets: list) -> dict:
+        """
+        | Updates the included targets in a static site.
+        |
+        | For more information see:
+            https://help.rapid7.com/insightvm/en-us/api/index.html#operation/updateIncludedTargets
+
+        Args:
+            site_id (str): ID of the site to create the credential for.
+            targets (list): List of addresses to be the site's new included scan targets. Each
+                address is a string that can represent either a hostname, ipv4 address, ipv4
+                address range, ipv6 address, or CIDR notation.
+
+        Returns:
+            dict: API response with information about updated included targets.
+        """
+        post_data = targets
+
+        return self._http_request(
+            url_suffix=f"/sites/{site_id}/included_targets",
+            method="PUT",
+            json_data=post_data,
+            resp_type="json"
         )
 
     def create_site_scan_credential(self, site_id: str, name: str, service: CredentialService,
@@ -2475,12 +2518,6 @@ def normalize_scan_data(scan_data: dict) -> dict:
         include_none=True,
     )
 
-    if scan_data.get("duration"):
-        result["TotalTime"] = readable_duration_time(scan_data["duration"])
-
-    else:
-        result["TotalTime"] = "No duration data was found."
-
     return result
 
 
@@ -3057,6 +3094,74 @@ def create_site_command(client: Client, name: str, description: str | None = Non
         outputs_prefix="Nexpose.Site",
         outputs_key_field="Id",
         outputs={"Id": response_data['id']},
+        raw_response=response_data,
+    )
+
+
+def get_site_included_targets(client: Client, site_id: str | None = None, site_name: str | None = None):
+    """
+    Get site included targets.
+
+    Args:
+        client (Client): Client to use for API requests.
+        site_id (str | None, optional): ID of the site to get the included targets for.
+        site_name (str | None, optional): Name of the site to get the included targets for.
+            Can be used instead of "site_id".
+    """
+    site = Site(
+        site_id=site_id,
+        site_name=site_name,
+        client=client,
+    )
+
+    response_data = client.get_site_included_targets(
+        site_id=site.id
+    )
+    included_targets = response_data['addresses'] if 'addresses' in response_data else []
+
+    return CommandResults(
+        readable_output=f"Included targets for site ID: {site.id} ->  {response_data}",
+        outputs_prefix="Nexpose.SiteIncludedTargets",
+        outputs_key_field="included_targets",
+        outputs={"included_targets": included_targets},
+        raw_response=response_data,
+    )
+
+
+def update_site_included_targets(client: Client, site_id: str | None = None, site_name: str | None = None,
+                                 targets: str | None = None):
+    """
+    Update site included targets.
+
+    Args:
+        client (Client): Client to use for API requests.
+        site_id (str | None, optional): ID of the site to update the included targets for.
+        site_name (str | None, optional): Name of the site to update the included targets for.
+            Can be used instead of "site_id".
+        targets (str | None): Comma separated list of targets to be updated.
+    """
+    site = Site(
+        site_id=site_id,
+        site_name=site_name,
+        client=client,
+    )
+
+    targets = targets.split(',')
+
+    client.update_site_included_targets(
+        site_id=site.id, targets=targets
+    )
+
+    response_data = client.get_site_included_targets(
+        site_id=site.id
+    )
+    included_targets = response_data['addresses'] if 'addresses' in response_data else []
+
+    return CommandResults(
+        readable_output=f"Included targets for site: Site Name: {site.name} Site ID: {site.id}.",
+        outputs_prefix="Nexpose.SiteIncludedTargets",
+        outputs_key_field="IncludedTargets",
+        outputs={"IncludedTargets": included_targets},
         raw_response=response_data,
     )
 
@@ -4932,23 +5037,12 @@ def start_site_scan_command(client: Client, site_id: str | None = None, site_nam
 
     else:
         assets = client.get_site_assets(site.id)
-
-        hosts_list = []
-
-        for asset in assets:
-            if asset.get("ip") and asset["ip"] not in hosts_list:
-                hosts_list.append(asset["ip"])
-
-            # In some cases there is an IP address in the "addresses" field, but not in the "ip" field.
-            elif asset.get("addresses"):
-                for address in asset["addresses"]:
-                    if address.get("ip") and address["ip"] not in hosts_list:
-                        hosts_list.append(address["ip"])
+        hosts_list = [asset["ip"] for asset in assets]
 
     scan_response = client.start_site_scan(
         site_id=site.id,
         scan_name=name,
-        hosts=hosts_list,
+        hosts=hosts_list
     )
 
     if not scan_response or "id" not in scan_response:
@@ -5402,6 +5496,10 @@ def main():  # pragma: no cover
             results = create_shared_credential_command(client=client, **args)
         elif command == "nexpose-create-site":
             results = create_site_command(client=client, template_id=args.pop("scanTemplateId", None), **args)
+        elif command == "nexpose-get-site-included-targets":
+            results = get_site_included_targets(client=client, **args)
+        elif command == "nexpose-update-site-included-targets":
+            results = update_site_included_targets(client=client, **args)
         elif command == "nexpose-create-sites-report":
             results = create_sites_report_command(client=client, report_format=args.pop("format", None), **args)
         elif command == "nexpose-create-site-scan-credential":
@@ -5419,7 +5517,7 @@ def main():  # pragma: no cover
         elif command == "nexpose-delete-vulnerability-exception":
             results = delete_vulnerability_exception_command(client=client, vulnerability_exception_id=args.pop("id"))
         elif command == "nexpose-delete-site":
-            results = delete_site_command(client=client, site_id=args.pop("id", None), **args)
+            results = delete_site_command(client=client, **args)
         elif command == "nexpose-disable-shared-credential":
             results = set_assigned_shared_credential_status_command(client=client, enabled=False, **args)
         elif command == "nexpose-download-report":
@@ -5491,7 +5589,7 @@ def main():  # pragma: no cover
             results = start_assets_scan_command(client=client, ip_addresses=args.pop("IPs", None),
                                                 hostnames=args.pop("hostNames", None), **args)
         elif command == "nexpose-start-site-scan":
-            results = start_site_scan_command(client=client, site_id=args.pop("site", None), **args)
+            results = start_site_scan_command(client=client, **args)
         elif command == "nexpose-stop-scan":
             results = update_scan_command(client=client, scan_id=args.pop("id"), scan_status=ScanStatus.STOP)
         else:
@@ -5509,3 +5607,4 @@ def main():  # pragma: no cover
 
 if __name__ in ("__main__", "builtin", "builtins"):   # pragma: no cover
     main()
+
