@@ -406,23 +406,23 @@ class Client(BaseClient):
             url_suffix = f'/domain/{domain_id}/policyassignments/interface'
         return self._http_request(method='GET', url_suffix=url_suffix)
 
-    def get_sensor_configuration_request(self, sensor_id: int | None) -> Dict:
-        """ Retrieves the configuration of a sensor.
+    def get_device_configuration_request(self, device_id: int | None) -> Dict:
+        """ Retrieves the configuration of a device.
             Args:
-                sensor_id: int - The relevant sensor id.
+                device_id: int - The relevant device id.
             Returns:
-                A dictionary with the sensor configuration.
+                A dictionary with the device configuration.
         """
-        url_suffix = f'/sensor/{sensor_id}/action/update_sensor_config'
+        url_suffix = f'/sensor/{device_id}/action/update_sensor_config'
         return self._http_request(method='GET', url_suffix=url_suffix)
 
-    def deploy_sensor_configuration_request(self, sensor_id: int, isSSLPushRequired: bool = False,
+    def deploy_device_configuration_request(self, device_id: int, isSSLPushRequired: bool = False,
                                             isGAMUpdateRequired: bool = False,
                                             isSigsetConfigPushRequired: bool = False,
                                             isBotnetPushRequired: bool = False) -> Dict:
-        """ Deploy a sensor configuration.
+        """ Deploy a device configuration.
             Args:
-                sensor_id: int - The relevant sensor id.
+                device_id: int - The relevant device id.
                 isSSLPushRequired: bool - Is SSL push required.
                 isGAMUpdateRequired: bool - Is GAM update required.
                 isSigsetConfigPushRequired: bool - Is signature set configuration push required.
@@ -436,20 +436,20 @@ class Client(BaseClient):
                      "isSigsetConfigPushRequired": isSigsetConfigPushRequired,
                      "isBotnetPushRequired": isBotnetPushRequired}
 
-        url_suffix = f'/sensor/{sensor_id}/action/update_sensor_config'
+        url_suffix = f'/sensor/{device_id}/action/update_sensor_config'
         return self._http_request(method='PUT', url_suffix=url_suffix, json_data=json_data)
 
-    def check_deploy_sensor_configuration_request_status(self, sensor_id, request_id):
+    def check_deploy_device_configuration_request_status(self, device_id, request_id):
         """_summary_
 
         Args:
-            sensor_id (_type_): _description_
+            device_id (_type_): _description_
             request_id (_type_): _description_
 
         Returns:
             _type_: _description_
         """
-        url_suffix = f'/sensor/{sensor_id}/action/update_sensor_config/{request_id}'
+        url_suffix = f'/sensor/{device_id}/action/update_sensor_config/{request_id}'
         return self._http_request(method='GET', url_suffix=url_suffix)
 
 
@@ -2213,7 +2213,7 @@ def assign_interface_policy_command(client: Client, args: Dict) -> CommandResult
     firewall_policy = args.get('firewall_policy_name')
     firewall_port_policy = args.get('firewall_port_policy_name')
     ips_policy = args.get('ips_policy_name')
-    custom_policy_json = args.get('custom_policy_json')
+    custom_policy_json = json.loads(args.get('custom_policy_json'))
 
     # Check if at least one policy is provided
     if len(args) < 3:
@@ -2278,7 +2278,7 @@ def list_interface_policy_command(client: Client, args: Dict) -> CommandResults:
     )
 
 
-def get_sensor_configuration_command(client: Client, args: Dict) -> CommandResults:
+def get_device_configuration_command(client: Client, args: Dict) -> CommandResults:
     """
 
     Args:
@@ -2286,11 +2286,11 @@ def get_sensor_configuration_command(client: Client, args: Dict) -> CommandResul
         args (Dict): - The function arguments.
 
     Returns:
-        A CommandResult object with the sensor configuration information.
+        A CommandResult object with the device configuration information.
     """
-    sensor_id = arg_to_number(args.get('sensor_id'))
+    device_id = arg_to_number(args.get('device_id'))
 
-    response = client.get_sensor_configuration_request(sensor_id=sensor_id)
+    response = client.get_device_configuration_request(device_id=device_id)
 
     capitlize_response = {k[:1].upper() + k[1:]: v for k, v in response.items()}
     iner_dict = capitlize_response.get('PendingChanges')
@@ -2305,19 +2305,19 @@ def get_sensor_configuration_command(client: Client, args: Dict) -> CommandResul
     capitlize_response.update(add_on_dict)
     capitlize_response.pop('PendingChanges')
     readable_output = tableToMarkdown(
-        name='Sensor Configuration', t=capitlize_response, removeNull=True
+        name='Device Configuration', t=capitlize_response, removeNull=True
     )
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix='NSM.SensorConfiguration',
+        outputs_prefix='NSM.DeviceConfiguration',
         outputs=response,
         raw_response=response
     )
 
 
-@polling_function(name='nsm-deploy-sensor-configuration', interval=INTERVAL, requires_polling_arg=False)
-def deploy_sensor_configuration_command(args: Dict, client: Client) -> PollResult:
+@polling_function(name='nsm-deploy-device-configuration', interval=INTERVAL, requires_polling_arg=False)
+def deploy_device_configuration_command(args: Dict, client: Client) -> PollResult:
     """
     Args:
         args (Dict): - The function arguments.
@@ -2328,9 +2328,9 @@ def deploy_sensor_configuration_command(args: Dict, client: Client) -> PollResul
     """
 
     request_id = arg_to_number(args.get('request_id'))
-    sensor_id = arg_to_number(args.get('sensor_id'))
+    device_id = arg_to_number(args.get('device_id'))
     if not request_id:
-        sensor_id = arg_to_number(args.get('sensor_id'))
+        device_id = arg_to_number(args.get('device_id'))
         isSSLPushRequired = argToBoolean(args.get('push_ssl_key', False))
         isGAMUpdateRequired = argToBoolean(args.get('push_gam_updates', False))
         isSigsetConfigPushRequired = argToBoolean(args.get('push_configuration_signature_set', False))
@@ -2340,43 +2340,44 @@ def deploy_sensor_configuration_command(args: Dict, client: Client) -> PollResul
         if not any([isSSLPushRequired, isGAMUpdateRequired, isSigsetConfigPushRequired, isBotnetPushRequired]):
             raise DemistoException("Please provide at least one argument to deploy")
 
-        requests_id = client.deploy_sensor_configuration_request(sensor_id=sensor_id, isSSLPushRequired=isSSLPushRequired,
+        requests_id = client.deploy_device_configuration_request(device_id=device_id, isSSLPushRequired=isSSLPushRequired,
                                                                  isGAMUpdateRequired=isGAMUpdateRequired,
                                                                  isSigsetConfigPushRequired=isSigsetConfigPushRequired,
                                                                  isBotnetPushRequired=isBotnetPushRequired).get('RequestId')
         args["request_id"] = requests_id
-    status = client.check_deploy_sensor_configuration_request_status(sensor_id=sensor_id,
+    status = client.check_deploy_device_configuration_request_status(device_id=device_id,
                                                                      request_id=request_id)
 
     fail_or_success_list = []
+    build_a_massage = ""
     for k, v in args.items():
-        if v in ("true", "True", "yes"):
+        if v == "true":
             current_percentage_status = status.get(PERCENTAGE_MAP.get(str(k)))
             current_message_status = status.get(MESSAGE_MAP.get(str(k)))
             if current_percentage_status != 100 or current_message_status != "DOWNLOAD COMPLETE":
-                fail_or_success_list.append("Fail")
-                message = CommandResults(
-                    readable_output=f"""The current percentage of deployment for '{k}' is: {current_percentage_status}
-                \nAnd the current message for '{k}' is: {current_message_status}\n\nChecking again in {INTERVAL} seconds...""")
-
-                return PollResult(
-                    partial_result=message,
-                    response=None,
-                    continue_to_poll=True,
-                    args_for_next_run={"request_id": request_id,
-                                       "sensor_id": sensor_id,
-                                       **args})
-
+                fail_or_success_list.append(0)
+                build_a_massage += f"""\nThe current percentage of deployment for '{k}' is: {current_percentage_status}%
+                \nAnd the current message is: {current_message_status}\n"""
             else:
-                fail_or_success_list.append("Success")
+                fail_or_success_list.append(1)
 
-            if all(fail_or_success_list):
-                message = CommandResults(
-                    readable_output='The sensor configuration has been deployed successfully.')
+        message = CommandResults(
+            readable_output=f"{build_a_massage}\n\nChecking again in {INTERVAL} seconds...")
+ 
+    if not all(fail_or_success_list):
+        return PollResult(
+            partial_result=message,
+            response=None,
+            continue_to_poll=True,
+            args_for_next_run={"request_id": request_id,
+                               "device_id": device_id,
+                               **args})
 
-                return PollResult(
-                    response=message,
-                    continue_to_poll=False)
+    message = CommandResults(
+        readable_output='The device configuration has been deployed successfully.')
+    return PollResult(
+        response=message,
+        continue_to_poll=False)
 
 
 ''' MAIN FUNCTION '''
@@ -2467,10 +2468,10 @@ def main() -> None:  # pragma: no cover
             results = assign_interface_policy_command(client, args)
         elif command == 'nsm-list-interface-policy':
             results = list_interface_policy_command(client, args)
-        elif command == 'nsm-get-sensor-configuration':
-            results = get_sensor_configuration_command(client, args)
-        elif command == 'nsm-deploy-sensor-configuration':
-            results = deploy_sensor_configuration_command(args, client)
+        elif command == 'nsm-get-device-configuration':
+            results = get_device_configuration_command(client, args)
+        elif command == 'nsm-deploy-device-configuration':
+            results = deploy_device_configuration_command(args, client)
         else:
             raise NotImplementedError('This command is not implemented yet.')
         return_results(results)
