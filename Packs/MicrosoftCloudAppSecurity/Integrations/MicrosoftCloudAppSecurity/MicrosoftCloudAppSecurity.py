@@ -738,7 +738,6 @@ def fetch_incidents(client: Client, max_results: Optional[str], last_run: dict, 
     # removing last 3 digits since api supports 13-digits
     fetch_start_time, fetch_end_time = fetch_start_time[:-3], fetch_end_time[:-3]
 
-    fetch_start_time, fetch_end_time = fetch_start_time, fetch_end_time
     formatted_fetch_start_time_timestamp = format_fetch_start_time_to_timestamp(fetch_start_time)
     demisto.debug(f'{fetch_start_time=}, {formatted_fetch_start_time_timestamp=}')
 
