@@ -406,7 +406,6 @@ class TestCloseFalsePositive:
 
 class TestFetchIncidents:
     LAST_RUN = {}
-    API_TIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%f'
     FREEZE_TIMESTAMP = '2022-05-15T11:00:00.000'
 
     def set_last_run(self, new_last_run):
