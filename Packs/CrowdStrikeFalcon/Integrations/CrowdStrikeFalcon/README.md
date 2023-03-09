@@ -4263,8 +4263,8 @@ Create an ML exclusion.
 | --- | --- | --- |
 | value | Value to match for the exclusion. | Required | 
 | excluded_from | Exclusion excluded from. Possible values are: blocking, extraction. | Required | 
-| comment | Comment describing why the exclusions was created. | Optional | 
-| groups | A comma separated list of group ID(s) impacted by the exclusion OR all if empty default is all. | Required | 
+| comment | Comment describing why the exclusions were created. | Optional | 
+| groups | A comma-separated list of group ID(s) impacted by the exclusion OR all if empty. Default is all. | Required | 
 
 #### Context Output
 
@@ -4274,8 +4274,8 @@ Create an ML exclusion.
 | CrowdStrike.MLExclusion.value | String | The ML exclusion value. | 
 | CrowdStrike.MLExclusion.regexp_value | String | A regular expression for matching the excluded value. | 
 | CrowdStrike.MLExclusion.value_hash | String | An hash of the value field. | 
-| CrowdStrike.MLExclusion.excluded_from | String | What the exclusion applies to \(e.g. a specific ML model\). | 
-| CrowdStrike.MLExclusion.groups.id | String | Groups ID that the exclusion rule is associated with. | 
+| CrowdStrike.MLExclusion.excluded_from | String | What the exclusion applies to \(e.g., a specific ML model\). | 
+| CrowdStrike.MLExclusion.groups.id | String | Group's ID that the exclusion rule is associated with. | 
 | CrowdStrike.MLExclusion.groups.group_type | String | Groups type that the exclusion rule is associated with. | 
 | CrowdStrike.MLExclusion.groups.name | String | Groups name that the exclusion rule is associated with. | 
 | CrowdStrike.MLExclusion.groups.description | String | Groups description that the exclusion rule is associated with. | 
@@ -4338,7 +4338,7 @@ Create an ML exclusion.
 ### cs-falcon-update-ml-exclusion
 
 ***
-Updates an ML exclusions. At least one argument is required in addition of the ID argument.
+Updates an ML exclusion. At least one argument is required in addition to the ID argument.
 
 #### Base Command
 
@@ -4350,7 +4350,7 @@ Updates an ML exclusions. At least one argument is required in addition of the I
 | --- | --- | --- |
 | id | The ID of the exclusion to update. | Required | 
 | value | Value to match for the exclusion (the exclusion pattern). | Optional | 
-| comment | Comment describing why the exclusions was created. | Optional | 
+| comment | Comment describing why the exclusions were created. | Optional | 
 | excluded_from | Group ID(s) explicitly excluded from the exclusion. | Optional | 
 | groups | Group ID(s) impacted by the exclusion. | Optional | 
 
@@ -4362,7 +4362,7 @@ Updates an ML exclusions. At least one argument is required in addition of the I
 | CrowdStrike.MLExclusion.value | String | The ML exclusion value. | 
 | CrowdStrike.MLExclusion.regexp_value | String | A regular expression for matching the excluded value. | 
 | CrowdStrike.MLExclusion.value_hash | String | An hash of the value field. | 
-| CrowdStrike.MLExclusion.excluded_from | String | What the exclusion applies to \(e.g. a specific ML model\). | 
+| CrowdStrike.MLExclusion.excluded_from | String | What the exclusion applies to \(e.g., a specific ML model\). | 
 | CrowdStrike.MLExclusion.groups.id | String | Groups ID that the exclusion rule is associated with. | 
 | CrowdStrike.MLExclusion.groups.group_type | String | Groups type that the exclusion rule is associated with. | 
 | CrowdStrike.MLExclusion.groups.name | String | Groups name that the exclusion rule is associated with. | 
@@ -4427,7 +4427,7 @@ Updates an ML exclusions. At least one argument is required in addition of the I
 ### cs-falcon-delete-ml-exclusion
 
 ***
-Delete the ML exclusions by id.
+Delete the ML exclusions by ID.
 
 #### Base Command
 
@@ -4453,7 +4453,7 @@ There is no context output for this command.
 ### cs-falcon-search-ml-exclusion
 
 ***
-Get a list of ML Exclusions by specifying their IDs, value, or a specific filter.
+Get a list of ML exclusions by specifying their IDs, value, or a specific filter.
 
 #### Base Command
 
@@ -4463,12 +4463,12 @@ Get a list of ML Exclusions by specifying their IDs, value, or a specific filter
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filter | A custom filter in which the exclusions should be filtered. For example `value:”&lt;value&gt;”`. | Optional | 
-| value | The value in which the exclusions should be filtered. | Optional | 
-| ids | The IDs of the exclusions to retrieve. IDs overwrites the filter and value. | Optional | 
+| filter | A custom filter by which the exclusions should be filtered. For example `value:”&lt;value&gt;”`. | Optional | 
+| value | The value by which the exclusions should be filtered. | Optional | 
+| ids | The IDs of the exclusions to retrieve. The IDs overwrite the filter and value. | Optional | 
 | limit | The maximum number of records to return. [1-500]. | Optional | 
 | offset | The offset to start retrieving records from. | Optional | 
-| sort | Hwo to Sort the retrieved exclusions. Possible values are: applied_globally.asc, applied_globally.desc, created_by.asc, created_by.desc, created_on.asc, created_on.desc, last_modified.asc, last_modified.desc, modified_by.asc, modified_by.desc, value.asc, value.desc. | Optional | 
+| sort | How to sort the retrieved exclusions. Possible values are: applied_globally.asc, applied_globally.desc, created_by.asc, created_by.desc, created_on.asc, created_on.desc, last_modified.asc, last_modified.desc, modified_by.asc, modified_by.desc, value.asc, value.desc. | Optional | 
 
 #### Context Output
 
@@ -4477,8 +4477,8 @@ Get a list of ML Exclusions by specifying their IDs, value, or a specific filter
 | CrowdStrike.MLExclusion.id | String | The ML exclusion ID. | 
 | CrowdStrike.MLExclusion.value | String | The ML exclusion value. | 
 | CrowdStrike.MLExclusion.regexp_value | String | A regular expression for matching the excluded value. | 
-| CrowdStrike.MLExclusion.value_hash | String | An hash of the value field. | 
-| CrowdStrike.MLExclusion.excluded_from | String | What the exclusion applies to \(e.g. a specific ML model\). | 
+| CrowdStrike.MLExclusion.value_hash | String | A hash of the value field. | 
+| CrowdStrike.MLExclusion.excluded_from | String | What the exclusion applies to \(e.g., a specific ML model\). | 
 | CrowdStrike.MLExclusion.groups.id | String | Groups ID that the exclusion rule is associated with. | 
 | CrowdStrike.MLExclusion.groups.group_type | String | Groups type that the exclusion rule is associated with. | 
 | CrowdStrike.MLExclusion.groups.name | String | Groups name that the exclusion rule is associated with. | 
@@ -4557,7 +4557,7 @@ Create an IOA exclusion.
 | pattern_id | ID of the exclusion pattern. | Required | 
 | cl_regex | Command line regular expression. | Required | 
 | ifn_regex | Indicator file name regular expression. | Required | 
-| comment | Comment describing why the exclusions was created. | Optional | 
+| comment | Comment describing why the exclusions were created. | Optional | 
 | description | Exclusion description. | Optional | 
 | detection_json | JSON formatted detection template. | Optional | 
 | groups | Group ID(s) impacted by the exclusion. | Required | 
@@ -4572,7 +4572,7 @@ Create an IOA exclusion.
 | CrowdStrike.IOAExclusion.pattern_id | String | The identifier of the pattern associated with the IOA exclusion. | 
 | CrowdStrike.IOAExclusion.pattern_name | String | The name of the pattern associated with the IOA exclusion. | 
 | CrowdStrike.IOAExclusion.ifn_regex | String | A regular expression used for file name matching. | 
-| CrowdStrike.IOAExclusion.cl_regex | String | A regular expression used for command-line matching. | 
+| CrowdStrike.IOAExclusion.cl_regex | String | A regular expression used for command line matching. | 
 | CrowdStrike.IOAExclusion.detection_json | String | A JSON string that describes the detection logic for the IOA exclusion. | 
 | CrowdStrike.IOAExclusion.groups.id | String | Groups ID that the exclusion rule is associated with. | 
 | CrowdStrike.IOAExclusion.groups.group_type | String | Groups type that the exclusion rule is associated with. | 
@@ -4638,7 +4638,7 @@ Create an IOA exclusion.
 ### cs-falcon-update-ioa-exclusion
 
 ***
-Updates an IOA exclusion. At least one argument is required in addition of the ID argument.
+Updates an IOA exclusion. At least one argument is required in addition to the ID argument.
 
 #### Base Command
 
@@ -4669,7 +4669,7 @@ Updates an IOA exclusion. At least one argument is required in addition of the I
 | CrowdStrike.IOAExclusion.pattern_id | String | The identifier of the pattern associated with the IOA exclusion. | 
 | CrowdStrike.IOAExclusion.pattern_name | String | The name of the pattern associated with the IOA exclusion. | 
 | CrowdStrike.IOAExclusion.ifn_regex | String | A regular expression used for file name matching. | 
-| CrowdStrike.IOAExclusion.cl_regex | String | A regular expression used for command-line matching. | 
+| CrowdStrike.IOAExclusion.cl_regex | String | A regular expression used for command line matching. | 
 | CrowdStrike.IOAExclusion.detection_json | String | A JSON string that describes the detection logic for the IOA exclusion. | 
 | CrowdStrike.IOAExclusion.groups.id | String | Groups ID that the exclusion rule is associated with. | 
 | CrowdStrike.IOAExclusion.groups.group_type | String | Groups type that the exclusion rule is associated with. | 
@@ -4735,7 +4735,7 @@ Updates an IOA exclusion. At least one argument is required in addition of the I
 ### cs-falcon-delete-ioa-exclusion
 
 ***
-Delete the IOA exclusions by id.
+Delete the IOA exclusions by ID.
 
 #### Base Command
 
@@ -4762,7 +4762,7 @@ There is no context output for this command.
 ### cs-falcon-search-ioa-exclusion
 
 ***
-Get a list of IOA Exclusions by specifying their IDs or a filter
+Get a list of IOA exclusions by specifying their IDs or a filter
 
 #### Base Command
 
@@ -4772,9 +4772,9 @@ Get a list of IOA Exclusions by specifying their IDs or a filter
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filter | A custom filter in which the exclusions should be filtered. For example `value:”&lt;value&gt;”`. | Optional | 
-| value | The value in which the exclusions should be filtered. | Optional | 
-| ids | The IDs of the exclusions to retrieve. IDs overwrites the filter and value. | Optional | 
+| filter | A custom filter by which the exclusions should be filtered. For example `value:”&lt;value&gt;”`. | Optional | 
+| value | The value by which the exclusions should be filtered. | Optional | 
+| ids | The IDs of the exclusions to retrieve. The IDs overwrite the filter and value. | Optional | 
 | limit | The limit of how many exclusions to retrieve. Default is 50. | Optional | 
 | offset | The offset of how many exclusions to skip. Default is 0. | Optional | 
 
@@ -4788,7 +4788,7 @@ Get a list of IOA Exclusions by specifying their IDs or a filter
 | CrowdStrike.IOAExclusion.pattern_id | String | The identifier of the pattern associated with the IOA exclusion. | 
 | CrowdStrike.IOAExclusion.pattern_name | String | The name of the pattern associated with the IOA exclusion. | 
 | CrowdStrike.IOAExclusion.ifn_regex | String | A regular expression used for file name matching. | 
-| CrowdStrike.IOAExclusion.cl_regex | String | A regular expression used for command-line matching. | 
+| CrowdStrike.IOAExclusion.cl_regex | String | A regular expression used for command line matching. | 
 | CrowdStrike.IOAExclusion.detection_json | String | A JSON string that describes the detection logic for the IOA exclusion. | 
 | CrowdStrike.IOAExclusion.groups.id | String | Groups ID that the exclusion rule is associated with. | 
 | CrowdStrike.IOAExclusion.groups.group_type | String | Groups type that the exclusion rule is associated with. | 
@@ -4842,7 +4842,7 @@ Get a list of IOA Exclusions by specifying their IDs or a filter
 ### cs-falcon-list-quarantined-file
 
 ***
-Get quarantine file metadata by specified ids or a filter.
+Get quarantine file metadata by specified IDs or filter.
 
 #### Base Command
 
@@ -4853,14 +4853,14 @@ Get quarantine file metadata by specified ids or a filter.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | ids | The IDs of the quarantined files to retrieve. | Optional | 
-| filter | A custom filter in which the retrieve quarantined file should be filtered. | Optional | 
-| sha256 | The sha256 of the quarantined files to retrieve. | Optional | 
+| filter | A custom filter by which the retrieve quarantined file should be filtered. | Optional | 
+| sha256 | The SHA256 hash value of the quarantined files to retrieve. | Optional | 
 | filename | The file name of the quarantined files to retrieve. | Optional | 
 | state | Filter the retrieved files by state. | Optional | 
 | hostname | Filter the retrieved files by hostname. | Optional | 
 | username | Filter the retrieved files by username. | Optional | 
 | limit | Maximum number of IDs to return. Max 5000. Default 50. | Optional | 
-| offset | Starting index of overall result set from which to return ids. | Optional | 
+| offset | Starting index of the overall result set from which to return IDs. | Optional | 
 
 #### Context Output
 
@@ -4922,7 +4922,7 @@ Get quarantine file metadata by specified ids or a filter.
 ### cs-falcon-apply-quarantine-file-action
 
 ***
-Update quarantine file metadata by specified ids or a filter.
+Update quarantine file metadata by the specified IDs or a filter.
 
 #### Base Command
 
@@ -4934,13 +4934,13 @@ Update quarantine file metadata by specified ids or a filter.
 | --- | --- | --- |
 | ids | The IDs of the quarantined files to update. | Optional | 
 | action | Action to perform against the quarantined file. Possible values are: delete, release, unrelease. | Required | 
-| comment | Comment to list along with action taken. | Required | 
+| comment | Comment to appear along with the action taken. | Required | 
 | filter | Update files based on a custom filter. | Optional | 
-| sha256 | Update files based on sha256. | Optional | 
-| filename | Update files based on file name. | Optional | 
-| state | Update files based on state. | Optional | 
-| hostname | Update files based on host name. | Optional | 
-| username | Update files based on user names. | Optional | 
+| sha256 | Update files based on the SHA256 hash value. | Optional | 
+| filename | Update files based on the filename. | Optional | 
+| state | Update files based on the state. | Optional | 
+| hostname | Update files based on the hostname. | Optional | 
+| username | Update files based on the usernames. | Optional | 
 
 #### Context Output
 
