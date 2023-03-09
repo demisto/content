@@ -25,7 +25,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": -100
+          "y": 220
         }
       }
     note: false
@@ -124,93 +124,6 @@ tasks:
         "position": {
           "x": 265,
           "y": 660
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "2":
-    id: "2"
-    taskid: 333f85e0-ed76-4131-8ec8-ff26551bab91
-    type: playbook
-    task:
-      id: 333f85e0-ed76-4131-8ec8-ff26551bab91
-      version: -1
-      name: Dedup - Generic v4
-      description: "This playbook identifies duplicate incidents using the Cortex XSOAR machine learning method (script).\nIn this playbook, you can choose fields and/or indicators to be compared against other incidents in the Cortex XSOAR database. \n\nNote: To identify similar incidents you must *must* properly define the playbook inputs. "
-      playbookName: Dedup - Generic v4
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "4"
-    scriptarguments:
-      closeReason:
-        simple: Closed by Dedup Playbook within inc ${incident.id}
-      fromDate:
-        simple: 1 months ago
-      handleSimilar:
-        simple: Link
-      limit:
-        simple: "200"
-      method:
-        simple: Fields and Indicators
-      minimunIncidentSimilarity:
-        simple: "0.2"
-      query:
-        simple: -status:closed -category:job
-      showIncidentSimilarityForAllFields:
-        simple: "True"
-      similarTextField:
-        simple: agnetsid,users,agentsid,CMDline,Hostnames,filenames,filepaths
-    separatecontext: true
-    continueonerrortype: ""
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 340
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "3":
-    id: "3"
-    taskid: 8e2ad4b7-9bf2-464d-86d3-12f11b4c74b1
-    type: title
-    task:
-      id: 8e2ad4b7-9bf2-464d-86d3-12f11b4c74b1
-      version: -1
-      name: Dedup
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "2"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 195
         }
       }
     note: false
@@ -496,7 +409,7 @@ tasks:
       id: d8abe179-60e4-4f0e-8c8c-517847d83785
       version: -1
       name: Soooooo who is the person behind this attack?
-      description: 'In order to answer this you will need to run the CTF_3 automation/script with the provided answer'
+      description: In order to answer this you will need to run the CTF_3 automation/script with the provided answer
       type: regular
       iscommand: false
       brand: ""
@@ -677,14 +590,14 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "4"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 30
+          "y": 350
         }
       }
     note: false
@@ -700,10 +613,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2615,
+        "height": 2295,
         "width": 810,
         "x": 50,
-        "y": -100
+        "y": 220
       }
     }
   }
@@ -711,5 +624,4 @@ inputs: []
 outputs: []
 tests:
 - No tests
-fromversion: 6.8.0
 description: ''
