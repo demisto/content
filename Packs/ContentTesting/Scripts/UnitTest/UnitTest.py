@@ -1,3 +1,4 @@
+# Final Test: 6.10
 import io
 import uuid
 
@@ -15,8 +16,7 @@ def GetAutomationId(name):
 def GetPlaybookId(name):
     playbook = demisto.executeCommand("demisto-api-post", {
         'uri': "/playbook/search",
-        "body":
-            {'query': "name:" + name}
+        "body": {"query": "name:" + f'"{name}"'}
     })[0]['Contents']['response']['playbooks']
     if playbook is None:
         return "-1"
@@ -27,10 +27,10 @@ def GetPlaybookId(name):
 def RunUTResults(args):
     try:
         # Set up the task arguments
-        scriptid = GetAutomationId("UnitTestResults")
         addafter = args['addafter']
         incid = args['incid']
         gridfld = args['gridfield']
+        scriptid = GetAutomationId("UnitTestResults")
         newargs = {
             'cmds': {'simple': ",".join(args['cmds'])},
             'tasks': {'simple': ",".join(args['tasks'])},

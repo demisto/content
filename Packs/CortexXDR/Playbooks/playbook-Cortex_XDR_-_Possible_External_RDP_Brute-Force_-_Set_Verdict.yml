@@ -299,7 +299,7 @@ tasks:
     timertriggers: []
     ignoreworker: false
     fieldMapping:
-    - incidentfield: XDR Related Alerts
+    - incidentfield: XDR Alert Search Results
       output:
         complex:
           root: inputs.RelatedAlerts

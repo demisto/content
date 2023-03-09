@@ -23,7 +23,7 @@ function toArray(value, raw) {
 }
 
 if (!args.item) {
-    return args.value;
+    return args.value === null ? [] : args.value;
 }
 var vals1 = toArray(args.value, true);
 var vals2 = toArray(args.item, toBoolean(args.raw));

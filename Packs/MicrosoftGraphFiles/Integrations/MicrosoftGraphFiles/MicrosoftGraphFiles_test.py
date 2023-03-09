@@ -555,3 +555,39 @@ def test_upload_command_without_upload_session(mocker, client, args):
                              '\n| 2022-12-15T12:56:27Z | some_id | some_pdf.pdf | 3028 | https://some_url/some_pdf.pdf |\n'
     assert result == return_value_upload_without_upload_session
     assert context == return_context
+
+
+@pytest.mark.parametrize(argnames='client_id', argvalues=['test_client_id', None])
+def test_test_module_command_with_managed_identities(mocker, requests_mock, client_id):
+    """
+        Given:
+            - Managed Identities client id for authentication.
+        When:
+            - Calling test_module.
+        Then:
+            - Ensure the output are as expected.
+    """
+    from MicrosoftGraphFiles import main, MANAGED_IDENTITIES_TOKEN_URL, Resources
+    import demistomock as demisto
+    import re
+
+    mock_token = {'access_token': 'test_token', 'expires_in': '86400'}
+    get_mock = requests_mock.get(MANAGED_IDENTITIES_TOKEN_URL, json=mock_token)
+    requests_mock.get(re.compile(f'^{Resources.graph}.*'), json={})
+
+    params = {
+        'managed_identities_client_id': {'password': client_id},
+        'authentication_type': 'Azure Managed Identities',
+        'host': Resources.graph
+    }
+    mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(demisto, 'command', return_value='test-module')
+    mocker.patch.object(demisto, 'results', return_value=params)
+    mocker.patch('MicrosoftApiModule.get_integration_context', return_value={})
+
+    main()
+
+    assert 'ok' in demisto.results.call_args[0][0]
+    qs = get_mock.last_request.qs
+    assert qs['resource'] == [Resources.graph]
+    assert client_id and qs['client_id'] == [client_id] or 'client_id' not in qs

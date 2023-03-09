@@ -457,5 +457,6 @@
 				"type": "custom"
 			}
 		]
-    }
+    },
+    "marketplaces": ["xsoar"]
 }

@@ -1,11 +1,10 @@
-Searches Cortex XSOAR incidents
+Searches Demisto incidents. A summarized version of this scrips is avilable with the summarizedversion argument.
 
 ## Permissions
 ---
 
 This automation runs using the default Limited User role, unless you explicitly change the permissions.
-For more information, see the section about permissions here: [https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
-](https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html)
+For more information, see the section about permissions here: [https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations)
 
 ## Script Data
 ---
@@ -18,36 +17,74 @@ For more information, see the section about permissions here: [https://docs.palo
 
 ## Used In
 ---
-This script is used in the following playbooks and scripts.
+Sample usage of this script can be found in the following playbooks and scripts.
+* Endpoint Investigation Plan
 * ExtraHop - Ticket Tracking
+* Kaseya VSA  0-day - REvil Ransomware Supply Chain Attack
+* MDE - False Positive Incident Handling
+* MDE - True Positive Incident Handling
+* Prisma Cloud Correlate Alerts
+* Ransomware Enrich and Contain
 * SafeBreach - Create Incidents per Insight and Associate Indicators
-* Send Investigation Summary Reports
+* SolarStorm and SUNBURST Hunting and Response Playbook
+* Spring Core and Cloud Function SpEL RCEs
+
+<!--
+Used In: list was truncated. Full list commented out for reference:
+
+Assign Active Incidents to Next Shift V2
+CVE-2021-40444 - MSHTML RCE
+Cortex XDR - PrintNightmare Detection and Response
+DSAR Inventa Handler
+Endpoint Investigation Plan
+Enrichment for Verdict
+ExtraHop - Ticket Tracking
+ExtraHop - Ticket Tracking v2
+HAFNIUM - Exchange 0-day exploits
+Kaseya VSA  0-day - REvil Ransomware Supply Chain Attack
+MDE - False Positive Incident Handling
+MDE - True Positive Incident Handling
+NGFW Scan
+NOBELIUM - wide scale APT29 spear-phishing
+NSA - 5 Security Vulnerabilities Under Active Nation-State Attack
+Phishing Alerts Investigation
+Prisma Cloud Correlate Alerts
+Ransomware Enrich and Contain
+SafeBreach - Create Incidents per Insight and Associate Indicators
+Send Investigation Summary Reports
+Shift handover
+SolarStorm and SUNBURST Hunting and Response Playbook
+Spring Core and Cloud Function SpEL RCEs
+ -->
 
 ## Inputs
 ---
 
-| **Argument Name** | **Description** |
-| --- | --- |
-| id | A comma-separated list of incident IDs by which to filter the results. |
-| name | A comma-separated list of incident names by which to filter the results. |
-| status | A comma-separated list of incident statuses by which to filter the results. For example: assigned. |
-| notstatus | A comma-separated list of incident statuses to exclude from the results.  For example: assigned. |
-| reason | A comma-separated list of incident close reasons by which to filter the results. |
-| fromdate | Filter by from date \(e.g. 2006-01-02T15:04:05\+07:00 or 2006-01-02T15:04:05Z\) |
-| todate | Filter by to date \(e.g. 2006-01-02T15:04:05\+07:00 or 2006-01-02T15:04:05Z\) |
-| fromclosedate | Filter by from close date \(e.g. 2006-01-02T15:04:05\+07:00 or 2006-01-02T15:04:05Z\) |
-| toclosedate | Filter by to close date \(e.g. 2006-01-02T15:04:05\+07:00 or 2006-01-02T15:04:05Z\) |
-| fromduedate | Filter by from due date \(e.g. 2006-01-02T15:04:05\+07:00 or 2006-01-02T15:04:05Z\) |
-| toduedate | Filter by to due date \(e.g. 2006-01-02T15:04:05\+07:00 or 2006-01-02T15:04:05Z\) |
-| level | Filter by Severity |
-| owner | Filter by incident owners |
-| details | Filter by incident details |
-| type | Filter by incident type |
-| query | Use free form query \(use Lucene syntax\) as filter. All other filters will be ignored when this filter is used. |
-| page | Filter by the page number |
-| size | Number of incidents per page \(per fetch\) |
-| sort | Sort in format of field.asc,field.desc,... |
-| searchresultslabel | If provided, the value of this argument will be set under the searchResultsLabel context key for each incident found. |
+| **Argument Name**  | **Description**                                                                                                                                                                                                                                      |
+|--------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| id                 | A comma-separated list of incident IDs by which to filter the results.                                                                                                                                                                               |
+| name               | A comma-separated list of incident names by which to filter the results.                                                                                                                                                                             |
+| status             | A comma-separated list of incident statuses by which to filter the results. For example: assigned.                                                                                                                                                   |
+| notstatus          | A comma-separated list of incident statuses to exclude from the results.  For example: assigned.                                                                                                                                                     |
+| reason             | A comma-separated list of incident close reasons by which to filter the results.                                                                                                                                                                     |
+| fromdate           | Filter by from date \(e.g. "3 days ago" or 2006-01-02T15:04:05\+07:00 or 2006-01-02T15:04:05Z\)                                                                                                                                                      |
+| todate             | Filter by to date \(e.g. "3 days ago" or 2006-01-02T15:04:05\+07:00 or 2006-01-02T15:04:05Z\)                                                                                                                                                        |
+| fromclosedate      | Filter by from close date \(e.g. 2006-01-02T15:04:05\+07:00 or 2006-01-02T15:04:05Z\)                                                                                                                                                                |
+| toclosedate        | Filter by to close date \(e.g. 2006-01-02T15:04:05\+07:00 or 2006-01-02T15:04:05Z\)                                                                                                                                                                  |
+| fromduedate        | Filter by from due date \(e.g. 2006-01-02T15:04:05\+07:00 or 2006-01-02T15:04:05Z\)                                                                                                                                                                  |
+| toduedate          | Filter by to due date \(e.g. 2006-01-02T15:04:05\+07:00 or 2006-01-02T15:04:05Z\)                                                                                                                                                                    |
+| level              | Filter by Severity                                                                                                                                                                                                                                   |
+| owner              | Filter by incident owners                                                                                                                                                                                                                            |
+| details            | Filter by incident details                                                                                                                                                                                                                           |
+| type               | Filter by incident type                                                                                                                                                                                                                              |
+| query              | Use free form query \(use Lucene syntax\) as filter. All other filters will be ignored when this filter is used.                                                                                                                                     |
+| page               | Filter by the page number (deprecated)                                                                                                                                                                                                               |
+| trimevents         | The number of events to return from the alert JSON. The default is 0, which returns all events.<br/>Note that the count is from the head of the list, regardless of event time or other properties.                                                  |
+| size               | Number of incidents per page \(per fetch\) (deprecated)                                                                                                                                                                                              |
+| sort               | Sort in format of field.asc,field.desc,...                                                                                                                                                                                                           |
+| searchresultslabel | If provided, the value of this argument will be set under the searchResultsLabel context key for each incident found.                                                                                                                                |
+| summarizedversion  | If enabled runs a summarized version of this script. Disables auto-extract, sets fromDate to 30 days, and minimizes the context output. You can add sepcific fields to context using the add_fields_to_summarize_context argument. Default is false. |
+| limit              | The maximum number of incidents to be returned. Default is 100.                                                                                                                                                                                      |
 
 ## Outputs
 ---

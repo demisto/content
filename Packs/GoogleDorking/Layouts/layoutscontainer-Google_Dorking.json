@@ -476,5 +476,6 @@
     "name": "Google Dorking",
     "system": false,
     "version": -1,
-    "description": ""
+    "description": "",
+    "marketplaces": ["xsoar"]
 }

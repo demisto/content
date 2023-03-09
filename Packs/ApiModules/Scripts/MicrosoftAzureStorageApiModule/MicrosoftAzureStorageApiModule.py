@@ -1,6 +1,9 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
+from CommonServerPython import *  # noqa: F401
+import demistomock as demisto  # noqa: F401
+
+MANAGED_IDENTITIES_TOKEN_URL = 'http://169.254.169.254/metadata/identity/oauth2/token?' \
+                               'api-version=2018-02-01&resource=https://storage.azure.com/'
+MANAGED_IDENTITIES_SYSTEM_ASSIGNED = 'SYSTEM_ASSIGNED'
 
 
 class MicrosoftStorageClient(BaseClient):
@@ -8,12 +11,19 @@ class MicrosoftStorageClient(BaseClient):
     Microsoft Azure Storage API Client
     """
 
-    def __init__(self, server_url, verify, proxy, account_sas_token, storage_account_name, api_version):
+    def __init__(self, server_url, verify, proxy,
+                 account_sas_token, storage_account_name,
+                 api_version, managed_identities_client_id: Optional[str] = None):
         super().__init__(base_url=server_url, verify=verify, proxy=proxy)
         self._account_sas_token = account_sas_token
         self._storage_account_name = storage_account_name
         self._api_version = api_version
         self._base_url = server_url
+
+        self._managed_identities_client_id = managed_identities_client_id
+        if self._managed_identities_client_id:
+            token, _ = self._get_managed_identities_token()
+            self._headers = {'Authorization': f'Bearer {token}'}
 
     def http_request(
             self, *args, url_suffix="", params=None, resp_type='response', headers=None,
@@ -46,13 +56,17 @@ class MicrosoftStorageClient(BaseClient):
             # The updated url_suffix after performing this logic will be:
             # url_suffix = 'container?sv=2020-08-04&ss=ay&spr=https&sig=s5&restype=directory&comp=list'
             params_query = self.params_dict_to_query_string(params, prefix='')
-            url_suffix = f'{url_suffix}{self._account_sas_token}{params_query}'
+            uri_token_part = self._account_sas_token if self._account_sas_token else '?'
+            url_suffix = f'{url_suffix}{uri_token_part}{params_query}'
             params = None
 
         default_headers = {'x-ms-version': self._api_version}
 
         if headers:
             default_headers.update(headers)
+
+        if self._headers:
+            default_headers.update(self._headers)
 
         response = super()._http_request(  # type: ignore[misc]
             *args, url_suffix=url_suffix, params=params, resp_type='response', headers=default_headers,
@@ -88,6 +102,32 @@ class MicrosoftStorageClient(BaseClient):
         except ValueError as exception:
             raise DemistoException('Failed to parse json object from response: {}'.format(response.content), exception)
 
+    def _get_managed_identities_token(self):
+        """
+        Gets a token based on the Azure Managed Identities mechanism
+        in case user was configured the Azure VM and the other Azure resource correctly
+        """
+        try:
+            # system assigned are restricted to one per resource and is tied to the lifecycle of the Azure resource
+            # see https://learn.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview
+            demisto.debug('try to get token based on the Managed Identities')
+            use_system_assigned = (self._managed_identities_client_id == MANAGED_IDENTITIES_SYSTEM_ASSIGNED)
+            params = {}
+            if not use_system_assigned:
+                params['client_id'] = self._managed_identities_client_id
+            response_json = requests.get(MANAGED_IDENTITIES_TOKEN_URL,
+                                         params=params, headers={'Metadata': 'True'}).json()
+            access_token = response_json.get('access_token')
+            expires_in = int(response_json.get('expires_in', 3595))
+            if access_token:
+                return access_token, expires_in
+
+            err = response_json.get('error_description')
+        except Exception as e:
+            err = f'{str(e)}'
+
+        return_error(f'Error in Microsoft authorization with Azure Managed Identities: {err}')
+
     def params_dict_to_query_string(self, params: dict = None, prefix: str = "") -> str:
         """
         Convert request params to string query.
@@ -116,3 +156,22 @@ class NotFoundError(Exception):
 
     def __init__(self, message):
         self.message = message
+
+
+def get_azure_managed_identities_client_id(params: dict) -> Optional[str]:
+    """"extract the Azure Managed Identities from the demisto params
+
+    Args:
+        params (dict): the demisto params
+
+    Returns:
+        Optional[str]: if the use_managed_identities are True
+        the managed_identities_client_id or MANAGED_IDENTITIES_SYSTEM_ASSIGNED
+        will return, otherwise - None
+
+    """
+    auth_type = params.get('auth_type') or params.get('authentication_type')
+    if params and (argToBoolean(params.get('use_managed_identities') or auth_type == 'Azure Managed Identities')):
+        client_id = params.get('managed_identities_client_id', {}).get('password')
+        return client_id or MANAGED_IDENTITIES_SYSTEM_ASSIGNED
+    return None
