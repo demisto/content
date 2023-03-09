@@ -1226,6 +1226,7 @@ tasks:
               else:
                 value:
                   simple: foundIncidents.CustomFields.initiatorpath
+                iscontext: true
               equals: {}
               lhs:
                 value:
@@ -1239,6 +1240,7 @@ tasks:
               then:
                 value:
                   simple: foundIncidents.CustomFields.filepath
+                iscontext: true
           - operator: uniq
       FileRemediation:
         complex:
@@ -2011,7 +2013,7 @@ inputs:
             value:
               simple: .=pickvalue(val);function pickvalue(x){if(x.filesha256){return x.filesha256} else {return x.initiatorsha256}}
   required: false
-  description: The SHA256 hash of the file to respond to.
+  description: The SHA256 hash of the file to respond to. Decided by the DT expression wether it's the initiator or the target file SHA256.
   playbookInputQuery:
 - key: Path
   value:
@@ -2024,7 +2026,7 @@ inputs:
             value:
               simple: .=pickvalue(val);function pickvalue(x){if(x.filepath){return x.filepath} else {return x.initiatorpath}}
   required: false
-  description: The path of the file to respond to.
+  description: The path of the file to respond to. Decided by the DT expression wether it's the initiator or the target file path.
   playbookInputQuery:
 - key: Query
   value:
@@ -2055,7 +2057,7 @@ inputs:
             value:
               simple: ${alert= '(filesha256:"' + val.filesha256 + '" or hostip:"' + val.hostip + '") ' + 'and sourceBrand:"' + val.sourceBrand + '" and name:"' + val.name + '"'}
   required: false
-  description: The query for searching previous alerts based on the file we want to respond to.
+  description: The query for searching previous alerts based on the file we want to respond to. Decided by the If-Then-Else expression wether it's the initiator or the target file.
   playbookInputQuery:
 outputs: []
 tests:

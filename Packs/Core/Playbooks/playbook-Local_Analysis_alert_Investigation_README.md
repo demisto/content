@@ -41,13 +41,13 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Enrichment for Verdict
-* Eradication Plan
-* Wildfire Detonate and Analyze File
-* Handle False Positive Alerts
-* Endpoint Investigation Plan
 * Containment Plan
 * Recovery Plan
+* Endpoint Investigation Plan
+* Wildfire Detonate and Analyze File
+* Handle False Positive Alerts
+* Enrichment for Verdict
+* Eradication Plan
 
 ### Integrations
 
@@ -61,10 +61,10 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ### Commands
 
 * closeInvestigation
-* core-report-incorrect-wildfire
-* core-retrieve-file-details
-* core-retrieve-files
 * internal-wildfire-get-report
+* core-report-incorrect-wildfire
+* core-retrieve-files
+* core-retrieve-file-details
 
 ## Playbook Inputs
 
@@ -80,9 +80,9 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | AutoCloseAlert | Whether to close the alert automatically or manually, after an analyst's review. | False | Optional |
 | ShouldRescanBenign | Whether to rescan \(Using WildFire detonate file\) benign files. | True | Optional |
 | ShouldManualReviewFP | Whether to ask for a manual review before false positive handling. Should be True or False | False | Optional |
-| SHA256 | The SHA256 hash of the file to respond to. | alert | Optional |
-| Path | The path of the file to respond to. | alert | Optional |
-| Query | The query for searching previous alerts based on the file we want to respond to. | alert | Optional |
+| SHA256 | The SHA256 hash of the file to respond to. Decided by the DT expression wether it's the initiator or the target file SHA256. | alert | Optional |
+| Path | The path of the file to respond to. Decided by the DT expression wether it's the initiator or the target file path. | alert | Optional |
+| Query | The query for searching previous alerts based on the file we want to respond to. Decided by the If-Then-Else expression wether it's the initiator or the target file. | alert | Optional |
 
 ## Playbook Outputs
 
