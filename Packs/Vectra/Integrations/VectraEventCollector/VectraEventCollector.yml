@@ -45,7 +45,6 @@ script:
       auto: PREDEFINED
       description: If true, the command will create events, otherwise it will only display them. Default is false.
       isArray: false
-      defaultvalue: false
       predefined:
       - 'true'
       - 'false'
