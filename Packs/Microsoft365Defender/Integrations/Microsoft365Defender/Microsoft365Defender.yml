@@ -63,6 +63,7 @@ configuration:
   type: 14
   section: Connect
   advanced: true
+  hidden: true
 - additionalinfo: Relevant only if the integration is running on Azure VM. 
     If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field.
     If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity.
