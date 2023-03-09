@@ -1645,8 +1645,10 @@ def resolve_incident(ids: List[str], status: str):
                                f'Status given is {status} and it is not in {STATUS_TEXT_TO_NUM.keys()}')
     return update_incident_request(ids, STATUS_TEXT_TO_NUM[status], 'update_status')
 
+
 def update_incident_comment(ids: List[str], comment: str):
     return update_incident_request(ids, comment, 'add_comment')
+
 
 def update_incident_request(ids: List[str], value: str, action_name: str):
     data = {
@@ -3607,10 +3609,12 @@ def resolve_incident_command(ids: List[str], status: str):
     readable = '\n'.join([f'{incident_id} changed successfully to {status}' for incident_id in ids])
     return CommandResults(readable_output=readable)
 
+
 def update_incident_comment_command(ids: List[str], comment: str):
     update_incident_comment(ids, comment)
     readable = '\n'.join([f'{incident_id} updated successfully with comment \"{comment}\"' for incident_id in ids])
     return CommandResults(readable_output=readable)
+
 
 def list_host_groups_command(filter: Optional[str] = None, offset: Optional[str] = None, limit: Optional[str] = None) \
         -> CommandResults:
@@ -4242,7 +4246,7 @@ def main():
                                                     ids=argToList(args.get('ids'))))
         elif command == 'cs-falcon-update-incident-comment':
             return_results(update_incident_comment_command(comment=args.get('comment'),
-                                                    ids=argToList(args.get('ids'))))
+                                                           ids=argToList(args.get('ids'))))
         elif command == 'cs-falcon-batch-upload-custom-ioc':
             return_results(upload_batch_custom_ioc_command(**args))
 
