@@ -129,10 +129,10 @@ def test_module(client: VectraClient) -> str:
     to them so we check if these endpoints exist in the response.
 
     Arguments:
-                                    - ``client` (``VectraClient``): An instance of a Vectra API HTTP client.
+                                                                    - ``client` (``VectraClient``): An instance of a Vectra API HTTP client.
 
     Returns:
-                                    `str` `'ok'` if test passed, anything else will raise an exception.
+                                                                    `str` `'ok'` if test passed, anything else will raise an exception.
     """
 
     demisto.info(f"Testing connection and authentication to {client._base_url}...")
@@ -161,32 +161,34 @@ def get_detections_cmd(client: VectraClient, first_timestamp: str) -> CommandRes
     """
 
     detections: List[Dict[str, Any]] = client.get_detections(first_timestamp=first_timestamp).get("results", [])  # type: ignore
+    if detections:
+        md = tableToMarkdown(
+            f"Detections since {first_timestamp}",
+            detections,
+            headers=[
+                "id",
+                "is_triaged",
+                "assigned_to",
+                "detection",
+                "src_ip",
+                "state",
+                "threat",
+                "certainty",
+            ],
+        )
 
-    md = tableToMarkdown(
-        f"Detections since {first_timestamp}",
-        detections,
-        headers=[
-            "id",
-            "is_triaged",
-            "assigned_to",
-            "detection",
-            "src_ip",
-            "state",
-            "threat",
-            "certainty",
-        ],
-    )
-
-    results = CommandResults(
-        outputs_prefix=f"{VENDOR}.Detections",
-        outputs_key_field="id",
-        outputs=detections,
-        readable_output=md
-        if detections
-        else f"""No detections found from {first_timestamp} until now.
-        Change the **First fetch time** in the integration settings and try again or try using a different integration instance
-        using ***using=***.""",
-    )
+        results = CommandResults(
+            outputs_prefix=f"{VENDOR}.Detections",
+            outputs_key_field="id",
+            outputs=detections,
+            readable_output=md,
+        )
+    else:
+        results = CommandResults(
+            readable_output=f"""No detections found from {first_timestamp} until now.
+            Change the **First fetch time** in the integration settings and try again or try using a different integration
+            instance using ***using=***."""
+        )
 
     return results
 
@@ -205,19 +207,21 @@ def get_audits_cmd(client: VectraClient, start: str) -> CommandResults:
     """
 
     audits: List[Dict[str, Any]] = client.get_audits(start=start).get("audits", [])  # type: ignore
+    if audits:
+        md = tableToMarkdown(f"Audits since {start}", audits)
 
-    md = tableToMarkdown(f"Audits since {start}", audits)
+        results = CommandResults(
+            outputs_prefix=f"{VENDOR}.Audits", outputs=audits, readable_output=md
+        )
 
-    results = CommandResults(
-        outputs_prefix=f"{VENDOR}.Audits",
-        outputs=audits,
-        readable_output=md
-        if audits
-        else f"""
-        No audits found from {start} until now.
-        Change the **First fetch time** in the integration settings and try again or
-        try using a different integration instance using ***using=***.""",
-    )
+    else:
+
+        results = CommandResults(
+            readable_output=f"""
+            No audits found from {start} until now.
+            Change the **First fetch time** in the integration settings and try again or
+            try using a different integration instance using ***using=***.""",
+        )
 
     return results
 
@@ -298,7 +302,7 @@ def fetch_events(
     else:
         demisto.info(
             f"""Skipping audits since it's not the end of the day (UTC),
-            it's {now.strftime(DETECTION_FIRST_TIMESTAMP_QUERY_START_FORMAT)}"""
+			it's {now.strftime(DETECTION_FIRST_TIMESTAMP_QUERY_START_FORMAT)}"""
         )
         audits = []
         next_run_audit_str = start
@@ -341,12 +345,12 @@ def get_events(
     Command function to retrieve detections and audits.
 
     Arguments:
-                                    - `client` (``VectraClient``): An instance of a Vectra API HTTP client.
-                                    - `first_fetch` (``datetime``): Parameter used as starting range to retrieve detections.
+                                                                    - `client` (``VectraClient``): An instance of a Vectra API HTTP client.
+                                                                    - `first_fetch` (``datetime``): Parameter used as starting range to retrieve detections.
 
     Returns:
-                                    - `CommandResults` of detections to War Room.
-                                    - `CommandResults` of audits to War Room.
+                                                                    - `CommandResults` of detections to War Room.
+                                                                    - `CommandResults` of audits to War Room.
     """
 
     detection_res = get_detections_cmd(
