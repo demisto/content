@@ -3068,7 +3068,7 @@ def set_xsoar_incident_entries(mirrored_object: dict, entries: list, remote_inci
         return entries
     elif mirrored_object.get("threatInfo", {}).get("incidentStatus") in (
         set(INCIDENT_STATUS) - {"resolved"}
-    ):
+    ) and close_xsoar_incident:
         demisto.debug(f"Incident is reopened: {remote_incident_id}")
         entries.append(
             {
@@ -3078,6 +3078,8 @@ def set_xsoar_incident_entries(mirrored_object: dict, entries: list, remote_inci
             }
         )
         return entries
+    else:
+        return []
 
 
 def get_remote_incident_data(client: Client, remote_incident_id: str):
@@ -3118,6 +3120,7 @@ def get_remote_data_command(client: Client, args: dict, params: dict):
         )
         mirrored_data = get_remote_incident_data(client, remote_incident_id)
         if mirrored_data:
+            demisto.debug("Successfully fetched the remote incident data")
             close_xsoar_incident = params.get("close_xsoar_incident", False)
             entries = set_xsoar_incident_entries(mirrored_data, entries, remote_incident_id, close_xsoar_incident)
         else:
