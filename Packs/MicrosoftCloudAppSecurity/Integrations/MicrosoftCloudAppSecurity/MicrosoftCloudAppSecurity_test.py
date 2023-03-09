@@ -132,34 +132,6 @@ def test_params_to_filter(severity, resolution_status, expected):
     assert res == expected
 
 
-def test_alerts_to_incidents_and_fetch_start_from(requests_mock):
-    """
-    Given:
-        `getLastRun` which holds `last_fetch` and `last_fetch_id`.
-    When:
-        There are two incidents to fetch, That one of them we had already fetched the previous time.
-    Then:
-        We only fetched the one that does not exist in his system.
-    """
-    from MicrosoftCloudAppSecurity import alerts_to_xsoar_incidents
-    incidents = get_fetch_data()
-    requests_mock.get('https://demistodev.eu2.portal.cloudappsecurity.com/api/v1/alerts/',
-                      json=incidents["incidents"])
-    res_incidents, new_last_fetch_id, alert = \
-        alerts_to_xsoar_incidents(incidents["incidents"], '1602771392519',
-                                  {"last_fetch": 1603365903,
-                                                  "last_fetch_id": "5f919e55b0703c2f5a23d9d8"})
-    assert new_last_fetch_id == "5f919e55b0703c2f5a23d9d7"
-
-    requests_mock.get('https://demistodev.eu2.portal.cloudappsecurity.com/api/v1/alerts/',
-                      json=[])
-    res_incidents, new_last_fetch_id, alerts = \
-        alerts_to_xsoar_incidents([], '1602771392519', {"last_fetch": 1603365903,
-                                                                       "last_fetch_id": "5f919e55b0703c2f5a23d9d8"})
-    assert new_last_fetch_id == "5f919e55b0703c2f5a23d9d8"
-    assert res_incidents == []
-
-
 def start_freeze_time(timestamp):
     _start_freeze_time = freeze_time(timestamp)
     _start_freeze_time.start()

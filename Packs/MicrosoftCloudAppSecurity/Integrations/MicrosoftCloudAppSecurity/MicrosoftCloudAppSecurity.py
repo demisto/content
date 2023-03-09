@@ -726,6 +726,7 @@ def fetch_incidents(client: Client, max_results: Optional[str], last_run: dict, 
         last_run=last_run, first_fetch=first_fetch, look_back=look_back, date_format=date_format
     )
 
+    # remove the last 3 chars because the api knows to work with 13 digits only
     fetch_start_time, fetch_end_time = fetch_start_time[:-3], fetch_end_time[:-3]
 
     formatted_fetch_start_time = format_fetch_start_time_to_timestamp(fetch_start_time)
