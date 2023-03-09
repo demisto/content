@@ -302,7 +302,7 @@ def fetch_events(
     else:
         demisto.info(
             f"""Skipping audits since it's not the end of the day (UTC),
-			it's {now.strftime(DETECTION_FIRST_TIMESTAMP_QUERY_START_FORMAT)}"""
+            it's {now.strftime(DETECTION_FIRST_TIMESTAMP_QUERY_START_FORMAT)}"""
         )
         audits = []
         next_run_audit_str = start
@@ -345,12 +345,12 @@ def get_events(
     Command function to retrieve detections and audits.
 
     Arguments:
-                                                                    - `client` (``VectraClient``): An instance of a Vectra API HTTP client.
-                                                                    - `first_fetch` (``datetime``): Parameter used as starting range to retrieve detections.
+    - `client` (``VectraClient``): An instance of a Vectra API HTTP client.
+    - `first_fetch` (``datetime``): Parameter used as starting range to retrieve detections.
 
     Returns:
-                                                                    - `CommandResults` of detections to War Room.
-                                                                    - `CommandResults` of audits to War Room.
+    - `CommandResults` of detections to War Room.
+    - `CommandResults` of audits to War Room.
     """
 
     detection_res = get_detections_cmd(
@@ -409,16 +409,16 @@ def main() -> None:  # pragma: no cover
                 if argToBoolean(args.pop("should_push_events")):
                     demisto.info(
                         f"Sending {len(detections_cmd_res.outputs)} detections to XSIAM..."
-                    )
+                    )  # type: ignore
                     send_events_to_xsiam(
                         detections_cmd_res.outputs, vendor=VENDOR, product=client.endpoints[0]
                     )
-                    demisto.info(f"{len(detections_cmd_res.outputs)} detections sent to XSIAM.")
-                    demisto.info(f"Sending {len(audits_cmd_res.outputs)} audits to XSIAM...")
+                    demisto.info(f"{len(detections_cmd_res.outputs)} detections sent to XSIAM.")  # type: ignore
+                    demisto.info(f"Sending {len(audits_cmd_res.outputs)} audits to XSIAM...")  # type: ignore
                     send_events_to_xsiam(
                         audits_cmd_res.outputs, vendor=VENDOR, product=client.endpoints[1]
                     )
-                    demisto.info(f"{len(audits_cmd_res.outputs)} audits sent to XSIAM.")
+                    demisto.info(f"{len(audits_cmd_res.outputs)} audits sent to XSIAM.")  # type: ignore
 
             # fetch-events
             else:
