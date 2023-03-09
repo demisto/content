@@ -22,8 +22,8 @@ configuration:
   required: false
   defaultvalue: V.9x
   options:
-  - V.9x
-  - V.10x
+  - V9x
+  - V10x
   type: 15
   section: Connect  
 - display: Trust any certificate (not secure)

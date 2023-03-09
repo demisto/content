@@ -1223,7 +1223,7 @@ def list_domain_rule_objects_command(client: Client, args: Dict) -> CommandResul
     response = client.list_domain_rule_objects_request(domain_id, rule_type)
     results = pagination(response.get('RuleObjDef', []), limit, page, page_size)
     # modify the results in v10 to match the v9 pattern
-    if VERSION == "V.10x":
+    if VERSION == "V10x":
         results = modify_v10_results_to_v9_format(results)
 
     contents = []
@@ -1263,7 +1263,7 @@ def get_rule_object_command(client: Client, args: Dict) -> CommandResults:
     response = response.get('RuleObjDef', {})
     addresses = get_addresses_from_response(response)
     # modify the results in v10 to match the v9 pattern
-    if VERSION == "V.10x":
+    if VERSION == "V10x":
         response = modify_v10_results_to_v9_format([response])[0]
     addresses = get_addresses_from_response(response)
     response['ruleobjType'] = reverse_rule_object_type_cases(response.get('ruleobjType'))
@@ -1335,7 +1335,7 @@ def create_rule_object_command(client: Client, args: Dict) -> CommandResults:
         'ToAddress': to_address
     }]
     # create the body according to the version of the NSM
-    if VERSION == "V.10x":
+    if VERSION == "V10x":
         d_name, extra_body = create_body_create_rule_for_v10(rule_type=rule_type, address=address,
                                                              number=number, from_to_list=from_to_list,
                                                              state=state)
@@ -1489,7 +1489,7 @@ def update_rule_object_command(client: Client, args: Dict) -> CommandResults:
     number = 4 if (address_ip_v_4 or from_to_address_ip_v_4) else 6
     from_to_list = from_to_address_ip_v_4 if from_to_address_ip_v_4 else from_to_address_ip_v_6
     # create the body according to the version of the NSM
-    if VERSION == "V.10x":
+    if VERSION == "V10x":
         d_name, extra_body = create_body_create_rule_for_v10(rule_type=rule_type, address=address,
                                                              number=number, from_to_list=from_to_list,
                                                              state=state)
