@@ -2942,6 +2942,466 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "80":
+    id: "80"
+    taskid: e490cdeb-571f-42a2-8ebb-7cb445c20c23
+    type: regular
+    task:
+      id: e490cdeb-571f-42a2-8ebb-7cb445c20c23
+      version: -1
+      name: Create ML exclusion
+      description: Create an ML exclusion.
+      script: '|||cs-falcon-create-ml-exclusion'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "81"
+    scriptarguments:
+      excluded_from:
+        simple: blocking
+      groups:
+        simple: 7471ba0636b34cbb8c65fae7979a6a9b
+      value:
+        simple: demo-test
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1852.5,
+          "y": 530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "81":
+    id: "81"
+    taskid: 8ab18e1f-3b52-49cb-89ce-740c6596524a
+    type: regular
+    task:
+      id: 8ab18e1f-3b52-49cb-89ce-740c6596524a
+      version: -1
+      name: Update ML exclusion
+      description: Updates an ML exclusions. At least one argument is required in
+        addition of the ID argument.
+      script: '|||cs-falcon-update-ml-exclusion'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "82"
+    scriptarguments:
+      comment:
+        simple: demo comment
+      id:
+        complex:
+          root: CrowdStrike.MLExclusion
+          accessor: id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1852.5,
+          "y": 705
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "82":
+    id: "82"
+    taskid: 87c023a5-1a87-4587-80b0-fd7139a47fb7
+    type: regular
+    task:
+      id: 87c023a5-1a87-4587-80b0-fd7139a47fb7
+      version: -1
+      name: Search ML exclusion
+      description: Get a list of ML Exclusions by specifying their IDs, value, or
+        a specific filter.
+      script: '|||cs-falcon-search-ml-exclusion'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "83"
+    scriptarguments:
+      value:
+        simple: demo-test
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1852.5,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "83":
+    id: "83"
+    taskid: 98be4904-26c1-4677-8205-a429d8650637
+    type: condition
+    task:
+      id: 98be4904-26c1-4677-8205-a429d8650637
+      version: -1
+      name: Untitled Task
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "84"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: CrowdStrike.MLExclusion
+                accessor: id
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: CrowdStrike.MLExclusion
+                accessor: id
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: CrowdStrike.MLExclusion
+                accessor: last_modified
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: CrowdStrike.MLExclusion
+                accessor: last_modified
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1852.5,
+          "y": 1055
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "84":
+    id: "84"
+    taskid: f66a0d1f-89ec-4dd8-8dda-bae3bc5547ee
+    type: regular
+    task:
+      id: f66a0d1f-89ec-4dd8-8dda-bae3bc5547ee
+      version: -1
+      name: Delete ML exclusion
+      description: Delete the ML exclusions by id.
+      script: '|||cs-falcon-delete-ml-exclusion'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "85"
+    scriptarguments:
+      ids:
+        complex:
+          root: CrowdStrike.MLExclusion
+          accessor: id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1852.5,
+          "y": 1230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "85":
+    id: "85"
+    taskid: bdcc0d1c-6ee5-4496-8835-5cf33b76f460
+    type: regular
+    task:
+      id: bdcc0d1c-6ee5-4496-8835-5cf33b76f460
+      version: -1
+      name: Create IOA exclusion
+      description: Create an IOA exclusion.
+      script: '|||cs-falcon-create-ioa-exclusion'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "86"
+    scriptarguments:
+      cl_regex:
+        simple: .*
+      exclusion_name:
+        simple: demo-test
+      groups:
+        simple: 7471ba0636b34cbb8c65fae7979a6a9b
+      ifn_regex:
+        simple: c:\\\\windows\\\\system32\\\\poqexec\\.exe
+      pattern_id:
+        simple: "10197"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1852.5,
+          "y": 1405
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "86":
+    id: "86"
+    taskid: 9fcc9da5-ecbf-4528-8d8e-3cf535fbb36f
+    type: regular
+    task:
+      id: 9fcc9da5-ecbf-4528-8d8e-3cf535fbb36f
+      version: -1
+      name: Update IOA exclusion
+      description: Updates an IOA exclusion. At least one argument is required in
+        addition of the ID argument.
+      script: '|||cs-falcon-update-ioa-exclusion'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "87"
+    scriptarguments:
+      description:
+        simple: demo-description
+      id:
+        complex:
+          root: CrowdStrike.IOAExclusion
+          accessor: id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1852.5,
+          "y": 1580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "87":
+    id: "87"
+    taskid: d9bdde76-83ae-4895-86b9-42d4ec90ddb0
+    type: regular
+    task:
+      id: d9bdde76-83ae-4895-86b9-42d4ec90ddb0
+      version: -1
+      name: Search IOA exclusion
+      description: Get a list of IOA Exclusions by specifying their IDs or a filter
+      script: '|||cs-falcon-search-ioa-exclusion'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "88"
+    scriptarguments:
+      value:
+        simple: demo-test
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1852.5,
+          "y": 1755
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "88":
+    id: "88"
+    taskid: 1b15250a-cbf6-4d02-8c75-b8e10154c84e
+    type: condition
+    task:
+      id: 1b15250a-cbf6-4d02-8c75-b8e10154c84e
+      version: -1
+      name: Untitled Task
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "89"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: CrowdStrike.IOAExclusion
+                accessor: id
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: CrowdStrike.IOAExclusion
+                accessor: id
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: CrowdStrike.IOAExclusion
+                accessor: description
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: CrowdStrike.IOAExclusion
+                accessor: description
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1852.5,
+          "y": 1930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "89":
+    id: "89"
+    taskid: e48b1242-fb5b-4fcc-82e6-5d084da38e88
+    type: regular
+    task:
+      id: e48b1242-fb5b-4fcc-82e6-5d084da38e88
+      version: -1
+      name: Delete IOA exclusion
+      description: Delete the IOA exclusions by id.
+      script: '|||cs-falcon-delete-ioa-exclusion'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "90"
+    scriptarguments:
+      ids:
+        complex:
+          root: CrowdStrike.IOAExclusion
+          accessor: id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1852.5,
+          "y": 2105
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "90":
+    id: "90"
+    taskid: e6c98c48-4a06-4dba-8686-3461eece9908
+    type: regular
+    task:
+      id: e6c98c48-4a06-4dba-8686-3461eece9908
+      version: -1
+      name: List quarantined file
+      description: Get quarantine file metadata by specified ids or a filter.
+      script: '|||cs-falcon-list-quarantined-file'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      limit:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1852.5,
+          "y": 2280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
