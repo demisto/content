@@ -6,11 +6,12 @@ display: FireEye ETP
 category: Network Security
 description: 'FireEye Email Threat Prevention (ETP Cloud) is a cloud-based platform that protects against advanced email attacks.'
 configuration:
-- display: 'Server URL. Valid values: https://etp.us.fireeye.com, https://etp.eu.fireeye.com, https://etp.us.fireeyegov.com '
+- display: 'Server URL'
   name: server
   defaultvalue: https://etp.us.fireeye.com
   type: 0
   required: true
+  additionalinfo: "Valid values: https://etp.us.fireeye.com, https://etp.eu.fireeye.com, https://etp.us.fireeyegov.com"
 - display: API key
   name: api_key
   defaultvalue: ""
@@ -24,7 +25,7 @@ configuration:
   name: proxy
   type: 8
   required: false
-- display: Fetch incidents
+- display: Fetch alerts
   name: isFetch
   type: 8
   required: false
