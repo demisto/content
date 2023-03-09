@@ -70,10 +70,7 @@ def trigger_generic_webhook(options):
     print(f"Detected Pr: {pr_title=}, {pr_link=}, {pr_body=}")
 
     # Handle cases where the PR did not intend to add links:
-    if ("fixes:" not in pr_body.lower()
-            and "relates:" not in pr_body.lower()
-            and "fixed:" not in pr_body.lower()
-            and "related:" not in pr_body.lower()):
+    if not any(x.casefold() in pr_body.casefold() for x in ("fixes:", "relates:", "fixed:", "related:")):
         print("Did not detect Jira linking pattern.")
         return
 
