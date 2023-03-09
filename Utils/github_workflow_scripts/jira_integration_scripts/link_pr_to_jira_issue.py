@@ -40,21 +40,21 @@ def find_fixed_issue_in_body(body_text, is_merged):
     Getting the issues url in the PR's body as part of `fixing: <issue>` format.
     Return list of issues found: [{"link": link, "id": issue_id}]
     """
-    fixed_jira_issues = [(x.group(1), x.group(2)) for x in re.finditer(JIRA_FIXED_ISSUE_REGEX, body_text)]
-    related_jira_issue = [(x.group(1), x.group(2)) for x in re.finditer(JIRA_RELATED_ISSUE_REGEX, body_text)]
-    print(f'Detected {related_jira_issue=}')
-
     # If a PR is not merged, we just add the pr link to all the linked issues using Gold.
     # If the PR is merged, we only send issues that should be closed by it.
     # Assuming If the PR was merged, all the related links were fetched when the PR last edited.
-    fixed_issue = [{"link": link, "id": issue_id} for link, issue_id in fixed_jira_issues]
-    related_issue = []
+    issues = [
+        {"link": x.group(1), "id": x.group(2)} for x in re.finditer(JIRA_FIXED_ISSUE_REGEX, body_text)
+    ]
 
     if not is_merged:
-        print("Not merging, getting related issues.")
-        related_issue = [{"link": link, "id": issue_id} for link, issue_id in related_jira_issue]
+        print(f"Not merging, collecting related issues.")
 
-    return fixed_issue + related_issue
+        issues.extend([
+            {"link": x.group(1), "id": x.group(2)} for x in re.finditer(JIRA_RELATED_ISSUE_REGEX, body_text)
+        ])
+
+    return issues
 
 
 def trigger_generic_webhook(options):
