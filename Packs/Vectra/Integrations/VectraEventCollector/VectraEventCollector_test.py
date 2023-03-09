@@ -150,10 +150,13 @@ class TestCommands:
 
         first_timestamp = datetime.now().strftime(DETECTION_FIRST_TIMESTAMP_QUERY_START_FORMAT)
 
-        mocker.patch.object(client, "_http_request", return_value=DETECTIONS)
-        cmd_res, detections = get_detections_cmd(client, first_timestamp)
+        mocker.patch.object(client, "get_detections", return_value=detections)
+        cmd_res = get_detections_cmd(client, first_timestamp)
 
-        assert len(cmd_res.outputs) == len(detections)
+        if detections:
+            assert len(cmd_res.outputs) == len(detections.get("results"))
+        else:
+            assert "No detections found" in cmd_res.readable_output
 
     def test_get_audits_cmd(
         self, mocker: MockerFixture, detections: Dict[str, Any], audits: Dict[str, Any]
@@ -164,10 +167,13 @@ class TestCommands:
 
         first_timestamp = datetime.now().strftime(DETECTION_FIRST_TIMESTAMP_QUERY_START_FORMAT)
 
-        mocker.patch.object(client, "_http_request", return_value=AUDITS)
-        cmd_res, audits = get_audits_cmd(client, first_timestamp)
+        mocker.patch.object(client, "get_audits", return_value=audits)
+        cmd_res = get_audits_cmd(client, first_timestamp)
 
-        assert len(cmd_res.outputs) == len(audits)
+        if audits:
+            assert len(cmd_res.outputs) == len(audits.get("audits"))
+        else:
+            assert "No audits found" in cmd_res.readable_output
 
     def test_get_events(
         self, mocker: MockerFixture, detections: Dict[str, Any], audits: Dict[str, Any]
@@ -190,12 +196,10 @@ class TestCommands:
         mocker.patch.object(client, "get_detections", return_value=detections)
         mocker.patch.object(client, "get_audits", return_value=audits)
 
-        detection_res, detections_actual, audits_res, audits_actual = get_events(
-            client, datetime.now()
-        )
+        detection_res, audits_res = get_events(client, datetime.now())
 
-        assert detection_res.outputs == detections_actual
-        assert audits_res.outputs == audits_actual
+        assert detection_res.outputs == detections.get("results")
+        assert audits_res.outputs == audits.get("audits")
 
     @freeze_time("1970-01-01 00:00:00")
     def test_first_fetch(
