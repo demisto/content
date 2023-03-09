@@ -321,6 +321,7 @@ tasks:
       - "2"
       - "63"
       - "68"
+      - "80"
     scriptarguments:
       all:
         simple: "yes"
@@ -3064,7 +3065,7 @@ tasks:
     task:
       id: 98be4904-26c1-4677-8205-a429d8650637
       version: -1
-      name: Untitled Task
+      name: Verify exclusion search results
       type: condition
       iscommand: false
       brand: ""
@@ -3278,7 +3279,7 @@ tasks:
     task:
       id: 1b15250a-cbf6-4d02-8c75-b8e10154c84e
       version: -1
-      name: Untitled Task
+      name: Verify exclusion search results
       type: condition
       iscommand: false
       brand: ""
