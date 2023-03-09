@@ -12,17 +12,13 @@ args:
   required: false
   secret: false
 - default: false
-  description: 'The start date by which to filter incidents. Date format will be the
-    same as in the incidents query page, for example: "3 days ago", ""2019-01-01T00:00:00
-    +0200").'
+  description: 'The start date by which to filter incidents. Date format will be the same as in the incidents query page, for example: "3 days ago", ""2019-01-01T00:00:00 +0200").'
   isArray: false
   name: fromDate
   required: false
   secret: false
 - default: false
-  description: 'The end date by which to filter incidents. Date format will be the
-    same as in the incidents query page, for example: "3 days ago", ""2019-01-01T00:00:00
-    +0200").'
+  description: 'The end date by which to filter incidents. Date format will be the same as in the incidents query page, for example: "3 days ago", ""2019-01-01T00:00:00 +0200").'
   isArray: false
   name: toDate
   required: false
@@ -37,8 +33,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: 'false'
-  description: Whether to query and fetch incident context. Can be "true" or "false".
-    The default is "false".
+  description: Whether to query and fetch incident context. Can be "true" or "false". The default is "false".
   isArray: false
   name: includeContext
   predefined:
@@ -49,9 +44,7 @@ args:
 - auto: PREDEFINED
   default: false
   defaultValue: created
-  description: The incident field to specify for the date range. Can be "created"
-    or "modified". The default is "created". Due to performance considerations, you
-    should only use "modified" if you have a large number of incidents.
+  description: The incident field to specify for the date range. Can be "created" or "modified". The default is "created". Due to performance considerations, you should only use "modified" if you have a large number of incidents.
   isArray: false
   name: timeField
   predefined:
@@ -60,8 +53,7 @@ args:
   required: false
   secret: false
 - default: false
-  description: A comma-separated list of non-empty value incident field names by which
-    to filter incidents.
+  description: A comma-separated list of non-empty value incident field names by which to filter incidents.
   isArray: false
   name: NonEmptyFields
   required: false
@@ -96,7 +88,7 @@ comment: |-
 
   This automation runs using the default Limited User role, unless you explicitly change the permissions.
   For more information, see the section about permissions here:
-  https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-5/cortex-xsoar-admin/playbooks/automations.html
+  https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
 commonfields:
   id: GetIncidentsByQuery
   version: -1
@@ -116,7 +108,7 @@ tags:
 - ml
 timeout: 60µs
 type: python
-dockerimage: demisto/python3:3.10.4.30607
+dockerimage: demisto/python3:3.10.10.48392
 tests:
 - Create Phishing Classifier V2 ML Test
 fromversion: 5.0.0
