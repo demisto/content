@@ -1,6 +1,6 @@
 from dateparser import parse
 import urllib3
-
+from pytz import utc
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 
 # Disable insecure warnings
@@ -662,12 +662,19 @@ def list_users_accounts_command(client: Client, args: dict):
 
 
 def format_fetch_start_time_to_timestamp(fetch_start_time: Optional[str]):
+    # fetch_start_time_datetime = parse(fetch_start_time).replace(tzinfo=utc)
     fetch_start_time_datetime = parse(fetch_start_time)
     start_fetch_timestamp = fetch_start_time_datetime.timestamp()
     if fetch_start_time_datetime.microsecond == 0:
         return int(start_fetch_timestamp) * 1000
+
+    timestamp = str(start_fetch_timestamp).replace('.', '')
+    if len(timestamp) == 11:
+        return int(timestamp) * 100
+    elif len(timestamp) == 12:
+        return int(timestamp) * 10
     else:
-        return int(str(start_fetch_timestamp).replace('.', ''))
+        return int(timestamp)
 
 
 def timestamp_to_datetime_string(timestamp: int):
@@ -728,11 +735,12 @@ def fetch_incidents(client: Client, max_results: Optional[str], last_run: dict, 
 
     # remove the last 3 chars because the api knows to work with 13 digits only
     fetch_start_time, fetch_end_time = fetch_start_time[:-3], fetch_end_time[:-3]
+    formatted_fetch_start_time_timestamp = format_fetch_start_time_to_timestamp(fetch_start_time)
+    demisto.debug(f'{fetch_start_time=}, {formatted_fetch_start_time_timestamp=}')
 
-    formatted_fetch_start_time = format_fetch_start_time_to_timestamp(fetch_start_time)
-    filters["date"] = {"gte": formatted_fetch_start_time}
-
+    filters["date"] = {"gte": formatted_fetch_start_time_timestamp}
     demisto.debug(f'fetching alerts using filter {filters} with max results {max_results}')
+
     alerts_response_data = client.list_incidents(filters, limit=max_results)
     alerts = alerts_response_data.get('data')
     alerts = arrange_alerts_by_incident_type(alerts)
