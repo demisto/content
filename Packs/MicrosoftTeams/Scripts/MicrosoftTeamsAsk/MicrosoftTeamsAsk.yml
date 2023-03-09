@@ -56,7 +56,7 @@ args:
   required: false
   secret: false
 - default: false
-  description: The team in which to mirror the XSOAR investigation. If not specified, the default team configured in the integration parameters will be used.
+  description: The team in which to mirror the Cortex XSOAR investigation. If not specified, the default team configured in the integration parameters will be used.
   isArray: false
   name: team
   required: false
