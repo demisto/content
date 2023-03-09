@@ -285,7 +285,7 @@ def test_update_reco_incident_timeline_error(capfd, requests_mock, reco_client: 
 def test_resolve_visibility_event(requests_mock, reco_client: RecoClient) -> None:
     entry_id = uuid.uuid1()
     requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/set-label-status", json={}, status_code=200)
-    res = reco_client.resolve_visibility_event(entity_id=entry_id, label_name="Accessible by all")
+    res = reco_client.resolve_visibility_event(entity_id=str(entry_id), label_name="Accessible by all")
     assert res == {}
 
 
@@ -294,7 +294,7 @@ def test_resolve_visibility_event_error(capfd, requests_mock, reco_client: RecoC
     requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/set-label-status", json={}, status_code=404)
     with capfd.disabled():
         with pytest.raises(Exception):
-            reco_client.resolve_visibility_event(entity_id=entry_id, label_name="Accessible by all")
+            reco_client.resolve_visibility_event(entity_id=str(entry_id), label_name="Accessible by all")
 
 
 def test_get_risky_users(requests_mock, reco_client: RecoClient) -> None:
