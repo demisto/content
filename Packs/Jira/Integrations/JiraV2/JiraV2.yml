@@ -61,7 +61,8 @@ configuration:
   type: 8
 - defaultvalue: 'false'
   display: Mirror incoming incidents
-  hidden: false
+  hidden:
+    - marketplacev2
   name: incoming_mirror
   required: false
   type: 8
@@ -74,7 +75,8 @@ configuration:
   required: false
   type: 8
 - display: Mirror outgoing incidents
-  hidden: false
+  hidden:
+    - marketplacev2
   name: outgoing_mirror
   required: false
   type: 8
@@ -82,14 +84,16 @@ configuration:
     in Jira.
   defaultvalue: attachment
   display: File entry tag
-  hidden: false
+  hidden:
+    - marketplacev2
   name: file_tag
   required: false
   type: 0
 - additionalinfo: Choose the tag to add to an entry to mirror it as a comment in Jira.
   defaultvalue: comment
   display: Comment entry tag
-  hidden: false
+  hidden:
+    - marketplacev2
   name: comment_tag
   required: false
   type: 0
@@ -838,7 +842,7 @@ script:
       for debugging.
     execution: false
     name: get-modified-remote-data
-  dockerimage: demisto/oauthlib:1.0.0.44977
+  dockerimage: demisto/oauthlib:1.0.0.48802
   feed: false
   isfetch: true
   ismappable: true
