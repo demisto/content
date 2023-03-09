@@ -7,10 +7,10 @@ import urllib3
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-JIRA_HOST_FOR_REGEX = "https:\/\/jira-hq.paloaltonetworks.local\/browse\/"
-JIRA_KEY_REGEX = "([A-Z][A-Z0-9]+-[0-9]+))\s?"
-JIRA_FIXED_ISSUE_REGEX = f"[fF]ixes:\s?.*({JIRA_HOST_FOR_REGEX}{JIRA_KEY_REGEX}"
-JIRA_RELATED_ISSUE_REGEX = f"[rR]elates:\s?.*({JIRA_HOST_FOR_REGEX}{JIRA_KEY_REGEX}"
+JIRA_URL_REGEX = \
+    r"(?:\[.+\]\()?(?P<url>https?:\/\/jira-hq\.paloaltonetworks\.local\/browse\/(?P<issue_id>[a-zA-Z][a-zA-Z0-9]+-[0-9]+))"
+JIRA_FIXED_ISSUE_REGEX = rf"(?i)fixes:\s*{JIRA_URL_REGEX}"
+JIRA_RELATED_ISSUE_REGEX = rf"(?i)relates:\s*{JIRA_URL_REGEX}"
 GENERIC_WEBHOOK_NAME = "GenericWebhook_link_pr_to_jira"
 
 
@@ -40,8 +40,8 @@ def find_fixed_issue_in_body(body_text, is_merged):
     Getting the issues url in the PR's body as part of `fixing: <issue>` format.
     Return list of issues found: [{"link": link, "id": issue_id}]
     """
-    fixed_jira_issues = re.findall(JIRA_FIXED_ISSUE_REGEX, body_text)
-    related_jira_issue = re.findall(JIRA_RELATED_ISSUE_REGEX, body_text)
+    fixed_jira_issues = [(x.group(1), x.group(2)) for x in re.finditer(JIRA_FIXED_ISSUE_REGEX, body_text)]
+    related_jira_issue = [(x.group(1), x.group(2)) for x in re.finditer(JIRA_RELATED_ISSUE_REGEX, body_text)]
     print(f'Detected {related_jira_issue=}')
 
     # If a PR is not merged, we just add the pr link to all the linked issues using Gold.
@@ -102,8 +102,8 @@ def trigger_generic_webhook(options):
 
     if res.status_code != 200:
         print(
-            f"Trigger playbook for Linking GitHub PR to Jira Issue failed. Post request to Content"
-            f" Gold has status code of {res.status_code}")
+            f"Trigger playbook for Linking GitHub PR to Jira Issue failed. "
+            f"Post request to Content Gold has received a status code of {res.status_code}")
         sys.exit(1)
 
     res_json = res.json()
