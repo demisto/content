@@ -1298,47 +1298,6 @@ def panorama_push_to_template_stack_command(args: dict):
         return_results(result['response']['msg']['line'])
 
 
-def get_job_status(job_id: str, target: Optional[str] = None):
-    """Get Panorama job status.
-
-    Args:
-        job_id (str): Panorama job id.
-        target (Optional[str], optional): target command argument (if available). Default is None.
-
-    Returns:
-        string: a sting representing the job status.
-    """        
-    params = {
-        'type': 'op',
-        'cmd': f'<show><jobs><id>{job_id}</id></jobs></show>',
-        'key': API_KEY
-    }
-    if target:
-        params['target'] = target
-
-    result = http_request(
-        URL,
-        'GET',
-        params=params
-    )
-
-    return result.get('response', {}).get('result', {}).get('job', {}).get('status', '')
-
-def verify_job_complete(job_id: str, max_tries: int):
-    """Verify a Panorama job is completed.
-    Will wait 1 second between each try and will try a maximum of max_tries.
-
-    Args:
-        job_id (str): Panorama job id.
-        max_tries (int): maximum number of tries to check the job status.
-    """    
-    for _ in range(max_tries):
-        if get_job_status(job_id) == 'FIN':
-            return
-        else:
-            time.sleep(1)
-
-
 @logger
 def panorama_push_status(job_id: str, target: Optional[str] = None):
     params = {
@@ -13086,7 +13045,19 @@ def get_query_entries_by_id_request(job_id: str) -> Dict[str, Any]:
         Dict[str,Any]: a dictionary of the raw entries linked to the Job ID
     """
     params = assign_params(key=API_KEY, type='log', action='get', job_id=job_id)
-    return http_request(URL, 'GET', params=params)
+    
+    # if the job has not finished, wait for 1 second and try again (until success or max retries)
+    for _ in range(GET_JOB_ID_MAX_RETRIES):
+        response = http_request(URL, 'GET', params=params)
+        status = response.get('response', {}).get('result', {}).get('job', {}).get('status', '')
+        demisto.debug(f'Job ID response status: {status}')
+        if status == 'FIN':
+            demisto.debug(f'{response=}')
+            return response
+        else:
+            demisto.debug('Job not completed, Retrying in 1 second...')
+            time.sleep(1)
+    return {}
 
 
 def get_query_entries(log_type: str, query: str, max_fetch: int) -> List[Dict[Any, Any]]:
@@ -13104,9 +13075,6 @@ def get_query_entries(log_type: str, query: str, max_fetch: int) -> List[Dict[An
     # first http request: send request with query, valid response will contain a job id.
     job_id = get_query_by_job_id_request(log_type, query, max_fetch)
     demisto.debug(f'{job_id=}')
-
-    # verify the job is finished before proceeding
-    verify_job_complete(job_id, GET_JOB_ID_MAX_RETRIES)
 
     # second http request: send request with job id, valid response will contain a dictionary of entries. 
     query_entries = get_query_entries_by_id_request(job_id)
