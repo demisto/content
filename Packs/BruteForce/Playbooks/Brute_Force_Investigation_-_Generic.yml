@@ -1,18 +1,7 @@
 id: Brute Force Investigation - Generic
 version: -1
 name: Brute Force Investigation - Generic
-description: "This playbook investigates a \"Brute Force\" incident by gathering user\
-  \ and IP information, calculating the incident severity based on the gathered information\
-  \ and information received from the user, and performs remediation.\n\nThe playbook\
-  \ handles the following use-cases:\n\n* Brute Force IP Detected - A detection of\
-  \ source IPs that are exceeding a high threshold of rejected and/or invalid logins.\
-  \ \n* Brute Force Increase Percentage - A detection of large increase percentages\
-  \ in various brute force statistics over different periods of time.\n* Brute Force\
-  \ Potentially Compromised Accounts - A detection of accounts that have shown high\
-  \ amount of failed logins with one successful login.\n\nUsed Sub-playbooks:\n- IP\
-  \ Enrichment - Generic v2\n- Account Enrichment - Generic v2.1\n- Calculate Severity\
-  \ - Critical Assets v2\n- Isolate Endpoint - Generic\n- Block Indicators - Generic\
-  \ v2\n"
+description: "This playbook investigates a \"Brute Force\" incident by gathering user and IP information, calculating the incident severity based on the gathered information and information received from the user, and performs remediation.\n\nThe playbook handles the following use-cases:\n\n* Brute Force IP Detected - A detection of source IPs that are exceeding a high threshold of rejected and/or invalid logins. \n* Brute Force Increase Percentage - A detection of large increase percentages in various brute force statistics over different periods of time.\n* Brute Force Potentially Compromised Accounts - A detection of accounts that have shown high amount of failed logins with one successful login.\n\nUsed Sub-playbooks:\n- IP Enrichment - Generic v2\n- Account Enrichment - Generic v2.1\n- Calculate Severity - Critical Assets v2\n- Isolate Endpoint - Generic\n- Block Indicators - Generic v3\n"
 starttaskid: "0"
 tasks:
   "0":
@@ -2855,202 +2844,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "58":
-    id: "58"
-    taskid: a87b975e-29d1-4ac3-8d90-54e3a469a51c
-    type: playbook
-    task:
-      id: a87b975e-29d1-4ac3-8d90-54e3a469a51c
-      version: -1
-      name: Block Indicators - Generic v2
-      playbookName: Block Indicators - Generic v2
-      type: playbook
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "62"
-    scriptarguments:
-      AutoCommit:
-        complex:
-          root: inputs.AutoCommit
-      CustomBlockRule:
-        complex:
-          root: inputs.CustomBlockRule
-      CustomURLCategory:
-        complex:
-          root: inputs.CustomURLCategory
-      DAG:
-        complex:
-          root: inputs.DAG
-      EDLServerIP:
-        complex:
-          root: inputs.EDLServerIP
-      IP:
-        complex:
-          root: DBotScore
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: ip
-              ignorecase: true
-          - - operator: greaterThanOrEqual
-              left:
-                value:
-                  simple: DBotScore.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "3"
-          accessor: Indicator
-          transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: IOCs found in investigation.Answers.3
-                iscontext: true
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: incident.src
-                iscontext: true
-          - operator: uniq
-      IPBlacklistMiner: {}
-      IPListName:
-        complex:
-          root: inputs.IPListName
-      LogForwarding: {}
-      MD5:
-        complex:
-          root: File
-          filters:
-          - - operator: isExists
-              left:
-                value:
-                  simple: File.Malicious
-                iscontext: true
-          accessor: MD5
-          transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: IOCs found in investigation.Answers.0
-                iscontext: true
-          - operator: uniq
-      SHA256:
-        complex:
-          root: File
-          filters:
-          - - operator: isExists
-              left:
-                value:
-                  simple: File.Malicious
-                iscontext: true
-          accessor: SHA256
-          transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: IOCs found in investigation.Answers.2
-                iscontext: true
-          - operator: uniq
-      StaticAddressGroup:
-        complex:
-          root: inputs.StaticAddressGroup
-      URL:
-        complex:
-          root: DBotScore
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: url
-              ignorecase: true
-          - - operator: greaterThanOrEqual
-              left:
-                value:
-                  simple: DBotScore.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "3"
-          accessor: Indicator
-          transformers:
-          - operator: append
-            args:
-              item:
-                value:
-                  simple: IOCs found in investigation.Answers.4
-                iscontext: true
-      URLBlacklistMiner: {}
-      URLListName:
-        complex:
-          root: inputs.URLListName
-      Username:
-        complex:
-          root: DBotScore
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: username
-              ignorecase: true
-          - - operator: greaterThanOrEqual
-              left:
-                value:
-                  simple: DBotScore.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "3"
-          accessor: Indicator
-          transformers:
-          - operator: uniq
-      categories:
-        complex:
-          root: inputs.categories
-      device-group:
-        complex:
-          root: inputs.device-group
-      type:
-        complex:
-          root: inputs.type
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 0
-    view: |-
-      {
-        "position": {
-          "x": 350,
-          "y": 4150
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "59":
     id: "59"
     taskid: 48cdf688-1ef8-4558-8c5e-d72a068e9f2b
@@ -4604,7 +4399,7 @@ tasks:
       "no":
       - "33"
       "yes":
-      - "58"
+      - "67"
     separatecontext: false
     view: |-
       {
@@ -4730,6 +4525,280 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "67":
+    id: "67"
+    taskid: 41c22087-79be-462b-89e7-5fe24b7f4e06
+    type: playbook
+    task:
+      id: 41c22087-79be-462b-89e7-5fe24b7f4e06
+      version: -1
+      name: Block Indicators - Generic v3
+      playbookName: Block Indicators - Generic v3
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "62"
+    scriptarguments:
+      AutoBlockIndicators:
+        complex:
+          root: inputs.AutoBlockIndicators
+      AutoCommit:
+        complex:
+          root: inputs.AutoCommit
+      CustomBlockRule:
+        complex:
+          root: inputs.CustomBlockRule
+      CustomURLCategory:
+        complex:
+          root: inputs.CustomURLCategory
+      DAG:
+        complex:
+          root: inputs.DAG
+      DomainToBlock:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: domain
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      EDLServerIP:
+        complex:
+          root: inputs.EDLServerIP
+      EmailToBlock:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: email
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      FilesToBlock:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: file
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      IP:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: ip
+              ignorecase: true
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: IOCs found in investigation.Answers.3
+                iscontext: true
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: incident.src
+                iscontext: true
+          - operator: uniq
+      InputEnrichment:
+        simple: "False"
+      MD5:
+        complex:
+          root: File
+          filters:
+          - - operator: isExists
+              left:
+                value:
+                  simple: File.Malicious
+                iscontext: true
+          accessor: MD5
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: IOCs found in investigation.Answers.0
+                iscontext: true
+          - operator: uniq
+      RuleDirection:
+        simple: outbound
+      RuleName:
+        simple: XSOAR - Block Indicators playbook - ${incident.id}
+      SHA256:
+        complex:
+          root: File
+          filters:
+          - - operator: isExists
+              left:
+                value:
+                  simple: File.Malicious
+                iscontext: true
+          accessor: SHA256
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: IOCs found in investigation.Answers.2
+                iscontext: true
+          - operator: uniq
+      StaticAddressGroup:
+        complex:
+          root: inputs.StaticAddressGroup
+      URL:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: url
+              ignorecase: true
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: IOCs found in investigation.Answers.4
+                iscontext: true
+      UserVerification:
+        complex:
+          root: inputs.UserVerification
+      Username:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: username
+              ignorecase: true
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      categories:
+        complex:
+          root: inputs.categories
+      device-group:
+        complex:
+          root: inputs.device-group
+      type:
+        complex:
+          root: inputs.type
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 4150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -4742,6 +4811,7 @@ view: |-
       "52_2_yes": 0.59,
       "56_22_yes": 0.59,
       "57_41_no": 0.19,
+      "64_67_yes": 0.59,
       "65_29_#default#": 0.2,
       "66_35_yes": 0.7,
       "66_36_#default#": 0.22,
@@ -4837,14 +4907,6 @@ inputs:
     This input determines whether Palo Alto Networks Panorama or Firewall Static Address Groups are used.
     Specify the Static Address Group name for IP handling.
   playbookInputQuery:
-- key: IPListName
-  value:
-    simple: Demisto Remediation - IP EDL
-  required: false
-  description: |-
-    This input determines whether Palo Alto Networks Panorama or Firewall External Dynamic Lists are used for blocking IPs.
-    Specify the EDL name for IP handling.
-  playbookInputQuery:
 - key: DAG
   value: {}
   required: false
@@ -4859,16 +4921,9 @@ inputs:
     This input determines whether Palo Alto Networks Panorama or Firewall Static Address Groups are used.
     Specify the Static Address Group name for IP handling.
   playbookInputQuery:
-- key: URLListName
-  value:
-    simple: Demisto Remediation - URL EDL
-  required: false
-  description: URL list from the instance context with which to override the remote
-    file.
-  playbookInputQuery:
 - key: CustomURLCategory
   value:
-    simple: Demisto Remediation - Malicious URLs
+    simple: XSOAR Remediation - Malicious URLs
   required: false
   description: Custom URL Category name.
   playbookInputQuery:
@@ -4894,6 +4949,23 @@ inputs:
     This input determines whether Palo Alto Networks Panorama or Firewall External Dynamic Lists are used:
     * The IP address of the web server on which the files are stored.
     * The web server IP address is configured in the integration instance.
+  playbookInputQuery:
+- key: UserVerification
+  value:
+    simple: "False"
+  required: false
+  description: "Possible values: True/False. \nWhether to provide user verification for blocking IPs. \n\nFalse - No prompt will be displayed to the user.\nTrue - The server will ask the user for blocking verification and will display the blocking list."
+  playbookInputQuery:
+- key: AutoBlockIndicators
+  value:
+    simple: "True"
+  required: false
+  description: |-
+    Possible values: True/False.  Default: True.
+    Should the given indicators be automatically blocked, or should the user be given the option to choose?
+
+    If set to False - no prompt will appear, and all provided indicators will be blocked automatically.
+    If set to True - the user will be prompted to select which indicators to block.
   playbookInputQuery:
 outputs: []
 fromversion: 5.0.0
