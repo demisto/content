@@ -691,56 +691,56 @@ class TestParsingIndicators:
     @pytest.mark.parametrize(
         '_object, xsoar_expected_response', [
             (
+                {
+                    "id": "ipv4-addr--e0caaaf7-6207-5d8e-8f2c-7ecf936b3c4e",  # ipv4-addr object.
+                    "spec_version": "2.0",
+                    "type": "ipv4-addr",
+                    "value": "1.1.1.1"
+                },
+                [
                     {
-                        "id": "ipv4-addr--e0caaaf7-6207-5d8e-8f2c-7ecf936b3c4e",  # ipv4-addr object.
-                        "spec_version": "2.0",
-                        "type": "ipv4-addr",
-                        "value": "1.1.1.1"
-                    },
-                    [
-                        {
-                            'value': '1.1.1.1',
-                            'score': Common.DBotScore.NONE,
-                            'type': 'IP',
-                            'fields': {
-                                'description': '',
-                                'firstseenbysource': '',
-                                'modified': '',
-                                'stixid': 'ipv4-addr--e0caaaf7-6207-5d8e-8f2c-7ecf936b3c4e',
-                                'tags': [],
-                                'trafficlightprotocol': 'GREEN'
-                            }
+                        'value': '1.1.1.1',
+                        'score': Common.DBotScore.NONE,
+                        'type': 'IP',
+                        'fields': {
+                            'description': '',
+                            'firstseenbysource': '',
+                            'modified': '',
+                            'stixid': 'ipv4-addr--e0caaaf7-6207-5d8e-8f2c-7ecf936b3c4e',
+                            'tags': [],
+                            'trafficlightprotocol': 'GREEN'
                         }
-                    ]
+                    }
+                ]
             ),
             (
+                {
+                    "type": "domain-name",  # domain object.
+                    "spec_version": "2.1",
+                    "id": "domain-name--3c10e93f-798e-5a26-a0c1-08156efab7f5",
+                    "value": "example.com"
+                },
+                [
                     {
-                        "type": "domain-name",  # domain object.
-                        "spec_version": "2.1",
-                        "id": "domain-name--3c10e93f-798e-5a26-a0c1-08156efab7f5",
-                        "value": "example.com"
-                    },
-                    [
-                        {
-                            'fields': {
-                                'description': '',
-                                'firstseenbysource': '',
-                                'modified': '',
-                                'stixid': 'domain-name--3c10e93f-798e-5a26-a0c1-08156efab7f5',
-                                'tags': [],
-                                'trafficlightprotocol': 'GREEN'
-                            },
-                            'rawJSON': {
-                                'id': 'domain-name--3c10e93f-798e-5a26-a0c1-08156efab7f5',
-                                'spec_version': '2.1',
-                                'type': 'domain-name',
-                                'value': 'example.com'
-                            },
-                            'score': Common.DBotScore.NONE,
-                            'type': 'Domain',
+                        'fields': {
+                            'description': '',
+                            'firstseenbysource': '',
+                            'modified': '',
+                            'stixid': 'domain-name--3c10e93f-798e-5a26-a0c1-08156efab7f5',
+                            'tags': [],
+                            'trafficlightprotocol': 'GREEN'
+                        },
+                        'rawJSON': {
+                            'id': 'domain-name--3c10e93f-798e-5a26-a0c1-08156efab7f5',
+                            'spec_version': '2.1',
+                            'type': 'domain-name',
                             'value': 'example.com'
-                        }
-                    ]
+                        },
+                        'score': Common.DBotScore.NONE,
+                        'type': 'Domain',
+                        'value': 'example.com'
+                    }
+                ]
             ),
 
         ]
@@ -970,7 +970,10 @@ class TestParsingIndicators:
                          "object_marking_refs": ["marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"],
                          "labels": ["medium"],
                          "indicator_types": ["anomalous-activity"],
-                         "pattern_version": "2.1", "spec_version": "2.1", 'type': 'Domain', 'value': 'test.org'}
+                         "pattern_version": "2.1", "spec_version": "2.1"}
+
+        indicator_obj['value'] = 'test.org'
+        indicator_obj['type'] = 'Domain'
         xsoar_expected_response = [
             {
                 'fields': {
@@ -979,7 +982,6 @@ class TestParsingIndicators:
                     'trafficlightprotocol': 'GREEN'
                 },
                 'rawJSON': indicator_obj,
-                # 'score': Common.DBotScore.NONE,
                 'type': 'Domain',
                 'value': 'test.org'
             }
