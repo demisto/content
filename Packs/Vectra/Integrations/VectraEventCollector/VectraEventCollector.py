@@ -103,14 +103,6 @@ class VectraClient(BaseClient):
             params={"start": start},
         )
 
-    def get_endpoints(self) -> Dict[str, str]:
-        """
-        Sends a request to the API root to check the authentication. The API root responds with a `Dict[str,str]`
-        of API endpoints and URLs.
-        """
-
-        return self._http_request(method="GET")
-
 
 """ HELPER FUNCTIONS """
 
@@ -131,35 +123,28 @@ def is_eod(now: datetime) -> bool:
 
 @pytest.mark.skip("Not a pytest")
 def test_module(client: VectraClient) -> str:
-    """Tests API connectivity and authentication'
+    """
+    Tests API connectivity and authentication'
+    Since the event collection works with the audit and detection APIs, we want to ensure that the user has access
+    to them so we check if these endpoints exist in the response.
 
-    `
+    Arguments:
+        - ``client` (``VectraClient``): An instance of a Vectra API HTTP client.
 
-        Since the event collection works with the audit and detection APIs, we want to ensure that the user has access
-        to them so we check if these endpoints exist in the response.
-
-        Arguments:
-            - ``client` (``VectraClient``): An instance of a Vectra API HTTP client.
-
-        Returns:
-            `str` `'ok'` if test passed, anything else will raise an exception.
+    Returns:
+        `str` `'ok'` if test passed, anything else will raise an exception.
     """
 
     demisto.info(f"Testing connection and authentication to {client._base_url}...")
 
-    endpoints: Dict[str, str] = client.get_endpoints()
+    fetch_events(
+        client,
+        first_timestamp=datetime.now().strftime(DETECTION_FIRST_TIMESTAMP_QUERY_START_FORMAT),
+        start=datetime.now().strftime(),
+        is_first_fetch=True,
+    )
 
-    demisto.info(f"User has access to the following endpoints returned: {list(endpoints.keys())}")
-
-    # Checks that the authenticated user has access to the required endpoints
-    if all(ep in endpoints for ep in client.endpoints):
-        demisto.info("User has access to the all required endpoints.")
-        return "ok"
-    else:
-        raise DemistoException(
-            f"""User doesn't have access to endpoints {client.endpoints}, only to {','.join(list(endpoints.keys()))}.
-                    Check with your Vectra account administrator."""
-        )
+    return "ok"
 
 
 def get_detections_cmd(
