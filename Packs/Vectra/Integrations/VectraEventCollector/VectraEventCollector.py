@@ -408,7 +408,7 @@ def main() -> None:  # pragma: no cover
 
                 if argToBoolean(args.pop("should_push_events")):
                     demisto.info(
-                        f"Sending {len(detections_cmd_res.outputs)} detections to XSIAM..."
+                        f"Sending {len(detections_cmd_res.outputs)} detections to XSIAM..."  # type: ignore
                     )  # type: ignore
                     send_events_to_xsiam(
                         detections_cmd_res.outputs, vendor=VENDOR, product=client.endpoints[0]
@@ -417,7 +417,7 @@ def main() -> None:  # pragma: no cover
                     demisto.info(f"Sending {len(audits_cmd_res.outputs)} audits to XSIAM...")  # type: ignore
                     send_events_to_xsiam(
                         audits_cmd_res.outputs, vendor=VENDOR, product=client.endpoints[1]
-                    )
+                    )  # type: ignore
                     demisto.info(f"{len(audits_cmd_res.outputs)} audits sent to XSIAM.")  # type: ignore
 
             # fetch-events
