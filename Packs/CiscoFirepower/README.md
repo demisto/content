@@ -3,7 +3,7 @@ This pack includes Cortex XSIAM content.
 ## Configuration on Server Side
 You need to configure Cisco Firepower to forward logs in CEF format via the System Event Streamer (eStreamer).
 
-To collect logs from Cisco Firepower to XSIAM in CEF format, use the information described to configure the eStreamer service [here](https://www.cisco.com/c/en/us/td/docs/security/firepower/710/api/estreamer/EventStreamerIntegrationGuide.html).
+To collect logs from Cisco Firepower to XSIAM in CEF format, use the information described  [here](https://www.cisco.com/c/en/us/td/docs/security/firepower/710/api/estreamer/EventStreamerIntegrationGuide.html) to configure the eStreamer service.
 
 For more information on the event types sent via the eStreamer, use the information described [here](https://www.cisco.com/c/en/us/td/docs/security/firepower/660/configuration/guide/fpmc-config-guide-v66/analyze_events_using_external_tools.html#ID-2219-00000439).
 
