@@ -121,7 +121,9 @@ TEST_SUPPRESS_ERRORS = [
                          TEST_SUPPRESS_ERRORS)
 def test_suppress_errors(mocker, fun, mock_fun, mock_value, args, expected_result):
 
-    client = create_ms_graph_client()
+    client = MsGraphClient(base_url='https://graph.microsoft.com/v1.0', tenant_id='tenant-id',
+                           auth_id='auth_and_token_url', enc_key='enc_key', app_name='ms-graph-groups',
+                           verify='use_ssl', proxy='proxies', self_deployed='self_deployed', handle_error=True)
     mocker.patch.object(client, mock_fun, side_effect=mock_value)
     results, _, _ = fun(client, args)
     assert results == expected_result
