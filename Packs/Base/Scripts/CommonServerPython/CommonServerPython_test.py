@@ -7645,14 +7645,13 @@ class TestFetchWithLookBack:
         query = self.build_query(start_fetch_time, end_fetch_time, fetch_limit)
         incidents_res = self.get_incidents_request(query, date_format)
 
-        incidents, filtered_incidents = filter_incidents_by_duplicates_and_limit(incidents_res=incidents_res, last_run=last_run,
+        incidents = filter_incidents_by_duplicates_and_limit(incidents_res=incidents_res, last_run=last_run,
                                                              fetch_limit=fetch_limit_param, id_field='incident_id')
 
         last_run = update_last_run_object(last_run=last_run, incidents=incidents, fetch_limit=fetch_limit_param,
                                           start_fetch_time=start_fetch_time,
                                           end_fetch_time=end_fetch_time, look_back=look_back,
-                                          created_time_field='created', id_field='incident_id',
-                                          filtered_incidents=filtered_incidents, date_format=date_format)
+                                          created_time_field='created', id_field='incident_id', date_format=date_format)
 
         demisto.setLastRun(last_run)
         return incidents
@@ -7895,7 +7894,6 @@ class TestFetchWithLookBack:
                     'look_back': 1,
                     'created_time_field': 'createAt',
                     'id_field': 'id',
-                    'filtered_incidents': False,
                     'date_format': '%Y-%m-%dT%H:%M:%S',
                     'increase_last_run_time': True
                 },
@@ -7916,7 +7914,6 @@ class TestFetchWithLookBack:
                     'look_back': 1,
                     'created_time_field': 'createAt',
                     'id_field': 'id',
-                    'filtered_incidents': False,
                     'date_format': '%Y-%m-%dT%H:%M:%S',
                     'increase_last_run_time': True
                 },
@@ -7938,7 +7935,6 @@ class TestFetchWithLookBack:
                     'look_back': 1,
                     'created_time_field': 'createAt',
                     'id_field': 'id',
-                    'filtered_incidents': False,
                     'date_format': '%Y-%m-%dT%H:%M:%S',
                     'increase_last_run_time': True
                 },
@@ -7963,7 +7959,6 @@ class TestFetchWithLookBack:
                     'look_back': 1,
                     'created_time_field': 'createAt',
                     'id_field': 'id',
-                    'filtered_incidents': False,
                     'date_format': '%Y-%m-%dT%H:%M:%S',
                     'increase_last_run_time': True
                 },
@@ -7983,7 +7978,6 @@ class TestFetchWithLookBack:
                     'look_back': 1,
                     'created_time_field': 'createAt',
                     'id_field': 'id',
-                    'filtered_incidents': False,
                     'date_format': '%Y-%m-%dT%H:%M:%S',
                     'increase_last_run_time': True
                 },
@@ -8004,7 +7998,6 @@ class TestFetchWithLookBack:
                     'look_back': 1,
                     'created_time_field': 'createAt',
                     'id_field': 'id',
-                    'filtered_incidents': False,
                     'date_format': '%Y-%m-%dT%H:%M:%S',
                     'increase_last_run_time': True
                 },
@@ -8028,7 +8021,6 @@ class TestFetchWithLookBack:
                     'look_back': 1,
                     'created_time_field': 'createAt',
                     'id_field': 'id',
-                    'filtered_incidents': False,
                     'date_format': '%Y-%m-%dT%H:%M:%S',
                     'increase_last_run_time': True
                 },
@@ -8045,7 +8037,6 @@ class TestFetchWithLookBack:
                     'look_back': 1,
                     'created_time_field': 'createAt',
                     'id_field': 'id',
-                    'filtered_incidents': False,
                     'date_format': '%Y-%m-%dT%H:%M:%S',
                     'increase_last_run_time': True
                 },
@@ -8062,7 +8053,6 @@ class TestFetchWithLookBack:
                     'look_back': 1,
                     'created_time_field': 'createAt',
                     'id_field': 'id',
-                    'filtered_incidents': False,
                     'date_format': '%Y-%m-%dT%H:%M:%S',
                     'increase_last_run_time': True
                 },
