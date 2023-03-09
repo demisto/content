@@ -1,6 +1,6 @@
 category: Network Security
 commonfields:
-  id: KnowBe4KMSAT
+  id: KnowBe4_KMSAT
   version: -1
 configuration:
 - defaultvalue: https://us.api.knowbe4.com
@@ -37,7 +37,7 @@ configuration:
   type: 8
 description: "KnowBe4 KMSAT integration allows you to pull Risk Scores, Phishing Tests, Campaigns and Enrollments"
 display: "KnowBe4KMSAT"
-name: KnowBe4KMSAT
+name: KnowBe4_KMSAT
 script:
   commands:
   - name: kmsat-account-info-list
