@@ -684,7 +684,7 @@ def timestamp_to_datetime_string(timestamp: int, include_miliseconds: bool = Tru
         else:
             return f'{iso_format_datetime}.000'
     else:
-        return iso_format_datetime.split('.0')[0]
+        return iso_format_datetime.split('.')[0]
 
 
 def arrange_alerts_by_incident_type(alerts: List[dict]):
