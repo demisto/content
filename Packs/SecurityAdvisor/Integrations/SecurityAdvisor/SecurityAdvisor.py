@@ -1,12 +1,13 @@
 import demistomock as demisto
 from CommonServerPython import *
 ''' IMPORTS '''
-import requests
 import json
 import collections
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+import urllib3
+urllib3.disable_warnings()
+
 
 ''' CONSTANTS '''
 URL_SUFFIX_COACH_USER = 'apis/coachuser/'
