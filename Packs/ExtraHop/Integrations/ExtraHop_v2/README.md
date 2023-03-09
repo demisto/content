@@ -6,24 +6,24 @@ ExtraHop Reveal(x) for Cortex XSOAR is a network detection and response solution
 2. Search for ExtraHop Reveal(x).
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Name | The name of the instance. | True |
-    | Fetches incidents | Select to enable this instance to fetch incident events. Otherwise, select **Do not fetch**. | True  |
-    | Classifier | Specifies the type of incident to be created for events ingested by this instance. | False |
-    | Incident type | Specifies the type of incident to be created for events ingested by this instance if a **Classifier** is not specified. | False |
-    | Mapper | Specifies how events ingested by this instance are mapped to Cortex XSOAR incident fields. | False |
-    | On Cloud | The type of ExtraHop system the integration will connect to. Select if connecting to ExtraHop Reveal(x) 360. Leave unselected if connecting to Reveal(x) Enterprise. | False |
-    | URL | The URL of the ExtraHop system this integration will connect to. | True |
-    | API Key | The API key required for authentication if connecting to ExtraHop Reveal(x) Enterprise. [The API key is generated on your ExtraHop system.](https://docs.extrahop.com/current/rest-api-guide/#generate-an-api-key) | False |
-    | Client ID and Client Secret | The credential pair required for authentication if connecting to ExtraHop Reveal(x) 360. [The client ID and secret are generated on your ExtraHop system.](https://docs.extrahop.com/current/rx360-integrations-cortex-xsoar/) | False |
-    | Trust any certificate (not secure) | Specifies whether to allow connections without verifying SSL certificate's validity. | False |
-    | Use system proxy settings | Specifies whether to use XSOAR system proxy settings to connect to the API. | False |
-    | First fetch time | Specifies the beginning timestamp from which to start fetching events. | False |
-    | Advanced Filter | Applies a filter to the list of detections or metrics based on a JSON-specific query. | False |
-    | Do not use by default | Select to disable running commands through the Cortex XSOAR CLI on this instance of the integration. | False |
-    | Log Level | Specifies the level of logging to enable for this instance of the integration. | False |
-    | Run on | Specifies whether to run the instance of the integration on a single engine. | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Name | The name of the instance. | True |
+| Fetches incidents | Select to enable this instance to fetch incident events. Otherwise, select **Do not fetch**. | True  |
+| Classifier | Specifies the type of incident to be created for events ingested by this instance. | False |
+| Incident type | Specifies the type of incident to be created for events ingested by this instance if a **Classifier** is not specified. | False |
+| Mapper | Specifies how events ingested by this instance are mapped to Cortex XSOAR incident fields. | False |
+| On Cloud | The type of ExtraHop system the integration will connect to. Select if connecting to ExtraHop Reveal(x) 360. Leave unselected if connecting to Reveal(x) Enterprise. | False |
+| URL | The URL of the ExtraHop system this integration will connect to. | True |
+| API Key | The API key required for authentication if connecting to ExtraHop Reveal(x) Enterprise. [The API key is generated on your ExtraHop system.](https://docs.extrahop.com/current/rest-api-guide/#generate-an-api-key) | False |
+| Client ID and Client Secret | The credential pair required for authentication if connecting to ExtraHop Reveal(x) 360. [The client ID and secret are generated on your ExtraHop system.](https://docs.extrahop.com/current/rx360-integrations-cortex-xsoar/) | False |
+| Trust any certificate (not secure) | Specifies whether to allow connections without verifying SSL certificate's validity. | False |
+| Use system proxy settings | Specifies whether to use XSOAR system proxy settings to connect to the API. | False |
+| First fetch time | Specifies the beginning timestamp from which to start fetching events. | False |
+| Advanced Filter | Applies a filter to the list of detections or metrics based on a JSON-specific query. | False |
+| Do not use by default | Select to disable running commands through the Cortex XSOAR CLI on this instance of the integration. | False |
+| Log Level | Specifies the level of logging to enable for this instance of the integration. | False |
+| Run on | Specifies whether to run the instance of the integration on a single engine. | False |
     
 4. Click **Test** to validate the URL, credentials, and connection.
 

@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: f45d5bda-1799-48ff-81d2-4cad6ceee00f
+    taskid: d9c9b197-6bfe-4f9d-8753-f2f0005112cb
     type: start
     task:
-      id: f45d5bda-1799-48ff-81d2-4cad6ceee00f
+      id: d9c9b197-6bfe-4f9d-8753-f2f0005112cb
       version: -1
       name: ""
       iscommand: false
@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: e6f35d28-f2eb-40d8-87a0-db193867a551
+    taskid: 40159736-146c-44a1-8984-fdb4f472fa7a
     type: regular
     task:
-      id: e6f35d28-f2eb-40d8-87a0-db193867a551
+      id: 40159736-146c-44a1-8984-fdb4f472fa7a
       version: -1
       name: Extrahop activity map  command
       description: Get a link to a live activity map in Reveal(x).
@@ -75,10 +75,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 62d77ed2-62bd-461b-8acc-3d7739e13070
+    taskid: ac773cba-afcc-4681-81c0-11e50c1fd7dc
     type: condition
     task:
-      id: 62d77ed2-62bd-461b-8acc-3d7739e13070
+      id: ac773cba-afcc-4681-81c0-11e50c1fd7dc
       version: -1
       name: Verify Output
       type: condition
@@ -115,10 +115,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 0a573d92-5d41-4f13-842f-2031f5b5a964
+    taskid: 21ef9db2-e244-408d-8e97-a6da27a727ae
     type: regular
     task:
-      id: 0a573d92-5d41-4f13-842f-2031f5b5a964
+      id: 21ef9db2-e244-408d-8e97-a6da27a727ae
       version: -1
       name: ExtraHop get protocols
       description: Get all active network protocols for a device from Reveal(x).
@@ -154,10 +154,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: f20268c8-979e-4892-89ba-caa3fed0aa91
+    taskid: 8534f8cb-641e-4690-8f66-d3a99fdfa0e9
     type: condition
     task:
-      id: f20268c8-979e-4892-89ba-caa3fed0aa91
+      id: 8534f8cb-641e-4690-8f66-d3a99fdfa0e9
       version: -1
       name: Verify get Protocol Output
       type: condition
@@ -175,15 +175,10 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: ExtraHop.Device.client_protocols
+              simple: ExtraHop.Device.Id
             iscontext: true
           right:
             value: {}
-      - - operator: isExists
-          left:
-            value:
-              simple: ExtraHop.Device.server_protocols
-            iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -201,10 +196,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: e40e20ed-313f-4e2d-81ac-05916136a8af
+    taskid: 095556b6-7712-4df6-8bb8-53e0b199180c
     type: title
     task:
-      id: e40e20ed-313f-4e2d-81ac-05916136a8af
+      id: 095556b6-7712-4df6-8bb8-53e0b199180c
       version: -1
       name: Done
       type: title
@@ -229,10 +224,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: cdfc9558-96c4-4ba7-880c-c23d6125c09b
+    taskid: 40c5c8ac-9e5f-407f-80c8-27c1ad1bccd6
     type: regular
     task:
-      id: cdfc9558-96c4-4ba7-880c-c23d6125c09b
+      id: 40c5c8ac-9e5f-407f-80c8-27c1ad1bccd6
       version: -1
       name: Packet search
       description: Search for specific packets in Reveal(x).
@@ -261,10 +256,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 08a4b93e-4658-4b23-81bf-fed6d1f091e4
+    taskid: 7c2c060c-02fc-49a2-831f-6df2db47939a
     type: condition
     task:
-      id: 08a4b93e-4658-4b23-81bf-fed6d1f091e4
+      id: 7c2c060c-02fc-49a2-831f-6df2db47939a
       version: -1
       name: Verify Output
       type: condition
@@ -316,10 +311,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 95a3be01-d50c-4704-8b88-7766e2462018
+    taskid: 1b7e3a69-bb67-482c-89dc-cbe62dee03a8
     type: regular
     task:
-      id: 95a3be01-d50c-4704-8b88-7766e2462018
+      id: 1b7e3a69-bb67-482c-89dc-cbe62dee03a8
       version: -1
       name: Get watchlist
       description: Get all devices on the watchlist in Reveal(x).
@@ -348,10 +343,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: ab5118aa-3d64-4c23-8240-ce8462e0e845
+    taskid: 0840fd13-7550-4bf1-892e-5c1367c25ee7
     type: regular
     task:
-      id: ab5118aa-3d64-4c23-8240-ce8462e0e845
+      id: 0840fd13-7550-4bf1-892e-5c1367c25ee7
       version: -1
       name: Get peers
       description: Get all peers for a device from Reveal(x).
@@ -387,10 +382,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: a1a4e704-21e7-454d-8320-3162b8bb397c
+    taskid: 9ff5eb34-7428-4a9e-85a6-34a41ca75290
     type: condition
     task:
-      id: a1a4e704-21e7-454d-8320-3162b8bb397c
+      id: 9ff5eb34-7428-4a9e-85a6-34a41ca75290
       version: -1
       name: Verify Output
       type: condition
@@ -434,10 +429,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: ec794e51-0b4a-4056-8fb6-89f58f993469
+    taskid: 71b24068-01db-4cb6-88cf-606b645d283c
     type: condition
     task:
-      id: ec794e51-0b4a-4056-8fb6-89f58f993469
+      id: 71b24068-01db-4cb6-88cf-606b645d283c
       version: -1
       name: 'Verify Output '
       type: condition
@@ -489,10 +484,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: c949ff6c-e000-4a9b-81cb-fb66b6d55042
+    taskid: f34d4528-b93c-4897-8804-1c7c7f6c5e24
     type: regular
     task:
-      id: c949ff6c-e000-4a9b-81cb-fb66b6d55042
+      id: f34d4528-b93c-4897-8804-1c7c7f6c5e24
       version: -1
       name: Device Search
       description: Search for devices in Reveal(x).
@@ -521,10 +516,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 33b5b4af-712b-458a-8c69-19abb4861e84
+    taskid: 941d8789-b937-4c75-8a07-b3b19a6c39e3
     type: condition
     task:
-      id: 33b5b4af-712b-458a-8c69-19abb4861e84
+      id: 941d8789-b937-4c75-8a07-b3b19a6c39e3
       version: -1
       name: Verify Output
       type: condition
@@ -576,10 +571,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: eae980d9-4edb-4247-8fdc-b51743bf8448
+    taskid: 1b9bd588-c677-4d05-8847-0202181c6b8b
     type: regular
     task:
-      id: eae980d9-4edb-4247-8fdc-b51743bf8448
+      id: 1b9bd588-c677-4d05-8847-0202181c6b8b
       version: -1
       name: Alert Rules Get
       description: Get all alert rules from Reveal(x).
@@ -608,10 +603,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: e65722da-fb65-42b3-8cf6-700d8c754451
+    taskid: e62fcd3c-c5dd-441d-89aa-acf6634c1c28
     type: condition
     task:
-      id: e65722da-fb65-42b3-8cf6-700d8c754451
+      id: e62fcd3c-c5dd-441d-89aa-acf6634c1c28
       version: -1
       name: Verify Output
       type: condition
@@ -658,10 +653,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 00247cc0-ef28-41f4-874a-fe14128def1e
+    taskid: b61982d6-8985-4c50-8da6-d9e7acf1b991
     type: condition
     task:
-      id: 00247cc0-ef28-41f4-874a-fe14128def1e
+      id: b61982d6-8985-4c50-8da6-d9e7acf1b991
       version: -1
       name: No protocols found
       type: condition
@@ -681,11 +676,6 @@ tasks:
             iscontext: true
           right:
             value: {}
-      - - operator: isNotExists
-          left:
-            value:
-              simple: ExtraHop.Device.server_protocols
-            iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -703,10 +693,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: cd5623c1-174c-4f84-87f7-9f5fa1547f57
+    taskid: 991df8c7-9622-4d09-8a79-d9ae82b47748
     type: condition
     task:
-      id: cd5623c1-174c-4f84-87f7-9f5fa1547f57
+      id: 991df8c7-9622-4d09-8a79-d9ae82b47748
       version: -1
       name: No peers found
       type: condition
@@ -746,10 +736,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 99911295-466a-4ef7-8a39-053641393805
+    taskid: 2ff0bbf0-4618-46e6-85d9-8f5f74acd037
     type: regular
     task:
-      id: 99911295-466a-4ef7-8a39-053641393805
+      id: 2ff0bbf0-4618-46e6-85d9-8f5f74acd037
       version: -1
       name: Detection list
       description: Retrieves the detections from the ExtraHop platform.
@@ -781,10 +771,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 59837b8f-d003-4083-8b94-0c6153009a0e
+    taskid: 7c431671-42a9-441d-8bd9-404ac29061c4
     type: condition
     task:
-      id: 59837b8f-d003-4083-8b94-0c6153009a0e
+      id: 7c431671-42a9-441d-8bd9-404ac29061c4
       version: -1
       name: Verify Output
       type: condition
@@ -839,10 +829,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: 9c45467c-cf20-46db-84ef-86e238263351
+    taskid: e7243259-7ba5-4dd4-8312-ce2d624efd5e
     type: regular
     task:
-      id: 9c45467c-cf20-46db-84ef-86e238263351
+      id: e7243259-7ba5-4dd4-8312-ce2d624efd5e
       version: -1
       name: Metrics list
       description: Retrieves metrics information collected about every object identified by the ExtraHop system.
@@ -933,10 +923,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: ee76ded7-6623-4a33-8dba-10de91c356ce
+    taskid: 9313326d-d00a-4cb1-82df-81cbddb24b71
     type: condition
     task:
-      id: ee76ded7-6623-4a33-8dba-10de91c356ce
+      id: 9313326d-d00a-4cb1-82df-81cbddb24b71
       version: -1
       name: Verify Output
       type: condition
@@ -991,10 +981,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: fdcac2b3-a9e0-425b-8e42-8485787e77c1
+    taskid: 3972b15f-3842-48a8-8ff5-21fab7deaa8b
     type: regular
     task:
-      id: fdcac2b3-a9e0-425b-8e42-8485787e77c1
+      id: 3972b15f-3842-48a8-8ff5-21fab7deaa8b
       version: -1
       name: 'Add tag devices '
       description: Add or remove a tag from devices in Reveal(x).
@@ -1032,10 +1022,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 1b90cd9f-4e31-48a2-8ad8-e610e65f90d5
+    taskid: 8328e793-f8c0-409b-878d-82f3e903b5b6
     type: regular
     task:
-      id: 1b90cd9f-4e31-48a2-8ad8-e610e65f90d5
+      id: 8328e793-f8c0-409b-878d-82f3e903b5b6
       version: -1
       name: 'Remove tag devices '
       description: Add or remove a tag from devices in Reveal(x).
