@@ -49,12 +49,6 @@ PR_TEST_CASE = [
     (PR_WITH_ONLY_RELATES_WITH_NEWLINE, False, ['CIAC-3472']),
     (PR_WITH_ONLY_RELATES_WITHOUT_END_OF_STR, False, ['CIAC-3472']),
     (PR_WITH_BOTH_BY_NEWLINE, False, ['CIAC-3473', 'CIAC-3475']),
-
-    # PR is merged, related issues should not be detected.
-    (PR_WITH_ONLY_RELATES_WITH_SPACE, True, []),
-    (PR_WITH_ONLY_RELATES_WITH_NEWLINE, True, []),
-    (PR_WITH_ONLY_RELATES_WITHOUT_END_OF_STR, True, []),
-    (PR_WITH_BOTH_BY_NEWLINE, True, ['CIAC-3473'])
 ]
 
 
@@ -63,36 +57,38 @@ def test_find_fixed_issue_in_body(pr_body, is_merged, expected):
     """
     Given: A PR representing text containing a few links.
     When: Searching all relevant links for closing/ for connecting
-    Then: validates relevant links were fetch for closing, and relevant links were fetch when only connected.
+    Then: Validates relevant links were fetched for closing, and relevant links were fetched when only connected.
     """
-    res = link_pr_to_jira_issue.find_fixed_issue_in_body(pr_body, is_merged)
-    res_ids = [x.get('id') for x in res]
-    assert res_ids == expected
+    res = link_pr_to_jira_issue.find_fixed_issue_in_body(pr_body)
+    res_keys = [x.get('key') for x in res]
+    assert res_keys == expected
 
 
 TRIGGER_TEST_CASE = [
     (
-        True,
-        [  # case one link with fixes:
-            {'link': 'https://jira-hq.paloaltonetworks.local/browse/CIAC-3473', 'id': 'CIAC-3473'}
+        PR_WITH_BOTH_BY_NEWLINE,
+        [
+            {
+                'link': 'https://jira-hq.paloaltonetworks.local/browse/CIAC-3473',
+                'key': 'CIAC-3473',
+                'should_close': True,
+            },
+            {
+                'link': 'https://jira-hq.paloaltonetworks.local/browse/CIAC-3475',
+                'key': 'CIAC-3475',
+                'should_close': False,
+            }
         ]
     ),
-    (
-        False,
-        [  # case multiple links only related:
-            {'link': 'https://jira-hq.paloaltonetworks.local/browse/CIAC-3473', 'id': 'CIAC-3473'},
-            {'link': 'https://jira-hq.paloaltonetworks.local/browse/CIAC-3475', 'id': 'CIAC-3475'}
-        ]
-    )
 ]
 
 
-@pytest.mark.parametrize('is_merged, expected', TRIGGER_TEST_CASE)
-def test_trigger_generic_webhook(requests_mock, is_merged, expected):
+@pytest.mark.parametrize('pr_body, expected', TRIGGER_TEST_CASE)
+def test_trigger_generic_webhook(requests_mock, pr_body, expected):
     """
-    Given: the links in a PR
-    When: Running github action on PR
-    Then: make sure the request to server is created correctly.
+    Given: The links in a PR
+    When: Running GitHub action on PR
+    Then: Make sure the request to server is created correctly.
     """
     class OptionMock:
         def __init__(self, link, num, title, body, merged):
@@ -106,11 +102,10 @@ def test_trigger_generic_webhook(requests_mock, is_merged, expected):
             self.url = 'http://test.com'
 
     post_mock = requests_mock.post('http://test.com', status_code=200, json=[{"id": "1"}])
-    option_mock = OptionMock('pr_link_example', '1', 'dummy pr', PR_WITH_BOTH_BY_NEWLINE, is_merged)
+    option_mock = OptionMock('pr_link_example', '1', 'dummy pr', pr_body, True)
     link_pr_to_jira_issue.trigger_generic_webhook(option_mock)
     res = post_mock.last_request.json()
     assert res.get('name') == link_pr_to_jira_issue.GENERIC_WEBHOOK_NAME
     assert 'raw_json' in res
     assert 'closeIssue' in res.get('raw_json')
     assert res.get('raw_json').get('JiraIssues') == expected
-    assert res.get('raw_json').get('closeIssue') == str(is_merged).lower()
