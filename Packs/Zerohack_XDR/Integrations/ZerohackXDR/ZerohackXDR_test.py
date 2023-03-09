@@ -121,3 +121,23 @@ def test_main():
     output = main()
 
     assert isinstance(output, type(None))
+
+
+def test_test_module(requests_mock):
+    from ZerohackXDR import Client, test_module
+    from ZerohackXDR import ZEROHACK_XDR_API_BASE_URL
+
+    # Initialising the client.
+    client = Client(
+        base_url=ZEROHACK_XDR_API_BASE_URL,
+        verify=False,
+        api_key="Some Random Key",
+        proxy=False,
+    )
+
+    mock_response = util_load_json("test_data/get_latest_incident.json")
+
+    requests_mock.register_uri(
+        "GET", f"{ZEROHACK_XDR_API_BASE_URL}/xdr-api", json=mock_response
+    )
+    assert test_module(client) == 'ok'
