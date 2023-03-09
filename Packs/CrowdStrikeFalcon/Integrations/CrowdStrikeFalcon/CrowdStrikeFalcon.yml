@@ -3560,7 +3560,7 @@ script:
       name: username
       required: false
       isArray: true
-    description: Update quarantine file metadata by the specified IDs or a filter.
+    description: Apply action to quarantined file by file ids or filter.
     name: cs-falcon-apply-quarantine-file-action
   dockerimage: demisto/python3:3.10.10.48392
   isfetch: true
