@@ -172,7 +172,7 @@ def create_incidents(demisto_user: dict, incidents: list) -> dict:
     return data
 
 
-def process_incident_create_message(demisto_user: dict, message: str) -> str:   # pragma: no cover
+def process_incident_create_message(demisto_user: dict, message: str) -> str:
     """
     Processes an incident creation message
     :param demisto_user: The Demisto user associated with the message (if exists)
@@ -689,7 +689,7 @@ def integration_health():
     })
 
 
-def validate_auth_header(headers: dict) -> bool:    # pragma: no cover
+def validate_auth_header(headers: dict) -> bool:
     """
     Validated authorization header provided in the bot activity object
     :param headers: Bot activity headers
@@ -2590,7 +2590,7 @@ and paste it in your instance configuration under the **Authorization code** par
     return_results(CommandResults(readable_output=result_msg))
 
 
-def main():
+def main():   # pragma: no cover
     """ COMMANDS MANAGER / SWITCH PANEL """
     demisto.debug("Main started...")
     commands: dict = {
