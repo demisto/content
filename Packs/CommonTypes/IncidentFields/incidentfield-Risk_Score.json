@@ -12,7 +12,8 @@
 		"NetWitness Incident",
 		"Skyhigh Security Alert",
 		"Skyhigh Security Threat",
-		"AWS Security Hub Finding"
+		"AWS Security Hub Finding",
+		"Prisma Cloud - VM Alert Prioritization"
 	],
 	"breachScript": "",
 	"caseInsensitive": true,

@@ -10,7 +10,8 @@
         "Netwitness Incident",
         "Symantec DLP Discover Incident",
         "Symantec DLP Endpoint Incident",
-        "Symantec DLP Network Incident"
+        "Symantec DLP Network Incident",
+		"Prisma Cloud - VM Alert Prioritization"
     ],
     "caseInsensitive": true,
     "cliName": "firstseen",

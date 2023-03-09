@@ -11,7 +11,8 @@
 		"AWS IAM Policy Misconfiguration",
 		"AWS EC2 Instance Misconfiguration",
 		"Microsoft CAS Alert",
-		"CrowdStrike Falcon Detection"
+		"CrowdStrike Falcon Detection",
+		"Prisma Cloud - VM Alert Prioritization"
 	],
 	"breachScript": "",
 	"caseInsensitive": true,

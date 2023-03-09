@@ -6,10 +6,11 @@
 		"AWS CloudTrail Misconfiguration",
 		"AWS IAM Policy Misconfiguration",
 		"AWS EC2 Instance Misconfiguration",
-		"Azure Active Directory Identity and Access"
+		"Azure Active Directory Identity and Access",
+		"Prisma Cloud - VM Alert Prioritization"
 	],
 	"breachScript": "",
-	"caseInsensitive": true,
+	"caseInsensitive": true,§
 	"cliName": "riskrating",
 	"closeForm": false,
 	"columns": null,

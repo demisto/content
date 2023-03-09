@@ -14,7 +14,8 @@
 		"AWS Guard Duty Kubernetes Finding",
 		"AWS Guard Duty Malware Protection Finding",
 		"AWS Guard Duty S3 Finding",
-		"AWS Security Hub Finding"
+		"AWS Security Hub Finding",
+		"Prisma Cloud - VM Alert Prioritization"
 	],
 	"breachScript": "",
 	"caseInsensitive": true,
