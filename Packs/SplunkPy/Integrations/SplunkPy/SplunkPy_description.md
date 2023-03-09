@@ -4,9 +4,9 @@ Use the SplunkPy integration to fetch incidents from Splunk ES, and query result
 
  - To use Splunk token authentication, enter the text: *_token* in the **Username** field and your token value in the **Password** field.
 To create an authentication token, go to [Splunk create authentication tokens](https://docs.splunk.com/Documentation/SplunkCloud/8.1.2101/Security/CreateAuthTokens).
- - In case of inconsistent authentication issues when using username & passowrd, try to use **\<USERNAME\>@_basic** as username.
+ - In case of inconsistent authentication issues when using username & password, try to use **\<USERNAME\>@_basic** as the username.
 this will set the integration to use basic authentication when connecting to the Splunk server.
-for example:
+For example:
 TestUser@_basic
 
 There are two main use cases for the SplunkPy integration. Refer to the following sections based on your needs.
