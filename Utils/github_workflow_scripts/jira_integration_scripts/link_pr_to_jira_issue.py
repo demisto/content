@@ -35,20 +35,24 @@ def arguments_handler():
     return parser.parse_args()
 
 
-def find_fixed_issue_in_body(body_text, is_merged):
+def find_fixed_issue_in_body(body_text, is_merged) -> list[dict[str, str]]:
     """
-    Getting the issues url in the PR's body as part of `fixing: <issue>` format.
-    Return list of issues found: [{"link": link, "id": issue_id}]
+    Getting issue URLs in PR's body matching a regex.
+
+    Note:
+        If the PR is merged, we only send issues that should be closed by it.
+        If a PR is not merged, we add the pr link to all the linked issues using Gold.
+        Assuming if the PR was merged, all the related links were fetched when the PR last edited.
+
+    Returns:
+        list: A list of issues found in a {"link": link, "id": id} format.
     """
-    # If a PR is not merged, we just add the pr link to all the linked issues using Gold.
-    # If the PR is merged, we only send issues that should be closed by it.
-    # Assuming If the PR was merged, all the related links were fetched when the PR last edited.
     issues = [
         {"link": x.group(1), "id": x.group(2)} for x in re.finditer(JIRA_FIXED_ISSUE_REGEX, body_text)
     ]
 
     if not is_merged:
-        print(f"Not merging, collecting related issues.")
+        print("Not merging, collecting related issues.")
 
         issues.extend([
             {"link": x.group(1), "id": x.group(2)} for x in re.finditer(JIRA_RELATED_ISSUE_REGEX, body_text)
@@ -70,7 +74,7 @@ def trigger_generic_webhook(options):
     print(f"Detected Pr: {pr_title=}, {pr_link=}, {pr_body=}")
 
     # Handle cases where the PR did not intend to add links:
-    if not any(x.casefold() in pr_body.casefold() for x in ("fixes:", "relates:", "fixed:", "related:")):
+    if all(x.casefold() not in pr_body.casefold() for x in ("fixes:", "relates:", "fixed:", "related:")):
         print("Did not detect Jira linking pattern.")
         return
 
