@@ -1280,7 +1280,7 @@ def channel_user_list_command():
     return_results(result)
 
 
-def is_bot_in_chat(chat_id):
+def is_bot_in_chat(chat_id: str) -> bool:
     """
     check if the bot is already in the chat.
     """
@@ -1289,7 +1289,7 @@ def is_bot_in_chat(chat_id):
     res = http_request('GET', urljoin(GRAPH_BASE_URL, url_suffix),
                        params={"$expand": "teamsApp,teamsAppDefinition",
                                "$filter": "teamsApp/externalId eq '{BOT_ID}'"})
-    return True if res.get('value') else False      # type: ignore
+    return bool(res.get('value'))
 
 
 def add_bot_to_chat(chat_id: str):  # pragma: no cover
@@ -2159,7 +2159,7 @@ def member_added_handler(integration_context: dict, request_body: dict, channel_
     set_integration_context(integration_context)
 
 
-def handle_external_user(user_identifier, allow_create_incident, create_incident):
+def handle_external_user(user_identifier: str, allow_create_incident: bool, create_incident: bool) -> str:
     """
     Handles message from non xsoar user
     :param user_identifier: the user name or email
@@ -2213,13 +2213,12 @@ def direct_message_handler(integration_context: dict, request_body: dict, conver
 
     lowered_message = message.lower()
     # the command is to create new incident
-    create_incident = lowered_message.find('incident') != -1 and (lowered_message.find('create') != -1
-                                                                  or lowered_message.find('open') != -1
-                                                                  or lowered_message.find('new') != -1)
-    data = ""
-    if not demisto_user:
-        data = handle_external_user(user_email or username,
-                                    allow_external_incidents_creation, create_incident)
+    create_incident = 'incident' in lowered_message and ('create' in lowered_message
+                                                         or 'open' in lowered_message
+                                                         or 'new' in lowered_message)
+    data = ("" if demisto_user else handle_external_user(user_email or username,
+                                                         allow_external_incidents_creation,
+                                                         create_incident,))
     # internal user or external who's trying to create incident
     if not data:
         if create_incident:
