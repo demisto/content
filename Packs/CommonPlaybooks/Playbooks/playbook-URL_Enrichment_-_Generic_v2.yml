@@ -456,11 +456,6 @@ view: |-
 inputs:
 - key: URL
   value:
-    simple: "True"
-  required: false
-  description: URLs to enrich.
-- key: URL
-  value:
     complex:
       root: URL
       accessor: Data

@@ -1,3 +1,4 @@
+# pylint: disable=E9010, E9011
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
