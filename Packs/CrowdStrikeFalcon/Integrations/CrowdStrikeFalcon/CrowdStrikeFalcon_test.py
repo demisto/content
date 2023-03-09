@@ -3379,13 +3379,13 @@ def test_resolve_incident_invalid(status):
 
 def test_update_incident_comment(requests_mock):
     """
-    Test Create resolve incidents with valid status code
+    Test Update incident comment
     Given
-     - Valid status, as expected by product description
+     - Comment
     When
-     - Calling resolve incident command
+     - Calling update incident comment command
     Then
-     - Map the status to the status number that the api expects
+     - Update incident comment
      """
     from CrowdStrikeFalcon import update_incident_comment_command
     m = requests_mock.post(
