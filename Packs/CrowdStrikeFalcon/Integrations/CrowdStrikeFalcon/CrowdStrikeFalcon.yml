@@ -2908,10 +2908,10 @@ script:
       predefined:
       - blocking
       - extraction
-    - description: Comment describing why the exclusions was created.
+    - description: Comment describing why the exclusions were created.
       name: comment
       required: false
-    - description: A comma separated list of group ID(s) impacted by the exclusion OR all if empty default is all.
+    - description: A comma-separated list of group ID(s) impacted by the exclusion OR all if empty. Default is all.
       name: groups
       required: true
       isArray: true
@@ -2931,10 +2931,10 @@ script:
       description: An hash of the value field.
       type: String
     - contextPath: CrowdStrike.MLExclusion.excluded_from
-      description: What the exclusion applies to (e.g. a specific ML model).
+      description: What the exclusion applies to (e.g., a specific ML model).
       type: String
     - contextPath: CrowdStrike.MLExclusion.groups.id
-      description: Groups ID that the exclusion rule is associated with.
+      description: Group's ID that the exclusion rule is associated with.
       type: String
     - contextPath: CrowdStrike.MLExclusion.groups.group_type
       description: Groups type that the exclusion rule is associated with.
@@ -2982,7 +2982,7 @@ script:
     - description: Value to match for the exclusion (the exclusion pattern).
       name: value
       required: false
-    - description: Comment describing why the exclusions was created.
+    - description: Comment describing why the exclusions were created.
       name: comment
       required: false
     - description: Group ID(s) explicitly excluded from the exclusion.
@@ -2993,7 +2993,7 @@ script:
       name: groups
       required: false
       isArray: true
-    description: Updates an ML exclusions. At least one argument is required in addition of the ID argument.
+    description: Updates an ML exclusion. At least one argument is required in addition to the ID argument.
     name: cs-falcon-update-ml-exclusion
     outputs:
     - contextPath: CrowdStrike.MLExclusion.id
@@ -3009,7 +3009,7 @@ script:
       description: An hash of the value field.
       type: String
     - contextPath: CrowdStrike.MLExclusion.excluded_from
-      description: What the exclusion applies to (e.g. a specific ML model).
+      description: What the exclusion applies to (e.g., a specific ML model).
       type: String
     - contextPath: CrowdStrike.MLExclusion.groups.id
       description: Groups ID that the exclusion rule is associated with.
@@ -3059,16 +3059,16 @@ script:
         name: ids
         required: true
         isArray: true
-    description: Delete the ML exclusions by id.
+    description: Delete the ML exclusions by ID.
     name: cs-falcon-delete-ml-exclusion
   - arguments:
-    - description: A custom filter in which the exclusions should be filtered. For example `value:”<value>”`.
+    - description: A custom filter by which the exclusions should be filtered. For example `value:”<value>”`.
       name: filter
       required: false
-    - description: The value in which the exclusions should be filtered.
+    - description: The value by which the exclusions should be filtered.
       name: value
       required: false
-    - description: The IDs of the exclusions to retrieve. IDs overwrites the filter and value.
+    - description: The IDs of the exclusions to retrieve. The IDs overwrite the filter and value.
       name: ids
       required: false
       isArray: true
@@ -3079,8 +3079,7 @@ script:
       name: offset
       required: false
     - auto: PREDEFINED
-      description: Hwo to Sort the retrieved exclusions.
-      name: sort
+      description: How to sort the retrieved exclusions.
       required: false
       predefined:
       - applied_globally.asc
@@ -3095,7 +3094,7 @@ script:
       - modified_by.desc
       - value.asc
       - value.desc
-    description: Get a list of ML Exclusions by specifying their IDs, value, or a specific filter.
+    description: Get a list of ML exclusions by specifying their IDs, value, or a specific filter.
     name: cs-falcon-search-ml-exclusion
     outputs:
     - contextPath: CrowdStrike.MLExclusion.id
@@ -3108,10 +3107,10 @@ script:
       description: A regular expression for matching the excluded value.
       type: String
     - contextPath: CrowdStrike.MLExclusion.value_hash
-      description: An hash of the value field.
+      description: A hash of the value field.
       type: String
     - contextPath: CrowdStrike.MLExclusion.excluded_from
-      description: What the exclusion applies to (e.g. a specific ML model).
+      description: What the exclusion applies to (e.g., a specific ML model).
       type: String
     - contextPath: CrowdStrike.MLExclusion.groups.id
       description: Groups ID that the exclusion rule is associated with.
@@ -3171,7 +3170,7 @@ script:
     - description: Indicator file name regular expression.
       name: ifn_regex
       required: true
-    - description: Comment describing why the exclusions was created.
+    - description: Comment describing why the exclusions were created.
       name: comment
       required: false
     - description: Exclusion description.
@@ -3206,7 +3205,7 @@ script:
       description: A regular expression used for file name matching.
       type: String
     - contextPath: CrowdStrike.IOAExclusion.cl_regex
-      description: A regular expression used for command-line matching.
+      description: A regular expression used for command line matching.
       type: String
     - contextPath: CrowdStrike.IOAExclusion.detection_json
       description: A JSON string that describes the detection logic for the IOA exclusion.
@@ -3285,7 +3284,7 @@ script:
       name: groups
       required: false
       isArray: true
-    description: Updates an IOA exclusion. At least one argument is required in addition of the ID argument.
+    description: Updates an IOA exclusion. At least one argument is required in addition to the ID argument.
     name: cs-falcon-update-ioa-exclusion
     outputs:
     - contextPath: CrowdStrike.IOAExclusion.id
@@ -3307,7 +3306,7 @@ script:
       description: A regular expression used for file name matching.
       type: String
     - contextPath: CrowdStrike.IOAExclusion.cl_regex
-      description: A regular expression used for command-line matching.
+      description: A regular expression used for command line matching.
       type: String
     - contextPath: CrowdStrike.IOAExclusion.detection_json
       description: A JSON string that describes the detection logic for the IOA exclusion.
@@ -3359,16 +3358,16 @@ script:
         name: ids
         required: true
         isArray: true
-    description: Delete the IOA exclusions by id.
+    description: Delete the IOA exclusions by ID.
     name: cs-falcon-delete-ioa-exclusion
   - arguments:
-    - description: A custom filter in which the exclusions should be filtered. For example `value:”<value>”`.
+    - description: A custom filter by which the exclusions should be filtered. For example `value:”<value>”`.
       name: filter
       required: false
-    - description: The value in which the exclusions should be filtered.
+    - description: The value by which the exclusions should be filtered.
       name: value
       required: false
-    - description: The IDs of the exclusions to retrieve. IDs overwrites the filter and value.
+    - description: The IDs of the exclusions to retrieve. The IDs overwrite the filter and value.
       name: ids
       required: false
       isArray: true
@@ -3378,7 +3377,7 @@ script:
     - description: The offset of how many exclusions to skip. Default is 0.
       name: offset
       required: false
-    description: Get a list of IOA Exclusions by specifying their IDs or a filter
+    description: Get a list of IOA exclusions by specifying their IDs or a filter
     name: cs-falcon-search-ioa-exclusion
     outputs:
     - contextPath: CrowdStrike.IOAExclusion.id
@@ -3400,7 +3399,7 @@ script:
       description: A regular expression used for file name matching.
       type: String
     - contextPath: CrowdStrike.IOAExclusion.cl_regex
-      description: A regular expression used for command-line matching.
+      description: A regular expression used for command line matching.
       type: String
     - contextPath: CrowdStrike.IOAExclusion.detection_json
       description: A JSON string that describes the detection logic for the IOA exclusion.
@@ -3452,10 +3451,10 @@ script:
       name: ids
       required: false
       isArray: true
-    - description: A custom filter in which the retrieve quarantined file should be filtered.
+    - description: A custom filter by which the retrieve quarantined file should be filtered.
       name: filter
       required: false
-    - description: The sha256 of the quarantined files to retrieve.
+    - description: The SHA256 hash value of the quarantined files to retrieve.
       name: sha256
       required: false
       isArray: true
@@ -3477,10 +3476,10 @@ script:
     - description: Maximum number of IDs to return. Max 5000. Default 50.
       name: limit
       required: false
-    - description: Starting index of overall result set from which to return ids.
+    - description: Starting index of the overall result set from which to return IDs.
       name: offset
       required: false
-    description: Get quarantine file metadata by specified ids or a filter.
+    description: Get quarantine file metadata by specified IDs or filter.
     name: cs-falcon-list-quarantined-file
     outputs:
     - contextPath: CrowdStrike.QuarantinedFile.id
@@ -3535,32 +3534,32 @@ script:
       - delete
       - release
       - unrelease
-    - description: Comment to list along with action taken.
+    - description: Comment to appear along with the action taken.
       name: comment
       required: true
     - description: Update files based on a custom filter.
       name: filter
       required: false
-    - description: Update files based on sha256.
+    - description: Update files based on the SHA256 hash value.
       name: sha256
       required: false
       isArray: true
-    - description: Update files based on file name.
+    - description: Update files based on the filename.
       name: filename
       required: false
       isArray: true
-    - description: Update files based on state.
+    - description: Update files based on the state.
       name: state
       required: false
-    - description: Update files based on host name.
+    - description: Update files based on the hostname.
       name: hostname
       required: false
       isArray: true
-    - description: Update files based on user names.
+    - description: Update files based on the usernames.
       name: username
       required: false
       isArray: true
-    description: Update quarantine file metadata by specified ids or a filter.
+    description: Update quarantine file metadata by the specified IDs or a filter.
     name: cs-falcon-apply-quarantine-file-action
   dockerimage: demisto/python3:3.10.10.48392
   isfetch: true
