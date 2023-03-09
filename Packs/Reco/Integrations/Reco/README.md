@@ -1,5 +1,4 @@
 Reco is a Saas data security solution that protects your data from accidental leaks and malicious attacks.
-This integration was integrated and tested with version xx of Reco
 
 ## Configure Reco on Cortex XSOAR
 
@@ -16,10 +15,10 @@ This integration was integrated and tested with version xx of Reco
     | Incident type |  | False |
     | Fetch incidents |  | False |
     | Max fetch |  | False |
-    | None | Incidents SaaS Source | False |
-    | None | Created At time before which incidents will be fetched | False |
-    | None | Created At time after which incidents will be fetched | False |
-    | None | Risk level of the incidents to fetch | False |
+    | Source | Incidents SaaS Source | False |
+    | Before | Created At time before which incidents will be fetched | False |
+    | After | Created At time after which incidents will be fetched | False |
+    | Risk level | Risk level of the incidents to fetch | False |
     | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.

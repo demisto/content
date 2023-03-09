@@ -36,18 +36,22 @@ configuration:
   required: false
   type: 0
 - additionalinfo: Incidents SaaS Source
+  display: Source
   name: source
   required: false
   type: 0
 - additionalinfo: Created At time before which incidents will be fetched
+  display: Before
   name: before
   required: false
   type: 0
 - additionalinfo: Created At time after which incidents will be fetched
+  display: After
   name: after
   required: false
   type: 0
 - additionalinfo: Risk level of the incidents to fetch
+  display: Risk level
   name: risk_level
   required: false
   type: 0
