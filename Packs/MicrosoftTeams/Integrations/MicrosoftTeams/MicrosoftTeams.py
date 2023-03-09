@@ -1289,7 +1289,7 @@ def is_bot_in_chat(chat_id: str) -> bool:
     res = http_request('GET', urljoin(GRAPH_BASE_URL, url_suffix),
                        params={"$expand": "teamsApp,teamsAppDefinition",
                                "$filter": "teamsApp/externalId eq '{BOT_ID}'"})
-    return bool(res.get('value'))
+    return bool(res.get('value'))   # type: ignore
 
 
 def add_bot_to_chat(chat_id: str):  # pragma: no cover
