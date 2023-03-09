@@ -10,7 +10,7 @@
 		"Prisma Cloud - VM Alert Prioritization"
 	],
 	"breachScript": "",
-	"caseInsensitive": true,§
+	"caseInsensitive": true,
 	"cliName": "riskrating",
 	"closeForm": false,
 	"columns": null,
