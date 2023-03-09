@@ -36,6 +36,7 @@ SKIPPING_MESSAGE = "Skipping Auto-Bumping release notes."
 PACKS_DIR = "Packs"
 PACK_METADATA_FILE = Pack.USER_METADATA
 RELEASE_NOTES_DIR = Pack.RELEASE_NOTES
+LAST_SUITABLE_PR_UPDATE_TIME_DAYS = 14
 
 
 class UpdateType(str, Enum):
@@ -59,7 +60,7 @@ class SkipReason:
     MORE_THAN_ONE_RN = 'Pack: {} has more than one added rn {}.'
     DIFFERENT_RN_METADATA_VERSIONS = 'Pack: {} has different rn version {}, and metadata version {}.'
     ALLOWED_BUMP_CONDITION = 'Pack {} version was updated from {} to {} version. Allowed bump only by + 1.'
-    ONLY_VERSION_CHANGED = 'Pack {} metadata file has different keys in master and branch: {}.'
+    UNALLOWED_KEYS_CHANGED = 'Pack {} metadata file has different keys in master and branch: {}.'
 
 
 class ConditionResult:
@@ -169,7 +170,7 @@ class BaseCondition(ABC):
             return curr_result
 
 
-class MetadataCondition(BaseCondition, ABC):
+class MetadataCondition(BaseCondition):
     """Conditions that needs metadata files in order to check them."""
 
     DEFAULT_VERSION = "1.0.0"
@@ -248,7 +249,7 @@ class MetadataCondition(BaseCondition, ABC):
 
 
 class LastModifiedCondition(BaseCondition):
-    LAST_SUITABLE_UPDATE_TIME_DAYS = 14
+    LAST_SUITABLE_UPDATE_TIME_DAYS = LAST_SUITABLE_PR_UPDATE_TIME_DAYS
 
     def generate_skip_reason(self, last_updated: str, **kwargs) -> str:     # type: ignore[override]
         """
@@ -421,23 +422,13 @@ class HasConflictOnAllowedFilesCondition(BaseCondition):
                 for file_name in conflicting_files
             )
         finally:
-            try:
-                self.git_repo.git.merge("--abort")
-            except GitCommandError as ex:
-                print(f'Merge abort exception caught.  {ex}')
+            self.git_repo.git.merge("--abort")
             self.git_repo.git.clean("-f")
         return bool(conflict_only_with_given_files and conflicting_files), conflicting_files
 
 
 class PackSupportCondition(MetadataCondition):
     ALLOWED_SUPPORT_TYPE = Metadata.XSOAR_SUPPORT
-
-    def __init__(
-        self, pack: str, pr: PullRequest, git_repo: Repo, branch_metadata: Dict
-    ):
-        super().__init__(
-            pack=pack, pr=pr, git_repo=git_repo, branch_metadata=branch_metadata
-        )
 
     def generate_skip_reason(self, support_type: Optional[str], **kwargs) -> str:  # type: ignore[override]
         """
@@ -470,21 +461,6 @@ class PackSupportCondition(MetadataCondition):
 
 
 class MajorChangeCondition(MetadataCondition):
-    def __init__(
-        self,
-        pack: str,
-        pr: PullRequest,
-        git_repo: Repo,
-        branch_metadata: Dict,
-        origin_base_metadata: Dict,
-    ):
-        super().__init__(
-            pack=pack,
-            pr=pr,
-            git_repo=git_repo,
-            branch_metadata=branch_metadata,
-            origin_base_metadata=origin_base_metadata,
-        )
 
     def generate_skip_reason(       # type: ignore[override]
         self, origin_version: Version, branch_version: Version, **kwargs
@@ -531,22 +507,6 @@ class MajorChangeCondition(MetadataCondition):
 
 class MaxVersionCondition(MetadataCondition):
     MAX_ALLOWED_VERSION = "99"
-
-    def __init__(
-        self,
-        pack: str,
-        pr: PullRequest,
-        git_repo: Repo,
-        branch_metadata: Dict,
-        origin_base_metadata: Dict,
-    ):
-        super().__init__(
-            pack=pack,
-            pr=pr,
-            git_repo=git_repo,
-            branch_metadata=branch_metadata,
-            origin_base_metadata=origin_base_metadata,
-        )
 
     def generate_skip_reason(       # type: ignore[override]
         self, origin_version: str, branch_version: str, **kwargs
@@ -595,29 +555,13 @@ class MaxVersionCondition(MetadataCondition):
 class OnlyVersionChangedCondition(MetadataCondition):
     ALLOWED_CHANGED_KEYS = [Metadata.CURRENT_VERSION]
 
-    def __init__(
-        self,
-        pack: str,
-        pr: PullRequest,
-        git_repo: Repo,
-        branch_metadata: Dict,
-        origin_base_metadata: Dict,
-    ):
-        super().__init__(
-            pack=pack,
-            pr=pr,
-            git_repo=git_repo,
-            branch_metadata=branch_metadata,
-            origin_base_metadata=origin_base_metadata,
-        )
-
     def generate_skip_reason(self, not_allowed_changed_keys, **kwargs) -> str:      # type: ignore[override]
         """
         Args:
             not_allowed_changed_keys: pack_metadata keys that was changed.
         Returns: Reason why the condition failed, and pr skipped.
         """
-        return SkipReason.ONLY_VERSION_CHANGED.format(
+        return SkipReason.UNALLOWED_KEYS_CHANGED.format(
             self.pack, not_allowed_changed_keys
         )
 
@@ -686,12 +630,6 @@ class OnlyOneRNPerPackCondition(MetadataCondition):
 
 
 class SameRNMetadataVersionCondition(MetadataCondition):
-    def __init__(
-        self, pack: str, pr: PullRequest, git_repo: Repo, branch_metadata: Dict
-    ):
-        super().__init__(
-            pack=pack, pr=pr, git_repo=git_repo, branch_metadata=branch_metadata
-        )
 
     def generate_skip_reason(       # type: ignore[override]
         self, rn_version: Version, metadata_version: Version, **kwargs
@@ -738,21 +676,6 @@ class SameRNMetadataVersionCondition(MetadataCondition):
 
 
 class AllowedBumpCondition(MetadataCondition):
-    def __init__(
-        self,
-        pack: str,
-        pr: PullRequest,
-        git_repo: Repo,
-        branch_metadata: Dict,
-        pr_base_metadata: Dict,
-    ):
-        super().__init__(
-            pack=pack,
-            pr=pr,
-            git_repo=git_repo,
-            branch_metadata=branch_metadata,
-            pr_base_metadata=pr_base_metadata,
-        )
 
     def generate_skip_reason(       # type: ignore[override]
         self, previous_version: Version, new_version: Version, **kwargs
@@ -1018,50 +941,22 @@ class AutoBumperManager:
                     pr=pr,
                     git_repo=self.git_repo_obj,
                 )
+                metadata_condition_kwargs = {
+                    'pack': pack,
+                    'pr': pr,
+                    'git_repo': self.git_repo_obj,
+                    'branch_metadata': branch_md,
+                    'pr_base_metadata': pr_base_md,
+                    'origin_base_metadata': origin_md,
+                }
                 conditions = [
-                    PackSupportCondition(
-                        pack=pack,
-                        pr=pr,
-                        git_repo=self.git_repo_obj,
-                        branch_metadata=branch_md,
-                    ),
-                    MajorChangeCondition(
-                        pack=pack,
-                        pr=pr,
-                        git_repo=self.git_repo_obj,
-                        branch_metadata=branch_md,
-                        origin_base_metadata=origin_md,
-                    ),
-                    MaxVersionCondition(
-                        pack=pack,
-                        pr=pr,
-                        git_repo=self.git_repo_obj,
-                        branch_metadata=branch_md,
-                        origin_base_metadata=origin_md,
-                    ),
-                    OnlyVersionChangedCondition(
-                        pack=pack,
-                        pr=pr,
-                        git_repo=self.git_repo_obj,
-                        branch_metadata=branch_md,
-                        origin_base_metadata=origin_md,
-                    ),
-                    OnlyOneRNPerPackCondition(
-                        pack=pack, pr=pr, git_repo=self.git_repo_obj
-                    ),
-                    SameRNMetadataVersionCondition(
-                        pack=pack,
-                        pr=pr,
-                        git_repo=self.git_repo_obj,
-                        branch_metadata=branch_md,
-                    ),
-                    AllowedBumpCondition(
-                        pack=pack,
-                        pr=pr,
-                        git_repo=self.git_repo_obj,
-                        branch_metadata=branch_md,
-                        pr_base_metadata=pr_base_md,
-                    ),
+                    PackSupportCondition(**metadata_condition_kwargs),
+                    MajorChangeCondition(**metadata_condition_kwargs),
+                    MaxVersionCondition(**metadata_condition_kwargs),
+                    OnlyVersionChangedCondition(**metadata_condition_kwargs),
+                    OnlyOneRNPerPackCondition(**metadata_condition_kwargs),
+                    SameRNMetadataVersionCondition(**metadata_condition_kwargs),
+                    AllowedBumpCondition(**metadata_condition_kwargs),
                 ]
                 for c1, c2 in pairwise(conditions):
                     c1.set_next_condition(c2)
