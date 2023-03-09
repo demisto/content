@@ -60,7 +60,7 @@ configuration:
   additionalinfo: The timeout of the HTTP requests sent to Cortex XDR API (in seconds).
 - display: Maximum number of incidents per fetch
   name: max_fetch
-  defaultvalue: "10"
+  defaultvalue: "201"
   type: 0
   required: false
   additionalinfo: The maximum number of incidents per fetch. Cannot exceed 100.
