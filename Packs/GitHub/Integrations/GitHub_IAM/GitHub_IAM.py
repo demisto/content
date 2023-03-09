@@ -24,6 +24,7 @@ class Client(BaseClient):
         return self._http_request(
             method='GET',
             url_suffix=uri,
+            ok_codes=[200, 404]
         )
 
     def create_user(self, data):
