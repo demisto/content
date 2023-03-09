@@ -1,6 +1,5 @@
 from dateparser import parse
 import urllib3
-from pytz import utc
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 
 # Disable insecure warnings
@@ -663,8 +662,8 @@ def list_users_accounts_command(client: Client, args: dict):
 
 def format_fetch_start_time_to_timestamp(fetch_start_time: Optional[str]):
     fetch_start_time_datetime = parse(fetch_start_time)  # type: ignore
-    start_fetch_timestamp = fetch_start_time_datetime.timestamp()
-    if fetch_start_time_datetime.microsecond == 0:
+    start_fetch_timestamp = fetch_start_time_datetime.timestamp()  # type: ignore
+    if fetch_start_time_datetime.microsecond == 0:  # type: ignore
         return int(start_fetch_timestamp) * 1000
 
     timestamp = str(start_fetch_timestamp).replace('.', '')
