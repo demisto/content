@@ -1575,7 +1575,7 @@
     "expected_get_rule_obj_result": {
         "RuleObjDef": {
             "ruleobjId": "113",
-            "ruleobjType": "Network IP V4",
+            "ruleobjType": "Network IP V.4",
             "name": "Network ip Test",
             "description": null,
             "domain": 0,

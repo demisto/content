@@ -991,13 +991,13 @@ tasks:
     scriptarguments:
       domain:
         simple: "0"
-      from_address_ip_v4:
+      from_address_ip_v.4:
         simple: 1.1.1.1
       name:
         simple: hello rule hello
       rule_object_type:
-        simple: Range IP V4
-      to_address_ip_v4:
+        simple: Range IP V.4
+      to_address_ip_v.4:
         simple: 2.2.2.2
     separatecontext: false
     continueonerrortype: ""

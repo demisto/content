@@ -11,7 +11,7 @@ import re
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-VERSION = demisto.params().get('version', 'V9x')
+VERSION = demisto.params().get('version', 'V.9x')
 STATE_TO_NUMBER = {"Disabled": 0, "Enabled": 1}
 DEPLOY_ARGUMENT_MAPPER = {"push_ssl_key": "SSLPercentageComplete",
                           "push_gam_updates": "GamUpdatePercentageComplete",
@@ -578,19 +578,19 @@ def rule_object_type_cases(str_type: str, case: str) -> str:
         The correct rule_object_type string.
     Examples:
         - In list_domain_rule_objects_command the arguments should be in lower case and in this form:
-            Endpoint IP V4 -> hostipv4
-            Range IP V4 -> ipv4addressrange
-            Network IP V4 -> networkipv4
-            Endpoint IP V6 -> hostipv6
-            Range IP V6 -> ipv6addressrange
-            Network IP V6 -> networkipv6
+            Endpoint IP V.4 -> hostipv4
+            Range IP V.4 -> ipv4addressrange
+            Network IP V.4 -> networkipv4
+            Endpoint IP V.6 -> hostipv6
+            Range IP V.6 -> ipv6addressrange
+            Network IP V.6 -> networkipv6
         - In all the other commands that use this function, the arguments should be in upper case and in this form:
-            Endpoint IP V4 -> HOST_IPV_4
-            Range IP V4 -> IPV_4_ADDRESS_RANGE
-            Network IP V4 -> NETWORK_IPV_4
-            Endpoint IP V6 -> HOST_IPV_6
-            Range IP V6 -> IPV_6_ADDRESS_RANGE
-            Network IP V6 -> NETWORK_IPV_6
+            Endpoint IP V.4 -> HOST_IPV_4
+            Range IP V.4 -> IPV_4_ADDRESS_RANGE
+            Network IP V.4 -> NETWORK_IPV_4
+            Endpoint IP V.6 -> HOST_IPV_6
+            Range IP V.6 -> IPV_6_ADDRESS_RANGE
+            Network IP V.6 -> NETWORK_IPV_6
     """
     type_split = str_type.upper().replace('.', ' ').split()
     if 'ENDPOINT' in type_split[0]:
@@ -611,20 +611,20 @@ def reverse_rule_object_type_cases(rule_type: str) -> str:
     Returns:
         The matching string.
     Example:
-        HOST_IPV_4 -> Endpoint IP V4
-        IPV_4_ADDRESS_RANGE -> Range IP V4
-        NETWORK_IPV_4 -> Network IP V4
-        HOST_IPV_6 -> Endpoint IP V6
-        IPV_6_ADDRESS_RANGE -> Range IP V6
-        NETWORK_IPV_6 -> Network IP V6
+        HOST_IPV_4 -> Endpoint IP V.4
+        IPV_4_ADDRESS_RANGE -> Range IP V.4
+        NETWORK_IPV_4 -> Network IP V.4
+        HOST_IPV_6 -> Endpoint IP V.6
+        IPV_6_ADDRESS_RANGE -> Range IP V.6
+        NETWORK_IPV_6 -> Network IP V.6
     """
     number = '4' if ('4' in rule_type) else '6'
     if 'HOST' in rule_type:
-        return f'Endpoint IP V{number}'
+        return f'Endpoint IP V.{number}'
     elif 'ADDRESS_RANGE' in rule_type:
-        return f'Range IP V{number}'
+        return f'Range IP V.{number}'
     else:
-        return f'Network IP V{number}'
+        return f'Network IP V.{number}'
 
 
 def check_source_and_destination(source_rule_object_id: Optional[int], source_rule_object_type: Optional[str],
@@ -725,7 +725,7 @@ def create_body_create_rule(rule_type: str, address: List, number: int,
         Args:
             rule_type: str - The type of the rule.
             address: List - A list of addresses, if relevant.
-            number: int - The number of the IPV
+            number: int - The number of the IPV.
             from_to_list: List - A list that contains dictionaries with from and do addresses.
         Returns:
             Returns the body for the request.
@@ -750,7 +750,7 @@ def create_body_create_rule_for_v10(rule_type: str, address: List, number: int,
         Args:
             rule_type: str - The type of the rule.
             address: List - A list of addresses, if relevant.
-            number: int - The number of the IPV
+            number: int - The number of the IPV.
             from_to_list: List - A list that contains dictionaries with from and do addresses.
             stste: str - An Enabled or Disabled state.
         Returns:
@@ -814,19 +814,19 @@ def check_args_create_rule(rule_type: str, address: List, from_address: str, to_
             address: List - A list of addresses, if relevant.
             from_address: str - The from address, if relevant.
             to_address: str - The to address, if relevant.
-            number: int - The number of the addresses IP V
+            number: int - The number of the addresses IP V.
     """
     if not address and not from_address and not to_address:
         raise Exception('Please enter a matching address.')
     if ('4' in rule_type and number == 6) or ('6' in rule_type and number == 4):
         raise Exception('The version of the IP in "rule_object_type" should match the addresses version.')
     if ('HOST' in rule_type or 'NETWORK' in rule_type) and (not address or from_address or to_address):
-        raise Exception(f'If the "rule_object_type" is “Endpoint IP V{number}” or “Network IP V{number}” than only'
-                        f' the argument “address_ip_V{number}” must contain a value. The other address arguments '
+        raise Exception(f'If the "rule_object_type" is “Endpoint IP V.{number}” or “Network IP V.{number}” than only'
+                        f' the argument “address_ip_v.{number}” must contain a value. The other address arguments '
                         f'should be empty.')
     if 'ADDRESS_RANGE' in rule_type and (not to_address or not from_address or address):
-        raise Exception(f'If the "rule_object_type" is “Range IP V{number}” than only the arguments '
-                        f'“from_address_ip_V{number}” and “to_address_ip_V{number}” must contain a value, the other'
+        raise Exception(f'If the "rule_object_type" is “Range IP V.{number}” than only the arguments '
+                        f'“from_address_ip_v.{number}” and “to_address_ip_v.{number}” must contain a value, the other'
                         f' address arguments should be empty.')
 
 
@@ -1223,7 +1223,7 @@ def list_domain_rule_objects_command(client: Client, args: Dict) -> CommandResul
     response = client.list_domain_rule_objects_request(domain_id, rule_type)
     results = pagination(response.get('RuleObjDef', []), limit, page, page_size)
     # modify the results in v10 to match the v9 pattern
-    if VERSION == "V10x":
+    if VERSION == "V.10x":
         results = modify_v10_results_to_v9_format(results)
 
     contents = []
@@ -1263,7 +1263,7 @@ def get_rule_object_command(client: Client, args: Dict) -> CommandResults:
     response = response.get('RuleObjDef', {})
     addresses = get_addresses_from_response(response)
     # modify the results in v10 to match the v9 pattern
-    if VERSION == "V10x":
+    if VERSION == "V.10x":
         response = modify_v10_results_to_v9_format([response])[0]
     addresses = get_addresses_from_response(response)
     response['ruleobjType'] = reverse_rule_object_type_cases(response.get('ruleobjType'))
@@ -1300,12 +1300,12 @@ def create_rule_object_command(client: Client, args: Dict) -> CommandResults:
     name = args.get('name')
     visible_to_child = argToBoolean(args.get('visible_to_child', True))
     description = args.get('description')
-    address_ip_v_4 = argToList(args.get('address_ip_V4', None))
-    from_address_ip_v_4 = args.get('from_address_ip_V4')
-    to_address_ip_v_4 = args.get('to_address_ip_V4')
-    address_ip_v_6 = argToList(args.get('address_ip_V6'))
-    from_address_ip_v_6 = args.get('from_address_ip_V6')
-    to_address_ip_v_6 = args.get('to_address_ip_V6')
+    address_ip_v_4 = argToList(args.get('address_ip_v.4', None))
+    from_address_ip_v_4 = args.get('from_address_ip_v.4')
+    to_address_ip_v_4 = args.get('to_address_ip_v.4')
+    address_ip_v_6 = argToList(args.get('address_ip_v.6'))
+    from_address_ip_v_6 = args.get('from_address_ip_v.6')
+    to_address_ip_v_6 = args.get('to_address_ip_v.6')
     state: str = args.get('state', 'Enabled')
 
     if (address_ip_v_4 and address_ip_v_6) or (from_address_ip_v_4 and from_address_ip_v_6) or \
@@ -1335,7 +1335,7 @@ def create_rule_object_command(client: Client, args: Dict) -> CommandResults:
         'ToAddress': to_address
     }]
     # create the body according to the version of the NSM
-    if VERSION == "V10x":
+    if VERSION == "V.10x":
         d_name, extra_body = create_body_create_rule_for_v10(rule_type=rule_type, address=address,
                                                              number=number, from_to_list=from_to_list,
                                                              state=state)
@@ -1371,12 +1371,12 @@ def update_rule_object_command(client: Client, args: Dict) -> CommandResults:
     name = args.get('name')
     visible_to_child = args.get('visible_to_child')
     description = args.get('description')
-    address_ip_v_4 = argToList(args.get('address_ip_V4', None))
-    from_address_ip_v_4 = args.get('from_address_ip_V4')
-    to_address_ip_v_4 = args.get('to_address_ip_V4')
-    address_ip_v_6 = argToList(args.get('address_ip_V6'))
-    from_address_ip_v_6 = args.get('from_address_ip_V6')
-    to_address_ip_v_6 = args.get('to_address_ip_V6')
+    address_ip_v_4 = argToList(args.get('address_ip_v.4', None))
+    from_address_ip_v_4 = args.get('from_address_ip_v.4')
+    to_address_ip_v_4 = args.get('to_address_ip_v.4')
+    address_ip_v_6 = argToList(args.get('address_ip_v.6'))
+    from_address_ip_v_6 = args.get('from_address_ip_v.6')
+    to_address_ip_v_6 = args.get('to_address_ip_v.6')
     is_overwrite = argToBoolean(args.get('is_overwrite', False))
     state: str = args.get('state', 'Enabled')
     response_get = client.get_rule_object_request(rule_id)
@@ -1385,27 +1385,27 @@ def update_rule_object_command(client: Client, args: Dict) -> CommandResults:
     rule_type = response_get.get('ruleobjType')
     if (rule_type == 'HOST_IPV_4' or rule_type == 'NETWORK_IPV_4') and \
             (from_address_ip_v_4 or to_address_ip_v_4 or address_ip_v_6 or from_address_ip_v_6 or to_address_ip_v_6):
-        raise Exception('If the rule object type is Endpoint IP V4 or Network IP V4 than only the argument '
+        raise Exception('If the rule object type is Endpoint IP V.4 or Network IP V.4 than only the argument '
                         '"address_ip_v_4" should contain a value')
     elif (rule_type == 'IPV_4_ADDRESS_RANGE') and \
             ((from_address_ip_v_4 and not to_address_ip_v_4) or (not from_address_ip_v_4 and to_address_ip_v_4)):
-        raise Exception('If the rule object type is Range IP V4 than both "from_address_ip_v_4" and '
+        raise Exception('If the rule object type is Range IP V.4 than both "from_address_ip_v_4" and '
                         '"to_address_ip_v_4" must contain a value or be empty.')
     elif (rule_type == 'IPV_4_ADDRESS_RANGE') and \
             (address_ip_v_4 or address_ip_v_6 or from_address_ip_v_6 or to_address_ip_v_6):
-        raise Exception('If the rule object type is Range IP V4 than only the arguments "from_address_ip_v_4" and '
+        raise Exception('If the rule object type is Range IP V.4 than only the arguments "from_address_ip_v_4" and '
                         '"to_address_ip_v_4" should contain a value')
     elif (rule_type == 'HOST_IPV_6' or rule_type == 'NETWORK_IPV_6') and \
             (address_ip_v_4 or from_address_ip_v_4 or to_address_ip_v_4 or from_address_ip_v_6 or to_address_ip_v_6):
-        raise Exception('If the rule object type is Endpoint IP V6 or Network IP V6 than only the argument '
+        raise Exception('If the rule object type is Endpoint IP V.6 or Network IP V.6 than only the argument '
                         '"address_ip_v_6" should contain a value')
     elif (rule_type == 'IPV_6_ADDRESS_RANGE') and \
             ((from_address_ip_v_6 and not to_address_ip_v_6) or (not from_address_ip_v_6 and to_address_ip_v_6)):
-        raise Exception('If the rule object type is Range IP V6 than both "from_address_ip_v_6" and '
+        raise Exception('If the rule object type is Range IP V.6 than both "from_address_ip_v_6" and '
                         '"to_address_ip_v_6" must contain a value or be empty.')
     elif (rule_type == 'IPV_6_ADDRESS_RANGE') and \
             (address_ip_v_4 or address_ip_v_6 or from_address_ip_v_4 or to_address_ip_v_4):
-        raise Exception('If the rule object type is Range IP V6 than only the arguments "from_address_ip_v_6" and '
+        raise Exception('If the rule object type is Range IP V.6 than only the arguments "from_address_ip_v_6" and '
                         '"to_address_ip_v_6" should contain a value')
 
     name = name if name else response_get.get('name')
@@ -1489,7 +1489,7 @@ def update_rule_object_command(client: Client, args: Dict) -> CommandResults:
     number = 4 if (address_ip_v_4 or from_to_address_ip_v_4) else 6
     from_to_list = from_to_address_ip_v_4 if from_to_address_ip_v_4 else from_to_address_ip_v_6
     # create the body according to the version of the NSM
-    if VERSION == "V10x":
+    if VERSION == "V.10x":
         d_name, extra_body = create_body_create_rule_for_v10(rule_type=rule_type, address=address,
                                                              number=number, from_to_list=from_to_list,
                                                              state=state)

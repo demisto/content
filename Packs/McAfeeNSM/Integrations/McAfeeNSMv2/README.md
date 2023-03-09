@@ -134,10 +134,10 @@ Gets the firewall policy details.
 | NSM.Policy.MemberDetails.MemberRuleList.Direction | String | Rule direction. Can be "Inbound" / "Outbound" / "Either". | 
 | NSM.Policy.MemberDetails.MemberRuleList.SourceAddressObjectList.RuleObjectId | String | Unique rule object ID. | 
 | NSM.Policy.MemberDetails.MemberRuleList.SourceAddressObjectList.Name | String | Rule object name. | 
-| NSM.Policy.MemberDetails.MemberRuleList.SourceAddressObjectList.RuleObjectType | Unknown | Source or destination mode. Can be "Endpoint IP V4" / "Range IP V4" / "Network IP V4" / "Endpoint IP V6" / "Range IP V6" / "Network IP V6". | 
+| NSM.Policy.MemberDetails.MemberRuleList.SourceAddressObjectList.RuleObjectType | Unknown | Source or destination mode. Can be "Endpoint IP V.4" / "Range IP V.4" / "Network IP V.4" / "Endpoint IP V.6" / "Range IP V.6" / "Network IP V.6". | 
 | NSM.Policy.MemberDetails.MemberRuleList.DestinationAddressObjectList.RuleObjectId | String | Unique rule object ID. | 
 | NSM.Policy.MemberDetails.MemberRuleList.DestinationAddressObjectList.Name | String | Rule object name. | 
-| NSM.Policy.MemberDetails.MemberRuleList.DestinationAddressObjectList.RuleObjectType | Unknown | Source or destination mode. Can be "Endpoint IP V4" / "Range IP V4" / "Endpoint IP V6" / "Range IP V6" / "Network IP V6". | 
+| NSM.Policy.MemberDetails.MemberRuleList.DestinationAddressObjectList.RuleObjectType | Unknown | Source or destination mode. Can be "Endpoint IP V.4" / "Range IP V.4" / "Endpoint IP V.6" / "Range IP V.6" / "Network IP V.6". | 
 | NSM.Policy.MemberDetails.MemberRuleList.SourceUserObjectList.RuleObjectId | String | Unique rule object ID. | 
 | NSM.Policy.MemberDetails.MemberRuleList.SourceUserObjectList.Name | String | Rule object name. | 
 | NSM.Policy.MemberDetails.MemberRuleList.SourceUserObjectList.RuleObjectType | String | Source user. Can be "USER" / "USER_GROUP". | 
@@ -254,9 +254,9 @@ Adds a new firewall policy and access rules. You have to provide at lease one of
 | rule_enabled | Whether the rule is enabled. Possible values are: yes, no. Default is yes. | Optional | 
 | direction | The direction of the rule. Possible values are: Inbound, Outbound, Either. | Required | 
 | source_rule_object_id | The ID of the rule connected to the policy. To get the rule_object_id use the command '!nsm-list-domain-rule-object'. | Optional | 
-| source_rule_object_type | The type of the rule connected to the policy. To get the rule_object_type use the command '!nsm-list-domain-rule-object'. Possible values are: Endpoint IP V4, Range IP V4, Network IP V4, Endpoint IP V6, Range IP V6, Network IP V6. | Optional | 
+| source_rule_object_type | The type of the rule connected to the policy. To get the rule_object_type use the command '!nsm-list-domain-rule-object'. Possible values are: Endpoint IP V.4, Range IP V.4, Network IP V.4, Endpoint IP V.6, Range IP V.6, Network IP V.6. | Optional | 
 | destination_rule_object_id | The ID of the rule connected to the policy. To get the rule_object_id use the command '!nsm-list-domain-rule-object'. | Optional | 
-| destination_rule_object_type | The type of the rule connected to the policy. To get the rule_object_type use the command '!nsm-list-domain-rule-object'. Possible values are: Endpoint IP V4, Range IP V4, Network IP V4, Endpoint IP V6, Range IP V6, Network IP V6. | Optional | 
+| destination_rule_object_type | The type of the rule connected to the policy. To get the rule_object_type use the command '!nsm-list-domain-rule-object'. Possible values are: Endpoint IP V.4, Range IP V.4, Network IP V.4, Endpoint IP V.6, Range IP V.6, Network IP V.6. | Optional | 
 
 
 #### Context Output
@@ -266,7 +266,7 @@ Adds a new firewall policy and access rules. You have to provide at lease one of
 | NSM.Policy.FirewallPolicyId | Number | The ID of the newly created firewall policy. | 
 
 #### Command example
-```!nsm-create-firewall-policy domain=0 name=policy visible_to_child=yes description="a new policy" is_editable=yes policy_type=Advanced response=Scan rule_description="Test Member Rule" direction=Inbound destination_rule_object_id=111 destination_rule_object_type="Range IP V4"```
+```!nsm-create-firewall-policy domain=0 name=policy visible_to_child=yes description="a new policy" is_editable=yes policy_type=Advanced response=Scan rule_description="Test Member Rule" direction=Inbound destination_rule_object_id=111 destination_rule_object_type="Range IP V.4"```
 
 #### Context Example
 ```json
@@ -310,9 +310,9 @@ Updates the firewall policy details. If the argument is_overwrite=true, the new 
 | rule_enabled | Whether the rule is enabled. Possible values are: yes, no. Default is yes. | Optional | 
 | direction | The direction of the rule. Possible values are: Inbound, Outbound, Either. | Optional | 
 | source_rule_object_id | The ID of the rule connected to the policy. To get the rule_object_id use the command '!nsm-list-domain-rule-object'. | Optional | 
-| source_rule_object_type | The type of the rule connected to the policy. To get the rule_object_type use the command '!nsm-list-domain-rule-object'. Possible values are: Endpoint IP V4, Range IP V4, Network IP V4, Endpoint IP V6, Range IP V6, Network IP V6. | Optional | 
+| source_rule_object_type | The type of the rule connected to the policy. To get the rule_object_type use the command '!nsm-list-domain-rule-object'. Possible values are: Endpoint IP V.4, Range IP V.4, Network IP V.4, Endpoint IP V.6, Range IP V.6, Network IP V.6. | Optional | 
 | destination_rule_object_id | The ID of the rule connected to the policy. To get the rule_object_id use the command '!nsm-list-domain-rule-object'. | Optional | 
-| destination_rule_object_type | The type of the rule connected to the policy. To get the rule_object_type use the command '!nsm-list-domain-rule-object'. Possible values are: Endpoint IP V4, Range IP V4, Network IP V4, Endpoint IP V6, Range IP V6, Network IP V6. | Optional | 
+| destination_rule_object_type | The type of the rule connected to the policy. To get the rule_object_type use the command '!nsm-list-domain-rule-object'. Possible values are: Endpoint IP V.4, Range IP V.4, Network IP V.4, Endpoint IP V.6, Range IP V.6, Network IP V.6. | Optional | 
 | is_overwrite | Whether the new addresses that were provided in the update processes will override the current ones or will be added to them. Possible values are: true, false. | Optional | 
 
 
@@ -364,7 +364,7 @@ Gets the list of rule objects defined in a particular domain.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | domain_id | The ID of the domain. To get the domain ID, use the !nsm-get-domains command. | Required | 
-| type | The type of the rule. Possible values are: Endpoint IP V4, Range IP V4, Network IP V4, Endpoint IP V6, Range IP V6, Network IP V6, All. Default is All. | Optional | 
+| type | The type of the rule. Possible values are: Endpoint IP V.4, Range IP V.4, Network IP V.4, Endpoint IP V.6, Range IP V.6, Network IP V.6, All. Default is All. | Optional | 
 | limit | The maximum number of projects to return. Default is 50. | Optional | 
 | page | The specific result page to display. | Optional | 
 | page_size | The number of records in a page. | Optional | 
@@ -437,7 +437,7 @@ Gets the list of rule objects defined in a particular domain.
                 "hostCriticality": "HIGH",
                 "name": "testing",
                 "ruleobjId": "134",
-                "ruleobjType": "Endpoint IP V4",
+                "ruleobjType": "Endpoint IP V.4",
                 "visibleToChild": true
             },
             {
@@ -469,7 +469,7 @@ Gets the list of rule objects defined in a particular domain.
                 "hostCriticality": null,
                 "name": "ruleo",
                 "ruleobjId": "133",
-                "ruleobjType": "Range IP V4",
+                "ruleobjType": "Range IP V.4",
                 "visibleToChild": true
             }
         ]
@@ -482,8 +482,8 @@ Gets the list of rule objects defined in a particular domain.
 >### List of Rule Objects
 >|RuleId| Name |VisibleToChild|RuleType|
 >|---------|---|---|---|
->| 134 | testing | true | Endpoint IP V4 |
->| 133 | ruleo | true | Range IP V4 |
+>| 134 | testing | true | Endpoint IP V.4 |
+>| 133 | ruleo | true | Range IP V.4 |
 
 
 ### nsm-get-rule-object
@@ -537,8 +537,8 @@ Gets the details of a rule object.
 ### nsm-create-rule-object
 ***
 Adds a new rule object. 
-* If the type is “Endpoint IP VX” or “Network IP VX”, only the argument “address_ip_VX” must contain a value. 
-* If the type is “Range IP VX”, only the arguments “from_address_ip_VX”, “to_address_ip_VX” must contain a value. Where X is 4 or 6 respectively.
+* If the type is “Endpoint IP V.X” or “Network IP V.X”, only the argument “address_ip_v.X” must contain a value. 
+* If the type is “Range IP V.X”, only the arguments “from_address_ip_v.X”, “to_address_ip_v.X” must contain a value. Where X is 4 or 6 respectively.
 
 
 #### Base Command
@@ -549,16 +549,16 @@ Adds a new rule object.
 | **Argument Name** | **Description**                                                                                                                                                                                                                                                                                                                                                                                                                 | **Required** |
 | --- |---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
 | domain | The ID of the domain. To get the domain ID, use the !nsm-get-domains command.                                                                                                                                                                                                                                                                                                                                                   | Required | 
-| rule_object_type | The type of the rule. <br/>* If the type is “Endpoint IP VX” or “Network IP VX”, only the argument “address_ip_VX” must contain a value. <br/>* If the type is “Range IP VX”, only the arguments “from_address_ip_VX”, “to_address_ip_VX” must contain a value, where X is 4 or 6 respectively. <br/>* Possible values are: Endpoint IP V4, Range IP V4, Network IP V4, Endpoint IP V6, Range IP V6, Network IP V6. | Required | 
+| rule_object_type | The type of the rule. <br/>* If the type is “Endpoint IP V.X” or “Network IP V.X”, only the argument “address_ip_v.X” must contain a value. <br/>* If the type is “Range IP V.X”, only the arguments “from_address_ip_v.X”, “to_address_ip_v.X” must contain a value, where X is 4 or 6 respectively. <br/>* Possible values are: Endpoint IP V.4, Range IP V.4, Network IP V.4, Endpoint IP V.6, Range IP V.6, Network IP V.6. | Required | 
 | name | The rule object name.                                                                                                                                                                                                                                                                                                                                                                                                           | Required | 
 | visible_to_child | Whether the rule object is visible to the child domain. Possible values are: yes, no. Default is yes.                                                                                                                                                                                                                                                                                                                           | Optional | 
 | description | The description of the rule object.                                                                                                                                                                                                                                                                                                                                                                                             | Optional | 
-| address_ip_V4 | List of IPv4 Host Address, separated by a comma.                                                                                                                                                                                                                                                                                                                                                                                | Optional | 
-| from_address_ip_V4 | Start of the IPv4 range.                                                                                                                                                                                                                                                                                                                                                                                                        | Optional | 
-| to_address_ip_V4 | End of the IPv4 range.                                                                                                                                                                                                                                                                                                                                                                                                          | Optional | 
-| address_ip_V6 | List of IPv6 host addresses, separated by a comma.                                                                                                                                                                                                                                                                                                                                                                              | Optional | 
-| from_address_ip_V6 | Start of the IPv6 range.                                                                                                                                                                                                                                                                                                                                                                                                        | Optional | 
-| to_address_ip_V6 | End of the IPv6 range.                                                                                                                                                                                                                                                                                                                                                                                                          | Optional | 
+| address_ip_v.4 | List of IPv4 Host Address, separated by a comma.                                                                                                                                                                                                                                                                                                                                                                                | Optional | 
+| from_address_ip_v.4 | Start of the IPv4 range.                                                                                                                                                                                                                                                                                                                                                                                                        | Optional | 
+| to_address_ip_v.4 | End of the IPv4 range.                                                                                                                                                                                                                                                                                                                                                                                                          | Optional | 
+| address_ip_v.6 | List of IPv6 host addresses, separated by a comma.                                                                                                                                                                                                                                                                                                                                                                              | Optional | 
+| from_address_ip_v.6 | Start of the IPv6 range.                                                                                                                                                                                                                                                                                                                                                                                                        | Optional | 
+| to_address_ip_v.6 | End of the IPv6 range.                                                                                                                                                                                                                                                                                                                                                                                                          | Optional | 
 
 
 #### Context Output
@@ -568,7 +568,7 @@ Adds a new rule object.
 | NSM.Rule.ruleobjId | Number | The ID of the newly created rule object. | 
 
 #### Command example
-```!nsm-create-rule-object domain=0 rule_object_type="Range IP V4" name="ruleo" visible_to_child=yes from_address_ip_V4=1.1.1.1 to_address_ip_V4=2.2.2.2```
+```!nsm-create-rule-object domain=0 rule_object_type="Range IP V.4" name="ruleo" visible_to_child=yes from_address_ip_v.4=1.1.1.1 to_address_ip_v.4=2.2.2.2```
 #### Context Example
 ```json
 {
@@ -587,8 +587,8 @@ Adds a new rule object.
 ### nsm-update-rule-object
 ***
 Updates a Rule object. In case of address rule update: 
-* if the rule type is “Endpoint IP VX” or “Network IP VX”, only the argument “address_ip_VX” should contain a value. 
-* If the type is “Range IP VX”, only the arguments “from_address_ip_VX”, “to_address_ip_VX” should contain a value, Where X is 4 or 6 respectively.
+* if the rule type is “Endpoint IP V.X” or “Network IP V.X”, only the argument “address_ip_v.X” should contain a value. 
+* If the type is “Range IP V.X”, only the arguments “from_address_ip_v.X”, “to_address_ip_v.X” should contain a value, Where X is 4 or 6 respectively.
 
 
 #### Base Command
@@ -603,12 +603,12 @@ Updates a Rule object. In case of address rule update:
 | name | The rule object name. | Optional | 
 | visible_to_child | Whether the rule object is visible to the child domain. Possible values are: yes, no. Default is yes. | Optional | 
 | description | The description of the rule object. | Optional | 
-| address_ip_V4 | List of IPv4 host addresses, separated by a comma. | Optional | 
-| from_address_ip_V4 | Start of the IPv4 range. | Optional | 
-| to_address_ip_V4 | End of the IPv4 range. | Optional | 
-| address_ip_V6 | List of IPv6 host addresses, separated by a comma. | Optional | 
-| from_address_ip_V6 | Start of the IPv6 range. | Optional | 
-| to_address_ip_V6 | End of the IPv6 range. | Optional | 
+| address_ip_v.4 | List of IPv4 host addresses, separated by a comma. | Optional | 
+| from_address_ip_v.4 | Start of the IPv4 range. | Optional | 
+| to_address_ip_v.4 | End of the IPv4 range. | Optional | 
+| address_ip_v.6 | List of IPv6 host addresses, separated by a comma. | Optional | 
+| from_address_ip_v.6 | Start of the IPv6 range. | Optional | 
+| to_address_ip_v.6 | End of the IPv6 range. | Optional | 
 | is_overwrite | Whether the new addresses that were provided in the update processes will override the current ones or will be added to them. The default is false, and the addresses will be added. Possible values are: true, false. | Optional | 
 
 
