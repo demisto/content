@@ -485,6 +485,7 @@ Sends commands to hosts.
 | full_command | The full command to run. | Required | 
 | scope | The scope for which to run the command. Possible values are: "read", "write", and "admin". Default is "read". (NOTE: In order to run the CrowdStrike RTR `put` command, it is necessary to pass `scope=admin`.) | Optional | 
 | target | The target for which to run the command. Possible values are: "single" and "batch". Default is "batch". | Optional | 
+| queue_offline | Any commands run against an offline-queued session will be queued up and executed when the host comes online. | Optional | 
 
 
 #### Context Output
@@ -870,6 +871,7 @@ Runs a script on the agent host.
 | host_ids | A comma-separated list of host agent IDs to run commands. (The list of host agent IDs can be retrieved by running the 'cs-falcon-search-device' command.) | Required | 
 | raw | The PowerShell script code to run. | Optional | 
 | timeout | The amount of time to wait before the request times out (in seconds). Maximum is 600 (10 minutes). Default value is 30. | Optional | 
+| queue_offline | Whether the command will run against an offline-queued session and be queued for execution when the host comes online. | Optional | 
 
 
 #### Context Output
@@ -3525,6 +3527,7 @@ Execute an active responder kill command on a single host.
 | --- | --- | --- |
 | host_id | The host ID in which you would like to kill the given process. | Required | 
 | process_ids | A comma-separated list of process IDs to kill. | Required | 
+| queue_offline | Whether the command will run against an offline-queued session and be queued for execution when the host comes online. | Optional | 
 
 #### Context Output
 
@@ -3587,6 +3590,7 @@ Batch executes an RTR active-responder remove file across the hosts mapped to th
 | host_ids | A comma-separated list of the hosts IDs in which you would like to remove the file. | Required | 
 | file_path | The path to a file or a directoty that you would like to remove. | Required | 
 | os | The operatin system of the hosts given. As the revome command is different in each operatin system, you can choose only one operating system. Possible values are: Windows, Linux, Mac. | Required | 
+| queue_offline | Whether the command will run against an offline-queued session and be queued for execution when the host comes online. | Optional | 
 
 #### Context Output
 
@@ -3635,6 +3639,7 @@ Executes an RTR active-responder ps command to get a list of active processes ac
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | host_id | The host ID in which you would like to get the processes list from. | Required | 
+| queue_offline | Whether the command will run against an offline-queued session and be queued for execution when the host comes online. | Optional | 
 
 #### Context Output
 
@@ -3694,6 +3699,7 @@ host.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | host_id | The host ID in which you would like to get the network status and protocol statistics list from. | Required | 
+| queue_offline | Whether the command will run against an offline-queued session and be queued for execution when the host comes online. | Optional | 
 
 #### Context Output
 
@@ -3754,6 +3760,7 @@ Windows hosts.
 | --- | --- | --- |
 | host_ids | A comma-separated list of the hosts IDs in which you would like to get the registry keys from. | Required | 
 | registry_keys | A comma-separated list of the registy keys, subkeys or value to get. | Required | 
+| queue_offline | Whether the command will run against an offline-queued session and be queued for execution when the host comes online. | Optional | 
 
 #### Context Output
 
@@ -3820,6 +3827,7 @@ valid only for Windows hosts.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | host_ids | A comma-separated list of the hosts IDs in which you would like to get the list of scheduled tasks from. | Required | 
+| queue_offline | Whether the command will run against an offline-queued session and be queued for execution when the host comes online. | Optional | 
 
 #### Context Output
 
@@ -3881,6 +3889,7 @@ Gets the RTR extracted file contents for the specified file path.
 | interval_in_seconds | interval between polling. Default is 60 seconds. Must be higher than 10. | Optional | 
 | hosts_and_requests_ids | This is an internal argument used for the polling process, not to be used by the user. | Optional | 
 | SHA256 | This is an internal argument used for the polling process, not to be used by the user. | Optional | 
+| queue_offline | Whether the command will run against an offline-queued session and be queued for execution when the host comes online. | Optional | 
 
 #### Context Output
 

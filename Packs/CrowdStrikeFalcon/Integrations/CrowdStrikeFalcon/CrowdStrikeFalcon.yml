@@ -1,3 +1,5 @@
+| queue_offline | Whether the command will run against an offline-queued session and be queued for execution when the host comes online. | Optional | 
+
 category: Endpoint
 sectionOrder:
 - Connect
@@ -684,6 +686,10 @@ script:
     - defaultValue: '30'
       description: Timeout for how long to wait for the request in seconds. Maximum is 600 (10 minutes).
       name: timeout
+    - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
+      name: queue_offline
+      defaultValue: false
+      required: false
     description: Runs a script on the agent host.
     name: cs-falcon-run-script
     outputs:
@@ -2397,6 +2403,10 @@ script:
       isArray: true
       name: process_ids
       required: true
+    - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
+      name: queue_offline
+      defaultValue: false
+      required: false
     description: Execute an active responder kill command on a single host.
     name: cs-falcon-rtr-kill-process
     outputs:
@@ -2425,6 +2435,10 @@ script:
       - Linux
       - Mac
       required: true
+    - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
+      name: queue_offline
+      defaultValue: false
+      required: false
     description: Batch executes an RTR active-responder remove file across the hosts mapped to the given batch ID.
     name: cs-falcon-rtr-remove-file
     outputs:
@@ -2438,6 +2452,10 @@ script:
     - description: The host ID you want to get the processes list from.
       name: host_id
       required: true
+    - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
+      name: queue_offline
+      defaultValue: false
+      required: false
     description: Executes an RTR active-responder ps command to get a list of active processes across the given host.
     name: cs-falcon-rtr-list-processes
     outputs:
@@ -2448,6 +2466,10 @@ script:
     - description: The host ID you want to get the network status and protocol statistics list from.
       name: host_id
       required: true
+    - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
+      name: queue_offline
+      defaultValue: false
+      required: false
     description: Executes an RTR active-responder netstat command to get a list of network status and protocol statistics across the given host.
     name: cs-falcon-rtr-list-network-stats
     outputs:
@@ -2463,6 +2485,10 @@ script:
       isArray: true
       name: registry_keys
       required: true
+    - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
+      name: queue_offline
+      defaultValue: false
+      required: false
     description: Executes an RTR active-responder read registry keys command across the given hosts. This command is valid only for Windows hosts.
     name: cs-falcon-rtr-read-registry
   - arguments:
@@ -2470,6 +2496,10 @@ script:
       isArray: true
       name: host_ids
       required: true
+    - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
+      name: queue_offline
+      defaultValue: false
+      required: false
     description: Executes an RTR active-responder netstat command to get a list of scheduled tasks across the given host. This command is valid only for Windows hosts.
     name: cs-falcon-rtr-list-scheduled-tasks
   - arguments:
@@ -2490,6 +2520,10 @@ script:
     - description: This is an internal argument used for the polling process, not to be used by the user.
       isArray: true
       name: SHA256
+    - description: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
+      name: queue_offline
+      defaultValue: false
+      required: false
     description: Gets the RTR extracted file contents for the specified file path.
     name: cs-falcon-rtr-retrieve-file
     outputs:

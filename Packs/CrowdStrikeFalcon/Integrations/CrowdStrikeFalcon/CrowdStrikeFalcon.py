@@ -768,7 +768,7 @@ def run_batch_admin_cmd(batch_id: str, command_type: str, full_command: str, tim
 
 
 def run_batch_get_cmd(host_ids: list, file_path: str, optional_hosts: list = None, timeout: int = None,
-                      timeout_duration: str = None) -> Dict:
+                      timeout_duration: str = None, offline: bool = False) -> Dict:
     """
         Batch executes `get` command across hosts to retrieve files.
         After this call is made `/real-time-response/combined/batch-get-command/v1` is used to query for the results.
@@ -779,10 +779,11 @@ def run_batch_get_cmd(host_ids: list, file_path: str, optional_hosts: list = Non
                              If this list is supplied, only these hosts will receive the command.
       :param timeout: Timeout for how long to wait for the request in seconds
       :param timeout_duration: Timeout duration for for how long to wait for the request in duration syntax
+      :param offline: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
       :return: Response JSON which contains errors (if exist) and retrieved resources
     """
     endpoint_url = '/real-time-response/combined/batch-get-command/v1'
-    batch_id = init_rtr_batch_session(host_ids)
+    batch_id = init_rtr_batch_session(host_ids, offline)
 
     body = assign_params(batch_id=batch_id, file_path=f'"{file_path}"', optional_hosts=optional_hosts)
     params = assign_params(timeout=timeout, timeout_duration=timeout_duration)
@@ -3209,6 +3210,7 @@ def run_script_command():
     script_name = args.get('script_name')
     raw = args.get('raw')
     host_ids = argToList(args.get('host_ids'))
+    offline = argToBoolean(args.get('queue_offline', False))
     try:
         timeout = int(args.get('timeout', 30))
     except ValueError as e:
@@ -3227,7 +3229,7 @@ def run_script_command():
 
     command_type = 'runscript'
 
-    batch_id = init_rtr_batch_session(host_ids)
+    batch_id = init_rtr_batch_session(host_ids, offline)
     timer = Timer(300, batch_refresh_session, kwargs={'batch_id': batch_id})
     timer.start()
     try:
@@ -3269,7 +3271,7 @@ def run_script_command():
     return create_entry_object(contents=response, ec=entry_context, hr=human_readable)
 
 
-def run_get_command(is_polling=False):
+def run_get_command(is_polling=False, offline=False):
     request_ids_for_polling = []
     args = demisto.args()
     host_ids = argToList(args.get('host_ids'))
@@ -3279,7 +3281,7 @@ def run_get_command(is_polling=False):
     timeout_duration = args.get('timeout_duration')
 
     timeout = timeout and int(timeout)
-    response = run_batch_get_cmd(host_ids, file_path, optional_hosts, timeout, timeout_duration)
+    response = run_batch_get_cmd(host_ids, file_path, optional_hosts, timeout, timeout_duration, offline)
 
     resources: dict = response.get('combined', {}).get('resources', {})
 
@@ -3797,7 +3799,8 @@ def rtr_kill_process_command(args: dict) -> CommandResults:
     command_type = "kill"
     raw_response = []
     host_ids = [host_id]
-    batch_id = init_rtr_batch_session(host_ids)
+    offline = argToBoolean(args.get('queue_offline', False))
+    batch_id = init_rtr_batch_session(host_ids, offline)
     outputs = []
 
     for process_id in process_ids:
@@ -3864,11 +3867,12 @@ def match_remove_command_for_os(operating_system, file_path):
 def rtr_remove_file_command(args: dict) -> CommandResults:
     file_path = args.get('file_path')
     host_ids = remove_duplicates_from_list_arg(args, 'host_ids')
+    offline = argToBoolean(args.get('queue_offline', False))
     operating_system = args.get('os')
     full_command = match_remove_command_for_os(operating_system, file_path)
     command_type = "rm"
 
-    batch_id = init_rtr_batch_session(host_ids)
+    batch_id = init_rtr_batch_session(host_ids, offline)
     response = execute_run_batch_write_cmd_with_timer(batch_id, command_type, full_command, host_ids)
     outputs = parse_rtr_command_response(response, host_ids)
     human_readable = tableToMarkdown(
@@ -3904,12 +3908,12 @@ def execute_run_batch_admin_cmd_with_timer(batch_id, command_type, full_command,
 
 
 def rtr_general_command_on_hosts(host_ids: list, command: str, full_command: str, get_session_function: Callable,
-                                 write_to_context=True) -> \
+                                 write_to_context=True, offline=False) -> \
         List[Union[CommandResults, dict]]:  # type:ignore
     """
     General function to run RTR commands depending on the given command.
     """
-    batch_id = init_rtr_batch_session(host_ids)
+    batch_id = init_rtr_batch_session(host_ids, offline)
     response = get_session_function(batch_id, command_type=command, full_command=full_command,
                                     host_ids=host_ids)  # type:ignore
     output, file, not_found_hosts = parse_rtr_stdout_response(host_ids, response, command)
@@ -3954,10 +3958,11 @@ def parse_rtr_stdout_response(host_ids, response, command, file_name_suffix=""):
 
 def rtr_read_registry_keys_command(args: dict):
     host_ids = remove_duplicates_from_list_arg(args, 'host_ids')
+    offline = argToBoolean(args.get('queue_offline', False))
     registry_keys = remove_duplicates_from_list_arg(args, 'registry_keys')
     command_type = "reg"
     raw_response = []
-    batch_id = init_rtr_batch_session(host_ids)
+    batch_id = init_rtr_batch_session(host_ids, offline)
     outputs = []
     files = []
     not_found_hosts = set()
@@ -4011,7 +4016,8 @@ def rtr_polling_retrieve_file_command(args: dict):
     if 'hosts_and_requests_ids' not in args:
         # this is the very first time we call the polling function. We don't wont to call this function more that
         # one time, so we store that arg between the different runs
-        args['hosts_and_requests_ids'] = run_get_command(is_polling=True)  # run the first command to retrieve file
+        offline = argToBoolean(args.get('queue_offline', False))
+        args['hosts_and_requests_ids'] = run_get_command(is_polling=True, offline=offline)  # run the first command to retrieve file
 
     # we are here after we ran the cs-falcon-run-get-command command at the current run or in previous
     if not args.get('SHA256'):
@@ -4596,14 +4602,16 @@ def main():
 
         elif command == 'cs-falcon-rtr-list-processes':
             host_id = args.get('host_id')
+            offline = argToBoolean(args.get('queue_offline', False))
             return_results(
-                rtr_general_command_on_hosts([host_id], "ps", "ps", execute_run_batch_write_cmd_with_timer, True))
+                rtr_general_command_on_hosts([host_id], "ps", "ps", execute_run_batch_write_cmd_with_timer, True, offline))
 
         elif command == 'cs-falcon-rtr-list-network-stats':
             host_id = args.get('host_id')
+            offline = argToBoolean(args.get('queue_offline', False))
             return_results(
                 rtr_general_command_on_hosts([host_id], "netstat", "netstat", execute_run_batch_write_cmd_with_timer,
-                                             True))
+                                             True, offline))
 
         elif command == 'cs-falcon-rtr-read-registry':
             return_results(rtr_read_registry_keys_command(args))
@@ -4611,8 +4619,9 @@ def main():
         elif command == 'cs-falcon-rtr-list-scheduled-tasks':
             full_command = f'runscript -Raw=```schtasks /query /fo LIST /v```'  # noqa: F541
             host_ids = argToList(args.get('host_ids'))
+            offline = argToBoolean(args.get('queue_offline', False))
             return_results(rtr_general_command_on_hosts(host_ids, "runscript", full_command,
-                                                        execute_run_batch_admin_cmd_with_timer))
+                                                        execute_run_batch_admin_cmd_with_timer, offline))
         elif command == 'cs-falcon-rtr-retrieve-file':
             return_results(rtr_polling_retrieve_file_command(args))
         elif command == 'cs-falcon-get-detections-for-incident':
