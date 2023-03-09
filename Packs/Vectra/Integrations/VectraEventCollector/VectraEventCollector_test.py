@@ -39,8 +39,6 @@ def load_json(path: Path):
 
 AUDITS: Dict[str, Any] = load_json(Path("./test_data/audits.json"))
 DETECTIONS: Dict[str, Any] = load_json(Path("./test_data/search_detections.json"))
-endpoints = load_json(Path("./test_data/endpoints.json"))
-no_access_endpoints = load_json(Path("./test_data/endpoints_no_detection_audits.json"))
 
 """ VectraClient Tests """
 
@@ -68,42 +66,43 @@ def test_create_headers(token: str):
     assert actual == expected
 
 
-@pytest.mark.parametrize(
-    "endpoints,expected",
-    [(endpoints, "ok")],
-)
-def test_test_module(mocker: MockerFixture, endpoints: Dict[str, str], expected: str):
+def test_test_module(mocker: MockerFixture):
     """
     Given
-            A dictionary of endpoints
+    - A dictionary of endpoints
     When
-            Case A: Calling test-module with list of endpoints which include detections and audits
+    - Calling ``test-module``.
     Then
-            Make sure that result succeeds or not.
+    - Make sure that result succeeds.
     """
 
-    mocker.patch.object(client, "_http_request", return_value=endpoints)
+    mocker.patch.object(client, "get_audits", return_value=AUDITS)
+    mocker.patch.object(client, "get_detections", return_value=DETECTIONS)
     actual = test_module(client)
-    assert expected in actual
+    assert "ok" in actual
 
 
 def test_test_module_exception(mocker: MockerFixture):
-    # TODO docstring
+
+    """
+    Given
+    - A dictionary of endpoints
+    When
+    - Calling ``test-module`` with an ``Exception`` side effect.
+    Then
+    - Make sure that result fails.
+    """
 
     mocker.patch.object(
         client,
         "_http_request",
-        side_effect=DemistoException(
-            f"""User doesn't have access to endpoints {client.endpoints}, only to {','.join(list(no_access_endpoints.keys()))}.
-                    Check with your Vectra account administrator."""
-        ),
+        side_effect=Exception("test module failed"),
     )
 
-    with pytest.raises(DemistoException) as e:
+    with pytest.raises(Exception) as e:
         test_module(client)
 
-    assert "User doesn't have access to endpoints" in str(e.value)
-    # assert
+    assert "test module failed" in str(e.value)
 
 
 def test_get_detections(mocker: MockerFixture):

@@ -129,10 +129,10 @@ def test_module(client: VectraClient) -> str:
     to them so we check if these endpoints exist in the response.
 
     Arguments:
-                                                                    - ``client` (``VectraClient``): An instance of a Vectra API HTTP client.
+    - ``client` (``VectraClient``): An instance of a Vectra API HTTP client.
 
     Returns:
-                                                                    `str` `'ok'` if test passed, anything else will raise an exception.
+    `str` `'ok'` if test passed, anything else will raise an exception.
     """
 
     demisto.info(f"Testing connection and authentication to {client._base_url}...")
@@ -140,7 +140,7 @@ def test_module(client: VectraClient) -> str:
     fetch_events(
         client,
         first_timestamp=datetime.now().strftime(DETECTION_FIRST_TIMESTAMP_QUERY_START_FORMAT),
-        start=datetime.now().strftime(),
+        start=datetime.now().strftime(AUDIT_NEXT_RUN_KEY),
         is_first_fetch=True,
     )
 
