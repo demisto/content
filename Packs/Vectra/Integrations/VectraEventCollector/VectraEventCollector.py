@@ -52,7 +52,7 @@ class VectraClient(BaseClient):
         Generates the necessary HTTP headers.
 
         Returns:
-                        `Dict[str, str]` of the HTTP headers.
+        - `Dict[str, str]` of the HTTP headers.
         """
 
         return {
@@ -65,10 +65,10 @@ class VectraClient(BaseClient):
         Retrieve detections. Detection objects contain all the information related to security events detected on the network.
 
         Arguments:
-                        - `first_timestamp` (``str``): The timestamp when the event was first detected.
+        - `first_timestamp` (``str``): The timestamp when the event was first detected.
 
         Returns:
-                        - `Dict[str, Any]` of detection objects.
+        - `Dict[str, Any]` of detection objects.
         """
 
         return self._http_request(
@@ -91,10 +91,10 @@ class VectraClient(BaseClient):
         - Source IP
 
         Arguments:
-                        - `start` (``str``): The start range in YYYY-MM-DD format for which to look for detections.
+        - `start` (``str``): The start range in YYYY-MM-DD format for which to look for detections.
 
         Returns:
-                        - `Dict[str, Any]` of audit objects.
+        - `Dict[str, Any]` of audit objects.
         """
 
         return self._http_request(
@@ -113,7 +113,7 @@ def is_eod(now: datetime) -> bool:
     We use this to check whether we should skip requesting audits as they are updated on a daily basis.
 
     Returns:
-                    - `bool` indicating whether we should skip audits.
+    - `bool` indicating whether we should skip audits.
     """
     return now.hour == 23 and now.minute == 59
 
@@ -129,10 +129,10 @@ def test_module(client: VectraClient) -> str:
     to them so we check if these endpoints exist in the response.
 
     Arguments:
-                    - ``client` (``VectraClient``): An instance of a Vectra API HTTP client.
+                                    - ``client` (``VectraClient``): An instance of a Vectra API HTTP client.
 
     Returns:
-                    `str` `'ok'` if test passed, anything else will raise an exception.
+                                    `str` `'ok'` if test passed, anything else will raise an exception.
     """
 
     demisto.info(f"Testing connection and authentication to {client._base_url}...")
@@ -153,14 +153,14 @@ def get_detections_cmd(client: VectraClient, first_timestamp: str) -> CommandRes
     Command function to retrieve detections.
 
     Arguments:
-                    - `client` (``VectraClient``): An instance of a Vectra API HTTP client.
-                    - `first_timestamp` (``str``): Parameter used as starting range to retrieve detections.
+    - `client` (``VectraClient``): An instance of a Vectra API HTTP client.
+    - `first_timestamp` (``str``): Parameter used as starting range to retrieve detections.
 
     Returns:
-                    - `CommandResults` to War Room.
+    - `CommandResults` to War Room.
     """
 
-    detections: List[Dict[str, Any]] = client.get_detections(first_timestamp=first_timestamp).get("results")  # type: ignore
+    detections: List[Dict[str, Any]] = client.get_detections(first_timestamp=first_timestamp).get("results", [])  # type: ignore
 
     md = tableToMarkdown(
         f"Detections since {first_timestamp}",
@@ -197,14 +197,14 @@ def get_audits_cmd(client: VectraClient, start: str) -> CommandResults:
     Command function to retrieve audits.
 
     Arguments:
-                    - `client` (``VectraClient``): An instance of a Vectra API HTTP client.
-                    - `start` (``str``): Parameter used as starting range to retrieve detections.
+    - `client` (``VectraClient``): An instance of a Vectra API HTTP client.
+    - `start` (``str``): Parameter used as starting range to retrieve detections.
 
     Returns:
-                    - `CommandResults` to War Room.
+    - `CommandResults` to War Room.
     """
 
-    audits: List[Dict[str, Any]] = client.get_audits(start=start).get("audits")  # type: ignore
+    audits: List[Dict[str, Any]] = client.get_audits(start=start).get("audits", [])  # type: ignore
 
     md = tableToMarkdown(f"Audits since {start}", audits)
 
@@ -222,6 +222,53 @@ def get_audits_cmd(client: VectraClient, start: str) -> CommandResults:
     return results
 
 
+def fetch_events_cmd(client, config: Dict[str, Any]) -> None:
+
+    """
+    Command function to fetch events.
+
+    Arguments:
+    - `client` (``VectraClient``): An instance of a Vectra API HTTP client.
+    - `config` (``Dict[str, Any]``): Integration configuration.
+
+    Returns:
+    - `CommandResults` to War Room.
+    """
+
+    # Not first time running fetch events
+    is_first_fetch: bool = False if demisto.getLastRun() else True
+    if not is_first_fetch:
+        first_timestamp = demisto.getLastRun().get(DETECTION_NEXT_RUN_KEY)
+        start = demisto.getLastRun().get(AUDIT_NEXT_RUN_KEY)
+
+    # First time running fetch events
+    else:
+        demisto.info("First time fetching events")
+        first_fetch: datetime = arg_to_datetime(  # type: ignore
+            arg=config.get("first_fetch", "3 days"), arg_name="First fetch time"
+        )
+        first_timestamp = first_fetch.strftime(DETECTION_FIRST_TIMESTAMP_QUERY_START_FORMAT)
+
+        start = first_fetch.strftime(AUDIT_START_TIMESTAMP_FORMAT)
+
+    detections, audits, next_fetch = fetch_events(
+        client=client,
+        first_timestamp=first_timestamp,
+        start=start,
+        is_first_fetch=is_first_fetch,
+    )
+
+    demisto.info(f"Setting last run to {str(next_fetch)}...")
+    demisto.setLastRun(next_fetch)
+
+    demisto.info(f"Sending {len(detections)} detections to XSIAM...")
+    send_events_to_xsiam(detections, vendor=VENDOR, product=client.endpoints[0])
+    demisto.info(f"{len(detections)} detections sent to XSIAM.")
+    demisto.info(f"Sending {len(audits)} audits to XSIAM...")
+    send_events_to_xsiam(audits, vendor=VENDOR, product=client.endpoints[1])
+    demisto.info(f"{len(audits)} audits sent to XSIAM.")
+
+
 def fetch_events(
     client: VectraClient, first_timestamp: str, start: str, is_first_fetch: bool
 ) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]], Dict[str, str]]:
@@ -230,24 +277,22 @@ def fetch_events(
     Fetch detections based on whether it's the first fetch or not.
 
     Arguments:
-                    - `client` (``VectraClient``): The API client for the Vectra service.
-                    - `first_timestamp` (``str``): The detection filter.
-                    - `start` (``str``): The audit filter.
-                    - `is_first_fetch` (``bool``): Whether this is the first fetch or not
-
-                    The arguments default is set to `None` to enable a method overloading for this function.
+    - `client` (``VectraClient``): The API client for the Vectra service.
+    - `first_timestamp` (``str``): The detection filter.
+    - `start` (``str``): The audit filter.
+    - `is_first_fetch` (``bool``): Whether this is the first fetch or not.
 
     Returns:
-                    - `Dict[str, Any]` of the detections
-                    - `Dict[str, Any]` of the audits
-                    - `Dict[str, str]` of the next_fetch
+    - `Dict[str, Any]` of the detections
+    - `Dict[str, Any]` of the audits
+    - `Dict[str, str]` of the next_fetch
     """
 
     # Fetch alerts if it's the end of the day or the first fetch
     now = datetime.utcnow()
     if is_eod(now) or is_first_fetch:
         demisto.info(f"Fetching audits from {start} to now...")
-        audits_cmd_res = get_audits_cmd(client=client, start=start)
+        audits = client.get_audits(start=start).get("audits", [])
         next_run_audit_str = now.strftime(AUDIT_START_TIMESTAMP_FORMAT)
 
     else:
@@ -255,31 +300,32 @@ def fetch_events(
             f"""Skipping audits since it's not the end of the day (UTC),
             it's {now.strftime(DETECTION_FIRST_TIMESTAMP_QUERY_START_FORMAT)}"""
         )
+        audits = []
         next_run_audit_str = start
 
     # detections are ordered by descending first_timestamp therefore we can take the first
     # detection first_timestamp as the next run
 
     demisto.info(f"Fetching detections from {first_timestamp} to now...")
-    detections_cmd_results = get_detections_cmd(client=client, first_timestamp=first_timestamp)
-    if detections_cmd_results.outputs:
+    detections = client.get_detections(first_timestamp=first_timestamp).get("results", [])
+    if detections:
         next_run_detection = datetime.strptime(
-            detections_cmd_results.outputs[0].get("first_timestamp"), DETECTION_FIRST_TIMESTAMP_FORMAT  # type: ignore
+            detections[0].get("first_timestamp"), DETECTION_FIRST_TIMESTAMP_FORMAT  # type: ignore
         )
 
         # Need to add 1 minute since first_timestamp query parameter is inclusive
         next_run_detection_str = (next_run_detection + timedelta(minutes=1)).strftime(
             DETECTION_FIRST_TIMESTAMP_QUERY_START_FORMAT
         )
-        demisto.info(f"{len(detections_cmd_results.outputs)} detections found.")
+        demisto.info(f"{len(detections)} detections found.")
     # If no detections were fetched, we can reuse the current first_timestamp
     else:
         next_run_detection_str = first_timestamp
         demisto.info("No detections were found")
 
     return (
-        detections_cmd_results.outputs,
-        audits_cmd_res.outputs if "audits_cmd_res" in locals() else [],
+        detections,
+        audits,
         {
             DETECTION_NEXT_RUN_KEY: next_run_detection_str,
             AUDIT_NEXT_RUN_KEY: next_run_audit_str,
@@ -295,12 +341,12 @@ def get_events(
     Command function to retrieve detections and audits.
 
     Arguments:
-                    - `client` (``VectraClient``): An instance of a Vectra API HTTP client.
-                    - `first_fetch` (``datetime``): Parameter used as starting range to retrieve detections.
+                                    - `client` (``VectraClient``): An instance of a Vectra API HTTP client.
+                                    - `first_fetch` (``datetime``): Parameter used as starting range to retrieve detections.
 
     Returns:
-                    - `CommandResults` of detections to War Room.
-                    - `CommandResults` of audits to War Room.
+                                    - `CommandResults` of detections to War Room.
+                                    - `CommandResults` of audits to War Room.
     """
 
     detection_res = get_detections_cmd(
@@ -373,40 +419,7 @@ def main() -> None:  # pragma: no cover
             # fetch-events
             else:
 
-                # Not first time running fetch events
-                is_first_fetch: bool = False if demisto.getLastRun() else True
-                if not is_first_fetch:
-                    first_timestamp = demisto.getLastRun().get(DETECTION_NEXT_RUN_KEY)
-                    start = demisto.getLastRun().get(AUDIT_NEXT_RUN_KEY)
-
-                # First time running fetch events
-                else:
-                    demisto.info("First time fetching events")
-                    first_fetch: datetime = arg_to_datetime(  # type: ignore
-                        arg=config.get("first_fetch", "3 days"), arg_name="First fetch time"
-                    )
-                    first_timestamp = first_fetch.strftime(
-                        DETECTION_FIRST_TIMESTAMP_QUERY_START_FORMAT
-                    )
-
-                    start = first_fetch.strftime(AUDIT_START_TIMESTAMP_FORMAT)
-
-                detections, audits, next_fetch = fetch_events(
-                    client=client,
-                    first_timestamp=first_timestamp,
-                    start=start,
-                    is_first_fetch=is_first_fetch,
-                )
-
-                demisto.info(f"Setting last run to {str(next_fetch)}...")
-                demisto.setLastRun(next_fetch)
-
-                demisto.info(f"Sending {len(detections)} detections to XSIAM...")
-                send_events_to_xsiam(detections, vendor=VENDOR, product=client.endpoints[0])
-                demisto.info(f"{len(detections)} detections sent to XSIAM.")
-                demisto.info(f"Sending {len(audits)} audits to XSIAM...")
-                send_events_to_xsiam(audits, vendor=VENDOR, product=client.endpoints[1])
-                demisto.info(f"{len(audits)} audits sent to XSIAM.")
+                fetch_events_cmd(client, config)
 
         else:
             raise NotImplementedError(f"command '{cmd}' is not implemented.")
