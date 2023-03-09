@@ -5347,6 +5347,7 @@
         }
     ],
     "skipped_tests": {
+        "CiscoWSAv2": "No instance - developed by Qmasters",
         "RegPathReputationBasicLists_test": "The D2 pack is deprecated",
         "CirclIntegrationTest": "No instance",
         "CrowdStrikeMalquery-Test": "Issue CRTX-71397",
