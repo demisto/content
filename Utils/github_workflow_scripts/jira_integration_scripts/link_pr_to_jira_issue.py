@@ -35,28 +35,33 @@ def arguments_handler():
     return parser.parse_args()
 
 
-def find_fixed_issue_in_body(body_text, is_merged) -> list[dict[str, str]]:
+def find_fixed_issue_in_body(body_text) -> list[dict[str, str]]:
     """
-    Getting issue URLs in PR's body matching a regex.
-
-    Note:
-        If the PR is merged, we only send issues that should be closed by it.
-        If a PR is not merged, we add the pr link to all the linked issues using Gold.
-        Assuming if the PR was merged, all the related links were fetched when the PR last edited.
+    Collect issue URLs in PR's body matching a regex.
 
     Returns:
-        list: A list of issues found in a {"link": link, "id": id} format.
+        list: A list of issues found in a {"link": str, "key": str, "should_close": bool} format.
+            "should_close" indicates whether to close the Jira issue once the PR is merged.
     """
+    # Issues tagged as "fixes"
     issues = [
-        {"link": x.group(1), "id": x.group(2)} for x in re.finditer(JIRA_FIXED_ISSUE_REGEX, body_text)
+        {
+            "link": x.group(1),
+            "key": x.group(2),
+            "should_close": True
+        }
+        for x in re.finditer(JIRA_FIXED_ISSUE_REGEX, body_text)
     ]
 
-    if not is_merged:
-        print("Not merging, collecting related issues.")
-
-        issues.extend([
-            {"link": x.group(1), "id": x.group(2)} for x in re.finditer(JIRA_RELATED_ISSUE_REGEX, body_text)
-        ])
+    # Issues tagged as "relates"
+    issues.extend([
+        {
+            "link": x.group(1),
+            "key": x.group(2),
+            "should_close": False
+        }
+        for x in re.finditer(JIRA_RELATED_ISSUE_REGEX, body_text)
+    ])
 
     return issues
 
@@ -78,7 +83,7 @@ def trigger_generic_webhook(options):
         print("Did not detect Jira linking pattern.")
         return
 
-    issues_in_pr = find_fixed_issue_in_body(pr_body, is_merged)
+    issues_in_pr = find_fixed_issue_in_body(pr_body)
 
     if not issues_in_pr:
         print("ERROR: No linked issues were found in PR. Make sure you correctly linked issues.")
