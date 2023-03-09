@@ -662,8 +662,7 @@ def list_users_accounts_command(client: Client, args: dict):
 
 
 def format_fetch_start_time_to_timestamp(fetch_start_time: Optional[str]):
-    # fetch_start_time_datetime = parse(fetch_start_time).replace(tzinfo=utc)
-    fetch_start_time_datetime = parse(fetch_start_time)
+    fetch_start_time_datetime = parse(fetch_start_time).replace(tzinfo=utc)
     start_fetch_timestamp = fetch_start_time_datetime.timestamp()
     if fetch_start_time_datetime.microsecond == 0:
         return int(start_fetch_timestamp) * 1000
@@ -673,7 +672,7 @@ def format_fetch_start_time_to_timestamp(fetch_start_time: Optional[str]):
         return int(timestamp) * 100
     elif len(timestamp) == 12:
         return int(timestamp) * 10
-    else:
+    elif len(timestamp) == 13:
         return int(timestamp)
 
 
@@ -733,8 +732,10 @@ def fetch_incidents(client: Client, max_results: Optional[str], last_run: dict, 
         last_run=last_run, first_fetch=first_fetch, look_back=look_back, date_format=date_format
     )
 
-    # remove the last 3 chars because the api knows to work with 13 digits only
+    # removing last 3 digits since api supports 13-digits
     fetch_start_time, fetch_end_time = fetch_start_time[:-3], fetch_end_time[:-3]
+
+    fetch_start_time, fetch_end_time = fetch_start_time, fetch_end_time
     formatted_fetch_start_time_timestamp = format_fetch_start_time_to_timestamp(fetch_start_time)
     demisto.debug(f'{fetch_start_time=}, {formatted_fetch_start_time_timestamp=}')
 
