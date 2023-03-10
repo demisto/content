@@ -1,0 +1,17 @@
+{
+    "status": "ok",
+    "event": {
+        "id": 6944262438981215162,
+        "id_str": "6944262438981215162",
+        "title": "Example-Post_an_event_returns_OK_response",
+        "text": "A text message.",
+        "date_happened": 1678173161,
+        "handle": null,
+        "priority": null,
+        "related_event_id": null,
+        "tags": [
+            "test:ExamplePostaneventreturnsOKresponse"
+        ],
+        "url": "https://app.datadoghq.com/event/event?id=6944262438981215162"
+    }
+}

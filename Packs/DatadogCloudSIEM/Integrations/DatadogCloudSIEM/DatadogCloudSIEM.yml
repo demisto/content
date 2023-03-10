@@ -1,0 +1,298 @@
+category: Analytics & SIEM
+commonfields:
+  id: DatadogCloudSIEM
+  version: -1
+configuration:
+- additionalinfo: Datadog webiste URL
+  defaultvalue: datadoghq.com
+  display: Server URL
+  name: site
+  required: true
+  type: 0
+- additionalinfo: The API Key to use for authentication
+  display: API Key
+  name: api_key
+  required: true
+  type: 0
+- additionalinfo: The API Key to use for authentication.
+  display: Application Key
+  hidden: false
+  name: app_key
+  required: true
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+description: |-
+  Datadog is an observability service for cloud-scale applications, providing monitoring of servers, databases, tools, and services, through a SaaS-based data analytics platform.
+
+  The SaaS platform integrates and automates infrastructure monitoring, application performance monitoring and log management to provide unified, real-time observability of our customers' entire technology stack.
+display: Datadog Cloud SIEM
+name: DatadogCloudSIEM
+script:
+  commands:
+  - arguments:
+    - default: false
+      description: "The body of the event.\nLimited to 4000 characters.\nThe text\
+        \ supports markdown. To use markdown in the event text, start the text block\
+        \ with %%% \\n and end the text block with \\n %%% "
+      isArray: false
+      name: text
+      required: true
+      secret: false
+    - default: false
+      description: The title of an event.
+      isArray: false
+      name: title
+      required: true
+      secret: false
+    - default: false
+      description: "Limited to events no older than 18 hours.\nFormat :  \nyyyy-MM-dd’\
+        T’HH:mm:ssZ or “12 hours ago” or “-12 hours” or “15 min ago” or “-15 min”."
+      isArray: false
+      name: date_happened
+      required: false
+      secret: false
+    - default: false
+      description: A device name.
+      isArray: false
+      name: device_name
+      required: false
+      secret: false
+    - default: false
+      description: 'Host name to associate with the event '
+      isArray: false
+      name: host_name
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The priority of the event.
+      isArray: false
+      name: priority
+      predefined:
+      - normal
+      - low
+      required: false
+      secret: false
+    - default: false
+      description: ID of the parent event.
+      isArray: false
+      name: related_event_id
+      required: false
+      secret: false
+    - default: false
+      description: "A list of tags to apply to the event. \nComma seperated strings.\n\
+        Ex: \"environment:production, region:East” "
+      isArray: false
+      name: tags
+      required: false
+      secret: false
+    - default: false
+      description: "An arbitrary string to use for aggregation. \nIf you specify a\
+        \ key, all events using that key are grouped together in the Event Stream.\
+        \ \nLimited to 100 characters."
+      isArray: false
+      name: aggregation_key
+      required: false
+      secret: false
+    - default: false
+      description: The type of event being posted. A complete list of source attribute
+        values available here. https://docs.datadoghq.com/integrations/faq/list-of-api-source-attribute-value/
+      isArray: false
+      name: source_type_name
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: If an alert event is enabled, set its type.
+      isArray: false
+      name: alert_type
+      predefined:
+      - error
+      - warning
+      - info
+      - success
+      - user_update
+      - recommendation
+      - snapshot
+      required: false
+      secret: false
+    deprecated: false
+    description: This endpoint allows you to post events to the stream.
+    execution: false
+    name: datadog-event-create
+    outputs:
+    - contextPath: Datadog.Event.date_happened
+      description: POSIX timestamp of the event
+      type: Number
+    - contextPath: Datadog.Event.id
+      description: Integer ID of the event.
+      type: Number
+    - contextPath: Datadog.Event.priority
+      description: 'The priority of the event. For example, normal or low. Allowed
+        enum values: normal, low.'
+      type: String
+    - contextPath: Datadog.Event.text
+      description: The body of the event. Limited to 4000 characters. The text supports
+        markdown.
+      type: String
+    - contextPath: Datadog.Event.tags
+      description: A list of tags to apply to the event.
+      type: Unknown
+    - contextPath: Datadog.Event.url
+      description: URL of the event.
+      type: String
+    - contextPath: Datadog.Event.status
+      description: The status of the event.
+      type: String
+    - contextPath: "Datadog.Event.title\t"
+      description: The event title.
+      type: String
+  - arguments:
+    - default: false
+      description: The ID of the event.
+      isArray: false
+      name: event_id
+      required: false
+      secret: false
+    - default: false
+      description: "Start Date \nFormat : yyyy-MM-dd’T’HH:mm:ssZ  or “-1days” or “\
+        12 hours ago” or “-12 hours” or “15 min ago” or “-15 min”. "
+      isArray: false
+      name: start_date
+      required: false
+      secret: false
+    - default: false
+      description: "End Date \nDefault: now \nFormat : yyyy-MM-dd’T’HH:mm:ssZ or \"\
+        -1 days\" or “12 hours ago” or “-12 hours” or “15 min ago” or “-15 min”. "
+      isArray: false
+      name: end_date
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The priority of the event.
+      isArray: false
+      name: priority
+      predefined:
+      - normal
+      - low
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        A comma separated string of sources.
+        A complete list of source attribute values available here: https://docs.datadoghq.com/integrations/faq/list-of-api-source-attribute-value/
+      isArray: false
+      name: sources
+      required: false
+      secret: false
+    - default: false
+      description: "A comma separated list indicating what tags, if any, should be\
+        \ used to filter the list of events. \nComma seperated string \nEx: \"environment:production,\
+        \ region:East\"."
+      isArray: false
+      name: tags
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Set unaggregated to 'true' to return all events within the specified
+        [start,end] timeframe.
+      isArray: false
+      name: unaggregated
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Set exclude_aggregate to 'true' to only return unaggregated events
+        where is_aggregate=false in the response.
+      isArray: false
+      name: exclude_aggregate
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    - default: false
+      description: The page number. Default is 1.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      description: The maximum number of records to return from the collection. Limit
+        default value is 50. If the page_size argument is set by the user then the
+        limit argument will be ignored.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: The number of requested results per page. Default is 50.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    deprecated: false
+    description: Get a list of Events / Get the details of a particular Event.
+    execution: false
+    name: datadog-event-list
+    outputs:
+    - contextPath: Datadog.Event.alert_type
+      description: 'Allowed enum values: error,warning,info,success,user_update,recommendation,snapshot'
+      type: String
+    - contextPath: Datadog.Event.date_happened
+      description: POSIX timestamp of the event
+      type: Number
+    - contextPath: Datadog.Event.device_name
+      description: 'A device name. '
+      type: String
+    - contextPath: Datadog.Event.id
+      description: Integer ID of the event.
+      type: Number
+    - contextPath: Datadog.Event.priority
+      description: 'The priority of the event. For example, normal or low. Allowed
+        enum values: normal, low.'
+      type: String
+    - contextPath: Datadog.Event.text
+      description: The body of the event. Limited to 4000 characters. The text supports
+        markdown.
+      type: String
+    - contextPath: Datadog.Event.tags
+      description: A list of tags to apply to the event.
+      type: Unknown
+    - contextPath: Datadog.Event.url
+      description: URL of the event.
+      type: String
+    - contextPath: Datadog.Event.status
+      description: The status of the event.
+      type: String
+    - contextPath: Datadog.Event.host
+      description: Host name to associate with the event. Any tags associated with
+        the host are also applied to this event.
+      type: String
+    - contextPath: Datadog.Event.title
+      description: The Event title.
+      type: String
+  dockerimage: demisto/datadog-api-client:1.0.0.48939
+  feed: false
+  isfetch: false
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- No tests (auto formatted)
+fromversion: 5.5.0
