@@ -6,6 +6,8 @@ from CommonServerPython import *  # noqa: F401
 
 
 
+
+
 import asyncio
 import concurrent
 import logging.handlers
@@ -2576,7 +2578,6 @@ def list_channels():
         body['cursor'] = cursor
 
     raw_response = send_slack_request_sync(CLIENT, 'conversations.list', http_verb="GET", body=body)
-    demisto.results(raw_response)
     # Provide an option to only select a channel by a name. Instead of returning a full list of results this allows granularity
     # Supports a single channel name
     name_filter = demisto.args().get('name_filter')
@@ -2633,7 +2634,7 @@ def conversation_history():
     """
 
     channel_id = demisto.args()['channel_id']
-    limit = int(demisto.args().get('limit'))
+    limit = demisto.args().get('limit')
     if limit == None:
         limit = 100
 
@@ -2643,15 +2644,74 @@ def conversation_history():
         'limit': limit
     }
 
-    raw_response = send_slack_request_sync(CLIENT, 'conversations.history', http_verb="GET", body=body)
 
-    #demisto.results(response)
-    return CommandResults(
-        raw_response = raw_response,
-        outputs_prefix = 'conversations.history',
-        outputs_key_field = 'id',
-        outputs = context
-    )
+    raw_response = send_slack_request_sync(CLIENT, 'conversations.history', http_verb="GET", body=body)
+    messages = raw_response['messages']
+
+
+    if type(messages) == dict:
+        for message in messages:
+            if 'subtype' not in message:
+                user_id = message['user']
+                user_id_body = {
+                    'user': user_id
+                }
+                user_response = get_user_by_id_async(AsyncWebClient, user_id)
+                user = user_response
+                demisto.results(user)
+                context = {
+                    'TYPE': message['type'],
+                    'TEXT': message['text'],
+                    'USER ID': message['user'],
+                    #'USERNAME': user_response
+                }
+            else:
+                context = {
+                    'TYPE': message['type'],
+                    'TEXT': message['text'],
+                    'USER ID': message['username'],
+                    #'USERNAME': user_response
+                }
+            readable_output = tableToMarkdown(f'Channel details from Channel ID - {channel_id}', context)
+
+
+    if type(messages) == list:
+        context = []
+        for message in messages:
+            if 'subtype' not in message:
+                user_id = message['user']
+                user_id_body = {
+                    'user': user_id
+                }
+                user_response = get_user_by_id_async(AsyncWebClient, user_id)
+                user = user_response
+                demisto.results(user)
+                entry ={
+                    'TYPE': message['type'],
+                    'TEXT': message['text'],
+                    'USER ID': message['user'],
+                    #'USERNAME': user_response
+                }
+                context.append(entry)
+            else:
+                entry ={
+                    'TYPE': message['type'],
+                    'TEXT': message['text'],
+                    'USER ID': message['username'],
+                    #'USERNAME': user_response
+                }
+                context.append(entry)
+        readable_output = tableToMarkdown(f'Channel details from Channel ID - {channel_id}', context)
+
+
+    demisto.results({
+        'Type': entryTypes['note'],
+        'Contents': messages,
+        'EntryContext': {'Slack.Messages': context},
+        'ContentsFormat': formats['json'],
+        'HumanReadable': readable_output,
+        'ReadableContentsFormat': formats['markdown']
+    })
 
 
 def long_running_main():
@@ -2867,6 +2927,7 @@ def main() -> None:
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     register_signal_handler_profiling_dump(profiling_dump_rows_limit=PROFILING_DUMP_ROWS_LIMIT)
     main()
+
 
 
 
