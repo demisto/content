@@ -5322,6 +5322,11 @@
             "playbookID": "TestXSOAREDLCheckerPlaybook"
         },
         {
+            "integrations": "CiscoWSAv2",
+            "playbookID": "playbook-CiscoWSA_Test",
+            "fromversion": "6.8.0"
+        },
+        {
             "playbookID": "Threat_Intel_Report_test",
             "fromversion": "6.5.0",
             "scripts": [
@@ -5329,7 +5334,7 @@
                 "UnpublishThreatIntelReport"
             ]
         },
-        {
+        {            
             "integrations": "Generic SQL",
             "playbookID": "generic-sql",
             "instance_names": "Microsoft SQL Server - MS ODBC Driver",
@@ -5342,6 +5347,7 @@
         }
     ],
     "skipped_tests": {
+        "CiscoWSAv2": "No instance - developed by Qmasters",
         "RegPathReputationBasicLists_test": "The D2 pack is deprecated",
         "CirclIntegrationTest": "No instance",
         "CrowdStrikeMalquery-Test": "Issue CRTX-71397",
@@ -5516,6 +5522,7 @@
         "awake_security_test_pb": "No instance, CRTX-77572"
     },
     "skipped_integrations": {
+        "CiscoWSAv2": "No instance - No license",
         "Lastline v2": "No instance - No license",
         "AbuseIPDB": "No instance - License expired",
         "checkpointdome9": "No instance - No license",
