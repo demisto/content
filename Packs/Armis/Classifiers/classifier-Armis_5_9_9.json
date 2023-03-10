@@ -33,7 +33,7 @@
                     "complex": null,
                     "simple": "severity"
                 },
-                "Armis Alert Status ": {
+                "Armis Alert Status": {
                     "complex": null,
                     "simple": "status"
                 },
@@ -41,7 +41,7 @@
                     "complex": null,
                     "simple": "type"
                 },
-                "Armis Device IDs": {
+                "Armis Device ID": {
                     "complex": null,
                     "simple": "deviceIds.[0]"
                 },
@@ -106,7 +106,7 @@
                     "complex": null,
                     "simple": "severity"
                 },
-                "Armis Alert Status ": {
+                "Armis Alert Status": {
                     "complex": null,
                     "simple": "status"
                 },
@@ -171,7 +171,7 @@
                     "complex": null,
                     "simple": "severity"
                 },
-                "Armis Alert Status ": {
+                "Armis Alert Status": {
                     "complex": null,
                     "simple": "status"
                 },
@@ -236,7 +236,7 @@
                     "complex": null,
                     "simple": "severity"
                 },
-                "Armis Alert Status ": {
+                "Armis Alert Status": {
                     "complex": null,
                     "simple": "status"
                 },
@@ -289,7 +289,7 @@
                     "complex": null,
                     "simple": "title"
                 },
-                "Armis Device IDs": {
+                "Armis Device ID": {
                     "complex": null,
                     "simple": "deviceIds.[0]"
                 },

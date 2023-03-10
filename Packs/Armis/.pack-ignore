@@ -19,3 +19,12 @@ ignore=IN145
 
 [file:Armis_image.png]
 ignore=IM111
+
+[file:classifier-Armis_mapper-incoming.json]
+ignore=MP107
+
+[known_words]
+pv
+Classifiers
+Mappers
+Mapper
