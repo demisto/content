@@ -1,11 +1,12 @@
 from datetime import timezone
+from time import sleep
 from typing import Dict, Tuple, Union
 
 import dateparser
 import demistomock as demisto  # noqa: F401
 import urllib3
 from CommonServerPython import *  # noqa: F401
-
+import random
 
 ''' IMPORTS '''
 
@@ -47,98 +48,97 @@ def parser(date_str, date_formats=None, languages=None, locales=None, region=Non
 
 
 def get_token_soap_request(user, password, instance, domain=None):
-
     if domain:
         return_xml = '<?xml version="1.0" encoding="utf-8"?>' + \
-            '<soap:Envelope xmlns:xsi="http://www.w3.orecord_to_incidentrg/2001/XMLSchema-instance" ' \
-            '  xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' + \
-            '    <soap:Body>' + \
-            '        <CreateDomainUserSessionFromInstance xmlns="http://archer-tech.com/webservices/">' + \
-            f'            <userName>{user}</userName>' + \
-            f'            <instanceName>{instance}</instanceName>' + \
-            f'            <password>{password}</password>' + \
-            f'            <usersDomain>{domain}</usersDomain>' + \
-            '        </CreateDomainUserSessionFromInstance>' + \
-            '    </soap:Body>' + \
-            '</soap:Envelope>'
+                     '<soap:Envelope xmlns:xsi="http://www.w3.orecord_to_incidentrg/2001/XMLSchema-instance" ' \
+                     '  xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' + \
+                     '    <soap:Body>' + \
+                     '        <CreateDomainUserSessionFromInstance xmlns="http://archer-tech.com/webservices/">' + \
+                     f'            <userName>{user}</userName>' + \
+                     f'            <instanceName>{instance}</instanceName>' + \
+                     f'            <password>{password}</password>' + \
+                     f'            <usersDomain>{domain}</usersDomain>' + \
+                     '        </CreateDomainUserSessionFromInstance>' + \
+                     '    </soap:Body>' + \
+                     '</soap:Envelope>'
     else:
         return_xml = '<?xml version="1.0" encoding="utf-8"?>' + \
-            '<soap:Envelope xmlns:xsi="http://www.w3.orecord_to_incidentrg/2001/XMLSchema-instance" ' \
-            '  xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' + \
-            '    <soap:Body>' + \
-            '        <CreateUserSessionFromInstance xmlns="http://archer-tech.com/webservices/">' + \
-            f'            <userName>{user}</userName>' + \
-            f'            <instanceName>{instance}</instanceName>' + \
-            f'            <password>{password}</password>' + \
-            '        </CreateUserSessionFromInstance>' + \
-            '    </soap:Body>' + \
-            '</soap:Envelope>'
+                     '<soap:Envelope xmlns:xsi="http://www.w3.orecord_to_incidentrg/2001/XMLSchema-instance" ' \
+                     '  xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' + \
+                     '    <soap:Body>' + \
+                     '        <CreateUserSessionFromInstance xmlns="http://archer-tech.com/webservices/">' + \
+                     f'            <userName>{user}</userName>' + \
+                     f'            <instanceName>{instance}</instanceName>' + \
+                     f'            <password>{password}</password>' + \
+                     '        </CreateUserSessionFromInstance>' + \
+                     '    </soap:Body>' + \
+                     '</soap:Envelope>'
     return return_xml
 
 
 def terminate_session_soap_request(token):
     return '<?xml version="1.0" encoding="utf-8"?>' + \
-           '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"' \
-           ' xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' + \
-           '    <soap:Body>' + \
-           '        <TerminateSession xmlns="http://archer-tech.com/webservices/">' + \
-           f'            <sessionToken>{token}</sessionToken>' + \
-           '        </TerminateSession>' + \
-           '    </soap:Body>' + \
-           '</soap:Envelope>'
+        '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"' \
+        ' xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' + \
+        '    <soap:Body>' + \
+        '        <TerminateSession xmlns="http://archer-tech.com/webservices/">' + \
+        f'            <sessionToken>{token}</sessionToken>' + \
+        '        </TerminateSession>' + \
+        '    </soap:Body>' + \
+        '</soap:Envelope>'
 
 
 def get_reports_soap_request(token):
     return '<?xml version="1.0" encoding="utf-8"?>' + \
-           '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ' \
-           'xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' + \
-           '    <soap:Body>' + \
-           '        <GetReports xmlns="http://archer-tech.com/webservices/">' + \
-           f'            <sessionToken>{token}</sessionToken>' + \
-           '        </GetReports>' + \
-           '    </soap:Body>' + \
-           '</soap:Envelope>'
+        '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ' \
+        'xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' + \
+        '    <soap:Body>' + \
+        '        <GetReports xmlns="http://archer-tech.com/webservices/">' + \
+        f'            <sessionToken>{token}</sessionToken>' + \
+        '        </GetReports>' + \
+        '    </soap:Body>' + \
+        '</soap:Envelope>'
 
 
 def get_statistic_search_report_soap_request(token, report_guid, max_results):
     return '<?xml version="1.0" encoding="utf-8"?>' + \
-           '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"' \
-           ' xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' + \
-           '    <soap:Body>' + \
-           '        <ExecuteStatisticSearchByReport xmlns="http://archer-tech.com/webservices/">' + \
-           f'            <sessionToken>{token}</sessionToken>' + \
-           f'            <reportIdOrGuid>{report_guid}</reportIdOrGuid>' + \
-           f'            <pageNumber>{max_results}</pageNumber>' + \
-           '        </ExecuteStatisticSearchByReport>' + \
-           '    </soap:Body>' + \
-           '</soap:Envelope>'
+        '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"' \
+        ' xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' + \
+        '    <soap:Body>' + \
+        '        <ExecuteStatisticSearchByReport xmlns="http://archer-tech.com/webservices/">' + \
+        f'            <sessionToken>{token}</sessionToken>' + \
+        f'            <reportIdOrGuid>{report_guid}</reportIdOrGuid>' + \
+        f'            <pageNumber>{max_results}</pageNumber>' + \
+        '        </ExecuteStatisticSearchByReport>' + \
+        '    </soap:Body>' + \
+        '</soap:Envelope>'
 
 
 def get_search_options_soap_request(token, report_guid):
     return '<?xml version="1.0" encoding="utf-8"?>' + \
-           '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ' \
-           'xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' + \
-           '    <soap:Body>' + \
-           '        <GetSearchOptionsByGuid xmlns="http://archer-tech.com/webservices/">' + \
-           f'            <sessionToken>{token}</sessionToken>' + \
-           f'            <searchReportGuid>{report_guid}</searchReportGuid>' + \
-           '        </GetSearchOptionsByGuid>' + \
-           '    </soap:Body>' + \
-           '</soap:Envelope>'
+        '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ' \
+        'xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' + \
+        '    <soap:Body>' + \
+        '        <GetSearchOptionsByGuid xmlns="http://archer-tech.com/webservices/">' + \
+        f'            <sessionToken>{token}</sessionToken>' + \
+        f'            <searchReportGuid>{report_guid}</searchReportGuid>' + \
+        '        </GetSearchOptionsByGuid>' + \
+        '    </soap:Body>' + \
+        '</soap:Envelope>'
 
 
 def search_records_by_report_soap_request(token, report_guid):
     return '<?xml version="1.0" encoding="utf-8"?>' + \
-           '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ' \
-           'xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' + \
-           '    <soap:Body>' + \
-           '        <SearchRecordsByReport xmlns="http://archer-tech.com/webservices/">' + \
-           f'            <sessionToken>{token}</sessionToken>' + \
-           f'            <reportIdOrGuid>{report_guid}</reportIdOrGuid>' + \
-           '            <pageNumber>1</pageNumber>' + \
-           '        </SearchRecordsByReport>' + \
-           '    </soap:Body>' + \
-           '</soap:Envelope>'
+        '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ' \
+        'xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">' + \
+        '    <soap:Body>' + \
+        '        <SearchRecordsByReport xmlns="http://archer-tech.com/webservices/">' + \
+        f'            <sessionToken>{token}</sessionToken>' + \
+        f'            <reportIdOrGuid>{report_guid}</reportIdOrGuid>' + \
+        '            <pageNumber>1</pageNumber>' + \
+        '        </SearchRecordsByReport>' + \
+        '    </soap:Body>' + \
+        '</soap:Envelope>'
 
 
 def search_records_soap_request(
@@ -257,6 +257,11 @@ SOAP_COMMANDS = {
     }
 }
 
+def merge_integration_context(new_dict):
+    old_context = get_integration_context()
+    old_context.update(new_dict)
+    set_integration_context(old_context)
+
 
 def get_occurred_time(fields: Union[List[dict], dict], field_id: str) -> str:
     """
@@ -291,23 +296,36 @@ class Client(BaseClient):
         self.password = password
         self.instance_name = instance_name
         self.domain = domain
-        super(Client, self).__init__(base_url=base_url, headers=REQUEST_HEADERS, timeout=timeout, **kwargs)
-
+        self.headers = self.generate_headers()
+            
+        super(Client, self).__init__(base_url=base_url, headers=self.headers, timeout=timeout, **kwargs)
+    
+    def generate_headers(self):
+        headers = REQUEST_HEADERS
+        headers['Authorization'] = get_integration_context().get('session_id')
+        return headers
+        
     def do_request(self, method, url_suffix, data=None, params=None):
-        if not REQUEST_HEADERS.get('Authorization'):
-            self.update_session()
+        if not self.headers['Authorization']:
+            self.update_headers_with_new_session()
 
-        res = self._http_request(method, url_suffix, headers=REQUEST_HEADERS, json_data=data, params=params,
+        res = self._http_request(method, url_suffix, headers=self.headers, json_data=data, params=params,
                                  resp_type='response', ok_codes=(200, 401))
 
         if res.status_code == 401:
-            self.update_session()
-            res = self._http_request(method, url_suffix, headers=REQUEST_HEADERS, json_data=data,
+            self.update_headers_with_new_session()
+            res = self._http_request(method, url_suffix, headers=None, json_data=data,
                                      resp_type='response', ok_codes=(200, 401))
 
         return res.json()
 
-    def update_session(self):
+    def update_headers_with_new_session(self):
+        session_id = self.create_session()
+        merge_integration_context({'session_id': session_id})
+        self.headers['Authorization'] = f'Archer session-id={session_id}'
+        return self.headers
+
+    def create_session(self):
         body = {
             'InstanceName': self.instance_name,
             'Username': self.username,
@@ -324,9 +342,16 @@ class Client(BaseClient):
         if not is_successful_response:
             return_error(res.get('ValidationMessages'))
         session = res.get('RequestedObject', {}).get('SessionToken')
-        REQUEST_HEADERS['Authorization'] = f'Archer session-id={session}'
+        return session
 
     def get_token(self):
+        sleep(random.uniform(0, 5))
+        if token := get_integration_context().get('token'):
+            return token
+        else:
+            return self.generate_new_token()
+
+    def generate_new_token(self):
         if self.domain:
             endpoint = 'CreateDomainUserSessionFromInstance'
         else:
@@ -339,11 +364,13 @@ class Client(BaseClient):
         }
         res = self._http_request('POST', 'ws/general.asmx',
                                  headers=headers, data=body, resp_type='content')
-        return extract_from_xml(
+        token = extract_from_xml(
             res,
             f'Envelope.Body.{endpoint}Response.'
             f'{endpoint}Result'
         )
+        merge_integration_context({'token': token})
+        return token
 
     def destroy_token(self, token):
         body = terminate_session_soap_request(token)
@@ -351,14 +378,34 @@ class Client(BaseClient):
                    'Content-Type': 'text/xml; charset=utf-8'}
         self._http_request('POST', 'ws/general.asmx', headers=headers, data=body, resp_type='content')
 
+    def retry_request_with_new_token(self, num_of_attempts, req_data, url_suffix, headers, **kwargs):
+        res = None
+        for attempt in range(num_of_attempts):
+            token = self.generate_new_token()
+            print(token)
+            ok_codes = (200, 201, 204, 500) if attempt < num_of_attempts else None
+            body = req_data['soapBody'](token, **kwargs)
+            res = self._http_request('POST', url_suffix=url_suffix, headers=headers, data=body,
+                                     resp_type='response', ok_codes=ok_codes)
+            if 200 < res.status_code < 300:
+                continue
+        return res
+
     def do_soap_request(self, command, **kwargs):
         req_data = SOAP_COMMANDS[command]
         headers = {'SOAPAction': req_data['soapAction'], 'Content-Type': 'text/xml; charset=utf-8'}
         token = self.get_token()
         body = req_data['soapBody'](token, **kwargs)  # type: ignore
-        res = self._http_request('POST', req_data['urlSuffix'], headers=headers, data=body, resp_type='content')
-        self.destroy_token(token)
-        return extract_from_xml(res, req_data['outputPath']), res
+        url_suffix = req_data['urlSuffix']
+        res = self._http_request('POST', url_suffix=url_suffix, headers=headers, data=body, resp_type='response',
+                                 ok_codes=(200, 201, 204, 500))
+        print(token)
+        print(res.status_code)
+        if res.status_code == 500 and "Invalid session token" in res.text:
+            res = self.retry_request_with_new_token(2, req_data, url_suffix, headers, **kwargs)
+
+        # self.destroy_token(token)
+        return extract_from_xml(res.content, req_data['outputPath']), res.content
 
     def get_level_by_app_id(self, app_id, specify_level_id=None):
         levels = []
@@ -387,7 +434,7 @@ class Client(BaseClient):
                     levels.append({'level': level_id, 'mapping': fields})
             if levels:
                 cache[int(app_id)] = levels
-                set_integration_context(cache)
+                merge_integration_context(cache)
 
         level_data = None
         if specify_level_id:
@@ -509,7 +556,7 @@ class Client(BaseClient):
             if field_name in fields_to_display:
                 fields_xml += f'<DisplayField name="{field_name}">{field}</DisplayField>'
             if (field_to_search and field_name.lower() == field_to_search.lower()) or \
-               (field_to_search_by_id and field_name.lower() == field_to_search_by_id.lower()):
+                    (field_to_search_by_id and field_name.lower() == field_to_search_by_id.lower()):
                 search_field_name = field_name
                 search_field_id = field
 
@@ -600,7 +647,7 @@ class Client(BaseClient):
                 field_data = {'FieldId': field_id, 'ValuesList': values_list}
 
                 cache['fieldValueList'][field_id] = field_data
-                set_integration_context(cache)
+                merge_integration_context(cache)
                 return field_data
         return {}
 
@@ -1318,7 +1365,7 @@ def main():
     cache = get_integration_context()
     if not cache.get('fieldValueList'):
         cache['fieldValueList'] = {}
-        set_integration_context(cache)
+        merge_integration_context(cache)
 
     client = Client(
         base_url,
