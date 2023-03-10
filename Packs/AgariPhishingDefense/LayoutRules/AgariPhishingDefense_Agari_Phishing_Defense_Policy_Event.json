@@ -1,0 +1,11 @@
+{
+    "rule_id": "default_rule_Agari_Phishing_Defense_Policy_Event",
+    "layout_id": "Agari Phishing Defense Policy Event",
+    "description": "This rule is a default rule as this layout did not have any.",
+    "rule_name": "default rule",
+    "alerts_filter": {
+        "filter": {}
+    },
+    "fromVersion": "6.10.0",
+    "toVersion": "6.11.9"
+}

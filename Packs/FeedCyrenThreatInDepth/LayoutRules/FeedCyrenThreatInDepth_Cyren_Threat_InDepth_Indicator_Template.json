@@ -1,0 +1,11 @@
+{
+    "rule_id": "default_rule_Cyren_Threat_InDepth_Indicator_Template",
+    "layout_id": "Cyren Threat InDepth Indicator Template",
+    "description": "This rule is a default rule as this layout did not have any.",
+    "rule_name": "default rule",
+    "alerts_filter": {
+        "filter": {}
+    },
+    "fromVersion": "6.10.0",
+    "toVersion": "6.11.9"
+}

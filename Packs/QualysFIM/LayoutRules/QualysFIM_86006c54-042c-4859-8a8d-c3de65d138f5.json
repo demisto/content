@@ -1,0 +1,11 @@
+{
+    "rule_id": "default_rule_86006c54-042c-4859-8a8d-c3de65d138f5",
+    "layout_id": "86006c54-042c-4859-8a8d-c3de65d138f5",
+    "description": "This rule is a default rule as this layout did not have any.",
+    "rule_name": "default rule",
+    "alerts_filter": {
+        "filter": {}
+    },
+    "fromVersion": "6.10.0",
+    "toVersion": "6.11.9"
+}
