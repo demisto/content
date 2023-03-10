@@ -3497,6 +3497,8 @@ script:
       name: UserIdGroupPairsVpcPeeringConnectionId
       required: false
       secret: false
+    - description: Full IpPermissions argument as a string to more easily copy rules.
+      name: IpPermissionsFull
     deprecated: false
     description: Adds ingress rule to a security group.
     execution: true
@@ -3640,6 +3642,8 @@ script:
       name: UserIdGroupPairsVpcPeeringConnectionId
       required: false
       secret: false
+    - description: Full IpPermissions argument as a string to more easily copy rules.
+      name: IpPermissionsFull
     deprecated: false
     description: Adds egress rule to a security group.
     execution: true
@@ -3711,6 +3715,8 @@ script:
       name: roleSessionDuration
       required: false
       secret: false
+    - description: Full IpPermissions argument as a string to more easily target rules.
+      name: IpPermissionsFull
     deprecated: false
     description: Removes egress rule from a security group. To remove a rule, the values that you specify (for example, ports) must match the existing rule's values exactly.
     execution: true
@@ -6262,6 +6268,8 @@ script:
       name: roleSessionDuration
       required: false
       secret: false
+    - description: Full IpPermissions argument as a string to more easily target rules.
+      name: IpPermissionsFull
     deprecated: false
     description: Removes egress rule from a security group. To remove a rule, the values that you specify (for example, ports) must match the existing rule's values exactly.
     execution: true
