@@ -1,0 +1,31 @@
+{
+    "id": "Social \u0026 Public Exposure",
+    "version": -1,
+    "vcShouldIgnore": false,
+    "locked": false,
+    "name": "Social \u0026 Public Exposure",
+    "prevName": "Social \u0026 Public Exposure",
+    "color": "#fdd549",
+    "sla": 168,
+    "playbookId": "DeCYFIR - v1",
+    "hours": 0,
+    "days": 0,
+    "weeks": 1,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": true,
+    "disabled": false,
+    "reputationCalc": 0,
+    "onChangeRepAlg": 0,
+    "layout": "DeCYFIR-Layout",
+    "detached": false,
+    "extractSettings": {
+        "mode": "Specific",
+        "fieldCliNameToExtractSettings": {}
+    },
+    "fromVersion": "6.2.0"
+}

@@ -451,5 +451,6 @@
 	"id": "Sumo Logic Insight",
 	"name": "Sumo Logic Insight",
 	"system": false,
-	"version": -1
+	"version": -1,
+ "marketplaces": ["xsoar"]
 }

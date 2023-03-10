@@ -1,0 +1,27 @@
+{
+    "created": 1671572992,
+    "created_by": {
+        "email": "user@example.com",
+        "first_name": "some",
+        "id": "5b03c17e-a1f8-43ab-b0d5-9e178fb95c4a",
+        "last_name": "user"
+    },
+    "id": "04bb5f2c-78a6-4e84-82ae-011666733998",
+    "is_json": false,
+    "meta_data": {
+        "component": "threatdata",
+        "object_id": "ba82b524-15b3-4071-8008-e58754f8d134",
+        "type": "indicator"
+    },
+    "modified": 1671573367,
+    "modified_by": {
+        "email": "user@example.com",
+        "first_name": "some",
+        "id": "5b03c17e-a1f8-43ab-b0d5-9e178fb95c4a",
+        "last_name": "user"
+    },
+    "object_id": "ba82b524-15b3-4071-8008-e58754f8d134",
+    "text": "this is the new text",
+    "title": null,
+    "type": "threatdata"
+}

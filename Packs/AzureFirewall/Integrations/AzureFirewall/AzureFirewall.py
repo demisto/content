@@ -15,7 +15,8 @@ class AzureFirewallClient:
                  client_secret: str = None,
                  tenant_id: str = None,
                  certificate_thumbprint: str = None,
-                 private_key: str = None):
+                 private_key: str = None,
+                 managed_identities_client_id: str = None):
         self.resource_group = resource_group
         self.subscription_id = subscription_id
         self.api_version = api_version
@@ -48,7 +49,9 @@ class AzureFirewallClient:
             verify=verify,
             proxy=proxy,
             certificate_thumbprint=certificate_thumbprint,
-            private_key=private_key
+            private_key=private_key,
+            managed_identities_client_id=managed_identities_client_id,
+            managed_identities_resource_uri=Resources.management_azure
         )
 
     def azure_firewall_list_request(self, resource: str, next_link: str = None) -> dict:
@@ -2860,13 +2863,14 @@ def main() -> None:
 
     subscription_id = params['subscription_id']['password']
     resource_group = params['resource_group']
-    client_id = params['client_id']
+    client_id = params.get('client_id')
 
     client_secret = dict_safe_get(params, ['client_secret', 'password'])
     tenant_id = dict_safe_get(params, ['tenant_id', 'password'])
 
     certificate_thumbprint = params.get('certificate_thumbprint')
     private_key = params.get('private_key')
+    managed_identities_client_id = get_azure_managed_identities_client_id(params)
 
     if tenant_id:
         if not client_secret and (
@@ -2889,7 +2893,8 @@ def main() -> None:
             client_secret=client_secret,
             tenant_id=tenant_id,
             certificate_thumbprint=certificate_thumbprint,
-            private_key=private_key)
+            private_key=private_key,
+            managed_identities_client_id=managed_identities_client_id)
 
         commands = {
             'azure-firewall-list': azure_firewall_list_command,
@@ -2919,9 +2924,15 @@ def main() -> None:
         }
 
         if command == 'test-module':
-            return_results(
-                'The test module is not functional, '
-                'run the azure-firewall-auth-start command instead.')
+            if managed_identities_client_id:
+                # test-module expected to get 'ok' in case of success
+                test_res = test_connection(client=client)
+                return return_results('ok' if 'Success' in test_res else test_res)
+
+            else:
+                return return_results(
+                    'The test module is not functional, '
+                    'run the azure-firewall-auth-start command instead.')
 
         if command == 'azure-firewall-auth-start':
             return_results(start_auth(client))

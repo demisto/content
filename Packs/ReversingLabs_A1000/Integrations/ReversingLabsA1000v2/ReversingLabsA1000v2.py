@@ -406,7 +406,8 @@ def advanced_search(a1000):
     """
     Advanced Search by query
     """
-    query = demisto.getArg('query')
+    query = demisto.getArg("query")
+    ticloud = argToBoolean(demisto.getArg("ticloud"))
 
     try:
         limit = demisto.getArg("result_limit")
@@ -416,7 +417,11 @@ def advanced_search(a1000):
         limit = 5000
 
     try:
-        result_list = a1000.advanced_search_v2_aggregated(query_string=query, max_results=limit)
+        result_list = a1000.advanced_search_v2_aggregated(
+            query_string=query,
+            ticloud=ticloud,
+            max_results=limit
+        )
     except Exception as e:
         return_error(str(e))
 

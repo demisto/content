@@ -8,6 +8,7 @@ tags:
 - Utility
 - transformer
 - string
+- incident-action-button
 comment: Decodes an input in Base64 format.
 enabled: true
 args:
@@ -27,6 +28,6 @@ subtype: python3
 runonce: false
 runas: DBotWeakRole
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.7.35188
+dockerimage: demisto/python3:3.10.9.45313
 tests:
 - Base64Decode - Test

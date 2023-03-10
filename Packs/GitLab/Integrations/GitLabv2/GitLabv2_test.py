@@ -1,5 +1,6 @@
 import io
 import json
+from typing import Dict, List
 import pytest
 from freezegun import freeze_time
 
@@ -749,6 +750,128 @@ def test_code_search_command(mocker):
     mocker.patch.object(Client, '_http_request', return_value=response_client)
     result = code_search_command(client, args)
     assert result.raw_response[0]['data'] == expected_raw
+
+
+def test_gitlab_pipelines_schedules_list_command(mocker):
+    """
+    Given:
+        - client and demisto args
+    When:
+        - calling the gitlab_pipelines_schedules_list_command
+    Then:
+        - validate that the command results returns properly
+    """
+    from GitLabv2 import (Client, gitlab_pipelines_schedules_list_command)
+    client = Client(project_id=1234,
+                    base_url="base_url",
+                    verify=False,
+                    proxy=False,
+                    headers={'PRIVATE-TOKEN': 'api_key'})
+    response_client = util_load_json('test_data/commands_test_data.json').get('pipeline_schedule')
+    args = {"project_id": 1}
+    expected_outputs: List[Dict] = response_client['expected_outputs']
+    expected_prefix: str = response_client['expected_prefix']
+    expected_key_field: str = response_client['expected_key_field']
+    mocker.patch.object(Client, '_http_request', return_value=response_client['mock_response'])
+    command_result = gitlab_pipelines_schedules_list_command(client, args)
+    assert command_result.outputs_prefix == expected_prefix
+    assert command_result.outputs == expected_outputs
+    assert command_result.outputs_key_field == expected_key_field
+
+
+def test_gitlab_pipelines_list_command(mocker):
+    """
+    Given:
+        - client and demisto args
+    When:
+        - calling the gitlab_pipelines_list_command
+    Then:
+        - validate that the command results returns properly
+    """
+    from GitLabv2 import (Client, gitlab_pipelines_list_command)
+    client = Client(project_id=1234,
+                    base_url="base_url",
+                    verify=False,
+                    proxy=False,
+                    headers={'PRIVATE-TOKEN': 'api_key'})
+    response_client = util_load_json('test_data/commands_test_data.json').get('pipeline')
+    args = {"project_id": "3"}
+    expected_outputs: List[Dict] = response_client['expected_outputs']
+    expected_prefix: str = response_client['expected_prefix']
+    expected_key_field: str = response_client['expected_key_field']
+    mocker.patch.object(Client, '_http_request', return_value=response_client['mock_response'])
+    command_result = gitlab_pipelines_list_command(client, args)
+    assert command_result.outputs_prefix == expected_prefix
+    assert command_result.outputs == expected_outputs
+    assert command_result.outputs_key_field == expected_key_field
+
+
+def test_gitlab_jobs_list_command(mocker):
+    """
+    Given:
+        - client and demisto args
+    When:
+        - calling the gitlab_jobs_list_command
+    Then:
+        - validate that the command results returns properly
+    """
+    from GitLabv2 import (Client, gitlab_jobs_list_command)
+    client = Client(project_id=1234,
+                    base_url="base_url",
+                    verify=False,
+                    proxy=False,
+                    headers={'PRIVATE-TOKEN': 'api_key'})
+    response_client = util_load_json('test_data/commands_test_data.json').get('jobs')
+    args = {
+        "project_id": "4",
+        "pipeline_id": "12"
+    }
+    expected_outputs: List[Dict] = response_client['expected_outputs']
+    expected_prefix: str = response_client['expected_prefix']
+    expected_key_field: str = response_client['expected_key_field']
+    mocker.patch.object(Client, '_http_request', return_value=response_client['mock_response'])
+    command_result = gitlab_jobs_list_command(client, args)
+    assert command_result.outputs_prefix == expected_prefix
+    assert command_result.outputs == expected_outputs
+    assert command_result.outputs_key_field == expected_key_field
+
+
+def test_gitlab_artifact_get_command(mocker):
+    """
+    Given:
+        - client and demisto args
+    When:
+        - calling the gitlab_artifact_get_command
+    Then:
+        - validate that the command results returns properly
+    """
+    from GitLabv2 import (Client, gitlab_artifact_get_command)
+    client = Client(project_id=1234,
+                    base_url="base_url",
+                    verify=False,
+                    proxy=False,
+                    headers={'PRIVATE-TOKEN': 'api_key'})
+    response_client = util_load_json('test_data/commands_test_data.json').get('artifact-get')
+    args = {
+        "project_id": "45",
+        "job_id": "32",
+        "artifact_path_suffix": "artifacts/failed_tests.txt"}
+    expected_outputs: List[Dict] = response_client['expected_outputs']
+    expected_prefix: str = response_client['expected_prefix']
+    expected_key_field: str = response_client['expected_key_field']
+    mocker.patch.object(Client, '_http_request', return_value=response_client['mock_response'])
+    command_result = gitlab_artifact_get_command(client, args)
+    assert command_result.outputs_prefix == expected_prefix
+    assert command_result.outputs == expected_outputs
+    assert command_result.outputs_key_field == expected_key_field
+
+
+@pytest.mark.parametrize('error_message, expected_result', [('this is an error', False),
+                                                            ("Failed to parse json object"
+                                                                "from response: <!DOCTYPE html>\n<html class=)", True)])
+def test_check_for_html_in_error(error_message, expected_result):
+    from GitLabv2 import check_for_html_in_error
+    assert check_for_html_in_error(error_message) == expected_result
 
 
 ARGS_FOR_PARTIAL_RESPONSE = [

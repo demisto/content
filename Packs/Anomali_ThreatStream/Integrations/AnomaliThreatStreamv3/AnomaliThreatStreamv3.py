@@ -985,6 +985,10 @@ def import_ioc_without_approval(client: Client, file_id, classification, confide
         tags = argToList(tags)
     if trustedcircles:
         trustedcircles = argToList(trustedcircles)
+    if confidence:
+        confidence = int(confidence)
+    if source_confidence_weight:
+        source_confidence_weight = int(source_confidence_weight)
     try:
         # entry id of uploaded file to war room
         file_info = demisto.getFilePath(file_id)
@@ -994,7 +998,8 @@ def import_ioc_without_approval(client: Client, file_id, classification, confide
         raise DemistoException(f'{THREAT_STREAM} - Entry {file_id} does not contain a valid json file.')
     except Exception:
         raise DemistoException(f'{THREAT_STREAM} - Entry {file_id} does not contain a file.')
-    ioc_to_import.update({'meta': assign_params(
+    meta = ioc_to_import.get('meta', {})
+    meta |= assign_params(
         classification=classification,
         confidence=confidence,
         allow_unresolved=argToBoolean(allow_unresolved),
@@ -1003,8 +1008,9 @@ def import_ioc_without_approval(client: Client, file_id, classification, confide
         severity=severity,
         tags=tags,
         trustedcircles=trustedcircles
-    )})
+    )
 
+    ioc_to_import.update({"meta": meta})
     client.http_request("PATCH", "v1/intelligence/", json=ioc_to_import, resp_type='text')
     return "The data was imported successfully."
 
@@ -1178,17 +1184,18 @@ def file_name_to_valid_string(file_name):
     return file_name
 
 
-def submit_report(client: Client, submission_type, submission_value, submission_classification="private",
-                  report_platform="WINDOWS7",
+def submit_report(client: Client, submission_type, submission_value, import_indicators=True,
+                  submission_classification="private", report_platform="WINDOWS7",
                   premium_sandbox="false", detail=None):
     """
         Detonates URL or file that was uploaded to war room to ThreatStream sandbox.
     """
-
+    import_indicators = argToBoolean(import_indicators)
     data = {
         'report_radio-classification': submission_classification,
         'report_radio-platform': report_platform,
         'use_premium_sandbox': premium_sandbox,
+        'import_indicators': import_indicators
     }
     if detail:
         data['detail'] = detail
@@ -1325,6 +1332,13 @@ def search_intelligence(client: Client, **kwargs):
     url = 'v2/intelligence/'
     if 'query' in kwargs:
         url += f"?q={kwargs.pop('query')}"
+    if 'confidence' in kwargs:
+        conf = kwargs.get('confidence', '').split(' ')
+        if len(conf) > 1:
+            if conf[0] not in {'gt', 'lt'}:
+                raise DemistoException(f'Confidence operator must be on of gt or lt, if used.{conf[0]} is not a legal value.')
+            kwargs[f'confidence__{conf[0]}'] = conf[1]
+            del kwargs['confidence']
     intelligence_list = client.http_request('GET', url, params=kwargs).get('objects', None)
     if not intelligence_list:
         return 'No intelligence found from ThreatStream'

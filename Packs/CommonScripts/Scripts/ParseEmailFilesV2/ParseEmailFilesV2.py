@@ -143,9 +143,13 @@ def main():
         for email in output:
             if email.get('AttachmentsData'):
                 for attachment in email.get('AttachmentsData'):
-                    if (name := attachment.get('Name')) and (content := attachment.get('FileData')):
-                        del attachment['FileData']
-                        attachment['FilePath'] = save_file(name, content)
+                    if name := attachment.get('Name'):
+                        if content := attachment.get('FileData'):
+                            attachment['FilePath'] = save_file(name, content)
+                            del attachment['FileData']
+                        else:
+                            attachment['FileData'] = None
+
             results.append(CommandResults(
                 outputs_prefix='Email',
                 outputs=email,

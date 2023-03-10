@@ -1,6 +1,9 @@
 commonfields:
   id: Github Event Collector
   version: -1
+sectionOrder:
+- Connect
+- Collect
 name: Github Event Collector
 display: Github Event Collector
 category: Analytics & SIEM
@@ -11,22 +14,26 @@ configuration:
   defaultvalue: 'https://api.github.com/orgs/${ORGANIZATION}/audit-log'
   type: 0
   required: true
+  section: Connect
 - display: ""
   displaypassword: API Key
   name: auth_credendtials
   type: 9
   required: true
   hiddenusername: true
+  section: Connect
 - display: Number of incidents to fetch per fetch.
   name: limit
   type: 0
   defaultvalue: 1000
   required: false
+  section: Collect
 - display: First fetch time interval
   name: after
   type: 0
   defaultvalue: 3 days
   required: false
+  section: Collect
 - display: The event types to include.
   additionalinfo: web - returns web (non-Git) events, git - returns Git events, all - returns both web and Git events.
   name: include
@@ -37,14 +44,20 @@ configuration:
   - all
   - web
   - git
+  section: Collect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
+  advanced: true
 - display: Trust any certificate (not secure)
   name: verify
   type: 8
   required: false
+  section: Connect
+  advanced: true
 script:
   script: ""
   type: python
@@ -63,7 +76,7 @@ script:
     description: Manual command to fetch events and display them.
     execution: false
     name: github-get-events
-  dockerimage: demisto/fastapi:1.0.0.32142
+  dockerimage: demisto/fastapi:1.0.0.45601
   runonce: false
   isfetchevents: true
   subtype: python3

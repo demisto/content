@@ -67,6 +67,7 @@ Please add the following permissions to the app registration. Choose application
     | Authentication Type | Type of authentication - either Authorization Code \(recommended\) or Client Credentials. |  |
     | Application redirect URI (for authorization code mode) |  | False |
     | Authorization code | for user-auth mode - received from the authorization step. see Detailed Instructions section | False |
+    | Azure Managed Identities Client ID | The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM. | UUID |
     | Status to filter out alerts for fetching as incidents| The property values are, "New", "InProgress" or "Resolved". Comma-separated lists are supported, e.g., New,Resolved. | New,In Progress,Resolved |
     | Severity to filter out alerts for fetching as incidents | The property values are, "Informational", "Low", "Medium" and "High". Comma-separated lists are supported, e.g., Medium,High. | Medium,High |
     | Maximum number of incidents to fetch | The maximum number of incidents to retrieve per fetch. | 50 |
@@ -6574,3 +6575,30 @@ Retrieves missing KBs (security updates) by software ID.
 >| 1111111 | some_name_1 | 22222 | some_id | some_url_1 | 1 | 2 |
 >| 2222222 | some_name_2 | 22222 | some_id | some_url_2 | 1 | 2 |
 
+
+### microsoft-atp-generate-login-url
+***
+Generate the login url used for Authorization code flow.
+
+#### Base Command
+
+`microsoft-atp-generate-login-url`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```microsoft-atp-generate-login-url```
+
+#### Human Readable Output
+
+>### Authorization instructions
+>1. Click on the [login URL]() to sign in and grant Cortex XSOAR permissions for your Azure Service Management.
+You will be automatically redirected to a link with the following structure:
+```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```
+>2. Copy the `AUTH_CODE` (without the `code=` prefix, and the `session_state` parameter)
+and paste it in your instance configuration under the **Authorization code** parameter.

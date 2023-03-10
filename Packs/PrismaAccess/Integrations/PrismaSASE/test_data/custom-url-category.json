@@ -1,0 +1,9 @@
+{
+    "id": "id1",
+    "name": "name1",
+    "folder": "Shared",
+    "list": [
+        "www.google.com"
+    ],
+    "type": "URL List"
+}

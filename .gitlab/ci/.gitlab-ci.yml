@@ -1,10 +1,11 @@
 
 default:
-  image: docker-io.art.code.pan.run/devdemisto/gitlab-content-ci:1.0.0.41284
+  image: docker-io.art.code.pan.run/devdemisto/gitlab-content-ci:1.0.0.49555
   artifacts:
     expire_in: 30 days
     paths:
       - /builds/xsoar/content/artifacts/*
+      - /builds/xsoar/content/pipeline_jobs_folder/*
     when: always
 
 stages:
@@ -12,19 +13,22 @@ stages:
   - prepare-testing-bucket
   - run-instances
   - upload-to-marketplace
+  - are-jobs-realy-done
   - fan-in  # concentrate pipeline artifacts to single job before triggering child slack pipeline
 
 
 variables:
   DONT_CACHE_LAST_RESPONSE: "true"
   GCS_MARKET_BUCKET: "marketplace-dist"
-  GCS_MARKET_BUCKET_DEV: "marketplace-dist-dev"
   GCS_MARKET_V2_BUCKET: "marketplace-v2-dist"
   GCS_MARKET_XPANSE_BUCKET: "xpanse-dist"
+  GCS_MARKET_BUCKET_DEV: "marketplace-dist-dev"
+  GCS_MARKET_V2_BUCKET_DEV: "marketplace-v2-dist-dev"
   STORAGE_BASE_PATH: ""
   SLACK_CHANNEL: "dmst-build-test"
   DEMISTO_README_VALIDATION: "true"
   ARTIFACTS_FOLDER: "/builds/xsoar/content/artifacts"
+  PIPELINE_JOBS_FOLDER: "/builds/xsoar/content/pipeline_jobs_folder"
   ARTIFACTS_FOLDER_XSOAR: "/builds/xsoar/content/artifacts/xsoar"
   ARTIFACTS_FOLDER_MPV2: "/builds/xsoar/content/artifacts/marketplacev2"
   ARTIFACTS_FOLDER_XPANSE: "/builds/xsoar/content/artifacts/xpanse"

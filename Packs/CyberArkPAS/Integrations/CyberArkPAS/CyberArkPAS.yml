@@ -1,4 +1,4 @@
-category: Authentication
+category: Authentication & Identity Management
 sectionOrder:
 - Connect
 - Collect
@@ -1095,7 +1095,7 @@ script:
       secret: false
     - default: false
       description: |-
-        Property or properties by which to sort the returned accounts. 
+        Property or properties by which to sort the returned accounts.
         The properties are followed by a comma and then 'asc' (default) or 'desc' to control the sort direction,
         e.g., Windows,asc
       isArray: false
@@ -1346,7 +1346,7 @@ script:
     - contextPath: CyberArkPAS.SecurityEvents.type
       description: The type of the security events.
       type: String
-  dockerimage: demisto/python3:3.10.4.28442
+  dockerimage: demisto/python3:3.10.10.48392
   feed: false
   isfetch: true
   longRunning: false

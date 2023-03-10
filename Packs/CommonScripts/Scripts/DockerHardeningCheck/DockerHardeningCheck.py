@@ -248,7 +248,7 @@ def main():
     return_outputs(table)
     if failed:
         return_error(f'Failed verifying docker hardening:\n{failed_msg}'
-                     'More details at: https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-9/cortex-xsoar-admin/docker/docker-hardening-guide.html')  # noqa
+                     'More details at: https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Docker-Hardening-Guide')  # noqa
 
 
 # python2 uses __builtin__ python3 uses builtins

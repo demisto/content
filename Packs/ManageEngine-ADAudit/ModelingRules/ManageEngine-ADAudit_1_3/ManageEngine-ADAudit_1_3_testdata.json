@@ -13,7 +13,6 @@
                 "reason": "Bad password",
                 "cs2": "8.8.8.8",
                 "suid": "S-1-1-11-1234567899-123456789-1234567899-22222",
-                "cs5": "",
                 "cefSeverity": "1",
                 "cefName": "LogonReports",
                 "cat": "LogonReports",

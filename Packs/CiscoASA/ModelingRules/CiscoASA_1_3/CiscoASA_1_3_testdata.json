@@ -5,7 +5,7 @@
             "vendor": "cisco",
             "product": "asa",
             "dataset": "cisco_asa_raw",
-            "event_data": {"_raw_log": "<158>Dec  5 09:40:09 6.6.6.6 %ASA-6-113005: AAA user authentication Rejected : reason = Password has expired : server = 1.1.1.1 : user = test.test@siemteam.com : user IP = 8.8.8.8"},
+            "event_data": {"_raw_log": "<158>Jan  1 09:40:09 6.6.6.6 %ASA-6-113005: AAA user authentication Rejected : reason = Password has expired : server = 1.1.1.1 : user = test.test@siemteam.com : user IP = 8.8.8.8"},
             "expected_values": {
                 "xdm.event.id": "113005",
                 "xdm.event.description": "AAA user authentication Rejected : reason = Password has expired : server = 1.1.1.1 : user = test.test@siemteam.com : user IP = 8.8.8.8",
@@ -18,8 +18,7 @@
                 "xdm.target.ipv4": null,
                 "xdm.target.port": null,
                 "xdm.target.interface": null,
-                "xdm.source.user.username": "test.test@siemteam.com",
-                "xdm.event.operation": "AAA user authentication Rejected"
+                "xdm.source.user.username": "test.test@siemteam.com"
             }
         }
     ]
