@@ -163,9 +163,12 @@ def test_module(configuration) -> str:
             api_instance = EventsApi(api_client)
             start_time = parse("1 min ago", settings={"TIMEZONE": "UTC"})
             end_time = parse(DEFAULT_TO_DATE, settings={"TIMEZONE": "UTC"})
-            api_instance.list_events(start=int(start_time.timestamp() if start_time else 0), end=int(end_time.timestamp() if end_time else 0))
+            api_instance.list_events(
+                start=int(start_time.timestamp() if start_time else 0),
+                end=int(end_time.timestamp() if end_time else 0),
+            )
             return "ok"
-    except Exception as ex:
+    except Exception:
         return "Authorization Error: Make sure API Key, Application Key, Server URL is correctly set."
 
 
@@ -193,7 +196,9 @@ def create_event_command(
     date_happened = args.get("date_happened")
     if date_happened:
         date_happened_timestamp = parse(date_happened, settings={"TIMEZONE": "UTC"})
-        if not is_within_18_hours(int(date_happened_timestamp.timestamp() if date_happened_timestamp else 0 )):
+        if not is_within_18_hours(
+            int(date_happened_timestamp.timestamp() if date_happened_timestamp else 0)
+        ):
             return CommandResults(
                 readable_output="The time of the event shall not be older than 18 hours!\n"
             )
@@ -210,11 +215,7 @@ def create_event_command(
         else None,
         "host": args.get("host_name"),
         "device_name": args.get("device_name"),
-        "date_happened": int(
-           date_happened.timestamp()
-        )
-        if date_happened
-        else None,
+        "date_happened": int(date_happened.timestamp()) if date_happened else None,
         "source_type_name": args.get("source_type_name"),
     }
     body = EventCreateRequest(
