@@ -2576,7 +2576,7 @@ def list_channels():
         body['cursor'] = cursor
 
     raw_response = send_slack_request_sync(CLIENT, 'conversations.list', http_verb="GET", body=body)
-
+    demisto.results(raw_response)
     # Provide an option to only select a channel by a name. Instead of returning a full list of results this allows granularity
     # Supports a single channel name
     name_filter = demisto.args().get('name_filter')
@@ -2616,13 +2616,14 @@ def list_channels():
             }
             context.append(entry)
         readable_output= tableToMarkdown(f'List of channel details for {channel_types}', context)
-    return_results(CommandResults(
-            readable_output= readable_output,
-            raw_response= raw_response,
-            outputs_prefix= 'Slack.Channels',
-            outputs= context
-        )
-    )
+    demisto.results({
+        'Type': entryTypes['note'],
+        'Contents': channels,
+        'EntryContext': {'Slack.Channels': context},
+        'ContentsFormat': formats['json'],
+        'HumanReadable': readable_output,
+        'ReadableContentsFormat': formats['markdown']
+    })
 
 
 def conversation_history():
@@ -2632,7 +2633,7 @@ def conversation_history():
     """
 
     channel_id = demisto.args()['channel_id']
-    limit = demisto.args().get('limit')
+    limit = int(demisto.args().get('limit'))
     if limit == None:
         limit = 100
 
@@ -2644,13 +2645,13 @@ def conversation_history():
 
     raw_response = send_slack_request_sync(CLIENT, 'conversations.history', http_verb="GET", body=body)
 
-    demisto.results(raw_response)
-    #return CommandResults(
-    #    raw_response = raw_response,
-    #    outputs_prefix = 'conversations.history',
-    #    outputs_key_field = 'id',
-    #    outputs = context
-    #)
+    #demisto.results(response)
+    return CommandResults(
+        raw_response = raw_response,
+        outputs_prefix = 'conversations.history',
+        outputs_key_field = 'id',
+        outputs = context
+    )
 
 
 def long_running_main():
