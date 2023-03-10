@@ -297,7 +297,7 @@ def get_events_command(
                 **{key: value for key, value in body_dict.items() if value is not None}
             )
             results: List[Event] = response.get("events", [])
-            resp: List[Event] = results[offset : offset + limit]
+            resp: List[Event] = results[offset: offset + limit]
             data = [event.to_dict() for event in resp]
             if data:
                 events_list = [event_for_lookup(event) for event in data]
