@@ -28,6 +28,7 @@ The default playbook for the Case type is 'Case Management - Generic v2', this p
 Optionally this playbook has built in Timers for adding metrics for Mean Time to Assignment or Mean Time to Remediation to the metrics you are tracking in the system.  To take advantage of these timers, you can add the included TimersOnOwnerChange script to as a field trigger script on the Owner field.   This script will stop the Time to Assignment timer and start the Remediation SLA timer when an owner is first assigned to the Incident.
 
 To set this up:
+
 1. Settings -> Objects Setup -> Incidents -> Fields
 2. Find and edit the Owner field
 3. Select TimersOnOwnerChange on the 'Script to run when field value changes' option
@@ -67,6 +68,7 @@ To create your own list, create an XSOAR list called "+Case Management Analyst T
 The CaseMgmtIncidentTypesDisplay is a field display script that can be tied to the Type field.  Use this to restrict the Incident Types which are displayed to Analysts when created manually, and prevent changing the Incident Type from being changed on existing Incidents.  
 
 To set this up:
+
 1. Create an XSOAR list (Settings -> Advanced -> Lists) called +IncidentTypesFromList+ with a comma seperated list of Incident Types to display (i.e. Case,Phishing,Malware)
 1. Settings -> Objects Setup -> Incidents -> Fields
 2. Find and edit the Type field

@@ -1,22 +1,32 @@
-This playbook will extract and enrich indicators upon trigger, calculate Severity, and set SLAs and Timers.
+This playbook will extract and enrich indicators upon trigger, calculate Severity, and set SLAs and Timers. 
+
+Can be used as a default playbook to ingest new Incidents, or for manually created Incidents. 
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+
+* Case Management - Generic - Start SLA Timers
+* Case Management - Generic - Send On Call Notification
 * Case Management - Generic - Set SLAs based on Severity
 * Calculate Severity - Standard
 
 ### Integrations
+
 This playbook does not use any integrations.
 
 ### Scripts
+
 This playbook does not use any scripts.
 
 ### Commands
+
 * extractIndicators
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
@@ -34,7 +44,16 @@ This playbook does not use any scripts.
 | HighTimeToAssignSLA | Number in minutes for the Time to Assignment Timer SLA, when the severity of the Incident is High.  | 60 | Optional |
 | MediumTimeToAssignSLA | Number in minutes for the Time to Assignment Timer SLA, when the severity of the Incident is Medium.  | 180 | Optional |
 | LowTimeToAssignSLA | Number in minutes for the Time to Assignment Timer SLA, when the severity of the Incident is Low or Informational.  | 1440 | Optional |
+| SendOnCallNotification | Whether to send the on call notification email for a Critical or High Severity Incident.  <br/><br/>Set to Yes to send notifications, and add the emails to the NotificationEmails input. | No | Optional |
+| NotificationEmails | The email addresses to send the message to, can be comma separated.  |  | Optional |
 
 ## Playbook Outputs
+
 ---
 There are no outputs for this playbook.
+
+## Playbook Image
+
+---
+
+![Case Management - Generic v2](../doc_files/Case_Management_-_Generic_v2.png)

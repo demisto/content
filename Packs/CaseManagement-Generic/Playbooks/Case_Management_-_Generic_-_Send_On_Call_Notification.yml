@@ -1,0 +1,260 @@
+id: Case Management - Generic - Send On Call Notification
+version: -1
+name: Case Management - Generic - Send On Call Notification
+description: "This playbook can be used to send email notification if an Incidents severity is Critical or High.  \n\nCan be used as a sub-playbook to perform the same logic across different playbooks/use cases."
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: a203e72c-aba1-470d-82e3-0daa49978fc0
+    type: start
+    task:
+      id: a203e72c-aba1-470d-82e3-0daa49978fc0
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 774919f1-1231-4000-8574-f4fc89a59464
+    type: condition
+    task:
+      id: 774919f1-1231-4000-8574-f4fc89a59464
+      version: -1
+      name: Is the Severity Critical or High?
+      description: Check if the severity on the Incident is critical (3) or high (2)
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: severity
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 1
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: a5d376f2-a85c-4481-8b3c-f2c93faf4dba
+    type: regular
+    task:
+      id: a5d376f2-a85c-4481-8b3c-f2c93faf4dba
+      version: -1
+      name: Send Email Notification
+      description: Send an email (doesn't actually send an email)
+      script: '|||send-mail'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      body:
+        simple: "${incident.severityStr} Severity Incident notification. \n\nName: ${incident.name}\nType: ${incident.type}\nInvestigation Link: ${demistoUrls.investigation}"
+      subject:
+        simple: Cortex XSOAR - ${incident.severityStr} Severity Incident Notification
+      to:
+        complex:
+          root: inputs.emails
+    reputationcalc: 1
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 92c9305c-f0bb-4288-8367-8bddc1f69c21
+    type: title
+    task:
+      id: 92c9305c-f0bb-4288-8367-8bddc1f69c21
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: c4e75922-9b6e-4e3e-80f8-1858973e26e8
+    type: regular
+    task:
+      id: c4e75922-9b6e-4e3e-80f8-1858973e26e8
+      version: -1
+      name: Set EscalationEmail to Yes
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      key:
+        simple: EscalationEmailSent
+      stringify:
+        simple: "true"
+      value:
+        simple: "Yes"
+    reputationcalc: 1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 1
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: b83a116c-0234-47cb-8342-851f7bc23821
+    type: regular
+    task:
+      id: b83a116c-0234-47cb-8342-851f7bc23821
+      version: -1
+      name: Set EscalationEmail to No
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: EscalationEmailSent
+      stringify:
+        simple: "true"
+      value:
+        simple: "No"
+    reputationcalc: 1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 1
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 735,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: emails
+  value: {}
+  required: true
+  description: 'The email addresses to send the message to, can be comma separated. '
+  playbookInputQuery:
+outputs:
+- contextPath: EscalationEmailSent
+  description: Whether an escalation email was sent, will be Yes or No
+  type: string
+fromversion: 6.8.0
+tests:
+- No tests (auto formatted)
