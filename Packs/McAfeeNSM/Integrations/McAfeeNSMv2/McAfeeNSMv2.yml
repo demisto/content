@@ -3,7 +3,7 @@ sectionorder:
 - Connect
 - Collect
 commonfields:
-  id: McAfeeNSMv2 Dev
+  id: McAfeeNSMv2
   version: -1
 configuration:
 - display: 'URL (for example: https://192.168.0.1:5000)'
@@ -39,8 +39,8 @@ configuration:
   section: Connect
   advanced: true
 description: McAfee Network Security Manager gives you real-time visibility and control over all McAfee intrusion prevention systems deployed across your network.
-display: 'McAfee NSM v2 Dev'
-name: McAfeeNSMv2 Dev
+display: 'McAfee NSM v2'
+name: McAfeeNSMv2
 section: Connect
 script:
   commands:
