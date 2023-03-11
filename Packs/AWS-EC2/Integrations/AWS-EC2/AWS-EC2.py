@@ -1509,7 +1509,7 @@ def authorize_security_group_egress_command(args, aws_client):
     kwargs = {'GroupId': args.get('groupId')}
     if args.get('IpPermissionsFull', None):
         IpPermissions = json.loads(args.get('IpPermissionsFull'))
-    else:    
+    else:
         IpPermissions = []
         UserIdGroupPairs = []
         IpPermissions_dict = create_ip_permissions_dict(args)
