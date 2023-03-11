@@ -416,7 +416,7 @@ class Client(BaseClient):
         url_suffix = f'/sensor/{device_id}/action/update_sensor_config'
         return self._http_request(method='GET', url_suffix=url_suffix)
 
-    def deploy_device_configuration_request(self, device_id: int, isSSLPushRequired: bool = False,
+    def deploy_device_configuration_request(self, device_id: int | None, isSSLPushRequired: bool = False,
                                             isGAMUpdateRequired: bool = False,
                                             isSigsetConfigPushRequired: bool = False,
                                             isBotnetPushRequired: bool = False) -> Dict:
@@ -2084,10 +2084,9 @@ def list_domain_device_command(client: Client, args: Dict) -> CommandResults:
     all_results = argToBoolean(args.get('all_results', False))
     response = client.list_domain_device_request(domain_id)
 
-    if all_results:
-        devices = response.get('DeviceResponseList')
-    else:
-        devices = response.get('DeviceResponseList')[:limit]
+    devices = (response['DeviceResponseList'] if all_results
+               else
+               response['DeviceResponseList'][:limit])
 
     capitalize_devices = []
     for device in devices:
@@ -2118,10 +2117,10 @@ def list_device_interface_command(client: Client, args: Dict) -> CommandResults:
     all_results = argToBoolean(args.get('all_results', False))
 
     response = client.list_device_interface_request(domain_id=domain_id, device_id=device_id)
-    if all_results:
-        interfaces = response.get('allocatedInterfaceList')
-    else:
-        interfaces = response.get('allocatedInterfaceList')[:limit]
+
+    interfaces = (response['allocatedInterfaceList'] if all_results
+                  else
+                  response['allocatedInterfaceList'][:limit])
 
     key_list = ['interfaceId', 'interfaceName', 'interfaceType']
     capitalize_interfaces = []
@@ -2179,10 +2178,10 @@ def list_device_policy_command(client: Client, args: Dict) -> CommandResults:
     limit = arg_to_number(args.get('limit', 50))
     all_results = argToBoolean(args.get('all_results', False))
     response = client.list_device_policy_request(domain_id=domain_id, device_id=device_id)
-    if all_results:
-        all_policies = response.get('policyAssignmentsList')
-    else:
-        all_policies = response.get('policyAssignmentsList')[:limit]
+
+    all_policies = (response['policyAssignmentsList'] if all_results
+                    else
+                    response['policyAssignmentsList'][:limit])
 
     capitalize_policies = []
     for policy in all_policies:
@@ -2213,7 +2212,7 @@ def assign_interface_policy_command(client: Client, args: Dict) -> CommandResult
     firewall_policy = args.get('firewall_policy_name')
     firewall_port_policy = args.get('firewall_port_policy_name')
     ips_policy = args.get('ips_policy_name')
-    custom_policy_json = json.loads(args.get('custom_policy_json'))
+    custom_policy_json = json.loads(args.get('custom_policy_json'))  # type: ignore
 
     # Check if at least one policy is provided
     if len(args) < 3:
@@ -2254,9 +2253,9 @@ def list_interface_policy_command(client: Client, args: Dict) -> CommandResults:
     response = client.list_interface_policy_request(domain_id=domain_id, interface_id=interface_id)
     if not interface_id:
         all_policies = (
-            response.get('policyAssignmentsList')
+            response['policyAssignmentsList']
             if all_results
-            else response.get('policyAssignmentsList')[:limit]
+            else response['policyAssignmentsList'][:limit]
         )
     elif all_results:
         all_policies = response
@@ -2292,17 +2291,18 @@ def get_device_configuration_command(client: Client, args: Dict) -> CommandResul
 
     response = client.get_device_configuration_request(device_id=device_id)
 
-    capitlize_response = {k[:1].upper() + k[1:]: v for k, v in response.items()}
-    iner_dict = capitlize_response.get('PendingChanges')
-    add_on_dict = {"IsPolicyConfigurationChanged": iner_dict.get("isPolicyConfigurationChanged")}
-    add_on_dict.update({"IsConfigurationChanged": iner_dict.get("isConfigurationChanged")})
-    add_on_dict.update({"IsMalwareConfigurationChanged": iner_dict.get("isMalwareConfigurationChanged")})
-    add_on_dict.update({"IsSignatureSetConfigurationChanged": iner_dict.get("isSignatureSetConfigurationChanged")})
-    add_on_dict.update({"IsSSLConfigurationChanged": iner_dict.get("isSSLConfigurationChanged")})
-    add_on_dict.update({"IsBotnetConfigurationChanged": iner_dict.get("isBotnetConfigurationChanged")})
-    add_on_dict.update({"IsGloablPolicyConfigurationChanged": iner_dict.get("isGloablPolicyConfigurationChanged")})
+    capitlize_response: Dict[str, Any] = {k[:1].upper() + k[1:]: v for k, v in response.items()}
+    iner_dict: Any = capitlize_response.get('PendingChanges')
+    add_on_dict = {"IsPolicyConfigurationChanged": iner_dict.get("isPolicyConfigurationChanged"),
+                   "IsConfigurationChanged": iner_dict.get("isConfigurationChanged"),
+                   "IsMalwareConfigurationChanged": iner_dict.get("isMalwareConfigurationChanged"),
+                   "IsSignatureSetConfigurationChanged": iner_dict.get("isSignatureSetConfigurationChanged"),
+                   "IsSSLConfigurationChanged": iner_dict.get("isSSLConfigurationChanged"),
+                   "IsBotnetConfigurationChanged": iner_dict.get("isBotnetConfigurationChanged"),
+                   "IsGloablPolicyConfigurationChanged": iner_dict.get("isGloablPolicyConfigurationChanged")
+                   }
 
-    capitlize_response.update(add_on_dict)
+    capitlize_response |= add_on_dict
     capitlize_response.pop('PendingChanges')
     readable_output = tableToMarkdown(
         name='Device Configuration', t=capitlize_response, removeNull=True
@@ -2335,7 +2335,6 @@ def deploy_device_configuration_command(args: Dict, client: Client) -> PollResul
         isGAMUpdateRequired = argToBoolean(args.get('push_gam_updates', False))
         isSigsetConfigPushRequired = argToBoolean(args.get('push_configuration_signature_set', False))
         isBotnetPushRequired = argToBoolean(args.get('push_botnet', False))
-        # interval_in_seconds = arg_to_number(args.get('interval_in_seconds', 20))
 
         if not any([isSSLPushRequired, isGAMUpdateRequired, isSigsetConfigPushRequired, isBotnetPushRequired]):
             raise DemistoException("Please provide at least one argument to deploy")
@@ -2363,7 +2362,7 @@ def deploy_device_configuration_command(args: Dict, client: Client) -> PollResul
 
         message = CommandResults(
             readable_output=f"{build_a_massage}\n\nChecking again in {INTERVAL} seconds...")
- 
+
     if not all(fail_or_success_list):
         return PollResult(
             partial_result=message,
