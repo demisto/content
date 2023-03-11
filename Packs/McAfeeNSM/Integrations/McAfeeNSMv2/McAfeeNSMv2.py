@@ -2084,10 +2084,11 @@ def list_domain_device_command(client: Client, args: Dict) -> CommandResults:
     all_results = argToBoolean(args.get('all_results', False))
     response = client.list_domain_device_request(domain_id)
 
-    devices = (response['DeviceResponseList'] if all_results
+    devices = (response.get('DeviceResponseList') if all_results
                else
-               response['DeviceResponseList'][:limit])
+               response.get('DeviceResponseList', {})[:limit])
 
+    # Capitalize the keys of the devices list and keeping the rest of the keys as is.
     capitalize_devices = []
     for device in devices:
         device = {k[:1].upper() + k[1:]: v for k, v in device.items()}
@@ -2118,11 +2119,12 @@ def list_device_interface_command(client: Client, args: Dict) -> CommandResults:
 
     response = client.list_device_interface_request(domain_id=domain_id, device_id=device_id)
 
-    interfaces = (response['allocatedInterfaceList'] if all_results
+    interfaces = (response.get('allocatedInterfaceList', []) if all_results
                   else
-                  response['allocatedInterfaceList'][:limit])
+                  response.get('allocatedInterfaceList', [])[:limit])
 
     key_list = ['interfaceId', 'interfaceName', 'interfaceType']
+    # Capitalize the keys of the interfaces list and keeping the rest of the keys as is.
     capitalize_interfaces = []
     for interface in interfaces:
         interface = {k[:1].upper() + k[1:]: v for k, v in interface.items() if k in key_list}
@@ -2179,10 +2181,10 @@ def list_device_policy_command(client: Client, args: Dict) -> CommandResults:
     all_results = argToBoolean(args.get('all_results', False))
     response = client.list_device_policy_request(domain_id=domain_id, device_id=device_id)
 
-    all_policies = (response['policyAssignmentsList'] if all_results
+    all_policies = (response.get('policyAssignmentsList') if all_results
                     else
-                    response['policyAssignmentsList'][:limit])
-
+                    response.get('policyAssignmentsList', {})[:limit])
+    # Capitalize the keys of the policies list and keeping the rest of the keys as is.
     capitalize_policies = []
     for policy in all_policies:
         policy = {k[:1].upper() + k[1:]: v for k, v in policy.items()}
@@ -2214,7 +2216,7 @@ def assign_interface_policy_command(client: Client, args: Dict) -> CommandResult
     ips_policy = args.get('ips_policy_name')
     custom_policy_json = json.loads(args.get('custom_policy_json'))  # type: ignore
 
-    # Check if at least one policy is provided
+    # Check if at least one policy was provided
     if len(args) < 3:
         raise DemistoException("Please provide at least one policy to assign")
     custom_policy_json_key = next(iter(custom_policy_json)) if custom_policy_json else None
@@ -2253,15 +2255,15 @@ def list_interface_policy_command(client: Client, args: Dict) -> CommandResults:
     response = client.list_interface_policy_request(domain_id=domain_id, interface_id=interface_id)
     if not interface_id:
         all_policies = (
-            response['policyAssignmentsList']
+            response.get('policyAssignmentsList')
             if all_results
-            else response['policyAssignmentsList'][:limit]
+            else response.get('policyAssignmentsList', {})[:limit]
         )
     elif all_results:
         all_policies = response
     else:
         all_policies = [response][:limit]
-
+    # Capitalize the keys of the policies list and keeping the rest of the keys as is.
     capitalize_policies = []
     for policy in all_policies:
         policy = {k[:1].upper() + k[1:]: v for k, v in policy.items()}
@@ -2290,8 +2292,9 @@ def get_device_configuration_command(client: Client, args: Dict) -> CommandResul
     device_id = arg_to_number(args.get('device_id'))
 
     response = client.get_device_configuration_request(device_id=device_id)
-
+    # Capitalize the keys of the policies list and keeping the rest of the keys as is.
     capitlize_response: Dict[str, Any] = {k[:1].upper() + k[1:]: v for k, v in response.items()}
+    # build a new dict with the keys and values of the nested dict
     iner_dict: Any = capitlize_response.get('PendingChanges')
     add_on_dict = {"IsPolicyConfigurationChanged": iner_dict.get("isPolicyConfigurationChanged"),
                    "IsConfigurationChanged": iner_dict.get("isConfigurationChanged"),
@@ -2329,7 +2332,7 @@ def deploy_device_configuration_command(args: Dict, client: Client) -> PollResul
 
     request_id = arg_to_number(args.get('request_id'))
     device_id = arg_to_number(args.get('device_id'))
-    if not request_id:
+    if not request_id:       # if this is the first time the function is called
         device_id = arg_to_number(args.get('device_id'))
         isSSLPushRequired = argToBoolean(args.get('push_ssl_key', False))
         isGAMUpdateRequired = argToBoolean(args.get('push_gam_updates', False))
@@ -2350,7 +2353,7 @@ def deploy_device_configuration_command(args: Dict, client: Client) -> PollResul
     fail_or_success_list = []
     build_a_massage = ""
     for k, v in args.items():
-        if v == "true":
+        if v == "true":  # if the argument is true we need to check the status
             current_percentage_status = status.get(PERCENTAGE_MAP.get(str(k)))
             current_message_status = status.get(MESSAGE_MAP.get(str(k)))
             if current_percentage_status != 100 or current_message_status != "DOWNLOAD COMPLETE":
@@ -2363,7 +2366,7 @@ def deploy_device_configuration_command(args: Dict, client: Client) -> PollResul
         message = CommandResults(
             readable_output=f"{build_a_massage}\n\nChecking again in {INTERVAL} seconds...")
 
-    if not all(fail_or_success_list):
+    if not all(fail_or_success_list):  # if one of the arguments was fully deployed yet, the polling will continue
         return PollResult(
             partial_result=message,
             response=None,
