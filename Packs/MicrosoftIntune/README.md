@@ -10,10 +10,7 @@ To filter a query to focus only on Microsoft Intune logs, use the following filt
 ## Collect Events from Vendor
 
 In order to use the collector, you need to use the following option:
-
-- [Microsoft Intune](#microsoft-intune)
-  - [Collect Events from Vendor](#collect-events-from-vendor)
-    - [Azure Event Hub Integration](#azure-event-hub-integration)
+  - [Azure Event Hub Integration](#azure-event-hub-integration)
 
 
 To collect logs from Microsoft Intune, use the information described [here](https://learn.microsoft.com/en-us/mem/intune/fundamentals/review-logs-using-azure-monitor) to configure log streaming from Microsoft Intune to Azure Event Hub.
