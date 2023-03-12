@@ -5,6 +5,7 @@ Use the Flashpoint integration to reduce business risk. Flashpoint allows users 
 The actions in this pack helps you to determine risks and help to remediate tasks using playbook:
 - Get alerts, compromised credentials, forum details, event details, report and reputation information.
 - Investigate compromised credentials incident.
+- Investigate compromised credentials incident.
 
 ### Playbook
 **Compromised Credentials Match - Flashpoint:** It authenticates and expires the credentials and sends an email alert.

@@ -107,6 +107,7 @@ IGNORED_FILE_TYPES: set[FileType] = {
     FileType.INI,
     FileType.PEM,
     FileType.LICENSE,
+    FileType.BINERY_FILES,
 }
 
 NON_CONTENT_FOLDERS: set[str] = set(TESTS_AND_DOC_DIRECTORIES) | {SAMPLES_DIR}
