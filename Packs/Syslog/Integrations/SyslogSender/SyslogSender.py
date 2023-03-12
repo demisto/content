@@ -389,8 +389,8 @@ def main():
                              'Otherwise, The certificate is not trusted by the system or by the client trying to' \
                              ' establish the connection'
         elif 'UnicodeError: label too long' in exception_msg:
-            error_message += 'Potential cause could be too long url label, which means that there is a part of the' \
-                             ' url between two dots that is longer then 64 chars.'
+            error_message += '\nPotential cause could be too long URL label, which means  there is a part of the' \
+                             ' url between two dots that is longer than 64 chars.'
         raise DemistoException(error_message)
 
 
