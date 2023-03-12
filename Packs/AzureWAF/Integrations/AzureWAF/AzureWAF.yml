@@ -9,12 +9,14 @@ configuration:
   name: app_id
   required: false
   type: 0
-- display: Subscription ID
+- display: Default Subscription ID
+  tooltip: Default value can be overridden by passing subscription IDs in commands.
   hidden: false
   name: subscription_id
   required: true
   type: 0
 - display: Default Resource Group Name
+  tooltip: Default value can be overridden by passing subscription IDs in commands.
   hidden: false
   name: resource_group_name
   required: true
@@ -93,9 +95,15 @@ script:
       required: false
       secret: false
     - default: false
-      description: The name of the resource group. If not provided, the instance's default resource group name will be used.
+      description: Comma separated value list of the names of the resource groups. If not provided, the instance's default resource group name will be used.
+      isArray: true
+      name: resource_group_names
+      required: false
+      secret: false
+    - default: false
+      description: Will override instance param ‘subscription_id’.
       isArray: false
-      name: resource_group_name
+      name: subscription_id
       required: false
       secret: false
     - auto: PREDEFINED
@@ -233,6 +241,12 @@ script:
       name: limit
       required: false
       secret: false
+    - default: false
+      description: Comma separated list of subscription IDs. Will override the default subscription ID.        
+      isArray: true
+      name: subscription_id
+      required: false
+      secret: false
     deprecated: false
     description: Retrieves all the WAF policies in a subscription.
     execution: false
@@ -339,9 +353,15 @@ script:
       required: true
       secret: false
     - default: false
-      description: The name of the resource group. If not provided, the instance's default resource group name will be used.
+      description: Comma separated list of the name of the resource group. If not provided, the instance's default resource group name will be used.
+      isArray: true
+      name: resource_group_names
+      required: false
+      secret: false
+    - default: false
+      description: Will override instance param ‘subscription_id’.
       isArray: false
-      name: resource_group_name
+      name: subscription_id
       required: false
       secret: false
     - default: false
@@ -488,9 +508,15 @@ script:
       required: true
       secret: false
     - default: false
-      description: The name of the resource group. If not provided, the instance's default resource group name will be used.
+      description: Will override instance param ‘subscription_id’.
       isArray: false
-      name: resource_group_name
+      name: subscription_id
+      required: false
+      secret: false
+    - default: false
+      description: Comma separated list of the name of the resource group. If not provided, the instance's default resource group name will be used.
+      isArray: true
+      name: resource_group_names
       required: false
       secret: false
     deprecated: false

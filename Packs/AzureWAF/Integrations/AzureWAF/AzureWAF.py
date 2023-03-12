@@ -1,3 +1,4 @@
+import contextlib
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -93,30 +94,58 @@ class AzureWAFClient:
                                            timeout=20,
                                            return_empty_response=return_empty_response)
 
-    def get_policy_by_name(self, policy_name: str, resource_group_name: str) -> Dict:
-        return self.http_request(
-            method='GET',
-            url_suffix=f'/{RESOURCE_PATH.format(resource_group_name)}/{POLICY_PATH}/{policy_name}'
-        )
+    def get_policy_by_name(self, policy_name: str, subscription_id: str, resource_group_name_list: list) -> List:
+        res: List[Dict] = []
+        if subscription_id:
+            base_url = f'{BASE_URL}/{SUBSCRIPTION_PATH.format(subscription_id)}'
+        else:
+            base_url = f'{self.ms_client._base_url}'
+        for resource_group_name in resource_group_name_list:
+            res += self.http_request(
+                method='GET',
+                full_url=f'{base_url}/{RESOURCE_PATH.format(resource_group_name)}/{POLICY_PATH}/{policy_name}'
+            )
+        return res
 
-    def get_policy_list_by_resource_group_name(self, resource_group_name: str) -> Dict:
-        return self.http_request(
-            method='GET',
-            url_suffix=f'/{RESOURCE_PATH.format(resource_group_name)}/{POLICY_PATH}'
-        )
+    def get_policy_list_by_resource_group_name(self, subscription_id: str, resource_group_name_list: list) -> List:
+        # TODO dont stop in case of failure print warn
+        res: List[Dict] = []
+        if subscription_id:
+            base_url = f'{BASE_URL}/{SUBSCRIPTION_PATH.format(subscription_id)}'
+        else:
+            base_url = f'{self.ms_client._base_url}'
+        for resource_group_name in resource_group_name_list:
+            res += self.http_request(
+                method='GET',
+                full_url=f'{base_url}/{RESOURCE_PATH.format(resource_group_name)}/{POLICY_PATH}'
+            )
+        return res
 
-    def get_policy_list_by_subscription_id(self) -> Dict:
-        return self.http_request(
-            method='GET',
-            url_suffix=f'/{POLICY_PATH}'
-        )
+    def get_policy_list_by_subscription_id(self, subscription_ids) -> List:
+        # TODO dont stop in case of failure print warn
+        res: List[Dict] = []
+        for subscription_id in subscription_ids:
+            base_url = f'{BASE_URL}/{SUBSCRIPTION_PATH.format(subscription_id)}'
+            res += self.http_request(
+                method='GET',
+                full_url=f'{base_url}/{POLICY_PATH}'
+            )
+        return res
 
-    def update_policy_upsert(self, policy_name: str, resource_group_name: str, data: Dict) -> Dict:
-        return self.http_request(
-            method='PUT',
-            url_suffix=f'/{RESOURCE_PATH.format(resource_group_name)}/{POLICY_PATH}/{policy_name}',
-            data=data
-        )
+    def update_policy_upsert(self, policy_name: str, resource_group_names: list, subscription_id: str, data: Dict) -> List:
+        # TODO dont stop in case of failure print warn
+        res: List[Dict] = []
+        if subscription_id:
+            base_url = f'{BASE_URL}/{SUBSCRIPTION_PATH.format(subscription_id)}'
+        else:
+            base_url = f'{self.ms_client._base_url}'
+        for resource_group_name in resource_group_names:
+            res += self.http_request(
+                method='PUT',
+                full_url=f'{base_url}/{RESOURCE_PATH.format(resource_group_name)}/{POLICY_PATH}/{policy_name}',
+                data=data
+            )
+        return res
 
     def delete_policy(self, policy_name: str, resource_group_name: str):
         return self.http_request(
@@ -155,27 +184,28 @@ def policies_get_command(client: AzureWAFClient, **args) -> CommandResults:
     """
 
     policy_name: str = args.get('policy_name', '')
-    resource_group_name: str = args.get('resource_group_name', client.resource_group_name)
+    subscription_id: str = args.get('subscription_id', '')
+    resource_group_name_list: list = argToList(args.get('resource_group_names', client.resource_group_name))
     verbose = args.get("verbose", "false") == "true"
     limit = int(str(args.get("limit", '20')))
 
-    policies: List[Dict] = []
+    # policies: List[Dict] = []
     try:
         if policy_name:
-            policy = client.get_policy_by_name(policy_name, resource_group_name)
-            policies.append(policy)
+            policy = client.get_policy_by_name(policy_name, subscription_id, resource_group_name_list)
+            # policies.append(policy)
         else:
-            policy = client.get_policy_list_by_resource_group_name(resource_group_name).get('value', [])
-            policies.extend(policy)
+            policy = client.get_policy_list_by_resource_group_name(subscription_id, resource_group_name_list).get('value', [])
+            # policies.extend(policy)
 
         # only showing number of policies until reaching the limit provided.
-        policies_num = len(policies)
+        policies_num = len(policy)
     except Exception:
         raise
-    return CommandResults(readable_output=policies_to_markdown(policies, verbose, limit),
-                          outputs=policies[:min(limit, policies_num)],
+    return CommandResults(readable_output=policies_to_markdown(policy, verbose, limit),
+                          outputs=policy[:min(limit, policies_num)],
                           outputs_key_field='id', outputs_prefix='AzureWAF.Policy',
-                          raw_response=policies)
+                          raw_response=policy)
 
 
 def policies_get_list_by_subscription_command(client: AzureWAFClient, **args: Dict[str, Any]) -> CommandResults:
@@ -185,9 +215,10 @@ def policies_get_list_by_subscription_command(client: AzureWAFClient, **args: Di
     policies: List[Dict] = []
     verbose = args.get("verbose", "false") == "true"
     limit = int(str(args.get("limit", '20')))
+    subscription_ids = argToList(args.get('subscription_id', ''))
 
     try:
-        policies.extend(client.get_policy_list_by_subscription_id().get("value", []))
+        policies.extend(client.get_policy_list_by_subscription_id(subscription_ids).get("value", []))
 
         # only showing number of policies until reaching the limit provided.
         policies_num = len(policies)
@@ -215,7 +246,8 @@ def policy_upsert_command(client: AzureWAFClient, **args: Dict[str, Any]) -> Com
             parse_nested_keys_to_dict(base_dict[keys[0]], keys[1:], value)
 
     policy_name = str(args.get('policy_name', ''))
-    resource_group_name = str(args.get('resource_group_name', client.resource_group_name))
+    resource_group_names = argToList(args.get('resource_group_names', client.resource_group_name))
+    subscription_id = args.get('subscription_id', client.subscription_id)
     managed_rules = args.get('managed_rules', {})
     location = args.get("location", '')  # location is not required by documentation but is required by the api itself.
     verbose = args.get("verbose", "false") == "true"
@@ -229,15 +261,13 @@ def policy_upsert_command(client: AzureWAFClient, **args: Dict[str, Any]) -> Com
     # creating the body for the request, using pre-defined fields.
     for param in UPSERT_PARAMS:
         val = str(args.get(param, ''))
-        try:
+        with contextlib.suppress(json.decoder.JSONDecodeError):
             val = json.loads(val)
-        except json.decoder.JSONDecodeError:
-            pass
         if val:
             key_hierarchy = UPSERT_PARAMS[param].split('.')
             parse_nested_keys_to_dict(base_dict=body, keys=key_hierarchy, value=val)
 
-    updated_policy = [client.update_policy_upsert(policy_name, resource_group_name, data=body)]
+    updated_policy = client.update_policy_upsert(policy_name=policy_name, resource_group_names=resource_group_names, subscription_id=subscription_id, data=body)
 
     return CommandResults(readable_output=policies_to_markdown(updated_policy, verbose),
                           outputs=updated_policy,
@@ -251,31 +281,31 @@ def policy_delete_command(client: AzureWAFClient, **args: Dict[str, str]):
     and delete the policy from the resource group.
     """
     policy_name = str(args.get('policy_name', ''))
-    resource_group_name = str(args.get('resource_group_name', client.resource_group_name))
+    subscription_id = args.get('subscription_id', client.subscription_id)
+    resource_group_names = argToList(args.get('resource_group_names', client.resource_group_name))
 
-    # policy_path is unique and used as unique id in the product.
-    policy_id = f'/{SUBSCRIPTION_PATH.format(client.subscription_id)}/' \
-                f'{RESOURCE_PATH.format(resource_group_name)}/{POLICY_PATH}/{policy_name}'
-    status = client.delete_policy(policy_name, resource_group_name)
-    md = ""
-    context = None
+    for resource_group_name in resource_group_names:
+        # policy_path is unique and used as unique id in the product.
+        policy_id = f'/{SUBSCRIPTION_PATH.format(subscription_id)}/' \
+                    f'{RESOURCE_PATH.format(resource_group_name)}/{POLICY_PATH}/{policy_name}'
+        status = client.delete_policy(policy_name, resource_group_name)
+        md = ""
+        context: Dict = {}
+        if status.status_code in [200, 202]:
+            if not context:
+                context = {}
+            if old_context := demisto.dt(
+                demisto.context(), f'AzureWAF.Policy(val.id === "{policy_id}")'
+            ):
+                if isinstance(old_context, list):
+                    old_context = old_context[0]
+                old_context['IsDeleted'] = True
+                context['AzureWAF.Policy(val.id === obj.id)'] = old_context
 
-    if status.status_code in [200, 202]:
-        old_context = demisto.dt(demisto.context(), f'AzureWAF.Policy(val.id === "{policy_id}")')
+            md = f"Policy {policy_name} was deleted successfully."
 
-        # updating the context with deleted policy.
-        if old_context:
-            if isinstance(old_context, list):
-                old_context = old_context[0]
-            old_context['IsDeleted'] = True
-            context = {
-                'AzureWAF.Policy(val.id === obj.id)': old_context
-            }
-
-        md = f"Policy {policy_name} was deleted successfully."
-
-    if status.status_code == 204:
-        md = f"Policy {policy_name} was not found."
+        if status.status_code == 204:
+            md = f"Policy {policy_name} was not found."
 
     return CommandResults(outputs=context, readable_output=md)
 
