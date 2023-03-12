@@ -2146,6 +2146,7 @@ def send_mail_command():
     manualAttachObj = argToList(args.get('manualAttachObj'))  # when send-mail called from within XSOAR (like reports)
     additional_headers = argToList(args.get('additionalHeader'))
     template_param = args.get('templateParams')
+    body_type = args.get('bodyType')
 
     if emailfrom is None:
         emailfrom = ADMIN_EMAIL
@@ -2153,7 +2154,8 @@ def send_mail_command():
     result = send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody,
                        replyTo, file_names, attchCID, transientFile, transientFileContent,
                        transientFileCID, manualAttachObj, additional_headers, template_param)
-    return sent_mail_to_entry('Email sent:', [result], emailto, emailfrom, cc, bcc, body, subject)
+    rendering_body = htmlBody if body_type == "html" else body
+    return sent_mail_to_entry('Email sent:', [result], emailto, emailfrom, cc, bcc, rendering_body, subject)
 
 
 def reply_mail_command():
@@ -2177,6 +2179,7 @@ def reply_mail_command():
     manualAttachObj = argToList(args.get('manualAttachObj'))  # when send-mail called from within XSOAR (like reports)
     additional_headers = argToList(args.get('additionalHeader'))
     template_param = args.get('templateParams')
+    body_type = args.get('bodyType')
 
     if emailfrom is None:
         emailfrom = ADMIN_EMAIL
@@ -2184,7 +2187,8 @@ def reply_mail_command():
     result = send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody,
                        replyTo, file_names, attchCID, transientFile, transientFileContent,
                        transientFileCID, manualAttachObj, additional_headers, template_param, inReplyTo, references)
-    return sent_mail_to_entry('Email sent:', [result], emailto, emailfrom, cc, bcc, body, subject)
+    rendering_body = htmlBody if body_type == "html" else body
+    return sent_mail_to_entry('Email sent:', [result], emailto, emailfrom, cc, bcc, rendering_body, subject)
 
 
 def forwarding_address_add(user_id: str, forwarding_email: str) -> tuple[dict, bool, Optional[dict]]:

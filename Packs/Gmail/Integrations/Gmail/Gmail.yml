@@ -1758,6 +1758,12 @@ script:
       name: templateParams
       required: false
       secret: false
+    - default: false
+      description: Control the rendering of the html in the war room, either show the plain text body or html body
+      isArray: false
+      name: bodyType
+      required: false
+      secret: false
     deprecated: false
     description: Sends mail using Gmail.
     execution: false
@@ -2278,7 +2284,7 @@ script:
     - contextPath: Gmail.ForwardingAddress.verificationStatus
       description: Indicates whether this address has been verified and is usable for forwarding.
       type: String
-  dockerimage: demisto/google-api-py3:1.0.0.49153
+  dockerimage: demisto/google-api-py3:1.0.0.49542
   isfetch: true
   longRunning: false
   longRunningPort: false

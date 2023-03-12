@@ -100,7 +100,11 @@ if (addresses.length > 0) {
     if (args.bcc) {
         emailArgs.bcc = args.bcc;
     }
+
+    emailArgs.bodyType = bodyType;
+
     return executeCommand('send-mail', emailArgs);
+
 } else {
     return {Type: entryTypes.error, ContentsFormat: formats.text, Contents: 'No email address found'};
 }
