@@ -1482,8 +1482,6 @@ tasks:
       '#none#':
       - "41"
     scriptarguments:
-      loginbehavior:
-        simple: Success
       severity:
         complex:
           root: incident
