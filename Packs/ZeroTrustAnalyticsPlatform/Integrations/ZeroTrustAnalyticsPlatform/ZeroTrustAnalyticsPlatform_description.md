@@ -1,3 +1,9 @@
+### Partner Contributed Integration
+#### Integration Author: Critical Start
+Support and maintenance for this integration are provided by the author. Please use the following contact details:
+- **Email**: [support@criticalstart.com](mailto:support@criticalstart.com)
+- **URL**: [https://support.criticalstart.com/](https://support.criticalstart.com/)
+***
 ## Critical Start Zero Threat Analytics Platform
 
 ## Select incident type

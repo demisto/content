@@ -1,6 +1,10 @@
-import demistomock as demisto
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-from CommonServerUserPython import *  # noqa
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
+
+
+
+
 
 import traceback
 import re
@@ -932,3 +936,4 @@ def main() -> None:
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
+

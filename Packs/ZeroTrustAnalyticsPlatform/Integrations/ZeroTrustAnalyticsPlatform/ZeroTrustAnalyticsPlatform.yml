@@ -8,14 +8,14 @@ configuration:
   name: url
   required: true
   type: 0
-- display: API Key
-  additionalinfo: The API Key to use for connection
+- additionalinfo: The API Key to use for connection
+  display: API Key
   name: apikey
   required: true
   type: 4
-- display: Reopen Group
-  additionalinfo: Group to send to when reopening
+- additionalinfo: Group to send to when reopening
   defaultvalue: Default
+  display: Reopen Group
   name: reopen_group
   required: true
   type: 0
@@ -35,8 +35,8 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- display: Incident Mirroring Direction
-  defaultvalue: Both
+- defaultvalue: Both
+  display: Incident Mirroring Direction
   name: mirror_direction
   options:
   - None
@@ -45,90 +45,92 @@ configuration:
   - Both
   required: false
   type: 15
-  hidden:
-    - marketplacev2
-- display: Comment entry tag
-  additionalinfo: Adding this tag to a Note will sync as a comment in ZTAP
+- additionalinfo: Adding this tag to a Note will sync as a comment in ZTAP
   defaultvalue: comment
+  display: Comment entry tag
   name: comment_tag
+  required: false
   type: 0
-- display: Escalate entry tag
-  additionalinfo: Adding this tag to a Note will reassign the alert back to Critical Start SOC
+- additionalinfo: Adding this tag to a Note will reassign the alert back to Critical Start SOC
   defaultvalue: escalate
+  display: Escalate entry tag
   name: escalate_tag
+  required: false
   type: 0
-- display: ZTAP input tag
-  defaultvalue: ztap
+- defaultvalue: ztap
+  display: ZTAP input tag
   name: input_tag
+  required: false
   type: 0
-- display: Fetch attachments for comments from ZTAP
-  defaultvalue: 'false'
+- defaultvalue: "false"
+  display: Fetch attachments for comments from ZTAP
   name: get_attachments
+  required: false
   type: 8
-- display: Sync closing incidents with ZTAP
-  defaultvalue: 'false'
+- defaultvalue: "false"
+  display: Sync closing incidents with ZTAP
   name: close_incident
+  required: false
   type: 8
-- display: Sync reopening incidents with ZTAP
-  defaultvalue: 'false'
+- defaultvalue: "false"
+  display: Sync reopening incidents with ZTAP
   name: reopen_incident
+  required: false
   type: 8
-- display: First fetch timestamp
-  defaultvalue: 3 days
+- defaultvalue: 3 days
+  display: First fetch timestamp
   name: first_fetch
   required: false
   type: 0
-- display: Maximum number of incidents to fetch
-  defaultvalue: '100'
+- defaultvalue: "100"
+  display: Maximum number of incidents to fetch
   name: max_fetch
   required: false
   type: 0
+- defaultvalue: "1"
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ""
+    fromServerVersion: ""
+    itemVersion: ""
+    packID: eef7186f-fe1c-4365-89a9-075a40d224fb
+    packName: testing pack version again
+    propagationLabels:
+    - all
+    toServerVersion: ""
 description: Zero Trust Analytics Platform (ZTAP) is the underlying investigation platform and user interface for Critical Start's MDR service.
-display: ZeroTrustAnalyticsPlatform
+display: ZeroTrustAnalyticsPlatform (Partner Contribution)
 name: ZeroTrustAnalyticsPlatform
 script:
   commands:
-  - name: get-mapping-fields
-    arguments: []
-    execution: false
+  - arguments: []
     description: Get mapping fields from remote incident.
-  - name: get-remote-data
-    arguments:
-    - default: false
-      description: The remote incident id
-      isArray: false
+    name: get-mapping-fields
+  - arguments:
+    - description: The remote incident id
       name: id
       required: true
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: "0"
       description: UTC timestamp in seconds. The incident is only updated if it was modified after the last update time.
-      isArray: false
       name: lastUpdate
-      required: false
-      secret: false
-    execution: false
     description: Get remote data from a remote incident. This command should only be called manually for debugging purposes.
-  - name: ztap-get-alert-entries
-    arguments:
-    - default: false
-      description: The remote incident id
-      isArray: false
+    name: get-remote-data
+  - arguments:
+    - description: The remote incident id
       name: id
       required: true
-      secret: false
     description: Get the entries data from a remote incident.
+    name: ztap-get-alert-entries
+  dockerimage: demisto/python3:3.10.9.42476
   isfetch: true
   ismappable: true
   isremotesyncin: true
   isremotesyncout: true
   runonce: false
-  script: '-'
-  type: python
+  script: ''
   subtype: python3
-  dockerimage: demisto/python3:3.10.10.48392
-fromversion: 6.0.0
-defaultmapperin: ZeroTrustAnalyticsPlatform - Incoming Mapper
-defaultmapperout: ZeroTrustAnalyticsPlatform - Outgoing Mapper
-tests:
-- No tests (auto formatted)
+  type: python
