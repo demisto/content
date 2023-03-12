@@ -2838,13 +2838,13 @@ tasks:
             value:
               complex:
                 root: incident
-                accessor: loginbehavior
+                accessor: successfullogin
                 transformers:
                 - operator: toLowerCase
             iscontext: true
           right:
             value:
-              simple: succe
+              simple: "yes"
     view: |-
       {
         "position": {
