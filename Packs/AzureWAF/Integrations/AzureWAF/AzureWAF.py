@@ -95,30 +95,32 @@ class AzureWAFClient:
                                            return_empty_response=return_empty_response)
 
     def get_policy_by_name(self, policy_name: str, subscription_id: str, resource_group_name_list: list) -> List:
-        res: List[Dict] = []
         if subscription_id:
             base_url = f'{BASE_URL}/{SUBSCRIPTION_PATH.format(subscription_id)}'
         else:
             base_url = f'{self.ms_client._base_url}'
-        for resource_group_name in resource_group_name_list:
-            res += self.http_request(
+        res: List[Dict] = [
+            self.http_request(
                 method='GET',
-                full_url=f'{base_url}/{RESOURCE_PATH.format(resource_group_name)}/{POLICY_PATH}/{policy_name}'
+                full_url=f'{base_url}/{RESOURCE_PATH.format(resource_group_name)}/{POLICY_PATH}/{policy_name}',
             )
+            for resource_group_name in resource_group_name_list
+        ]
         return res
 
     def get_policy_list_by_resource_group_name(self, subscription_id: str, resource_group_name_list: list) -> List:
         # TODO dont stop in case of failure print warn
-        res: List[Dict] = []
         if subscription_id:
             base_url = f'{BASE_URL}/{SUBSCRIPTION_PATH.format(subscription_id)}'
         else:
             base_url = f'{self.ms_client._base_url}'
-        for resource_group_name in resource_group_name_list:
-            res += self.http_request(
+        res: List[Dict] = [
+            self.http_request(
                 method='GET',
                 full_url=f'{base_url}/{RESOURCE_PATH.format(resource_group_name)}/{POLICY_PATH}'
             )
+            for resource_group_name in resource_group_name_list
+        ]
         return res
 
     def get_policy_list_by_subscription_id(self, subscription_ids) -> List:
@@ -195,7 +197,7 @@ def policies_get_command(client: AzureWAFClient, **args) -> CommandResults:
             policy = client.get_policy_by_name(policy_name, subscription_id, resource_group_name_list)
             # policies.append(policy)
         else:
-            policy = client.get_policy_list_by_resource_group_name(subscription_id, resource_group_name_list).get('value', [])
+            policy = client.get_policy_list_by_resource_group_name(subscription_id, resource_group_name_list)
             # policies.extend(policy)
 
         # only showing number of policies until reaching the limit provided.

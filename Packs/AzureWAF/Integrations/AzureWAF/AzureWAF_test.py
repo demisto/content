@@ -7,37 +7,37 @@ GET_COMMAND_DATA = [
         {'policy_name': 'pol1', 'resource_group_name': 'res1', 'verbose': 'false', 'limit': '10'},
         # args, case: custom resource_group
         {"method": "GET",
-         "url_suffix":
-             "/resourceGroups/res1/providers/Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/pol1"
+         "full_url":
+             "https://management.azure.com/subscriptions/test/resourceGroups/test/providers/Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/pol1"
          }  # expected
     ),
     (
         {'policy_name': 'pol1', 'verbose': 'false', 'limit': '10'},  # args, case: default resource_group
         {"method": "GET",
-         "url_suffix":
-             "/resourceGroups/test/providers/Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/pol1"
+         "full_url":
+             "https://management.azure.com/subscriptions/test/resourceGroups/test/providers/Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/pol1"
          }  # expected
     ),
     (
         {'verbose': 'false', 'limit': '10'},  # args, case: list of policies in default resourse_group
         {"method": "GET",
-         "url_suffix":
-             "/resourceGroups/test/providers/Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies"
+         "full_url":
+             "https://management.azure.com/subscriptions/test/resourceGroups/test/providers/Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies"
          }  # expected
     ),
     (
         {'verbose': 'true', 'limit': '10'},  # args, case: list of policies in default resourse_group with full data
         {"method": "GET",
-         "url_suffix":
-             "/resourceGroups/test/providers/Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies"
+         "full_url":
+             "https://management.azure.com/subscriptions/test/resourceGroups/test/providers/Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies"
          }  # expected
     ),
     (
         {'resource_group_name': 'res1', 'verbose': 'false', 'limit': '10'},
         # args, case: list of policies in custom resourse_group
         {"method": "GET",
-         "url_suffix":
-             "/resourceGroups/res1/providers/Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies"
+         "full_url":
+             "https://management.azure.com/subscriptions/test/resourceGroups/res1/providers/Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies"
          }  # expected
     ),
 
@@ -69,7 +69,7 @@ def test_get_policy_by_resource_body(mocker, demisto_args, expected_results):
     )
     m = mocker.patch.object(client, 'http_request', return_value={'properties': 'test'})
     waf.policies_get_command(client, **demisto_args)
-    assert m.call_args[1].get('url_suffix') == expected_results.get("url_suffix")
+    assert m.call_args[1].get('full_url') == expected_results.get("full_url")
     assert m.call_args[1].get('method') == expected_results.get("method")
 
 
