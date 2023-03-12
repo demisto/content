@@ -111,13 +111,10 @@ def test_get_detections(mocker: MockerFixture):
     Test Vectra client `get_detections` method.
     """
 
-    first_timestamp = datetime.now().strftime(DETECTION_FIRST_TIMESTAMP_QUERY_START_FORMAT)
-
     mocker.patch.object(client, "_http_request", return_value=DETECTIONS)
-    response: Dict[str, Any] = client.get_detections(first_timestamp)
+    response: Dict[str, Any] = client.get_detections(1)
 
     assert isinstance(response, dict)
-    assert not client.max_fetch < response.get("count")
 
 
 def test_get_audits(mocker: MockerFixture):
@@ -149,10 +146,8 @@ class TestCommands:
         Test `vectra-get-events` method detections part.
         """
 
-        first_timestamp = datetime.now().strftime(DETECTION_FIRST_TIMESTAMP_QUERY_START_FORMAT)
-
         mocker.patch.object(client, "get_detections", return_value=detections)
-        cmd_res = get_detections_cmd(client, first_timestamp)
+        cmd_res = get_detections_cmd(client)
 
         if detections:
             assert len(cmd_res.outputs) == len(detections.get("results"))
@@ -166,10 +161,8 @@ class TestCommands:
         Test `vectra-get-events` method audits part.
         """
 
-        first_timestamp = datetime.now().strftime(DETECTION_FIRST_TIMESTAMP_QUERY_START_FORMAT)
-
         mocker.patch.object(client, "get_audits", return_value=audits)
-        cmd_res = get_audits_cmd(client, first_timestamp)
+        cmd_res = get_audits_cmd(client, "1970-01-01 00:00:00")
 
         if audits:
             assert len(cmd_res.outputs) == len(audits.get("audits"))
@@ -231,25 +224,22 @@ class TestCommands:
 
         detections_actual, audits_actual, next_fetch = fetch_events(client)
 
-        if detections_actual:
-            assert next_fetch.get(DETECTION_NEXT_RUN_KEY) == (
-                datetime.strptime(
-                    detections_actual[0].get(DETECTION_NEXT_RUN_KEY),
-                    DETECTION_FIRST_TIMESTAMP_FORMAT,
-                )
-                + timedelta(minutes=1)
-            ).strftime(DETECTION_FIRST_TIMESTAMP_QUERY_START_FORMAT)
-        else:
-            assert next_fetch.get(DETECTION_NEXT_RUN_KEY) == (
-                datetime.now() + timedelta(days=-3)
-            ).strftime(DETECTION_FIRST_TIMESTAMP_QUERY_START_FORMAT)
-
         if audits_actual:
+            assert len(audits_actual) == 5
             assert next_fetch.get(AUDIT_NEXT_RUN_KEY) == AUDITS.get("audits")[-1].get(
                 "vectra_timestamp"
             )
         else:
             assert next_fetch.get(AUDIT_NEXT_RUN_KEY) == "0"
+
+        if detections_actual:
+            assert len(detections_actual) == 5
+            assert (
+                int(next_fetch.get(DETECTION_NEXT_RUN_KEY))
+                == DETECTIONS.get("results")[0].get("id") + 1
+            )
+        else:
+            assert int(next_fetch.get(DETECTION_NEXT_RUN_KEY)) == 1
 
     @freeze_time("2023-02-19 00:00:13")
     def test_not_first_fetch(
@@ -278,9 +268,7 @@ class TestCommands:
             demisto,
             "getLastRun",
             return_value={
-                DETECTION_NEXT_RUN_KEY: datetime.now().strftime(
-                    DETECTION_FIRST_TIMESTAMP_QUERY_START_FORMAT
-                ),
+                DETECTION_NEXT_RUN_KEY: 2,
                 AUDIT_NEXT_RUN_KEY: str(datetime.now().timestamp()),
             },
         )
@@ -294,17 +282,12 @@ class TestCommands:
             )
 
         if detections_actual:
-            assert next_fetch.get(DETECTION_NEXT_RUN_KEY) == (
-                datetime.strptime(
-                    detections_actual[0].get(DETECTION_NEXT_RUN_KEY),
-                    DETECTION_FIRST_TIMESTAMP_FORMAT,
-                )
-                + timedelta(minutes=1)
-            ).strftime(DETECTION_FIRST_TIMESTAMP_QUERY_START_FORMAT)
-        else:
-            assert next_fetch.get(DETECTION_NEXT_RUN_KEY) == datetime.now().strftime(
-                DETECTION_FIRST_TIMESTAMP_QUERY_START_FORMAT
+            assert (
+                int(next_fetch.get(DETECTION_NEXT_RUN_KEY))
+                == detections_actual[0].get(DETECTION_NEXT_RUN_KEY) + 1
             )
+        else:
+            assert int(next_fetch.get(DETECTION_NEXT_RUN_KEY)) == 2
 
 
 """ Helper Functions Tests """
