@@ -779,7 +779,7 @@ def run_batch_get_cmd(host_ids: list, file_path: str, optional_hosts: list = Non
                              If this list is supplied, only these hosts will receive the command.
       :param timeout: Timeout for how long to wait for the request in seconds
       :param timeout_duration: Timeout duration for for how long to wait for the request in duration syntax
-      :param offline: Whether the command will run against an offline-queued session and be queued for execution when the host comes online.
+      :param offline: Whether the command will run against an offline-queued session for execution when the host comes online.
       :return: Response JSON which contains errors (if exist) and retrieved resources
     """
     endpoint_url = '/real-time-response/combined/batch-get-command/v1'
@@ -4017,7 +4017,8 @@ def rtr_polling_retrieve_file_command(args: dict):
         # this is the very first time we call the polling function. We don't wont to call this function more that
         # one time, so we store that arg between the different runs
         offline = argToBoolean(args.get('queue_offline', False))
-        args['hosts_and_requests_ids'] = run_get_command(is_polling=True, offline=offline)  # run the first command to retrieve file
+        # run the first command to retrieve file
+        args['hosts_and_requests_ids'] = run_get_command(is_polling=True, offline=offline)
 
     # we are here after we ran the cs-falcon-run-get-command command at the current run or in previous
     if not args.get('SHA256'):
