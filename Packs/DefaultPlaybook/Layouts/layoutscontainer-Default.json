@@ -4188,6 +4188,7 @@
     "name": "Default",
     "system": false,
     "version": -1,
+    "marketplaces": ["xsoar"],
     "fromVersion": "8.2.0",
     "description": ""
 }
