@@ -7,6 +7,16 @@ from CommonServerPython import *  # noqa: F401
 
 from typing import Any, Dict, Union, Optional, Tuple, List
 
+ENTRY_TYPE_USER = "ENTRY_TYPE_USER"
+
+LABEL_STATUS_ACTIVE = "LABEL_STATUS_ACTIVE"
+
+RISKY_USER = "Risky User"
+
+ENTRY_TYPE_EVENT = "ENTRY_TYPE_EVENT"
+
+LABEL_STATUS_RESOLVED = "LABEL_STATUS_RESOLVED"
+
 FILTER_RELATIONSHIP_AND = "FILTER_RELATIONSHIP_AND"
 
 DEMISTO_OCCURRED_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
@@ -15,6 +25,7 @@ DEMISTO_INFORMATIONAL = 0.5
 RECO_API_TIMEOUT_IN_SECONDS = 30  # Increase timeout for RECO API
 RECO_ACTIVE_INCIDENTS_VIEW = "active_incidents_view"
 RECO_INCIDENT_ID_FIELD = "incident_id"
+RECO_TIMELINE_EVENT_TYPE = "TIMELINE_EVENT_TYPE_USER_COMMENT"
 CREATED_AT_FIELD = "created_at"
 STEP_FETCH = "fetch"
 STEP_INIT = "init"
@@ -22,7 +33,12 @@ STEP_INIT = "init"
 
 class RecoClient(BaseClient):
     def __init__(self, api_token: str, base_url: str, verify: bool, proxy):
-        super().__init__(base_url, verify=verify, proxy=proxy, headers={"Authorization": f"Bearer {api_token}"})
+        super().__init__(
+            base_url,
+            verify=verify,
+            proxy=proxy,
+            headers={"Authorization": f"Bearer {api_token}"},
+        )
 
     def get_incidents(
             self,
@@ -53,12 +69,9 @@ class RecoClient(BaseClient):
                 },
                 "fieldSorts": {
                     "sorts": [
-                        {
-                            "sortBy": "updated_at",
-                            "sortDirection": "SORT_DIRECTION_ASC"
-                        }
+                        {"sortBy": "updated_at", "sortDirection": "SORT_DIRECTION_ASC"}
                     ]
-                }
+                },
             }
         }
         if risk_level:
@@ -128,8 +141,145 @@ class RecoClient(BaseClient):
             demisto.error(f"Validate API key ReadTimeout error: {str(e)}")
             raise e
 
-        demisto.info(f"done fetching RECO incident assets, fetched {len(result)} assets.")
+        demisto.info(
+            f"done fetching RECO incident assets, fetched {len(result)} assets."
+        )
         return result
+
+    def update_reco_incident_timeline(self, incident_id: str, comment: str) -> Any:
+        """
+        Update timeline of an incident.
+        """
+        demisto.info("Update incident timeline, enter")
+        try:
+            response = self._http_request(
+                method="PUT",
+                url_suffix=f"/incident-timeline/{incident_id}",
+                timeout=RECO_API_TIMEOUT_IN_SECONDS,
+                data=json.dumps({
+                    "event": {
+                        "eventType": RECO_TIMELINE_EVENT_TYPE,
+                        "eventTime": datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
+                        "title": "Comment added by XSOAR",
+                        "content": comment,
+                    }
+                }),
+            )
+        except Exception as e:
+            demisto.error(f"Update incident timeline error: {str(e)}")
+            raise e
+
+        demisto.info(f"Comment added to timeline of incident {incident_id}")
+        return response
+
+    def resolve_visibility_event(self, entity_id: str, label_name: str) -> Any:
+        """Resolve visibility event.
+        :param entity_id: The entry id of the visibility event to resolve
+        :param label_name: The label name of the visibility event to resolve
+        """
+        try:
+            response = self._http_request(
+                method="PUT",
+                url_suffix="/set-label-status",
+                timeout=RECO_API_TIMEOUT_IN_SECONDS,
+                data=json.dumps({
+                    "labelsRelationStatusUpdate": [
+                        {
+                            "labelName": label_name,
+                            "entryId": f"{entity_id}_visibility",
+                            "entryType": ENTRY_TYPE_EVENT,
+                            "newStatus": LABEL_STATUS_RESOLVED,
+                            "oldStatus": LABEL_STATUS_ACTIVE,
+                            "comment": "Resolved by XSOAR Automation",
+                        }
+                    ]
+                }),
+            )
+        except Exception as e:
+            demisto.error(f"Resolve visibility event error: {str(e)}")
+            raise e
+
+        demisto.info(f"Visibility event {entity_id} resolved")
+        return response
+
+    def get_risky_users(self) -> List[Dict[str, Any]]:
+        """Get risky users. Returns a list of risky users with analysis.
+        """
+        params = {
+            "getTableRequest": {
+                "tableName": "RISK_MANAGEMENT_VIEW_USER_LIST",
+                "pageSize": 200,
+                "fieldSorts": {
+                    "sorts": [
+                        {
+                            "sortBy": "risk_level",
+                            "sortDirection": "SORT_DIRECTION_DESC"
+                        }
+                    ]
+                },
+                "fieldFilters": {}
+            }
+        }
+        try:
+            response = self._http_request(
+                method="PUT",
+                url_suffix="/risk-management/get-risk-management-table",
+                timeout=RECO_API_TIMEOUT_IN_SECONDS,
+                data=json.dumps(params)
+            )
+            if response.get("getTableResponse") is None:
+                demisto.error(f"got bad response, {response}")
+                raise Exception(f"got bad response, {response}")
+            else:
+                demisto.info(
+                    f"Count of risky users: {response.get('getTableResponse').get('totalNumberOfRecords')}"
+                )
+                users = (
+                    response.get("getTableResponse", {}).get("data", {}).get("rows", [])
+                )
+                demisto.info(f"Got {len(users)} users")
+                return users
+        except Exception as e:
+            demisto.error(f"Validate API key ReadTimeout error: {str(e)}")
+            raise e
+
+    def set_entry_label_relations(self, entry_id: str, label_name: str, label_status: str, entry_type: str) -> Any:
+        """Set entry label relations.
+        :param entry_id: The entry id to set (email_address, asset_id etc.)
+        :param label_name: The label name to set
+        :param label_status: The label_status to set. Can be one of the following:
+        LABEL_STATUS_INACTIVE,
+        LABEL_STATUS_ACTIVE,
+        LABEL_STATUS_RESOLVED,
+        LABEL_STATUS_FALSE_POSITIVE,
+        LABEL_STATUS_PENDING
+        :param entry_type: The entry type to set. Can be one of the following: ENTRY_TYPE_INCIDENT,
+        ENTRY_TYPE_PROCESS,
+        ENTRY_TYPE_EVENT,
+        ENTRY_TYPE_USER,
+        ENTRY_TYPE_ASSET,
+        ENTRY_TYPE_PLAYBOOK
+        """
+        try:
+            response = self._http_request(
+                method="PUT",
+                url_suffix="/entry-label-relations",
+                timeout=RECO_API_TIMEOUT_IN_SECONDS,
+                data=json.dumps({"labelRelations": [{
+                    "labelName": label_name,
+                    "entryId": entry_id,
+                    "count": 1,
+                    "confidence": 1,
+                    "entryType": entry_type,
+                    "labelStatus": label_status,
+                    "attributes": {}
+                }]}),
+            )
+        except Exception as e:
+            demisto.error(f"Set entry label relations error: {str(e)}")
+            raise e
+        demisto.info(f"Label {label_name} set to {label_status} for event {entry_id}")
+        return response
 
     def validate_api_key(self) -> str:
         """
@@ -184,7 +334,34 @@ def parse_table_row_to_dict(alert: List[Dict[str, Any]]) -> Dict[str, Any]:
     return alert_as_dict
 
 
-def enrich_incident(reco_client: RecoClient, single_incident: Dict[str, Any]) -> Dict[str, Any]:
+def get_risky_users_from_reco(reco_client: RecoClient) -> CommandResults:
+    """Get risky users from Reco.
+    """
+    risky_users = reco_client.get_risky_users()
+    users = []
+    for user in risky_users:
+        user_as_dict = parse_table_row_to_dict(user.get("cells", {}))
+        users.append(user_as_dict)
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            "Risky Users", users, headers=["email_account", "risk_level", "labels", "status"]),
+        outputs_prefix="Reco.RiskyUsers",
+        outputs_key_field="email_account",
+        outputs=users,
+        raw_response=risky_users
+    )
+
+
+def add_risky_user_label(reco_client: RecoClient, email_address: str) -> CommandResults:
+    """Add a risky user to Reco.
+    """
+    raw_response = reco_client.set_entry_label_relations(email_address, RISKY_USER, LABEL_STATUS_ACTIVE, ENTRY_TYPE_USER)
+    return CommandResults(raw_response=raw_response, readable_output=f"User {email_address} labeled as risky")
+
+
+def enrich_incident(
+        reco_client: RecoClient, single_incident: Dict[str, Any]
+) -> Dict[str, Any]:
     alert_as_dict = parse_table_row_to_dict(single_incident.get("cells", {}))
     if RECO_INCIDENT_ID_FIELD in alert_as_dict.keys():
         incident_id: str = str(alert_as_dict[RECO_INCIDENT_ID_FIELD])
@@ -222,7 +399,9 @@ def map_reco_score_to_demisto_score(
     return MAPPING[reco_score]
 
 
-def parse_incidents_objects(reco_client: RecoClient, incidents_raw: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+def parse_incidents_objects(
+        reco_client: RecoClient, incidents_raw: List[Dict[str, Any]]
+) -> List[Dict[str, Any]]:
     demisto.info("parse_incidents_objects enter")
     incidents = []
     for single_incident in incidents_raw:
@@ -260,13 +439,17 @@ def fetch_incidents(
     incidents = [
         incident
         for incident in incidents
-        if incident.get("severity", 0) > DEMISTO_INFORMATIONAL
-        and incident.get("dbotMirrorId", None) not in existing_incidents
+        if (incident.get("severity", 0) > DEMISTO_INFORMATIONAL)
+        and (incident.get("dbotMirrorId", None) not in existing_incidents)
     ]  # type: ignore
 
     incidents_sorted = sorted(incidents, key=lambda k: k["occurred"])
-    next_run["lastRun"] = incidents_sorted[0]["occurred"] if incidents_sorted else last_run_time
-    next_run["incident_ids"] = existing_incidents + [incident["dbotMirrorId"] for incident in incidents]
+    next_run["lastRun"] = (
+        incidents_sorted[0]["occurred"] if incidents_sorted else last_run_time
+    )
+    next_run["incident_ids"] = existing_incidents + [
+        incident["dbotMirrorId"] for incident in incidents
+    ]
     return next_run, incidents
 
 
@@ -288,12 +471,17 @@ def main() -> None:
         params = demisto.params()
         api_url = params.get("url")
         api_token = params.get("api_token")
-        verify_certificate = not params.get('insecure', False)
-        proxy = params.get('proxy', False)
+        verify_certificate = not params.get("insecure", False)
+        proxy = params.get("proxy", False)
 
         max_fetch = get_max_fetch(int(params.get("max_fetch", "200")))
 
-        reco_client = RecoClient(api_token=api_token, base_url=api_url, verify=verify_certificate, proxy=proxy)
+        reco_client = RecoClient(
+            api_token=api_token,
+            base_url=api_url,
+            verify=verify_certificate,
+            proxy=proxy,
+        )
         if command == "fetch-incidents":
             risk_level = params.get("risk_level")
             source = params.get("source")
@@ -301,7 +489,7 @@ def main() -> None:
             after = params.get("after")
 
             # How much time before the first fetch to retrieve incidents
-            if arg := params.get('first_fetch'):
+            if arg := params.get("first_fetch"):
                 first_fetch_time_stamp = dateparser.parse(arg)
                 if first_fetch_time_stamp:
                     after = first_fetch_time_stamp
@@ -317,9 +505,34 @@ def main() -> None:
             )
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
+        elif command == "reco-update-incident-timeline":
+            incident_id = demisto.args()["incident_id"]
+            response = reco_client.update_reco_incident_timeline(
+                incident_id=incident_id,
+                comment=demisto.args()["comment"],
+            )
+            return_results(CommandResults(
+                raw_response=response,
+                readable_output=f"Timeline updated successfully for incident {incident_id}"))
+        elif command == "reco-resolve-visibility-event":
+            entity_id = demisto.args()["entity_id"]
+            label_name = demisto.args()["label_name"]
+            response = reco_client.resolve_visibility_event(
+                entity_id=entity_id,
+                label_name=label_name)
+            return_results(CommandResults(
+                raw_response=response,
+                readable_output=f"Visibility event {entity_id} resolved successfully"))
         elif command == "test-module":
             test_res = reco_client.validate_api_key()
             return_results(test_res)
+        elif command == "reco-get-risky-users":
+            result = get_risky_users_from_reco(reco_client)
+            return_results(result)
+        elif command == "reco-add-risky-user-label":
+            email_address = demisto.args()["email_address"]
+            result = add_risky_user_label(reco_client, email_address)
+            return_results(result)
         else:
             raise NotImplementedError(f"{command} is not an existing reco command")
     except Exception as e:
