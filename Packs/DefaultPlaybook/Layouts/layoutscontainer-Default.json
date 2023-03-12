@@ -1840,6 +1840,10 @@
                         "moved": false,
                         "name": "IP Ranges",
                         "query": {
+                            "categories": [
+                                "tags"
+                            ],
+                            "preDefinedFilters": true,
                             "tags": [
                                 "IP_Private_Ranges"
                             ]
@@ -1861,6 +1865,10 @@
                         "moved": false,
                         "name": "Internal/External Domain Names",
                         "query": {
+                            "categories": [
+                                "tags"
+                            ],
+                            "preDefinedFilters": true,
                             "tags": [
                                 "Internal_Domain_Check_Results"
                             ]
@@ -4186,9 +4194,9 @@
     "group": "incident",
     "id": "Default",
     "name": "Default",
+    "marketplaces": ["xsoar"],
     "system": false,
     "version": -1,
-    "marketplaces": ["xsoar"],
     "fromVersion": "8.2.0",
     "description": ""
 }
