@@ -60,6 +60,37 @@
             "chromium",
             "tesseract"
          ]
+      },
+      "native:candidate":{
+         "supported_docker_images":[
+            "python3",
+            "python3-deb",
+            "python3-ubi",
+            "py3-tools",
+            "py3-tools-ubi",
+            "crypto",
+            "readpdf",
+            "parse-emails",
+            "docxpy",
+            "sklearn",
+            "pandas",
+            "ippysocks-py3",
+            "oauthlib",
+            "unzip",
+            "py3ews",
+            "taxii2",
+            "pan-os-python",
+            "slackv3",
+            "google-api-py3",
+            "boto3py3",
+            "pyjwt3",
+            "joe-security",
+            "slack",
+            "office-utils",
+            "chromium",
+            "tesseract"
+         ],
+         "docker_ref": "demisto/py3-native:8.2.0.49457"
       }
    },
    "ignored_content_items":[
@@ -113,6 +144,7 @@
    "flags_versions_mapping": {
       "native:dev" : "native:dev",
       "native:ga" : "native:8.1",
-      "native:maintenance" : ""
+      "native:maintenance" : "",
+      "native:candidate": "native:candidate"
    }
 }
