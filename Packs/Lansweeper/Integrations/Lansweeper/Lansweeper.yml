@@ -1,6 +1,6 @@
 category: IT Services
 commonfields:
-  id: Lansweeper dev
+  id: Lansweeper
   version: -1
 configuration:
 - additionalinfo: Identity code generated for the specific application.
@@ -17,8 +17,8 @@ configuration:
   required: false
   type: 8
 description: The Lansweeper integration allows users to retrieve the asset details.
-display: Lansweeper dev
-name: Lansweeper dev
+display: Lansweeper
+name: Lansweeper
 script:
   commands:
   - deprecated: false
