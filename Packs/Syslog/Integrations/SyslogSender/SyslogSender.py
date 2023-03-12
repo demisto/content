@@ -390,7 +390,7 @@ def main():
                              ' establish the connection'
         elif 'UnicodeError: label too long' in exception_msg:
             error_message += '\nPotential cause could be too long URL label, which means  there is a part of the' \
-                             ' url between two dots that is longer than 64 chars.'
+                             ' URL between two dots that is longer than 64 chars.'
         raise DemistoException(error_message)
 
 
