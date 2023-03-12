@@ -442,10 +442,8 @@ class URLCheck(object):
                 return len(self.modified_url), part
 
         elif char == '\\':
-            # Edge case of the url ending with quotes and an escape char before them
-
-            if index + 1 == len(self.modified_url) or self.modified_url[index + 1] == "\"":
-                return len(self.modified_url), part
+            # Edge case of the url ending with an escape char
+            return len(self.modified_url), part
 
         elif not char.isalnum() and not self.check_codepoint_validity(char):
             raise URLError(f"Invalid character {self.modified_url[index]} at position {index}")
@@ -752,11 +750,11 @@ def main():
         try:
             formatted_url = URLFormatter(url).output
 
-        except URLError as e:
-            demisto.debug(e.__str__())
+        except URLError:
+            demisto.debug(traceback.format_exc())
 
-        except Exception as e:
-            demisto.debug(traceback.format_exc() + str(e))  # print the traceback
+        except Exception:
+            demisto.debug(traceback.format_exc())
 
         finally:
             formatted_urls.append(formatted_url)
