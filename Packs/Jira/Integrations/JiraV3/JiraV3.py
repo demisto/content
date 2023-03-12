@@ -311,6 +311,9 @@ class JiraCloudClient(JiraBaseClient):
         """
         integration_context = get_integration_context()
         token = integration_context.get('token', '')
+        if not token:
+            raise DemistoException(('No access token was configured, please complete the authorization process'
+                                    ' as shown in the documentation'))
         valid_until = integration_context.get('valid_until', 0)
         current_time = get_current_time_in_seconds()
         if current_time >= valid_until:
@@ -701,77 +704,77 @@ class JiraIssueFieldsParser():
     """
 
     @staticmethod
-    def get_id_context(issue_data: Dict[str, Any]) -> Dict[str, Any]:
+    def get_id_context(issue_data: Dict[str, Any]) -> Dict[str, str]:
         return {'Id': issue_data.get('id', '') or ''}
 
     @staticmethod
-    def get_key_context(issue_data: Dict[str, Any]) -> Dict[str, Any]:
+    def get_key_context(issue_data: Dict[str, Any]) -> Dict[str, str]:
         return {'Key': issue_data.get('key', '') or ''}
 
     @staticmethod
-    def get_summary_context(issue_data: Dict[str, Any]) -> Dict[str, Any]:
+    def get_summary_context(issue_data: Dict[str, Any]) -> Dict[str, str]:
         return {'Summary': demisto.get(issue_data, 'fields.summary', '') or ''}
 
     @staticmethod
-    def get_status_context(issue_data: Dict[str, Any]) -> Dict[str, Any]:
+    def get_status_context(issue_data: Dict[str, Any]) -> Dict[str, str]:
         return {'Status': demisto.get(issue_data, 'fields.status.name', '') or ''}
 
     @staticmethod
-    def get_priority_context(issue_data: Dict[str, Any]) -> Dict[str, Any]:
+    def get_priority_context(issue_data: Dict[str, Any]) -> Dict[str, str]:
         return {'Priority': demisto.get(issue_data, 'fields.priority.name', '') or ''}
 
     @staticmethod
-    def get_project_name_context(issue_data: Dict[str, Any]) -> Dict[str, Any]:
+    def get_project_name_context(issue_data: Dict[str, Any]) -> Dict[str, str]:
         return {'ProjectName': demisto.get(issue_data, 'fields.project.name', '') or ''}
 
     @staticmethod
-    def get_due_date_context(issue_data: Dict[str, Any]) -> Dict[str, Any]:
+    def get_due_date_context(issue_data: Dict[str, Any]) -> Dict[str, str]:
         return {'DueDate': demisto.get(issue_data, 'fields.duedate', '') or ''}
 
     @staticmethod
-    def get_created_date_context(issue_data: Dict[str, Any]) -> Dict[str, Any]:
+    def get_created_date_context(issue_data: Dict[str, Any]) -> Dict[str, str]:
         return {'Created': demisto.get(issue_data, 'fields.created', '') or ''}
 
     @staticmethod
-    def get_labels_context(issue_data: Dict[str, Any]) -> Dict[str, Any]:
+    def get_labels_context(issue_data: Dict[str, Any]) -> Dict[str, List[str]]:
         return {'Labels': demisto.get(issue_data, 'fields.labels', []) or []}
 
     @staticmethod
-    def get_last_seen_context(issue_data: Dict[str, Any]) -> Dict[str, Any]:
+    def get_last_seen_context(issue_data: Dict[str, Any]) -> Dict[str, str]:
         return {'LastSeen': demisto.get(issue_data, 'fields.lastViewed', '') or ''}
 
     @staticmethod
-    def get_last_update_context(issue_data: Dict[str, Any]) -> Dict[str, Any]:
+    def get_last_update_context(issue_data: Dict[str, Any]) -> Dict[str, str]:
         return {'LastUpdate': demisto.get(issue_data, 'fields.updated', '') or ''}
 
     @staticmethod
-    def get_issue_type_context(issue_data: Dict[str, Any]) -> Dict[str, Any]:
+    def get_issue_type_context(issue_data: Dict[str, Any]) -> Dict[str, str]:
         return {'IssueType': demisto.get(issue_data, 'fields.issuetype.name', '') or ''}
 
     @staticmethod
-    def get_ticket_link_context(issue_data: Dict[str, Any]) -> Dict[str, Any]:
+    def get_ticket_link_context(issue_data: Dict[str, Any]) -> Dict[str, str]:
         return {'TicketLink': issue_data.get('self', '') or ''}
 
     @staticmethod
-    def get_assignee_context(issue_data: Dict[str, Any]) -> Dict[str, Any]:
+    def get_assignee_context(issue_data: Dict[str, Any]) -> Dict[str, str]:
         assignee = demisto.get(issue_data, 'fields.assignee', {}) or {}
         return {'Assignee': f'{assignee.get("displayName","")}({assignee.get("emailAddress", "")})'
                 if assignee else ''}
 
     @staticmethod
-    def get_creator_context(issue_data: Dict[str, Any]) -> Dict[str, Any]:
+    def get_creator_context(issue_data: Dict[str, Any]) -> Dict[str, str]:
         creator = demisto.get(issue_data, 'fields.creator', {}) or {}
         return {'Creator': f'{creator.get("displayName","")}({creator.get("emailAddress", "")})'
                 if creator else ''}
 
     @staticmethod
-    def get_reporter_context(issue_data: Dict[str, Any]) -> Dict[str, Any]:
+    def get_reporter_context(issue_data: Dict[str, Any]) -> Dict[str, str]:
         reporter = demisto.get(issue_data, 'fields.reporter', {}) or {}
         return {'Reporter': f'{reporter.get("displayName","")}({reporter.get("emailAddress", "")})'
                 if reporter else ''}
 
     @staticmethod
-    def get_description_context(issue_data: Dict[str, Any]) -> Dict[str, Any]:
+    def get_description_context(issue_data: Dict[str, Any]) -> Dict[str, str]:
         # Since the description can be returned in Atlassian Document Format
         # (which holds nested dictionaries that includes the content and also metadata about it), we check if the response
         # returns the fields rendered in HTML format (by accessing the renderedFields).
@@ -783,14 +786,31 @@ class JiraIssueFieldsParser():
     def get_attachments_context(issue_data: Dict[str, Any]) -> Dict[str, Any]:
         attachments: List[Dict[str, Any]] = [
             {
-                'Id': attachment.get('id'),
-                'Filename': attachment.get('filename'),
-                'Created': attachment.get('created'),
-                'Size': attachment.get('size'),
+                'id': attachment.get('id'),
+                'filename': attachment.get('filename'),
+                'created': attachment.get('created'),
+                'size': attachment.get('size'),
             }
             for attachment in demisto.get(issue_data, 'fields.attachment', [])
         ]
         return {'Attachments': attachments}
+
+    @staticmethod
+    def get_subtasks_context(issue_data: Dict[str, Any]) -> Dict[str, List[Dict[str, str]]]:
+        subtasks: List[Dict[str, str]] = []
+        subtasks.extend(
+            {
+                'id': subtask.get('id', '') or '',
+                'key': subtask.get('key', '') or ''
+            }
+            for subtask in demisto.get(issue_data, 'fields.subtasks', [])
+        )
+        return {'Subtasks': subtasks}
+
+    @staticmethod
+    def get_components_context(issue_data: Dict[str, Any]) -> Dict[str, List[str]]:
+        components = [(component.get('name') or '') for component in (demisto.get(issue_data, 'fields.components') or [])]
+        return {'Components': components}
 
     @staticmethod
     def get_raw_field_data_context(issue_data: Dict[str, Any], issue_field_id: str,
@@ -2181,6 +2201,7 @@ def fetch_incidents(client: JiraBaseClient, issue_field_to_fetch_from: str, fetc
             last_fetch_created_time = demisto.get(issue, 'fields.created') or ''
             last_fetch_updated_time = demisto.get(issue, 'fields.updated') or ''
             last_fetch_status_category_change_date = demisto.get(issue, 'fields.statuscategorychangedate') or ''
+            demisto.debug(f'Creating an incident for Jira issue with ID: {issue_id}')
             incidents.append(create_incident_from_ticket(
                 client=client, issue=issue, fetch_attachments=fetch_attachments, fetch_comments=fetch_comments,
                 incoming_mirror=incoming_mirror, outgoing_mirror=outgoing_mirror,
@@ -2232,7 +2253,7 @@ def create_fetch_incidents_query(issue_field_to_fetch_from: str, fetch_interval:
     Returns:
         str: _description_
     """
-    exclude_issue_ids_query = f'AND ID NOT IN {tuple(last_fetch_issue_ids)}' if last_fetch_issue_ids else ''
+    exclude_issue_ids_query = f"AND ID NOT IN ({', '.join(map(str, last_fetch_issue_ids))})" if last_fetch_issue_ids else ''
     if issue_field_to_fetch_from == 'id':
         return f'{fetch_query} AND id >= {last_fetch_id} {exclude_issue_ids_query} ORDER BY id ASC'
     first_fetch_date = ''
@@ -2311,10 +2332,7 @@ def get_attachments_entries_for_fetched_incident(client: JiraBaseClient, attachm
 def create_incident_from_ticket(client: JiraBaseClient, issue: Dict[str, Any], fetch_attachments: bool, fetch_comments: bool,
                                 incoming_mirror: bool, outgoing_mirror: bool,
                                 comment_tag: str, attachment_tag: str) -> Dict[str, Any]:
-    rendered_issue_fields = demisto.get(issue, 'renderedFields', {})
-    issue_description = BeautifulSoup(rendered_issue_fields.get('description')).get_text() \
-        if rendered_issue_fields \
-        else str(demisto.get(issue, 'fields.description'))
+    issue_description: str = JiraIssueFieldsParser.get_description_context(issue_data=issue).get('Description') or ''
     issue_id = str(issue.get('id'))
     labels = [
         {'type': 'issue', 'value': json.dumps(issue)},
@@ -2332,20 +2350,23 @@ def create_incident_from_ticket(client: JiraBaseClient, issue: Dict[str, Any], f
 
     ]
     issue['parsedDescription'] = issue_description
+    issue['extractedSubtasks'] = JiraIssueFieldsParser.get_subtasks_context(issue_data=issue).get('Subtasks') or []
+    issue['extractedCreator'] = JiraIssueFieldsParser.get_creator_context(issue_data=issue).get('Creator') or ''
+    issue['extractedComponents'] = JiraIssueFieldsParser.get_components_context(issue_data=issue).get('Components') or []
     name = demisto.get(issue, 'fields.summary')
     if name:
         name = f"Jira issue: {issue.get('id')}"
 
-    severity = 0
-    if demisto.get(issue, 'fields.priority') and demisto.get(issue, 'fields.priority.name'):
-        if demisto.get(issue, 'fields.priority.name') == 'Highest':
-            severity = 4
-        elif demisto.get(issue, 'fields.priority.name') == 'High':
-            severity = 3
-        elif demisto.get(issue, 'fields.priority.name') == 'Medium':
-            severity = 2
-        elif demisto.get(issue, 'fields.priority.name') == 'Low':
-            severity = 1
+    severity = get_jira_issue_severity(issue_field_priority=demisto.get(issue, 'fields.priority') or {})
+    # if demisto.get(issue, 'fields.priority') and demisto.get(issue, 'fields.priority.name'):
+    #     if demisto.get(issue, 'fields.priority.name') == 'Highest':
+    #         severity = 4
+    #     elif demisto.get(issue, 'fields.priority.name') == 'High':
+    #         severity = 3
+    #     elif demisto.get(issue, 'fields.priority.name') == 'Medium':
+    #         severity = 2
+    #     elif demisto.get(issue, 'fields.priority.name') == 'Low':
+    #         severity = 1
 
     file_names: list = []
     if fetch_attachments:
@@ -2365,7 +2386,7 @@ def create_incident_from_ticket(client: JiraBaseClient, issue: Dict[str, Any], f
         extracted_comment_bodies = get_comments_entries_for_fetched_incident(client=client, issue_id_or_key=issue_id)
         demisto.debug('Fetching comments')
         demisto.debug(f'Fetched comments {extracted_comment_bodies}')
-        # issue['extractedComments'] = extracted_comment_bodies
+        issue['extractedComments'] = extracted_comment_bodies
         labels.append({'type': 'comments', 'value': str(extracted_comment_bodies)})
     else:
         labels.append({'type': 'comments', 'value': '[]'})
@@ -2386,6 +2407,20 @@ def create_incident_from_ticket(client: JiraBaseClient, issue: Dict[str, Any], f
         "attachment": file_names,
         "rawJSON": json.dumps(issue)
     }
+
+
+def get_jira_issue_severity(issue_field_priority: Dict[str, Any]) -> int:
+    severity = 0
+    if issue_priority_name := issue_field_priority.get('name', ''):
+        if issue_priority_name == 'Highest':
+            severity = 4
+        elif issue_priority_name == 'High':
+            severity = 3
+        elif issue_priority_name == 'Medium':
+            severity = 2
+        elif issue_priority_name == 'Low':
+            severity = 1
+    return severity
 
 
 def safe_get_last_interval_for_fetch(last_fetch_date: str, fetch_interval: int) -> str:
