@@ -60,7 +60,7 @@ class VectraClient(BaseClient):
             "Authorization": f"Token {self.api_key}",
         }
 
-    def get_detections(self, min_id: int) -> Dict[str, Any]:
+    def get_detections(self, min_id: int = 0) -> Dict[str, Any]:
         """
         Retrieve detections. Detection objects contain all the information related to security events detected on the network.
 
@@ -71,15 +71,16 @@ class VectraClient(BaseClient):
         - `Dict[str, Any]` of detection objects.
         """
 
-        params = {"page_size": self.max_fetch, "ordering": "id"}
+        params = {"page_size": self.max_fetch, "ordering": "-id"}
 
-        if min_id:
+        if min_id != 0:
             params["min_id"] = min_id
 
+        demisto.info(params)
         return self._http_request(
             method="GET",
             url_suffix=f"{self.endpoints[0]}",
-            params={"page_size": self.max_fetch, "ordering": "id", "min_id": min_id},
+            params=params,
         )
 
     def get_audits(self, start: str) -> Dict[str, Any]:
