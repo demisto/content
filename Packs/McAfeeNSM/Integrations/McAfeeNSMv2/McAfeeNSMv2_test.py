@@ -1121,3 +1121,20 @@ def test_assign_interface_policy_request(mocker, mcafeensmv2_client, input, outp
                                            firewall_policy="mock", firewall_port_policy="mock",
                                            ips_policy="mock", custom_policy_json_value="mock")
     assert http_request.call_args[1].get('json_data') == output
+
+
+@pytest.mark.parametrize('input, output', [(777, '/domain/9/policyassignments/interface/777'),
+                                           (None, '/domain/9/policyassignments/interface')])
+def test_list_interface_policy_request(mocker, mcafeensmv2_client, input, output):
+    """
+    Given:
+        - A interface id or no interface id.
+    When:
+        - nsm-list_interface_policy_request command is executed.
+    Then:
+        - The http request is called with the right arguments.
+    """
+    from McAfeeNSMv2 import Client
+    http_request = mocker.patch.object(mcafeensmv2_client, '_http_request')
+    Client.list_interface_policy_request(mcafeensmv2_client, domain_id=9, interface_id=input)
+    assert http_request.call_args[1].get('url_suffix') == output
