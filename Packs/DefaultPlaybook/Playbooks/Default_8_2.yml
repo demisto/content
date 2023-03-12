@@ -81,10 +81,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 697d6e32-b0aa-42d2-837a-5019d65609fc
+    taskid: e900a51b-ea8f-4bf1-8e93-312ec286acf5
     type: regular
     task:
-      id: 697d6e32-b0aa-42d2-837a-5019d65609fc
+      id: e900a51b-ea8f-4bf1-8e93-312ec286acf5
       version: -1
       name: Close Investigation
       description: Closes the current incident.
@@ -150,13 +150,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 24f589f6-d64b-4fcc-8523-6e0d0765821c
+    taskid: b3b54419-b6ae-4a40-8f3a-795efebcbf4a
     type: playbook
     task:
-      id: 24f589f6-d64b-4fcc-8523-6e0d0765821c
+      id: b3b54419-b6ae-4a40-8f3a-795efebcbf4a
       version: -1
       name: Dedup - Generic v4
-      description: "This playbook identifies duplicate incidents using the Cortex XSOAR machine learning method (script).\nIn this playbook, you can choose fields and/or indicators to be compared against other incidents in the Cortex XSOAR database. \n\nNote: To identify similar incidents you *must* properly define the playbook inputs."
+      description: "This playbook identifies duplicate incidents using the Cortex XSOAR machine learning method (script).\nIn this playbook, you can choose fields and/or indicators to be compared against other incidents in the Cortex XSOAR database. \n\nNote: To identify similar incidents you must *must* properly define the playbook inputs. "
       playbookName: Dedup - Generic v4
       type: playbook
       iscommand: false
@@ -170,7 +170,7 @@ tasks:
       closeReason:
         simple: Closed by Dedup Playbook within inc ${incident.id}
       fromDate:
-        simple: 7 days ago
+        simple: 3 days ago
       handleSimilar:
         simple: Link and Close
       limit:
@@ -184,7 +184,7 @@ tasks:
       showIncidentSimilarityForAllFields:
         simple: "True"
       similarTextField:
-        simple: details,alertname,sourcebrand,type
+        simple: details,name,sourcebrand,type
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -489,10 +489,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: eb5be662-cf33-436b-8f8a-947ee5d83279
+    taskid: cde89024-e2ad-4fb4-8a08-5277d3fa43c4
     type: title
     task:
-      id: eb5be662-cf33-436b-8f8a-947ee5d83279
+      id: cde89024-e2ad-4fb4-8a08-5277d3fa43c4
       version: -1
       name: Containment
       type: title
@@ -512,9 +512,7 @@ tasks:
         }
       }
     note: false
-    timertriggers:
-    - fieldname: containmentsla
-      action: start
+    timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
@@ -667,10 +665,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: 8ee82702-8035-435c-8d26-c44dc95c168a
+    taskid: e2d7bb99-ffcd-4d9b-8a4f-837d0b299203
     type: title
     task:
-      id: 8ee82702-8035-435c-8d26-c44dc95c168a
+      id: e2d7bb99-ffcd-4d9b-8a4f-837d0b299203
       version: -1
       name: Reporting
       type: title
@@ -690,9 +688,7 @@ tasks:
         }
       }
     note: false
-    timertriggers:
-    - fieldname: containmentsla
-      action: stop
+    timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
@@ -1104,6 +1100,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -1128,18 +1125,6 @@ inputs:
     simple: "True"
   required: false
   description: Determines whether indicators in this incident should be extracted manually. If you turned off Auto-extract for the current incident type, you may want to set this value to True. Otherwise, indicators from this incident will not be extracted, which will negatively affect the efficacy of the playbook.
-  playbookInputQuery:
-- key: MaliciousTagName
-  value:
-    simple: malicious
-  required: false
-  description: The tag to assign for indicators to block. Tagging indicators can be done through the buttons in the incident layout.
-  playbookInputQuery:
-- key: BenignTagName
-  value:
-    simple: benign
-  required: false
-  description: The tag to assign for allowed indicators. Tagging indicators can be done through the buttons in the incident layout.
   playbookInputQuery:
 outputs: []
 marketplaces:
