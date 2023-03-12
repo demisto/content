@@ -3651,7 +3651,7 @@ VALID_URL_INDICATORS = [
     'wwW.GooGle.com/path',
     '2001:db8:85a3:8d3:1319:8a2e:370:7348/65/path/path',
     '2001:db8:3333:4444:5555:6666:7777:8888/32/path/path',
-    '2001:db8:85a3:8d3:1319:8a2e:370:7348/h'
+    '2001:db8:85a3:8d3:1319:8a2e:370:7348/h',
     '1.1.1.1/7/server',
     "1.1.1.1/32/path",
     'https://evil.tld/evil.html',
@@ -3716,7 +3716,8 @@ def test_valid_url_indicator_types(indicator_value):
     Then
     - The indicators are classified as URL indicators.
     """
-    assert re.match(urlRegex, indicator_value)
+    regex_match = re.match(urlRegex, indicator_value)
+    assert regex_match.group(0) == indicator_value
 
 
 INVALID_URL_INDICATORS = [
@@ -6734,6 +6735,30 @@ class TestIndicatorsSearcher:
         for res in search_indicators:
             results.append(res)
         assert len(results) == 1
+
+    def test_search_indicators_with_sort(self, mocker):
+        """
+        Given:
+          - Searching indicators with a custom sort parameter.
+          - Mocking the searchIndicators function.
+        When:
+          - Calling the searchIndicators function with the custom sort parameter.
+        Then:
+          - Ensure that the sort parameter is set correctly.
+          - Ensure that the searchIndicators function is called with the expected arguments.
+        """
+        from CommonServerPython import IndicatorsSearcher
+        get_demisto_version._version = None  # clear cache between runs of the test
+        mocker.patch.object(demisto, 'demistoVersion', return_value={'version': '6.6.0'})
+
+        mocker.patch.object(demisto, 'searchIndicators')
+        sort_param = [{"field": "created", "asc": False}]
+        search_indicators_obj_search_after = IndicatorsSearcher(sort=sort_param)
+        search_indicators_obj_search_after.search_indicators_by_version()
+        expected_args = {'size': 100, 'sort': [{'asc': False, 'field': 'created'}]}
+        assert search_indicators_obj_search_after._sort == sort_param
+        demisto.searchIndicators.assert_called_once_with(**expected_args)
+
 
 
 class TestAutoFocusKeyRetriever:

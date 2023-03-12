@@ -243,7 +243,7 @@ def test_module(client: Client) -> str:
     # This  should validate all the inputs given in the integration configuration panel,
     # either manually or by using an API that uses them.
     if client.client_credentials:
-        raise DemistoException("When using a self-deployed configuration, run the !microsoft-365-defender-auth-test"
+        raise DemistoException("When using a self-deployed configuration, run the !microsoft-365-defender-auth-test "
                                "command in order to test the connection")
 
     test_connection(client)
