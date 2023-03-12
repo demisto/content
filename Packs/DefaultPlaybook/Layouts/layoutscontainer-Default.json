@@ -574,7 +574,7 @@
                     {
                         "description": "**Note:** File retrieval requires the *Powershell Remoting* pack and integration.",
                         "displayType": "ROW",
-                        "h": 5,
+                        "h": 7,
                         "hideName": false,
                         "i": "caseinfoid-wnnwvzoxmk-eytv0yxsil-wnnwvzoxmk-eytv0yxsil-caseinfoid-wnnwvzoxmk-caseinfoid-5361e480-8f30-11ed-ba40-93b2031cccfa",
                         "items": [
@@ -1829,6 +1829,48 @@
                         "w": 1,
                         "x": 1,
                         "y": 5
+                    },
+                    {
+                        "h": 2,
+                        "hideName": true,
+                        "i": "caseinfoid-wnnwvzoxmk-eytv0yxsil-wnnwvzoxmk-eytv0yxsil-caseinfoid-5d80b3b0-9b2e-11ed-806a-bf1c03602b43",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "IP Ranges",
+                        "query": {
+                            "tags": [
+                                "IP_Private_Ranges"
+                            ]
+                        },
+                        "queryType": "warRoomFilter",
+                        "static": false,
+                        "type": "invTimeline",
+                        "w": 1,
+                        "x": 0,
+                        "y": 8
+                    },
+                    {
+                        "h": 2,
+                        "hideName": true,
+                        "i": "caseinfoid-wnnwvzoxmk-eytv0yxsil-wnnwvzoxmk-eytv0yxsil-caseinfoid-59084db0-a570-11ed-b616-8f0bd799015c",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Internal/External Domain Names",
+                        "query": {
+                            "tags": [
+                                "Internal_Domain_Check_Results"
+                            ]
+                        },
+                        "queryType": "warRoomFilter",
+                        "static": false,
+                        "type": "invTimeline",
+                        "w": 1,
+                        "x": 1,
+                        "y": 8
                     },
                     {
                         "description": "Select indicators from the incident to tag to allow or block using an EDL.",
@@ -4141,9 +4183,6 @@
             }
         ]
     },
-    "marketplaces": [
-        "xsoar"
-    ],
     "group": "incident",
     "id": "Default",
     "name": "Default",
