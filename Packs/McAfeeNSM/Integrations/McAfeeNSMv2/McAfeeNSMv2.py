@@ -2353,7 +2353,7 @@ def deploy_device_configuration_command(args: Dict, client: Client) -> PollResul
     fail_or_success_list = []
     build_a_massage = ""
     for k, v in args.items():
-        if v == "true":  # if the argument is true we need to check the status
+        if v == "true":  # if the argument is true we need to check it's status
             current_percentage_status = status.get(PERCENTAGE_MAP.get(str(k)))
             current_message_status = status.get(MESSAGE_MAP.get(str(k)))
             if current_percentage_status != 100 or current_message_status != "DOWNLOAD COMPLETE":
@@ -2366,7 +2366,7 @@ def deploy_device_configuration_command(args: Dict, client: Client) -> PollResul
         message = CommandResults(
             readable_output=f"{build_a_massage}\n\nChecking again in {INTERVAL} seconds...")
 
-    if not all(fail_or_success_list):  # if one of the arguments was fully deployed yet, the polling will continue
+    if not all(fail_or_success_list):  # if one of the arguments was not fully deployed yet, the polling will continue
         return PollResult(
             partial_result=message,
             response=None,
