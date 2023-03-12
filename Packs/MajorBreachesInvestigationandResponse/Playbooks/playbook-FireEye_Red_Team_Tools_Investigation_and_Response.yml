@@ -816,29 +816,24 @@ tasks:
     task:
       id: 9d270ed1-773b-43a0-8bab-3a8821895516
       version: -1
-      name: Isolate Endpoint - Generic
-      playbookName: Isolate Endpoint - Generic
+      name: Isolate Endpoint - Generic V2
+      description: |-
+        This playbook isolates a given endpoint using various endpoint product integrations.
+        Make sure to provide valid playbook inputs for the integration you are using.
+      playbookName: Isolate Endpoint - Generic V2
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "19"
     scriptarguments:
-      EndpointId: {}
-      Hostname:
+      Endpoint_hostname:
         complex:
           root: Endpoint
-          accessor: HostName
-      IP:
-        complex:
-          root: IP
-          accessor: Address
-      xdr_endpoint_id:
-        complex:
-          root: PaloAltoNetworksXDR
-          accessor: Endpoint.endpoint_id
+          accessor: Hostname
+          transformers:
+          - operator: uniq
     separatecontext: true
     loop:
       iscommand: false
