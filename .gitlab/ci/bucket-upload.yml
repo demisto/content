@@ -192,7 +192,7 @@ install-packs-in-server-master:
     ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_MPV2}/env_results.json"
     INSTANCE_CREATED: "true"
     TIME_TO_LIVE: ""
-    GCS_LOCKS_PATH: "gs://xsoar-ci-artifacts/content-locks-xsiam"
+    GCS_LOCKS_PATH: "content-locks/locks-xsiam-ga"
   extends:
     - .bucket-upload-rule
     - .default-job-settings
@@ -230,7 +230,7 @@ install-packs-in-server-master:
   after_script:
     - echo "Job finished, removing lock file"
     - gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > auth.out 2>&1
-    - gsutil rm "gs://xsoar-ci-artifacts/content-locks-xsiam/*-lock-$CI_JOB_ID"
+    - gsutil rm "gs://xsoar-ci-artifacts/content-locks-xsiam/machines_locks/*-lock-$CI_JOB_ID"
     - echo "Finished removing lock file"
 
 
@@ -528,6 +528,7 @@ sync-buckets-between-projects:
     - .bucket-upload-rule
   stage: upload-to-marketplace
   needs: ["upload-packs-to-marketplace", "upload-packs-to-marketplace-v2", "upload-packs-to-xpanse-marketplace"]
+  when: always
   script:
     - |
       if [[ -z "$GCS_XSOAR_CONTENT_DEV_KEY" ]] || [[ -z "$GCS_XSOAR_CONTENT_PROD_KEY" ]]; then

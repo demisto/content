@@ -7,7 +7,8 @@
 		"AWS IAM Policy Misconfiguration",
 		"AWS EC2 Instance Misconfiguration",
         "Nutanix Hypervisor Alert",
-		"OpsGenie Alert"
+		"OpsGenie Alert",
+		"Microsoft Sentinel Incident"
 	],
 	"breachScript": "",
 	"caseInsensitive": true,
