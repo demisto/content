@@ -187,14 +187,14 @@ tasks:
     scriptarguments:
       body:
         simple: |-
-          XSOAR Notification
+          XSIAM Notification
 
-          XSOAR has detected activity related to Cryptojacking.
-          After careful analysis, XSOAR found the activity malicious.
+          XSIAM has detected activity related to Cryptojacking.
+          After careful analysis, XSIAM found the activity malicious.
 
-          Please enter XSOAR incident ID ${alert.id} for further investigation and response.
+          Please enter XSIAM alert ID ${alert.id} for further investigation and response.
       subject:
-        simple: Cryptojacking activity detected by XSOAR
+        simple: Cryptojacking activity detected by XSIAM
       to:
         complex:
           root: inputs.SOCEmailAddress

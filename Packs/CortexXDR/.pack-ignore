@@ -72,4 +72,4 @@ ignore=BA101
 ignore=BA101
 
 [file:layoutscontainer-Cortex_XDR_-_XCLOUD_Cryptomining.json]
-ignore=BA101
+    ignore=BA101
