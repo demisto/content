@@ -746,7 +746,7 @@ def create_body_create_rule(rule_type: str, address: List, number: int,
 
 def create_body_create_rule_for_v10(rule_type: str, address: List, number: int,
                                     from_to_list: list[dict[str, Any | None]], state: str = "Enabled") -> tuple:
-    """ create part of the body for the command create/update_rule_object
+    """ create part of the body for the command create/update_rule_object for v10
         Args:
             rule_type: str - The type of the rule.
             address: List - A list of addresses, if relevant.
@@ -760,7 +760,7 @@ def create_body_create_rule_for_v10(rule_type: str, address: List, number: int,
     list_to_send: list[dict] = [
         {"value": single_address, "state": STATE_TO_NUMBER.get(state)}
         for single_address in address]
-    # for paremets with a range, we need to add the state to the dictionary
+    # for parameters with a range, we need to add the state to the dictionary
     if from_to_list:
         from_to_list[0].update({"state": STATE_TO_NUMBER.get(state)})
 
