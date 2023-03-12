@@ -1083,3 +1083,41 @@ def test_update_alerts_command(args, expected_error, mcafeensmv2_client):
     with pytest.raises(Exception) as e:
         update_alerts_command(mcafeensmv2_client, args)
         assert expected_error == str(e.value)
+
+
+@pytest.mark.parametrize('input, output', [(777, {'method': 'GET', 'url_suffix': '/domain/9/policyassignments/device/777'}),
+                                           (None, {'method': 'GET', 'url_suffix':
+                                                   '/domain/9/policyassignments/device'})])
+def test_list_device_policy_request(mocker, mcafeensmv2_client, input, output):
+    """
+    Given:
+        - A device id or no device id.
+    When:
+        - nsm-list-device-policy command is executed.
+    Then:
+        - The http request is called with the right arguments.
+    """
+    from McAfeeNSMv2 import Client
+    http_request = mocker.patch.object(mcafeensmv2_client, '_http_request')
+    Client.list_device_policy_request(mcafeensmv2_client, domain_id=9, device_id=input)
+    assert http_request.call_args[1] == output
+
+
+@pytest.mark.parametrize('input, output', [(777, {'firewallPolicy': 'mock', 'firewallPortPolicy': 'mock',
+                                                  'ipsPolicy': 'mock', '777': 'mock'}),
+                                           (None, {'firewallPolicy': 'mock', 'firewallPortPolicy': 'mock', 'ipsPolicy': 'mock'})])
+def test_assign_interface_policy_request(mocker, mcafeensmv2_client, input, output):
+    """
+    Given:
+        - A custom_json is given or not
+    When:
+        - assign_interface_policy_request command is executed.
+    Then:
+        - The http request is called with the right arguments.
+    """
+    from McAfeeNSMv2 import Client
+    http_request = mocker.patch.object(mcafeensmv2_client, '_http_request')
+    Client.assign_interface_policy_request(mcafeensmv2_client, domain_id=9, interface_id=9, custom_policy_json_key=input,
+                                           firewall_policy="mock", firewall_port_policy="mock",
+                                           ips_policy="mock", custom_policy_json_value="mock")
+    assert http_request.call_args[1].get('json_data') == output
