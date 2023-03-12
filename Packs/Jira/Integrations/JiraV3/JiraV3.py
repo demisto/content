@@ -2372,6 +2372,7 @@ def create_incident_from_ticket(client: JiraBaseClient, issue: Dict[str, Any], f
     if fetch_attachments:
         demisto.debug('Fetching attachments')
         attachment_ids: List[str] = [attachment.get('id', '') for attachment in (demisto.get(issue, 'fields.attachment') or [])]
+        demisto.debug(f"The fetched attachments' ids {attachment_ids}")
         attachments_entries = get_attachments_entries_for_fetched_incident(client=client,
                                                                            attachment_ids=attachment_ids)
         file_names.extend(
@@ -2383,8 +2384,8 @@ def create_incident_from_ticket(client: JiraBaseClient, issue: Dict[str, Any], f
             if attachment_entry['Type'] != entryTypes['error']
         )
     if fetch_comments:
-        extracted_comment_bodies = get_comments_entries_for_fetched_incident(client=client, issue_id_or_key=issue_id)
         demisto.debug('Fetching comments')
+        extracted_comment_bodies = get_comments_entries_for_fetched_incident(client=client, issue_id_or_key=issue_id)
         demisto.debug(f'Fetched comments {extracted_comment_bodies}')
         issue['extractedComments'] = extracted_comment_bodies
         labels.append({'type': 'comments', 'value': str(extracted_comment_bodies)})
