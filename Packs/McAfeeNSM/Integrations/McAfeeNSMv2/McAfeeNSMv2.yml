@@ -1985,7 +1985,7 @@ script:
       description: The maximum number of interfaces to return.
       defaultvalue: 50
     - name: all_results
-      description: Return all interfaces related to the given device.
+      description: Return all policies assigned to a domain or a specific device.
       auto: PREDEFINED
       predefined:
         - yes
@@ -2007,7 +2007,7 @@ script:
       description: The name of the IPS policy that will be connected to the interface. To get the policy name, use the !nsm-get-ips-policies command.
     - name: custom_policy_json
       description: A Json with a firewall policy type as key and name as value. (e.g `{"advancedMalwareInboundPolicy":"test"}`).
-        To see all the firewall policy types visit this page https://docs.trellix.com/bundle/network-security-platform-9.1.x-manager-api-reference-guide/page/GUID-5E5F9514-935F-4F16-B2F0-C48E465A4E7C.html.
+        To see all the firewall policy options visit this page https://docs.trellix.com/bundle/network-security-platform-9.1.x-manager-api-reference-guide/page/GUID-5E5F9514-935F-4F16-B2F0-C48E465A4E7C.html.
   - name: nsm-list-interface-policy
     description: List all the policies assigned to all interfaces or a specific interface.
     arguments:
@@ -2033,7 +2033,7 @@ script:
       required: true
   - name: nsm-deploy-device-configuration
     polling: true
-    description: Deploy the pending changes. To get the pending changes, use the !nsm-get-sensor-configuration command.
+    description: Deploy the pending changes. To get the pending changes, use the !nsm-get-device-configuration command.
     arguments:
     - name: request_id
       description: This is for the polling to work. not for the user.
