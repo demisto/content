@@ -9,6 +9,7 @@ If you are upgrading from a previous of this integration, see [Breaking Changes]
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for FireEye Endpoint Security (HX) v2.
 3. Click **Add instance** to create and configure a new integration instance.
+4. This branch is only test for relative path in pack readme.
 
     | **Parameter** | **Required** |
     | --- | --- |
