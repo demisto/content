@@ -91,9 +91,7 @@ class Git:
         ]
 
     def merge(self, *args):
-        if "--abort" in args:
-            pass
-        elif "--no-commit" in args:
+        if "--no-commit" in args:
             if "not-allowed-conflicts" in args[0]:
                 raise GitCommandError(
                     command="merge",
@@ -108,8 +106,8 @@ class Git:
                         self.rn_file[0], self.changed_metadata_files[0]
                     ),
                 )
-            else:
-                pass
+        else:
+            pass
 
     def add(self, *args, **kwargs):
         pass

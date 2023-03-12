@@ -725,13 +725,13 @@ class AllowedBumpCondition(MetadataCondition):
         elif (
             prev_version.minor + 1 == new_version.minor
             and same_major
-            and not new_version.micro
+            and new_version.micro == 0
         ):
             return UpdateType.MINOR
         elif (
             prev_version.major + 1 == new_version.major
-            and not new_version.minor
-            and not new_version.micro
+            and new_version.minor == 0
+            and new_version.micro == 0
         ):
             return UpdateType.MAJOR
         else:
