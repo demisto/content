@@ -751,7 +751,7 @@ def main():
             formatted_url = URLFormatter(url).output
 
         except URLError as e:
-            demisto.debug(traceback.format_exc() + str(e))
+            demisto.debug(traceback.format_exc())
 
         except Exception as e:
             demisto.debug(traceback.format_exc() + str(e))  # print the traceback
