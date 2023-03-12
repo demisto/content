@@ -20,11 +20,11 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
+* Account Enrichment - Generic v2.1
+* Isolate Endpoint - Generic
+* IP Enrichment - Generic v2
 * Block Indicators - Generic v3
 * Calculate Severity - Critical Assets v2
-* Isolate Endpoint - Generic
-* Account Enrichment - Generic v2.1
-* IP Enrichment - Generic v2
 
 ### Integrations
 
@@ -36,11 +36,11 @@ This playbook does not use any integrations.
 
 ### Commands
 
-* ad-expire-password
-* closeInvestigation
-* ad-disable-account
 * setIncident
+* ad-disable-account
+* ad-expire-password
 * send-mail
+* closeInvestigation
 * ad-enable-account
 
 ## Playbook Inputs
