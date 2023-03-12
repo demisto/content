@@ -107,15 +107,35 @@ class VectraClient(BaseClient):
 """ HELPER FUNCTIONS """
 
 
-def is_eod(now: datetime) -> bool:
-    """
-    Checks whether it's the end of the day (UTC).
-    We use this to check whether we should skip requesting audits as they are updated on a daily basis.
+def get_audits_to_send(
+    audits: List[Dict[str, Any]], is_first_fetch: bool, prev_fetch_timestamp: str
+) -> List[Dict[str, Any]]:
 
-    Returns:
-    - `bool` indicating whether we should skip audits.
     """
-    return now.hour == 23 and now.minute == 59
+    Helper method to filter out audits that should not be sent. Since the API
+    returns audits on a day resolution, we need to check the audit timestamp
+    to ensure discard older audits.
+
+    Args:
+        - `audits` (``List[Dict[str, Any]]``): The audits returned from the endpoint.
+        - `is_first_fetch` (``bool``): Whether it's the first fetch.
+        - `prev_fetch_timestamp` (``str``): The previous fetch's most recent audit timestamp as a string.
+    Return:
+        - ``List[Dict[str, Any]]`` of filtered audits to send to XSIAM.
+    """
+
+    if not is_first_fetch:
+        prev_fetch_timestamp_ts = datetime.fromtimestamp(float(prev_fetch_timestamp))
+        filtered_audits = [
+            a
+            for a in audits
+            if datetime.fromtimestamp(float(a.get("vectra_timestamp"))) > prev_fetch_timestamp_ts
+        ]
+
+        return filtered_audits
+
+    else:
+        return audits
 
 
 """ COMMAND FUNCTIONS """
@@ -137,12 +157,7 @@ def test_module(client: VectraClient) -> str:
 
     demisto.info(f"Testing connection and authentication to {client._base_url}...")
 
-    fetch_events(
-        client,
-        first_timestamp=datetime.now().strftime(DETECTION_FIRST_TIMESTAMP_QUERY_START_FORMAT),
-        start=datetime.now().strftime(AUDIT_NEXT_RUN_KEY),
-        is_first_fetch=True,
-    )
+    fetch_events(client)
 
     return "ok"
 
@@ -226,7 +241,7 @@ def get_audits_cmd(client: VectraClient, start: str) -> CommandResults:
     return results
 
 
-def fetch_events_cmd(client, config: Dict[str, Any]) -> None:
+def fetch_events_cmd(client) -> None:
 
     """
     Command function to fetch events.
@@ -239,28 +254,7 @@ def fetch_events_cmd(client, config: Dict[str, Any]) -> None:
     - `CommandResults` to War Room.
     """
 
-    # Not first time running fetch events
-    is_first_fetch: bool = False if demisto.getLastRun() else True
-    if not is_first_fetch:
-        first_timestamp = demisto.getLastRun().get(DETECTION_NEXT_RUN_KEY)
-        start = demisto.getLastRun().get(AUDIT_NEXT_RUN_KEY)
-
-    # First time running fetch events
-    else:
-        demisto.info("First time fetching events")
-        first_fetch: datetime = arg_to_datetime(  # type: ignore
-            arg=config.get("first_fetch", "3 days"), arg_name="First fetch time"
-        )
-        first_timestamp = first_fetch.strftime(DETECTION_FIRST_TIMESTAMP_QUERY_START_FORMAT)
-
-        start = first_fetch.strftime(AUDIT_START_TIMESTAMP_FORMAT)
-
-    detections, audits, next_fetch = fetch_events(
-        client=client,
-        first_timestamp=first_timestamp,
-        start=start,
-        is_first_fetch=is_first_fetch,
-    )
+    detections, audits, next_fetch = fetch_events(client=client)
 
     demisto.info(f"Setting last run to {str(next_fetch)}...")
     demisto.setLastRun(next_fetch)
@@ -274,7 +268,7 @@ def fetch_events_cmd(client, config: Dict[str, Any]) -> None:
 
 
 def fetch_events(
-    client: VectraClient, first_timestamp: str, start: str, is_first_fetch: bool
+    client: VectraClient,
 ) -> Tuple[List[Dict[str, Any]], List[Dict[str, Any]], Dict[str, str]]:
 
     """
@@ -292,20 +286,46 @@ def fetch_events(
     - `Dict[str, str]` of the next_fetch
     """
 
-    # Fetch alerts if it's the end of the day or the first fetch
-    now = datetime.utcnow()
-    if is_eod(now) or is_first_fetch:
-        demisto.info(f"Fetching audits from {start} to now...")
-        audits = client.get_audits(start=start).get("audits", [])
-        next_run_audit_str = now.strftime(AUDIT_START_TIMESTAMP_FORMAT)
+    is_first_fetch: bool = False if demisto.getLastRun() else True
+
+    # The first fetch
+    if is_first_fetch:
+        demisto.info("First time fetching events")
+        first_fetch: datetime = arg_to_datetime(  # type: ignore
+            arg=demisto.params().get("first_fetch", "3 days"), arg_name="First fetch time"
+        )
+
+        first_timestamp = first_fetch.strftime(DETECTION_FIRST_TIMESTAMP_QUERY_START_FORMAT)
+        start = first_fetch.strftime(AUDIT_START_TIMESTAMP_FORMAT)
+        previous_fetch_most_recent_audit_timestamp_str = "0"
+
+    # Next fetches
+    else:
+        first_timestamp = demisto.getLastRun().get(DETECTION_NEXT_RUN_KEY)
+
+        # If we're already fetching, we want only from today
+        start = datetime.now().strftime(AUDIT_START_TIMESTAMP_FORMAT)
+        previous_fetch_most_recent_audit_timestamp_str = demisto.getLastRun().get(
+            AUDIT_NEXT_RUN_KEY
+        )
+
+    # Fetch Audits
+    demisto.info(f"Fetching audits from {start} to now...")
+    returned_audits: List[Dict[str, Any]] = client.get_audits(start=start).get("audits", [])
+
+    audits = get_audits_to_send(
+        returned_audits, is_first_fetch, previous_fetch_most_recent_audit_timestamp_str
+    )
+
+    demisto.info(f"Fetched {len(audits)} audits.")
+    if audits:
+        most_recent_audit = audits[-1]
+        demisto.info(f"Most recent audit: {str(most_recent_audit)}")
+        most_recent_audit_str = most_recent_audit.get("vectra_timestamp")
 
     else:
-        demisto.info(
-            f"""Skipping audits since it's not the end of the day (UTC),
-            it's {now.strftime(DETECTION_FIRST_TIMESTAMP_QUERY_START_FORMAT)}"""
-        )
-        audits = []
-        next_run_audit_str = start
+        demisto.info("No audits were fetched.")
+        most_recent_audit_str = previous_fetch_most_recent_audit_timestamp_str
 
     # detections are ordered by descending first_timestamp therefore we can take the first
     # detection first_timestamp as the next run
@@ -313,8 +333,9 @@ def fetch_events(
     demisto.info(f"Fetching detections from {first_timestamp} to now...")
     detections = client.get_detections(first_timestamp=first_timestamp).get("results", [])
     if detections:
+        most_recent_detection = detections[0]
         next_run_detection = datetime.strptime(
-            detections[0].get("first_timestamp"), DETECTION_FIRST_TIMESTAMP_FORMAT  # type: ignore
+            most_recent_detection.get("first_timestamp"), DETECTION_FIRST_TIMESTAMP_FORMAT  # type: ignore
         )
 
         # Need to add 1 minute since first_timestamp query parameter is inclusive
@@ -332,7 +353,7 @@ def fetch_events(
         audits,
         {
             DETECTION_NEXT_RUN_KEY: next_run_detection_str,
-            AUDIT_NEXT_RUN_KEY: next_run_audit_str,
+            AUDIT_NEXT_RUN_KEY: most_recent_audit_str,
         },
     )
 
@@ -423,7 +444,7 @@ def main() -> None:  # pragma: no cover
             # fetch-events
             else:
 
-                fetch_events_cmd(client, config)
+                fetch_events_cmd(client)
 
         else:
             raise NotImplementedError(f"command '{cmd}' is not implemented.")
