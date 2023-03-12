@@ -24,7 +24,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2510,
+          "x": 2780,
           "y": -170
         }
       }
@@ -63,7 +63,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1410,
+          "x": 1430,
           "y": 130
         }
       }
@@ -93,6 +93,7 @@ tasks:
       - "35"
       "yes":
       - "5"
+      - "23"
     scriptarguments:
       brandname:
         simple: WildFire-v2
@@ -102,7 +103,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2040,
+          "x": 2130,
           "y": 130
         }
       }
@@ -116,10 +117,10 @@ tasks:
     continueonerrortype: ""
   "5":
     id: "5"
-    taskid: 34c5cd0e-a60f-447a-8b3b-e09ec944ee50
+    taskid: e2d75750-8dec-4e9f-8ef3-94cbf5bedb8f
     type: regular
     task:
-      id: 34c5cd0e-a60f-447a-8b3b-e09ec944ee50
+      id: e2d75750-8dec-4e9f-8ef3-94cbf5bedb8f
       version: -1
       name: Search for hash in Wildfire
       description: Searches for a specific hash in the WildFire sandbox.
@@ -129,7 +130,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "23"
+      - "25"
     scriptarguments:
       extended_data:
         simple: "true"
@@ -138,13 +139,15 @@ tasks:
       sha256:
         complex:
           root: inputs.FileSha256
+          transformers:
+          - operator: uniq
       verbose:
         simple: "true"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 2040,
+          "x": 1930,
           "y": 350
         }
       }
@@ -158,10 +161,10 @@ tasks:
     continueonerrortype: ""
   "6":
     id: "6"
-    taskid: ef7aa5cd-3f2e-4f37-8284-d4be81ee5fa9
+    taskid: 23a14477-9a87-48a9-8ab4-0a03a72b8209
     type: regular
     task:
-      id: ef7aa5cd-3f2e-4f37-8284-d4be81ee5fa9
+      id: 23a14477-9a87-48a9-8ab4-0a03a72b8209
       version: -1
       name: Search for hash in Falcon Intelligence Sandbox
       description: Finds sandbox reports by providing an FQL filter and paging details.
@@ -176,11 +179,13 @@ tasks:
       hashes:
         complex:
           root: inputs.FileSha256
+          transformers:
+          - operator: uniq
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1410,
+          "x": 1430,
           "y": 350
         }
       }
@@ -223,7 +228,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2510,
+          "x": 2780,
           "y": -40
         }
       }
@@ -251,7 +256,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2510,
+          "x": 2780,
           "y": 1850
         }
       }
@@ -292,7 +297,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1410,
+          "x": 1430,
           "y": 510
         }
       }
@@ -348,7 +353,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1410,
+          "x": 1430,
           "y": 685
         }
       }
@@ -392,8 +397,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1640,
-          "y": 860
+          "x": 1670,
+          "y": 870
         }
       }
     note: false
@@ -406,10 +411,10 @@ tasks:
     continueonerrortype: ""
   "23":
     id: "23"
-    taskid: 6cefaa98-da96-45d2-8c0f-b98db7d32ec6
+    taskid: 398e10df-835c-4362-8812-bfc35b7b2cc8
     type: regular
     task:
-      id: 6cefaa98-da96-45d2-8c0f-b98db7d32ec6
+      id: 398e10df-835c-4362-8812-bfc35b7b2cc8
       version: -1
       name: Get Wildfire PDF report
       description: Gets a PDF report of search results for hashes in the WildFire sandbox.
@@ -426,14 +431,16 @@ tasks:
       sha256:
         complex:
           root: inputs.FileSha256
+          transformers:
+          - operator: uniq
       execution-timeout:
         simple: "900"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 2040,
-          "y": 510
+          "x": 2330,
+          "y": 350
         }
       }
     note: false
@@ -481,8 +488,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2270,
-          "y": 860
+          "x": 2370,
+          "y": 700
         }
       }
     note: false
@@ -530,8 +537,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2040,
-          "y": 685
+          "x": 2140,
+          "y": 530
         }
       }
     note: false
@@ -792,7 +799,7 @@ tasks:
       {
         "position": {
           "x": 530,
-          "y": 850
+          "y": 870
         }
       }
     note: false
@@ -845,7 +852,7 @@ tasks:
       {
         "position": {
           "x": 980,
-          "y": 850
+          "y": 870
         }
       }
     note: false
@@ -920,7 +927,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2510,
+          "x": 2780,
           "y": 310
         }
       }
@@ -971,7 +978,7 @@ tasks:
       {
         "position": {
           "x": 980,
-          "y": 1030
+          "y": 1040
         }
       }
     note: false
@@ -1001,7 +1008,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2040,
+          "x": 2140,
           "y": 1550
         }
       }
@@ -1014,10 +1021,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: 52e49580-6f9b-430f-81a4-a98dfe2b2813
+    taskid: 33a49df6-9764-4640-8477-ad4aaf91741d
     type: regular
     task:
-      id: 52e49580-6f9b-430f-81a4-a98dfe2b2813
+      id: 33a49df6-9764-4640-8477-ad4aaf91741d
       version: -1
       name: Set Detected Hashes - WildFire
       description: |-
@@ -1059,8 +1066,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2040,
-          "y": 1030
+          "x": 2140,
+          "y": 870
         }
       }
     note: false
@@ -1072,10 +1079,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: 668a18cd-a176-4315-8bc1-0ac660fe91ef
+    taskid: b139aa96-52d4-47f6-8730-16dfb5d5f02a
     type: regular
     task:
-      id: 668a18cd-a176-4315-8bc1-0ac660fe91ef
+      id: b139aa96-52d4-47f6-8730-16dfb5d5f02a
       version: -1
       name: Set Detected Hashes - Falcon Intelligence Sandbox
       description: |-
@@ -1113,8 +1120,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1410,
-          "y": 1030
+          "x": 1430,
+          "y": 1040
         }
       }
     note: false
@@ -1222,7 +1229,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2040,
+          "x": 2140,
           "y": 1680
         }
       }
@@ -1249,7 +1256,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 2085,
-        "width": 2360,
+        "width": 2630,
         "x": 530,
         "y": -170
       }
@@ -1276,6 +1283,9 @@ outputs:
   type: string
 - contextPath: csfalconx.resource.sandbox
   description: The results of the Falcon Intelligence Sandbox report.
+  type: string
+- contextPath: DetectedHashes
+  description: A list of hashes that were detected by the sandboxes.
   type: string
 tests:
 - No tests (auto formatted)

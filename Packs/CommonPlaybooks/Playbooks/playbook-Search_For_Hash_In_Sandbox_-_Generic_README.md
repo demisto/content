@@ -14,19 +14,19 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* IsIntegrationAvailable
 * SetAndHandleEmpty
+* IsIntegrationAvailable
 
 ### Commands
 
-* joe-search
-* rasterize-pdf
-* attack-pattern
-* wildfire-report
-* joe-download-report
 * cs-fx-get-full-report
 * cs-fx-find-reports
 * extractIndicators
+* attack-pattern
+* wildfire-report
+* joe-download-report
+* rasterize-pdf
+* joe-search
 
 ## Playbook Inputs
 
@@ -47,6 +47,7 @@ This playbook does not use any integrations.
 | NonFoundHashes | A list of hashes that are not found in the sandboxes. | string |
 | WildFire.Report | The results of the Wildfire report. | string |
 | csfalconx.resource.sandbox | The results of the Falcon Intelligence Sandbox report. | string |
+| DetectedHashes | A list of hashes that were detected by the sandboxes. | string |
 
 ## Playbook Image
 
