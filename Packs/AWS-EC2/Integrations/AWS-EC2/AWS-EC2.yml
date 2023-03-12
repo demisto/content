@@ -3639,7 +3639,7 @@ script:
       name: UserIdGroupPairsVpcPeeringConnectionId
       required: false
       secret: false
-    - description: 'Full IpPermissions argument as a string to more easily copy rules (e.x. """[{"IpProtocol": "-1", "IpRanges": [{"CidrIp": "0.0.0.0/0"}], "Ipv6Ranges": [], "PrefixListIds": [], "UserIdGroupPairs": []}]""").'.
+    - description: 'Full IpPermissions argument as a string to more easily copy rules (e.x. """[{"IpProtocol": "-1", "IpRanges": [{"CidrIp": "0.0.0.0/0"}], "Ipv6Ranges": [], "PrefixListIds": [], "UserIdGroupPairs": []}]""").'
       name: IpPermissionsFull
     deprecated: false
     description: Adds egress rule to a security group.
