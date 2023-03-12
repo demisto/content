@@ -191,23 +191,23 @@ def policies_get_command(client: AzureWAFClient, **args) -> CommandResults:
     verbose = args.get("verbose", "false") == "true"
     limit = int(str(args.get("limit", '20')))
 
-    # policies: List[Dict] = []
+    policies: List[Dict] = []
     try:
         if policy_name:
-            policy = client.get_policy_by_name(policy_name, subscription_id, resource_group_name_list)
-            # policies.append(policy)
+            policies = client.get_policy_by_name(policy_name, subscription_id, resource_group_name_list)
         else:
-            policy = client.get_policy_list_by_resource_group_name(subscription_id, resource_group_name_list)
-            # policies.extend(policy)
+            raw_policy_list = client.get_policy_list_by_resource_group_name(subscription_id, resource_group_name_list)
+            for policy in raw_policy_list:
+                policies.extend(policy.get('valie', []))
 
         # only showing number of policies until reaching the limit provided.
-        policies_num = len(policy)
+        policies_num = len(policies)
     except Exception:
         raise
-    return CommandResults(readable_output=policies_to_markdown(policy, verbose, limit),
-                          outputs=policy[:min(limit, policies_num)],
+    return CommandResults(readable_output=policies_to_markdown(policies, verbose, limit),
+                          outputs=policies[:min(limit, policies_num)],
                           outputs_key_field='id', outputs_prefix='AzureWAF.Policy',
-                          raw_response=policy)
+                          raw_response=policies)
 
 
 def policies_get_list_by_subscription_command(client: AzureWAFClient, **args: Dict[str, Any]) -> CommandResults:
@@ -249,7 +249,7 @@ def policy_upsert_command(client: AzureWAFClient, **args: Dict[str, Any]) -> Com
 
     policy_name = str(args.get('policy_name', ''))
     resource_group_names = argToList(args.get('resource_group_names', client.resource_group_name))
-    subscription_id = args.get('subscription_id', client.subscription_id)
+    subscription_id = args.get('subscription_id', '')
     managed_rules = args.get('managed_rules', {})
     location = args.get("location", '')  # location is not required by documentation but is required by the api itself.
     verbose = args.get("verbose", "false") == "true"

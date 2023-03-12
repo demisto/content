@@ -4,40 +4,45 @@ import demistomock as demisto
 
 GET_COMMAND_DATA = [
     (
-        {'policy_name': 'pol1', 'resource_group_name': 'res1', 'verbose': 'false', 'limit': '10'},
+        {'policy_name': 'pol1', 'resource_group_names': ['res1'], 'verbose': 'false', 'limit': '10'},
         # args, case: custom resource_group
         {"method": "GET",
          "full_url":
-             "https://management.azure.com/subscriptions/test/resourceGroups/test/providers/Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/pol1"
+             "https://management.azure.com/subscriptions/test/resourceGroups/res1/providers/Microsoft.Network/\
+ApplicationGatewayWebApplicationFirewallPolicies/pol1"
          }  # expected
     ),
     (
         {'policy_name': 'pol1', 'verbose': 'false', 'limit': '10'},  # args, case: default resource_group
         {"method": "GET",
          "full_url":
-             "https://management.azure.com/subscriptions/test/resourceGroups/test/providers/Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/pol1"
+             "https://management.azure.com/subscriptions/test/resourceGroups/test/providers/Microsoft.Network/\
+ApplicationGatewayWebApplicationFirewallPolicies/pol1"
          }  # expected
     ),
     (
-        {'verbose': 'false', 'limit': '10'},  # args, case: list of policies in default resourse_group
+        {'verbose': 'false', 'limit': '10'},  # args, case: list of policies in default resource_group
         {"method": "GET",
          "full_url":
-             "https://management.azure.com/subscriptions/test/resourceGroups/test/providers/Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies"
+             "https://management.azure.com/subscriptions/test/resourceGroups/test/providers/Microsoft.Network/\
+ApplicationGatewayWebApplicationFirewallPolicies"
          }  # expected
     ),
     (
-        {'verbose': 'true', 'limit': '10'},  # args, case: list of policies in default resourse_group with full data
+        {'verbose': 'true', 'limit': '10'},  # args, case: list of policies in default resource_group with full data
         {"method": "GET",
          "full_url":
-             "https://management.azure.com/subscriptions/test/resourceGroups/test/providers/Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies"
+             "https://management.azure.com/subscriptions/test/resourceGroups/test/providers/Microsoft.Network/\
+ApplicationGatewayWebApplicationFirewallPolicies"
          }  # expected
     ),
     (
-        {'resource_group_name': 'res1', 'verbose': 'false', 'limit': '10'},
-        # args, case: list of policies in custom resourse_group
+        {'resource_group_names': ['res1'], 'verbose': 'false', 'limit': '10'},
+        # args, case: list of policies in custom resource_group
         {"method": "GET",
          "full_url":
-             "https://management.azure.com/subscriptions/test/resourceGroups/res1/providers/Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies"
+             "https://management.azure.com/subscriptions/test/resourceGroups/res1/providers/Microsoft.Network/\
+ApplicationGatewayWebApplicationFirewallPolicies"
          }  # expected
     ),
 
