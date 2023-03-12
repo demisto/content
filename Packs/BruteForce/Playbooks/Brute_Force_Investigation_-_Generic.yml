@@ -798,7 +798,7 @@ tasks:
                 iscontext: true
       InternalRange:
         complex:
-          root: inputs.InternalRange
+          root: inputs.internal_range
       ResolveIP:
         simple: "True"
     separatecontext: true
@@ -4664,7 +4664,7 @@ tasks:
             args:
               item:
                 value:
-                  simple: incident.src
+                  simple: inputs.src
                 iscontext: true
           - operator: uniq
       InputEnrichment:

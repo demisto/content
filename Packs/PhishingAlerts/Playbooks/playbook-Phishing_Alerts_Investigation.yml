@@ -1754,7 +1754,7 @@ inputs:
     The method to delete emails using the O365 - Security And Compliance - Search And Delete playbook. Can be "Soft" (recoverable), or "Hard" (unrecoverable). Leave empty to decide manually for each email incident.
     This is only applicable if the SearchAndDeleteIntegration input is set to O365.
   playbookInputQuery:
-- key: O365DeleteTarget
+- key: O365ExchangeLocationExclusion
   value:
     simple: SingleMailbox
   required: false
