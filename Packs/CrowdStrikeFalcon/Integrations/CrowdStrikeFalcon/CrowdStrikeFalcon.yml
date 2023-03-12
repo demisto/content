@@ -1,5 +1,3 @@
-| queue_offline | Whether the command will run against an offline-queued session and be queued for execution when the host comes online. | Optional | 
-
 category: Endpoint
 sectionOrder:
 - Connect
