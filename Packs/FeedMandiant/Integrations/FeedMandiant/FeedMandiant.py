@@ -402,7 +402,9 @@ def create_indicator(client: MandiantClient, raw_indicator: Dict) -> Dict:
               'firstseenbysource': raw_indicator.get('first_seen'),
               'lastseenbysource': raw_indicator.get('last_seen'),
               'stixid': raw_indicator.get('id'),
-              'trafficlightprotocol': client.tlp_color
+              'trafficlightprotocol': client.tlp_color,
+              'tags': [industry.get('name') for industry in  # type: ignore
+                       raw_indicator.get('industries', [])] + client.tags
               }
 
     fields = {k: v for k, v in fields.items() if v and v != 'redacted'}  # filter none and redacted values

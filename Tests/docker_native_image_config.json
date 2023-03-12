@@ -64,6 +64,13 @@
    },
    "ignored_content_items":[
       {
+         "id":"ParseEmailFilesV2",
+         "reason":"Issue: CIAC-5711 - Failed unit-test: test_eml_contains_empty_htm_not_containing_file_data.",
+         "ignored_native_images":[
+            "native:8.1"
+         ]
+      },
+      {
          "id":"UnzipFile",
          "reason":"Issue: CIAC-5246 - Failed unit-test: test_unrar_no_password.",
          "ignored_native_images":[
