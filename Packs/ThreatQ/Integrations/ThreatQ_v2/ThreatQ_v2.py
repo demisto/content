@@ -6,10 +6,11 @@ import json
 import shutil
 from typing import Dict, List
 
+import urllib3
 import requests
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' GLOBAL VARIABLES '''
 SERVER_URL = demisto.params()['serverUrl'].rstrip('/')
@@ -181,20 +182,22 @@ def get_generic_context(indicator, generic_context=None):
     return generic_context
 
 
-def tq_request(method, url_suffix, params=None, files=None, retrieve_entire_response=False, allow_redirects=True):
+def tq_request(method, url_suffix, params=None, files=None, retrieve_entire_response=False, allow_redirects=True,
+               make_second_attempt=True):
     api_call_headers = None
+    request_params = params
     if url_suffix != '/token':
         access_token = get_access_token()
         api_call_headers = {'Authorization': 'Bearer ' + access_token}
 
         if not files:
-            params = json.dumps(params)
+            request_params = json.dumps(params)
             api_call_headers.update({'Content-Type': 'application/json'})
 
     response = requests.request(
         method,
         API_URL + url_suffix,
-        data=params,
+        data=request_params,
         headers=api_call_headers,
         verify=USE_SSL,
         files=files,
@@ -202,6 +205,22 @@ def tq_request(method, url_suffix, params=None, files=None, retrieve_entire_resp
     )
 
     if response.status_code >= 400:
+
+        if make_second_attempt and response.status_code == 500:
+            value = params.get("criteria", {}).get("value", {}).get("+equals")
+            if value:  # Trying with an other body
+                params["criteria"]["value"] = value
+
+                return tq_request(
+                    method=method,
+                    url_suffix=url_suffix,
+                    params=params,
+                    files=files,
+                    retrieve_entire_response=retrieve_entire_response,
+                    allow_redirects=allow_redirects,
+                    make_second_attempt=False
+                )
+
         errors_string = get_errors_string_from_bad_request(response, response.status_code)
         error_message = 'Received an error - status code [{0}].\n{1}'.format(response.status_code, errors_string)
         return_error(error_message)
