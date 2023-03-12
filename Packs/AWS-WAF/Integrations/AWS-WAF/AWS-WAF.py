@@ -15,6 +15,9 @@ urllib3.disable_warnings()
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # IfrSO8601 format with UTC, default in XSOAR
 SERVICE = 'wafv2'
 OUTPUT_PREFIX = 'AWS.Waf'
+DEFAULT_SCOPE = 'Regional'
+SCOPE_MAP = {'Regional': 'REGIONAL',
+             'Global': 'CLOUDFRONT'}
 OPERATOR_TO_STATEMENT_OPERATOR = {'And': 'AndStatement', 'Or': 'OrStatement', 'Not': 'NotStatement'}
 REGEX_MATCH_STATEMENT = 'RegexPatternSetReferenceStatement'
 BYTE_MATCH_STATEMENT = 'ByteMatchStatement'
@@ -252,7 +255,7 @@ def append_new_rule(rules: list, rule: dict) -> list:
 def build_kwargs(args: dict) -> dict:
     return {
         'Name': args.get('group_name', ''),
-        'Scope': args.get('scope', ''),
+        'Scope': SCOPE_MAP[args.get('scope') or DEFAULT_SCOPE],
         'Id': args.get('group_id', '')
     }
 
@@ -285,13 +288,11 @@ def connection_test(client: boto3.client) -> str:
     :rtype: ``str``
     """
     try:
-        client.list_ip_sets(args={'scope': 'REGIONAL'})
+        client.list_ip_sets(args={'scope': SCOPE_MAP[DEFAULT_SCOPE]})
     except Exception as e:
         f'Failed to execute test module. Error: {e}'
 
     return 'ok'
-
-
 
 
 def create_ip_set_command(client: boto3.client, args) -> CommandResults:
@@ -299,7 +300,7 @@ def create_ip_set_command(client: boto3.client, args) -> CommandResults:
     tag_values = argToList(args.get('tag_value')) or []
     kwargs = {
         'Name': args.get('name', ''),
-        'Scope': args.get('scope', ''),
+        'Scope': SCOPE_MAP[args.get('scope') or DEFAULT_SCOPE],
         'IPAddressVersion': args.get('ip_version', ''),
         'Addresses': argToList(args.get('addresses')) or [],
     }
@@ -324,7 +325,7 @@ def create_ip_set_command(client: boto3.client, args) -> CommandResults:
 def get_ip_set_command(client: boto3.client, args) -> CommandResults:
     kwargs = {
         'Name': args.get('name', ''),
-        'Scope': args.get('scope', ''),
+        'Scope': SCOPE_MAP[args.get('scope') or DEFAULT_SCOPE],
         'Id': args.get('id', '')
     }
 
@@ -344,7 +345,7 @@ def get_ip_set_command(client: boto3.client, args) -> CommandResults:
 def update_ip_set_command(client: boto3.client, args) -> CommandResults:
     kwargs = {
         'Name': args.get('name', ''),
-        'Scope': args.get('scope', ''),
+        'Scope': SCOPE_MAP[args.get('scope') or DEFAULT_SCOPE],
         'Id': args.get('id', '')
     }
 
@@ -365,8 +366,7 @@ def update_ip_set_command(client: boto3.client, args) -> CommandResults:
 
     response = client.update_ip_set(**kwargs)
 
-    readable_output = f'AWS Waf ip set with id {args.get("Id", "")} was updated successfully. ' \
-                      f'Next Lock Token: {response.get("NextLockToken")}'
+    readable_output = f'AWS Waf ip set with id {args.get("id", "")} was updated successfully.'
 
     return CommandResults(readable_output=readable_output,
                           raw_response=response)
@@ -374,7 +374,7 @@ def update_ip_set_command(client: boto3.client, args) -> CommandResults:
 
 def list_ip_set_command(client: boto3.client, args) -> CommandResults:
     kwargs = {
-        'Scope': args.get('scope', ''),
+        'Scope': SCOPE_MAP[args.get('scope') or DEFAULT_SCOPE],
         'Limit': arg_to_number(args.get('limit')) or 50
     }
 
@@ -384,17 +384,19 @@ def list_ip_set_command(client: boto3.client, args) -> CommandResults:
     response = client.list_ip_sets(**kwargs)
     ip_sets = response.get('IPSets', [])
     readable_output = tableToMarkdown('List IP Sets', ip_sets, is_auto_json_transform=True)
-    outputs = {f'{OUTPUT_PREFIX}.IpSet(val.Id === obj.Id)': ip_sets, 'IpSetNextToken': response.get('NextMarker', '')}
+    outputs = {f'{OUTPUT_PREFIX}.IpSet(val.Id === obj.Id)': ip_sets,
+               f'{OUTPUT_PREFIX}.IpSetNextToken': response.get('NextMarker', '')}
 
     return CommandResults(readable_output=readable_output,
                           outputs=outputs,
-                          raw_response=response)
+                          raw_response=response,
+                          outputs_key_field='Id')
 
 
 def delete_ip_set_command(client: boto3.client, args) -> CommandResults:
     kwargs = {
         'Name': args.get('name', ''),
-        'Scope': args.get('scope', ''),
+        'Scope': SCOPE_MAP[args.get('scope') or DEFAULT_SCOPE],
         'Id': args.get('id', '')
     }
 
@@ -416,7 +418,7 @@ def create_regex_set_command(client: boto3.client, args) -> CommandResults:
     regex_patterns = argToList(args.get('regex_pattern')) or []
     kwargs = {
         'Name': args.get('name', ''),
-        'Scope': args.get('scope', ''),
+        'Scope': SCOPE_MAP[args.get('scope') or DEFAULT_SCOPE],
         'RegularExpressionList': build_regex_pattern_object(regex_patterns)
     }
 
@@ -440,7 +442,7 @@ def create_regex_set_command(client: boto3.client, args) -> CommandResults:
 def get_regex_set_command(client: boto3.client, args) -> CommandResults:
     kwargs = {
         'Name': args.get('name', ''),
-        'Scope': args.get('scope', ''),
+        'Scope': SCOPE_MAP[args.get('scope') or DEFAULT_SCOPE],
         'Id': args.get('id', '')
     }
 
@@ -460,7 +462,7 @@ def get_regex_set_command(client: boto3.client, args) -> CommandResults:
 def update_regex_set_command(client: boto3.client, args) -> CommandResults:
     kwargs = {
         'Name': args.get('name', ''),
-        'Scope': args.get('scope', ''),
+        'Scope': SCOPE_MAP[args.get('scope') or DEFAULT_SCOPE],
         'Id': args.get('id', '')
     }
 
@@ -481,8 +483,7 @@ def update_regex_set_command(client: boto3.client, args) -> CommandResults:
 
     response = client.update_regex_pattern_set(**kwargs)
 
-    readable_output = f'AWS Waf ip set with id {args.get("Id", "")} was updated successfully. ' \
-                      f'Next Lock Token: {response.get("NextLockToken")}'
+    readable_output = f'AWS Waf ip set with id {args.get("Id", "")} was updated successfully.'
 
     return CommandResults(readable_output=readable_output,
                           raw_response=response)
@@ -490,7 +491,7 @@ def update_regex_set_command(client: boto3.client, args) -> CommandResults:
 
 def list_regex_set_command(client: boto3.client, args) -> CommandResults:
     kwargs = {
-        'Scope': args.get('scope', ''),
+        'Scope': SCOPE_MAP[args.get('scope') or DEFAULT_SCOPE],
         'Limit': arg_to_number(args.get('limit')) or 50
     }
 
@@ -511,7 +512,7 @@ def list_regex_set_command(client: boto3.client, args) -> CommandResults:
 def delete_regex_set_command(client: boto3.client, args) -> CommandResults:
     kwargs = {
         'Name': args.get('name', ''),
-        'Scope': args.get('scope', ''),
+        'Scope': SCOPE_MAP[args.get('scope') or DEFAULT_SCOPE],
         'Id': args.get('id', '')
     }
 
@@ -529,7 +530,7 @@ def delete_regex_set_command(client: boto3.client, args) -> CommandResults:
 
 def list_rule_group_command(client: boto3.client, args) -> CommandResults:
     kwargs = {
-        'Scope': args.get('scope', ''),
+        'Scope': SCOPE_MAP[args.get('scope') or DEFAULT_SCOPE],
         'Limit': arg_to_number(args.get('limit')) or 50
     }
 
@@ -539,7 +540,7 @@ def list_rule_group_command(client: boto3.client, args) -> CommandResults:
     response = client.list_rule_groups(**kwargs)
     rule_groups = response.get('RuleGroups', [])
     outputs = {f'{OUTPUT_PREFIX}.RuleGroup(val.Id === obj.Id)': rule_groups,
-               'RuleGroupNextToken': response.get('NextMarker', '')}
+               f'{OUTPUT_PREFIX}.RuleGroupNextToken': response.get('NextMarker', '')}
     readable_output = tableToMarkdown('List rule groups',
                                       rule_groups,
                                       headers=['Name', 'Id', 'ARN', 'Description'],
@@ -553,11 +554,29 @@ def list_rule_group_command(client: boto3.client, args) -> CommandResults:
 def get_rule_group_command(client: boto3.client, args) -> CommandResults:
     kwargs = {
         'Name': args.get('name', ''),
-        'Scope': args.get('scope', ''),
+        'Scope': SCOPE_MAP[args.get('scope') or DEFAULT_SCOPE],
         'Id': args.get('id', '')
     }
 
     response = client.get_rule_group(**kwargs)
+
+    def bytes_to_str_recursive(input_dict):
+        output_dict = {}
+        for key, value in input_dict.items():
+            if isinstance(value, bytes):
+                output_dict[key] = value.decode()
+            elif isinstance(value, dict):
+                output_dict[key] = bytes_to_str_recursive(value)
+            elif isinstance(value, list):
+                output_dict[key] = [
+                    bytes_to_str_recursive(item) if isinstance(item, dict) else item.decode() if isinstance(item,
+                                                                                                            bytes) else item
+                    for item in value]
+            else:
+                output_dict[key] = value
+        return output_dict
+
+    response = bytes_to_str_recursive(response)
 
     outputs = response.get('RuleGroup', {})
 
@@ -573,7 +592,7 @@ def get_rule_group_command(client: boto3.client, args) -> CommandResults:
 def delete_rule_group_command(client: boto3.client, args) -> CommandResults:
     kwargs = {
         'Name': args.get('name', ''),
-        'Scope': args.get('scope', ''),
+        'Scope': SCOPE_MAP[args.get('scope') or DEFAULT_SCOPE],
         'Id': args.get('id', '')
     }
 
@@ -609,7 +628,7 @@ def create_rule_group_command(client: boto3.client, args) -> CommandResults:
 
     kwargs = {
         'Name': name,
-        'Scope': args.get('scope', ''),
+        'Scope': SCOPE_MAP[args.get('scope') or DEFAULT_SCOPE],
         'Capacity': arg_to_number(args.get('capacity', '')),
         'VisibilityConfig': build_visibility_config_object(cloud_watch_metrics_enabled=cloud_watch_metrics_enabled,
                                                            metric_name=metric_name,
@@ -647,8 +666,7 @@ def create_ip_rule_command(client: boto3.client, args) -> CommandResults:
                            updated_rules=updated_rules,
                            rule_group_visibility_config=rule_group_visibility_config)
 
-    readable_output = f'AWS Waf ip rule with id {args.get("Id", "")} was created successfully. ' \
-                      f'Next Lock Token: {response.get("NextLockToken")}'
+    readable_output = f'AWS Waf ip rule with name {args.get("rule_name", "")} was created successfully.'
 
     return CommandResults(readable_output=readable_output,
                           raw_response=response)
@@ -668,8 +686,7 @@ def create_country_rule_command(client: boto3.client, args) -> CommandResults:
                            updated_rules=updated_rules,
                            rule_group_visibility_config=rule_group_visibility_config)
 
-    readable_output = f'AWS Waf country rule with id {args.get("Id", "")} was created successfully. ' \
-                      f'Next Lock Token: {response.get("NextLockToken")}'
+    readable_output = f'AWS Waf country rule with name {args.get("rule_name", "")} was created successfully.'
 
     return CommandResults(readable_output=readable_output,
                           raw_response=response)
@@ -689,8 +706,7 @@ def create_string_match_rule_command(client: boto3.client, args) -> CommandResul
                            updated_rules=updated_rules,
                            rule_group_visibility_config=rule_group_visibility_config)
 
-    readable_output = f'AWS Waf string match rule with id {args.get("Id", "")} was created successfully. ' \
-                      f'Next Lock Token: {response.get("NextLockToken")}'
+    readable_output = f'AWS Waf string match rule with name {args.get("rule_name", "")} was created successfully.'
 
     return CommandResults(readable_output=readable_output,
                           raw_response=response)
@@ -729,8 +745,7 @@ def add_ip_statement_command(client: boto3.client, args) -> CommandResults:
                            updated_rules=updated_rules,
                            rule_group_visibility_config=rule_group_visibility_config)
 
-    readable_output = f'AWS Waf ip statement was added to rule with id {args.get("Id", "")} successfully. ' \
-                      f'Next Lock Token: {response.get("NextLockToken")}'
+    readable_output = f'AWS Waf ip statement was added to rule with name {args.get("rule_name", "")} successfully.'
 
     return CommandResults(readable_output=readable_output,
                           raw_response=response)
@@ -750,8 +765,8 @@ def add_country_statement_command(client: boto3.client, args) -> CommandResults:
                            updated_rules=updated_rules,
                            rule_group_visibility_config=rule_group_visibility_config)
 
-    readable_output = f'AWS Waf country statement was added to rule with id {args.get("Id", "")} successfully. ' \
-                      f'Next Lock Token: {response.get("NextLockToken")}'
+    readable_output = f'AWS Waf country statement was added to rule with name {args.get("rule_name", "")} ' \
+                      f'successfully.'
 
     return CommandResults(readable_output=readable_output,
                           raw_response=response)
@@ -771,8 +786,8 @@ def add_string_match_statement_command(client: boto3.client, args) -> CommandRes
                            updated_rules=updated_rules,
                            rule_group_visibility_config=rule_group_visibility_config)
 
-    readable_output = f'AWS Waf string match statement was added to rule with id {args.get("Id", "")} successfully. ' \
-                      f'Next Lock Token: {response.get("NextLockToken")}'
+    readable_output = f'AWS Waf string match statement was added to rule with name {args.get("rule_name", "")} ' \
+                      f'successfully.'
 
     # response = update_rule(client, args, build_string_match_statement, action='ADD')
 
@@ -794,8 +809,7 @@ def add_json_statement_command(client: boto3.client, args) -> CommandResults:
                            updated_rules=updated_rules,
                            rule_group_visibility_config=rule_group_visibility_config)
 
-    readable_output = f'AWS Waf json statement was added to rule with id {args.get("Id", "")} successfully. ' \
-                      f'Next Lock Token: {response.get("NextLockToken")}'
+    readable_output = f'AWS Waf json statement was added to rule with name {args.get("rule_name", "")} successfully.'
 
     return CommandResults(readable_output=readable_output,
                           raw_response=response)

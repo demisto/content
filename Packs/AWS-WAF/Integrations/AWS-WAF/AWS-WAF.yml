@@ -97,13 +97,13 @@ script:
       required: true
     - name: scope
       description: The IP set scope.
-      required: true
+      defaultValue: "Regional"
       auto: PREDEFINED
       predefined:
-      - "CLOUDFRONT"
-      - "REGIONAL"
+      - "Global"
+      - "Regional"
     - name: addresses
-      description: A comma separated list of the IP set addresses.
+      description: A comma separated list of the IP set addresses in CIDR notation.
       isArray: true
     - name: description
       description: The IP set description.
@@ -168,11 +168,11 @@ script:
       required: true
     - name: scope
       description: The IP set scope.
-      required: true
+      defaultValue: "Regional"
       auto: PREDEFINED
       predefined:
-      - "CLOUDFRONT"
-      - "REGIONAL"
+      - "Global"
+      - "Regional"
     - name: id
       description: The IP set ID.
       required: true
@@ -227,16 +227,16 @@ script:
       required: true
     - name: scope
       description: The IP set scope.
-      required: true
+      defaultValue: "Regional"
       auto: PREDEFINED
       predefined:
-      - "CLOUDFRONT"
-      - "REGIONAL"
+      - "Global"
+      - "Regional"
     - name: id
       description: The IP set ID.
       required: true
     - name: addresses
-      description: A comma separated list of the IP set addresses.
+      description: A comma separated list of the IP set addresses in CIDR notation.
       isArray: true
     - name: description
       description: The IP set description.
@@ -265,7 +265,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Whether to overwrite the original addresses.
+      description: Whether to overwrite the existing addresses.
       isArray: false
       name: is_overwrite
       predefined:
@@ -278,11 +278,11 @@ script:
   - arguments:
     - name: scope
       description: The IP set scope.
-      required: true
+      defaultValue: "Regional"
       auto: PREDEFINED
       predefined:
-      - "CLOUDFRONT"
-      - "REGIONAL"
+      - "Global"
+      - "Regional"
     - name: next_token
       description: The token for the next page.
     - name: limit
@@ -338,11 +338,11 @@ script:
       required: true
     - name: scope
       description: The IP set scope.
-      required: true
+      defaultValue: "Regional"
       auto: PREDEFINED
       predefined:
-      - "CLOUDFRONT"
-      - "REGIONAL"
+      - "Global"
+      - "Regional"
     - name: id
       description: The IP set ID.
       required: true
@@ -378,11 +378,11 @@ script:
       required: true
     - name: scope
       description: The regex set scope.
-      required: true
+      defaultValue: "Regional"
       auto: PREDEFINED
       predefined:
-      - "CLOUDFRONT"
-      - "REGIONAL"
+      - "Global"
+      - "Regional"
     - name: regex_pattern
       description: A comma separated list of the regex patterns.
       isArray: true
@@ -442,11 +442,11 @@ script:
       required: true
     - name: scope
       description: The regex set scope.
-      required: true
+      defaultValue: "Regional"
       auto: PREDEFINED
       predefined:
-      - "CLOUDFRONT"
-      - "REGIONAL"
+      - "Global"
+      - "Regional"
     - name: id
       description: The regex set ID.
       required: true
@@ -498,11 +498,11 @@ script:
       required: true
     - name: scope
       description: The regex set scope.
-      required: true
+      defaultValue: "Regional"
       auto: PREDEFINED
       predefined:
-      - "CLOUDFRONT"
-      - "REGIONAL"
+      - "Global"
+      - "Regional"
     - name: id
       description: The regex set ID.
       required: true
@@ -536,7 +536,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Whether to overwrite the original regex patterns.
+      description: Whether to overwrite the existing regex patterns.
       isArray: false
       name: is_overwrite
       predefined:
@@ -549,11 +549,11 @@ script:
   - arguments:
     - name: scope
       description: The regex set scope.
-      required: true
+      defaultValue: "Regional"
       auto: PREDEFINED
       predefined:
-      - "CLOUDFRONT"
-      - "REGIONAL"
+      - "Global"
+      - "Regional"
     - name: next_token
       description: The token for the next page.
     - name: limit
@@ -609,11 +609,11 @@ script:
       required: true
     - name: scope
       description: The regex set scope.
-      required: true
+      defaultValue: "Regional"
       auto: PREDEFINED
       predefined:
-      - "CLOUDFRONT"
-      - "REGIONAL"
+      - "Global"
+      - "Regional"
     - name: id
       description: The regex set ID.
       required: true
@@ -646,11 +646,11 @@ script:
   - arguments:
     - name: scope
       description: The rule group scope.
-      required: true
+      defaultValue: "Regional"
       auto: PREDEFINED
       predefined:
-      - "CLOUDFRONT"
-      - "REGIONAL"
+      - "Global"
+      - "Regional"
     - name: next_token
       description: The token for the next page.
     - name: limit
@@ -706,11 +706,11 @@ script:
       required: true
     - name: scope
       description: The rule group scope.
-      required: true
+      defaultValue: "Regional"
       auto: PREDEFINED
       predefined:
-      - "CLOUDFRONT"
-      - "REGIONAL"
+      - "Global"
+      - "Regional"
     - name: id
       description: The rule group ID.
       required: true
@@ -762,11 +762,11 @@ script:
       required: true
     - name: scope
       description: The rule group scope.
-      required: true
+      defaultValue: "Regional"
       auto: PREDEFINED
       predefined:
-      - "CLOUDFRONT"
-      - "REGIONAL"
+      - "Global"
+      - "Regional"
     - name: id
       description: The rule group ID.
       required: true
@@ -802,11 +802,11 @@ script:
         required: true
       - name: scope
         description: The rule group scope.
-        required: true
+        defaultValue: "Regional"
         auto: PREDEFINED
         predefined:
-          - "CLOUDFRONT"
-          - "REGIONAL"
+          - "Global"
+          - "Regional"
       - name: capacity
         description: The rule group capacity.
         required: true
@@ -888,11 +888,11 @@ script:
         required: true
       - name: scope
         description: The rule scope.
-        required: true
+        defaultValue: "Regional"
         auto: PREDEFINED
         predefined:
-          - "CLOUDFRONT"
-          - "REGIONAL"
+          - "Global"
+          - "Regional"
       - name: region
         description: The AWS Region. If not specified, the default region will be used.
         auto: PREDEFINED
@@ -954,11 +954,11 @@ script:
         required: true
       - name: scope
         description: The rule scope.
-        required: true
+        defaultValue: "Regional"
         auto: PREDEFINED
         predefined:
-          - "CLOUDFRONT"
-          - "REGIONAL"
+          - "Global"
+          - "Regional"
       - name: region
         description: The AWS Region. If not specified, the default region will be used.
         auto: PREDEFINED
@@ -1013,11 +1013,11 @@ script:
         required: true
       - name: scope
         description: The rule scope.
-        required: true
+        defaultValue: "Regional"
         auto: PREDEFINED
         predefined:
-          - "CLOUDFRONT"
-          - "REGIONAL"
+          - "Global"
+          - "Regional"
       - name: region
         description: The AWS Region. If not specified, the default region will be used.
         auto: PREDEFINED
@@ -1129,11 +1129,11 @@ script:
         required: true
       - name: scope
         description: The rule scope.
-        required: true
+        defaultValue: "Regional"
         auto: PREDEFINED
         predefined:
-          - "CLOUDFRONT"
-          - "REGIONAL"
+          - "Global"
+          - "Regional"
       - name: region
         description: The AWS Region. If not specified, the default region will be used.
         auto: PREDEFINED
@@ -1172,11 +1172,11 @@ script:
         required: true
       - name: scope
         description: The rule scope.
-        required: true
+        defaultValue: "Regional"
         auto: PREDEFINED
         predefined:
-          - "CLOUDFRONT"
-          - "REGIONAL"
+          - "Global"
+          - "Regional"
       - name: region
         description: The AWS Region. If not specified, the default region will be used.
         auto: PREDEFINED
@@ -1225,11 +1225,11 @@ script:
         required: true
       - name: scope
         description: The rule scope.
-        required: true
+        defaultValue: "Regional"
         auto: PREDEFINED
         predefined:
-          - "CLOUDFRONT"
-          - "REGIONAL"
+          - "Global"
+          - "Regional"
       - name: region
         description: The AWS Region. If not specified, the default region will be used.
         auto: PREDEFINED
@@ -1278,11 +1278,11 @@ script:
         required: true
       - name: scope
         description: The rule scope.
-        required: true
+        defaultValue: "Regional"
         auto: PREDEFINED
         predefined:
-          - "CLOUDFRONT"
-          - "REGIONAL"
+          - "Global"
+          - "Regional"
       - name: region
         description: The AWS Region. If not specified, the default region will be used.
         auto: PREDEFINED
@@ -1387,11 +1387,11 @@ script:
         required: true
       - name: scope
         description: The rule scope.
-        required: true
+        defaultValue: "Regional"
         auto: PREDEFINED
         predefined:
-          - "CLOUDFRONT"
-          - "REGIONAL"
+          - "Global"
+          - "Regional"
       - name: region
         description: The AWS Region. If not specified, the default region will be used.
         auto: PREDEFINED
