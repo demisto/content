@@ -27,7 +27,9 @@
         "GCP Kubernetes Engine Misconfiguration",
         "AWS CloudTrail Misconfiguration",
         "AWS IAM Policy Misconfiguration",
-        "AWS EC2 Instance Misconfiguration"
+        "AWS EC2 Instance Misconfiguration",
+        "AWS Security Hub Finding",
+		"Prisma Cloud - VM Alert Prioritization"
     ],
     "breachScript": "",
     "caseInsensitive": true,
@@ -59,7 +61,9 @@
     "selectValues": null,
     "sla": 0,
     "system": false,
-    "systemAssociatedTypes": null,
+    "systemAssociatedTypes": [
+		"Prisma Cloud - VM Alert Prioritization"
+	],
     "threshold": 72,
     "toServerVersion": "",
     "type": "shortText",
