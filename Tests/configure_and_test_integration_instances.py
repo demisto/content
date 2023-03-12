@@ -1827,12 +1827,15 @@ def get_packs_with_higher_min_version(packs_names: Set[str],
     extract_content_packs_path = mkdtemp()
     packs_artifacts_path = f'{os.getenv("ARTIFACTS_FOLDER")}/content_packs.zip'
     extract_packs_artifacts(packs_artifacts_path, extract_content_packs_path)
-
+    logging.debug(f"[TEST] list dir in {packs_artifacts_path} -\n{os.listdir()}")
     packs_with_higher_version = set()
     for pack_name in packs_names:
-
-        pack_metadata = get_json_file(f"{extract_content_packs_path}/{pack_name}/metadata.json")
+        pack_metadata_path = f"{extract_content_packs_path}/{pack_name}/metadata.json"
+        logging.debug(f"[TEST] {pack_metadata_path=}")
+        pack_metadata = get_json_file(pack_metadata_path)
+        logging.debug(f"[TEST] pack metadata of pack '{pack_name}' -\n{pack_metadata=}")
         server_min_version = pack_metadata.get(Metadata.SERVER_MIN_VERSION, Metadata.SERVER_DEFAULT_MIN_VERSION)
+        logging.debug(f"{server_min_version=}")
         if 'Master' not in server_numeric_version and Version(server_numeric_version) < Version(server_min_version):
             packs_with_higher_version.add(pack_name)
             logging.info(f"Found pack '{pack_name}' with min version {server_min_version} that is "
