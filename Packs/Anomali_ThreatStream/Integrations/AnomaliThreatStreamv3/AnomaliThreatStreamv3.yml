@@ -1,4 +1,7 @@
 category: Data Enrichment & Threat Intelligence
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: Anomali ThreatStream v3
   version: -1
@@ -8,37 +11,52 @@ configuration:
   name: url
   required: true
   type: 0
+  section: Connect
 - display: Username
   name: credentials
   required: true
   type: 9
+  displaypassword: API Key
+  section: Connect
 - display: URL threshold
   name: url_threshold
   required: false
   type: 0
+  section: Collect
+  advanced: true
 - display: IP threshold
   name: ip_threshold
   required: false
   type: 0
+  section: Collect
+  advanced: true
 - display: Domain threshold
   name: domain_threshold
   required: false
   type: 0
+  section: Collect
+  advanced: true
 - display: File threshold
   name: file_threshold
   required: false
   type: 0
+  section: Collect
+  advanced: true
 - display: Email threshold
   additionalinfo: Email indicators with confidence value above this threshold are considered malicious.
   name: email_threshold
   required: false
   type: 0
+  section: Collect
+  advanced: true
 - defaultvalue: 'false'
   additionalinfo: Whether to include inactive indicators in reputation commands.
   display: Include inactive results
   name: include_inactive
   required: false
   type: 8
+  section: Collect
+  advanced: true
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
   display: Source Reliability
@@ -53,21 +71,28 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
+  section: Collect
 - defaultvalue: 'false'
   display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - defaultvalue: 'true'
   additionalinfo: Create relationships between indicators as part of enrichment.
   display: Create relationships
   name: create_relationships
   required: false
   type: 8
+  section: Collect
+  advanced: true
 defaultclassifier: 'null'
 description: Use Anomali ThreatStream to query and submit threats.
 display: Anomali ThreatStream v3
@@ -2807,6 +2832,16 @@ script:
       name: detail
       required: false
       secret: false
+    - default: true
+      auto: PREDEFINED
+      description: If you want to initiate an import job for observables discovered during detonation, set this value to true. Default value is true.
+      isArray: false
+      name: import_indicators
+      required: false
+      secret: false
+      predefined:
+        - 'false'
+        - 'true'
     deprecated: false
     description: Submits a file or URL to the ThreatStream-hosted sandbox for detonation.
     execution: false
@@ -4335,7 +4370,7 @@ script:
     - contextPath: ThreatStream.Intelligence.severity
       description: The severity of the intelligence.
       type: String
-  dockerimage: demisto/py3-tools:1.0.0.41748
+  dockerimage: demisto/py3-tools:1.0.0.49703
   feed: false
   isfetch: false
   longRunning: false

@@ -25,6 +25,8 @@
 /Tests/scripts/prepare_content_packs_for_testing.sh @yaakovpraisler
 /Utils/trigger_test_upload_flow.sh @yaakovpraisler
 /Utils/trigger_upload_packs_to_production.sh @yaakovpraisler
+/Utils/should_trigger_test_upload.sh @yaakovpraisler
+/Utils/test_upload_flow/* @yaakovpraisler
 
 # Test Collection
 /Tests/scripts/collect_tests @dorschw
@@ -66,13 +68,13 @@
 .gitlab/* @esharf
 .gitlab-ci.yml @esharf
 .gitlab/ci/on-push.yml @daryakoval
-/Tests/scripts/wait_in_line_for_xsiam_env.sh @daryakoval
+/Tests/scripts/wait_in_line_for_cloud_env.sh @daryakoval
 .gitlab/ci/staging.yml @ilaner
-/Tests/scripts/uninstall_packs_and_reset_bucket_xsiam.sh @daryakoval
+/Tests/scripts/uninstall_packs_and_reset_bucket_cloud.sh @daryakoval
 /Tests/Marketplace/search_and_uninstall_pack.py @daryakoval
 /Tests/scripts/install_content_and_test_integrations.sh @daryakoval
 /Tests/configure_and_test_integration_instances.py @daryakoval
-/Tests/scripts/print_xsiam_machine_details.sh @daryakoval
+/Tests/scripts/print_cloud_machine_details.sh @daryakoval
 /Tests/scripts/run_tests.sh @daryakoval
 
 # SDK Related

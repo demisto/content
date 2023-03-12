@@ -1,0 +1,159 @@
+{
+    "version": "version",
+    "metadata": {
+        "links": {
+            "self": "metadata_links_self"
+        },
+        "results": {
+            "total": "metadata_results_total",
+            "current_item_count": "metadata_results_current_item_count",
+            "index": "metadata_results_index",
+            "items_per_page": "metadata_results_items_per_page"
+        }
+    },
+    "data": [
+        {
+            "name": "data[0]_name",
+            "description": "data[0]_description",
+            "guid": "data[0]_guid",
+            "product": "data[0]_product",
+            "default": "data[0]_default",
+            "serial_number": "data[0]_serial_number",
+            "links": {
+                "policy": "data[0]_links_policy"
+            }
+        },
+        {
+            "name": "data[1]_name",
+            "description": "data[1]_description",
+            "guid": "data[1]_guid",
+            "product": "data[1]_product",
+            "default": "data[1]_default",
+            "serial_number": "data[1]_serial_number",
+            "links": {
+                "policy": "data[1]_links_policy"
+            }
+        },
+        {
+            "name": "data[2]_name",
+            "description": "data[2]_description",
+            "guid": "data[2]_guid",
+            "product": "data[2]_product",
+            "default": "data[2]_default",
+            "serial_number": "data[2]_serial_number",
+            "links": {
+                "policy": "data[2]_links_policy"
+            }
+        },
+        {
+            "name": "data[3]_name",
+            "description": "data[3]_description",
+            "guid": "data[3]_guid",
+            "product": "data[3]_product",
+            "default": "data[3]_default",
+            "serial_number": "data[3]_serial_number",
+            "links": {
+                "policy": "data[3]_links_policy"
+            }
+        },
+        {
+            "name": "data[4]_name",
+            "description": "data[4]_description",
+            "guid": "data[4]_guid",
+            "product": "data[4]_product",
+            "default": "data[4]_default",
+            "serial_number": "data[4]_serial_number",
+            "links": {
+                "policy": "data[4]_links_policy"
+            }
+        },
+        {
+            "name": "data[5]_name",
+            "description": "data[5]_description",
+            "guid": "data[5]_guid",
+            "product": "data[5]_product",
+            "default": "data[5]_default",
+            "serial_number": "data[5]_serial_number",
+            "links": {
+                "policy": "data[5]_links_policy"
+            }
+        },
+        {
+            "name": "data[6]_name",
+            "description": "data[6]_description",
+            "guid": "data[6]_guid",
+            "product": "data[6]_product",
+            "default": "data[6]_default",
+            "serial_number": "data[6]_serial_number",
+            "links": {
+                "policy": "data[6]_links_policy"
+            }
+        },
+        {
+            "name": "data[7]_name",
+            "description": "data[7]_description",
+            "guid": "data[7]_guid",
+            "product": "data[7]_product",
+            "default": "data[7]_default",
+            "serial_number": "data[7]_serial_number",
+            "links": {
+                "policy": "data[7]_links_policy"
+            }
+        },
+        {
+            "name": "data[8]_name",
+            "description": "data[8]_description",
+            "guid": "data[8]_guid",
+            "product": "data[8]_product",
+            "default": "data[8]_default",
+            "serial_number": "data[8]_serial_number",
+            "links": {
+                "policy": "data[8]_links_policy"
+            }
+        },
+        {
+            "name": "data[9]_name",
+            "description": "data[9]_description",
+            "guid": "data[9]_guid",
+            "product": "data[9]_product",
+            "default": "data[9]_default",
+            "serial_number": "data[9]_serial_number",
+            "links": {
+                "policy": "data[9]_links_policy"
+            }
+        },
+        {
+            "name": "data[10]_name",
+            "description": "data[10]_description",
+            "guid": "data[10]_guid",
+            "product": "data[10]_product",
+            "default": "data[10]_default",
+            "serial_number": "data[10]_serial_number",
+            "links": {
+                "policy": "data[10]_links_policy"
+            }
+        },
+        {
+            "name": "data[11]_name",
+            "description": "data[11]_description",
+            "guid": "data[11]_guid",
+            "product": "data[11]_product",
+            "default": "data[11]_default",
+            "serial_number": "data[11]_serial_number",
+            "links": {
+                "policy": "data[11]_links_policy"
+            }
+        },
+        {
+            "name": "data[12]_name",
+            "description": "data[12]_description",
+            "guid": "data[12]_guid",
+            "product": "data[12]_product",
+            "default": "data[12]_default",
+            "serial_number": "data[12]_serial_number",
+            "links": {
+                "policy": "data[12]_links_policy"
+            }
+        }
+    ]
+}

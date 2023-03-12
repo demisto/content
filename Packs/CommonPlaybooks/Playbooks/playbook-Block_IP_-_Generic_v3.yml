@@ -3558,3 +3558,6 @@ tests:
 - Block IP - Generic V3_Test
 fromversion: 6.0.0
 system: true
+marketplaces:
+  - xsoar
+  - marketplacev2

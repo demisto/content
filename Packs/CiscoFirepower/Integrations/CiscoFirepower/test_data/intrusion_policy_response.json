@@ -1,0 +1,31 @@
+{
+    "name": "Test policy",
+    "id": "id",
+    "type": "intrusionpolicy",
+    "links": {
+        "self": "links_self"
+    },
+    "basePolicy": {
+        "name": "Maximum Detection",
+        "id": "basePolicy_id",
+        "type": "intrusionpolicy"
+    },
+    "description": "string",
+    "inspectionMode": "PREVENTION",
+    "isSystemDefined": false,
+    "metadata": {
+        "mappedPolicy": {
+            "name": "Test policy",
+            "id": "metadata_mappedPolicy_id",
+            "type": "intrusionpolicy",
+            "inspectionMode": "PREVENTION",
+            "snortEngine": "SNORT2"
+        },
+        "domain": {
+            "name": "Global",
+            "id": "metadata_domain_id",
+            "type": "Domain"
+        },
+        "snortEngine": "SNORT3"
+    }
+}

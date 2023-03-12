@@ -366,6 +366,20 @@ class TestFetchStarredIncident:
         assert not incidents
 
 
+def test_get_tenant_info(requests_mock):
+    from CortexXDRIR import get_tenant_info_command, Client
+
+    tenant_info_response = load_test_data('./test_data/get_tenant_info.json')
+    requests_mock.post(f'{XDR_URL}/public_api/v1/system/get_tenant_info/', json=tenant_info_response)
+
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1/', headers={}
+    )
+    expected_output = tenant_info_response.get('reply')
+    response = get_tenant_info_command(client)
+    assert response.outputs == expected_output
+
+
 def test_insert_parsed_alert(requests_mock):
     from CortexXDRIR import insert_parsed_alert_command, Client
 
@@ -779,3 +793,51 @@ def test_replace_featured_field_command(requests_mock):
 
     assert response.outputs == expected_response
     assert len(response.outputs.get('fields')) == 2
+
+
+def test_failure_to_update_incident():
+    from CortexXDRIR import update_incident_command, Client
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
+    )
+
+    with pytest.raises(ValueError, match="Can't provide both assignee_email/assignee_name and unassign_user"):
+        update_incident_command(client=client, args={'unassign_user': 'true', 'assigned_user_mail': 'user', 'status': 'new'})
+
+
+def test_update_incident(requests_mock):
+    from CortexXDRIR import update_incident_command, Client
+
+    update_incident_response = load_test_data('./test_data/update_incident.json')
+    requests_mock.post(f'{XDR_URL}/public_api/v1/incidents/update_incident/', json=update_incident_response)
+
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
+    )
+    args = {
+        'incident_id': '1',
+        'status': 'new',
+        'add_comment': 'new comment',
+    }
+    readable_output, outputs, _ = update_incident_command(client, args)
+
+    assert outputs is None
+    assert readable_output == 'Incident 1 has been updated'
+
+
+@pytest.mark.parametrize('incident_changed, delta',
+                         [(True, {'CortexXDRIRstatus': 'investigating'}),
+                          (False, {})])
+def test_update_remote_system_command(incident_changed, delta):
+    from CortexXDRIR import update_remote_system_command, Client
+    client = Client(
+        base_url=f'{XDR_URL}/public_api/v1', headers={}
+    )
+    data = {'CortexXDRIRstatus': 'uninvestigated'}
+    expected_remote_id = 'remote_id'
+    args = {'remoteId': expected_remote_id, 'data': data, 'entries': [], 'incidentChanged': incident_changed,
+            'delta': delta,
+            'status': 2,
+            }
+    actual_remote_id = update_remote_system_command(client, args)
+    assert actual_remote_id == expected_remote_id

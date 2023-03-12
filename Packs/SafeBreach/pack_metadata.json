@@ -2,20 +2,20 @@
     "name": "SafeBreach - Breach and Attack Simulation platform",
     "description": "SafeBreach automates validation and remediation of your security controls to ensure you detect and prevent known indicators of compromise (IOCs).",
     "support": "partner",
-    "videos": ["https://www.youtube.com/watch?v=Wb7q5Gbd2qo"],
-    "currentVersion": "1.1.14",
+    "videos": [
+        "https://www.youtube.com/watch?v=Wb7q5Gbd2qo"
+    ],
+    "currentVersion": "1.1.16",
     "author": "SafeBreach",
     "url": "https://www.safebreach.com",
     "email": "support@safebreach.com",
     "created": "2020-03-11T12:59:01Z",
     "certification": "certified",
     "categories": [
-        "Data Enrichment & Threat Intelligence"
+        "Deception & Breach Simulation"
     ],
-    "tags": [
-    ],
-    "useCases": [
-    ],
+    "tags": [],
+    "useCases": [],
     "keywords": [
         "SafeBreach",
         "Feed"

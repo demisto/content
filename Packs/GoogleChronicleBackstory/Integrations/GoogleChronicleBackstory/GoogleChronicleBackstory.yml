@@ -1,4 +1,7 @@
 category: Analytics & SIEM
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: Google Chronicle Backstory
   version: -1
@@ -7,8 +10,8 @@ configuration:
   name: service_account_credential
   required: true
   type: 4
-- additionalinfo: Select the region based on the location of the chronicle backstory
-    instance.
+  section: Connect
+- additionalinfo: Select the region based on the location of the chronicle backstory instance.
   defaultvalue: General
   display: Region
   name: region
@@ -18,22 +21,20 @@ configuration:
   - Asia
   required: false
   type: 15
-- display: Provide comma(',') separated categories (e.g. APT-Activity, Phishing).
-    Indicators belonging to these "categories" would be considered as "malicious"
-    when executing reputation commands.
+  section: Connect
+- display: Provide comma(',') separated categories (e.g. APT-Activity, Phishing). Indicators belonging to these "categories" would be considered as "malicious" when executing reputation commands.
   name: malicious_categories
   required: false
   type: 12
-- display: Provide comma(',') separated categories (e.g. Unwanted, VirusTotal YARA
-    Rule Match). Indicators belonging to these "categories" would be considered as
-    "suspicious" when executing reputation commands.
+  section: Collect
+  advanced: true
+- display: Provide comma(',') separated categories (e.g. Unwanted, VirusTotal YARA Rule Match). Indicators belonging to these "categories" would be considered as "suspicious" when executing reputation commands.
   name: suspicious_categories
   required: false
   type: 12
-- display: Specify the "severity" of indicator that should be considered as "malicious"
-    irrespective of the category.  If you wish to consider all indicators with High
-    severity as Malicious, set this parameter to 'High'. Allowed values are 'High',
-    'Medium' and 'Low'. This configuration is applicable to reputation commands only.
+  section: Collect
+  advanced: true
+- display: Specify the "severity" of indicator that should be considered as "malicious" irrespective of the category.  If you wish to consider all indicators with High severity as Malicious, set this parameter to 'High'. Allowed values are 'High', 'Medium' and 'Low'. This configuration is applicable to reputation commands only.
   name: override_severity_malicious
   options:
   - high
@@ -41,10 +42,9 @@ configuration:
   - low
   required: false
   type: 16
-- display: Specify the "severity" of indicator that should be considered as "suspicious"
-    irrespective of the category. If you wish to consider all indicators with Medium
-    severity as Suspicious, set this parameter to 'Medium'. Allowed values are 'High',
-    'Medium' and 'Low'. This configuration is applicable to reputation commands only.
+  section: Collect
+  advanced: true
+- display: Specify the "severity" of indicator that should be considered as "suspicious" irrespective of the category. If you wish to consider all indicators with Medium severity as Suspicious, set this parameter to 'Medium'. Allowed values are 'High', 'Medium' and 'Low'. This configuration is applicable to reputation commands only.
   name: override_severity_suspicious
   options:
   - high
@@ -52,26 +52,21 @@ configuration:
   - low
   required: false
   type: 16
-- display: Specify the numeric value of "confidence score". If the indicator's confidence
-    score is equal or above the configured threshold, it would be considered as "malicious".
-    The value provided should be greater than the suspicious threshold. This configuration
-    is applicable to reputation commands only.
+  section: Collect
+  advanced: true
+- display: Specify the numeric value of "confidence score". If the indicator's confidence score is equal or above the configured threshold, it would be considered as "malicious". The value provided should be greater than the suspicious threshold. This configuration is applicable to reputation commands only.
   name: override_confidence_score_malicious_threshold
   required: false
   type: 0
-- display: Specify the numeric value of "confidence score". If the indicator's confidence
-    score is equal or above the configured threshold, it would be considered as "suspicious".
-    The value provided should be smaller than the malicious threshold. This configuration
-    is applicable to reputation commands only.
+  section: Collect
+  advanced: true
+- display: Specify the numeric value of "confidence score". If the indicator's confidence score is equal or above the configured threshold, it would be considered as "suspicious". The value provided should be smaller than the malicious threshold. This configuration is applicable to reputation commands only.
   name: override_confidence_score_suspicious_threshold
   required: false
   type: 0
-- display: Select the confidence score level. If the indicator's confidence score
-    level is equal or above the configured level, it would be considered as "malicious".
-    The confidence level configured should have higher precedence than the suspicious
-    level. This configuration is applicable to reputation commands only. Refer the
-    "confidence score" level precedence UNKNOWN SEVERITY < INFORMATIONAL < LOW < MEDIUM
-    < HIGH.
+  section: Collect
+  advanced: true
+- display: Select the confidence score level. If the indicator's confidence score level is equal or above the configured level, it would be considered as "malicious". The confidence level configured should have higher precedence than the suspicious level. This configuration is applicable to reputation commands only. Refer the "confidence score" level precedence UNKNOWN SEVERITY < INFORMATIONAL < LOW < MEDIUM < HIGH.
   name: override_confidence_level_malicious
   options:
   - unknown_severity
@@ -81,6 +76,8 @@ configuration:
   - high
   required: false
   type: 15
+  section: Collect
+  advanced: true
 - display: |-
     Select the confidence score level. If the indicator's confidence score level is equal or above the configured level, it would be considered as "suspicious".
     The confidence level configured should have lesser precedence than the malicious level. This configuration is applicable to reputation commands only. Refer the "confidence score" level precedence UNKNOWN SEVERITY < INFORMATIONAL < LOW < MEDIUM < HIGH.
@@ -93,14 +90,18 @@ configuration:
   - high
   required: false
   type: 15
+  section: Collect
+  advanced: true
 - display: Fetch incidents
   name: isFetch
   required: false
   type: 8
+  section: Collect
 - display: Incident type
   name: incidentType
   required: false
   type: 13
+  section: Connect
 - additionalinfo: |-
     The UTC date or relative timestamp from where to start fetching incidents.
 
@@ -112,14 +113,14 @@ configuration:
   name: first_fetch
   required: false
   type: 0
+  section: Collect
 - defaultvalue: '100'
   display: How many incidents to fetch each time
   name: max_fetch
   required: false
   type: 0
-- additionalinfo: Select Chronicle alert type to create actionable incident. Available
-    options are IOC Domain matches(Default), Assets with alerts, Detection alerts
-    and User alerts.
+  section: Collect
+- additionalinfo: Select Chronicle alert type to create actionable incident. Available options are IOC Domain matches(Default), Assets with alerts, Detection alerts and User alerts.
   defaultvalue: IOC Domain matches
   display: Chronicle Alert Type (Select the type of data to consider for fetch incidents).
   hidden: false
@@ -131,9 +132,9 @@ configuration:
   - User alerts
   required: false
   type: 15
-- display: Select the severity of alerts to be filtered for Fetch Incidents. Available
-    options are 'High', 'Medium', 'Low' and 'Unspecified' (If not selected, fetches
-    all alerts).
+  section: Collect
+  advanced: true
+- display: Select the severity of alerts to be filtered for Fetch Incidents. Available options are 'High', 'Medium', 'Low' and 'Unspecified' (If not selected, fetches all alerts).
   name: incident_severity
   options:
   - High
@@ -142,24 +143,25 @@ configuration:
   - Unspecified
   required: false
   type: 15
-- additionalinfo: 'Fetches detection by either Rule ID (format: ru_{UUID}) or Version
-    ID (format: {ruleId}@v_{int64}_{int64}. Enter in comma separated format to add
-    multiple. Entered rules have precedence over the "Fetch all rules detections"
-    checkbox.'
+  section: Collect
+  advanced: true
+- additionalinfo: 'Fetches detection by either Rule ID (format: ru_{UUID}) or Version ID (format: {ruleId}@v_{int64}_{int64}. Enter in comma separated format to add multiple. Entered rules have precedence over the "Fetch all rules detections" checkbox.'
   display: Detections to fetch by Rule ID or Version ID
   hidden: false
   name: fetch_detection_by_ids
   required: false
   type: 0
+  section: Collect
+  advanced: true
 - additionalinfo: Fetch detections for all versions of all the rules.
   display: Fetch all rules detections
   hidden: false
   name: fetch_all_detections
   required: false
   type: 8
-- additionalinfo: Select the alert state to filter the detections to be fetched using
-    fetch incidents. Available options are 'ALERTING' and 'NOT_ALERTING' (Default-No
-    Selection).
+  section: Collect
+  advanced: true
+- additionalinfo: Select the alert state to filter the detections to be fetched using fetch incidents. Available options are 'ALERTING' and 'NOT_ALERTING' (Default-No Selection).
   display: Filter detections by alert state
   name: fetch_detection_by_alert_state
   options:
@@ -167,11 +169,9 @@ configuration:
   - NOT_ALERTING
   required: false
   type: 15
-- additionalinfo: Select the time window to query Chronicle. While selecting the time
-    window consider the time delay for an event to appear in Chronicle after generation.
-    Available options are 15 (Default), 30, 45 and 60. This parameter is not applied
-    when "IOC Domain matches" Chronicle Alert Type is selected. Don't touch unless
-    you're missing alerts.
+  section: Collect
+  advanced: true
+- additionalinfo: Select the time window to query Chronicle. While selecting the time window consider the time delay for an event to appear in Chronicle after generation. Available options are 15 (Default), 30, 45 and 60. This parameter is not applied when "IOC Domain matches" Chronicle Alert Type is selected. Don't touch unless you're missing alerts.
   defaultvalue: '15'
   display: Time window (in minutes)
   hidden: false
@@ -183,9 +183,9 @@ configuration:
   - '60'
   required: false
   type: 15
-- additionalinfo: Sort detections by "DETECTION_TIME" or by "CREATED_TIME". If not
-    specified, it defaults to "CREATED_TIME". This configuration is applicable to
-    "Detection alerts" only.
+  section: Collect
+  advanced: true
+- additionalinfo: Sort detections by "DETECTION_TIME" or by "CREATED_TIME". If not specified, it defaults to "CREATED_TIME". This configuration is applicable to "Detection alerts" only.
   defaultvalue: CREATED_TIME
   display: List Basis
   name: fetch_detection_by_list_basis
@@ -194,14 +194,20 @@ configuration:
   - DETECTION_TIME
   required: false
   type: 15
+  section: Collect
+  advanced: true
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
   display: Source Reliability
@@ -216,6 +222,7 @@ configuration:
   - F - Reliability cannot be judged
   required: false
   type: 15
+  section: Collect
 - defaultvalue: indicatorType
   name: feedExpirationPolicy
   display: ''
@@ -226,15 +233,16 @@ configuration:
   - suddenDeath
   required: false
   type: 17
+  section: Collect
+  advanced: true
 - defaultvalue: '20160'
   name: feedExpirationInterval
   display: ''
   required: false
   type: 1
-description: Use the Chronicle integration to retrieve Asset alerts or IOC Domain
-  matches as Incidents. Use it to fetch a list of infected assets based on the indicator
-  accessed. This integration also provides reputation and threat enrichment of indicators
-  observed in the enterprise.
+  section: Collect
+  advanced: true
+description: Use the Chronicle integration to retrieve Asset alerts or IOC Domain matches as Incidents. Use it to fetch a list of infected assets based on the indicator accessed. This integration also provides reputation and threat enrichment of indicators observed in the enterprise.
 display: Chronicle
 name: Google Chronicle Backstory
 script:
@@ -242,8 +250,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: Fetches IOC Domain matches in the specified time interval. If configured,
-        overrides the start_time argument.
+      description: Fetches IOC Domain matches in the specified time interval. If configured, overrides the start_time argument.
       isArray: false
       name: preset_time_range
       predefined:
@@ -254,28 +261,20 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'The value of the start time for your request, in RFC 3339 format
-        (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied, the default
-        is the UTC time corresponding to 3 days earlier than current time. Formats:
-        YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours. Example: 2020-05-01T00:00:00Z,
-        2020-05-01, 2 days, 5 hours, 01 Mar 2021, 01 Feb 2021 04:45:33, 15 Jun.'
+      description: 'The value of the start time for your request, in RFC 3339 format (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied, the default is the UTC time corresponding to 3 days earlier than current time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours. Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours, 01 Mar 2021, 01 Feb 2021 04:45:33, 15 Jun.'
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
       defaultValue: '10000'
-      description: The maximum number of IOCs to return. You can specify between 1
-        and 10000.
+      description: The maximum number of IOCs to return. You can specify between 1 and 10000.
       isArray: false
       name: page_size
       required: false
       secret: false
     deprecated: false
-    description: Lists the IOC Domain matches within your enterprise for the specified
-      time interval. The indicator of compromise (IOC) domain matches lists for which
-      the domains that your security infrastructure has flagged as both suspicious
-      and that have been seen recently within your enterprise.
+    description: Lists the IOC Domain matches within your enterprise for the specified time interval. The indicator of compromise (IOC) domain matches lists for which the domains that your security infrastructure has flagged as both suspicious and that have been seen recently within your enterprise.
     execution: false
     name: gcb-list-iocs
     outputs:
@@ -311,16 +310,14 @@ script:
       type: String
   - arguments:
     - default: true
-      description: ' The artifact indicator associated with assets. The artifact type
-        can be one of the following: IP, Domain, MD5, SHA1, or SHA256. '
+      description: ' The artifact indicator associated with assets. The artifact type can be one of the following: IP, Domain, MD5, SHA1, or SHA256. '
       isArray: false
       name: artifact_value
       required: true
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Fetches assets that accessed the artifact during the interval specified.
-        If configured, overrides the start_time and end_time arguments.
+      description: Fetches assets that accessed the artifact during the interval specified. If configured, overrides the start_time and end_time arguments.
       isArray: false
       name: preset_time_range
       predefined:
@@ -331,36 +328,26 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'The value of the start time for your request, in RFC 3339 format
-        (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied, the default
-        is the UTC time corresponding to 3 days earlier than current time. Formats:
-        YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours. Example: 2020-05-01T00:00:00Z,
-        2020-05-01, 2 days, 5 hours, 01 Mar 2021, 01 Feb 2021 04:45:33, 15 Jun.'
+      description: 'The value of the start time for your request, in RFC 3339 format (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied, the default is the UTC time corresponding to 3 days earlier than current time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours. Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours, 01 Mar 2021, 01 Feb 2021 04:45:33, 15 Jun.'
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
-      description: 'The value of the end time for your request, in RFC 3339 format
-        (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied,  the default
-        is current UTC time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N
-        hours. Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours, 01 Mar
-        2021, 01 Feb 2021 04:45:33, 15 Jun.'
+      description: 'The value of the end time for your request, in RFC 3339 format (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied,  the default is current UTC time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours. Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours, 01 Mar 2021, 01 Feb 2021 04:45:33, 15 Jun.'
       isArray: false
       name: end_time
       required: false
       secret: false
     - default: false
       defaultValue: '10000'
-      description: The maximum number of IOCs to return. You can specify between 1
-        and 10000.
+      description: The maximum number of IOCs to return. You can specify between 1 and 10000.
       isArray: false
       name: page_size
       required: false
       secret: false
     deprecated: false
-    description: Returns a list of the assets that accessed the input artifact (IP,
-      domain, MD5, SHA1 and SHA256) during the specified time.
+    description: Returns a list of the assets that accessed the input artifact (IP, domain, MD5, SHA1 and SHA256) during the specified time.
     execution: false
     name: gcb-assets
     outputs:
@@ -458,8 +445,7 @@ script:
       description: The behavior of the artifact.
       type: String
     - contextPath: GoogleChronicleBackstory.IP.Sources.ConfidenceScore
-      description: The confidence score indicating the accuracy and appropriateness
-        of the assigned category.
+      description: The confidence score indicating the accuracy and appropriateness of the assigned category.
       type: Number
     - contextPath: GoogleChronicleBackstory.IP.Sources.FirstAccessedTime
       description: The time the IOC was first accessed within the enterprise.
@@ -519,8 +505,7 @@ script:
       description: The behavior of the artifact.
       type: String
     - contextPath: GoogleChronicleBackstory.Domain.Sources.ConfidenceScore
-      description: The confidence score indicating the accuracy and appropriateness
-        of the assigned category.
+      description: The confidence score indicating the accuracy and appropriateness of the assigned category.
       type: Number
     - contextPath: GoogleChronicleBackstory.Domain.Sources.FirstAccessedTime
       description: The time the IOC was first accessed within the enterprise.
@@ -533,17 +518,13 @@ script:
       type: String
   - arguments:
     - default: false
-      description: The artifact indicator value. The supported artifact types are
-        IP and domain.
+      description: The artifact indicator value. The supported artifact types are IP and domain.
       isArray: false
       name: artifact_value
       required: true
       secret: false
     deprecated: false
-    description: Accepts an artifact indicator and returns any threat intelligence
-      associated with the artifact. The threat intelligence information is drawn from
-      your enterprise security systems and from Chronicle's IoC partners (for example,
-      the DHS threat feed).
+    description: Accepts an artifact indicator and returns any threat intelligence associated with the artifact. The threat intelligence information is drawn from your enterprise security systems and from Chronicle's IoC partners (for example, the DHS threat feed).
     execution: false
     name: gcb-ioc-details
     outputs:
@@ -569,8 +550,7 @@ script:
       description: The behavior of the artifact.
       type: String
     - contextPath: GoogleChronicleBackstory.IocDetails.Sources.ConfidenceScore
-      description: The confidence score indicating the accuracy and appropriateness
-        of the assigned category.
+      description: The confidence score indicating the accuracy and appropriateness of the assigned category.
       type: Number
     - contextPath: GoogleChronicleBackstory.IocDetails.Sources.FirstAccessedTime
       description: The time the IOC was first accessed within the enterprise.
@@ -584,8 +564,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: Fetch alerts for the specified time range. If preset_time_range
-        is configured, overrides the start_time and end_time arguments.
+      description: Fetch alerts for the specified time range. If preset_time_range is configured, overrides the start_time and end_time arguments.
       isArray: false
       name: preset_time_range
       predefined:
@@ -596,38 +575,27 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'The value of the start time for your request, in RFC 3339 format
-        (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied, the default
-        is the UTC time corresponding to 3 days earlier than current time. Formats:
-        YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours. Example: 2020-05-01T00:00:00Z,
-        2020-05-01, 2 days, 5 hours, 01 Mar 2021, 01 Feb 2021 04:45:33, 15 Jun.'
+      description: 'The value of the start time for your request, in RFC 3339 format (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied, the default is the UTC time corresponding to 3 days earlier than current time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours. Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours, 01 Mar 2021, 01 Feb 2021 04:45:33, 15 Jun.'
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
-      description: 'The value of the end time for your request, in RFC 3339 format
-        (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied,  the default
-        is current UTC time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N
-        hours. Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours, 01 Mar
-        2021, 01 Feb 2021 04:45:33, 15 Jun.'
+      description: 'The value of the end time for your request, in RFC 3339 format (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied,  the default is current UTC time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours. Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours, 01 Mar 2021, 01 Feb 2021 04:45:33, 15 Jun.'
       isArray: false
       name: end_time
       required: false
       secret: false
     - default: false
       defaultValue: '10000'
-      description: The maximum number of IOCs to return. You can specify between 1
-        and 100000.
+      description: The maximum number of IOCs to return. You can specify between 1 and 100000.
       isArray: false
       name: page_size
       required: false
       secret: false
     - auto: PREDEFINED
       default: false
-      description: The severity by which to filter the returned alerts. If not supplied,
-        all alerts are fetched. This is applicable for asset alerts only. The possible
-        values are "High", "Medium", "Low", or "Unspecified".
+      description: The severity by which to filter the returned alerts. If not supplied, all alerts are fetched. This is applicable for asset alerts only. The possible values are "High", "Medium", "Low", or "Unspecified".
       isArray: false
       name: severity
       predefined:
@@ -640,8 +608,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Asset Alerts
-      description: Specify which type of alerts you want. The possible values are
-        "Asset Alerts" or "User Alerts".
+      description: Specify which type of alerts you want. The possible values are "Asset Alerts" or "User Alerts".
       isArray: false
       name: alert_type
       predefined:
@@ -650,15 +617,12 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: List all the alerts tracked within your enterprise for the specified
-      time range. Both the parsed alerts and their corresponding raw alert logs are
-      returned.
+    description: List all the alerts tracked within your enterprise for the specified time range. Both the parsed alerts and their corresponding raw alert logs are returned.
     execution: false
     name: gcb-list-alerts
     outputs:
     - contextPath: GoogleChronicleBackstory.Alert.AssetName
-      description: The asset identifier. It can be IP Address, MAC Address, Hostname
-        or Product ID.
+      description: The asset identifier. It can be IP Address, MAC Address, Hostname or Product ID.
       type: String
     - contextPath: GoogleChronicleBackstory.Alert.AlertInfo.Name
       description: The name of the alert.
@@ -696,8 +660,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: false
-      description: Specify the identifier type of the asset you are investigating.
-        The possible values are Host Name, IP Address, MAC Address or Product ID.
+      description: Specify the identifier type of the asset you are investigating. The possible values are Host Name, IP Address, MAC Address or Product ID.
       isArray: false
       name: asset_identifier_type
       predefined:
@@ -715,8 +678,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Get events that are discovered during the interval specified. If
-        configured, overrides the start_time and end_time arguments.
+      description: Get events that are discovered during the interval specified. If configured, overrides the start_time and end_time arguments.
       isArray: false
       name: preset_time_range
       predefined:
@@ -727,53 +689,32 @@ script:
       required: false
       secret: false
     - default: false
-      description: ' The value of the start time for your request. The format of Date
-        should comply with RFC 3339 (e.g. 2002-10-02T15:00:00Z) or relative time.
-        If not supplied, the product considers UTC time corresponding to 2 hours earlier
-        than current time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.
-        Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours, 01 Mar 2021, 01
-        Feb 2021 04:45:33, 15 Jun.'
+      description: ' The value of the start time for your request. The format of Date should comply with RFC 3339 (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied, the product considers UTC time corresponding to 2 hours earlier than current time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours. Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours, 01 Mar 2021, 01 Feb 2021 04:45:33, 15 Jun.'
       isArray: false
       name: start_time
       required: false
       secret: false
     - default: false
-      description: 'The value of the end time for your request. The format of Date
-        should comply with RFC 3339 (e.g. 2002-10-02T15:00:00Z) or relative time.
-        If not supplied, the product considers current UTC time. Formats: YYYY-MM-ddTHH:mm:ssZ,
-        YYYY-MM-dd, N days, N hours. Example: 2020-05-01T00:00:00Z, 2020-05-01, 2
-        days, 5 hours, 01 Mar 2021, 01 Feb 2021 04:45:33, 15 Jun.'
+      description: 'The value of the end time for your request. The format of Date should comply with RFC 3339 (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied, the product considers current UTC time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours. Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours, 01 Mar 2021, 01 Feb 2021 04:45:33, 15 Jun.'
       isArray: false
       name: end_time
       required: false
       secret: false
     - default: false
       defaultValue: '10000'
-      description: Specify the maximum number of events to fetch. You can specify
-        between 1 and 10000.
+      description: Specify the maximum number of events to fetch. You can specify between 1 and 10000.
       isArray: false
       name: page_size
       required: false
       secret: false
     - default: false
-      description: 'Specify the reference time for the asset you are investigating,
-        in RFC 3339 format (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied,
-        the product considers start time as reference time. Formats: YYYY-MM-ddTHH:mm:ssZ,
-        YYYY-MM-dd, N days, N hours. Example: 2020-05-01T00:00:00Z, 2020-05-01, 2
-        days, 5 hours, 01 Mar 2021, 01 Feb 2021 04:45:33, 15 Jun.'
+      description: 'Specify the reference time for the asset you are investigating, in RFC 3339 format (e.g. 2002-10-02T15:00:00Z) or relative time. If not supplied, the product considers start time as reference time. Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours. Example: 2020-05-01T00:00:00Z, 2020-05-01, 2 days, 5 hours, 01 Mar 2021, 01 Feb 2021 04:45:33, 15 Jun.'
       isArray: false
       name: reference_time
       required: false
       secret: false
     deprecated: false
-    description: List all of the events discovered within your enterprise on a particular
-      device within the specified time range. If you receive the maximum number of
-      events you specified using the page_size parameter (or 100, the default), there
-      might still be more events within your Chronicle account. You can narrow the
-      time range and issue the call again to ensure you have visibility into all possible
-      events. This command returns more than 60 different types of events. Any event
-      would have only specific output context set. Refer the UDM documentation to
-      figure out the output properties specific to the event types.
+    description: List all of the events discovered within your enterprise on a particular device within the specified time range. If you receive the maximum number of events you specified using the page_size parameter (or 100, the default), there might still be more events within your Chronicle account. You can narrow the time range and issue the call again to ensure you have visibility into all possible events. This command returns more than 60 different types of events. Any event would have only specific output context set. Refer the UDM documentation to figure out the output properties specific to the event types.
     execution: false
     name: gcb-list-events
     outputs:
@@ -784,20 +725,16 @@ script:
       description: The GMT timestamp when the event was generated.
       type: Date
     - contextPath: GoogleChronicleBackstory.Events.collectedTimestamp
-      description: The GMT timestamp when the event was collected by the vendor's
-        local collection infrastructure.
+      description: The GMT timestamp when the event was collected by the vendor's local collection infrastructure.
       type: Date
     - contextPath: GoogleChronicleBackstory.Events.description
       description: Human-readable description of the event.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.productEventType
-      description: Short, descriptive, human-readable, and product-specific event
-        name or type.
+      description: Short, descriptive, human-readable, and product-specific event name or type.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.productLogId
-      description: A vendor-specific event identifier to uniquely identify the event
-        (a GUID). Users might use this identifier to search the vendor's proprietary
-        console for the event in question.
+      description: A vendor-specific event identifier to uniquely identify the event (a GUID). Users might use this identifier to search the vendor's proprietary console for the event in question.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.productName
       description: Specifies the name of the product.
@@ -806,8 +743,7 @@ script:
       description: Specifies the version of the product.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.urlBackToProduct
-      description: URL linking to a relevant website where you can view more information
-        about this specific event or the general event category.
+      description: URL linking to a relevant website where you can view more information about this specific event or the general event category.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.vendorName
       description: Specifies the product vendor's name.
@@ -834,8 +770,7 @@ script:
       description: IP address associated with a network connection.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.principal.port
-      description: Source or destination network port number when a specific network
-        connection is described within an event.
+      description: Source or destination network port number when a specific network connection is described within an event.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.principal.mac
       description: MAC addresses associated with a device.
@@ -907,12 +842,10 @@ script:
       description: Stores the process ID.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.principal.registry.registryKey
-      description: Stores the registry key associated with an application or system
-        component.
+      description: Stores the registry key associated with an application or system component.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.principal.registry.registryValueName
-      description: Stores the name of the registry value associated with an application
-        or system component.
+      description: Stores the name of the registry value associated with an application or system component.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.principal.registry.registryValueData
       description: Stores the data associated with a registry value.
@@ -948,8 +881,7 @@ script:
       description: Stores the user ID.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.principal.user.windowsSid
-      description: Stores the Microsoft Windows security identifier (SID) associated
-        with a user.
+      description: Stores the Microsoft Windows security identifier (SID) associated with a user.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.target.assetId
       description: Vendor-specific unique device identifier.
@@ -973,8 +905,7 @@ script:
       description: IP address associated with a network connection.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.target.port
-      description: Source or destination network port number when a specific network
-        connection is described within an event.
+      description: Source or destination network port number when a specific network connection is described within an event.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.target.mac
       description: One or more MAC addresses associated with a device.
@@ -1046,12 +977,10 @@ script:
       description: Stores the process ID.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.target.registry.registryKey
-      description: Stores the registry key associated with an application or system
-        component.
+      description: Stores the registry key associated with an application or system component.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.target.registry.registryValueName
-      description: Stores the name of the registry value associated with an application
-        or system component.
+      description: Stores the name of the registry value associated with an application or system component.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.target.registry.registryValueData
       description: Stores the data associated with a registry value.
@@ -1087,8 +1016,7 @@ script:
       description: Stores the user ID.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.target.user.windowsSid
-      description: Stores the Microsoft Windows security identifier (SID) associated
-        with a user.
+      description: Stores the Microsoft Windows security identifier (SID) associated with a user.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.intermediary.assetId
       description: Vendor-specific unique device identifier.
@@ -1112,8 +1040,7 @@ script:
       description: IP address associated with a network connection.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.intermediary.port
-      description: Source or destination network port number when a specific network
-        connection is described within an event.
+      description: Source or destination network port number when a specific network connection is described within an event.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.intermediary.mac
       description: One or more MAC addresses associated with a device.
@@ -1185,12 +1112,10 @@ script:
       description: Stores the process ID.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.intermediary.registry.registryKey
-      description: Stores the registry key associated with an application or system
-        component.
+      description: Stores the registry key associated with an application or system component.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.intermediary.registry.registryValueName
-      description: Stores the name of the registry value associated with an application
-        or system component.
+      description: Stores the name of the registry value associated with an application or system component.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.intermediary.registry.registryValueData
       description: Stores the data associated with a registry value.
@@ -1226,8 +1151,7 @@ script:
       description: Stores the user ID.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.intermediary.user.windowsSid
-      description: Stores the Microsoft Windows security identifier (SID) associated
-        with a user.
+      description: Stores the Microsoft Windows security identifier (SID) associated with a user.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.src.assetId
       description: Vendor-specific unique device identifier.
@@ -1251,8 +1175,7 @@ script:
       description: IP address associated with a network connection.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.src.port
-      description: Source or destination network port number when a specific network
-        connection is described within an event.
+      description: Source or destination network port number when a specific network connection is described within an event.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.src.mac
       description: One or more MAC addresses associated with a device.
@@ -1324,12 +1247,10 @@ script:
       description: Stores the process ID.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.src.registry.registryKey
-      description: Stores the registry key associated with an application or system
-        component.
+      description: Stores the registry key associated with an application or system component.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.src.registry.registryValueName
-      description: Stores the name of the registry value associated with an application
-        or system component.
+      description: Stores the name of the registry value associated with an application or system component.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.src.registry.registryValueData
       description: Stores the data associated with a registry value.
@@ -1365,8 +1286,7 @@ script:
       description: Stores the user ID.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.src.user.windowsSid
-      description: Stores the Microsoft Windows security identifier (SID) associated
-        with a user.
+      description: Stores the Microsoft Windows security identifier (SID) associated with a user.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.observer.assetId
       description: Vendor-specific unique device identifier.
@@ -1390,8 +1310,7 @@ script:
       description: IP address associated with a network connection.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.observer.port
-      description: Source or destination network port number when a specific network
-        connection is described within an event.
+      description: Source or destination network port number when a specific network connection is described within an event.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.observer.mac
       description: One or more MAC addresses associated with a device.
@@ -1463,12 +1382,10 @@ script:
       description: Stores the process ID.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.observer.registry.registryKey
-      description: Stores the registry key associated with an application or system
-        component.
+      description: Stores the registry key associated with an application or system component.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.observer.registry.registryValueName
-      description: Stores the name of the registry value associated with an application
-        or system component.
+      description: Stores the name of the registry value associated with an application or system component.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.observer.registry.registryValueData
       description: Stores the data associated with a registry value.
@@ -1504,8 +1421,7 @@ script:
       description: Stores the user ID.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.observer.user.windowsSid
-      description: Stores the Microsoft Windows security identifier (SID) associated
-        with a user.
+      description: Stores the Microsoft Windows security identifier (SID) associated with a user.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.about.assetId
       description: Vendor-specific unique device identifier.
@@ -1529,8 +1445,7 @@ script:
       description: IP address associated with a network connection.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.about.port
-      description: Source or destination network port number when a specific network
-        connection is described within an event.
+      description: Source or destination network port number when a specific network connection is described within an event.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.about.mac
       description: One or more MAC addresses associated with a device.
@@ -1602,12 +1517,10 @@ script:
       description: Stores the process ID.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.about.registry.registryKey
-      description: Stores the registry key associated with an application or system
-        component.
+      description: Stores the registry key associated with an application or system component.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.about.registry.registryValueName
-      description: Stores the name of the registry value associated with an application
-        or system component.
+      description: Stores the name of the registry value associated with an application or system component.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.about.registry.registryValueData
       description: Stores the data associated with a registry value.
@@ -1643,8 +1556,7 @@ script:
       description: Stores the user ID.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.about.user.windowsSid
-      description: Stores the Microsoft Windows security identifier (SID) associated
-        with a user.
+      description: Stores the Microsoft Windows security identifier (SID) associated with a user.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.network.applicationProtocol
       description: Indicates the network application protocol.
@@ -1695,8 +1607,7 @@ script:
       description: Client identifier.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.network.dhcp.seconds
-      description: Seconds elapsed since the client began the address acquisition/renewal
-        process.
+      description: Seconds elapsed since the client began the address acquisition/renewal process.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.network.dhcp.sname
       description: Name of the server which the client has requested to boot from.
@@ -1732,8 +1643,7 @@ script:
       description: Set to true if the event is a DNS response.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.network.dns.opcode
-      description: Stores the DNS OpCode used to specify the type of DNS query (standard,
-        inverse, server status, etc.).
+      description: Stores the DNS OpCode used to specify the type of DNS query (standard, inverse, server status, etc.).
       type: String
     - contextPath: GoogleChronicleBackstory.Events.network.dns.recursionAvailable
       description: Set to true if a recursive DNS lookup is available.
@@ -1742,8 +1652,7 @@ script:
       description: Set to true if a recursive DNS lookup is requested.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.network.dns.responseCode
-      description: Stores the DNS response code as defined by RFC 1035, Domain Names
-        - Implementation and Specification.
+      description: Stores the DNS response code as defined by RFC 1035, Domain Names - Implementation and Specification.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.network.dns.truncated
       description: Set to true if this is a truncated DNS response.
@@ -1758,64 +1667,55 @@ script:
       description: Stores the code specifying the type of the query.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.network.dns.answers.binaryData
-      description: Stores the raw bytes of any non-UTF8 strings that might be included
-        as part of a DNS response.
+      description: Stores the raw bytes of any non-UTF8 strings that might be included as part of a DNS response.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.network.dns.answers.class
       description: Stores the code specifying the class of the resource record.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.network.dns.answers.data
-      description: Stores the payload or response to the DNS question for all responses
-        encoded in UTF-8 format.
+      description: Stores the payload or response to the DNS question for all responses encoded in UTF-8 format.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.network.dns.answers.name
       description: Stores the name of the owner of the resource record.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.network.dns.answers.ttl
-      description: Stores the time interval for which the resource record can be cached
-        before the source of the information should again be queried.
+      description: Stores the time interval for which the resource record can be cached before the source of the information should again be queried.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.network.dns.answers.type
       description: Stores the code specifying the type of the resource record.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.network.dns.authority.binaryData
-      description: Stores the raw bytes of any non-UTF8 strings that might be included
-        as part of a DNS response.
+      description: Stores the raw bytes of any non-UTF8 strings that might be included as part of a DNS response.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.network.dns.authority.class
       description: Stores the code specifying the class of the resource record.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.network.dns.authority.data
-      description: Stores the payload or response to the DNS question for all responses
-        encoded in UTF-8 format.
+      description: Stores the payload or response to the DNS question for all responses encoded in UTF-8 format.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.network.dns.authority.name
       description: Stores the name of the owner of the resource record.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.network.dns.authority.ttl
-      description: Stores the time interval for which the resource record can be cached
-        before the source of the information should again be queried.
+      description: Stores the time interval for which the resource record can be cached before the source of the information should again be queried.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.network.dns.authority.type
       description: Stores the code specifying the type of the resource record.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.network.dns.additional.binaryData
-      description: Stores the raw bytes of any non-UTF8 strings that might be included
-        as part of a DNS response.
+      description: Stores the raw bytes of any non-UTF8 strings that might be included as part of a DNS response.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.network.dns.additional.class
       description: Stores the code specifying the class of the resource record.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.network.dns.additional.data
-      description: Stores the payload or response to the DNS question for all responses
-        encoded in UTF-8 format.
+      description: Stores the payload or response to the DNS question for all responses encoded in UTF-8 format.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.network.dns.additional.name
       description: Stores the name of the owner of the resource record.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.network.dns.additional.ttl
-      description: Stores the time interval for which the resource record can be cached
-        before the source of the information should again be queried.
+      description: Stores the time interval for which the resource record can be cached before the source of the information should again be queried.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.network.dns.additional.type
       description: Stores the code specifying the type of the resource record.
@@ -1851,17 +1751,13 @@ script:
       description: Stores the URL for the HTTP referer.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.network.http.responseCode
-      description: Stores the HTTP response status code, which indicates whether a
-        specific HTTP request has been successfully completed.
+      description: Stores the HTTP response status code, which indicates whether a specific HTTP request has been successfully completed.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.network.http.useragent
-      description: Stores the User-Agent request header which includes the application
-        type, operating system, software vendor or software version of the requesting
-        software user agent.
+      description: Stores the User-Agent request header which includes the application type, operating system, software vendor or software version of the requesting software user agent.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.authentication.authType
-      description: Type of system an authentication event is associated with (Chronicle
-        UDM).
+      description: Type of system an authentication event is associated with (Chronicle UDM).
       type: String
     - contextPath: GoogleChronicleBackstory.Events.authentication.mechanism
       description: Mechanism(s) used for authentication.
@@ -1876,16 +1772,13 @@ script:
       description: Specify a security category.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.securityResult.confidence
-      description: Specify a confidence with regards to a security event as estimated
-        by the product.
+      description: Specify a confidence with regards to a security event as estimated by the product.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.securityResult.confidenceDetails
-      description: Additional detail with regards to the confidence of a security
-        event as estimated by the product vendor.
+      description: Additional detail with regards to the confidence of a security event as estimated by the product vendor.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.securityResult.priority
-      description: Specify a priority with regards to a security event as estimated
-        by the product vendor.
+      description: Specify a priority with regards to a security event as estimated by the product vendor.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.securityResult.priorityDetails
       description: Vendor-specific information about the security result priority.
@@ -1897,8 +1790,7 @@ script:
       description: Name of the security rule.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.securityResult.severity
-      description: Severity of a security event as estimated by the product vendor
-        using values defined by the Chronicle UDM.
+      description: Severity of a security event as estimated by the product vendor using values defined by the Chronicle UDM.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.securityResult.severityDetails
       description: Severity for a security event as estimated by the product vendor.
@@ -1907,8 +1799,7 @@ script:
       description: Name of the security threat.
       type: String
     - contextPath: GoogleChronicleBackstory.Events.securityResult.urlBackToProduct
-      description: URL to direct you to the source product console for this security
-        event.
+      description: URL to direct you to the source product console for this security event.
       type: String
   - arguments:
     - default: true
@@ -1952,16 +1843,13 @@ script:
       secret: false
     - default: false
       defaultValue: '100'
-      description: Specify the limit on the number of detections to display. You can
-        specify between 1 and 1000.
+      description: Specify the limit on the number of detections to display. You can specify between 1 and 1000.
       isArray: false
       name: page_size
       required: false
       secret: false
     - default: false
-      description: A page token received from a previous call. Provide this to retrieve
-        the subsequent page. If the page token is configured, overrides the detection
-        start and end time arguments.
+      description: A page token received from a previous call. Provide this to retrieve the subsequent page. If the page token is configured, overrides the detection start and end time arguments.
       isArray: false
       name: page_token
       required: false
@@ -2012,8 +1900,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Return the detections for the specified version of a rule, the latest
-      version of a rule, all versions of a rule, or all versions of all rules.
+    description: Return the detections for the specified version of a rule, the latest version of a rule, all versions of a rule, or all versions of all rules.
     execution: false
     name: gcb-list-detections
     outputs:
@@ -2036,8 +1923,7 @@ script:
       description: The end time of the window the detection was found in.
       type: Date
     - contextPath: GoogleChronicleBackstory.Detections.alertState
-      description: Indicates whether the rule generating this detection currently
-        has alerting enabled or disabled.
+      description: Indicates whether the rule generating this detection currently has alerting enabled or disabled.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.urlBackToProduct
       description: URL pointing to the Chronicle UI for this detection.
@@ -2052,8 +1938,7 @@ script:
       description: The time period the detection was found in.
       type: Date
     - contextPath: GoogleChronicleBackstory.Detections.ruleType
-      description: Whether the rule generating this detection is a single event or
-        multi-event rule.
+      description: Whether the rule generating this detection is a single event or multi-event rule.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.detectionFields.key
       description: The key for a field specified in the rule, for MULTI_EVENT rules.
@@ -2083,13 +1968,10 @@ script:
       description: Human-readable description of the event.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.productEventType
-      description: Short, descriptive, human-readable, and product-specific event
-        name or type.
+      description: Short, descriptive, human-readable, and product-specific event name or type.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.productLogId
-      description: A vendor-specific event identifier to uniquely identify the event
-        (a GUID). Users might use this identifier to search the vendor's proprietary
-        console for the event in question.
+      description: A vendor-specific event identifier to uniquely identify the event (a GUID). Users might use this identifier to search the vendor's proprietary console for the event in question.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.productName
       description: Specifies the name of the product.
@@ -2098,8 +1980,7 @@ script:
       description: Specifies the version of the product.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.urlBackToProduct
-      description: URL linking to a relevant website where you can view more information
-        about this specific event or the general event category.
+      description: URL linking to a relevant website where you can view more information about this specific event or the general event category.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.vendorName
       description: Specifies the product vendor's name.
@@ -2126,8 +2007,7 @@ script:
       description: IP address associated with a network connection.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.principal.port
-      description: Source or destination network port number when a specific network
-        connection is described within an event.
+      description: Source or destination network port number when a specific network connection is described within an event.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.principal.mac
       description: MAC addresses associated with a device.
@@ -2199,12 +2079,10 @@ script:
       description: Stores the process ID.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.principal.registry.registryKey
-      description: Stores the registry key associated with an application or system
-        component.
+      description: Stores the registry key associated with an application or system component.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.principal.registry.registryValueName
-      description: Stores the name of the registry value associated with an application
-        or system component.
+      description: Stores the name of the registry value associated with an application or system component.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.principal.registry.registryValueData
       description: Stores the data associated with a registry value.
@@ -2240,8 +2118,7 @@ script:
       description: Stores the user ID.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.principal.user.windowsSid
-      description: Stores the Microsoft Windows security identifier (SID) associated
-        with a user.
+      description: Stores the Microsoft Windows security identifier (SID) associated with a user.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.target.assetId
       description: Vendor-specific unique device identifier.
@@ -2265,8 +2142,7 @@ script:
       description: IP address associated with a network connection.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.target.port
-      description: Source or destination network port number when a specific network
-        connection is described within an event.
+      description: Source or destination network port number when a specific network connection is described within an event.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.target.mac
       description: One or more MAC addresses associated with a device.
@@ -2338,12 +2214,10 @@ script:
       description: Stores the process ID.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.target.registry.registryKey
-      description: Stores the registry key associated with an application or system
-        component.
+      description: Stores the registry key associated with an application or system component.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.target.registry.registryValueName
-      description: Stores the name of the registry value associated with an application
-        or system component.
+      description: Stores the name of the registry value associated with an application or system component.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.target.registry.registryValueData
       description: Stores the data associated with a registry value.
@@ -2379,8 +2253,7 @@ script:
       description: Stores the user ID.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.target.user.windowsSid
-      description: Stores the Microsoft Windows security identifier (SID) associated
-        with a user.
+      description: Stores the Microsoft Windows security identifier (SID) associated with a user.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.assetId
       description: Vendor-specific unique device identifier.
@@ -2404,8 +2277,7 @@ script:
       description: IP address associated with a network connection.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.port
-      description: Source or destination network port number when a specific network
-        connection is described within an event.
+      description: Source or destination network port number when a specific network connection is described within an event.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.mac
       description: One or more MAC addresses associated with a device.
@@ -2477,12 +2349,10 @@ script:
       description: Stores the process ID.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.registry.registryKey
-      description: Stores the registry key associated with an application or system
-        component.
+      description: Stores the registry key associated with an application or system component.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.registry.registryValueName
-      description: Stores the name of the registry value associated with an application
-        or system component.
+      description: Stores the name of the registry value associated with an application or system component.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.registry.registryValueData
       description: Stores the data associated with a registry value.
@@ -2518,8 +2388,7 @@ script:
       description: Stores the user ID.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.intermediary.user.windowsSid
-      description: Stores the Microsoft Windows security identifier (SID) associated
-        with a user.
+      description: Stores the Microsoft Windows security identifier (SID) associated with a user.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.src.assetId
       description: Vendor-specific unique device identifier.
@@ -2543,8 +2412,7 @@ script:
       description: IP address associated with a network connection.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.src.port
-      description: Source or destination network port number when a specific network
-        connection is described within an event.
+      description: Source or destination network port number when a specific network connection is described within an event.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.src.mac
       description: One or more MAC addresses associated with a device.
@@ -2616,12 +2484,10 @@ script:
       description: Stores the process ID.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.src.registry.registryKey
-      description: Stores the registry key associated with an application or system
-        component.
+      description: Stores the registry key associated with an application or system component.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.src.registry.registryValueName
-      description: Stores the name of the registry value associated with an application
-        or system component.
+      description: Stores the name of the registry value associated with an application or system component.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.src.registry.registryValueData
       description: Stores the data associated with a registry value.
@@ -2657,8 +2523,7 @@ script:
       description: Stores the user ID.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.src.user.windowsSid
-      description: Stores the Microsoft Windows security identifier (SID) associated
-        with a user.
+      description: Stores the Microsoft Windows security identifier (SID) associated with a user.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.observer.assetId
       description: Vendor-specific unique device identifier.
@@ -2682,8 +2547,7 @@ script:
       description: IP address associated with a network connection.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.observer.port
-      description: Source or destination network port number when a specific network
-        connection is described within an event.
+      description: Source or destination network port number when a specific network connection is described within an event.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.observer.mac
       description: One or more MAC addresses associated with a device.
@@ -2755,12 +2619,10 @@ script:
       description: Stores the process ID.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.observer.registry.registryKey
-      description: Stores the registry key associated with an application or system
-        component.
+      description: Stores the registry key associated with an application or system component.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.observer.registry.registryValueName
-      description: Stores the name of the registry value associated with an application
-        or system component.
+      description: Stores the name of the registry value associated with an application or system component.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.observer.registry.registryValueData
       description: Stores the data associated with a registry value.
@@ -2796,8 +2658,7 @@ script:
       description: Stores the user ID.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.observer.user.windowsSid
-      description: Stores the Microsoft Windows security identifier (SID) associated
-        with a user.
+      description: Stores the Microsoft Windows security identifier (SID) associated with a user.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.about.assetId
       description: Vendor-specific unique device identifier.
@@ -2821,8 +2682,7 @@ script:
       description: IP address associated with a network connection.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.about.port
-      description: Source or destination network port number when a specific network
-        connection is described within an event.
+      description: Source or destination network port number when a specific network connection is described within an event.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.about.mac
       description: One or more MAC addresses associated with a device.
@@ -2894,12 +2754,10 @@ script:
       description: Stores the process ID.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.about.registry.registryKey
-      description: Stores the registry key associated with an application or system
-        component.
+      description: Stores the registry key associated with an application or system component.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.about.registry.registryValueName
-      description: Stores the name of the registry value associated with an application
-        or system component.
+      description: Stores the name of the registry value associated with an application or system component.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.about.registry.registryValueData
       description: Stores the data associated with a registry value.
@@ -2935,8 +2793,7 @@ script:
       description: Stores the user ID.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.about.user.windowsSid
-      description: Stores the Microsoft Windows security identifier (SID) associated
-        with a user.
+      description: Stores the Microsoft Windows security identifier (SID) associated with a user.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.applicationProtocol
       description: Indicates the network application protocol.
@@ -2987,8 +2844,7 @@ script:
       description: Client identifier.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.dhcp.seconds
-      description: Seconds elapsed since the client began the address acquisition/renewal
-        process.
+      description: Seconds elapsed since the client began the address acquisition/renewal process.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.dhcp.sname
       description: Name of the server which the client has requested to boot from.
@@ -3024,8 +2880,7 @@ script:
       description: Set to true if the event is a DNS response.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.opcode
-      description: Stores the DNS OpCode used to specify the type of DNS query (standard,
-        inverse, server status, etc.).
+      description: Stores the DNS OpCode used to specify the type of DNS query (standard, inverse, server status, etc.).
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.recursionAvailable
       description: Set to true if a recursive DNS lookup is available.
@@ -3034,8 +2889,7 @@ script:
       description: Set to true if a recursive DNS lookup is requested.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.responseCode
-      description: Stores the DNS response code as defined by RFC 1035, Domain Names
-        - Implementation and Specification.
+      description: Stores the DNS response code as defined by RFC 1035, Domain Names - Implementation and Specification.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.truncated
       description: Set to true if this is a truncated DNS response.
@@ -3050,64 +2904,55 @@ script:
       description: Stores the code specifying the type of the query.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.answers.binaryData
-      description: Stores the raw bytes of any non-UTF8 strings that might be included
-        as part of a DNS response.
+      description: Stores the raw bytes of any non-UTF8 strings that might be included as part of a DNS response.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.answers.class
       description: Stores the code specifying the class of the resource record.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.answers.data
-      description: Stores the payload or response to the DNS question for all responses
-        encoded in UTF-8 format.
+      description: Stores the payload or response to the DNS question for all responses encoded in UTF-8 format.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.answers.name
       description: Stores the name of the owner of the resource record.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.answers.ttl
-      description: Stores the time interval for which the resource record can be cached
-        before the source of the information should again be queried.
+      description: Stores the time interval for which the resource record can be cached before the source of the information should again be queried.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.answers.type
       description: Stores the code specifying the type of the resource record.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.authority.binaryData
-      description: Stores the raw bytes of any non-UTF8 strings that might be included
-        as part of a DNS response.
+      description: Stores the raw bytes of any non-UTF8 strings that might be included as part of a DNS response.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.authority.class
       description: Stores the code specifying the class of the resource record.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.authority.data
-      description: Stores the payload or response to the DNS question for all responses
-        encoded in UTF-8 format.
+      description: Stores the payload or response to the DNS question for all responses encoded in UTF-8 format.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.authority.name
       description: Stores the name of the owner of the resource record.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.authority.ttl
-      description: Stores the time interval for which the resource record can be cached
-        before the source of the information should again be queried.
+      description: Stores the time interval for which the resource record can be cached before the source of the information should again be queried.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.authority.type
       description: Stores the code specifying the type of the resource record.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.additional.binaryData
-      description: Stores the raw bytes of any non-UTF8 strings that might be included
-        as part of a DNS response.
+      description: Stores the raw bytes of any non-UTF8 strings that might be included as part of a DNS response.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.additional.class
       description: Stores the code specifying the class of the resource record.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.additional.data
-      description: Stores the payload or response to the DNS question for all responses
-        encoded in UTF-8 format.
+      description: Stores the payload or response to the DNS question for all responses encoded in UTF-8 format.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.additional.name
       description: Stores the name of the owner of the resource record.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.additional.ttl
-      description: Stores the time interval for which the resource record can be cached
-        before the source of the information should again be queried.
+      description: Stores the time interval for which the resource record can be cached before the source of the information should again be queried.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.dns.additional.type
       description: Stores the code specifying the type of the resource record.
@@ -3143,17 +2988,13 @@ script:
       description: Stores the URL for the HTTP referer.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.http.responseCode
-      description: Stores the HTTP response status code, which indicates whether a
-        specific HTTP request has been successfully completed.
+      description: Stores the HTTP response status code, which indicates whether a specific HTTP request has been successfully completed.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.network.http.useragent
-      description: Stores the User-Agent request header which includes the application
-        type, operating system, software vendor or software version of the requesting
-        software user agent.
+      description: Stores the User-Agent request header which includes the application type, operating system, software vendor or software version of the requesting software user agent.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.authentication.authType
-      description: Type of system an authentication event is associated with (Chronicle
-        UDM).
+      description: Type of system an authentication event is associated with (Chronicle UDM).
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.authentication.mechanism
       description: Mechanism(s) used for authentication.
@@ -3168,16 +3009,13 @@ script:
       description: Specify a security category.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.securityResult.confidence
-      description: Specify a confidence with regards to a security event as estimated
-        by the product.
+      description: Specify a confidence with regards to a security event as estimated by the product.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.securityResult.confidenceDetails
-      description: Additional detail with regards to the confidence of a security
-        event as estimated by the product vendor.
+      description: Additional detail with regards to the confidence of a security event as estimated by the product vendor.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.securityResult.priority
-      description: Specify a priority with regards to a security event as estimated
-        by the product vendor.
+      description: Specify a priority with regards to a security event as estimated by the product vendor.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.securityResult.priorityDetails
       description: Vendor-specific information about the security result priority.
@@ -3189,8 +3027,7 @@ script:
       description: Name of the security rule.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.securityResult.severity
-      description: Severity of a security event as estimated by the product vendor
-        using values defined by the Chronicle UDM.
+      description: Severity of a security event as estimated by the product vendor using values defined by the Chronicle UDM.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.securityResult.severityDetails
       description: Severity for a security event as estimated by the product vendor.
@@ -3199,29 +3036,24 @@ script:
       description: Name of the security threat.
       type: String
     - contextPath: GoogleChronicleBackstory.Detections.collectionElements.references.securityResult.urlBackToProduct
-      description: URL to direct you to the source product console for this security
-        event.
+      description: URL to direct you to the source product console for this security event.
       type: String
     - contextPath: GoogleChronicleBackstory.Token.name
-      description: The name of the command to which the value of the nextPageToken
-        corresponds.
+      description: The name of the command to which the value of the nextPageToken corresponds.
       type: String
     - contextPath: GoogleChronicleBackstory.Token.nextPageToken
-      description: A page token that can be provided to the next call to view the
-        next page of detections. Absent if this is the last page.
+      description: A page token that can be provided to the next call to view the next page of detections. Absent if this is the last page.
       type: String
   - arguments:
     - default: false
       defaultValue: '100'
-      description: Specify the maximum number of Rules to return. You can specify
-        between 1 and 1000.
+      description: Specify the maximum number of Rules to return. You can specify between 1 and 1000.
       isArray: false
       name: page_size
       required: false
       secret: false
     - default: false
-      description: A page token, received from a previous call.  Provide this to retrieve
-        the subsequent page.
+      description: A page token, received from a previous call.  Provide this to retrieve the subsequent page.
       isArray: false
       name: page_token
       required: false
@@ -3266,8 +3098,7 @@ script:
       description: Compilation state of the rule. It can be SUCCEEDED or FAILED.
       type: String
     - contextPath: GoogleChronicleBackstory.Rules.compilationError
-      description: A compilation error if compilationState is FAILED, absent if compilationState
-        is SUCCEEDED.
+      description: A compilation error if compilationState is FAILED, absent if compilationState is SUCCEEDED.
       type: String
     - contextPath: GoogleChronicleBackstory.Rules.Metadata.severity
       description: Severity for the rule.
@@ -3288,12 +3119,10 @@ script:
       description: Time at which the rule is updated.
       type: String
     - contextPath: GoogleChronicleBackstory.Token.name
-      description: The name of the command to which the value of the nextPageToken
-        corresponds.
+      description: The name of the command to which the value of the nextPageToken corresponds.
       type: String
     - contextPath: GoogleChronicleBackstory.Token.nextPageToken
-      description: A page token that can be provided to the next call to view the
-        next page of Rules. Absent if this is the last page.
+      description: A page token that can be provided to the next call to view the next page of Rules. Absent if this is the last page.
       type: String
   - arguments:
     - default: false
@@ -3303,8 +3132,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: Creates a new rule. By default the live rule status will be set to
-      disabled.
+    description: Creates a new rule. By default the live rule status will be set to disabled.
     execution: false
     name: gcb-create-rule
     outputs:
@@ -3333,12 +3161,10 @@ script:
       description: Compilation state of the rule. It can be SUCCEEDED or FAILED.
       type: String
     - contextPath: GoogleChronicleBackstory.Rules.compilationError
-      description: A compilation error if compilationState is FAILED, absent if compilationState
-        is SUCCEEDED.
+      description: A compilation error if compilationState is FAILED, absent if compilationState is SUCCEEDED.
       type: String
     - contextPath: GoogleChronicleBackstory.Rules.ruleType
-      description: Indicates the type of event in rule. It can be SINGLE_EVENT or
-        MULTI_EVENT.
+      description: Indicates the type of event in rule. It can be SINGLE_EVENT or MULTI_EVENT.
       type: String
     - contextPath: GoogleChronicleBackstory.Rules.metadata.severity
       description: Severity for the rule.
@@ -3395,12 +3221,10 @@ script:
       description: Compilation state of the rule. It can be SUCCEEDED or FAILED.
       type: String
     - contextPath: GoogleChronicleBackstory.Rules.compilationError
-      description: A compilation error if compilationState is FAILED, absent if compilationState
-        is SUCCEEDED.
+      description: A compilation error if compilationState is FAILED, absent if compilationState is SUCCEEDED.
       type: String
     - contextPath: GoogleChronicleBackstory.Rules.ruleType
-      description: Indicates the type of event in rule. It can be SINGLE_EVENT or
-        MULTI_EVENT.
+      description: Indicates the type of event in rule. It can be SINGLE_EVENT or MULTI_EVENT.
       type: String
     - contextPath: GoogleChronicleBackstory.Rules.metadata.severity
       description: Severity for the rule.
@@ -3446,8 +3270,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Rule text in YARA-L 2.0 format for the new version of the rule
-        to be created.
+      description: Rule text in YARA-L 2.0 format for the new version of the rule to be created.
       isArray: false
       name: rule_text
       required: true
@@ -3482,12 +3305,10 @@ script:
       description: Compilation state of the rule. It can be SUCCEEDED or FAILED.
       type: String
     - contextPath: GoogleChronicleBackstory.Rules.compilationError
-      description: A compilation error if compilationState is FAILED, absent if compilationState
-        is SUCCEEDED.
+      description: A compilation error if compilationState is FAILED, absent if compilationState is SUCCEEDED.
       type: String
     - contextPath: GoogleChronicleBackstory.Rules.ruleType
-      description: Indicates the type of event in rule. It can be SINGLE_EVENT or
-        MULTI_EVENT.
+      description: Indicates the type of event in rule. It can be SINGLE_EVENT or MULTI_EVENT.
       type: String
     - contextPath: GoogleChronicleBackstory.Rules.metadata.severity
       description: Severity for the rule.
@@ -3516,8 +3337,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: New alerting status for the Rule. Possible values are 'enable'
-        or 'disable'.
+      description: New alerting status for the Rule. Possible values are 'enable' or 'disable'.
       isArray: false
       name: alerting_status
       predefined:
@@ -3534,8 +3354,7 @@ script:
       description: Unique identifier for a Rule.
       type: String
     - contextPath: GoogleChronicleBackstory.RuleAlertingChange.actionStatus
-      description: Whether the alerting status for the rule is successfully updated
-        or not.
+      description: Whether the alerting status for the rule is successfully updated or not.
       type: String
     - contextPath: GoogleChronicleBackstory.RuleAlertingChange.alertingStatus
       description: New alerting status for the rule.
@@ -3549,8 +3368,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: New live rule status for the Rule. Possible values are 'enable'
-        or 'disable'.
+      description: New live rule status for the Rule. Possible values are 'enable' or 'disable'.
       isArray: false
       name: live_rule_status
       predefined:
@@ -3567,8 +3385,7 @@ script:
       description: Unique identifier for a Rule.
       type: String
     - contextPath: GoogleChronicleBackstory.LiveRuleStatusChange.actionStatus
-      description: Whether the live rule status for the rule is successfully updated
-        or not.
+      description: Whether the live rule status for the rule is successfully updated or not.
       type: String
     - contextPath: GoogleChronicleBackstory.LiveRuleStatusChange.liveRuleStatus
       description: New live rule status for the rule.
@@ -3606,8 +3423,7 @@ script:
     name: gcb-start-retrohunt
     outputs:
     - contextPath: GoogleChronicleBackstory.RetroHunt.retrohuntId
-      description: Unique identifier for a retrohunt, defined and returned by the
-        server.
+      description: Unique identifier for a retrohunt, defined and returned by the server.
       type: String
     - contextPath: GoogleChronicleBackstory.RetroHunt.ruleId
       description: Unique identifier for a Rule.
@@ -3625,8 +3441,7 @@ script:
       description: Start time for the retrohunt.
       type: Date
     - contextPath: GoogleChronicleBackstory.RetroHunt.state
-      description: Current state of the retrohunt. It can be STATE_UNSPECIFIED, RUNNING,
-        DONE, or CANCELLED.
+      description: Current state of the retrohunt. It can be STATE_UNSPECIFIED, RUNNING, DONE, or CANCELLED.
       type: String
   - arguments:
     - default: false
@@ -3636,8 +3451,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Unique identifier for a retrohunt, defined and returned by the
-        server. You must specify exactly one retrohunt identifier.
+      description: Unique identifier for a retrohunt, defined and returned by the server. You must specify exactly one retrohunt identifier.
       isArray: false
       name: retrohunt_id
       required: true
@@ -3648,8 +3462,7 @@ script:
     name: gcb-get-retrohunt
     outputs:
     - contextPath: GoogleChronicleBackstory.RetroHunt.retrohuntId
-      description: Unique identifier for a retrohunt, defined and returned by the
-        server.
+      description: Unique identifier for a retrohunt, defined and returned by the server.
       type: String
     - contextPath: GoogleChronicleBackstory.RetroHunt.ruleId
       description: Unique identifier for a Rule.
@@ -3670,16 +3483,14 @@ script:
       description: End time for the retrohunt.
       type: Date
     - contextPath: GoogleChronicleBackstory.RetroHunt.state
-      description: Current state of the retrohunt. It can be STATE_UNSPECIFIED, RUNNING,
-        DONE or CANCELLED.
+      description: Current state of the retrohunt. It can be STATE_UNSPECIFIED, RUNNING, DONE or CANCELLED.
       type: String
     - contextPath: GoogleChronicleBackstory.RetroHunt.progressPercentage
       description: Percentage progress towards retrohunt completion (0.00 to 100.00).
       type: Number
   - arguments:
     - default: false
-      description: Rule ID or Version ID of the rule whose retrohunts are to be listed.
-        If not supplied, retohunts for all versions of all rules will be listed.
+      description: Rule ID or Version ID of the rule whose retrohunts are to be listed. If not supplied, retohunts for all versions of all rules will be listed.
       isArray: false
       name: id
       required: false
@@ -3699,8 +3510,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Filter retrohunts based on their status. The possible values are
-        "RUNNING", "DONE", or "CANCELLED".
+      description: Filter retrohunts based on their status. The possible values are "RUNNING", "DONE", or "CANCELLED".
       isArray: false
       name: state
       predefined:
@@ -3711,15 +3521,13 @@ script:
       secret: false
     - default: false
       defaultValue: '100'
-      description: Specify the maximum number of retohunts to return. You can specify
-        between 1 and 1000.
+      description: Specify the maximum number of retohunts to return. You can specify between 1 and 1000.
       isArray: false
       name: page_size
       required: false
       secret: false
     - default: false
-      description: A page token, received from a previous call. Provide this to retrieve
-        the subsequent page.
+      description: A page token, received from a previous call. Provide this to retrieve the subsequent page.
       isArray: false
       name: page_token
       required: false
@@ -3730,8 +3538,7 @@ script:
     name: gcb-list-retrohunts
     outputs:
     - contextPath: GoogleChronicleBackstory.RetroHunt.retrohuntId
-      description: Unique identifier for a retrohunt, defined and returned by the
-        server.
+      description: Unique identifier for a retrohunt, defined and returned by the server.
       type: String
     - contextPath: GoogleChronicleBackstory.RetroHunt.ruleId
       description: Unique identifier for a Rule.
@@ -3752,8 +3559,7 @@ script:
       description: End time for the retrohunt.
       type: Date
     - contextPath: GoogleChronicleBackstory.RetroHunt.state
-      description: Current state of the retrohunt. It can be STATE_UNSPECIFIED, RUNNING,
-        DONE or CANCELLED.
+      description: Current state of the retrohunt. It can be STATE_UNSPECIFIED, RUNNING, DONE or CANCELLED.
       type: String
     - contextPath: GoogleChronicleBackstory.RetroHunt.progressPercentage
       description: Percentage progress towards retrohunt completion (0.00 to 100.00).
@@ -3766,8 +3572,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: Unique identifier for a retrohunt, defined and returned by the
-        server. You must specify exactly one retrohunt identifier.
+      description: Unique identifier for a retrohunt, defined and returned by the server. You must specify exactly one retrohunt identifier.
       isArray: false
       name: retrohunt_id
       required: true
@@ -3781,8 +3586,7 @@ script:
       description: Unique identifier for a Rule.
       type: String
     - contextPath: GoogleChronicleBackstory.RetroHunt.retrohuntId
-      description: Unique identifier for a retrohunt, defined and returned by the
-        server.
+      description: Unique identifier for a retrohunt, defined and returned by the server.
       type: String
     - contextPath: GoogleChronicleBackstory.RetroHunt.cancelled
       description: Whether the retrohunt is cancelled or not.
@@ -3837,8 +3641,7 @@ script:
   - arguments:
     - default: true
       defaultValue: '100'
-      description: Number of results to retrieve in the response. Maximum size allowed
-        is 1000.
+      description: Number of results to retrieve in the response. Maximum size allowed is 1000.
       isArray: false
       name: page_size
       required: false
@@ -3852,8 +3655,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: BASIC
-      description: Select option to control the returned response. BASIC will return
-        the metadata for the list, but not the full contents. FULL will return everything.
+      description: Select option to control the returned response. BASIC will return the metadata for the list, but not the full contents. FULL will return everything.
       isArray: false
       name: view
       predefined:
@@ -3888,8 +3690,7 @@ script:
     - auto: PREDEFINED
       default: true
       defaultValue: FULL
-      description: Select option to control the returned response. BASIC will return
-        the metadata for the list, but not the full contents. FULL will return everything.
+      description: Select option to control the returned response. BASIC will return the metadata for the list, but not the full contents. FULL will return everything.
       isArray: false
       name: view
       predefined:
@@ -3971,38 +3772,26 @@ script:
       required: true
       secret: false
     - default: false
-      description: "Start time for the time range of the rule being tested. The format\
-        \ of Date should comply with RFC 3339 (e.g. 2022-10-02T15:00:00Z) or relative\
-        \ time. \n\nFormats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.\n\
-        Example: 2022-05-01T00:00:00Z, 2022-05-01, 2 days, 5 hours, 01 Mar 2022, 01\
-        \ Feb 2022 04:45:33, 15 Jun.\n\n\nNote: The time window between start_time\
-        \ and end_time cannot be greater than 2 weeks."
+      description: "Start time for the time range of the rule being tested. The format of Date should comply with RFC 3339 (e.g. 2022-10-02T15:00:00Z) or relative time. \n\nFormats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.\nExample: 2022-05-01T00:00:00Z, 2022-05-01, 2 days, 5 hours, 01 Mar 2022, 01 Feb 2022 04:45:33, 15 Jun.\n\n\nNote: The time window between start_time and end_time cannot be greater than 2 weeks."
       isArray: false
       name: start_time
       required: true
       secret: false
     - default: false
-      description: "End time for the time range of the rule being tested. The format\
-        \ of Date should comply with RFC 3339 (e.g. 2022-10-02T15:00:00Z) or relative\
-        \ time. \n\nFormats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.\n\
-        Example: 2022-05-01T00:00:00Z, 2022-05-01, 2 days, 5 hours, 01 Mar 2022, 01\
-        \ Feb 2022 04:45:33, 15 Jun.\n\nNote: The time window between start_time and\
-        \ end_time cannot be greater than 2 weeks."
+      description: "End time for the time range of the rule being tested. The format of Date should comply with RFC 3339 (e.g. 2022-10-02T15:00:00Z) or relative time. \n\nFormats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.\nExample: 2022-05-01T00:00:00Z, 2022-05-01, 2 days, 5 hours, 01 Mar 2022, 01 Feb 2022 04:45:33, 15 Jun.\n\nNote: The time window between start_time and end_time cannot be greater than 2 weeks."
       isArray: false
       name: end_time
       required: true
       secret: false
     - default: true
       defaultValue: '1000'
-      description: 'Maximum number of results to return. Specify a value between 1
-        and 10,000. '
+      description: 'Maximum number of results to return. Specify a value between 1 and 10,000. '
       isArray: false
       name: max_results
       required: false
       secret: false
     deprecated: false
-    description: Test a rule over a specified time range. Return any errors and any
-      detections up to the specified maximum.
+    description: Test a rule over a specified time range. Return any errors and any detections up to the specified maximum.
     execution: false
     name: gcb-test-rule-stream
     outputs:
@@ -4013,8 +3802,7 @@ script:
       description: Name of the rule generating the detection, as parsed from ruleText.
       type: String
     - contextPath: GoogleChronicleBackstory.StreamRules.list.detection.detection.ruleType
-      description: Whether the rule generating this detection is a single event or
-        multi-event rule.
+      description: Whether the rule generating this detection is a single event or multi-event rule.
       type: String
     - contextPath: GoogleChronicleBackstory.StreamRules.list.detection.detection.ruleLabels
       description: Information about the rule
@@ -4029,9 +3817,7 @@ script:
       description: The end time of the window the detection was found in.
       type: Date
     - contextPath: GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.references.event.metadata.productLogId
-      description: A vendor-specific event identifier to uniquely identify the event
-        (a GUID). Users might use this identifier to search the vendor's proprietary
-        console for the event in question.
+      description: A vendor-specific event identifier to uniquely identify the event (a GUID). Users might use this identifier to search the vendor's proprietary console for the event in question.
       type: String
     - contextPath: GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.references.event.metadata.eventTimestamp
       description: The GMT timestamp when the event was generated.
@@ -4046,8 +3832,7 @@ script:
       description: Specifies the name of the product.
       type: String
     - contextPath: GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.references.event.metadata.productEventType
-      description: Short, descriptive, human-readable, and product-specific event
-        name or type.
+      description: Short, descriptive, human-readable, and product-specific event name or type.
       type: String
     - contextPath: GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.references.event.metadata.ingestedTimestamp
       description: The GMT timestamp when the event was ingested in the vendor's instance.
@@ -4065,8 +3850,7 @@ script:
       description: Stores the display name for the user.
       type: String
     - contextPath: GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.references.event.principal.user.windowsSid
-      description: Stores the Microsoft Windows security identifier (SID) associated
-        with a user.
+      description: Stores the Microsoft Windows security identifier (SID) associated with a user.
       type: String
     - contextPath: GoogleChronicleBackstory.StreamRules.list.detection.collectionElements.references.event.principal.user.emailAddresses
       description: Stores the email addresses for the user.
@@ -4140,7 +3924,7 @@ script:
     - contextPath: GoogleChronicleBackstory.StreamRules.list.detection.detectionTime
       description: The time period the detection was found in.
       type: Date
-  dockerimage: demisto/googleapi-python3:1.0.0.41311
+  dockerimage: demisto/googleapi-python3:1.0.0.48575
   feed: false
   isfetch: true
   longRunning: false

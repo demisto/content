@@ -56,7 +56,7 @@ subtype: python3
 system: false
 timeout: '0'
 type: python
-dockerimage: demisto/xslxwriter:1.0.0.43436
+dockerimage: demisto/xslxwriter:1.0.0.45070
 runas: DBotWeakRole
 runonce: false
 tests:

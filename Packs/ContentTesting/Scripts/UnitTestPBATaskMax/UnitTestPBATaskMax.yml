@@ -1,0 +1,22 @@
+commonfields:
+  id: UnitTestPBATaskMax
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ""
+dockerimage: demisto/python3:3.10.10.48392
+enabled: true
+name: UnitTestPBATaskMax
+comment: ""
+runas: DBotWeakRole
+runonce: false
+script: ''
+scripttarget: 0
+subtype: python3
+tags:
+- dynamic-section
+timeout: 300ns
+type: python
+fromversion: 6.5.0
+tests:
+- No tests (auto formatted)

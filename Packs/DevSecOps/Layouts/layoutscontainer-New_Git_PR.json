@@ -893,5 +893,6 @@
 	"id": "New Git PR",
 	"name": "New Git PR",
 	"fromVersion": "6.0.0",
-	"version": -1
+	"version": -1,
+ "marketplaces": ["xsoar"]
 }

@@ -29,14 +29,13 @@ filter
     xdm.target.host.ipv4_addresses = arraycreate(coalesce(source_ip, "")),
     xdm.source.host.ipv4_addresses = arraycreate(coalesce(destination_ip, "")),
     xdm.event.type = event_type,
-    xdm.event.outcome = action,
+    xdm.event.outcome = if(action ~= "block", XDM_CONST.OUTCOME_FAILED, action = "allow", XDM_CONST.OUTCOME_SUCCESS, action = null, null, to_string(action)),
     xdm.event.outcome_reason = message,
     xdm.source.process.executable.sha256 = sha_256,
     xdm.source.process.executable.filename = found_malisious,
     xdm.source.process.executable.path = url,
     xdm.alert.severity = priority,
     xdm.target.file.filename = file_name;
-
 filter
     _raw_log contains "urls src=" or (_raw_log contains "flows" and _raw_log contains "src=") or _raw_log contains "vpn_connectivity_change" or _raw_log contains "events dhcp" or _raw_log contains "Site-to-site VPN" or _raw_log contains "events"
 | alter appliance_name1 = arrayindex(regextract(_raw_log,"\.\d+\s(\w+)\s[events]"),0),
@@ -81,6 +80,7 @@ filter
     protocl = arrayindex(regextract(_raw_log,"protocol\=(\w+)"),0),
     protocl_type = arrayindex(regextract(_raw_log,"type\=(\d+)"),0)
 | alter
+    xdm.observer.name = appliance_name,
     xdm.source.ipv4 = source_ip,
     xdm.source.port = to_number(source_port),
     xdm.target.ipv4 = destination_ip,
@@ -89,7 +89,7 @@ filter
     xdm.target.interface = destination_mac,
     xdm.alert.description = Message,
     xdm.network.dhcp.dns_server = arraycreate(coalesce(Dns_server_ips, "")),
-    xdm.event.outcome = connectivity,
+    xdm.event.outcome = if(connectivity = "false", XDM_CONST.OUTCOME_FAILED, connectivity = "true", XDM_CONST.OUTCOME_SUCCESS, connectivity = null, null, to_string(connectivity)),    
     xdm.event.operation_sub_type = vpn_type,
     xdm.network.session_id = spi_unique_identifier,
     xdm.observer.unique_identifier = peer_unique_identifier,

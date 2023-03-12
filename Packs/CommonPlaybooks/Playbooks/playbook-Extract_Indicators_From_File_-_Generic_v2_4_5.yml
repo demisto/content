@@ -1989,3 +1989,6 @@ quiet: true
 tests:
 - Extract Indicators From File - Generic v2 - Test
 fromversion: 5.0.0
+marketplaces:
+  - xsoar
+  - marketplacev2

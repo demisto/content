@@ -31,6 +31,14 @@ FETCH_TIME = demisto.params().get('fetch_time')
 PROXIES = handle_proxy()
 TIME_UNIT_TO_MINUTES = {'minute': 1, 'hour': 60, 'day': 24 * 60, 'week': 7 * 24 * 60, 'month': 30 * 24 * 60,
                         'year': 365 * 24 * 60}
+DEFAULT_DISPOSITIONS = {
+    'True Positive - Suspicious Activity': 'disposition:1',
+    'Benign Positive - Suspicious But Expected': 'disposition:2',
+    'False Positive - Incorrect Analytic Logic': 'disposition:3',
+    'False Positive - Inaccurate Data': 'disposition:4',
+    'Other': 'disposition:5',
+    'Undetermined': 'disposition:6'
+}
 
 # =========== Mirroring Mechanism Globals ===========
 MIRROR_DIRECTION = {
@@ -183,14 +191,14 @@ def get_latest_incident_time(incidents):
     return latest_incident["occurred"]
 
 
-def get_next_start_time(latests_incident_fetched_time, now, were_new_incidents_found=True):
+def get_next_start_time(latests_incident_fetched_time, latest_time, were_new_incidents_found=True):
     if were_new_incidents_found:
         latest_incident_datetime = splunk_time_to_datetime(latests_incident_fetched_time)
         next_run_without_miliseconds_and_tz = latest_incident_datetime.strftime(SPLUNK_TIME_FORMAT)
         next_run = next_run_without_miliseconds_and_tz
         return next_run
     else:
-        return now
+        return latest_time
 
 
 def create_incident_custom_id(incident):
@@ -256,7 +264,6 @@ def enforce_look_behind_time(last_run_time, now, look_behind_time):
 
     Returns:
         last_run (str): The new start time for the fetch.
-
     """
     last_run_datetime = datetime.strptime(last_run_time, SPLUNK_TIME_FORMAT)
     now_datetime = datetime.strptime(now, SPLUNK_TIME_FORMAT)
@@ -268,7 +275,7 @@ def enforce_look_behind_time(last_run_time, now, look_behind_time):
     return last_run_time
 
 
-def get_fetch_start_times(dem_params, service, last_run_time, occurence_time_look_behind):
+def get_fetch_start_times(dem_params, service, last_run_earliest_time, occurence_time_look_behind):
     current_time_for_fetch = datetime.utcnow()
     if demisto.get(dem_params, 'timezone'):
         timezone = dem_params['timezone']
@@ -280,18 +287,18 @@ def get_fetch_start_times(dem_params, service, last_run_time, occurence_time_loo
         current_time_in_splunk = datetime.strptime(now, SPLUNK_TIME_FORMAT)
         current_time_for_fetch = current_time_in_splunk
 
-    if not last_run_time:
+    if not last_run_earliest_time:
         fetch_time_in_minutes = parse_time_to_minutes()
         start_time_for_fetch = current_time_for_fetch - timedelta(minutes=fetch_time_in_minutes)
-        last_run_time = start_time_for_fetch.strftime(SPLUNK_TIME_FORMAT)
-        extensive_log('[SplunkPy] SplunkPy last run is None. Last run time is: {}'.format(last_run_time))
+        last_run_earliest_time = start_time_for_fetch.strftime(SPLUNK_TIME_FORMAT)
+        extensive_log('[SplunkPy] SplunkPy last run is None. Last run earliest time is: {}'.format(last_run_earliest_time))
 
-    occured_start_time = enforce_look_behind_time(last_run_time, now, occurence_time_look_behind)
+    occured_start_time = enforce_look_behind_time(last_run_earliest_time, now, occurence_time_look_behind)
 
     return occured_start_time, now
 
 
-def build_fetch_kwargs(dem_params, occured_start_time, now, search_offset):
+def build_fetch_kwargs(dem_params, occured_start_time, latest_time, search_offset):
     occurred_start_time_fieldname = dem_params.get("earliest_occurrence_time_fieldname", "earliest_time")
     occurred_end_time_fieldname = dem_params.get("latest_occurrence_time_fieldname", "latest_time")
 
@@ -300,7 +307,7 @@ def build_fetch_kwargs(dem_params, occured_start_time, now, search_offset):
 
     kwargs_oneshot = {
         occurred_start_time_fieldname: occured_start_time,
-        occurred_end_time_fieldname: now,
+        occurred_end_time_fieldname: latest_time,
         "count": FETCH_LIMIT,
         'offset': search_offset
     }
@@ -325,21 +332,26 @@ def fetch_notables(service: client.Service, mapper: UserMappingObject, cache_obj
     last_run_data = demisto.getLastRun()
     if not last_run_data:
         extensive_log('[SplunkPy] SplunkPy first run')
-    last_run_time = last_run_data and 'time' in last_run_data and last_run_data['time']
-    extensive_log('[SplunkPy] SplunkPy last run is:\n {}'.format(last_run_data))
+
+    last_run_earliest_time = last_run_data and last_run_data.get('time')
+    last_run_latest_time = last_run_data and last_run_data.get('latest_time')
+    extensive_log(f'[SplunkPy] SplunkPy last run is:\n {last_run_data}')
 
     search_offset = last_run_data.get('offset', 0)
 
     dem_params = demisto.params()
     occurred_look_behind = int(dem_params.get('occurrence_look_behind', 15) or 15)
-    extensive_log('[SplunkPy] occurrence look behind is: {}'.format(occurred_look_behind))
+    extensive_log(f'[SplunkPy] occurrence look behind is: {occurred_look_behind}')
 
-    occured_start_time, now = get_fetch_start_times(dem_params, service, last_run_time, occurred_look_behind)
-    extensive_log('[SplunkPy] SplunkPy last run time: {}, now: {}'.format(last_run_time, now))
+    occured_start_time, now = get_fetch_start_times(dem_params, service, last_run_earliest_time, occurred_look_behind)
 
-    kwargs_oneshot = build_fetch_kwargs(dem_params, occured_start_time, now, search_offset)
+    # if last_run_latest_time is not None it's mean we are in a batch fetch iteration with offset
+    latest_time = last_run_latest_time or now
+    kwargs_oneshot = build_fetch_kwargs(dem_params, occured_start_time, latest_time, search_offset)
     fetch_query = build_fetch_query(dem_params)
 
+    demisto.debug(f'[SplunkPy] fetch query = {fetch_query}')
+    demisto.debug(f'[SplunkPy] oneshot query args = {kwargs_oneshot}')
     oneshotsearch_results = service.jobs.oneshot(fetch_query, **kwargs_oneshot)  # type: ignore
     reader = results.ResultsReader(oneshotsearch_results)
 
@@ -348,33 +360,35 @@ def fetch_notables(service: client.Service, mapper: UserMappingObject, cache_obj
     incidents = []
     notables = []
     incident_ids_to_add = []
+    num_of_dropped = 0
     for item in reader:
-        extensive_log('[SplunkPy] Incident data before parsing to notable: {}'.format(item))
+        extensive_log(f'[SplunkPy] Incident data before parsing to notable: {item}')
         notable_incident = Notable(data=item)
         inc = notable_incident.to_incident(mapper)
-        extensive_log('[SplunkPy] Incident data after parsing to notable: {}'.format(inc))
+        extensive_log(f'[SplunkPy] Incident data after parsing to notable: {inc}')
         incident_id = create_incident_custom_id(inc)
 
         if incident_id not in last_run_fetched_ids:
             incident_ids_to_add.append(incident_id)
             incidents.append(inc)
             notables.append(notable_incident)
+            extensive_log(f'[SplunkPy] - Fetched incident {item.get("event_id", incident_id)} to be created.')
         else:
-            extensive_log('[SplunkPy] SplunkPy - Dropped incident {} due to duplication.'.format(incident_id))
+            num_of_dropped += 1
+            extensive_log(f'[SplunkPy] - Dropped incident {item.get("event_id", incident_id)} due to duplication.')
 
     current_epoch_time = int(time.time())
-    extensive_log('[SplunkPy] Size of last_run_fetched_ids before adding new IDs: {}'.format(len(last_run_fetched_ids)))
+    extensive_log(f'[SplunkPy] Size of last_run_fetched_ids before adding new IDs: {len(last_run_fetched_ids)}')
     for incident_id in incident_ids_to_add:
         last_run_fetched_ids[incident_id] = current_epoch_time
-    extensive_log('[SplunkPy] Size of last_run_fetched_ids after adding new IDs: {}'.format(len(last_run_fetched_ids)))
+    extensive_log(f'[SplunkPy] Size of last_run_fetched_ids after adding new IDs: {len(last_run_fetched_ids)}')
     last_run_fetched_ids = remove_old_incident_ids(last_run_fetched_ids, current_epoch_time, occurred_look_behind)
     extensive_log('[SplunkPy] Size of last_run_fetched_ids after '
-                  'removing old IDs: {}'.format(len(last_run_fetched_ids)))
-    extensive_log('[SplunkPy] SplunkPy - incidents fetched on last run = {}'.format(last_run_fetched_ids))
+                  f'removing old IDs: {len(last_run_fetched_ids)}')
+    extensive_log(f'[SplunkPy] SplunkPy - incidents fetched on last run = {last_run_fetched_ids}')
 
-    debug_message = 'SplunkPy - total number of incidents found: from {}\n to {}\n with the ' \
-                    'query: {} is: {}.'.format(last_run_time, now, fetch_query, len(incidents))
-    extensive_log(debug_message)
+    demisto.debug(f'SplunkPy - total number of new incidents found is: {len(incidents)}')
+    demisto.debug(f'SplunkPy - total number of dropped incidents is: {num_of_dropped}')
 
     if not enrich_notables or not cache_object:
         demisto.incidents(incidents)
@@ -386,31 +400,29 @@ def fetch_notables(service: client.Service, mapper: UserMappingObject, cache_obj
             # want to add data to the integration context (which will ruin the logic of the cache object)
             last_run_data.update({DUMMY: DUMMY})
 
-    if len(incidents) == 0:
-        next_run = get_next_start_time(last_run_time, now, False)
-        extensive_log('[SplunkPy] SplunkPy - Next run time with no incidents found: {}'.format(next_run))
+    # we didn't get any new incident or get less then limit
+    # so the next run earliest time will be the latest_time from this iteration
+    # should also set when num_of_dropped == FETCH_LIMIT
+    if not incidents or (len(incidents) + num_of_dropped) < FETCH_LIMIT:
+        next_run_earliest_time = latest_time
         new_last_run = {
-            'time': next_run,
+            'time': next_run_earliest_time,
+            'latest_time': None,
             'offset': 0,
             'found_incidents_ids': last_run_fetched_ids
         }
-    elif len(incidents) < FETCH_LIMIT:
-        latest_incident_fetched_time = get_latest_incident_time(incidents)
-        next_run = get_next_start_time(latest_incident_fetched_time, now)
-        extensive_log('[SplunkPy] SplunkPy - Next run time with some incidents found: {}'.format(next_run))
-        new_last_run = {
-            'time': next_run,
-            'offset': 0,
-            'found_incidents_ids': last_run_fetched_ids
-        }
+
+    # we get limit notables from splunk
+    # we should fetch the entire queue with offset - so set the offset, time and latest_time for the next run
     else:
-        extensive_log('[SplunkPy] SplunkPy - '
-                      'Next run time with too many incidents:  {}'.format(last_run_time))
         new_last_run = {
             'time': occured_start_time,
+            'latest_time': latest_time,
             'offset': search_offset + FETCH_LIMIT,
             'found_incidents_ids': last_run_fetched_ids
         }
+    demisto.debug(f'SplunkPy - {new_last_run["time"]=}, {new_last_run["latest_time"]=}, {new_last_run["offset"]=}')
+
     last_run_data.update(new_last_run)
     demisto.setLastRun(last_run_data)
 
@@ -443,7 +455,6 @@ class Enrichment:
         data (list): The enrichment's data list (events retrieved from the job's search).
         creation_time (str): The enrichment's creation time in ISO format.
         status (str): The enrichment's status.
-
     """
     FAILED = 'Enrichment failed'
     EXCEEDED_TIMEOUT = 'Enrichment exceed the given timeout'
@@ -468,7 +479,6 @@ class Enrichment:
 
         Returns:
             The created enrichment (Enrichment)
-
         """
         if job:
             return cls(enrichment_type=enrichment_type, enrichment_id=job["sid"])
@@ -484,7 +494,6 @@ class Enrichment:
 
         Returns:
             An instance of the Enrichment class constructed from JSON representation.
-
         """
         return cls(
             enrichment_type=enrichment_dict.get(TYPE),
@@ -507,7 +516,6 @@ class Notable:
         custom_id (str): The custom ID of the notable (used in the fetch function).
         time_is_missing (bool): Whether the `_time` field has an empty value or not.
         index_time (str): The time the notable have been indexed.
-
     """
 
     def __init__(self, data, enrichments=None, notable_id=None, occurred=None, custom_id=None, index_time=None,
@@ -650,7 +658,6 @@ class Notable:
             enrichment_timeout (int): The timeout for the enrichment process
 
         Returns (bool): True if the enrichment process exceeded the given timeout, False otherwise
-
         """
         now = datetime.utcnow()
         exceeding_timeout = False
@@ -673,7 +680,6 @@ class Notable:
 
         Returns:
             An instance of the Enrichment class constructed from JSON representation.
-
         """
         return cls(
             data=notable_dict.get(DATA),
@@ -693,9 +699,7 @@ class Cache:
     Attributes:
         not_yet_submitted_notables (list): The list of all notables that were fetched but not yet submitted.
         submitted_notables (list): The list of all submitted notables that needs to be handled.
-
     """
-
     def __init__(self, not_yet_submitted_notables=None, submitted_notables=None):
         self.not_yet_submitted_notables = not_yet_submitted_notables if not_yet_submitted_notables else []
         self.submitted_notables = submitted_notables if submitted_notables else []
@@ -716,7 +720,6 @@ class Cache:
         Returns:
             handled_not_created_incident (list): The list of all notables that have been handled but not created an
              incident.
-
         """
         not_yet_submitted, submitted, handled_not_created_incident = [], [], []
 
@@ -751,7 +754,6 @@ class Cache:
 
         Returns:
             An instance of the Cache class constructed from JSON representation.
-
         """
         return cls(
             not_yet_submitted_notables=list(map(Notable.from_json, cache_dict.get(NOT_YET_SUBMITTED_NOTABLES, []))),
@@ -780,7 +782,6 @@ def get_fields_query_part(notable_data, prefix, fields, raw_dict=None, add_backs
         add_backslash (bool): For users that contains single backslash, we add one more
 
     Returns: The query part
-
     """
     if not raw_dict:
         raw_dict = rawToDict(notable_data.get('_raw', ''))
@@ -832,7 +833,6 @@ def build_drilldown_search(notable_data, search, raw_dict):
         raw_dict (dict): The raw dict
 
     Returns (str): A searchable drilldown search query
-
     """
     searchable_search = []
     start = 0
@@ -866,7 +866,6 @@ def get_drilldown_timeframe(notable_data, raw):
         task_status: True if the timeframe was retrieved successfully, False otherwise.
         earliest_offset: The earliest time to query from.
         latest_offset: The latest time to query to.
-
     """
     task_status = True
     earliest_offset = notable_data.get("drilldown_earliest", "")
@@ -899,7 +898,6 @@ def drilldown_enrichment(service: client.Service, notable_data, num_enrichment_e
         num_enrichment_events (int): The maximal number of events to return per enrichment type.
 
     Returns: The Splunk Job
-
     """
     job = None
     search = notable_data.get("drilldown_search", "")
@@ -941,7 +939,6 @@ def identity_enrichment(service: client.Service, notable_data, num_enrichment_ev
         num_enrichment_events (int): The maximal number of events to return per enrichment type.
 
     Returns: The Splunk Job
-
     """
     job = None
     error_msg = "Failed submitting identity enrichment request to Splunk for notable {}".format(notable_data[EVENT_ID])
@@ -972,7 +969,6 @@ def asset_enrichment(service: client.Service, notable_data, num_enrichment_event
         num_enrichment_events (int): The maximal number of events to return per enrichment type.
 
     Returns: The Splunk Job
-
     """
     job = None
     error_msg = "Failed submitting asset enrichment request to Splunk for notable {}".format(notable_data[EVENT_ID])
@@ -1003,7 +999,6 @@ def handle_submitted_notables(service: client.Service, incidents, cache_object: 
         service (splunklib.client.Service): Splunk service object.
         incidents (list): The incident to be submitted at the end of the run.
         cache_object (Cache): The enrichment mechanism cache object
-
     """
     handled_notables = []
     enrichment_timeout = arg_to_number(str(demisto.params().get('enrichment_timeout', '5')))
@@ -1035,7 +1030,6 @@ def handle_submitted_notable(service: client.Service, notable: Notable, enrichme
 
     Returns:
         notable_status (str): The status of the notable
-
     """
     task_status = False
 
@@ -1076,7 +1070,6 @@ def submit_notables(service: client.Service, incidents: list, cache_object: Cach
         service (splunklib.client.Service): Splunk service object
         incidents (list): The incident to be submitted at the end of the run.
         cache_object (Cache): The enrichment mechanism cache object
-
     """
     failed_notables, submitted_notables = [], []
     num_enrichment_events = arg_to_number(str(demisto.params().get('num_enrichment_events', '20')))
@@ -1118,7 +1111,6 @@ def submit_notable(service: client.Service, notable: Notable, num_enrichment_eve
 
     Returns:
         task_status (bool): True if any of the enrichment's succeeded to be submitted to Splunk, False otherwise
-
     """
     submitted_drilldown, submitted_asset, submitted_identity = notable.get_submitted_enrichments()
 
@@ -1146,7 +1138,6 @@ def run_enrichment_mechanism(service: client.Service, integration_context, mappe
     Args:
         service (splunklib.client.Service): Splunk service object.
         integration_context (dict): The integration context
-
     """
     incidents = []  # type: list
     cache_object = Cache.load_from_integration_context(integration_context)
@@ -1179,7 +1170,6 @@ def store_incidents_for_mapping(incidents, integration_context):
     Args:
         incidents (list): The incidents
         integration_context (dict): The integration context
-
     """
     if incidents:
         integration_context[INCIDENTS] = incidents[:20]
@@ -1190,7 +1180,6 @@ def fetch_incidents_for_mapping(integration_context):
 
     Args:
         integration_context (dict): The integration context
-
     """
     incidents = integration_context.get(INCIDENTS, [])
     demisto.debug(
@@ -1222,7 +1211,6 @@ def get_last_update_in_splunk_time(last_update):
         last_update (str): The time to be transformed, E.g 2021-02-09T16:41:30.589575+02:00
 
     Returns (int): The corresponding timestamp on the Splunk server
-
     """
     last_update_utc_datetime = dateparser.parse(last_update, settings={'TIMEZONE': 'UTC'})
     if not last_update_utc_datetime:
@@ -1239,18 +1227,20 @@ def get_last_update_in_splunk_time(last_update):
     return (dt - datetime(1970, 1, 1, tzinfo=pytz.utc)).total_seconds()
 
 
-def get_remote_data_command(service: client.Service, args: dict, close_incident, mapper):
+def get_remote_data_command(service: client.Service, args: dict,
+                            close_incident: bool, close_end_statuses: bool, close_extra_labels: list[str], mapper):
     """ get-remote-data command: Returns an updated notable and error entry (if needed)
 
     Args:
         service (splunklib.client.Service): Splunk service object
         args (dict): The command arguments
-        close_incident (bool): Indicates whether to close the corresponding XSOAR incident if the notable has been
-        closed on Splunk end
+        close_incident (bool): Indicates whether to close the corresponding XSOAR incident if the notable
+            has been closed on Splunk's end.
+        close_end_statuses (bool): Specifies whether "End Status" statuses on Splunk should be closed when mirroring.
+        close_extra_labels (list[str]): A list of additional Splunk status labels to close during mirroring.
 
     Returns:
         GetRemoteDataResponse: The Response containing the update notable to mirror and the entries
-
     """
     entries = []
     updated_notable = {}
@@ -1263,7 +1253,7 @@ def get_remote_data_command(service: client.Service, args: dict, close_incident,
              '| where last_modified_timestamp>{} ' \
              '| fields - time ' \
              '| map search=" search `notable_by_id($rule_id$)`"'.format(notable_id, last_update_splunk_timestamp)
-    demisto.debug('Performing get-remote-data command with query: {}'.format(search))
+    demisto.debug(f'Performing get-remote-data command with query: {search}')
 
     for item in results.ResultsReader(service.jobs.oneshot(search)):
         updated_notable = parse_notable(item, to_dict=True)
@@ -1273,20 +1263,27 @@ def get_remote_data_command(service: client.Service, args: dict, close_incident,
         updated_notable["owner"] = mapper.get_xsoar_user_by_splunk(
             updated_notable.get("owner")) if mapper.should_map else updated_notable.get("owner")
 
-    demisto.debug('notable {} data: {}'.format(notable_id, updated_notable))
-    if updated_notable.get('status') == '5' and close_incident:
-        demisto.info('Closing incident related to notable {}'.format(notable_id))
-        entries = [{
-            'Type': EntryType.NOTE,
-            'Contents': {
-                'dbotIncidentClose': True,
-                'closeReason': 'Notable event was closed on Splunk.'
-            },
-            'ContentsFormat': EntryFormat.JSON
-        }]
+    demisto.debug(f'notable {notable_id} data: {updated_notable}')
+    if close_incident and updated_notable.get('status_label'):
+        status_label = updated_notable['status_label']
 
-    demisto.debug('Updated notable {}'.format(notable_id))
+        if status_label == "Closed" or (status_label in close_extra_labels) \
+                or (close_end_statuses and argToBoolean(updated_notable.get('status_end', 'false'))):
+            demisto.info(f'Closing incident related to notable {notable_id} with status_label: {status_label}')
+            entries = [{
+                'Type': EntryType.NOTE,
+                'Contents': {
+                    'dbotIncidentClose': True,
+                    'closeReason': f'Notable event was closed on Splunk with status \"{status_label}\".'
+                },
+                'ContentsFormat': EntryFormat.JSON
+            }]
 
+    else:
+        demisto.debug('"status_label" key could not be found on the returned data, '
+                      f'skipping closure mirror for notable {notable_id}.')
+
+    demisto.debug(f'Updated notable {notable_id}')
     return_results(GetRemoteDataResponse(mirrored_object=updated_notable, entries=entries))
 
 
@@ -1299,7 +1296,6 @@ def get_modified_remote_data_command(service: client.Service, args):
 
     Returns:
         GetModifiedRemoteDataResponse: The response containing the list of ids of notables changed
-
     """
     modified_notable_ids = []
     remote_args = GetModifiedRemoteDataArgs(args)
@@ -1329,7 +1325,6 @@ def update_remote_system_command(args, params, service: client.Service, auth_tok
 
     Returns:
         notable_id (str): The notable id
-
     """
     parsed_args = UpdateRemoteSystemArgs(args)
     delta = parsed_args.delta
@@ -1391,9 +1386,6 @@ def create_mapping_dict(total_parsed_results, type_field):
     Args:
         total_parsed_results: list. the results from the splunk search query
         type_field: str. the field that represents the type of the event or alert.
-
-    Returns:
-
     """
     types_map = {}
     for result in total_parsed_results:
@@ -1619,8 +1611,7 @@ def get_cim_mapping_field_command():
 # =========== Integration Functions & Classes ===========
 
 class ResponseReaderWrapper(io.RawIOBase):
-    """ This class was supplied as a solution for a bug in Splunk causing the search to run slowly.
-    """
+    """ This class was supplied as a solution for a bug in Splunk causing the search to run slowly."""
 
     def __init__(self, responseReader):
         self.responseReader = responseReader
@@ -1882,7 +1873,6 @@ def parse_notable(notable, to_dict=False):
         to_dict (bool): Whether to cast the notable to dict or not.
 
     Returns (OrderedDict or dict): The parsed notable
-
     """
     notable = replace_keys(notable) if REPLACE_FLAG else notable
     for key, val in list(notable.items()):
@@ -1934,6 +1924,8 @@ def build_search_kwargs(args, polling=False):
         kwargs_normalsearch['latest_time'] = args['latest_time']
     if demisto.get(args, 'app'):
         kwargs_normalsearch['app'] = args['app']
+    if argToBoolean(demisto.get(args, 'fast_mode')):
+        kwargs_normalsearch['adhoc_search_level'] = "fast"
     if polling:
         kwargs_normalsearch['exec_mode'] = "normal"
     else:
@@ -1950,15 +1942,22 @@ def build_search_query(args):
     return query
 
 
-def create_entry_context(args: dict, parsed_search_results, dbot_scores, status_res):
+def create_entry_context(args: dict, parsed_search_results, dbot_scores, status_res, job_id):
     ec = {}
+    number_of_results = len(parsed_search_results)
 
     if args.get('update_context', "true") == "true":
         ec['Splunk.Result'] = parsed_search_results
         if len(dbot_scores) > 0:
             ec['DBotScore'] = dbot_scores
         if status_res:
-            ec['Splunk.JobStatus(val.SID && val.SID === obj.SID)'] = status_res.outputs
+            ec['Splunk.JobStatus(val.SID && val.SID === obj.SID)'] = {
+                **status_res.outputs, 'TotalResults': number_of_results}
+    if job_id and not status_res:
+        status = 'DONE' if (number_of_results > 0) else 'NO RESULTS'
+        ec['Splunk.JobStatus(val.SID && val.SID === obj.SID)'] = [{'SID': job_id,
+                                                                   'TotalResults': number_of_results,
+                                                                   'Status': status}]
     return ec
 
 
@@ -1974,7 +1973,7 @@ def schedule_polling_command(command: str, args: dict, interval_in_secs: int):
     )
 
 
-def build_search_human_readable(args: dict, parsed_search_results) -> str:
+def build_search_human_readable(args: dict, parsed_search_results, sid) -> str:
     headers = ""
     if parsed_search_results and len(parsed_search_results) > 0:
         if not isinstance(parsed_search_results[0], dict):
@@ -2002,7 +2001,10 @@ def build_search_human_readable(args: dict, parsed_search_results) -> str:
             headers = update_headers_from_field_names(parsed_search_results, chosen_fields)
 
     query = args['query'].replace('`', r'\`')
-    human_readable = tableToMarkdown("Splunk Search results for query: {}".format(query),
+    hr_headline = 'Splunk Search results for query:\n'
+    if sid:
+        hr_headline += f'sid: {str(sid)}'
+    human_readable = tableToMarkdown(hr_headline,
                                      parsed_search_results, headers)
     return human_readable
 
@@ -2059,14 +2061,12 @@ def parse_batch_of_results(current_batch_of_results, max_results_to_add, app):
 
 def splunk_search_command(service: client.Service) -> CommandResults:
     args = demisto.args()
-
     query = build_search_query(args)
     polling = argToBoolean(args.get("polling", False))
     search_kwargs = build_search_kwargs(args, polling)
     job_sid = args.get("sid")
     search_job = None
     interval_in_secs = int(args.get('interval_in_seconds', 30))
-
     if not job_sid or not polling:
         # create a new job to search the query.
         search_job = service.jobs.create(query, **search_kwargs)
@@ -2086,7 +2086,6 @@ def splunk_search_command(service: client.Service) -> CommandResults:
         else:
             # Get the job by its SID.
             search_job = service.job(job_sid)
-
     num_of_results_from_query = search_job["resultCount"] if search_job else None
 
     results_limit = float(args.get("event_limit", 100))
@@ -2108,9 +2107,8 @@ def splunk_search_command(service: client.Service) -> CommandResults:
         dbot_scores.extend(batch_dbot_scores)
 
         results_offset += batch_size
-
-    entry_context = create_entry_context(args, total_parsed_results, dbot_scores, status_cmd_result)
-    human_readable = build_search_human_readable(args, total_parsed_results)
+    entry_context = create_entry_context(args, total_parsed_results, dbot_scores, status_cmd_result, str(job_sid))
+    human_readable = build_search_human_readable(args, total_parsed_results, str(job_sid))
 
     return CommandResults(
         outputs=entry_context,
@@ -2284,10 +2282,17 @@ def splunk_edit_notable_event_command(base_url: str, token: str, auth_token: str
     if args.get('status'):
         status = int(args['status'])
 
+    # Map the label to the disposition id
+    disposition = args.get('disposition', '')
+    if disposition:
+        if disposition in DEFAULT_DISPOSITIONS:
+            disposition = DEFAULT_DISPOSITIONS[disposition]
+
     response_info = update_notable_events(baseurl=base_url,
                                           comment=args.get('comment'), status=status,
                                           urgency=args.get('urgency'),
                                           owner=args.get('owner'), eventIDs=event_ids,
+                                          disposition=disposition,
                                           auth_token=auth_token, sessionKey=session_key)
 
     if 'success' not in response_info or not response_info['success']:
@@ -2620,6 +2625,9 @@ def main():  # pragma: no cover
         connection_args['splunkToken'] = password
         auth_token = password
     else:
+        if '@_basic' in username:
+            username = username.split('@_basic')[0]
+            connection_args['basic'] = True
         connection_args['username'] = username
         connection_args['password'] = password
         connection_args['autologin'] = True
@@ -2694,7 +2702,11 @@ def main():  # pragma: no cover
             get_mapping_fields_command(service, mapper)
     elif command == 'get-remote-data':
         demisto.info('########### MIRROR IN #############')
-        get_remote_data_command(service, demisto.args(), demisto.params().get('close_incident'), mapper)
+        get_remote_data_command(service=service, args=demisto.args(),
+                                close_incident=demisto.params().get('close_incident'),
+                                close_end_statuses=demisto.params().get('close_end_status_statuses'),
+                                close_extra_labels=argToList(demisto.params().get('close_extra_labels', '')),
+                                mapper=mapper)
     elif command == 'get-modified-remote-data':
         get_modified_remote_data_command(service, demisto.args())
     elif command == 'update-remote-system':

@@ -1,0 +1,86 @@
+{
+    "version": "version",
+    "metadata": {
+        "links": {
+            "self": "metadata_links_self"
+        },
+        "results": {
+            "total": "metadata_results_total",
+            "current_item_count": "metadata_results_current_item_count",
+            "index": "metadata_results_index",
+            "items_per_page": "metadata_results_items_per_page"
+        }
+    },
+    "data": [
+        {
+            "connector_guid": "data[0]_connector_guid",
+            "hostname": "data[0]_hostname",
+            "active": "data[0]_active",
+            "links": {
+                "computer": "data[0]_links_computer",
+                "trajectory": "data[0]_links_trajectory",
+                "group": "data[0]_links_group"
+            }
+        },
+        {
+            "connector_guid": "data[1]_connector_guid",
+            "hostname": "data[1]_hostname",
+            "active": "data[1]_active",
+            "links": {
+                "computer": "data[1]_links_computer",
+                "trajectory": "data[1]_links_trajectory",
+                "group": "data[1]_links_group"
+            }
+        },
+        {
+            "connector_guid": "data[2]_connector_guid",
+            "hostname": "data[2]_hostname",
+            "active": "data[2]_active",
+            "links": {
+                "computer": "data[2]_links_computer",
+                "trajectory": "data[2]_links_trajectory",
+                "group": "data[2]_links_group"
+            }
+        },
+        {
+            "connector_guid": "data[3]_connector_guid",
+            "hostname": "data[3]_hostname",
+            "active": "data[3]_active",
+            "links": {
+                "computer": "data[3]_links_computer",
+                "trajectory": "data[3]_links_trajectory",
+                "group": "data[3]_links_group"
+            }
+        },
+        {
+            "connector_guid": "data[4]_connector_guid",
+            "hostname": "data[4]_hostname",
+            "active": "data[4]_active",
+            "links": {
+                "computer": "data[4]_links_computer",
+                "trajectory": "data[4]_links_trajectory",
+                "group": "data[4]_links_group"
+            }
+        },
+        {
+            "connector_guid": "data[5]_connector_guid",
+            "hostname": "data[5]_hostname",
+            "active": "data[5]_active",
+            "links": {
+                "computer": "data[5]_links_computer",
+                "trajectory": "data[5]_links_trajectory",
+                "group": "data[5]_links_group"
+            }
+        },
+        {
+            "connector_guid": "data[6]_connector_guid",
+            "hostname": "data[6]_hostname",
+            "active": "data[6]_active",
+            "links": {
+                "computer": "data[6]_links_computer",
+                "trajectory": "data[6]_links_trajectory",
+                "group": "data[6]_links_group"
+            }
+        }
+    ]
+}

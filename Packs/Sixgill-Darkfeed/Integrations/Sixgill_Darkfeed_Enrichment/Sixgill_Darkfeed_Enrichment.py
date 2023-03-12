@@ -1,3 +1,4 @@
+import urllib3
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -12,7 +13,7 @@ from sixgill.sixgill_request_classes.sixgill_auth_request import SixgillAuthRequ
 from sixgill.sixgill_enrich_client import SixgillEnrichClient
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 hashes: Dict[str, Any] = {}
 

@@ -1,6 +1,5 @@
-import urllib3
 from CommonServerPython import *
-
+import urllib3
 # Disable insecure warnings
 urllib3.disable_warnings()
 
@@ -12,8 +11,23 @@ class Client(BaseClient):
                  token: str = None):
         super().__init__(base_url, verify, proxy, ok_codes, headers)
         self.token = token
-
+        self.agent = self.get_agent()   # Agent is different based on the platform running the integration (XSOAR/XSIAM)
         add_sensitive_log_strs(token)
+
+    @staticmethod
+    def get_agent():
+        """
+        Auto API expect the agent header to be 'xdr' when running from within XSIAM and 'xsoartim' when running from
+        within XSOAR (both on-prem and cloud).
+        """
+        # This block is a patch - need to remove it once the server side fix of the following issue is merged:
+        # https://jira-hq.paloaltonetworks.local/browse/CRTX-77146
+        if version := get_demisto_version().get('version'):
+            if version == '8.1.0':
+                return 'xsoartim'
+
+        platform = get_demisto_version().get('platform')
+        return 'xdr' if platform == 'x2' else 'xsoartim'
 
     def get_file_report(self, file_hash: str):
         return self._http_request(
@@ -21,7 +35,7 @@ class Client(BaseClient):
             url_suffix='/get/report',
             params={
                 'apikey': self.token,
-                'agent': 'xsoartim',
+                'agent': self.agent,
                 'format': 'pdf',
                 'hash': file_hash,
             },
@@ -33,7 +47,7 @@ class Client(BaseClient):
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client: Client) -> str:
+def test_module(client: Client) -> str:  # pragma: no coverage
     try:
         wildfire_hash_example = 'dca86121cc7427e375fd24fe5871d727'  # guardrails-disable-line
         res = client.get_file_report(wildfire_hash_example)
@@ -84,7 +98,7 @@ def wildfire_get_report_command(client: Client, args: Dict[str, str]):
 ''' MAIN FUNCTION '''
 
 
-def main():
+def main():  # pragma: no coverage
     command = demisto.command()
     params = demisto.params()
     args = demisto.args()
