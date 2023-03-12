@@ -1111,7 +1111,7 @@ build = ["gsutil (==5.17)"]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
 reference = "add_validation_for_readme_images"
-resolved_reference = "9fb9aa3b86a7db6dfb025fc83875bf1d74869eb3"
+resolved_reference = "81fd57a9804e989f1c49534dd2898bfa95c0c2d3"
 
 [[package]]
 name = "deprecated"
