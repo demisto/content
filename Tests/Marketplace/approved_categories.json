@@ -6,16 +6,16 @@
 	"Cloud Services",
 	"Data Enrichment & Threat Intelligence",
 	"Database",
+	"Deception & Breach Simulation",
 	"Endpoint",
 	"Forensics & Malware Analysis",
 	"IT Services",
 	"Identity and Access Management",
+	"Messaging and Conferencing",
 	"Network Security",
 	"Utilities",
 	"Vulnerability Management",
-	"Messaging and Conferencing",
 	"Authentication & Identity Management",
-	"Deception & Breach Simulation",
 	"Email"
     ]
 }
