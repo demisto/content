@@ -15,7 +15,7 @@ The flow of this playbook is as following:
 6) Notifications and ticketing with 3rd party systems.
 7) Close the incident.
 
-This playbook will run when a new incident is created with the **Prisma Cloud - VM Alert Prioritization** incident type.
+This playbook will run when a new incident is created with the **Prisma Cloud - VM Alert Prioritization** incident type which also includes a dedicated layout.
 
 **The Layout**
 

@@ -2,8 +2,9 @@ id: Prisma Cloud - VM Alert Prioritization
 version: -1
 name: Prisma Cloud - VM Alert Prioritization
 description: |-
+  This playbook handles incidents related to dozens of Prisma Cloud public VM alerts.
   It determines the severity of the ingested alert based on data returned from Cortex XSOAR commands interacting with the Prisma Cloud API and creates new issues in either Slack or Jira, with all of the relevant information.
-  It updates the Cortex XSOAR incident’s layout with information the analyst can use to investigate the alert. It also extracts and enriches indicators using existing configured integrations and then closes the investigation.
+  The playbook updates the Cortex XSOAR incident’s layout with information the analyst can use to investigate the alert. It also extracts and enriches indicators using existing configured integrations and then closes the investigation.
   
   The flow of this playbook is as following:
   1) Check the CSP type.
@@ -11,14 +12,14 @@ description: |-
   3) Check if there are any vulnerabilities or findings related to the instance.
   4) Check if there are any IAM permissions associated to the instance.
   5) Set the incident severity based on the results:
-    - LOW - No public IP was found.
+    - Low - No public IP was found.
     - Medium - Public IP was found, other checks didn't return results.
     - High - Public IP was found and also one of the other checks returned results.
     - Critical - Public IP was found and both of the other checks returned results.
   6) Notifications and ticketing with 3rd party systems.
   7) Close the incident.
   
-  This playbook will run when a new incident is created with the **Prisma Cloud - VM Alert Prioritization** incident type whicih also includes a dedicated layout.
+  This playbook will run when a new incident is created with the **Prisma Cloud - VM Alert Prioritization** incident type which also includes a dedicated layout.
 starttaskid: "0"
 tasks:
   "0":
