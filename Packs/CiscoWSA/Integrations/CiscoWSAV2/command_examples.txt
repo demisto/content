@@ -1,0 +1,18 @@
+!cisco-wsa-access-policy-list page=1 page_size=3
+!cisco-wsa-access-policy-create policy_name=test policy_status=enable policy_description=test policy_order=1 identification_profile_name=global_identification_profile
+!cisco-wsa-access-policy-update policy_name=test policy_order=2 policy_description=testtest
+!cisco-wsa-access-policy-protocols-user-agents-update policy_name=test block_custom_user_agents=test allow_connect_ports=22,24 block_protocols=http
+!cisco-wsa-access-policy-url-filtering-update policy_name=test predefined_categories_action=monitor predefined_categories=Astrology custom_categories_action=block custom_categories=test
+!cisco-wsa-access-policy-applications-update policy_name=test application=Blogging action=block values=Blogger
+!cisco-wsa-access-policy-objects-update policy_name=test object_type=Media object_action=block object_values=Audio block_custom_mime_types=test,test12 http_or_https_max_object_size_mb=30 ftp_max_object_size_mb=20
+!cisco-wsa-access-policy-anti-malware-update policy_name=test web_reputation_status=enable file_reputation_filtering_status=enable file_reputation_action=block anti_malware_scanning_status=enable suspect_user_agent_scanning=block block_malware_categories=Adware block_other_categories=Unscannable
+!cisco-wsa-access-policy-delete policy_names=test
+!cisco-wsa-domain-map-list limit=5
+!cisco-wsa-domain-map-create domain_name=test.com order=1 ip_addresses=1.1.1.1
+!cisco-wsa-domain-map-update domain_name=test.com new_domain_name=test1.com order=2 ip_addresses=1.1.1.1,2.2.2.2
+!cisco-wsa-domain-map-delete domain_names=test1.com
+!cisco-wsa-identification-profiles-list page=1 page_size=2
+!cisco-wsa-identification-profiles-create profile_name=test status=enable description=test protocols=HTTPS order=1
+!cisco-wsa-identification-profiles-update profile_name=test description=testtest protocols=HTTPS,SOCKS order=2
+!cisco-wsa-identification-profiles-delete profile_names=test
+!cisco-wsa-url-categories-list
