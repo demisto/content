@@ -1270,6 +1270,7 @@ def main():
     create_corepacks_config(storage_bucket, build_number, index_folder_path,
                             os.path.dirname(packs_artifacts_path), storage_base_path, marketplace)
 
+    logging.info('Strting new code index_v2')
     index_v2_gcs_path = os.path.join(storage_base_path, f"{GCPConfig.INDEX_V2_NAME}.zip")
     index_v2_local_path = os.path.join(extract_destination_path, f"{GCPConfig.INDEX_V2_NAME}.zip")
     index_v2_blob = storage_bucket.blob(index_v2_gcs_path)
@@ -1280,6 +1281,7 @@ def main():
         with open(filepath, 'w') as f:
             f.write('This is the new readme')
 
+    logging.info('uploading new index')
     upload_index_to_storage(index_folder_path=index_v2_local_path, extract_destination_path=extract_destination_path,
                             index_blob=index_v2_blob, build_number=build_number, private_packs=private_packs,
                             current_commit_hash=current_commit_hash, index_generation=index_generation,
@@ -1288,6 +1290,7 @@ def main():
                             artifacts_dir=os.path.dirname(packs_artifacts_path),
                             storage_bucket=storage_bucket, index_name=GCPConfig.INDEX_V2_NAME)
 
+    logging.info('finished uploading new index')
     # finished iteration over content packs
     upload_index_to_storage(index_folder_path=index_folder_path, extract_destination_path=extract_destination_path,
                             index_blob=index_blob, build_number=build_number, private_packs=private_packs,
