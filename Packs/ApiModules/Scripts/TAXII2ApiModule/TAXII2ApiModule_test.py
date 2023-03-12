@@ -195,7 +195,8 @@ class TestBuildIterator:
         """
         mock_client = Taxii2FeedClient(url='', collection_to_fetch=None, proxies=[], verify=False, objects_to_fetch=[])
         mocker.patch.object(mock_client, 'collection_to_fetch', spec=v21.Collection)
-        mocker.patch.object(mock_client, 'load_stix_objects_from_envelope', side_effect=InvalidJSONError('Invalid JSON'))
+        mocker.patch.object(mock_client, 'load_stix_objects_from_envelope',
+                            side_effect=InvalidJSONError('Invalid JSON'))
 
         iocs = mock_client.build_iterator()
         assert iocs == []
@@ -291,7 +292,8 @@ class TestInitRoots:
         Then:
         - api_root is initialized with the given default_api_root
         """
-        mock_client = Taxii2FeedClient(url='https://ais2.cisa.dhs.gov/taxii2/', collection_to_fetch='default', proxies=[],
+        mock_client = Taxii2FeedClient(url='https://ais2.cisa.dhs.gov/taxii2/', collection_to_fetch='default',
+                                       proxies=[],
                                        verify=False, objects_to_fetch=[], default_api_root='federal')
         mock_client.init_server()
         self._title = ""
@@ -313,7 +315,8 @@ class TestInitRoots:
         Then:
         - api_root is initialized with the first api_root
         """
-        mock_client = Taxii2FeedClient(url='https://ais2.cisa.dhs.gov/taxii2/', collection_to_fetch='default', proxies=[],
+        mock_client = Taxii2FeedClient(url='https://ais2.cisa.dhs.gov/taxii2/', collection_to_fetch='default',
+                                       proxies=[],
                                        verify=False, objects_to_fetch=[], default_api_root=None)
         mock_client.init_server()
         self._title = ""
@@ -335,7 +338,8 @@ class TestInitRoots:
         Then:
         - api_root is initialized with the server defined default api_root
         """
-        mock_client = Taxii2FeedClient(url='https://ais2.cisa.dhs.gov/taxii2/', collection_to_fetch='default', proxies=[],
+        mock_client = Taxii2FeedClient(url='https://ais2.cisa.dhs.gov/taxii2/', collection_to_fetch='default',
+                                       proxies=[],
                                        verify=False, objects_to_fetch=[], default_api_root=None)
         mock_client.init_server()
         self._title = ""
@@ -357,7 +361,8 @@ class TestInitRoots:
         Then:
         - api_root is initialized with the given default_api_root
         """
-        mock_client = Taxii2FeedClient(url='https://ais2.cisa.dhs.gov/taxii2/', collection_to_fetch='default', proxies=[],
+        mock_client = Taxii2FeedClient(url='https://ais2.cisa.dhs.gov/taxii2/', collection_to_fetch='default',
+                                       proxies=[],
                                        verify=False, objects_to_fetch=[], default_api_root='federal')
         mock_client.init_server(TAXII_VER_2_1)
         self._title = ""
@@ -379,7 +384,8 @@ class TestInitRoots:
         Then:
         - api_root is initialized with the first api_root
         """
-        mock_client = Taxii2FeedClient(url='https://ais2.cisa.dhs.gov/taxii2/', collection_to_fetch='default', proxies=[],
+        mock_client = Taxii2FeedClient(url='https://ais2.cisa.dhs.gov/taxii2/', collection_to_fetch='default',
+                                       proxies=[],
                                        verify=False, objects_to_fetch=[], default_api_root=None)
         mock_client.init_server(TAXII_VER_2_1)
         self._title = ""
@@ -401,7 +407,8 @@ class TestInitRoots:
         Then:
         - api_root is initialized with the server defined default api_root
         """
-        mock_client = Taxii2FeedClient(url='https://ais2.cisa.dhs.gov/taxii2/', collection_to_fetch='default', proxies=[],
+        mock_client = Taxii2FeedClient(url='https://ais2.cisa.dhs.gov/taxii2/', collection_to_fetch='default',
+                                       proxies=[],
                                        verify=False, objects_to_fetch=[], default_api_root=None)
         mock_client.init_server(TAXII_VER_2_1)
         self._title = ""
@@ -441,9 +448,11 @@ class TestInitRoots:
             - If the server is TAXII 2.1, error is handled and server is initialized with right version
             - If it is a different error, it is raised
         """
-        mock_client = Taxii2FeedClient(url='https://ais2.cisa.dhs.gov/taxii2/', collection_to_fetch='default', proxies=[],
+        mock_client = Taxii2FeedClient(url='https://ais2.cisa.dhs.gov/taxii2/', collection_to_fetch='default',
+                                       proxies=[],
                                        verify=False, objects_to_fetch=[], default_api_root='federal')
-        set_api_root_mocker = mocker.patch.object(mock_client, 'set_api_root', side_effect=[TAXIIServiceException(error_msg), ''])
+        set_api_root_mocker = mocker.patch.object(mock_client, 'set_api_root',
+                                                  side_effect=[TAXIIServiceException(error_msg), ''])
 
         if should_raise_error:
             with pytest.raises(Exception) as e:
@@ -599,7 +608,8 @@ class TestFetchingStixObjects:
         (None, None, None), (None, '2021-09-29T15:55:04.815Z', '2021-09-29T15:55:04.815Z'),
         ('2021-09-29T15:55:04.815Z', '2022-09-29T15:55:04.815Z', '2022-09-29T15:55:04.815Z')
     ])
-    def test_update_last_modified_indicator_date(self, last_modifies_client, last_modifies_param, expected_modified_result):
+    def test_update_last_modified_indicator_date(self, last_modifies_client, last_modifies_param,
+                                                 expected_modified_result):
         """
                Scenario: Test updating the last_fetched_indicator__modified field of the client.
 
@@ -940,6 +950,44 @@ class TestParsingIndicators:
 
         assert parsed_response == xsoar_expected_response
         assert set(response_tags) == xsoar_expected_tags
+
+    def test_parse_indicator(self, taxii_2_client):
+        """
+        Given:
+         - Indicator object.
+
+        When:
+         - Parsing the indicator into a format XSOAR knows to read.
+
+        Then:
+         - Make sure all the fields are being parsed correctly.
+        """
+        indicator_obj = {"id": "indicator--1234", "pattern": "[domain-name:value = 'test.org']", "confidence": 85,
+                         "lang": "en", "type": "indicator", "created": "2020-05-14T00:14:05.401Z",
+                         "modified": "2020-05-14T00:14:05.401Z", "name": "suspicious_domain: test.org",
+                         "description": "TS ID: 55475482483; iType: suspicious_domain; ",
+                         "valid_from": "2020-05-07T14:33:02.714602Z", "pattern_type": "stix",
+                         "object_marking_refs": ["marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"],
+                         "labels": ["medium"],
+                         "indicator_types": ["anomalous-activity"],
+                         "pattern_version": "2.1", "spec_version": "2.1"}
+
+        indicator_obj['value'] = 'test.org'
+        indicator_obj['type'] = 'Domain'
+        xsoar_expected_response = [
+            {
+                'fields': {
+                    'description': 'TS ID: 55475482483; iType: suspicious_domain; ',
+                    'tags': ['medium'],
+                    'trafficlightprotocol': 'GREEN'
+                },
+                'rawJSON': indicator_obj,
+                'type': 'Domain',
+                'value': 'test.org'
+            }
+        ]
+        taxii_2_client.tlp_color = None
+        assert taxii_2_client.parse_indicator(indicator_obj) == xsoar_expected_response
 
     # Parsing SDO Indicators
 
