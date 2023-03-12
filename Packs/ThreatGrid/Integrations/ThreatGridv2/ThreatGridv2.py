@@ -39,14 +39,26 @@ ANALYSIS_OUTPUTS: Dict[str, Any] = {
         "output": "ArtifactAnalysis",
         "keys_to_delete": ["antivirus", "forensics"],
     },
-    "iocs": {"output": "IOCAnalysis", "keys_to_delete": ["data"]},
-    "metadata": {"output": "AnalysisMetadata", "keys_to_get": "malware_desc"},
+    "iocs": {
+        "output": "IOCAnalysis",
+        "keys_to_delete": ["data"]
+    },
+    "metadata": {
+        "output": "AnalysisMetadata",
+        "keys_to_get": "malware_desc"
+    },
     "network_stream": {
         "output": "NetworkAnalysis",
         "keys_to_delete": ["ssl", "relation"],
     },
-    "processes": {"output": "ProcessAnalysis", "keys_to_delete": ["startup_info"]},
-    "annotations": {"output": "SampleAnnotations", "keys_to_get": "network"},
+    "processes": {
+        "output": "ProcessAnalysis",
+        "keys_to_delete": ["startup_info"]
+    },
+    "annotations": {
+        "output": "SampleAnnotations",
+        "keys_to_get": "network"
+    },
 }
 
 PREFIX_OUTPUTS: Dict[str, Any] = {
@@ -61,9 +73,10 @@ PREFIX_OUTPUTS: Dict[str, Any] = {
 
 
 class Client(BaseClient):
-    """API Client to communicate with ThreatGris API."""
+    """API Client to communicate with ThreatGrid API."""
 
-    def __init__(self, base_url: str, api_token: str, proxy: bool, verify: bool):
+    def __init__(self, base_url: str, api_token: str, proxy: bool,
+                 verify: bool):
         headers = {
             "Authorization": f"bearer {api_token}",
         }
@@ -94,12 +107,10 @@ class Client(BaseClient):
         Returns:
             Dict[str, Any]: API response from Cisco ThreatGrid.
         """
-        params = remove_empty_elements(
-            {
-                "limit": limit,
-                "offset": offset,
-            }
-        )
+        params = remove_empty_elements({
+            "limit": limit,
+            "offset": offset,
+        })
 
         url_suffix = f"samples/{sample_id}" if sample_id else "samples"
         url_suffix = f"{url_suffix}/summary" if summary else url_suffix
@@ -134,14 +145,14 @@ class Client(BaseClient):
         Returns:
             Dict[str, Any]: API response from Cisco ThreatGrid.
         """
-        analysis_type = (
-            f"{analysis_type}s" if analysis_type == "network_stream" else analysis_type
-        )
+        analysis_type = (f"{analysis_type}s" if analysis_type
+                         == "network_stream" else analysis_type)
         url_prefix = f"{analysis_type}/{arg_value}" if arg_value else analysis_type
 
         return self._http_request(
             "GET",
-            urljoin(API_V2_PREFIX, f"samples/{sample_id}/analysis/{url_prefix}"),
+            urljoin(API_V2_PREFIX,
+                    f"samples/{sample_id}/analysis/{url_prefix}"),
         )
 
     def whoami(self) -> Dict[str, Any]:
@@ -150,7 +161,8 @@ class Client(BaseClient):
         Returns:
             Dict[str, Any]: API response from Cisco ThreatGrid.
         """
-        return self._http_request("GET", urljoin(API_V3_PREFIX, "session/whoami"))
+        return self._http_request("GET",
+                                  urljoin(API_V3_PREFIX, "session/whoami"))
 
     def list_associated_samples(
         self,
@@ -169,12 +181,10 @@ class Client(BaseClient):
         Returns:
             Dict[str, Any]: API response from Cisco ThreatGrid.
         """
-        params = remove_empty_elements(
-            {
-                "limit": limit,
-                "offset": offset,
-            }
-        )
+        params = remove_empty_elements({
+            "limit": limit,
+            "offset": offset,
+        })
         return self._http_request(
             "GET",
             urljoin(API_V2_PREFIX, f"{arg_name}s/{arg_value}/samples"),
@@ -191,12 +201,11 @@ class Client(BaseClient):
             Dict[str, Any]: API response from Cisco ThreatGrid.
         """
         return self._http_request(
-            "GET", urljoin(API_V2_PREFIX, f"samples/{sample_id}/state")
-        )
+            "GET", urljoin(API_V2_PREFIX, f"samples/{sample_id}/state"))
 
-    def upload_sample(
-        self, files: Optional[Dict] = None, payload: Optional[Dict] = None
-    ) -> Dict[str, Any]:
+    def upload_sample(self,
+                      files: Optional[Dict] = None,
+                      payload: Optional[Dict] = None) -> Dict[str, Any]:
         """Submits a sample (file or URL) to Malware Analytics for analysis.
         Args:
             files (dict, optional): File name and path in XSOAR.
@@ -213,9 +222,8 @@ class Client(BaseClient):
             data=payload,
         )
 
-    def associated_samples(
-        self, arg_name: str, arg_value: str, url_arg: str
-    ) -> Dict[str, Any]:
+    def associated_samples(self, arg_name: str, arg_value: str,
+                           url_arg: str) -> Dict[str, Any]:
         """Returns a list of domains / URLs associated with the IP or
             list of IPs / URLs associated with the domain.
 
@@ -272,21 +280,19 @@ class Client(BaseClient):
         Returns:
             Dict[str, Any]: API response from Cisco ThreatGrid.
         """
-        params = remove_empty_elements(
-            {
-                arg_name: arg_value,
-                "sample_id": sample_id,
-                "severity": severity,
-                "ioc": ioc,
-                "before": before,
-                "after": after,
-                "user_only": user_only,
-                "org_only": org_only,
-                "confidence": confidence,
-                "limit": limit,
-                "offset": offset,
-            }
-        )
+        params = remove_empty_elements({
+            arg_name: arg_value,
+            "sample_id": sample_id,
+            "severity": severity,
+            "ioc": ioc,
+            "before": before,
+            "after": after,
+            "user_only": user_only,
+            "org_only": org_only,
+            "confidence": confidence,
+            "limit": limit,
+            "offset": offset,
+        })
 
         return self._http_request(
             "GET",
@@ -335,22 +341,20 @@ class Client(BaseClient):
         Returns:
             Dict[str, Any]: API response from Cisco ThreatGrid.
         """
-        params = remove_empty_elements(
-            {
-                "q": query,
-                "sort_by": sort_by,
-                "term": term,
-                "state": state,
-                "before": before,
-                "after": after,
-                "user_only": user_only,
-                "org_only": org_only,
-                "highlight": highlight,
-                "sort_order": sort_order,
-                "limit": limit,
-                "offset": offset,
-            }
-        )
+        params = remove_empty_elements({
+            "q": query,
+            "sort_by": sort_by,
+            "term": term,
+            "state": state,
+            "before": before,
+            "after": after,
+            "user_only": user_only,
+            "org_only": org_only,
+            "highlight": highlight,
+            "sort_order": sort_order,
+            "limit": limit,
+            "offset": offset,
+        })
         return self._http_request(
             "GET",
             urljoin(API_V2_PREFIX, "search/submissions"),
@@ -416,7 +420,8 @@ class Client(BaseClient):
         params = remove_empty_elements({"before": before, "after": after})
         return self._http_request(
             method="GET",
-            url_suffix=urljoin(API_V3_PREFIX, f"feeds/{feed_name}.{output_type}"),
+            url_suffix=urljoin(API_V3_PREFIX,
+                               f"feeds/{feed_name}.{output_type}"),
             params=params,
         )
 
@@ -466,8 +471,7 @@ def search_submission_command(
         delete_keys_from_dict(
             sample["item"],
             ["login", "organization_id", "vm_runtime", "login", "tags"],
-        )
-        for sample in response["data"]["items"]
+        ) for sample in response["data"]["items"]
     ]
     readable_output = tableToMarkdown(
         name="Samples Submitted :",
@@ -501,19 +505,20 @@ def search_command(
     arg_name = get_arg_from_command_name(args["command_name"], 2)
     arg_value = args[arg_name]
 
+    arg_value = validate_url_template(
+        arg_value) if arg_name == "url" else arg_value
     arg_value = url_to_sha256(arg_value) if arg_name == "url" else arg_value
 
     response = client.search(
         arg_name=arg_name,
         arg_value=arg_value,
     )
-    search_data = (
-        response["data"]["url"] if response["data"].get("url") else response["data"]
-    )
+    search_data = (response["data"]["url"]
+                   if response["data"].get("url") else response["data"])
 
-    readable_output = tableToMarkdown(
-        name=f"{arg_name} data:", t=search_data, headerTransform=string_to_table_header
-    )
+    readable_output = tableToMarkdown(name=f"{arg_name} data:",
+                                      t=search_data,
+                                      headerTransform=string_to_table_header)
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix="ThreatGrid.search",
@@ -540,6 +545,8 @@ def list_associated_samples_command(
     arg_name = get_arg_from_command_name(args["command_name"], 2)
     arg_value = args[arg_name]
 
+    arg_value = validate_url_template(
+        arg_value) if arg_name == "url" else arg_value
     arg_value = url_to_sha256(arg_value) if arg_name == "url" else arg_value
 
     limit, offset, pagination_message = pagination(args)
@@ -552,8 +559,7 @@ def list_associated_samples_command(
 
     samples = response["data"]["samples"]
     sample_list = delete_key_from_list(
-        samples, ["details", "relation", "owner", "iocs"]
-    )
+        samples, ["details", "relation", "owner", "iocs"])
 
     readable_output = tableToMarkdown(
         name=f"List of samples associated to the {arg_name} - {arg_value} : ",
@@ -590,13 +596,11 @@ def analysis_sample_command(
     sample_id = args["sample_id"]
     response = client.analysis_sample(sample_id, url_param, arg_value)
 
-    items = (
-        response["data"]["items"] if response["data"].get("items") else response["data"]
-    )
+    items = (response["data"]["items"]
+             if response["data"].get("items") else response["data"])
 
-    items_to_display = (
-        parse_output(items, url_param) if isinstance(items, dict) else items
-    )
+    items_to_display = (parse_output(items, url_param) if isinstance(
+        items, dict) else items)
 
     response["data"].update({"sample_id": sample_id})
 
@@ -665,9 +669,9 @@ def who_am_i_command(
 
     whoami_data = response["data"]
     whoami_data = delete_keys_from_dict(whoami_data, ["properties"])
-    readable_output = tableToMarkdown(
-        name="Who am I ?", t=whoami_data, headerTransform=string_to_table_header
-    )
+    readable_output = tableToMarkdown(name="Who am I ?",
+                                      t=whoami_data,
+                                      headerTransform=string_to_table_header)
 
     return CommandResults(
         readable_output=readable_output,
@@ -742,16 +746,18 @@ def associated_command(
     response = client.associated_samples(arg_name, arg_value, url_arg)
     items = response["data"][url_arg]
 
-    item_list = delete_key_from_list(items, ["details"]) if url_arg == "urls" else items
+    item_list = delete_key_from_list(
+        items, ["details"]) if url_arg == "urls" else items
 
     readable_output = tableToMarkdown(
         name=f"List of {url_arg} associated to the {arg_name} - {arg_value} :",
         t=item_list,
         headerTransform=string_to_table_header,
     )
+    output_suffix = f'{arg_name.capitalize()}Associated{url_arg[:-1].capitalize()}'
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix=f"ThreatGrid.{arg_name.capitalize()}Associated{url_arg[:-1].capitalize()}",
+        outputs_prefix=f"ThreatGrid.{output_suffix}",
         outputs_key_field=arg_name,
         outputs=response["data"],
         raw_response=response["data"],
@@ -893,9 +899,9 @@ def get_sample_command(
         content_format = "html"
         return fileResult(filename=f"{sample_id}-{artifact}", data=response)
     else:
-        sample_details = dict_safe_get(response, ["data", "items"]) or response.get(
-            "data"
-        )  # type: ignore[assignment]
+        sample_details = dict_safe_get(response,
+                                       ["data", "items"]) or response.get(
+                                           "data")  # type: ignore[assignment]
 
     readable_output = tableToMarkdown(
         name=SAMPLE_ARGS[arg_name]["name"],
@@ -906,7 +912,8 @@ def get_sample_command(
     return CommandResults(
         readable_output=readable_output,
         content_format=content_format,
-        outputs_prefix=SAMPLE_ARGS[arg_name]["outputs_prefix"],  # type: ignore[arg-type]
+        outputs_prefix=SAMPLE_ARGS[arg_name]
+        ["outputs_prefix"],  # type: ignore[arg-type]
         outputs_key_field=SAMPLE_ARGS[arg_name]["outputs_key_field"],
         outputs=sample_details,
         raw_response=response,
@@ -929,15 +936,17 @@ def sample_state_get_command(
     output = response["data"]
 
     readable_output = "The command was executed successfully"
-    return CommandResults(
-        readable_output=readable_output, outputs=output, raw_response=output
-    )
+    return CommandResults(readable_output=readable_output,
+                          outputs=output,
+                          raw_response=output)
 
 
 @polling_function(
     name="threat-grid-sample-upload",
-    interval=arg_to_number(demisto.args().get("interval_in_seconds", DEFAULT_INTERVAL)),
-    timeout=arg_to_number(demisto.args().get("timeout_in_seconds", DEFAULT_TIMEOUT)),
+    interval=arg_to_number(demisto.args().get("interval_in_seconds",
+                                              DEFAULT_INTERVAL)),
+    timeout=arg_to_number(demisto.args().get("timeout_in_seconds",
+                                             DEFAULT_TIMEOUT)),
     poll_message="Upload sample is executing",
     requires_polling_arg=False,
 )
@@ -1055,12 +1064,10 @@ def reputation_command(
                 sample_details = {}
                 sample_id = ""
 
-        dbot_score = get_dbotscore(
-            score, generic_command_name, command_arg, reliability
-        )
+        dbot_score = get_dbotscore(score, generic_command_name, command_arg,
+                                   reliability)
         reputation_helper_command: Callable = REPUTATION_TYPE_TO_FUNCTION[
-            generic_command_name
-        ]
+            generic_command_name]
         kwargs = {
             "client": client,
             "command_arg": command_arg,
@@ -1074,6 +1081,39 @@ def reputation_command(
 
 
 """ HELPER FUNCTIONS """
+
+
+def validate_url_template(url: str) -> str:
+    """ Validate URL argument is according to the 'http://example.com:80' template.
+
+    Args:
+        url (str): The URL argument.
+
+    Raises:
+        ValueError: In case URL suffix is different than '.com'.
+
+    Returns:
+        str: The updated URL.
+    """
+    correct_prefix = 'http://'
+    correct_suffix = '.com:80/'
+
+    if not url.startswith(correct_prefix):
+        if url.startswith('www.'):
+            url = url.replace('www.', correct_prefix)
+        elif url.startswith('https://'):
+            url = url.replace('https://', correct_prefix)
+        else:
+            url = correct_prefix + url
+    if not url.endswith(correct_suffix):
+        if url.endswith('.com:80'):
+            url += '/'
+        elif url.endswith('.com'):
+            url += ':80/'
+        else:
+            raise ValueError(
+                "Threat Grid only supports for URL suffix '.com'. ")
+    return url
 
 
 def is_day_diff_valid(sample_analysis_date: str) -> bool:
@@ -1222,22 +1262,23 @@ def parse_ip_indicator(
         Tuple: Return command_indicator, outputs_prefix, outputs_key_field, and outputs.
     """
 
-    response = (
-        client.analysis_sample(sample_id=sample_id, analysis_type="annotations")
-        if sample_id
-        else None
-    )
+    response = (client.analysis_sample(sample_id=sample_id,
+                                       analysis_type="annotations")
+                if sample_id else None)
     command_indicator = Common.IP(
         ip=command_arg,
-        asn=dict_safe_get(response, ["data", "items", "network", command_arg, "asn"]),
+        asn=dict_safe_get(response,
+                          ["data", "items", "network", command_arg, "asn"]),
         dbot_score=dbot_score,
     )
     outputs = {
-        "indicator": command_arg,
-        "asn": dict_safe_get(
-            response, ["data", "items", "network", command_arg, "asn"]
-        ),
-        "confidence": "",
+        "indicator":
+        command_arg,
+        "asn":
+        dict_safe_get(response,
+                      ["data", "items", "network", command_arg, "asn"]),
+        "confidence":
+        "",
     }
     readable_output = tableToMarkdown(
         name=f"ThreatGrid IP Reputation for {command_arg} \n",
@@ -1292,8 +1333,8 @@ def parse_url_indicator(
 
 
 def delete_keys_from_dict(
-    dictionary: MutableMapping, keys_to_delete: Union[Set[str], List[str]]
-) -> Dict[str, Any]:
+        dictionary: MutableMapping,
+        keys_to_delete: Union[Set[str], List[str]]) -> Dict[str, Any]:
     """Get a modified dictionary without the requested keys.
     Args:
         dictionary (Dict[str, Any]): Dictionary to modify according to.
@@ -1309,11 +1350,8 @@ def delete_keys_from_dict(
             if isinstance(value, MutableMapping):
                 modified_dict[key] = delete_keys_from_dict(value, keys_set)
 
-            elif (
-                isinstance(value, MutableSequence)
-                and value
-                and isinstance(value[0], MutableMapping)
-            ):
+            elif (isinstance(value, MutableSequence) and value
+                  and isinstance(value[0], MutableMapping)):
                 modified_dict[key] = [
                     delete_keys_from_dict(val, keys_set) for val in value
                 ]
@@ -1342,7 +1380,8 @@ def validate_pagination_arguments(
         )
 
     if page is not None and page < MIN_PAGE_NUM:
-        raise ValueError(f"page argument must be greater than {MIN_PAGE_NUM-1}.")
+        raise ValueError(
+            f"page argument must be greater than {MIN_PAGE_NUM-1}.")
 
     if limit is not None and limit <= MIN_LIMIT:
         raise ValueError(f"limit argument must be greater than {MIN_LIMIT}.")
@@ -1431,10 +1470,8 @@ def parse_output(
     items_to_display = items
     if ANALYSIS_OUTPUTS[analysis_arg].get("keys_to_get"):
         items_to_display = (
-            items[ANALYSIS_OUTPUTS[analysis_arg]["keys_to_get"]]
-            if items.get(ANALYSIS_OUTPUTS[analysis_arg]["keys_to_get"])
-            else items
-        )
+            items[ANALYSIS_OUTPUTS[analysis_arg]["keys_to_get"]] if items.get(
+                ANALYSIS_OUTPUTS[analysis_arg]["keys_to_get"]) else items)
     if ANALYSIS_OUTPUTS[analysis_arg].get("keys_to_delete"):
         items_to_display = delete_keys_from_dict(
             items,
@@ -1540,7 +1577,8 @@ def main() -> None:
         "threat-grid-ip-samples-list": list_associated_samples_command,
         "threat-grid-path-samples-list": list_associated_samples_command,
         "threat-grid-url-samples-list": list_associated_samples_command,
-        "threat-grid-registry-key-samples-list": list_associated_samples_command,
+        "threat-grid-registry-key-samples-list":
+        list_associated_samples_command,
         "threat-grid-sample-upload": upload_sample_command,
         "threat-grid-sample-list": get_sample_command,
         "file": reputation_command,
@@ -1582,11 +1620,13 @@ def main() -> None:
         elif command in commands:
             return_results(commands[command](client, args))
         else:
-            raise NotImplementedError(f"The {command} command is not implemented.")
+            raise NotImplementedError(
+                f"The {command} command is not implemented.")
 
     except Exception as exc:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f"Failed to execute {command} command." f"\nError:\n{str(exc)}")
+        return_error(f"Failed to execute {command} command."
+                     f"\nError:\n{str(exc)}")
 
 
 if __name__ in ["__main__", "builtin", "builtins"]:
