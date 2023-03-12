@@ -1477,8 +1477,8 @@ def authorize_security_group_ingress_command(args, aws_client):
         role_session_duration=args.get('roleSessionDuration'),
     )
     kwargs = {'GroupId': args.get('groupId')}
-    if args.get('IpPermissionsFull', None):
-        IpPermissions = json.loads(args.get('IpPermissionsFull'))
+    if IpPermissionsFull := args.get('IpPermissionsFull', None):
+        IpPermissions = json.loads(IpPermissionsFull)
     else:
         IpPermissions = []
         UserIdGroupPairs = []
@@ -1507,8 +1507,8 @@ def authorize_security_group_egress_command(args, aws_client):
         role_session_duration=args.get('roleSessionDuration'),
     )
     kwargs = {'GroupId': args.get('groupId')}
-    if args.get('IpPermissionsFull', None):
-        IpPermissions = json.loads(args.get('IpPermissionsFull'))
+    if IpPermissionsFull := args.get('IpPermissionsFull', None):
+        IpPermissions = json.loads(IpPermissionsFull)
     else:
         IpPermissions = []
         UserIdGroupPairs = []
@@ -1594,8 +1594,8 @@ def revoke_security_group_ingress_command(args, aws_client):
         role_session_duration=args.get('roleSessionDuration'),
     )
     kwargs = {'GroupId': args.get('groupId')}
-    if args.get('IpPermissionsFull', None):
-        IpPermissions = json.loads(args.get('IpPermissionsFull'))
+    if IpPermissionsFull := args.get('IpPermissionsFull', None):
+        IpPermissions = json.loads(IpPermissionsFull)
         kwargs['IpPermissions'] = IpPermissions
     else:
         kwargs.update(create_policy_kwargs_dict(args))
@@ -1619,8 +1619,8 @@ def revoke_security_group_egress_command(args, aws_client):
     kwargs = {
         'GroupId': args.get('groupId')
     }
-    if args.get('IpPermissionsFull', None):
-        IpPermissions = json.loads(args.get('IpPermissionsFull'))
+    if IpPermissionsFull := args.get('IpPermissionsFull'):
+        IpPermissions = json.loads(IpPermissionsFull)
         kwargs['IpPermissions'] = IpPermissions
     else:
         IpPermissions_dict = create_ip_permissions_dict(args)
