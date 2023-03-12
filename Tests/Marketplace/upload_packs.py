@@ -254,6 +254,7 @@ def upload_index_to_storage(index_folder_path: str, extract_destination_path: st
                             previous_commit_hash: str = None, landing_page_sections: dict = None,
                             artifacts_dir: Optional[str] = None,
                             storage_bucket: Optional[Bucket] = None,
+                            index_name: str = GCPConfig.INDEX_NAME,
                             ):
     """
     Upload updated index zip to cloud storage.
@@ -288,7 +289,7 @@ def upload_index_to_storage(index_folder_path: str, extract_destination_path: st
         landing_page_sections = load_json(LANDING_PAGE_SECTIONS_PATH)
 
     logging.debug(f'commit hash is: {commit}')
-    index_json_path = os.path.join(index_folder_path, f'{GCPConfig.INDEX_NAME}.json')
+    index_json_path = os.path.join(index_folder_path, f'{index_name}.json')
     logging.info(f'index json path: {index_json_path}')
     logging.info(f'Private packs are: {private_packs}')
     with open(index_json_path, "w+") as index_file:
@@ -1268,6 +1269,24 @@ def main():
     # upload core packs json to bucket
     create_corepacks_config(storage_bucket, build_number, index_folder_path,
                             os.path.dirname(packs_artifacts_path), storage_base_path, marketplace)
+
+    index_v2_gcs_path = os.path.join(storage_base_path, f"{GCPConfig.INDEX_V2_NAME}.zip")
+    index_v2_local_path = os.path.join(extract_destination_path, f"{GCPConfig.INDEX_V2_NAME}.zip")
+    index_v2_blob = storage_bucket.blob(index_v2_gcs_path)
+    shutil.copytree(index_folder_path, index_v2_local_path)
+    for filename in os.listdir(index_v2_local_path):
+        filepath = os.path.join(index_v2_local_path, filename, 'README.md')
+        logging.info(f'Index V2 {filepath=}')
+        with open(filepath, 'w') as f:
+            f.write('This is the new readme')
+
+    upload_index_to_storage(index_folder_path=index_v2_local_path, extract_destination_path=extract_destination_path,
+                            index_blob=index_v2_blob, build_number=build_number, private_packs=private_packs,
+                            current_commit_hash=current_commit_hash, index_generation=index_generation,
+                            force_upload=force_upload, previous_commit_hash=previous_commit_hash,
+                            landing_page_sections=statistics_handler.landing_page_sections,
+                            artifacts_dir=os.path.dirname(packs_artifacts_path),
+                            storage_bucket=storage_bucket, index_name=GCPConfig.INDEX_V2_NAME)
 
     # finished iteration over content packs
     upload_index_to_storage(index_folder_path=index_folder_path, extract_destination_path=extract_destination_path,
