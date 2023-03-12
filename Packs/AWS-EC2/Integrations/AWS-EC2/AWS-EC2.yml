@@ -3494,7 +3494,7 @@ script:
       name: UserIdGroupPairsVpcPeeringConnectionId
       required: false
       secret: false
-    - description: Full IpPermissions argument as a string to more easily copy rules.
+    - description: 'Full IpPermissions argument as a string to more easily copy rules (e.x. """[{"IpProtocol": "-1", "IpRanges": [{"CidrIp": "0.0.0.0/0"}], "Ipv6Ranges": [], "PrefixListIds": [], "UserIdGroupPairs": []}]""").'
       name: IpPermissionsFull
     deprecated: false
     description: Adds ingress rule to a security group.
@@ -3639,7 +3639,7 @@ script:
       name: UserIdGroupPairsVpcPeeringConnectionId
       required: false
       secret: false
-    - description: Full IpPermissions argument as a string to more easily copy rules.
+    - description: 'Full IpPermissions argument as a string to more easily copy rules (e.x. """[{"IpProtocol": "-1", "IpRanges": [{"CidrIp": "0.0.0.0/0"}], "Ipv6Ranges": [], "PrefixListIds": [], "UserIdGroupPairs": []}]""").'.
       name: IpPermissionsFull
     deprecated: false
     description: Adds egress rule to a security group.
@@ -3712,7 +3712,7 @@ script:
       name: roleSessionDuration
       required: false
       secret: false
-    - description: Full IpPermissions argument as a string to more easily target rules.
+    - description: 'Full IpPermissions argument as a string to more easily target rules (e.x. """[{"IpProtocol": "-1", "IpRanges": [{"CidrIp": "0.0.0.0/0"}], "Ipv6Ranges": [], "PrefixListIds": [], "UserIdGroupPairs": []}]""").'
       name: IpPermissionsFull
     deprecated: false
     description: Removes egress rule from a security group. To remove a rule, the values that you specify (for example, ports) must match the existing rule's values exactly.
@@ -6265,7 +6265,7 @@ script:
       name: roleSessionDuration
       required: false
       secret: false
-    - description: Full IpPermissions argument as a string to more easily target rules.
+    - description: 'Full IpPermissions argument as a string to more easily target rules (e.x. """[{"IpProtocol": "-1", "IpRanges": [{"CidrIp": "0.0.0.0/0"}], "Ipv6Ranges": [], "PrefixListIds": [], "UserIdGroupPairs": []}]""").'
       name: IpPermissionsFull
     deprecated: false
     description: Removes egress rule from a security group. To remove a rule, the values that you specify (for example, ports) must match the existing rule's values exactly.
