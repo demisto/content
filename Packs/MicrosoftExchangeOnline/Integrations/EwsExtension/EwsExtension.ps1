@@ -1399,7 +1399,10 @@ function Main {
                 ($human_readable, $entry_context, $raw_response) = GetMailboxAuditBypassAssociationCommand $exo_client $command_arguments
             }
             default {
-                ReturnError "Could not recognize $command"
+                if ($command -ne "$script:COMMAND_PREFIX-auth-start" -and $command -ne "$script:COMMAND_PREFIX-auth-complete")
+                {
+                    ReturnError "Could not recognize $command"
+                }
             }
         }
         # Updating integration context if access token changed
