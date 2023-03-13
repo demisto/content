@@ -16,6 +16,7 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # IfrSO8601 format with UTC, default in XSOA
 SERVICE = 'wafv2'
 OUTPUT_PREFIX = 'AWS.Waf'
 DEFAULT_SCOPE = 'Regional'
+
 SCOPE_MAP = {'Regional': 'REGIONAL',
              'Global': 'CLOUDFRONT'}
 OPERATOR_TO_STATEMENT_OPERATOR = {'And': 'AndStatement', 'Or': 'OrStatement', 'Not': 'NotStatement'}
@@ -25,7 +26,19 @@ MATCH_TYPE_TO_POSITIONAL_CONSTRAIN = {'Exactly Matches String': 'EXACTLY',
                                       'Starts With String': 'STARTS_WITH',
                                       'Ends With String': 'ENDS_WITH',
                                       'Contains String': 'CONTAINS',
-                                      'Contains Words': 'CONTAINS_WORD'}
+                                      'Contains Words': 'CONTAINS_WORD',
+                                      'all': 'EXACTLY | STARTS_WITH | ENDS_WITH | CONTAINS | CONTAINS_WORD'}
+WEB_REQUEST_COMPONENT_MAP = {"Headers": "Headers",
+                             "Cookies": "Cookies",
+                             "Query Parameters": "AllQueryArguments",
+                             "Uri Path": "UriPath",
+                             "Query String": "QueryString",
+                             "Body": "Body",
+                             "HTTP Method": "Method"}
+TEXT_TRANSFORMATIONS = 'NONE | COMPRESS_WHITE_SPACE | HTML_ENTITY_DECODE | LOWERCASE | CMD_LINE | URL_DECODE | ' \
+                       'BASE64_DECODE | HEX_DECODE | MD5 | REPLACE_COMMENTS | ESCAPE_SEQ_DECODE | SQL_HEX_DECODE | ' \
+                       'CSS_DECODE | JS_DECODE | NORMALIZE_PATH | NORMALIZE_PATH_WIN | REMOVE_NULLS | ' \
+                       'REPLACE_NULLS | BASE64_DECODE_EXT | URL_DECODE_UNI | UTF8_TO_UNICODE'
 
 ''' HELPER FUNCTIONS '''
 
@@ -70,31 +83,30 @@ def build_ip_rule_object(args: dict) -> dict:
                                'when ip_set_arn has more than one value.')
 
     if len(ip_set_arn) == 1:
-        ip_rule['Statement'] = build_ip_statement(args)
+        ip_rule['Statement'] = build_ip_statement(ip_set_arn)
     elif len(ip_set_arn) > 1:
         statement_operator = OPERATOR_TO_STATEMENT_OPERATOR[condition_operator]
         ip_rule['Statement'][statement_operator] = {
-            'Statements': build_ip_statement(args)
+            'Statements': build_ip_statement(ip_set_arn)
         }
     return ip_rule
 
 
-def build_ip_statement(args: dict) -> list | dict:
-    ip_set_arn = argToList(args.get('ip_set_arn')) or []
+def build_ip_statement(ip_set_arn: list) -> list | dict:
     ip_statements = [
         {'IPSetReferenceStatement': {'ARN': ip_set}} for ip_set in ip_set_arn
     ]
     return ip_statements[0] if len(ip_statements) == 1 else ip_statements
 
 
-def build_country_statement(args: dict) -> dict:
-    country_codes = argToList(args.get('country_codes')) or []
+def build_country_statement(country_codes: list) -> dict:
     return {'GeoMatchStatement': {'CountryCodes': country_codes}}
 
 
 def build_country_rule_object(args: dict) -> dict:
+    country_codes = argToList(args.get('country_codes')) or []
     country_rule: dict = {
-        'Statement': build_country_statement(args)
+        'Statement': build_country_statement(country_codes)
     }
     return country_rule
 
@@ -110,7 +122,7 @@ def build_string_match_statement(args: dict) -> dict:
 
     elif match_statement == BYTE_MATCH_STATEMENT and not string_to_match:
         raise DemistoException('string_to_match must be provided when using strings match_type')
-    web_request_component = args.get('web_request_component') or ''
+    web_request_component = WEB_REQUEST_COMPONENT_MAP.get(args.get('web_request_component')) or ''
     oversize_handling = args.get('oversize_handling') or ''
     text_transformation = args.get('text_transformation') or 'NONE'
     if match_statement == BYTE_MATCH_STATEMENT:
@@ -141,6 +153,7 @@ def update_rule_with_statement(rule: dict, statement: dict, condition_operator: 
 
     else:
         raise DemistoException('Rule contains only one statement. Please provide condition operator.')
+    # TODO support list of statements
     rule['Statement'][condition]['Statements'].append(statement)
 
 
@@ -609,7 +622,6 @@ def delete_rule_group_command(client: boto3.client, args) -> CommandResults:
 
 
 def update_rule(client: boto3.client, kwargs, lock_token, updated_rules, rule_group_visibility_config) -> dict:
-
     kwargs |= {'LockToken': lock_token,
                'Rules': updated_rules,
                'VisibilityConfig': rule_group_visibility_config
@@ -735,8 +747,8 @@ def add_ip_statement_command(client: boto3.client, args) -> CommandResults:
     kwargs = build_kwargs(args)
 
     rules, rule_group_visibility_config, lock_token = get_required_response_fields_from_rule_group(client, kwargs)
-
-    statement = build_ip_statement(args)
+    ip_set_arn = argToList(args.get('ip_set_arn')) or []
+    statement = build_ip_statement(ip_set_arn)
     updated_rules = add_statement_to_rule(args, statement, rules)  # type: ignore
 
     response = update_rule(client=client,
@@ -755,8 +767,8 @@ def add_country_statement_command(client: boto3.client, args) -> CommandResults:
     kwargs = build_kwargs(args)
 
     rules, rule_group_visibility_config, lock_token = get_required_response_fields_from_rule_group(client, kwargs)
-
-    statement = build_country_statement(args)
+    country_codes = argToList(args.get('country_codes')) or []
+    statement = build_country_statement(country_codes)
     updated_rules = add_statement_to_rule(args, statement, rules)
 
     response = update_rule(client=client,
@@ -818,6 +830,40 @@ def add_json_statement_command(client: boto3.client, args) -> CommandResults:
 ''' MAIN FUNCTION '''
 
 
+def template_json_command(args):
+    statement_type = args.get('statement_type', '')
+    web_request_component = args.get('web_request_component', '')
+    if statement_type == 'Ip Set':
+        readable_output = json.dumps(build_ip_statement(ip_set_arn=['The Ip Set ARN']))
+
+    elif statement_type == 'Country':
+        readable_output = json.dumps(build_country_statement(country_codes=['country code1, country code2...']))
+
+    else:
+        if not web_request_component:
+            raise DemistoException('Please provide web_request_component for string match and regex match ')
+        web_request_component = WEB_REQUEST_COMPONENT_MAP[web_request_component]
+        if statement_type == 'String Match':
+            output = build_byte_match_statement(web_request_component=web_request_component,
+                                                oversize_handling='CONTINUE | MATCH | NO_MATCH',
+                                                text_transformation=TEXT_TRANSFORMATIONS,
+                                                string_to_match='The string to match',
+                                                match_type='all')
+            match_statement = BYTE_MATCH_STATEMENT
+
+        else:  # statement_type == 'Regex Pattern':
+            output = build_regex_match_statement(web_request_component=web_request_component,
+                                                 oversize_handling='CONTINUE | MATCH | NO_MATCH',
+                                                 text_transformation=TEXT_TRANSFORMATIONS,
+                                                 regex_set_arn="The regex set ARN")
+            match_statement = REGEX_MATCH_STATEMENT
+
+        statement = {match_statement: output}
+        readable_output = json.dumps(statement)
+
+    return CommandResults(readable_output=readable_output)
+
+
 def main() -> None:
     """main function, parses params and runs command functions
 
@@ -845,70 +891,73 @@ def main() -> None:
                                aws_role_policy, aws_access_key_id, aws_secret_access_key, verify_certificate,
                                timeout, retries)
         args = demisto.args()
-
+        command = demisto.command()
         client = aws_client.aws_session(service=SERVICE, region=args.get('region'))
 
-        if demisto.command() == 'test-module':
+        if command == 'test-module':
             # This is the call made when pressing the integration test button.
             result = connection_test(client)
 
-        elif demisto.command() == 'aws-waf-ip-set-create':
+        elif command == 'aws-waf-ip-set-create':
             result = create_ip_set_command(client, args)
-        elif demisto.command() == 'aws-waf-ip-set-get':
+        elif command == 'aws-waf-ip-set-get':
             result = get_ip_set_command(client, args)
-        elif demisto.command() == 'aws-waf-ip-set-update':
+        elif command == 'aws-waf-ip-set-update':
             result = update_ip_set_command(client, args)
-        elif demisto.command() == 'aws-waf-ip-set-list':
+        elif command == 'aws-waf-ip-set-list':
             result = list_ip_set_command(client, args)
-        elif demisto.command() == 'aws-waf-ip-set-delete':
+        elif command == 'aws-waf-ip-set-delete':
             result = delete_ip_set_command(client, args)
 
-        elif demisto.command() == 'aws-waf-regex-set-create':
+        elif command == 'aws-waf-regex-set-create':
             result = create_regex_set_command(client, args)
-        elif demisto.command() == 'aws-waf-regex-set-get':
+        elif command == 'aws-waf-regex-set-get':
             result = get_regex_set_command(client, args)
-        elif demisto.command() == 'aws-waf-regex-set-update':
+        elif command == 'aws-waf-regex-set-update':
             result = update_regex_set_command(client, args)
-        elif demisto.command() == 'aws-waf-regex-set-list':
+        elif command == 'aws-waf-regex-set-list':
             result = list_regex_set_command(client, args)
-        elif demisto.command() == 'aws-waf-regex-set-delete':
+        elif command == 'aws-waf-regex-set-delete':
             result = delete_regex_set_command(client, args)
 
-        elif demisto.command() == 'aws-waf-rule-group-list':
+        elif command == 'aws-waf-rule-group-list':
             result = list_rule_group_command(client, args)
-        elif demisto.command() == 'aws-waf-rule-group-get':
+        elif command == 'aws-waf-rule-group-get':
             result = get_rule_group_command(client, args)
-        elif demisto.command() == 'aws-waf-rule-group-delete':
+        elif command == 'aws-waf-rule-group-delete':
             result = delete_rule_group_command(client, args)
-        elif demisto.command() == 'aws-waf-rule-group-create':
+        elif command == 'aws-waf-rule-group-create':
             result = create_rule_group_command(client, args)
 
-        elif demisto.command() == 'aws-waf-ip-rule-create':
+        elif command == 'aws-waf-ip-rule-create':
             result = create_ip_rule_command(client, args)
-        elif demisto.command() == 'aws-waf-country-rule-create':
+        elif command == 'aws-waf-country-rule-create':
             result = create_country_rule_command(client, args)
-        elif demisto.command() == 'aws-waf-string-match-rule-create':
+        elif command == 'aws-waf-string-match-rule-create':
             result = create_string_match_rule_command(client, args)
-        elif demisto.command() == 'aws-waf-rule-delete':
+        elif command == 'aws-waf-rule-delete':
             result = delete_rule_command(client, args)
 
-        elif demisto.command() == 'aws-waf-ip-statement-add':
+        elif command == 'aws-waf-ip-statement-add':
             result = add_ip_statement_command(client, args)
-        elif demisto.command() == 'aws-waf-country-statement-add':
+        elif command == 'aws-waf-country-statement-add':
             result = add_country_statement_command(client, args)
-        elif demisto.command() == 'aws-waf-string-match-statement-add':
+        elif command == 'aws-waf-string-match-statement-add':
             result = add_string_match_statement_command(client, args)
-        elif demisto.command() == 'aws-waf-statement-json-add':
+        elif command == 'aws-waf-statement-json-add':
             result = add_json_statement_command(client, args)
 
+        elif command == 'aws-waf-statement-json-template-get':
+            result = template_json_command(args)
+
         else:
-            raise NotImplementedError(f'Command {demisto.command()} is not implemented in AWS WAF integration.')
+            raise NotImplementedError(f'Command {command} is not implemented in AWS WAF integration.')
 
         return_results(result)
 
     # Log exceptions and return errors
     except Exception as e:
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
 
 ''' ENTRY POINT '''

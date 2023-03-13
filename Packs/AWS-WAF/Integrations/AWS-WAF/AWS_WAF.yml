@@ -1075,11 +1075,11 @@ script:
         predefined:
           - "Headers"
           - "Cookies"
-          - "QueryParameters"
-          - "UriPath"
-          - "QueryString"
+          - "Query Parameters"
+          - "Uri Path"
+          - "Query String"
           - "Body"
-          - "HTTPMethod"
+          - "HTTP Method"
       - name: oversize_handling
         description: AWS WAF applies oversize handling to web request contents that are larger than AWS WAF can inspect. If the web_request_component is Headers, Cookies or Body, a value must be provided.
         auto: PREDEFINED
@@ -1327,11 +1327,11 @@ script:
         predefined:
           - "Headers"
           - "Cookies"
-          - "QueryParameters"
-          - "UriPath"
-          - "QueryString"
+          - "Query Parameters"
+          - "Uri Path"
+          - "Query String"
           - "Body"
-          - "HTTPMethod"
+          - "HTTP Method"
       - name: oversize_handling
         description: AWS WAF applies oversize handling to web request contents that are larger than AWS WAF can inspect. If the web_request_component is Headers, Cookies or Body, a value must be provided.
         auto: PREDEFINED
@@ -1428,6 +1428,35 @@ script:
     description: Adds a generic statement to an existing rule.
     execution: false
     name: aws-waf-statement-json-add
+
+
+  - arguments:
+      - name: statement_type
+        description: The statement type.
+        required: true
+        auto: PREDEFINED
+        predefined:
+          - "Ip Set"
+          - "Country"
+          - "String Match"
+          - "Regex Pattern"
+      - name: web_request_component
+        description: The web component to inspect.
+        auto: PREDEFINED
+        predefined:
+          - "Headers"
+          - "Cookies"
+          - "Query Parameters"
+          - "Uri Path"
+          - "Query String"
+          - "Body"
+          - "HTTP Method"
+    deprecated: false
+    description: Gets the statement template.
+    execution: false
+    name: aws-waf-statement-json-template-get
+
+
   isfetch: false
   runonce: false
   script: '-'
