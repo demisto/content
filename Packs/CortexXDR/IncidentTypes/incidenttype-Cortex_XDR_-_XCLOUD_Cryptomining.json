@@ -20,7 +20,7 @@
     "disabled": false,
     "reputationCalc": 0,
     "onChangeRepAlg": 0,
-    "layout": "Cortex XDR - XCLOUD Cryptojacking",
+    "layout": "Cortex XDR - XCLOUD Cryptomining",
     "detached": false,
     "extractSettings": {
         "mode": "Specific",
