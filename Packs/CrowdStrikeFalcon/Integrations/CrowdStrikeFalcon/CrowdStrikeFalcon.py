@@ -4324,6 +4324,11 @@ def search_ml_exclusion_command(args):
             ids = get_exclusions('ml', f"value:'{value}'", search_args).get('resources')
         else:
             ids = get_exclusions('ml', args.get('filter'), search_args).get('resources')
+    
+    if not ids:
+        return CommandResults(
+            readable_output='The arguments/filters you provided did not match any exclusion.'
+        )
 
     exclusions = get_exclusion_entities('ml', ids).get('resources')
     human_readable = tableToMarkdown('CrowdStrike Falcon machine learning exclusions', exclusions, sort_headers=False,
@@ -4410,6 +4415,11 @@ def search_ioa_exclusion_command(args):
             ids = get_exclusions('ioa', f'name:{name}', search_args).get('resources')
         else:
             ids = get_exclusions('ioa', args.get('filter'), search_args).get('resources')
+    
+    if not ids:
+        return CommandResults(
+            readable_output='The arguments/filters you provided did not match any exclusion.'
+        )
 
     exclusions = get_exclusion_entities('ioa', ids).get('resources')
     human_readable = tableToMarkdown('CrowdStrike Falcon IOA exclusions', exclusions, is_auto_json_transform=True,
@@ -4438,6 +4448,11 @@ def list_quarantined_file_command(args):
         )
 
         ids = list_quarantined_files_id(args.get('filter'), search_args, pagination_args).get('resources')
+    
+    if not ids:
+        return CommandResults(
+            readable_output='The arguments/filters you provided did not match any files.'
+        )
 
     files = list_quarantined_files(ids).get('resources')
     human_readable = tableToMarkdown('CrowdStrike Falcon Quarantined File', files, is_auto_json_transform=True,

@@ -4396,6 +4396,18 @@ def test_search_ml_exclusion_command_by_value(requests_mock):
     assert results.outputs[0].get('value') == '/test'
 
 
+def test_search_ml_exclusion_command_by_value_no_results(requests_mock):
+    from CrowdStrikeFalcon import search_ml_exclusion_command
+    requests_mock.get(
+        f'{SERVER_URL}/policy/queries/ml-exclusions/v1?filter=value%3A%27%2Ftest-mock%27',
+        json={}
+    )
+
+    results = search_ml_exclusion_command({'value': '/test-mock'})
+
+    assert results.readable_output == 'The arguments/filters you provided did not match any exclusion.'
+
+
 def test_search_ml_exclusion_command_by_filter(requests_mock):
     from CrowdStrikeFalcon import search_ml_exclusion_command
     requests_mock.get(
@@ -4499,6 +4511,18 @@ def test_search_ioa_exclusion_command_by_name(requests_mock):
     assert results.outputs[0].get('name') == 'test'
 
 
+def test_search_ioa_exclusion_command_by_name_no_results(requests_mock):
+    from CrowdStrikeFalcon import search_ioa_exclusion_command
+    requests_mock.get(
+        f'{SERVER_URL}/policy/queries/ioa-exclusions/v1?filter=name%3Atest-mock',
+        json={}
+    )
+
+    results = search_ioa_exclusion_command({'name': 'test-mock'})
+
+    assert results.readable_output == 'The arguments/filters you provided did not match any exclusion.'
+
+
 def test_search_ioa_exclusion_command_by_filter(requests_mock):
     from CrowdStrikeFalcon import search_ioa_exclusion_command
     requests_mock.get(
@@ -4533,6 +4557,18 @@ def test_list_quarantined_file_command(requests_mock):
     assert len(results.outputs) == 2
     assert results.outputs[0].get('id') == '121212'
     assert results.outputs[1].get('id') == '171717'
+
+
+def test_list_quarantined_file_command_no_results(requests_mock):
+    from CrowdStrikeFalcon import list_quarantined_file_command
+    requests_mock.get(
+        f'{SERVER_URL}/quarantine/queries/quarantined-files/v1?q=hostname%3A%27%5B%27INSTANCE-1%27%5D%27&limit=50',
+        json={}
+    )
+
+    results = list_quarantined_file_command({'hostname': 'INSTANCE-1'})
+
+    assert results.readable_output == 'The arguments/filters you provided did not match any files.'
 
 
 def test_apply_quarantine_file_action_command(requests_mock):
