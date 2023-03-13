@@ -1186,3 +1186,21 @@ def test_modify_v10_results_to_v9_format():
                                                                              'changedState': 0}]}, 'HostIPv6': None}]
     excepted_output = [{'ruleobjId': '130', 'HostIPv4': {'hostIPv4AddressList': ['1.1.1.1']}, 'HostIPv6': None}]
     assert modify_v10_results_to_v9_format(test_input) == excepted_output
+
+
+@pytest.mark.parametrize('input, output', [(None, [{'InterfaceId': 'mock'},{'InterfaceId': 'mock'}]), (1, [{'InterfaceId': 'mock'}])])
+def test_list_device_interface_command__with_and_without_limit(mocker, input, output, mcafeensmv2_client):
+    """
+    Given:
+    - A limit is given or not.
+    When:
+    - nsm-list_device_interface_command command is executed.
+    Then:
+    - Confirm the output is as expected(the number of results and the capitalization).
+    """
+    from McAfeeNSMv2 import list_device_interface_command
+    mocker.patch.object(mcafeensmv2_client, 'list_device_interface_request',
+                        return_value={"allocatedInterfaceList": [{"interfaceId": "mock"}, {"interfaceId": "mock"}]})
+    res = list_device_interface_command(client=mcafeensmv2_client, args={"domain_id": 777, "device_id": 777, "limit": input})
+    assert res.outputs == output
+
