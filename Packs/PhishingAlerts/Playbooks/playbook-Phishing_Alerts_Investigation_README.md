@@ -7,15 +7,15 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Threat Hunting - Generic
-* Extract Indicators From File - Generic v2
 * Detonate File - Generic
-* Process Email - Generic v2
+* Search And Delete Emails - Generic v2
+* Threat Hunting - Generic
 * Entity Enrichment - Phishing v2
 * Email Headers Check - Generic
+* Process Email - Generic v2
 * Block Indicators - Generic v3
+* Extract Indicators From File - Generic v2
 * Phishing Alerts - Check Severity
-* Search And Delete Emails - Generic v2
 
 ### Integrations
 
@@ -43,9 +43,8 @@ This playbook does not use any integrations.
 | OnCall | Set to True to assign only to analysts on the current shift. Requires Cortex XSOAR v5.5 or later. | False | Optional |
 | SearchAndDeleteIntegration | Determines which product and playbook is used to search and delete the phishing email from user inboxes.<br/>Set this to "O365" to use the O365 - Security And Compliance - Search And Delete playbook.<br/>Set this to "EWS" to use the Search And Delete Emails - EWS playbook. | EWS | Optional |
 | O365DeleteType | The method to delete emails using the O365 - Security And Compliance - Search And Delete playbook. Can be "Soft" \(recoverable\), or "Hard" \(unrecoverable\). Leave empty to decide manually for each email incident.<br/>This is only applicable if the SearchAndDeleteIntegration input is set to O365. | Soft | Optional |
-| O365DeleteTarget | The exchange location. Determines from where to search and delete emails searched using O365 playbooks. Use the value 'All' to search all mailboxes, use 'SingleMailbox' to search and delete the email only from the recipient's inbox, or use 'Manual' to decide manually for every incident. Note: Searching all mailboxes may take a significant amount of time. This input is only applicable if the SearchAndDeleteIntegration input is set to O365. | SingleMailbox | Optional |
+| O365ExchangeLocationExclusion | The exchange location. Determines from where to search and delete emails searched using O365 playbooks. Use the value 'All' to search all mailboxes, use 'SingleMailbox' to search and delete the email only from the recipient's inbox, or use 'Manual' to decide manually for every incident. Note: Searching all mailboxes may take a significant amount of time. This input is only applicable if the SearchAndDeleteIntegration input is set to O365. | SingleMailbox | Optional |
 | SOCEmailAddress | The SOC email address to set if the playbook handles phishing alerts. | demistoadmin@demisto.int | Optional |
-| closeIfBlocked | Whether to close the investigation if the email has already been blocked. | False | Optional |
 | escalationRole | The role to assign the incident to if the incident severity is critical. |  | Optional |
 | blockedAlertActionValue | A comma-separated list of optional values the email security device returns for blocked\\denied\\etc. emails. | block, deny, denied, delete | Optional |
 | SensitiveMailboxesList | The name of a list that contains the organization's sensitive users. | lists.sensitiveMailboxesList | Optional |
