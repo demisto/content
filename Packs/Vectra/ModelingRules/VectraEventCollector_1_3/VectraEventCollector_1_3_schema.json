@@ -1,5 +1,5 @@
 {
-	"vectra_detections_raw": {
+	"vectra_vectra_raw": {
 		"id": {
 			"type": "string",
 			"is_array": false
@@ -31,9 +31,7 @@
 		"src_host": {
 			"type": "string",
 			"is_array": false
-		}
-	},
-	"vectra_audits_raw": {
+		},
 		"role": {
 			"type": "string",
 			"is_array": false
