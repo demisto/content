@@ -75,4 +75,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Cortex XDR - XCloud Cryptojacking](../doc_files/Cortex_XDR_-_XCloud_Cryptojacking.png)
+![Cortex XDR - XCloud Cryptojacking](../doc_files/Cortex_XDR_-_Cloud_Cryptomining.png)
