@@ -418,3 +418,4 @@ view: |-
   }
 inputs: []
 outputs: []
+description: Runs a common Model Breach workflow for fetched Model breach alerts.
