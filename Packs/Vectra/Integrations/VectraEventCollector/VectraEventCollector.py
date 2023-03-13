@@ -21,6 +21,10 @@ DETECTION_FIRST_TIMESTAMP_QUERY_START_FORMAT = "%Y-%m-%dT%H%M"
 AUDIT_START_TIMESTAMP_FORMAT = "%Y-%m-%d"
 DETECTION_NEXT_RUN_KEY = "id"
 AUDIT_NEXT_RUN_KEY = "start"
+DETECTION_TIMESTAMP_KEY = "first_timestamp"
+AUDIT_TIMESTAMP_KEY = "vectra_timestamp"
+XSIAM_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S.000Z"
+
 
 """ CLIENT CLASS """
 
@@ -76,7 +80,6 @@ class VectraClient(BaseClient):
         if min_id != 0:
             params["min_id"] = min_id
 
-        demisto.info(params)
         return self._http_request(
             method="GET",
             url_suffix=f"{self.endpoints[0]}",
@@ -110,6 +113,40 @@ class VectraClient(BaseClient):
 """ HELPER FUNCTIONS """
 
 
+def add_parsing_rules(event: Dict[str, Any]) -> Dict[str, Any]:
+
+    """
+    Helper method to add the Parsing Rules to an event.
+
+    Arguments:
+        - `event_type` (``str``): The type of event to parse, i.e. detection or audit
+
+    Returns:
+        - `Dict[str, Any]` with the added Parsing Rules.
+    """
+
+    parsing_rules_to_add = ["_time"]
+
+    try:
+        # Process detection
+        if DETECTION_TIMESTAMP_KEY in event:
+            event[parsing_rules_to_add[0]] = datetime.strptime(
+                event.get(DETECTION_TIMESTAMP_KEY), DETECTION_FIRST_TIMESTAMP_FORMAT
+            ).strftime(XSIAM_TIME_FORMAT)
+        # Process Audit
+        else:
+            event[parsing_rules_to_add[0]] = timestamp_to_datestring(event.get(AUDIT_TIMESTAMP_KEY))
+
+        return event
+
+    except Exception as e:
+        demisto.info(
+            f"""Failed adding parsing rules {parsing_rules_to_add} to event '{str(event)}': {str(e)}.
+            Will be added in ingestion time"""
+        )
+        pass
+
+
 def get_audits_to_send(
     audits: List[Dict[str, Any]], is_first_fetch: bool, prev_fetch_timestamp: str
 ) -> List[Dict[str, Any]]:
@@ -132,7 +169,7 @@ def get_audits_to_send(
         filtered_audits = [
             a
             for a in audits
-            if datetime.fromtimestamp(float(a.get("vectra_timestamp"))) > prev_fetch_timestamp_ts
+            if datetime.fromtimestamp(float(a.get(AUDIT_TIMESTAMP_KEY))) > prev_fetch_timestamp_ts
         ]
 
         return filtered_audits
@@ -261,12 +298,17 @@ def fetch_events_cmd(client) -> None:
     demisto.info(f"Setting last run to {str(next_fetch)}...")
     demisto.setLastRun(next_fetch)
 
-    demisto.info(f"Sending {len(detections)} detections to XSIAM...")
-    send_events_to_xsiam(detections, vendor=VENDOR, product=client.endpoints[0])
-    demisto.info(f"{len(detections)} detections sent to XSIAM.")
-    demisto.info(f"Sending {len(audits)} audits to XSIAM...")
-    send_events_to_xsiam(audits, vendor=VENDOR, product=client.endpoints[1])
-    demisto.info(f"{len(audits)} audits sent to XSIAM.")
+    parsed_events: List[Dict[str, Any]] = []
+
+    demisto.info("Adding parsing rules to events...")
+    for event in detections + audits:
+        parsed_events.append(add_parsing_rules(event))
+    demisto.info("Finished adding parsing rules.")
+
+    demisto.info(
+        f"Sending {len(parsed_events)} events to XSIAM ({len(detections)} detections, {len(audits)} audits)"
+    )
+    send_events_to_xsiam(parsed_events, vendor=VENDOR, product=VENDOR)  # type: ignore
 
 
 def fetch_events(
@@ -321,7 +363,7 @@ def fetch_events(
     if audits:
         most_recent_audit = audits[-1]
         demisto.info(f"Most recent audit: {str(most_recent_audit)}")
-        most_recent_audit_str = most_recent_audit.get("vectra_timestamp")
+        most_recent_audit_str = most_recent_audit.get(AUDIT_TIMESTAMP_KEY)
 
     else:
         demisto.info("No audits were fetched.")
@@ -421,18 +463,19 @@ def main() -> None:  # pragma: no cover
                 return_results(audits_cmd_res)
 
                 if argToBoolean(args.pop("should_push_events")):
+
+                    parsed_events: List[Dict[str, Any]] = []
+
+                    demisto.info("Adding parsing rules to events...")
+                    for event in detections_cmd_res.outputs + audits_cmd_res.outputs:
+                        parsed_events.append(add_parsing_rules(event))
+                    demisto.info("Finished adding parsing rules.")
+
                     demisto.info(
-                        f"Sending {len(detections_cmd_res.outputs)} detections to XSIAM..."  # type: ignore
-                    )  # type: ignore
-                    send_events_to_xsiam(
-                        detections_cmd_res.outputs, vendor=VENDOR, product=client.endpoints[0]
+                        f"""Sending {len(parsed_events)} events to XSIAM ({len(detections_cmd_res.outputs)} detections,
+                        {len(audits_cmd_res.outputs)} audits)"""
                     )
-                    demisto.info(f"{len(detections_cmd_res.outputs)} detections sent to XSIAM.")  # type: ignore
-                    demisto.info(f"Sending {len(audits_cmd_res.outputs)} audits to XSIAM...")  # type: ignore
-                    send_events_to_xsiam(
-                        audits_cmd_res.outputs, vendor=VENDOR, product=client.endpoints[1]
-                    )  # type: ignore
-                    demisto.info(f"{len(audits_cmd_res.outputs)} audits sent to XSIAM.")  # type: ignore
+                    send_events_to_xsiam(parsed_events, vendor=VENDOR, product=VENDOR)
 
             # fetch-events
             else:

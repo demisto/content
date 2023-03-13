@@ -7,16 +7,15 @@ from pytest_mock import MockerFixture
 from VectraEventCollector import (
     VectraClient,
     test_module,
-    DETECTION_FIRST_TIMESTAMP_QUERY_START_FORMAT,
-    AUDIT_START_TIMESTAMP_FORMAT,
-    DETECTION_FIRST_TIMESTAMP_FORMAT,
     DETECTION_NEXT_RUN_KEY,
     AUDIT_NEXT_RUN_KEY,
+    XSIAM_TIME_FORMAT,
     get_detections_cmd,
     get_audits_cmd,
     get_events,
     fetch_events,
     get_audits_to_send,
+    add_parsing_rules,
 )
 from typing import Dict, Any
 import json
@@ -25,7 +24,6 @@ from pathlib import Path
 from CommonServerPython import *
 from hypothesis import given, strategies as st
 from freezegun import freeze_time
-from pprint import pprint
 
 """ Constants """
 BASE_URL = "mock://dev.vectra.ai"
@@ -344,3 +342,29 @@ def test_get_audits_to_send_not_first_fetch(
     actual = get_audits_to_send(audits, False, prev_fetch_ts_str)
 
     assert actual == expected
+
+
+@pytest.mark.parametrize(
+    "event,expected_time",
+    [
+        (DETECTIONS.get("results")[0], "2022-09-01T02:15:48.000Z"),
+        (AUDITS.get("audits")[0], "1970-01-20T09:46:04.000Z"),
+    ],
+)
+def test_add_parsing_rules(event: Dict[str, Any], expected_time: str):
+    """
+    Given: An Event.
+
+    When:
+        - Case A: The event is a detection.
+        - Case B: The event is an audit.
+
+    Then:
+        - Case A/B: The event should have a property _time in format %Y-%m-%dT%H:%M:%S.000Z.
+    """
+
+    actual = add_parsing_rules(event)
+
+    assert "_time" in actual
+    assert actual["_time"] == expected_time
+    assert datetime.strptime(actual["_time"], XSIAM_TIME_FORMAT)
