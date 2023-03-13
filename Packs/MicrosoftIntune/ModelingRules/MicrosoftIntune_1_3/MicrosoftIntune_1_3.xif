@@ -15,7 +15,7 @@ xdm.source.user.identifier=json_extract_scalar(properties,"$.UserId"),
 xdm.source.user.username=coalesce(json_extract_scalar(properties,"$.UserName"),identity),
 xdm.intermediate.agent.identifier=json_extract_scalar(properties,"$.IntuneAccountId");
  
-filter category contains "AuditLogs"
+filter category="AuditLogs"
 |alter xdm.event.type=category,
 xdm.observer.unique_identifier=tenantId,
 xdm.source.ipv4=callerIpAddress,
