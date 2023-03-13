@@ -7184,7 +7184,11 @@ def get_whois_raw(domain, server="", previous=None, rfc3490=True, never_cut=Fals
     else:
         raise WhoisException('(104) Connection Reset By Peer')
     if not response:
-        raise Exception(f"Got an empty response for the requested domain {request_domain} from the server {target_server}. Please check your firewall or proxy settings.")
+        msg = f"Got an empty response for the requested domain {request_domain} from the server {target_server}. Please check your firewall or proxy settings."
+        if SHOULD_ERROR:
+            raise Exception(msg)
+        else:
+            return_warning(msg)
     if never_cut:
         # If the caller has requested to 'never cut' responses, he will get the original response from the server (
         # this is useful for callers that are only interested in the raw data). Otherwise, if the target is
