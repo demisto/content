@@ -1276,9 +1276,11 @@ def main():
     index_v2_blob = storage_bucket.blob(index_v2_gcs_path)
     shutil.copytree(index_folder_path, index_v2_local_path)
     for filename in os.listdir(index_v2_local_path):
-        filepath = os.path.join(index_v2_local_path, filename, 'README.md')
-        logging.info(f'Index V2 {filepath=}')
-        with open(filepath, 'w') as f:
+        pack_readme_path = os.path.join(index_v2_local_path, filename, 'README.md')
+        if not os.path.exists(pack_readme_path):
+            continue
+        logging.info(f'Index V2 {pack_readme_path=}')
+        with open(pack_readme_path, 'w') as f:
             f.write('This is the new readme')
 
     logging.info('uploading new index')
