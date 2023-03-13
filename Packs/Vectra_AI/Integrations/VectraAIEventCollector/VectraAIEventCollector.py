@@ -473,9 +473,10 @@ def main() -> None:  # pragma: no cover
                         parsed_events.append(add_parsing_rules(event))
                     demisto.info("Finished adding parsing rules.")
 
-                    demisto.info(  # type: ignore
-                        f"""Sending {len(parsed_events)} events to XSIAM ({len(detections_cmd_res.outputs)} detections,
-                        {len(audits_cmd_res.outputs)} audits)"""  # type: ignore
+                    demisto.info(
+                        f"Sending {len(parsed_events)} events to XSIAM, "
+                        + f"({len(detections_cmd_res.outputs)} detections"  # type: ignore
+                        + f"{len(audits_cmd_res.outputs)} audits)"  # type: ignore
                     )
                     send_events_to_xsiam(parsed_events, vendor=VENDOR, product=VENDOR)
 
