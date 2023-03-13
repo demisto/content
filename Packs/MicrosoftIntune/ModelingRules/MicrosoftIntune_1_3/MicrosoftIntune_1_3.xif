@@ -1,5 +1,5 @@
 [MODEL: dataset="msft_azure_raw"]
-filter _collector_name = "intune-xdr-eventhub (demistodev.onmicrosoft.com)" and category contains "DeviceComplianceOrg"
+filter category contains "DeviceComplianceOrg"
 |alter xdm.event.type=category,
 xdm.observer.unique_identifier=tenantId,
 xdm.event.operation_sub_type=operationName,
@@ -15,7 +15,7 @@ xdm.source.user.identifier=json_extract_scalar(properties,"$.UserId"),
 xdm.source.user.username=coalesce(json_extract_scalar(properties,"$.UserName"),identity),
 xdm.intermediate.agent.identifier=json_extract_scalar(properties,"$.IntuneAccountId");
  
-filter _collector_name = "intune-xdr-eventhub (demistodev.onmicrosoft.com)" and category contains "AuditLogs"
+filter category contains "AuditLogs"
 |alter xdm.event.type=category,
 xdm.observer.unique_identifier=tenantId,
 xdm.source.ipv4=callerIpAddress,
@@ -42,7 +42,7 @@ xdm.target.resource.name = arraystring(arraymap(ModifiedProperties, json_extract
 xdm.target.resource_before.value = arraystring(arraymap(ModifiedProperties, json_extract_scalar("@element","$.Old")), ", "),
 xdm.target.resource.value = arraystring(arraymap(ModifiedProperties, json_extract_scalar("@element","$.New")), ", ");
 
-filter _collector_name = "intune-xdr-eventhub (demistodev.onmicrosoft.com)" and category contains "OperationalLogs"
+filter category contains "OperationalLogs"
 |alter xdm.event.type=category,
 xdm.observer.unique_identifier=tenantId,
 xdm.event.outcome=if(resultType="Completed", XDM_CONST.OUTCOME_SUCCESS , resultType="Success", XDM_CONST.OUTCOME_SUCCESS , resultType="None", XDM_CONST.OUTCOME_UNKNOWN, resultType),
