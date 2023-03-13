@@ -1,0 +1,43 @@
+[
+    {
+    "id": "g750d9a5e-8df9-43fb-b3a3-1d1915dbc5fc",
+    "active": false,
+    "acknowledged": false,
+    "pinned": true,
+    "userTriggered": false,
+    "externalTriggered": false,
+    "previousIds": [],
+    "incidentEvents": [
+        {
+        "uuid": "750d9a5e-8df9-43fb-b3a3-1d1915dbc5fc",
+        "start": 1658853532289,
+        "title": "Possible Hijack of Office365 Account",
+        "triggerDid": 1976,
+        "visible": true
+        },
+        {
+        "uuid": "bc64f242-ce29-4f35-bc94-230991116564",
+        "start": 1658853532289,
+        "title": "Possible Hijack of AzureActiveDirectory",
+        "triggerDid": 1975,
+        "visible": true
+        }
+    ],
+    "mitreTactics": [
+        "privilege-escalation"
+    ],
+    "devices": [
+        1975,
+        1976
+    ],
+    "initialDevices": [
+        1976,
+        1975
+    ],
+    "category": "critical",
+    "groupScore": 40.666309838880856,
+    "start": 1658853532289,
+    "end": 1658853546000,
+    "edges": []
+    }
+]
