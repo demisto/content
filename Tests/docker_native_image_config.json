@@ -64,9 +64,17 @@
    },
    "ignored_content_items":[
       {
+         "id":"ParseEmailFilesV2",
+         "reason":"Issue: CIAC-5711 - Failed unit-test: test_eml_contains_empty_htm_not_containing_file_data.",
+         "ignored_native_images":[
+            "native:8.1"
+         ]
+      },
+      {
          "id":"UnzipFile",
          "reason":"Issue: CIAC-5246 - Failed unit-test: test_unrar_no_password.",
          "ignored_native_images":[
+            "native:8.1",
             "native:8.2",
             "native:dev"
          ]
@@ -75,6 +83,7 @@
          "id":"DockerHardeningCheck",
          "reason":"Issue: CIAC-5248 - Failed unit-test: get_default_gateway (ip command does not exist).",
          "ignored_native_images":[
+            "native:8.1",
             "native:8.2",
             "native:dev"
          ]
@@ -83,6 +92,7 @@
          "id":"FetchIndicatorsFromFile",
          "reason":"issue: CIAC-5243 - ElementTree object (xml) in python3.9 has getiterator attribute while in python 3.10 this attribute does not exist - causing unit tests failures.",
          "ignored_native_images":[
+            "native:8.1",
             "native:8.2",
             "native:dev"
          ]
@@ -91,14 +101,23 @@
          "id":"Traps",
          "reason":"Integration is Deprecated.",
          "ignored_native_images": [
+            "native:8.1",
             "native:8.2",
             "native:dev"
+         ]
+      },
+      {
+         "id": "Rasterize",
+         "reason": "Issue: CRTX-72338.",
+         "ignored_native_images": [
+            "native:8.1",
+            "native:8.2"
          ]
       }
    ],
    "flags_versions_mapping": {
       "native:dev" : "native:dev",
       "native:ga" : "native:8.2",
-      "native:maintenance" : ""
+      "native:maintenance" : "native:8.1"
    }
 }
