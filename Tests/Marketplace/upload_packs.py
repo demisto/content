@@ -1271,8 +1271,8 @@ def main():
                             os.path.dirname(packs_artifacts_path), storage_base_path, marketplace)
 
     logging.info('Strting new code index_v2')
-    index_v2_gcs_path = os.path.join(storage_base_path, f"{GCPConfig.INDEX_V2_NAME}.zip")
-    index_v2_local_path = os.path.join(extract_destination_path, f"{GCPConfig.INDEX_V2_NAME}.zip")
+    index_v2_gcs_path = os.path.join(storage_base_path, f"{GCPConfig.INDEX_V2_NAME}")
+    index_v2_local_path = os.path.join(extract_destination_path, f"{GCPConfig.INDEX_V2_NAME}")
     index_v2_blob = storage_bucket.blob(index_v2_gcs_path)
     shutil.copytree(index_folder_path, index_v2_local_path)
     for filename in os.listdir(index_v2_local_path):
