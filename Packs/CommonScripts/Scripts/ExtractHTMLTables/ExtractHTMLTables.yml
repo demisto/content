@@ -26,7 +26,7 @@ outputs:
   description: The extracted HTML tables
 scripttarget: 0
 runonce: false
-dockerimage: demisto/bs4-py3:1.0.0.32198
+dockerimage: demisto/bs4-py3:1.0.0.48637
 fromversion: 5.0.0
 tests:
   - TestExtractHTMLTables
