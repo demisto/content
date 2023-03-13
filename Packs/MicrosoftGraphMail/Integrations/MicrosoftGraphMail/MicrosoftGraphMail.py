@@ -1,7 +1,7 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
+
 from typing import Union, Optional
 
 ''' IMPORTS '''
@@ -714,7 +714,7 @@ class MsGraphClient:
 
         emails_as_html = self.ms_client.http_request('GET', suffix_endpoint, params=params,
                                                      overwrite_rate_limit_retry=overwrite_rate_limit_retry)\
-                             .get('value') or []
+            .get('value') or []
 
         headers = {
             "Prefer": "outlook.body-content-type='text'"
@@ -1806,7 +1806,7 @@ def prepare_args(command, args):
             'body': email_body,
             'body_type': args.get('bodyType', 'html'),
             'flag': args.get('flag', 'notFlagged'),
-            'importance': args.get('importance', 'Low'),
+            'importance': args.get('importance', 'Normal'),
             'internet_message_headers': argToList(args.get('headers')),
             'attach_ids': argToList(args.get('attachIDs')),
             'attach_names': argToList(args.get('attachNames')),

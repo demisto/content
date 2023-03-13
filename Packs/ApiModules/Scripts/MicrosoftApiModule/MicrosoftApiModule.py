@@ -1,9 +1,8 @@
-# pylint: disable=E9010, E9011
+from CommonServerPython import *  # noqa: F401
+import demistomock as demisto  # noqa: F401
 import traceback
 
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
+
 import requests
 import re
 import base64
