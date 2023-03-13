@@ -99,6 +99,7 @@ def test_test_module_exception(mocker: MockerFixture):
         "_http_request",
         side_effect=Exception("test module failed"),
     )
+    mocker.patch.object(demisto, "getLastRun", return_value={})
 
     with pytest.raises(Exception) as e:
         test_module(client)
