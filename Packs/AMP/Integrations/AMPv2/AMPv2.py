@@ -1165,7 +1165,7 @@ def fetch_incidents(
     client: Client,
     last_run: Dict[str, Any],
     first_fetch_time: str,
-    incident_severities: List[str],
+    incident_severities: List[str | None],
     event_types: List[int] = None,
     max_incidents_to_fetch: int = FETCH_LIMIT,
     include_null_severities: bool = False,
@@ -1213,7 +1213,7 @@ def fetch_incidents(
 
     # Incase the severity acceptance list is empty, initialize it with all values.
     if not incident_severities:
-        incident_severities = XSOAR_SEVERITY_BY_AMP_SEVERITY.keys()
+        incident_severities.extend(XSOAR_SEVERITY_BY_AMP_SEVERITY.keys())
 
     # Whether to accept an incident without a severity.
     if include_null_severities:
