@@ -15,4 +15,4 @@ As part of this pack, you also get out-of-the-box Policy Optimizer incident view
 
 _For more information, visit our [PAN-OS Policy Optimizer docs page](https://xsoar.pan.dev/docs/reference/packs/policy-optimizer)._
 
-![Policy_Optimizer_-_Manage_Unused_Rules](https://github.com/demisto/content/raw/82df056cff9dc4ce8b0753b341a4434593fa4608/Packs/PANOSPolicyOptimizer/doc_files/Policy_Optimizer_-_Manage_Unused_Rules.png?raw=true)
+![Policy_Optimizer_-_Manage_Unused_Rules](binary_files/Policy_Optimizer_-_Manage_Unused_Rules.png)

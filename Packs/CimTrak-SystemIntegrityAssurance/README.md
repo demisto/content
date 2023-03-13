@@ -22,4 +22,4 @@ This pack includes a few sample playbooks, that serve as an example of how to us
 
 *Learn more by viewing this [video](https://cimcor.wistia.com/medias/qa9xv7d63j) of the CimTrak content pack in action.*
 
-[![Integration of Cimcor CimTrak with Palo Alto XSOAR](https://embed-ssl.wistia.com/deliveries/12a3644ca48cd7fc76dfa55f587aa677.jpg?image_crop_resized=900x506&image_play_button=true&image_play_button_size=2x&image_play_button_color=174bd2e0)](https://cimcor.wistia.com/medias/qa9xv7d63j "Integration of Cimcor CimTrak with Palo Alto XSOAR")
+[![Integration of Cimcor CimTrak with Palo Alto XSOAR](binary_files/12a3644ca48cd7fc76dfa55f587aa677.jpg)
