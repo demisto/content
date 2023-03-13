@@ -2774,7 +2774,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "215"
+      - "43"
     scriptarguments:
       AutoBlockIndicators:
         complex:
@@ -2955,93 +2955,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "214":
-    id: "214"
-    taskid: e510b4e8-5385-4696-8ce9-a774cbbda43a
-    type: regular
-    task:
-      id: e510b4e8-5385-4696-8ce9-a774cbbda43a
-      version: -1
-      name: Set selected indicators to block
-      description: Creates a Grid table from items or key-value pairs.
-      scriptName: SetGridField
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "43"
-    scriptarguments:
-      columns:
-        simple: Indicators
-      context_path:
-        simple: IndicatorsToBlock
-      grid_id:
-        simple: Selected indicators to block
-      overwrite:
-        simple: "true"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 640,
-          "y": 4210
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "215":
-    id: "215"
-    taskid: be775102-3837-47f5-8b1a-ef18a1e9d117
-    type: condition
-    task:
-      id: be775102-3837-47f5-8b1a-ef18a1e9d117
-      version: -1
-      name: Indicators chosen to be blocked?
-      description: Checks if there are indicators chosen to be blocked
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "43"
-      "yes":
-      - "214"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEqualString
-          left:
-            value:
-              complex:
-                root: IndicatorsToBlock
-            iscontext: true
-          right:
-            value:
-              simple: No indicators to block
-          ignorecase: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 640,
-          "y": 4035
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
 system: true
 view: |-
   {
@@ -3062,7 +2975,6 @@ view: |-
       "162_52_#default#": 0.22,
       "179_211_yes": 0.5,
       "179_84_#default#": 0.1,
-      "215_43_#default#": 0.44,
       "33_149_yes": 0.18,
       "36_152_Yes": 0.49,
       "79_82_yes": 0.46,

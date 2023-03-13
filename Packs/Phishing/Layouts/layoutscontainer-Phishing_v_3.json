@@ -500,27 +500,19 @@
                         "y": 18
                     },
                     {
-                        "description": "A list of indicators that chosen to be blocked using \"Block Indicators - Generic v3\" sub-playbook.",
-                        "displayType": "ROW",
+                        "description": "Indicators selected to be blocked.",
                         "h": 2,
-                        "hideName": false,
-                        "i": "swtuqptgvs-5a3d4150-bd84-11ed-a0ad-dd2507a0d65f",
-                        "items": [
-                            {
-                                "endCol": 2,
-                                "fieldId": "selectedindicatorstoblock",
-                                "height": 22,
-                                "id": "a8afce20-bd84-11ed-a0ad-dd2507a0d65f",
-                                "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            }
-                        ],
+                        "i": "swtuqptgvs-1a52c090-c187-11ed-a413-1fc9f082fba8",
+                        "items": [],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
                         "name": "Selected indicators to block",
+                        "query": "tags:\"Blocked Indicator In Systems\"",
+                        "queryType": "input",
                         "static": false,
+                        "type": "indicators",
                         "w": 1,
                         "x": 2,
                         "y": 10
