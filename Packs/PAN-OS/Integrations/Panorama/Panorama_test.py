@@ -6031,8 +6031,7 @@ def test_pan_os_delete_application_group_command_main_flow(mocker, args, params,
             {'type': 'user-id',
              'cmd': '<uid-message><version>2.0</version><type>update</type><payload><register><entry ip="2.2.2.2" '
                     'persistent="1"><tag><member>test</member></tag></entry></register></payload></uid-message>',
-             'key': 'thisisabogusAPIKEY!',
-             'vsys': ''}
+             'key': 'thisisabogusAPIKEY!'}
         )
     ]
 )
