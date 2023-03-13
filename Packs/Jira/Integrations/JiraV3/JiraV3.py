@@ -36,8 +36,9 @@ SCOPES = [
 
 # Exception Classes
 class RevokedAccessTokenError(Exception):
-    """This class in used to raise exceptions when the access token stored in the integration context has been revoked
-    or not valid anymore.
+    """This class is used to raise exceptions when the access token stored in the integration context has been revoked
+    or not valid anymore, so we could try to retrieve another access token using the refresh token or show an error message
+    to the user.
     """
 
     def __init__(self):
@@ -106,16 +107,25 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
 
     @abstractmethod
     def test_instance_connection(self) -> None:
+        """This method is used to test the connectivity of each instance, each child will implement
+        their own connectivity test
+        """
         pass
 
     def http_request_with_access_token(self, method, headers: Dict[str, str] | None = None, url_suffix='', params=None, data=None,
                                        json_data=None, resp_type='json', ok_codes=None, full_url='',
-                                       files: Dict[str, Any] | None = None):
+                                       files: Dict[str, Any] | None = None) -> Any:
+        """This method wraps the _http_request that comes from the BaseClient class, and adds the access_token
+        of the client to the headers request, by calling the get_access_token method, which is an abstract method,
+        and every child class mush implement it.
+        Returns:
+            _type_: _description_
+        """
         if headers is None:
             headers = {}
         access_token = self.get_access_token()
-        # We unite multiple headers since some requests may require extra headers to work, and this way, we have
-        # the option to receive the extra headers and send them in the API request.
+        # We unite multiple headers (using the '|' character, pipe operator) since some requests may require extra headers
+        # to work, and this way, we have the option to receive the extra headers and send them in the API request.
         request_headers = self._headers | headers | {'Authorization': f'Bearer {access_token}'}
         return self._http_request(method, url_suffix=url_suffix, full_url=full_url, params=params, data=data,
                                   json_data=json_data, resp_type=resp_type, ok_codes=ok_codes, files=files,
@@ -124,148 +134,444 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
     # Authorization methods
     @abstractmethod
     def get_access_token(self) -> str:
+        """This method is in charge of returning the access token stored in the integration context
+
+        Returns:
+            str: Returns the access token
+        """
         pass
 
     @abstractmethod
     def oauth_start(self) -> str:
+        """This method is used to start the OAuth process in order to retrieve the access and refresh token of the client,
+        by returning a callback URL that the user must interact with in order to continue the process.
+
+        Returns:
+            str: The callback URL that the user will use in order to authenticate
+        himself
+        """
         pass
 
     @abstractmethod
     def oauth_complete(self, code: str) -> None:
+        """This method is used to finish the authentication process. It receives a code string that was acquired
+        after interacting with the callback URL, and this code string is sent to a Jira endpoint as an exchange
+        for the access and refresh token, in which these tokens will be saved to the integration's context, along with
+        any necessary data.
+
+        Args:
+            code (str): A code string that was acquired after interacting with the callback URL
+        """
         pass
 
     # Query Requests
     @abstractmethod
     def run_query(self, query_params: Dict[str, Any]) -> Dict[str, Any]:
+        """This method is in charge of running a JQL (Jira Query Language), and retrieving its results.
+
+        Args:
+            query_params (Dict[str, Any]): The query parameters, which will hold the query string itself,
+            and any pagination data (using startAt and maxResults, as required by the API)
+
+        Returns:
+            Dict[str, Any]: The query results, which will hold the issues acquired from the query.
+        """
         pass
 
     # Board Requests
     @abstractmethod
     def get_issues_from_backlog(self, board_id: str, jql_query: str | None = None,
                                 start_at: int | None = None, max_results: int | None = None) -> Dict[str, Any]:
+        """This method is in charge of retrieving issues from the backlog of a specific board.
+
+        Args:
+            board_id (str): The board id
+            jql_query (str | None, optional): The JQL query to filter specific issues. Defaults to None.
+            start_at (int | None, optional): The starting index of the returned issues . Defaults to None.
+            max_results (int | None, optional): The maximum number of issues to return per page. Defaults to None.
+
+        Returns:
+            Dict[str, Any]: The result of the API, which will hold the relevant issues.
+        """
         pass
 
     @abstractmethod
     def get_issues_from_board(self, board_id: str, jql_query: str | None = None,
                               start_at: int | None = None, max_results: int | None = None) -> Dict[str, Any]:
+        """This method is in charge of returning all issues from a specific board.
+
+        Args:
+            board_id (str): The board id
+            jql_query (str | None, optional): The JQL query to filter specific issues. Defaults to None.
+            start_at (int | None, optional): The starting index of the returned issues. Defaults to None.
+            max_results (int | None, optional): The maximum number of issues to return per page. Defaults to None.
+
+        Returns:
+            Dict[str, Any]: The result of the API, which will hold the relevant issues.
+        """
         pass
 
     @abstractmethod
     def get_sprints_from_board(self, board_id: str, start_at: int | None = None,
                                max_results: int | None = None) -> Dict[str, Any]:
+        """This method is in charge of returning the sprints of a specific board, if the board supports sprints.
+
+        Args:
+            board_id (str): The board id
+            start_at (int | None, optional): The starting index of the returned issues. Defaults to None.
+            max_results (int | None, optional): The maximum number of issues to return per page. Defaults to None.
+
+        Returns:
+            Dict[str, Any]: The result of the API, which will hold the relevant sprints.
+        """
         pass
 
     @abstractmethod
     def get_epics_from_board(self, board_id: str, done: str, start_at: int | None = None,
                              max_results: int | None = None) -> Dict[str, Any]:
+        """This method is in charge of returning the issues with issue type `epic`, of a specific board.
+
+        Args:
+            board_id (str): The board id
+            done (str): _description_
+            start_at (int | None, optional): The starting index of the returned issues. Defaults to None.
+            max_results (int | None, optional): The maximum number of issues to return per page. Defaults to None.
+
+        Returns:
+            Dict[str, Any]: The result of the API, which will hold the relevant epic issues.
+        """
         pass
 
     @abstractmethod
     def issues_from_sprint_to_backlog(self, json_data: Dict[str, Any]) -> requests.Response:
+        """This method is in charge of moving issues from a specific spring, back to the backlog board of a specific board.
+
+        Args:
+            json_data (Dict[str, Any]): The data that is sent to the endpoint to move the issues from a sprint
+            back to the backlog board.
+
+        Returns:
+            requests.Response: The raw response of the endpoint.
+        """
         pass
 
     @abstractmethod
     def get_boards(self, board_type: str | None = None, project_key_id: str | None = None, board_name: str | None = None,
                    start_at: int | None = None, max_results: int | None = None) -> Dict[str, Any]:
+        """This method is in charge of retrieving the boards found in the Jira instance.
+
+        Args:
+            board_type (str | None, optional): Filters results to boards of the specified types. Valid values: scrum, kanban,
+            simple. Defaults to None.
+            project_key_id (str | None, optional): Filters results to boards that are relevant to a project. Defaults to None.
+            board_name (str | None, optional): Filters results to boards that match or partially match the specified name.
+            Defaults to None.
+            start_at (int | None, optional): The starting index of the returned issues. Defaults to None.
+            max_results (int | None, optional): The maximum number of issues to return per page. Defaults to None.
+
+        Returns:
+            Dict[str, Any]: The result of the API, which will hold the relevant boards.
+        """
         pass
 
     @abstractmethod
     def get_board(self, board_id: str) -> Dict[str, Any]:
+        """This method is in charge of retrieving the board corresponding to the board_id.
+
+        Args:
+            board_id (str): The board id to retrieve.
+
+        Returns:
+            Dict[str, Any]: The result of the API, which will hold the relevant board.
+        """
         pass
 
     @abstractmethod
     def get_issues_from_sprint(self, sprint_id: str, start_at: int | None = None, max_results: int | None = None,
                                jql_query: str | None = None) -> Dict[str, Any]:
+        """This method is in charge of retrieving the issues from a specific sprint.
+
+        Args:
+            sprint_id (str): The sprint id.
+            start_at (int | None, optional): The starting index of the returned issues. Defaults to None.
+            max_results (int | None, optional): The maximum number of issues to return per page. Defaults to None.
+            jql_query (str | None, optional):  The JQL query to filter specific issues. Defaults to None.
+
+        Returns:
+            Dict[str, Any]: The result of the API, which will hold the issues of the sprint.
+        """
         pass
 
     @abstractmethod
     def get_sprint_issues_from_board(self, sprint_id: str, board_id: str, start_at: int | None = None,
                                      max_results: int | None = None, jql_query: str | None = None) -> Dict[str, Any]:
+        """This method is in charge of retrieving the issues from a specific sprint.
+
+        Args:
+            sprint_id (str): The sprint id.
+            board_id (str): The board id which holds the specified sprint.
+            start_at (int | None, optional): The starting index of the returned issues. Defaults to None.
+            max_results (int | None, optional): The maximum number of issues to return per page. Defaults to None.
+            jql_query (str | None, optional):  The JQL query to filter specific issues. Defaults to None.
+
+        Returns:
+            Dict[str, Any]: The result of the API, which will hold the issues of the sprint.
+        """
         pass
 
     @abstractmethod
     def issues_to_sprint(self, sprint_id: str, json_data: Dict[str, Any]) -> requests.Response:
+        """This method is in charge of moving issues to a specified sprint.
+
+        Args:
+            sprint_id (str): The sprint id where we want to move the issues to.
+            json_data (Dict[str, Any]): The data that is sent to the endpoint to move the issues to a specified sprint.
+
+        Returns:
+            requests.Response: The raw response of the endpoint.
+        """
         pass
 
     # Issue Fields Requests
     @abstractmethod
     def get_issue_fields(self) -> List[Dict[str, Any]]:
+        """This method is in charge of returning system and custom issue fields
+
+        Returns:
+            List[Dict[str, Any]]: The result of the API, which will hold the issue fields.
+        """
         pass
 
     # Issue Requests
     @abstractmethod
     def transition_issue(self, issue_id_or_key: str, json_data: Dict[str, Any]) -> requests.Response:
+        """This method is in charge of transitioning an issue to a different status using a transition.
+
+        Args:
+            issue_id_or_key (str): The issue id or key.
+            json_data (Dict[str, Any]): The data that is sent to the endpoint to transition an issue to another status.
+
+        Returns:
+            requests.Response: The raw response of the endpoint.
+        """
         pass
 
     @abstractmethod
     def add_link(self, issue_id_or_key: str, json_data: Dict[str, Any]) -> Dict[str, Any]:
+        """This method is in charge of adding a link (web link) to a specific issue.
+
+        Args:
+            issue_id_or_key (str): The issue id or key.
+            json_data (Dict[str, Any]): The data that is sent to the endpoint to add the web link to the issue.
+
+        Returns:
+            Dict[str, Any]: The result of the API, which will hold data about the added web link.
+        """
         pass
 
     @abstractmethod
     def get_comments(self, issue_id_or_key: str, max_results: int = 50) -> Dict[str, Any]:
+        """This method is in charge of returning the comments of a specific issue.
+
+        Args:
+            issue_id_or_key (str): The issue id or key.
+            max_results (int, optional): The maximum number of comments. Defaults to 50.
+
+        Returns:
+            Dict[str, Any]: The result of the API, which will hold the comments of the issue.
+        """
         pass
 
     @abstractmethod
-    def delete_comment(self, issue_id_or_key: str, comment_id: str) -> Dict[str, Any]:
+    def delete_comment(self, issue_id_or_key: str, comment_id: str) -> requests.Response:
+        """This method is in charge of deleting a comment from an issue.
+
+        Args:
+            issue_id_or_key (str): The issue id or key.
+            comment_id (str): The id of the comment to delete.
+
+        Returns:
+            requests.Response: The raw response of the endpoint.
+        """
         pass
 
     @abstractmethod
     def add_comment(self, issue_id_or_key: str, json_data: Dict[str, Any]) -> Dict[str, Any]:
+        """This method is in charge of adding a comment to an issue.
+
+        Args:
+            issue_id_or_key (str): The issue id or key.
+            json_data (Dict[str, Any]): The data that is sent to the endpoint to add a comment to the issue.
+
+        Returns:
+            Dict[str, Any]: The result of the API, which will hold the newly added comment.
+        """
         pass
 
     @abstractmethod
     def edit_comment(self, issue_id_or_key: str, comment_id: str, json_data: Dict[str, Any]) -> Dict[str, Any]:
+        """This method is in charge of editing a comment that is part of an issue.
+
+        Args:
+            issue_id_or_key (str): The issue id or key.
+            comment_id (str): The id of the comment to edit.
+            json_data (Dict[str, Any]): The data that is sent to the endpoint to edit the comment.
+
+        Returns:
+            Dict[str, Any]: The result of the API, which will hold the edited comment.
+        """
         pass
 
     @ abstractmethod
     def get_issue(self, issue_id_or_key: str = '', full_issue_url: str = '') -> Dict[str, Any]:
+        """This method is in charge of returning a specific issue.
+
+        Args:
+            issue_id_or_key (str, optional): The id or key of the issue to return. Defaults to ''.
+            full_issue_url (str, optional): The full issue url, if given, it will act as the endpoint to retrieve the issue.
+            Defaults to ''.
+
+        Returns:
+            Dict[str, Any]: The result of the API, which will hold issue.
+        """
         pass
 
     @ abstractmethod
     def edit_issue(self, issue_id_or_key: str, json_data: Dict[str, Any]) -> requests.Response:
+        """This method is in charge of editing a specific issue.
+
+        Args:
+            issue_id_or_key (str): The id or key of the issue to edit.
+            json_data (Dict[str, Any]): The data that is sent to the endpoint to edit the issue.
+
+        Returns:
+            requests.Response: The raw response of the endpoint.
+        """
         pass
 
     @ abstractmethod
     def delete_issue(self, issue_id_or_key: str) -> requests.Response:
+        """This method is in charge of deleting a specific issue.
+
+        Args:
+            issue_id_or_key (str): The id or the key of the issue to delete.
+
+        Returns:
+            requests.Response: The raw response of the endpoint.
+        """
         pass
 
     @ abstractmethod
     def get_transitions(self, issue_id_or_key: str) -> Dict[str, Any]:
+        """This method is in charge of returning the available transitions of a specific issue.
+
+        Args:
+            issue_id_or_key (str): The issue id or key.
+
+        Returns:
+            Dict[str, Any]: The result of the API, which will hold available transitions.
+        """
         pass
 
     @ abstractmethod
     def create_issue(self, json_data: Dict[str, Any]) -> Dict[str, Any]:
+        """This method is in charge of creating a new issue.
+
+        Args:
+            json_data (Dict[str, Any]): The data that is sent to the endpoint to create the issue.
+
+        Returns:
+            Dict[str, Any]: The results of the API, which will hold the newly created issue.
+        """
         pass
 
     @abstractmethod
     def get_epic_issues(self, epic_id_or_key: str, start_at: int | None = None, max_results: int | None = None,
                         jql_query: str | None = None) -> Dict[str, Any]:
+        """This method is in charge of returning the issues that belong to a specific epic issue.
+
+        Args:
+            epic_id_or_key (str): The id or key of the epic issue.
+            start_at (int | None, optional): The starting index of the returned issues. Defaults to None.
+            max_results (int | None, optional): The maximum number of issues to return per page. Defaults to None.
+            jql_query (str | None, optional): The JQL query to filter specific issues. Defaults to None.
+
+        Returns:
+            Dict[str, Any]: The results of the API, which will hold the issues that belong to the epic issue.
+        """
         pass
 
     @abstractmethod
     def get_issue_link_types(self) -> Dict[str, Any]:
+        """This method is in charge of returning a list of all issue link types.
+
+        Returns:
+            Dict[str, Any]: The results of the API, which will hold the issue link types.
+        """
         pass
 
     @abstractmethod
     def create_issue_link(self, json_data: Dict[str, Any]) -> requests.Response:
+        """This method is in charge of creating an issue link between two issues.
+
+        Args:
+            json_data (Dict[str, Any]): The data that is sent to the endpoint to create the issue link.
+
+        Returns:
+            requests.Response: The raw response of the endpoint.
+        """
         pass
 
     # Attachments Requests
     @ abstractmethod
     def add_attachment(self, issue_id_or_key: str, files: Dict[str, Any] | None = None) -> List[Dict[str, Any]]:
+        """This method is in charge of adding an attachment to an issue.
+
+        Args:
+            issue_id_or_key (str): The issue id or key.
+            files (Dict[str, Any] | None, optional): The data of the attachment to add. Defaults to None.
+
+        Returns:
+            List[Dict[str, Any]]: The results of the API, which will hold the newly added attachment.
+        """
         pass
 
     @ abstractmethod
     def get_attachment_metadata(self, attachment_id: str) -> Dict[str, Any]:
+        """This method is in charge of returning the metadata for an attachment.
+
+        Args:
+            attachment_id (str): The attachment id.
+
+        Returns:
+            Dict[str, Any]: The results of the API, which will hold the metadata of the attachment.
+        """
         pass
 
     @ abstractmethod
     def get_attachment_content(self, attachment_id: str) -> str:
+        """This method is in charge of returning the content for an attachment.
+
+        Args:
+            attachment_id (str): The attachment id.
+
+        Returns:
+            Dict[str, Any]: The results of the API, which will hold the content of the attachment.
+        """
         pass
 
     # User Requests
     @ abstractmethod
     def get_id_by_attribute(self, attribute: str, max_results: int) -> List[Dict[str, Any]]:
+        """This method is in charge of returning a list of users that match the attribute.
+
+        Args:
+            attribute (str): The attribute that will be matched against user attributes to find relevant users.
+            max_results (int): The maximum number of issues to return per page
+
+        Returns:
+            List[Dict[str, Any]]: The results of the API, which will hold the users that match the attribute.
+        """
         pass
 
 
@@ -294,8 +600,6 @@ class JiraCloudClient(JiraBaseClient):
                          base_url=f'{server_url}/{cloud_id}')
 
     def test_instance_connection(self) -> None:
-        appendContext(key='Ticket.Comments', data={'comment': 'appended comment', 'Id': '1234'})
-        print(demisto.get(demisto.context(), 'Ticket.Comments'))
         self.http_request_with_access_token(method='GET', url_suffix='rest/api/3/myself',
                                             resp_type='json')
 
@@ -569,7 +873,7 @@ class JiraCloudClient(JiraBaseClient):
             params=query_params,
         )
 
-    def delete_comment(self, issue_id_or_key: str, comment_id: str) -> Dict[str, Any]:
+    def delete_comment(self, issue_id_or_key: str, comment_id: str) -> requests.Response:
         return self.http_request_with_access_token(
             method='DELETE',
             url_suffix=f'rest/api/3/issue/{issue_id_or_key}/comment/{comment_id}',
@@ -1045,51 +1349,6 @@ def get_issue_fields_for_update(issue_args: Dict[str, str], issue_update_mapper:
             issue_fields=issue_fields, dotted_string=dotted_string, update_key=update_key, value=parsed_value or value,
             action=action)
     return issue_fields
-
-
-def response_to_md_and_outputs(data: Dict[str, Any], shared_fields: Dict[str, tuple[str, Any]] | None = None,
-                               hr_fields: Dict[str, tuple[str, Any]] | None = None,
-                               outputs_fields: Dict[str, tuple[str, Any]] | None = None) -> tuple[Dict[str, Any], Dict[str, Any]]:
-    """A dictionary that holds data to be used in the human readable and outputs dictionaries.
-
-    Args:
-        data (Dict[str, Any]): A dictionary that holds data to be extracted
-
-        shared_fields (Dict[str, tuple[str, str]]): A dictionary where its keys are shared keys for the human readable and
-        context data dictionary, and the value is a tuple, where the first element is nested keys in data (separated by dots)
-        that holds the data to retrieve, and the second element is the default value if the nested key was not found
-
-        hr_fields (Dict[str, tuple[str, str]]): A dictionary where its keys are keys to the human readable dictionary, and the
-        value is a tuple, where the first element is nested keys in data (separated by dots) that holds the data to retrieve,
-        and the second element is the default value if the nested key was not found
-
-        outputs_fields (Dict[str, tuple[str, str]]): A dictionary where its keys are keys to the context data dictionary, and the
-        value is a tuple, where the first element is nested keys in data (separated by dots) that holds the data to retrieve,
-        and the second element is the default value if the nested key was not found
-
-    Returns:
-        tuple[Dict[str, Any], Dict[str, Any]]: A tuple where the first value is the human readable dictionary,
-        and the second value is the outputs dictionary
-    """
-    if shared_fields is None:
-        shared_fields = {}
-    if hr_fields is None:
-        hr_fields = {}
-    if outputs_fields is None:
-        outputs_fields = {}
-    human_readable: Dict[str, Any] = {}
-    outputs: Dict[str, Any] = {}
-    for shared_field, value in shared_fields.items():
-        human_readable[shared_field] = demisto.get(data, value[0], value[1])
-        outputs[shared_field] = demisto.get(data, value[0], value[1])
-
-    for hr_field, value in hr_fields.items():
-        human_readable[hr_field] = demisto.get(data, value[0], value[1])
-
-    for output_field, value in outputs_fields.items():
-        outputs[output_field] = demisto.get(data, value[0], value[1])
-
-    return human_readable, outputs
 
 
 def extract_issue_id_from_comment_url(comment_url: str) -> str:
