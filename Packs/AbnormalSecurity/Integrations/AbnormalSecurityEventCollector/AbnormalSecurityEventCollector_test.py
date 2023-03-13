@@ -30,6 +30,8 @@ def test_get_events():
         Then
             - Assert the returned messages contains only messages in the specific time range (.
             - Assert the returned messages are ordered by datetime.
+            - Assert the returned "toAddresses" field in the messages returned as a list.
+
     """
     client = Client(base_url="url")
     messages, last_run = get_events(client, after='2022-05-02T18:44:38Z')
