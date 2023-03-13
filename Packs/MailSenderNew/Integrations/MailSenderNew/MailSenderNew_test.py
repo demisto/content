@@ -64,7 +64,7 @@ def test_hmac(mocker):
     Test that hmac is able to handle unicode user/pass
     '''
     mocker.patch.object(demisto, 'params', return_value={
-        'credentials': {'identifier': 'user', 'password': 'pass'}
+        'credentials': {'identifier': u'user', 'password': u'pass'}
     })
     user, password = MailSenderNew.get_user_pass()
     res = user + hmac.HMAC(str.encode(password), b'test', hashlib.sha256).hexdigest()
