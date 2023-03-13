@@ -113,7 +113,7 @@ class VectraClient(BaseClient):
 """ HELPER FUNCTIONS """
 
 
-def add_parsing_rules(event: Dict[str, Any]) -> Dict[str, Any]:
+def add_parsing_rules(event: Dict[str, Any]) -> Any:
 
     """
     Helper method to add the Parsing Rules to an event.
@@ -122,7 +122,7 @@ def add_parsing_rules(event: Dict[str, Any]) -> Dict[str, Any]:
         - `event_type` (``str``): The type of event to parse, i.e. detection or audit
 
     Returns:
-        - `Dict[str, Any]` with the added Parsing Rules.
+        - Event `Dict[str, Any]` with the added Parsing Rules or skip.
     """
 
     parsing_rules_to_add = ["_time"]
@@ -131,12 +131,12 @@ def add_parsing_rules(event: Dict[str, Any]) -> Dict[str, Any]:
         # Process detection
         if DETECTION_TIMESTAMP_KEY in event:
             event[parsing_rules_to_add[0]] = datetime.strptime(
-                event.get(DETECTION_TIMESTAMP_KEY), DETECTION_FIRST_TIMESTAMP_FORMAT
+                event.get(DETECTION_TIMESTAMP_KEY), DETECTION_FIRST_TIMESTAMP_FORMAT  # type: ignore
             ).strftime(XSIAM_TIME_FORMAT)
         # Process Audit
         else:
             event[parsing_rules_to_add[0]] = timestamp_to_datestring(
-                float(event.get(AUDIT_TIMESTAMP_KEY)) * 1000
+                float(event.get(AUDIT_TIMESTAMP_KEY)) * 1000  # type: ignore
             )
 
         return event
@@ -171,7 +171,7 @@ def get_audits_to_send(
         filtered_audits = [
             a
             for a in audits
-            if datetime.fromtimestamp(float(a.get(AUDIT_TIMESTAMP_KEY))) > prev_fetch_timestamp_ts
+            if datetime.fromtimestamp(float(a.get(AUDIT_TIMESTAMP_KEY))) > prev_fetch_timestamp_ts  # type: ignore
         ]
 
         return filtered_audits
@@ -393,7 +393,7 @@ def fetch_events(
         audits,
         {
             DETECTION_NEXT_RUN_KEY: str(next_run_detection_id),
-            AUDIT_NEXT_RUN_KEY: most_recent_audit_str,
+            AUDIT_NEXT_RUN_KEY: most_recent_audit_str,  # type: ignore
         },
     )
 
@@ -469,13 +469,13 @@ def main() -> None:  # pragma: no cover
                     parsed_events: List[Dict[str, Any]] = []
 
                     demisto.info("Adding parsing rules to events...")
-                    for event in detections_cmd_res.outputs + audits_cmd_res.outputs:
+                    for event in detections_cmd_res.outputs + audits_cmd_res.outputs:  # type: ignore
                         parsed_events.append(add_parsing_rules(event))
                     demisto.info("Finished adding parsing rules.")
 
-                    demisto.info(
+                    demisto.info(  # type: ignore
                         f"""Sending {len(parsed_events)} events to XSIAM ({len(detections_cmd_res.outputs)} detections,
-                        {len(audits_cmd_res.outputs)} audits)"""
+                        {len(audits_cmd_res.outputs)} audits)"""  # type: ignore
                     )
                     send_events_to_xsiam(parsed_events, vendor=VENDOR, product=VENDOR)
 
