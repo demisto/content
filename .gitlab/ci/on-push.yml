@@ -552,7 +552,6 @@ test-upload-flow:
   variables:
     ALL_BUCKETS: "$GCS_MARKET_BUCKET_DEV,$GCS_MARKET_V2_BUCKET_DEV"
   stage: unittests-and-validations
-  allow_failure: true
   script:
     - |
     - section_start "Checks Whether to Trigger a Test Upload"
