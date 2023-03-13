@@ -1,10 +1,103 @@
 {
-    "id": "cveRep",
+    "edit": {
+        "sections": [
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "indicator_value",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_indicatortype",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_score",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_expiration",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_comment",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_investigationids",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Basic Information",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": "basicInformationSection"
+            },
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "indicator_communitynotes",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_description",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_stixid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_tags",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_trafficlightprotocol",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Custom fields - core",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            },
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "indicator_cvssversion",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_cvssscore",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_cvssvector",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_cvsstable",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Custom fields - unique",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            }
+        ]
+    },
     "group": "indicator",
-    "name": "CVE Indicator",
-    "version": -1,
-    "fromVersion": "6.0.0",
-    "toVersion": "6.9.9",
+    "id": "cveRep",
     "indicatorsDetails": {
         "tabs": [
             {
@@ -37,15 +130,15 @@
                                 "startCol": 0
                             },
                             {
+                                "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "stixid",
                                 "height": 22,
                                 "id": "ea9dea60-7d0c-11ec-abe4-4fa9d22d9889",
                                 "index": 2,
+                                "listId": "main-cveRep-main-9fa550a0-a2e6-11e9-a74b-a79deb2f5d2a",
                                 "sectionItemType": "field",
-                                "startCol": 0,
-                                "dropEffect": "move",
-                                "listId": "main-cveRep-main-9fa550a0-a2e6-11e9-a74b-a79deb2f5d2a"
+                                "startCol": 0
                             },
                             {
                                 "endCol": 2,
@@ -125,22 +218,6 @@
                         "y": 2
                     },
                     {
-                        "displayType": "ROW",
-                        "h": 2,
-                        "hideName": false,
-                        "i": "main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-cveRep-main-374a4120-ac5d-11e9-82f1-b168a5ac3417",
-                        "isVisible": true,
-                        "items": null,
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "Related Incidents",
-                        "readOnly": true,
-                        "static": false,
-                        "type": "relatedIncidents",
-                        "w": 2,
-                        "x": 0,
-                        "y": 7,
                         "columns": [
                             {
                                 "displayed": true,
@@ -178,7 +255,23 @@
                                 "key": "owner",
                                 "width": 160
                             }
-                        ]
+                        ],
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-cveRep-main-374a4120-ac5d-11e9-82f1-b168a5ac3417",
+                        "isVisible": true,
+                        "items": null,
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Related Incidents",
+                        "readOnly": true,
+                        "static": false,
+                        "type": "relatedIncidents",
+                        "w": 2,
+                        "x": 0,
+                        "y": 7
                     },
                     {
                         "columns": [
@@ -229,6 +322,7 @@
                         "y": 4
                     },
                     {
+                        "displayType": "ROW",
                         "h": 1,
                         "hideName": false,
                         "i": "main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-cveRep-main-fafa73b0-a9af-11ea-a4b1-a5bbd1788c5a",
@@ -267,8 +361,7 @@
                         "static": false,
                         "w": 1,
                         "x": 2,
-                        "y": 0,
-                        "displayType": "ROW"
+                        "y": 0
                     },
                     {
                         "h": 3,
@@ -285,7 +378,9 @@
                         "y": 4
                     },
                     {
+                        "displayType": "ROW",
                         "h": 2,
+                        "hideItemTitleOnlyOne": true,
                         "hideName": false,
                         "i": "main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-8c4ad450-8a4a-11ec-a1ef-6369524b39c7",
                         "items": [
@@ -306,12 +401,12 @@
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 0,
-                        "displayType": "ROW",
-                        "hideItemTitleOnlyOne": true
+                        "y": 0
                     },
                     {
+                        "displayType": "ROW",
                         "h": 4,
+                        "hideName": false,
                         "i": "main-dad5aa4c-8d37-4211-8f73-49df65e4191d-main-c323dbf0-8e39-11ec-9c49-5f11296515d9",
                         "items": [
                             {
@@ -362,9 +457,7 @@
                         "static": false,
                         "w": 1,
                         "x": 1,
-                        "y": 0,
-                        "displayType": "ROW",
-                        "hideName": false
+                        "y": 0
                     }
                 ],
                 "type": "custom"
@@ -392,6 +485,7 @@
                     {
                         "displayType": "ROW",
                         "h": 4,
+                        "hideName": false,
                         "i": "kopixekjqw-89359390-9878-11ec-8a36-89f2ae31e8cd",
                         "items": [
                             {
@@ -420,8 +514,7 @@
                         "static": false,
                         "w": 3,
                         "x": 0,
-                        "y": 0,
-                        "hideName": false
+                        "y": 0
                     }
                 ],
                 "type": "custom"
@@ -437,34 +530,35 @@
                     {
                         "h": 2,
                         "i": "indicator-quick-view-info-dad5aa4c-8d37-4211-8f73-49df65e4191d-indicator-quick-view-info-relatedIncidents",
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
                         "moved": false,
                         "name": "Related Incidents",
                         "static": false,
                         "type": "relatedIncidents",
                         "w": 1,
                         "x": 0,
-                        "y": 7,
-                        "maxH": null,
-                        "maxW": 3,
-                        "minH": 1
+                        "y": 7
                     },
                     {
                         "h": 2,
                         "i": "indicator-quick-view-info-dad5aa4c-8d37-4211-8f73-49df65e4191d-indicator-quick-view-info-comments",
+                        "maxH": null,
+                        "maxW": 3,
+                        "minH": 1,
                         "moved": false,
                         "name": "Comments",
                         "static": false,
                         "type": "comments",
                         "w": 1,
                         "x": 0,
-                        "y": 9,
-                        "maxH": null,
-                        "maxW": 3,
-                        "minH": 1
+                        "y": 9
                     },
                     {
                         "displayType": "ROW",
                         "h": 2,
+                        "hideName": false,
                         "i": "indicator-quick-view-info-dad5aa4c-8d37-4211-8f73-49df65e4191d-indicator-quick-view-info-b92ed1c0-ccbd-11ea-937a-6f8841d9fed1",
                         "items": [
                             {
@@ -522,6 +616,7 @@
                                 "startCol": 0
                             }
                         ],
+                        "maxH": null,
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
@@ -529,22 +624,14 @@
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 2,
-                        "hideName": false,
-                        "maxH": null
+                        "y": 2
                     },
                     {
-                        "h": 3,
-                        "i": "indicator-quick-view-info-dad5aa4c-8d37-4211-8f73-49df65e4191d-indicator-quick-view-info-c834ecb0-84ed-11ec-a589-e73aadc98c9a",
-                        "moved": false,
-                        "name": "CVSS",
-                        "static": false,
-                        "w": 1,
-                        "x": 0,
-                        "y": 4,
                         "displayType": "ROW",
+                        "h": 3,
                         "hideItemTitleOnlyOne": false,
                         "hideName": false,
+                        "i": "indicator-quick-view-info-dad5aa4c-8d37-4211-8f73-49df65e4191d-indicator-quick-view-info-c834ecb0-84ed-11ec-a589-e73aadc98c9a",
                         "items": [
                             {
                                 "dropEffect": "move",
@@ -587,20 +674,20 @@
                         ],
                         "maxH": null,
                         "maxW": 3,
-                        "minH": 1
-                    },
-                    {
-                        "h": 2,
-                        "i": "indicator-quick-view-info-dad5aa4c-8d37-4211-8f73-49df65e4191d-indicator-quick-view-info-a9e35130-8a4b-11ec-a1ef-6369524b39c7",
+                        "minH": 1,
                         "moved": false,
-                        "name": "Vulnerability Description",
+                        "name": "CVSS",
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 0,
+                        "y": 4
+                    },
+                    {
                         "displayType": "ROW",
+                        "h": 2,
                         "hideItemTitleOnlyOne": true,
                         "hideName": false,
+                        "i": "indicator-quick-view-info-dad5aa4c-8d37-4211-8f73-49df65e4191d-indicator-quick-view-info-a9e35130-8a4b-11ec-a1ef-6369524b39c7",
                         "items": [
                             {
                                 "endCol": 2,
@@ -614,7 +701,13 @@
                         ],
                         "maxH": null,
                         "maxW": 3,
-                        "minH": 1
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Vulnerability Description",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
                     }
                 ],
                 "type": "custom"
@@ -643,6 +736,9 @@
             }
         ]
     },
+    "name": "CVE Indicator",
     "system": false,
-    "description": ""
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "description": "CVE Indicator Layout"
 }

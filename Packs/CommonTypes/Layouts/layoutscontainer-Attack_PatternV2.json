@@ -1,10 +1,100 @@
 {
+    "fromVersion": "6.10.0",
+    "edit": {
+        "sections": [
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "indicator_value",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_indicatortype",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_score",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_expiration",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_comment",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_investigationids",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Basic Information",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": "basicInformationSection"
+            },
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "indicator_communitynotes",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_description",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_stixid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_tags",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_trafficlightprotocol",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Custom fields - core",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            },
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "indicator_killchainphases",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_aliases",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Custom fields - unique",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            }
+        ]
+    },
     "group": "indicator",
-    "id": "Infrastructure",
+    "id": "STIX Attack Pattern",
     "indicatorsDetails": {
         "tabs": [
             {
-                "id": "main",
+                "id": "sgzngfxnoq",
                 "name": "Summary",
                 "sections": [
                     {
@@ -43,7 +133,7 @@
                         "displayType": "ROW",
                         "h": 3,
                         "hideName": false,
-                        "i": "main-c1f3f0d0-a09d-11e9-8956-390f602b039a",
+                        "i": "sgzngfxnoq-main-c1f3f0d0-a09d-11e9-8956-390f602b039a",
                         "isVisible": true,
                         "items": null,
                         "maxW": 3,
@@ -61,7 +151,7 @@
                         "displayType": "ROW",
                         "h": 3,
                         "hideName": false,
-                        "i": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
+                        "i": "sgzngfxnoq-main-e2c8c970-a09d-11e9-8956-390f602b039a",
                         "isVisible": true,
                         "items": [
                             {
@@ -79,50 +169,41 @@
                                 "endCol": 2,
                                 "fieldId": "timestamp",
                                 "height": 22,
-                                "id": "0a4b4e10-81af-11ec-a247-cfbd25dcdbb6",
+                                "id": "55a26a10-81af-11ec-a247-cfbd25dcdbb6",
                                 "index": 0,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
+                                "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "modified",
                                 "height": 22,
                                 "id": "54038b80-ccca-11ea-a049-6b4b59f3b34f",
                                 "index": 1,
+                                "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
                                 "sectionItemType": "field",
-                                "startCol": 0,
-                                "dropEffect": "move",
-                                "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a"
+                                "startCol": 0
                             },
                             {
+                                "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "stixid",
                                 "height": 22,
                                 "id": "f1ebc8a0-d17d-11ea-b39d-69849bf59ed7",
                                 "index": 2,
+                                "listId": "sgzngfxnoq-main-e2c8c970-a09d-11e9-8956-390f602b039a",
                                 "sectionItemType": "field",
-                                "startCol": 0,
-                                "dropEffect": "move",
-                                "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a"
+                                "startCol": 0
                             },
                             {
+                                "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "aliases",
                                 "height": 22,
-                                "id": "18169330-a81e-11eb-8bae-034332f83c9b",
+                                "id": "60dd8e70-a81e-11eb-8bae-034332f83c9b",
                                 "index": 3,
-                                "sectionItemType": "field",
-                                "startCol": 0,
-                                "dropEffect": "move",
-                                "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a"
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "infrastructuretypes",
-                                "height": 22,
-                                "id": "1083f220-a81e-11eb-8bae-034332f83c9b",
-                                "index": 4,
+                                "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -130,7 +211,16 @@
                                 "endCol": 2,
                                 "fieldId": "killchainphases",
                                 "height": 22,
-                                "id": "1cec1010-a81e-11eb-8bae-034332f83c9b",
+                                "id": "4635b630-8345-11ec-957b-0b2fa4b6ab8a",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "operatingsystemrefs",
+                                "height": 22,
+                                "id": "4ba88480-8345-11ec-957b-0b2fa4b6ab8a",
                                 "index": 5,
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -195,7 +285,7 @@
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
-                        "name": "Infrastructure Details",
+                        "name": "Intrusion Set Details",
                         "static": false,
                         "w": 1,
                         "x": 1,
@@ -203,7 +293,7 @@
                     },
                     {
                         "h": 3,
-                        "i": "main-acbc9a10-3d54-11ea-8f80-71a50769e869",
+                        "i": "sgzngfxnoq-main-acbc9a10-3d54-11ea-8f80-71a50769e869",
                         "items": null,
                         "maxW": 3,
                         "minH": 1,
@@ -217,7 +307,7 @@
                     },
                     {
                         "h": 3,
-                        "i": "main-e608e030-3d54-11ea-8f80-71a50769e869",
+                        "i": "sgzngfxnoq-main-e608e030-3d54-11ea-8f80-71a50769e869",
                         "items": null,
                         "maxW": 3,
                         "minH": 1,
@@ -234,11 +324,11 @@
                         "h": 3,
                         "hideItemTitleOnlyOne": true,
                         "hideName": false,
-                        "i": "main-a37f4790-cf12-11ea-99ca-719a20305a18",
+                        "i": "sgzngfxnoq-main-a37f4790-cf12-11ea-99ca-719a20305a18",
                         "items": [
                             {
                                 "dropEffect": "move",
-                                "endCol": 4,
+                                "endCol": 2,
                                 "fieldId": "description",
                                 "height": 106,
                                 "id": "3a65d1d0-d17d-11ea-b39d-69849bf59ed7",
@@ -251,7 +341,7 @@
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
-                        "name": "Infrastructure Description",
+                        "name": "Attack Pattern Description",
                         "static": false,
                         "w": 1,
                         "x": 0,
@@ -259,31 +349,31 @@
                     },
                     {
                         "h": 3,
-                        "i": "main-979b5ae0-979e-11eb-a8d1-098e2c945225",
+                        "i": "sgzngfxnoq-main-979b5ae0-979e-11eb-a8d1-098e2c945225",
                         "items": [],
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
                         "name": "Relationships",
                         "static": false,
+                        "type": "relationshipsTable",
                         "w": 2,
                         "x": 0,
-                        "y": 3,
-                        "type": "relationshipsTable"
+                        "y": 3
                     }
                 ],
                 "type": "custom"
             },
             {
                 "hidden": false,
-                "id": "ifyfdlsd7t",
+                "id": "09urfmlizj",
                 "name": "Publications and notes",
                 "sections": [
                     {
                         "displayType": "ROW",
                         "h": 9,
                         "hideName": false,
-                        "i": "ifyfdlsd7t-zuteowyvsu-e768a150-7ebf-11ec-b7e4-a70f28a44ba6",
+                        "i": "09urfmlizj-zuteowyvsu-e768a150-7ebf-11ec-b7e4-a70f28a44ba6",
                         "items": [
                             {
                                 "endCol": 6,
@@ -321,51 +411,21 @@
     "indicatorsQuickView": {
         "tabs": [
             {
-                "id": "indicator-quick-view-info",
+                "hidden": false,
+                "id": "vv7yhjfzjm",
                 "name": "Info",
                 "sections": [
                     {
-                        "h": 2,
-                        "i": "indicator-quick-view-info-relatedIncidents",
-                        "maxW": 3,
-                        "moved": false,
-                        "name": "Related Incidents",
-                        "static": false,
-                        "w": 1,
-                        "x": 0,
-                        "y": 4,
-                        "type": "relatedIncidents"
-                    },
-                    {
-                        "h": 2,
-                        "i": "indicator-quick-view-info-comments",
-                        "maxW": 3,
-                        "moved": false,
-                        "name": "Comments",
-                        "static": false,
-                        "type": "comments",
-                        "w": 1,
-                        "x": 0,
-                        "y": 6
-                    },
-                    {
-                        "h": 2,
-                        "i": "indicator-quick-view-info-3518e4c0-cccc-11ea-a049-6b4b59f3b34f",
-                        "maxW": 3,
-                        "moved": false,
-                        "name": "Infrastructure Details",
-                        "static": false,
-                        "w": 1,
-                        "x": 0,
-                        "y": 2,
                         "displayType": "ROW",
+                        "h": 2,
                         "hideName": false,
+                        "i": "vv7yhjfzjm-c3492ae0-b306-11eb-941c-e725acf1fbbc",
                         "items": [
                             {
                                 "endCol": 2,
                                 "fieldId": "timestamp",
                                 "height": 22,
-                                "id": "0cc59400-8a4e-11ec-a1ef-6369524b39c7",
+                                "id": "efc2ba20-84eb-11ec-a589-e73aadc98c9a",
                                 "index": 0,
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -375,9 +435,9 @@
                                 "endCol": 2,
                                 "fieldId": "modified",
                                 "height": 22,
-                                "id": "3faf7700-cccc-11ea-a049-6b4b59f3b34f",
+                                "id": "d5429ba0-b306-11eb-941c-e725acf1fbbc",
                                 "index": 1,
-                                "listId": "indicator-quick-view-info-3518e4c0-cccc-11ea-a049-6b4b59f3b34f",
+                                "listId": "vv7yhjfzjm-c3492ae0-b306-11eb-941c-e725acf1fbbc",
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -386,9 +446,9 @@
                                 "endCol": 2,
                                 "fieldId": "stixid",
                                 "height": 22,
-                                "id": "20001a20-d183-11ea-b1ee-39abdac77dba",
+                                "id": "cbcdf420-b306-11eb-941c-e725acf1fbbc",
                                 "index": 2,
-                                "listId": "indicator-quick-view-info-3518e4c0-cccc-11ea-a049-6b4b59f3b34f",
+                                "listId": "vv7yhjfzjm-c3492ae0-b306-11eb-941c-e725acf1fbbc",
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -397,18 +457,9 @@
                                 "endCol": 2,
                                 "fieldId": "aliases",
                                 "height": 22,
-                                "id": "2564f270-a81e-11eb-8bae-034332f83c9b",
+                                "id": "cda1c9c0-b306-11eb-941c-e725acf1fbbc",
                                 "index": 3,
-                                "listId": "indicator-quick-view-info-3518e4c0-cccc-11ea-a049-6b4b59f3b34f",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "infrastructuretypes",
-                                "height": 22,
-                                "id": "29794230-a81e-11eb-8bae-034332f83c9b",
-                                "index": 4,
+                                "listId": "vv7yhjfzjm-c3492ae0-b306-11eb-941c-e725acf1fbbc",
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -416,7 +467,16 @@
                                 "endCol": 2,
                                 "fieldId": "killchainphases",
                                 "height": 22,
-                                "id": "221e2be0-a81e-11eb-8bae-034332f83c9b",
+                                "id": "d1afff00-b306-11eb-941c-e725acf1fbbc",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "operatingsystemrefs",
+                                "height": 22,
+                                "id": "d30778b0-b306-11eb-941c-e725acf1fbbc",
                                 "index": 5,
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -425,7 +485,7 @@
                                 "endCol": 2,
                                 "fieldId": "trafficlightprotocol",
                                 "height": 22,
-                                "id": "acc3f580-d16f-11ea-b39d-69849bf59ed7",
+                                "id": "f3ac1990-b306-11eb-941c-e725acf1fbbc",
                                 "index": 6,
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -434,25 +494,33 @@
                                 "endCol": 2,
                                 "fieldId": "tags",
                                 "height": 22,
-                                "id": "indicator-quick-view-info-tags-field",
+                                "id": "f0eb24d0-b306-11eb-941c-e725acf1fbbc",
                                 "index": 7,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
                         ],
-                        "minH": 1
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Attack Pattern Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 2
                     },
                     {
                         "displayType": "ROW",
                         "h": 2,
+                        "hideItemTitleOnlyOne": true,
                         "hideName": false,
-                        "i": "indicator-quick-view-info-c9d165e0-d16f-11ea-b39d-69849bf59ed7",
+                        "i": "vv7yhjfzjm-db1eda20-b306-11eb-941c-e725acf1fbbc",
                         "items": [
                             {
                                 "endCol": 2,
                                 "fieldId": "description",
-                                "height": 22,
-                                "id": "514ccc90-d183-11ea-b1ee-39abdac77dba",
+                                "height": 44,
+                                "id": "e21191b0-b306-11eb-941c-e725acf1fbbc",
                                 "index": 0,
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -461,12 +529,39 @@
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
-                        "name": "Infrastructure Description",
+                        "name": "Attack Pattern Description",
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 0,
-                        "hideItemTitleOnlyOne": true
+                        "y": 0
+                    },
+                    {
+                        "h": 2,
+                        "i": "vv7yhjfzjm-fde82fc0-b306-11eb-941c-e725acf1fbbc",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Related Incidents",
+                        "static": false,
+                        "type": "relatedIncidents",
+                        "w": 1,
+                        "x": 0,
+                        "y": 4
+                    },
+                    {
+                        "h": 2,
+                        "i": "vv7yhjfzjm-003490c0-b307-11eb-941c-e725acf1fbbc",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Comments",
+                        "static": false,
+                        "type": "comments",
+                        "w": 1,
+                        "x": 0,
+                        "y": 6
                     }
                 ],
                 "type": "custom"
@@ -492,13 +587,179 @@
                     }
                 ],
                 "type": "custom"
+            },
+            {
+                "id": "indicator-quick-view-info",
+                "name": "(Deprecated)",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 1,
+                        "hideItemTitleOnlyOne": false,
+                        "i": "indicator-quick-view-info-tags-section",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "tags",
+                                "height": 22,
+                                "id": "indicator-quick-view-info-tags-field",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "trafficlightprotocol",
+                                "height": 22,
+                                "id": "acc3f580-d16f-11ea-b39d-69849bf59ed7",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "Tags and TLP",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 4
+                    },
+                    {
+                        "h": 2,
+                        "i": "indicator-quick-view-info-relatedIncidents",
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Related Incidents",
+                        "static": false,
+                        "type": "relatedIncidents",
+                        "w": 1,
+                        "x": 0,
+                        "y": 5
+                    },
+                    {
+                        "h": 2,
+                        "i": "indicator-quick-view-info-comments",
+                        "maxW": 3,
+                        "moved": false,
+                        "name": "Comments",
+                        "static": false,
+                        "type": "comments",
+                        "w": 1,
+                        "x": 0,
+                        "y": 7
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "indicator-quick-view-info-3518e4c0-cccc-11ea-a049-6b4b59f3b34f",
+                        "items": [
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "stixid",
+                                "height": 22,
+                                "id": "20001a20-d183-11ea-b1ee-39abdac77dba",
+                                "index": 0,
+                                "listId": "indicator-quick-view-info-3518e4c0-cccc-11ea-a049-6b4b59f3b34f",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "stixaliases",
+                                "height": 22,
+                                "id": "28289290-d183-11ea-b1ee-39abdac77dba",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "stixkillchainphases",
+                                "height": 22,
+                                "id": "3e755110-97b6-11eb-b107-d54cb1092446",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "operatingsystemrefs",
+                                "height": 22,
+                                "id": "8afd0010-a818-11eb-8bae-034332f83c9b",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "modified",
+                                "height": 22,
+                                "id": "3faf7700-cccc-11ea-a049-6b4b59f3b34f",
+                                "index": 4,
+                                "listId": "indicator-quick-view-info-3518e4c0-cccc-11ea-a049-6b4b59f3b34f",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "firstseen",
+                                "height": 22,
+                                "id": "3c8d7680-cccc-11ea-a049-6b4b59f3b34f",
+                                "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "STIX Attack Pattern Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
+                        "i": "indicator-quick-view-info-c9d165e0-d16f-11ea-b39d-69849bf59ed7",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "stixdescription",
+                                "height": 22,
+                                "id": "be655620-b306-11eb-941c-e725acf1fbbc",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "minW": 1,
+                        "moved": false,
+                        "name": "STIX Attack Pattern Description",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 2
+                    }
+                ],
+                "type": "custom"
             }
         ]
     },
-    "name": "Infrastructure",
+    "name": "Attack Pattern",
     "system": false,
     "version": -1,
-    "fromVersion": "6.0.0",
-    "toVersion": "6.9.9",
-    "description": ""
+    "description": "Attack Pattern Indicator Layout"
 }

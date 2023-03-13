@@ -1,6 +1,107 @@
 {
+    "edit": {
+        "sections": [
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "indicator_value",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_indicatortype",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_score",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_expiration",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_comment",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_investigationids",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Basic Information",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": "basicInformationSection"
+            },
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "indicator_communitynotes",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_description",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_stixid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_tags",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_trafficlightprotocol",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Custom fields - core",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            },
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "indicator_aliases",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_goals",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_primarymotivation",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_secondarymotivations",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_resourcelevel",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Custom fields - unique",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            }
+        ]
+    },
     "group": "indicator",
-    "id": "Infrastructure",
+    "id": "Intrusion Set",
     "indicatorsDetails": {
         "tabs": [
             {
@@ -79,59 +180,77 @@
                                 "endCol": 2,
                                 "fieldId": "timestamp",
                                 "height": 22,
-                                "id": "0a4b4e10-81af-11ec-a247-cfbd25dcdbb6",
+                                "id": "55a26a10-81af-11ec-a247-cfbd25dcdbb6",
                                 "index": 0,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
+                                "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "modified",
                                 "height": 22,
                                 "id": "54038b80-ccca-11ea-a049-6b4b59f3b34f",
                                 "index": 1,
+                                "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
                                 "sectionItemType": "field",
-                                "startCol": 0,
-                                "dropEffect": "move",
-                                "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a"
+                                "startCol": 0
                             },
                             {
+                                "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "stixid",
                                 "height": 22,
                                 "id": "f1ebc8a0-d17d-11ea-b39d-69849bf59ed7",
                                 "index": 2,
+                                "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
                                 "sectionItemType": "field",
-                                "startCol": 0,
-                                "dropEffect": "move",
-                                "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a"
+                                "startCol": 0
                             },
                             {
+                                "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "aliases",
                                 "height": 22,
-                                "id": "18169330-a81e-11eb-8bae-034332f83c9b",
+                                "id": "60dd8e70-a81e-11eb-8bae-034332f83c9b",
                                 "index": 3,
+                                "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
                                 "sectionItemType": "field",
-                                "startCol": 0,
-                                "dropEffect": "move",
-                                "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a"
+                                "startCol": 0
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "infrastructuretypes",
+                                "fieldId": "goals",
                                 "height": 22,
-                                "id": "1083f220-a81e-11eb-8bae-034332f83c9b",
+                                "id": "662e2ec0-a81e-11eb-8bae-034332f83c9b",
                                 "index": 4,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "killchainphases",
+                                "fieldId": "resourcelevel",
                                 "height": 22,
-                                "id": "1cec1010-a81e-11eb-8bae-034332f83c9b",
+                                "id": "6b496730-a81e-11eb-8bae-034332f83c9b",
                                 "index": 5,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "primarymotivation",
+                                "height": 22,
+                                "id": "7532c980-a81e-11eb-8bae-034332f83c9b",
+                                "index": 6,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "secondarymotivations",
+                                "height": 22,
+                                "id": "70310c80-a81e-11eb-8bae-034332f83c9b",
+                                "index": 7,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -141,7 +260,7 @@
                                 "fieldId": "trafficlightprotocol",
                                 "height": 22,
                                 "id": "b36304a0-b6dd-11ea-842d-c3903a6d3bd1",
-                                "index": 6,
+                                "index": 8,
                                 "listId": "main-0e19dbd0-4e74-11ea-8bf6-67db400d7da5",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -152,7 +271,7 @@
                                 "fieldId": "tags",
                                 "height": 22,
                                 "id": "1cf1e850-4e74-11ea-8bf6-67db400d7da5",
-                                "index": 7,
+                                "index": 9,
                                 "listId": "main-0e19dbd0-4e74-11ea-8bf6-67db400d7da5",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -167,7 +286,7 @@
                                 "fieldId": "",
                                 "height": 44,
                                 "id": "f1f63340-aa49-11ea-9e46-5ff91c1cf9b7",
-                                "index": 8,
+                                "index": 10,
                                 "name": "Add tags",
                                 "scriptId": "Builtin|||appendIndicatorField",
                                 "sectionItemType": "button",
@@ -184,7 +303,7 @@
                                 "fieldId": "",
                                 "height": 44,
                                 "id": "fb499720-aa49-11ea-9e46-5ff91c1cf9b7",
-                                "index": 8,
+                                "index": 10,
                                 "listId": "main-0e19dbd0-4e74-11ea-8bf6-67db400d7da5",
                                 "name": "Remove tags",
                                 "scriptId": "Builtin|||removeIndicatorField",
@@ -195,7 +314,7 @@
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
-                        "name": "Infrastructure Details",
+                        "name": "Intrusion Set Details",
                         "static": false,
                         "w": 1,
                         "x": 1,
@@ -238,7 +357,7 @@
                         "items": [
                             {
                                 "dropEffect": "move",
-                                "endCol": 4,
+                                "endCol": 2,
                                 "fieldId": "description",
                                 "height": 106,
                                 "id": "3a65d1d0-d17d-11ea-b39d-69849bf59ed7",
@@ -251,7 +370,7 @@
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
-                        "name": "Infrastructure Description",
+                        "name": "Intrusion Set Description",
                         "static": false,
                         "w": 1,
                         "x": 0,
@@ -266,24 +385,24 @@
                         "moved": false,
                         "name": "Relationships",
                         "static": false,
+                        "type": "relationshipsTable",
                         "w": 2,
                         "x": 0,
-                        "y": 3,
-                        "type": "relationshipsTable"
+                        "y": 3
                     }
                 ],
                 "type": "custom"
             },
             {
                 "hidden": false,
-                "id": "ifyfdlsd7t",
+                "id": "qvpdtmert1",
                 "name": "Publications and notes",
                 "sections": [
                     {
                         "displayType": "ROW",
                         "h": 9,
                         "hideName": false,
-                        "i": "ifyfdlsd7t-zuteowyvsu-e768a150-7ebf-11ec-b7e4-a70f28a44ba6",
+                        "i": "qvpdtmert1-zuteowyvsu-e768a150-7ebf-11ec-b7e4-a70f28a44ba6",
                         "items": [
                             {
                                 "endCol": 6,
@@ -331,10 +450,10 @@
                         "moved": false,
                         "name": "Related Incidents",
                         "static": false,
+                        "type": "relatedIncidents",
                         "w": 1,
                         "x": 0,
-                        "y": 4,
-                        "type": "relatedIncidents"
+                        "y": 4
                     },
                     {
                         "h": 2,
@@ -349,35 +468,26 @@
                         "y": 6
                     },
                     {
-                        "h": 2,
-                        "i": "indicator-quick-view-info-3518e4c0-cccc-11ea-a049-6b4b59f3b34f",
-                        "maxW": 3,
-                        "moved": false,
-                        "name": "Infrastructure Details",
-                        "static": false,
-                        "w": 1,
-                        "x": 0,
-                        "y": 2,
                         "displayType": "ROW",
+                        "h": 2,
                         "hideName": false,
+                        "i": "indicator-quick-view-info-3518e4c0-cccc-11ea-a049-6b4b59f3b34f",
                         "items": [
                             {
                                 "endCol": 2,
                                 "fieldId": "timestamp",
                                 "height": 22,
-                                "id": "0cc59400-8a4e-11ec-a1ef-6369524b39c7",
+                                "id": "9312b650-84ef-11ec-a589-e73aadc98c9a",
                                 "index": 0,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
-                                "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "modified",
                                 "height": 22,
-                                "id": "3faf7700-cccc-11ea-a049-6b4b59f3b34f",
+                                "id": "98d2e150-84ef-11ec-a589-e73aadc98c9a",
                                 "index": 1,
-                                "listId": "indicator-quick-view-info-3518e4c0-cccc-11ea-a049-6b4b59f3b34f",
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -397,7 +507,7 @@
                                 "endCol": 2,
                                 "fieldId": "aliases",
                                 "height": 22,
-                                "id": "2564f270-a81e-11eb-8bae-034332f83c9b",
+                                "id": "8c529640-a81e-11eb-8bae-034332f83c9b",
                                 "index": 3,
                                 "listId": "indicator-quick-view-info-3518e4c0-cccc-11ea-a049-6b4b59f3b34f",
                                 "sectionItemType": "field",
@@ -407,16 +517,16 @@
                                 "endCol": 2,
                                 "fieldId": "infrastructuretypes",
                                 "height": 22,
-                                "id": "29794230-a81e-11eb-8bae-034332f83c9b",
+                                "id": "a51c53b0-84ef-11ec-a589-e73aadc98c9a",
                                 "index": 4,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "killchainphases",
+                                "fieldId": "goals",
                                 "height": 22,
-                                "id": "221e2be0-a81e-11eb-8bae-034332f83c9b",
+                                "id": "e5d34080-84ef-11ec-a589-e73aadc98c9a",
                                 "index": 5,
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -438,13 +548,66 @@
                                 "index": 7,
                                 "sectionItemType": "field",
                                 "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "resourcelevel",
+                                "height": 22,
+                                "id": "f18e2e80-84ef-11ec-a589-e73aadc98c9a",
+                                "index": 8,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "primarymotivation",
+                                "height": 22,
+                                "id": "f95aa440-84ef-11ec-a589-e73aadc98c9a",
+                                "index": 9,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "secondarymotivations",
+                                "height": 22,
+                                "id": "fce04890-84ef-11ec-a589-e73aadc98c9a",
+                                "index": 10,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "trafficlightprotocol",
+                                "height": 22,
+                                "id": "070db8c0-84f0-11ec-a589-e73aadc98c9a",
+                                "index": 11,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "tags",
+                                "height": 22,
+                                "id": "0bc4d830-84f0-11ec-a589-e73aadc98c9a",
+                                "index": 12,
+                                "sectionItemType": "field",
+                                "startCol": 0
                             }
                         ],
-                        "minH": 1
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Intrusion Set Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 2
                     },
                     {
                         "displayType": "ROW",
                         "h": 2,
+                        "hideItemTitleOnlyOne": true,
                         "hideName": false,
                         "i": "indicator-quick-view-info-c9d165e0-d16f-11ea-b39d-69849bf59ed7",
                         "items": [
@@ -461,12 +624,11 @@
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
-                        "name": "Infrastructure Description",
+                        "name": "Intrusion Set Description",
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 0,
-                        "hideItemTitleOnlyOne": true
+                        "y": 0
                     }
                 ],
                 "type": "custom"
@@ -495,10 +657,9 @@
             }
         ]
     },
-    "name": "Infrastructure",
+    "name": "Intrusion Set",
     "system": false,
     "version": -1,
-    "fromVersion": "6.0.0",
-    "toVersion": "6.9.9",
-    "description": ""
+    "description": "Intrusion Set Layout",
+	"fromVersion": "6.10.0"
 }
