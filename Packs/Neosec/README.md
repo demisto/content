@@ -8,4 +8,4 @@ Neosec is reinventing application security. Its pioneering SaaS platform gives s
 
 _For more information, visit [Neosec Inc.](https://neosec.com/)_
 
-[![Neosec Overview](binary_files/neosec.com)
+[![Neosec Overview](binary_files/Author_image.png)](https://neosec.com)
