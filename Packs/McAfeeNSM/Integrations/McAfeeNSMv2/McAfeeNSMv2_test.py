@@ -1088,7 +1088,7 @@ def test_update_alerts_command(args, expected_error, mcafeensmv2_client):
 @pytest.mark.parametrize('input, output', [(777, {'method': 'GET', 'url_suffix': '/domain/9/policyassignments/device/777'}),
                                            (None, {'method': 'GET', 'url_suffix':
                                                    '/domain/9/policyassignments/device'})])
-def test_list_device_policy_request(mocker, mcafeensmv2_client, input, output):
+def test_list_device_policy_request__with_and_without_device_id(mocker, mcafeensmv2_client, input, output):
     """
     Given:
         - A device id or no device id.
@@ -1106,7 +1106,7 @@ def test_list_device_policy_request(mocker, mcafeensmv2_client, input, output):
 @pytest.mark.parametrize('input, output', [(777, {'firewallPolicy': 'mock', 'firewallPortPolicy': 'mock',
                                                   'ipsPolicy': 'mock', '777': 'mock'}),
                                            (None, {'firewallPolicy': 'mock', 'firewallPortPolicy': 'mock', 'ipsPolicy': 'mock'})])
-def test_assign_interface_policy_request(mocker, mcafeensmv2_client, input, output):
+def test_assign_interface_policy_request__with_and_without_custom_json(mocker, mcafeensmv2_client, input, output):
     """
     Given:
         - A custom_json is given or not
@@ -1125,7 +1125,7 @@ def test_assign_interface_policy_request(mocker, mcafeensmv2_client, input, outp
 
 @pytest.mark.parametrize('input, output', [(777, '/domain/9/policyassignments/interface/777'),
                                            (None, '/domain/9/policyassignments/interface')])
-def test_list_interface_policy_request(mocker, mcafeensmv2_client, input, output):
+def test_list_interface_policy_request__with_and_without_intereface_id(mocker, mcafeensmv2_client, input, output):
     """
     Given:
         - A interface id or no interface id.
@@ -1140,21 +1140,26 @@ def test_list_interface_policy_request(mocker, mcafeensmv2_client, input, output
     assert http_request.call_args[1].get('url_suffix') == output
 
 
-@pytest.mark.parametrize('input, output', [({"from_to_list": [{"FromAddress": "1.1.1.1", "ToAddress": "2.2.2.2"}],
+@pytest.mark.parametrize('input, output', [(({"from_to_list": [{"FromAddress": "1.1.1.1", "ToAddress": "2.2.2.2"}],
                                              "rule_type": 'IPV_4_ADDRESS_RANGE', "address": [],
-                                             "number":4, "state":"Enabled"},
-                                            'IPv4AddressRange',
-                                            {'IPV4RangeList': [{'FromAddress': '1.1.1.1', 'ToAddress': '2.2.2.2', 'state': 1}]}),
-                                           ({"from_to_list": [{'FromAddress': None, 'ToAddress': None}],
+                                              "number":4, "state":"Enabled"},
+                                            ('IPv4AddressRange',
+                                            {'IPV4RangeList': [{'FromAddress': '1.1.1.1',
+                                                                'ToAddress': '2.2.2.2', 'state': 1}]}))),
+                                           (({"from_to_list": [{'FromAddress': None, 'ToAddress': None}],
                                              "rule_type": 'HOST_IPV_4', "address": ["1.1.1.1"], "number":4, "state":"Disabled"}),
-                                           ('HostIPv4', {'hostIPv4AddressList': [{'value': '1.1.1.1', 'state': 1}]})])
-def test_create_body_create_rule_for_v10(input, output):
+                                           ('HostIPv4', {'hostIPv4AddressList': [{'value': '1.1.1.1', 'state': 0}]})),
+                                           (({"from_to_list": [{'FromAddress': None, 'ToAddress': None, 'state': 1}],
+                                             "rule_type": 'NETWORK_IPV_6', "address": ['Network IP V.6'],
+                                              "number":6, "state":"Disabled"}),
+                                           ('Network_IPV_6', {'networkIPV6List': [{'value': 'Network IP V.6', 'state': 0}]}))])
+def test_create_body_create_rule_for_v10__with_different_arguments(input, output):
     """
-    Given:
+        Given:
         - A rule type and other arguments.
-    When:
+        When:
         - create_body_create_rule_for_v10 command is executed.
-    Then:
+        Then:
         - The body is created correctly according to the rule type.
     """
     from McAfeeNSMv2 import create_body_create_rule_for_v10
