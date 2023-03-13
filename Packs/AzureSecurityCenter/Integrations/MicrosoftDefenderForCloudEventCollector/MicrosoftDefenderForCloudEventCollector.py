@@ -32,7 +32,7 @@ class MsClient:
         self.server = server
         self.subscription_id = subscription_id
 
-    def get_event_list(self, last_run) -> dict:
+    def get_event_list(self, last_run) -> tuple:
         """Listing alerts
         Args:
             last_run (str): last run
@@ -41,7 +41,24 @@ class MsClient:
         """
         cmd_url = "/providers/Microsoft.Security/alerts"
         params = {'api-version': API_VERSION}
-        return self.ms_client.http_request(method="GET", url_suffix=cmd_url, params=params)
+        events: list = []
+        response = self.ms_client.http_request(method="GET", url_suffix=cmd_url, params=params)
+        events.append(response.get("value", []))
+        if events:
+            last_run = events[0]
+            nextLink = response.get('nextLink', None)
+
+        while nextLink:
+            params['nextLink'] = nextLink
+            response = self.ms_client.http_request(method="GET", url_suffix=cmd_url, params=params)
+            events.append(response.get("value", []))
+            if events:
+                last_run = events[0]
+                nextLink = response.get('nextLink', None)
+
+        return events, last_run
+
+
 
 
 def test_module(client: MsClient, last_run: str):
@@ -64,10 +81,7 @@ def get_events(client: MsClient, last_run: str, args: dict):
             The raw events and a CommandResults object.
     """
     limit = arg_to_number(args.get('limit', 50))
-    response = client.get_event_list(last_run)
-    nextLink = response.get('nextLink')
-    events = response.get('value', [])
-    events_list = events
+    events_list, last_run = client.get_event_list(last_run)
     sort_events(events_list)
 
     if limit:
@@ -140,7 +154,7 @@ def fetch_events(client: MsClient, last_run: str) -> tuple:
         list: List of events that will be created in XSIAM.
     """
     events = client.get_event_list(last_run)
-    events = events.get("value", [])
+
     demisto.info(f'Fetched {len(events)} events.')
 
     # Save the next_run as a dict with the last_fetch key to be stored
