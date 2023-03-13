@@ -1,6 +1,6 @@
 {
   "count": 6212,
-  "next": "https://apitest.vectracloudlab.com/api/v2.2/detections?min_id=7412&ordering=id&page=2&page_size=5",
+  "next": "mock://vectra-v22.dev.local/api/v2.2/detections?min_id=7412&ordering=id&page=2&page_size=5",
   "previous": null,
   "results": [
     {
@@ -11,19 +11,19 @@
         "num_attempts": 1000,
         "description": "This host is making many login attempts on an internal system.",
         "dst_ips": [
-          "10.250.100.99"
+          "127.127.127.127"
         ]
       },
       "id": 7412,
-      "url": "https://apitest.vectracloudlab.com/api/v2.2/detections/7412",
-      "detection_url": "https://apitest.vectracloudlab.com/api/v2.2/detections/7412",
+      "url": "mock://vectra-v22.dev.local/api/v2.2/detections/7412",
+      "detection_url": "mock://vectra-v22.dev.local/api/v2.2/detections/7412",
       "category": "LATERAL MOVEMENT",
       "detection": "Brute-Force",
       "detection_category": "LATERAL MOVEMENT",
       "detection_type": "Brute-Force",
       "custom_detection": null,
       "description": null,
-      "src_ip": "10.250.50.112",
+      "src_ip": "127.127.127.127",
       "state": "fixed",
       "t_score": 0,
       "c_score": 0,
@@ -37,9 +37,9 @@
       "src_account": null,
       "src_host": {
         "id": 873,
-        "ip": "10.250.50.112",
-        "name": "VMAL #2 windows 10.250.50.112 (endo-kao12)",
-        "url": "https://apitest.vectracloudlab.com/api/v2.2/hosts/873",
+        "ip": "127.127.127.127",
+        "name": "VMAL #2 windows 127.127.127.127 (endo-kao12)",
+        "url": "mock://vectra-v22.dev.local/api/v2.2/hosts/873",
         "is_key_asset": false,
         "groups": [
           {
@@ -89,11 +89,11 @@
             {
               "id": 325,
               "name": "VMAL #2 - FS01",
-              "ip": "10.250.100.99"
+              "ip": "127.127.127.127"
             }
           ],
           "dst_ips": [
-            "10.250.100.99"
+            "127.127.127.127"
           ],
           "target_domains": [
             ""
@@ -108,11 +108,11 @@
             {
               "id": 325,
               "name": "VMAL #2 - FS01",
-              "ip": "10.250.100.99"
+              "ip": "127.127.127.127"
             }
           ],
           "dst_ips": [
-            "10.250.100.99"
+            "127.127.127.127"
           ],
           "target_domains": [
             ""
@@ -127,11 +127,11 @@
             {
               "id": 325,
               "name": "VMAL #2 - FS01",
-              "ip": "10.250.100.99"
+              "ip": "127.127.127.127"
             }
           ],
           "dst_ips": [
-            "10.250.100.99"
+            "127.127.127.127"
           ],
           "target_domains": [
             "fs01.archer.local"
@@ -146,11 +146,11 @@
             {
               "id": 325,
               "name": "VMAL #2 - FS01",
-              "ip": "10.250.100.99"
+              "ip": "127.127.127.127"
             }
           ],
           "dst_ips": [
-            "10.250.100.99"
+            "127.127.127.127"
           ],
           "target_domains": [
             ""
@@ -165,11 +165,11 @@
             {
               "id": 325,
               "name": "VMAL #2 - FS01",
-              "ip": "10.250.100.99"
+              "ip": "127.127.127.127"
             }
           ],
           "dst_ips": [
-            "10.250.100.99"
+            "127.127.127.127"
           ],
           "target_domains": [
             ""
@@ -179,15 +179,15 @@
     },
     {
       "id": 7413,
-      "url": "https://apitest.vectracloudlab.com/api/v2.2/detections/7413",
-      "detection_url": "https://apitest.vectracloudlab.com/api/v2.2/detections/7413",
+      "url": "mock://vectra-v22.dev.local/api/v2.2/detections/7413",
+      "detection_url": "mock://vectra-v22.dev.local/api/v2.2/detections/7413",
       "category": "LATERAL MOVEMENT",
       "detection": "Suspicious Remote Execution",
       "detection_category": "LATERAL MOVEMENT",
       "detection_type": "Suspicious Remote Execution",
       "custom_detection": null,
       "description": null,
-      "src_ip": "10.250.50.112",
+      "src_ip": "127.127.127.127",
       "state": "inactive",
       "t_score": 20,
       "c_score": 94,
@@ -201,9 +201,9 @@
       "src_account": null,
       "src_host": {
         "id": 873,
-        "ip": "10.250.50.112",
-        "name": "VMAL #2 windows 10.250.50.112 (endo-kao12)",
-        "url": "https://apitest.vectracloudlab.com/api/v2.2/hosts/873",
+        "ip": "127.127.127.127",
+        "name": "VMAL #2 windows 127.127.127.127 (endo-kao12)",
+        "url": "mock://vectra-v22.dev.local/api/v2.2/hosts/873",
         "is_key_asset": false,
         "groups": [
           {
@@ -250,15 +250,15 @@
             "IWbemServices",
             "administrator",
             null,
-            "10.250.50.112",
-            "10.250.50.42"
+            "127.127.127.127",
+            "127.127.127.127"
           ],
           "first_timestamp": null,
           "last_timestamp": "2022-09-14T01:36:27Z",
           "src_host": {
             "id": 873,
-            "ip": "10.250.50.112",
-            "name": "VMAL #2 windows 10.250.50.112 (endo-kao12)"
+            "ip": "127.127.127.127",
+            "name": "VMAL #2 windows 127.127.127.127 (endo-kao12)"
           },
           "uuid": "IWbemServices",
           "named_pipe": "",
@@ -267,8 +267,8 @@
           ],
           "normal_src_hosts": [
             {
-              "name": "VMAL #2 windows 10.250.50.111 (higaki-ha11)",
-              "ip": "10.250.50.111",
+              "name": "VMAL #2 windows 127.127.127.127 (higaki-ha11)",
+              "ip": "127.127.127.127",
               "id": 872
             }
           ],
@@ -280,12 +280,12 @@
           "dst_hosts": [
             {
               "id": 825,
-              "ip": "10.250.50.42",
+              "ip": "127.127.127.127",
               "name": "VMAL #2 - Windows 10 pc-lkane"
             }
           ],
           "dst_ips": [
-            "10.250.50.42"
+            "127.127.127.127"
           ],
           "num_events": 3
         }
@@ -298,22 +298,22 @@
           "ExecMethod"
         ],
         "dst_ips": [
-          "10.250.50.42"
+          "127.127.127.127"
         ],
         "num_events": 3
       }
     },
     {
       "id": 7432,
-      "url": "https://apitest.vectracloudlab.com/api/v2.2/detections/7432",
-      "detection_url": "https://apitest.vectracloudlab.com/api/v2.2/detections/7432",
+      "url": "mock://vectra-v22.dev.local/api/v2.2/detections/7432",
+      "detection_url": "mock://vectra-v22.dev.local/api/v2.2/detections/7432",
       "category": "RECONNAISSANCE",
       "detection": "Port Scan",
       "detection_category": "RECONNAISSANCE",
       "detection_type": "Port Scan",
       "custom_detection": "VMAL",
       "description": null,
-      "src_ip": "10.250.50.112",
+      "src_ip": "127.127.127.127",
       "state": "inactive",
       "t_score": 0,
       "c_score": 0,
@@ -327,9 +327,9 @@
       "src_account": null,
       "src_host": {
         "id": 873,
-        "ip": "10.250.50.112",
-        "name": "VMAL #2 windows 10.250.50.112 (endo-kao12)",
-        "url": "https://apitest.vectracloudlab.com/api/v2.2/hosts/873",
+        "ip": "127.127.127.127",
+        "name": "VMAL #2 windows 127.127.127.127 (endo-kao12)",
+        "url": "mock://vectra-v22.dev.local/api/v2.2/hosts/873",
         "is_key_asset": false,
         "groups": [
           {
@@ -377,7 +377,7 @@
           "duration": 164.0,
           "last_timestamp": "2022-09-14T00:57:46Z",
           "dst_ips": [
-            "10.250.100.62"
+            "127.127.127.127"
           ]
         },
         {
@@ -387,7 +387,7 @@
           "duration": 156.0,
           "last_timestamp": "2022-09-14T00:57:38Z",
           "dst_ips": [
-            "10.250.100.99"
+            "127.127.127.127"
           ]
         },
         {
@@ -397,7 +397,7 @@
           "duration": 110.0,
           "last_timestamp": "2022-09-14T00:54:56Z",
           "dst_ips": [
-            "10.250.100.99"
+            "127.127.127.127"
           ]
         },
         {
@@ -407,7 +407,7 @@
           "duration": 110.0,
           "last_timestamp": "2022-09-14T00:54:56Z",
           "dst_ips": [
-            "10.250.100.62"
+            "127.127.127.127"
           ]
         }
       ],
@@ -418,8 +418,8 @@
           1
         ],
         "dst_ips": [
-          "10.250.100.62",
-          "10.250.100.99"
+          "127.127.127.127",
+          "127.127.127.127"
         ]
       }
     },
@@ -431,19 +431,19 @@
         "num_attempts": 100,
         "description": "This host is making many login attempts on an internal system.",
         "dst_ips": [
-          "10.250.100.32"
+          "127.127.127.127"
         ]
       },
       "id": 7433,
-      "url": "https://apitest.vectracloudlab.com/api/v2.2/detections/7433",
-      "detection_url": "https://apitest.vectracloudlab.com/api/v2.2/detections/7433",
+      "url": "mock://vectra-v22.dev.local/api/v2.2/detections/7433",
+      "detection_url": "mock://vectra-v22.dev.local/api/v2.2/detections/7433",
       "category": "LATERAL MOVEMENT",
       "detection": "Brute-Force",
       "detection_category": "LATERAL MOVEMENT",
       "detection_type": "Brute-Force",
       "custom_detection": "VMAL",
       "description": null,
-      "src_ip": "10.250.50.112",
+      "src_ip": "127.127.127.127",
       "state": "inactive",
       "t_score": 0,
       "c_score": 0,
@@ -457,9 +457,9 @@
       "src_account": null,
       "src_host": {
         "id": 873,
-        "ip": "10.250.50.112",
-        "name": "VMAL #2 windows 10.250.50.112 (endo-kao12)",
-        "url": "https://apitest.vectracloudlab.com/api/v2.2/hosts/873",
+        "ip": "127.127.127.127",
+        "name": "VMAL #2 windows 127.127.127.127 (endo-kao12)",
+        "url": "mock://vectra-v22.dev.local/api/v2.2/hosts/873",
         "is_key_asset": false,
         "groups": [
           {
@@ -509,11 +509,11 @@
             {
               "id": 817,
               "name": "VMAL #2 - DC01",
-              "ip": "10.250.100.32"
+              "ip": "127.127.127.127"
             }
           ],
           "dst_ips": [
-            "10.250.100.32"
+            "127.127.127.127"
           ],
           "target_domains": [
             "dc01.archer.local"
@@ -523,15 +523,15 @@
     },
     {
       "id": 7434,
-      "url": "https://apitest.vectracloudlab.com/api/v2.2/detections/7434",
-      "detection_url": "https://apitest.vectracloudlab.com/api/v2.2/detections/7434",
+      "url": "mock://vectra-v22.dev.local/api/v2.2/detections/7434",
+      "detection_url": "mock://vectra-v22.dev.local/api/v2.2/detections/7434",
       "category": "RECONNAISSANCE",
       "detection": "RDP Recon",
       "detection_category": "RECONNAISSANCE",
       "detection_type": "RDP Recon",
       "custom_detection": "VMAL",
       "description": null,
-      "src_ip": "10.250.50.112",
+      "src_ip": "127.127.127.127",
       "state": "inactive",
       "t_score": 0,
       "c_score": 0,
@@ -545,9 +545,9 @@
       "src_account": null,
       "src_host": {
         "id": 873,
-        "ip": "10.250.50.112",
-        "name": "VMAL #2 windows 10.250.50.112 (endo-kao12)",
-        "url": "https://apitest.vectracloudlab.com/api/v2.2/hosts/873",
+        "ip": "127.127.127.127",
+        "name": "VMAL #2 windows 127.127.127.127 (endo-kao12)",
+        "url": "mock://vectra-v22.dev.local/api/v2.2/hosts/873",
         "is_key_asset": false,
         "groups": [
           {
@@ -601,12 +601,12 @@
           {
             "id": 325,
             "name": "VMAL #2 - FS01",
-            "ip": "10.250.100.99"
+            "ip": "127.127.127.127"
           },
           {
             "id": 817,
             "name": "VMAL #2 - DC01",
-            "ip": "10.250.100.32"
+            "ip": "127.127.127.127"
           }
         ]
       }
