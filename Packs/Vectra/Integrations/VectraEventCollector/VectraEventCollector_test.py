@@ -10,6 +10,7 @@ from VectraEventCollector import (
     DETECTION_NEXT_RUN_KEY,
     AUDIT_NEXT_RUN_KEY,
     XSIAM_TIME_FORMAT,
+    AUDIT_START_TIMESTAMP_FORMAT,
     get_detections_cmd,
     get_audits_cmd,
     get_events,
@@ -77,6 +78,7 @@ def test_test_module(mocker: MockerFixture):
 
     mocker.patch.object(client, "get_audits", return_value=AUDITS)
     mocker.patch.object(client, "get_detections", return_value=DETECTIONS)
+    mocker.patch.object(demisto, "getLastRun", return_value={})
     actual = test_module(client)
     assert "ok" in actual
 
