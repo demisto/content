@@ -7,12 +7,14 @@
 
 | **Parameter** | **Description** |
 | --- | --- |
-| Fetches incidents | Select to enable this instance to fetch incident events. Otherwise, select **Do not fetch**. |
-| Classifier | Specifies the type of incident to be created for events ingested by this instance. |
-| Incident type | Specifies the type of incident to be created for events ingested by this instance if a **Classifier** is not specified. |
-| Mapper | Specifies how events ingested by this instance are mapped to Cortex XSOAR incident fields. |
+| Fetches incidents | Select to enable this instance to fetch detection events. Otherwise, select **Do not fetch**. Each API call fetches a maximum of 200 detection events. |
+| Classifier | Specifies the type of incident to be created for detection events ingested by this instance. |
+| Incident type | Specifies the type of incident to be created for detection events ingested by this instance if a **Classifier** is not specified. |
+| Mapper | Specifies how detection events ingested by this instance are mapped to Cortex XSOAR incident fields. |
+| Trust any certificate (not secure) | Specifies whether to allow connections without verifying SSL certificate's validity. |
 | Use system proxy settings | Specifies whether to use XSOAR system proxy settings to connect to the API. |
-| First fetch time | Specifies the beginning timestamp from which to start fetching events. |
+| First fetch time | Specifies the beginning timestamp from which to start fetching detection events. |
+| Incidents Fetch Interval | Specifies how often the instance fetches detection events. Because each API call fetches a maximum of 200 detection events, we recommend specifying one minute intervals to fetch all detection events. |
 | Advanced Filter | Applies a filter to the list of detections or metrics based on a JSON-specific query. |
 | Do not use by default | Select to disable running commands through the Cortex XSOAR CLI on this instance of the integration. |
 | Log Level | Specifies the level of logging to enable for this instance of the integration. |

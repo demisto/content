@@ -100,60 +100,60 @@ script:
     execution: false
     name: extrahop-watchlist-get
     outputs:
-    - contextPath: Extrahop.Device.Macaddr
+    - contextPath: ExtraHop.Device.Macaddr
       description: The MAC address of the device.
       type: String
-    - contextPath: Extrahop.Device.DeviceClass
+    - contextPath: ExtraHop.Device.DeviceClass
       description: The class of this device.
       type: String
-    - contextPath: Extrahop.Device.UserModTime
+    - contextPath: ExtraHop.Device.UserModTime
       description: The time of the most recent update, expressed in milliseconds since
         the epoch.
       type: Number
-    - contextPath: Extrahop.Device.AutoRole
+    - contextPath: ExtraHop.Device.AutoRole
       description: The role automatically detected by the ExtraHop system.
       type: String
-    - contextPath: Extrahop.Device.ParentId
+    - contextPath: ExtraHop.Device.ParentId
       description: The ID of the parent device.
       type: Number
-    - contextPath: Extrahop.Device.Vendor
+    - contextPath: ExtraHop.Device.Vendor
       description: The device vendor.
       type: String
-    - contextPath: Extrahop.Device.Analysis
+    - contextPath: ExtraHop.Device.Analysis
       description: The level of analysis received by the device.
       type: string
-    - contextPath: Extrahop.Device.DiscoveryId
+    - contextPath: ExtraHop.Device.DiscoveryId
       description: The UUID for this device.
       type: String
-    - contextPath: Extrahop.Device.DefaultName
+    - contextPath: ExtraHop.Device.DefaultName
       description: The default name for this device.
       type: String
-    - contextPath: Extrahop.Device.DisplayName
+    - contextPath: ExtraHop.Device.DisplayName
       description: The display name of device.
       type: String
-    - contextPath: Extrahop.Device.OnWatchlist
+    - contextPath: ExtraHop.Device.OnWatchlist
       description: Whether the device is on the advanced analysis watch list.
       type: Boolean
-    - contextPath: Extrahop.Device.ModTime
+    - contextPath: ExtraHop.Device.ModTime
       description: The time of the most recent update, expressed in milliseconds since
         the epoch.
       type: Number
-    - contextPath: Extrahop.Device.IsL3
+    - contextPath: ExtraHop.Device.IsL3
       description: Indicates whether the device is a layer 3 device.
       type: Boolean
-    - contextPath: Extrahop.Device.Role
+    - contextPath: ExtraHop.Device.Role
       description: The role of the device.
       type: String
-    - contextPath: Extrahop.Device.DiscoverTime
+    - contextPath: ExtraHop.Device.DiscoverTime
       description: The time that the device was discovered.
       type: Number
-    - contextPath: Extrahop.Device.Id
+    - contextPath: ExtraHop.Device.Id
       description: The ID of the device.
       type: Number
-    - contextPath: Extrahop.Device.Ipaddr4
+    - contextPath: ExtraHop.Device.Ipaddr4
       description: The IPv4 address for this device.
       type: String
-    - contextPath: Extrahop.Device.Vlanid
+    - contextPath: ExtraHop.Device.Vlanid
       description: The unique identifier for the VLAN associated with this device.
       type: Number
     - contextPath: ExtraHop.Device.Ipaddr6
@@ -294,60 +294,60 @@ script:
     execution: false
     name: extrahop-peers-get
     outputs:
-    - contextPath: Extrahop.Device.Macaddr
+    - contextPath: ExtraHop.Device.Macaddr
       description: The MAC address of the device.
       type: String
-    - contextPath: Extrahop.Device.DeviceClass
+    - contextPath: ExtraHop.Device.DeviceClass
       description: The class of this device.
       type: String
-    - contextPath: Extrahop.Device.UserModTime
+    - contextPath: ExtraHop.Device.UserModTime
       description: The time of the most recent update, expressed in milliseconds since
         the epoch.
       type: Number
-    - contextPath: Extrahop.Device.AutoRole
+    - contextPath: ExtraHop.Device.AutoRole
       description: The role automatically detected by the ExtraHop system.
       type: String
-    - contextPath: Extrahop.Device.ParentId
+    - contextPath: ExtraHop.Device.ParentId
       description: The ID of the parent device.
       type: Number
-    - contextPath: Extrahop.Device.Vendor
+    - contextPath: ExtraHop.Device.Vendor
       description: The device vendor.
       type: String
-    - contextPath: Extrahop.Device.Analysis
+    - contextPath: ExtraHop.Device.Analysis
       description: The level of analysis received by the device.
       type: string
-    - contextPath: Extrahop.Device.DiscoveryId
+    - contextPath: ExtraHop.Device.DiscoveryId
       description: The UUID of the device.
       type: String
-    - contextPath: Extrahop.Device.DefaultName
+    - contextPath: ExtraHop.Device.DefaultName
       description: The default name for this device.
       type: String
-    - contextPath: Extrahop.Device.DisplayName
+    - contextPath: ExtraHop.Device.DisplayName
       description: The display name of device.
       type: String
-    - contextPath: Extrahop.Device.OnWatchlist
+    - contextPath: ExtraHop.Device.OnWatchlist
       description: Whether the device is on the advanced analysis watch list.
       type: Boolean
-    - contextPath: Extrahop.Device.ModTime
+    - contextPath: ExtraHop.Device.ModTime
       description: The time of the most recent update, expressed in milliseconds since
         the epoch.
       type: Number
-    - contextPath: Extrahop.Device.IsL3
+    - contextPath: ExtraHop.Device.IsL3
       description: Indicates whether the device is a layer 3 device.
       type: Boolean
-    - contextPath: Extrahop.Device.Role
+    - contextPath: ExtraHop.Device.Role
       description: The role of the device.
       type: String
-    - contextPath: Extrahop.Device.DiscoverTime
+    - contextPath: ExtraHop.Device.DiscoverTime
       description: The time that the device was discovered.
       type: Number
-    - contextPath: Extrahop.Device.Id
+    - contextPath: ExtraHop.Device.Id
       description: The ID of the device.
       type: Number
-    - contextPath: Extrahop.Device.Ipaddr4
+    - contextPath: ExtraHop.Device.Ipaddr4
       description: The IPv4 address for this device.
       type: String
-    - contextPath: Extrahop.Device.Vlanid
+    - contextPath: ExtraHop.Device.Vlanid
       description: The unique identifier for the VLAN associated with this device.
       type: Number
     - contextPath: ExtraHop.Device.Ipaddr6
@@ -1026,65 +1026,65 @@ script:
     execution: false
     name: extrahop-alert-rules-get
     outputs:
-    - contextPath: Extrahop.Alert.Operator
+    - contextPath: ExtraHop.Alert.Operator
       description: The logical operator applied when comparing the value of the operand
         field to alert conditions.
       type: String
-    - contextPath: Extrahop.Alert.FieldName
+    - contextPath: ExtraHop.Alert.FieldName
       description: The name of the monitored metric.
       type: String
-    - contextPath: Extrahop.Alert.NotifySnmp
+    - contextPath: ExtraHop.Alert.NotifySnmp
       description: Indicates whether to send an SNMP trap when an alert is generated.
       type: Boolean
-    - contextPath: Extrahop.Alert.Operand
+    - contextPath: ExtraHop.Alert.Operand
       description: The value to compare against alert conditions.
       type: String
-    - contextPath: Extrahop.Alert.IntervalLength
+    - contextPath: ExtraHop.Alert.IntervalLength
       description: The length of the alert interval, expressed in seconds.
       type: Number
-    - contextPath: Extrahop.Alert.Author
+    - contextPath: ExtraHop.Alert.Author
       description: The name of the user that created the alert.
       type: String
-    - contextPath: Extrahop.Alert.Name
+    - contextPath: ExtraHop.Alert.Name
       description: The unique, friendly name for the alert.
       type: String
-    - contextPath: Extrahop.Alert.FieldName2
+    - contextPath: ExtraHop.Alert.FieldName2
       description: The second monitored metric when applying a ratio.
       type: String
-    - contextPath: Extrahop.Alert.RefireInterval
+    - contextPath: ExtraHop.Alert.RefireInterval
       description: The time interval in which alert conditions are monitored, expressed
         in seconds.
       type: Number
-    - contextPath: Extrahop.Alert.ModTime
+    - contextPath: ExtraHop.Alert.ModTime
       description: The time of the most recent update, expressed in milliseconds since
         the epoch.
       type: Number
-    - contextPath: Extrahop.Alert.Units
+    - contextPath: ExtraHop.Alert.Units
       description: The interval in which to evaluate the alert condition.
       type: String
-    - contextPath: Extrahop.Alert.ApplyAll
+    - contextPath: ExtraHop.Alert.ApplyAll
       description: Indicates whether the alert is assigned to all available data sources.
       type: Boolean
-    - contextPath: Extrahop.Alert.Type
+    - contextPath: ExtraHop.Alert.Type
       description: The type of alert.
       type: String
-    - contextPath: Extrahop.Alert.FieldOp
+    - contextPath: ExtraHop.Alert.FieldOp
       description: The type of comparison between the "field_name" and "field_name2"
         fields when applying a ratio.
       type: String
-    - contextPath: Extrahop.Alert.Id
+    - contextPath: ExtraHop.Alert.Id
       description: The unique identifier for the alert.
       type: Number
-    - contextPath: Extrahop.Alert.Disabled
+    - contextPath: ExtraHop.Alert.Disabled
       description: Indicates whether the alert is disabled.
       type: Boolean
-    - contextPath: Extrahop.Alert.Description
+    - contextPath: ExtraHop.Alert.Description
       description: An optional description for the alert.
       type: String
-    - contextPath: Extrahop.Alert.Severity
+    - contextPath: ExtraHop.Alert.Severity
       description: The severity level of the alert.
       type: Number
-    - contextPath: Extrahop.Alert.StatName
+    - contextPath: ExtraHop.Alert.StatName
       description: The statistic name for the alert.
       type: String
   - arguments:
@@ -2010,7 +2010,7 @@ script:
     - contextPath: ExtraHop.Detections.is_user_created
       description: Indicates whether the detection is user-created.
       type: Boolean
-  dockerimage: demisto/python3:3.10.10.48392
+  dockerimage: demisto/python3:3.10.10.49238
   feed: false
   isfetch: true
   longRunning: false

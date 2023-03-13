@@ -9,17 +9,18 @@ ExtraHop Reveal(x) for Cortex XSOAR is a network detection and response solution
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Name | The name of the instance. | True |
-| Fetches incidents | Select to enable this instance to fetch incident events. Otherwise, select **Do not fetch**. | True  |
-| Classifier | Specifies the type of incident to be created for events ingested by this instance. | False |
-| Incident type | Specifies the type of incident to be created for events ingested by this instance if a **Classifier** is not specified. | False |
-| Mapper | Specifies how events ingested by this instance are mapped to Cortex XSOAR incident fields. | False |
+| Fetches incidents | Select to enable this instance to fetch detection events. Otherwise, select **Do not fetch**. Each API call fetches a maximum of 200 detection events. | True  |
+| Classifier | Specifies the type of incident to be created for detection events ingested by this instance. | False |
+| Incident type | Specifies the type of incident to be created for detection events ingested by this instance if a **Classifier** is not specified. | False |
+| Mapper | Specifies how detection events ingested by this instance are mapped to Cortex XSOAR incident fields. | False |
 | On Cloud | The type of ExtraHop system the integration will connect to. Select if connecting to ExtraHop Reveal(x) 360. Leave unselected if connecting to Reveal(x) Enterprise. | False |
 | URL | The URL of the ExtraHop system this integration will connect to. | True |
 | API Key | The API key required for authentication if connecting to ExtraHop Reveal(x) Enterprise. [The API key is generated on your ExtraHop system.](https://docs.extrahop.com/current/rest-api-guide/#generate-an-api-key) | False |
 | Client ID and Client Secret | The credential pair required for authentication if connecting to ExtraHop Reveal(x) 360. [The client ID and secret are generated on your ExtraHop system.](https://docs.extrahop.com/current/rx360-integrations-cortex-xsoar/) | False |
 | Trust any certificate (not secure) | Specifies whether to allow connections without verifying SSL certificate's validity. | False |
 | Use system proxy settings | Specifies whether to use XSOAR system proxy settings to connect to the API. | False |
-| First fetch time | Specifies the beginning timestamp from which to start fetching events. | False |
+| First fetch time | Specifies the beginning timestamp from which to start fetching detection events. | False |
+| Incidents Fetch Interval | Specifies how often the instance fetches detection events. Because each API call fetches a maximum of 200 detection events, we recommend specifying one minute intervals to fetch all detection events. | False |
 | Advanced Filter | Applies a filter to the list of detections or metrics based on a JSON-specific query. | False |
 | Do not use by default | Select to disable running commands through the Cortex XSOAR CLI on this instance of the integration. | False |
 | Log Level | Specifies the level of logging to enable for this instance of the integration. | False |
@@ -64,24 +65,24 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Extrahop.Device.Macaddr | String | The MAC Address of the device. | 
-| Extrahop.Device.DeviceClass | String | The class of this device. | 
-| Extrahop.Device.UserModTime | Number | The time of the most recent update, expressed in milliseconds since the epoch. | 
-| Extrahop.Device.AutoRole | String | The role automatically detected by the ExtraHop system. | 
-| Extrahop.Device.ParentId | Number | The ID of the parent device. | 
-| Extrahop.Device.Vendor | String | The device vendor. | 
-| Extrahop.Device.Analysis | string | The level of analysis received by the device. | 
-| Extrahop.Device.DiscoveryId | String | The UUID for this device. | 
-| Extrahop.Device.DefaultName | String | The default name for this device. | 
-| Extrahop.Device.DisplayName | String | The display name of device. | 
-| Extrahop.Device.OnWatchlist | Boolean | Whether the device is on the advanced analysis watch list. | 
-| Extrahop.Device.ModTime | Number | The time of the most recent update, expressed in milliseconds since the epoch. | 
-| Extrahop.Device.IsL3 | Boolean | Indicates whether the device is a layer 3 device. | 
-| Extrahop.Device.Role | String | The role of the device. | 
-| Extrahop.Device.DiscoverTime | Number | The time that the device was discovered. | 
-| Extrahop.Device.Id | Number | The ID of the device. | 
-| Extrahop.Device.Ipaddr4 | String | The IPv4 address for this device. | 
-| Extrahop.Device.Vlanid | Number | The unique identifier for the VLAN associated with the device. | 
+| ExtraHop.Device.Macaddr | String | The MAC Address of the device. | 
+| ExtraHop.Device.DeviceClass | String | The class of this device. | 
+| ExtraHop.Device.UserModTime | Number | The time of the most recent update, expressed in milliseconds since the epoch. | 
+| ExtraHop.Device.AutoRole | String | The role automatically detected by the ExtraHop system. | 
+| ExtraHop.Device.ParentId | Number | The ID of the parent device. | 
+| ExtraHop.Device.Vendor | String | The device vendor. | 
+| ExtraHop.Device.Analysis | string | The level of analysis received by the device. | 
+| ExtraHop.Device.DiscoveryId | String | The UUID for this device. | 
+| ExtraHop.Device.DefaultName | String | The default name for this device. | 
+| ExtraHop.Device.DisplayName | String | The display name of device. | 
+| ExtraHop.Device.OnWatchlist | Boolean | Whether the device is on the advanced analysis watch list. | 
+| ExtraHop.Device.ModTime | Number | The time of the most recent update, expressed in milliseconds since the epoch. | 
+| ExtraHop.Device.IsL3 | Boolean | Indicates whether the device is a layer 3 device. | 
+| ExtraHop.Device.Role | String | The role of the device. | 
+| ExtraHop.Device.DiscoverTime | Number | The time that the device was discovered. | 
+| ExtraHop.Device.Id | Number | The ID of the device. | 
+| ExtraHop.Device.Ipaddr4 | String | The IPv4 address for this device. | 
+| ExtraHop.Device.Vlanid | Number | The unique identifier for the VLAN associated with the device. | 
 | ExtraHop.Device.Ipaddr6 | string | The IPv6 address of the device. | 
 | ExtraHop.Device.NodeId | number | The node ID of the sensor associated with this device. | 
 | ExtraHop.Device.Description | string | A user customizable description of the device. | 
@@ -188,24 +189,24 @@ Get all peers for a device from ExtraHop Reveal(x).
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Extrahop.Device.Macaddr | String | The MAC address of the device. | 
-| Extrahop.Device.DeviceClass | String | The class of the device. | 
-| Extrahop.Device.UserModTime | Number | The time of the most recent update, expressed in milliseconds since the epoch. | 
-| Extrahop.Device.AutoRole | String | The role automatically detected by the ExtraHop system. | 
-| Extrahop.Device.ParentId | Number | The ID of the parent device. | 
-| Extrahop.Device.Vendor | String | The device vendor. | 
-| Extrahop.Device.Analysis | string | The level of analysis received by the device. | 
-| Extrahop.Device.DiscoveryId | String | The UUID given of the device. | 
-| Extrahop.Device.DefaultName | String | The default name for this device. | 
-| Extrahop.Device.DisplayName | String | The display name of device. | 
-| Extrahop.Device.OnWatchlist | Boolean | Whether the device is on the advanced analysis watch list. | 
-| Extrahop.Device.ModTime | Number | The time of the most recent update, expressed in milliseconds since the epoch. | 
-| Extrahop.Device.IsL3 | Boolean | Indicates whether the device is a layer 3 device. | 
-| Extrahop.Device.Role | String | The role of the device. | 
-| Extrahop.Device.DiscoverTime | Number | The time that the device was discovered. | 
-| Extrahop.Device.Id | Number | The ID of the device. | 
-| Extrahop.Device.Ipaddr4 | String | The IPv4 address for this device. | 
-| Extrahop.Device.Vlanid | Number | The unique identifier for the VLAN associated with the device. | 
+| ExtraHop.Device.Macaddr | String | The MAC address of the device. | 
+| ExtraHop.Device.DeviceClass | String | The class of the device. | 
+| ExtraHop.Device.UserModTime | Number | The time of the most recent update, expressed in milliseconds since the epoch. | 
+| ExtraHop.Device.AutoRole | String | The role automatically detected by the ExtraHop system. | 
+| ExtraHop.Device.ParentId | Number | The ID of the parent device. | 
+| ExtraHop.Device.Vendor | String | The device vendor. | 
+| ExtraHop.Device.Analysis | string | The level of analysis received by the device. | 
+| ExtraHop.Device.DiscoveryId | String | The UUID given of the device. | 
+| ExtraHop.Device.DefaultName | String | The default name for this device. | 
+| ExtraHop.Device.DisplayName | String | The display name of device. | 
+| ExtraHop.Device.OnWatchlist | Boolean | Whether the device is on the advanced analysis watch list. | 
+| ExtraHop.Device.ModTime | Number | The time of the most recent update, expressed in milliseconds since the epoch. | 
+| ExtraHop.Device.IsL3 | Boolean | Indicates whether the device is a layer 3 device. | 
+| ExtraHop.Device.Role | String | The role of the device. | 
+| ExtraHop.Device.DiscoverTime | Number | The time that the device was discovered. | 
+| ExtraHop.Device.Id | Number | The ID of the device. | 
+| ExtraHop.Device.Ipaddr4 | String | The IPv4 address for this device. | 
+| ExtraHop.Device.Vlanid | Number | The unique identifier for the VLAN associated with the device. | 
 | ExtraHop.Device.Ipaddr6 | string | The IPv6 address of the device. | 
 | ExtraHop.Device.NodeId | number | The node ID of the sensor associated with the device. | 
 | ExtraHop.Device.Description | string | A user customizable description of the device. | 
@@ -553,25 +554,25 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Extrahop.Alert.Operator | String | The logical operator applied when comparing the value of the operand field to alert conditions. | 
-| Extrahop.Alert.FieldName | String | The name of the monitored metric. | 
-| Extrahop.Alert.NotifySnmp | Boolean | Indicates whether to send an SNMP trap when an alert is generated. | 
-| Extrahop.Alert.Operand | String | The value to compare against alert conditions. | 
-| Extrahop.Alert.IntervalLength | Number | The length of the alert interval, expressed in seconds. | 
-| Extrahop.Alert.Author | String | The name of the user that created the alert. | 
-| Extrahop.Alert.Name | String | The unique, friendly name for the alert. | 
-| Extrahop.Alert.FieldName2 | String | The second monitored metric when applying a ratio. | 
-| Extrahop.Alert.RefireInterval | Number | The time interval in which alert conditions are monitored, expressed in seconds. | 
-| Extrahop.Alert.ModTime | Number | The time of the most recent update, expressed in milliseconds since the epoch. | 
-| Extrahop.Alert.Units | String | The interval in which to evaluate the alert condition. | 
-| Extrahop.Alert.ApplyAll | Boolean | Indicates whether the alert is assigned to all available data sources. | 
-| Extrahop.Alert.Type | String | The type of alert. | 
-| Extrahop.Alert.FieldOp | String | The type of comparison between the "field_name" and "field_name2" fields when applying a ratio. | 
-| Extrahop.Alert.Id | Number | The unique identifier for the alert. | 
-| Extrahop.Alert.Disabled | Boolean | Indicates whether the alert is disabled. | 
-| Extrahop.Alert.Description | String | An optional description for the alert. | 
-| Extrahop.Alert.Severity | Number | The severity level of the alert. | 
-| Extrahop.Alert.StatName | String | The statistic name for the alert. | 
+| ExtraHop.Alert.Operator | String | The logical operator applied when comparing the value of the operand field to alert conditions. | 
+| ExtraHop.Alert.FieldName | String | The name of the monitored metric. | 
+| ExtraHop.Alert.NotifySnmp | Boolean | Indicates whether to send an SNMP trap when an alert is generated. | 
+| ExtraHop.Alert.Operand | String | The value to compare against alert conditions. | 
+| ExtraHop.Alert.IntervalLength | Number | The length of the alert interval, expressed in seconds. | 
+| ExtraHop.Alert.Author | String | The name of the user that created the alert. | 
+| ExtraHop.Alert.Name | String | The unique, friendly name for the alert. | 
+| ExtraHop.Alert.FieldName2 | String | The second monitored metric when applying a ratio. | 
+| ExtraHop.Alert.RefireInterval | Number | The time interval in which alert conditions are monitored, expressed in seconds. | 
+| ExtraHop.Alert.ModTime | Number | The time of the most recent update, expressed in milliseconds since the epoch. | 
+| ExtraHop.Alert.Units | String | The interval in which to evaluate the alert condition. | 
+| ExtraHop.Alert.ApplyAll | Boolean | Indicates whether the alert is assigned to all available data sources. | 
+| ExtraHop.Alert.Type | String | The type of alert. | 
+| ExtraHop.Alert.FieldOp | String | The type of comparison between the "field_name" and "field_name2" fields when applying a ratio. | 
+| ExtraHop.Alert.Id | Number | The unique identifier for the alert. | 
+| ExtraHop.Alert.Disabled | Boolean | Indicates whether the alert is disabled. | 
+| ExtraHop.Alert.Description | String | An optional description for the alert. | 
+| ExtraHop.Alert.Severity | Number | The severity level of the alert. | 
+| ExtraHop.Alert.StatName | String | The statistic name for the alert. | 
 
 #### Command example
 ```!extrahop-alert-rules-get```
