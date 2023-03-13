@@ -712,7 +712,7 @@ def parse_indicator(sandbox: dict, reliability_str: str) -> Optional[Common.File
                                 score=score_field,
                                 reliability=reliability)
 
-        info = {item['id']: item['value'] for item in sandbox.get('version_info', [])}
+        info = {item['id']: item.get('value') for item in sandbox.get('version_info', [])}
         relationships: Optional[List[EntityRelationship]] = None
         if sandbox.get('submission_type', '') in ('file_url', 'file'):
             relationships = parse_indicator_relationships(sandbox, indicator_value=sha256, reliability=reliability)
