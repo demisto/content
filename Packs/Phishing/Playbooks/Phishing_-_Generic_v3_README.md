@@ -10,19 +10,19 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Email Address Enrichment - Generic v2.1
-* Detonate File - Generic
 * Block Indicators - Generic v3
-* Detect & Manage Phishing Campaigns
-* Calculate Severity - Generic v2
-* Process Microsoft's Anti-Spam Headers
-* Detonate URL - Generic
-* Entity Enrichment - Phishing v2
-* Phishing - Machine Learning Analysis
-* Extract Indicators From File - Generic v2
 * Phishing - Indicators Hunting
+* Detonate File - Generic
 * Search And Delete Emails - Generic v2
+* Email Address Enrichment - Generic v2.1
 * Process Email - Generic v2
+* Phishing - Machine Learning Analysis
+* Entity Enrichment - Phishing v2
+* Extract Indicators From File - Generic v2
+* Detonate URL - Generic
+* Detect & Manage Phishing Campaigns
+* Process Microsoft's Anti-Spam Headers
+* Calculate Severity - Generic v2
 
 ### Integrations
 
@@ -30,16 +30,15 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* SetAndHandleEmpty
-* SetGridField
 * AssignAnalystToIncident
+* SetAndHandleEmpty
 * CheckEmailAuthenticity
 
 ### Commands
 
-* send-mail
-* setIncident
 * closeInvestigation
+* setIncident
+* send-mail
 
 ## Playbook Inputs
 
@@ -49,7 +48,7 @@ This playbook does not use any integrations.
 | --- | --- | --- | --- |
 | Role | The default role to assign the incident to. |  | Required |
 | SearchAndDelete | Enables the Search and Delete capability.<br/>For a malicious email, the "Search and Delete" sub-playbook looks for other instances of the email and deletes them pending analyst approval. | False | Optional |
-| BlockIndicators | Enables the automated block Indicators capability.<br/>Set to "True" for automatically block all malicious indicators.<br/>Set to "False" for choosing manually which indicators to block, if any. | False | Optional |
+| BlockIndicators | manages the automated block Indicators capability.<br/>Set to "True" for automatically block all malicious indicators.<br/>Set to "False" for choosing manually which indicators to block, if any. | False | Optional |
 | AuthenticateEmail | Determines whether the authenticity of the email should be verified using SPF, DKIM, and DMARC. | True | Optional |
 | OnCall | Set to True to assign only the user that is currently on shift. | False | Optional |
 | SearchAndDeleteIntegration | Determines which product and playbook is used to search and delete the phishing email from user inboxes.<br/>  - Set this to "O365" to use the "O365 - Security And Compliance - Search And Delete" playbook.<br/>  - Set this to "EWS" to use the "Search And Delete Emails - EWS" playbook.<br/>  - Set this to "Gmail" to use the "Search And Delete - Gmail" playbook. | EWS | Optional |
