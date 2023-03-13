@@ -483,3 +483,4 @@ view: |-
   }
 inputs: []
 outputs: []
+description: Runs a common AI Analyst workflow for fetched AI Analyst events.
