@@ -1138,3 +1138,28 @@ def test_list_interface_policy_request(mocker, mcafeensmv2_client, input, output
     http_request = mocker.patch.object(mcafeensmv2_client, '_http_request')
     Client.list_interface_policy_request(mcafeensmv2_client, domain_id=9, interface_id=input)
     assert http_request.call_args[1].get('url_suffix') == output
+
+
+@pytest.mark.parametrize('input, output', [({"from_to_list": [{"FromAddress": "1.1.1.1", "ToAddress": "2.2.2.2"}],
+                                             "rule_type": 'IPV_4_ADDRESS_RANGE', "address": [],
+                                             "number":4, "state":"Enabled"},
+                                            'IPv4AddressRange',
+                                            {'IPV4RangeList': [{'FromAddress': '1.1.1.1', 'ToAddress': '2.2.2.2', 'state': 1}]}),
+                                           ({"from_to_list": [{'FromAddress': None, 'ToAddress': None}],
+                                             "rule_type": 'HOST_IPV_4', "address": ["1.1.1.1"], "number":4, "state":"Disabled"}),
+                                           ('HostIPv4', {'hostIPv4AddressList': [{'value': '1.1.1.1', 'state': 1}]})])
+def test_create_body_create_rule_for_v10(input, output):
+    """
+    Given:
+        - A rule type and other arguments.
+    When:
+        - create_body_create_rule_for_v10 command is executed.
+    Then:
+        - The body is created correctly according to the rule type.
+    """
+    from McAfeeNSMv2 import create_body_create_rule_for_v10
+    res = create_body_create_rule_for_v10(from_to_list=input.get("from_to_list"),
+                                          rule_type=input.get("rule_type"),
+                                          address=input.get("address"), number=input.get("number"),
+                                          state=input.get("state"))
+    assert res == output
