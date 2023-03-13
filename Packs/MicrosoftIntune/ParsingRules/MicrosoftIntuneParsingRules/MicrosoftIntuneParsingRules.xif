@@ -1,4 +1,4 @@
-[INGEST:vendor="MSFT", product="Azure", target_dataset="msft_azure_raw", no_hit=keep, content_id="AzureEventsHub"]
+[INGEST:vendor="MSFT", product="Azure", target_dataset="msft_azure_raw", no_hit=keep]
 alter timestampModify = time
 | alter splitStr = split(timestampModify, ".")
 | alter epoch_s = to_string(to_epoch(parse_timestamp("%Y-%m-%dT%H:%M:%S", arrayindex(splitStr ,0)), "seconds")),
