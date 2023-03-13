@@ -386,9 +386,7 @@ def main():
             else:
                 (str_msg, to, cc, bcc) = create_msg()
 
-            TO = [str.encode(t) for t in to + cc + bcc]
-
-            SERVER.sendmail(FROM, TO, str.encode(str_msg))  # type: ignore[union-attr]
+            SERVER.sendmail(FROM, to + cc + bcc, str_msg)  # type: ignore[union-attr]
             SERVER.quit()  # type: ignore[union-attr]
             demisto.results('Mail sent successfully')
         else:
@@ -404,5 +402,5 @@ def main():
 
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ == "__builtin__" or __name__ == "builtins" or __name__ == '__main__':
+if __name__ == "__builtin__" or __name__ == "builtins" or __name__ == "__main__":
     main()
