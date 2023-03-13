@@ -39,26 +39,21 @@ class MsClient:
         Returns:
             dict: contains response body with events
         """
+
         cmd_url = "/providers/Microsoft.Security/alerts"
         params = {'api-version': API_VERSION}
         events: list = []
         response = self.ms_client.http_request(method="GET", url_suffix=cmd_url, params=params)
-        events.append(response.get("value", []))
+        events.extend(response.get("value", []))
         if events:
             last_run = events[0]
-            nextLink = response.get('nextLink', None)
 
-        while nextLink:
-            params['nextLink'] = nextLink
-            response = self.ms_client.http_request(method="GET", url_suffix=cmd_url, params=params)
-            events.append(response.get("value", []))
+        while nextLink := response.get('nextLink', None):
+            response = self.ms_client.http_request(method="GET", full_url=nextLink)
+            events.extend(response.get("value", []))
             if events:
                 last_run = events[0]
-                nextLink = response.get('nextLink', None)
-
         return events, last_run
-
-
 
 
 def test_module(client: MsClient, last_run: str):
@@ -115,8 +110,8 @@ def get_events(client: MsClient, last_run: str, args: dict):
         removeNull=True,
     )
     cr = CommandResults(outputs_prefix="MicrosoftDefenderForCloud.Alerts",
-                        outputs=outputs, readable_output=md, raw_response=events)
-    return events, cr
+                        outputs=outputs, readable_output=md, raw_response=events_list)
+    return events_list, cr
 
 
 def find_next_run(events_list: list, last_run: str) -> str:
