@@ -11,40 +11,34 @@ Used Sub-playbooks:
 - Account Enrichment - Generic v2.1
 - Calculate Severity - Critical Assets v2
 - Isolate Endpoint - Generic
-- Block Indicators - Generic v3
+- Block Indicators - Generic v2
 
 
 ## Dependencies
-
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-
-* Account Enrichment - Generic v2.1
-* Isolate Endpoint - Generic
 * IP Enrichment - Generic v2
-* Block Indicators - Generic v3
+* Isolate Endpoint - Generic V2
+* Block Indicators - Generic v2
 * Calculate Severity - Critical Assets v2
+* Account Enrichment - Generic v2.1
 
 ### Integrations
-
 This playbook does not use any integrations.
 
 ### Scripts
-
 * GenerateInvestigationSummaryReport
 
 ### Commands
-
-* setIncident
-* ad-disable-account
 * ad-expire-password
 * send-mail
-* closeInvestigation
+* setIncident
 * ad-enable-account
+* ad-disable-account
+* closeInvestigation
 
 ## Playbook Inputs
-
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
@@ -60,23 +54,20 @@ This playbook does not use any integrations.
 | critical_groups | Critical groups, separated by comma. |  | Optional |
 | CustomBlockRule | This input determines whether Palo Alto Networks Panorama or Firewall Custom Block Rules are used.<br/>Specify True to use Custom Block Rules. | True | Optional |
 | AutoCommit | This input determines whether Palo Alto Networks Panorama or Firewall Static Address Groups are used.<br/>Specify the Static Address Group name for IP handling. | No | Optional |
+| IPListName | This input determines whether Palo Alto Networks Panorama or Firewall External Dynamic Lists are used for blocking IPs.<br/>Specify the EDL name for IP handling. | Demisto Remediation - IP EDL | Optional |
 | DAG | This input determines whether Palo Alto Networks Panorama or Firewall Dynamic Address Groups are used.<br/>Specify the Dynamic Address Group tag name for IP handling. |  | Optional |
 | StaticAddressGroup | This input determines whether Palo Alto Networks Panorama or Firewall Static Address Groups are used.<br/>Specify the Static Address Group name for IP handling. |  | Optional |
-| CustomURLCategory | Custom URL Category name. | XSOAR Remediation - Malicious URLs | Optional |
+| URLListName | URL list from the instance context with which to override the remote file. | Demisto Remediation - URL EDL | Optional |
+| CustomURLCategory | Custom URL Category name. | Demisto Remediation - Malicious URLs | Optional |
 | type | Custom URL category type. Insert "URL List"/ "Category Match". |  | Optional |
 | device-group | Device group for the Custom URL Category \(Panorama instances\). |  | Optional |
 | categories | The list of categories. Relevant from PAN-OS v9.x. |  | Optional |
 | EDLServerIP | This input determines whether Palo Alto Networks Panorama or Firewall External Dynamic Lists are used:<br/>\* The IP address of the web server on which the files are stored.<br/>\* The web server IP address is configured in the integration instance. |  | Optional |
-| UserVerification | Possible values: True/False. <br/>Whether to provide user verification for blocking IPs. <br/><br/>False - No prompt will be displayed to the user.<br/>True - The server will ask the user for blocking verification and will display the blocking list. | False | Optional |
-| AutoBlockIndicators | Possible values: True/False.  Default: True.<br/>Should the given indicators be automatically blocked, or should the user be given the option to choose?<br/><br/>If set to False - no prompt will appear, and all provided indicators will be blocked automatically.<br/>If set to True - the user will be prompted to select which indicators to block. | True | Optional |
 
 ## Playbook Outputs
-
 ---
 There are no outputs for this playbook.
 
 ## Playbook Image
-
 ---
-
 ![Brute Force Investigation - Generic](../doc_files/Brute_Force_Investigation_-_Generic.png)
