@@ -2033,7 +2033,12 @@ script:
       required: true
   - name: nsm-deploy-device-configuration
     polling: true
-    description: Deploy the pending changes. To get the pending changes, use the !nsm-get-device-configuration command.
+    description: > 
+      Deploy the pending changes. 
+      
+      Note: In order to avoid extra run time, it is recommended to deploy only the changes that are pending.
+
+      To get the pending changes, use the !nsm-get-device-configuration command.
     arguments:
     - name: request_id
       description: This is for the polling to work. not for the user.
