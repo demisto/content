@@ -119,8 +119,10 @@ FILTER_GET_SYSTEM_STATUS_ARGS = [
 
 """ GENERAL HELPER FUNCTIONS TESTS"""
 
+
 @freeze_time("2023-03-12T13:34:14Z")
-@pytest.mark.parametrize('date_string, expected_output', [('3 days', '2023-03-15T15:34:14'), ('in 4 hours', '2023-03-12T19:34:14'), ('5 mhours', '')])
+@pytest.mark.parametrize('date_string, expected_output',
+                         [('3 days', '2023-03-15T13:34:14'), ('in 4 hours', '2023-03-12T17:34:14'), ('5 mhours', '')])
 def test_get_future_date(date_string, expected_output):
     """
         Given -
@@ -139,6 +141,7 @@ def test_get_future_date(date_string, expected_output):
             assert 'invalid date string' in de.message
     else:
         assert TaniumThreatResponseV2.get_future_date(date_string) == expected_output
+
 
 @pytest.mark.parametrize('test_input, expected_output', [('2', 2), (None, None), (2, 2), ('', None)])
 def test_convert_to_int(test_input, expected_output):

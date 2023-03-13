@@ -7,7 +7,7 @@ import os
 import traceback
 import urllib.parse
 from typing import Any, List, Tuple
-from datetime import datetime, timedelta
+from datetime import datetime
 
 
 import urllib3
@@ -239,7 +239,11 @@ def get_future_date(date_string: str) -> str:
     try:
         if 'in' not in date_string:
             date_string = f'in {date_string}'
-        return dateparser.parse(date_string).isoformat()
+        parsed_date = dateparser.parse(date_string)
+        if parsed_date:
+            return parsed_date.isoformat()
+        else:
+            raise ValueError
     except Exception:
         raise DemistoException('Invalid date string format. Must be "<amount> <unit>"')
 
@@ -2208,8 +2212,8 @@ def get_system_status(client, command_args) -> Tuple[str, dict, Union[list, dict
     context = createContext(active_computers, removeNull=True,
                             keyTransform=lambda x: underscoreToCamelCase(x, upper_camel=False))
     outputs = {'Tanium.SystemStatus(val.clientId === obj.clientId)': context}
-    headers = ['hostName', 'clientId', 'ipaddressClient', 'ipaddressServer', 'portNumber']
-    human_readable = tableToMarkdown('Reporting clients', context, headers=headers,
+    markdown_headers = ['hostName', 'clientId', 'ipaddressClient', 'ipaddressServer', 'portNumber']
+    human_readable = tableToMarkdown('Reporting clients', context, headers=markdown_headers,
                                      headerTransform=pascalToSpace, removeNull=True)
     return human_readable, outputs, raw_response
 
