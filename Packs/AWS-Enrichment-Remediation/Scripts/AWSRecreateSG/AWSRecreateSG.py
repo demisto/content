@@ -6,7 +6,7 @@ import json
 from random import randint
 
 
-def split_rule(rule: str, port: int, protocol: str) -> List:
+def split_rule(rule: Dict, port: int, protocol: str) -> List[Dict]:
     res_list=[]
     #Check if 'FromPort' is in rule, else it is an "all traffic rule".
     if rule.get('FromPort'):
@@ -60,7 +60,7 @@ def split_rule(rule: str, port: int, protocol: str) -> List:
             res_list.append(rule3)
     return(res_list)
 
-def sg_fix(sg_info: Dict, port: int, protocol: str) -> Dict[str, str]:
+def sg_fix(sg_info: Dict, port: int, protocol: str) -> Dict:
 
     info = sg_info[0]['Contents']['AWS.EC2.SecurityGroups(val.GroupId === obj.GroupId)'][0]
     recreate_list=[]
@@ -120,14 +120,14 @@ def sg_fix(sg_info: Dict, port: int, protocol: str) -> Dict[str, str]:
     return {'new-sg':new_id}
 
 
-def replace_sgs(replace_list,int_sg_mapping):
+def replace_sgs(replace_list: List,int_sg_mapping: Dict):
     for entry in replace_list:
         int_sg_mapping[entry['int']].remove(entry['old-sg'])
         int_sg_mapping[entry['int']].append(entry['new-sg'])
         formatted_list = ','.join(int_sg_mapping[entry['int']])
         demisto.executeCommand("aws-ec2-modify-network-interface-attribute", {"networkInterfaceId":entry['int'], "groups":formatted_list})
 
-def determine_excessive_access(int_sg_mapping, port, protocol):
+def determine_excessive_access(int_sg_mapping: Dict, port: int, protocol: str) -> List:
     replace_list=[]
     for mapping in int_sg_mapping.keys():
         for sg in int_sg_mapping[mapping]:
@@ -142,7 +142,7 @@ def determine_excessive_access(int_sg_mapping, port, protocol):
     return replace_list
 
 
-def instance_info(instance_id, public_ip):
+def instance_info(instance_id: str, public_ip: str) -> Dict:
     instance_info = demisto.executeCommand("aws-ec2-describe-instances", {"instanceIds":instance_id})
     if instance_info[0].get('Contents').get('AWS.EC2.Instances(val.InstanceId === obj.InstanceId)')[0].get('NetworkInterfaces'):
         interfaces = instance_info[0].get('Contents').get('AWS.EC2.Instances(val.InstanceId === obj.InstanceId)')[0].get('NetworkInterfaces')
@@ -165,7 +165,7 @@ def instance_info(instance_id, public_ip):
 ''' COMMAND FUNCTION '''
 
 
-def aws_recreate_sg_command(args: Dict[str, Any]) -> CommandResults:
+def aws_recreate_sg_command(args: Dict[str, Any]) -> List:
 
     instance_id = args.get('instance_id', None)
     port = int(args.get('port', None))
