@@ -29,11 +29,11 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ### Sub-playbooks
 
 * Sophos Firewall - Block IP
-* PAN-OS - Block IP - Custom Block Rule
-* PAN-OS - Block IP - Static Address Group
-* PAN-OS DAG Configuration
 * Checkpoint - Block IP - Custom Block Rule
+* PAN-OS - Block IP - Custom Block Rule
 * Cisco FirePower- Append network group object
+* PAN-OS DAG Configuration
+* PAN-OS - Block IP - Static Address Group
 
 ### Integrations
 
@@ -42,25 +42,25 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Scripts
 
+* SetAndHandleEmpty
 * IsIntegrationAvailable
 * IsIPInRanges
-* SetAndHandleEmpty
 
 ### Commands
 
+* setIndicators
 * threatx-blacklist-ip
-* akamai-add-elements-to-network-list
-* zscaler-blacklist-ip
+* enrichIndicators
 * sw-block-domain-or-ip
-* createNewIndicator
+* f5-silverline-ip-object-add
 * cisco-asa-create-rule
 * sigsci-blacklist-add-ip
+* createNewIndicator
 * aria-block-dest-subnet
-* threatx-block-ip
-* setIndicators
-* enrichIndicators
-* f5-silverline-ip-object-add
 * fortigate-ban-ip
+* threatx-block-ip
+* zscaler-blacklist-ip
+* akamai-add-elements-to-network-list
 
 ## Playbook Inputs
 
@@ -79,7 +79,6 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | InternalRange | A list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation, separated by commas. An example of a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" \(without quotes\). If a list is not provided, will use the default list provided in the IsIPInRanges script \(the known IPv4 private address ranges\). |  | Optional |
 | SiteName | Signal Sciences WAF - Enter the site name for the integration to be applied. The site name can be found in your instance console. |  | Optional |
 | AkamaiNetworkListID | Akamai's WAF network list ID, which is mandatory to be mentioned for the integration. The chosen IPs will be added to this ID. |  | Optional |
-| CiscoFWSource | Cisco ASA \(firewall\) value for the rule's source object in the created blocking rule. Can be the value of an IPv4, an address block, or the name of a network object. |  | Optional |
 | InputEnrichment | Possible values: True/False . Default: False<br/>Enrich the input IP address/es with reputation commands. | False | Optional |
 | RuleName | The rule name/description that will be presented on the created rule in certain integrations \(if there is a need\).<br/>The supported integrations: PAN-OS, CheckPoint.<br/><br/>Default input- "XSOAR - Block IP playbook - $\{incident.id\}" | XSOAR - Block IP playbook - ${incident.id} | Optional |
 | RuleDirection | Determine if a newly created rule should be with the network direction of outbound or inbound blocked traffic.<br/>Possible values: inbound or outbound<br/>Default: outbound | outbound | Optional |

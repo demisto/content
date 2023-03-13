@@ -51,8 +51,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1990,
-          "y": 4645
+          "x": 1980,
+          "y": 4655
         }
       }
     note: false
@@ -307,6 +307,9 @@ tasks:
           accessor: Final
           transformers:
           - operator: uniq
+      LogForwarding:
+        complex:
+          root: inputs.LogForwarding
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -1825,7 +1828,7 @@ tasks:
       {
         "position": {
           "x": 1980,
-          "y": 4470
+          "y": 4460
         }
       }
     note: false
@@ -3453,7 +3456,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 4720,
+        "height": 4730,
         "width": 7852.5,
         "x": -1442.5,
         "y": -10
@@ -3522,11 +3525,6 @@ inputs:
   value: {}
   required: false
   description: Akamai's WAF network list ID, which is mandatory to be mentioned for the integration. The chosen IPs will be added to this ID.
-  playbookInputQuery:
-- key: CiscoFWSource
-  value: {}
-  required: false
-  description: Cisco ASA (firewall) value for the rule's source object in the created blocking rule. Can be the value of an IPv4, an address block, or the name of a network object.
   playbookInputQuery:
 - key: InputEnrichment
   value:
