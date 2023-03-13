@@ -4609,8 +4609,10 @@ def panorama_register_ip_tag(tag: str, ips: List, persistent: str, timeout: int)
         'cmd': f'<uid-message><version>2.0</version><type>update</type><payload><register>{entry}'
                f'</register></payload></uid-message>',
         'key': API_KEY,
-        'vsys': VSYS
     }
+    if VSYS:
+        params['vsys'] = VSYS
+
     result = http_request(
         URL,
         'POST',
@@ -4679,8 +4681,10 @@ def panorama_unregister_ip_tag(tag: str, ips: list):
         'cmd': '<uid-message><version>2.0</version><type>update</type><payload><unregister>' + entry
                + '</unregister></payload></uid-message>',
         'key': API_KEY,
-        'vsys': VSYS
     }
+    if VSYS:
+        params['vsys'] = VSYS
+
     result = http_request(
         URL,
         'POST',
@@ -4725,8 +4729,9 @@ def panorama_register_user_tag(tag: str, users: List, timeout: Optional[int]):
         'cmd': f'<uid-message><version>2.0</version><type>update</type><payload><register-user>{entry}'
                f'</register-user></payload></uid-message>',
         'key': API_KEY,
-        'vsys': VSYS
     }
+    if VSYS:
+        params['vsys'] = VSYS
 
     result = http_request(
         URL,
@@ -4787,8 +4792,10 @@ def panorama_unregister_user_tag(tag: str, users: list):
         'cmd': f'<uid-message><version>2.0</version><type>update</type><payload><unregister-user>{entry}'
                f'</unregister-user></payload></uid-message>',
         'key': API_KEY,
-        'vsys': VSYS
     }
+    if VSYS:
+        params['vsys'] = VSYS
+
     result = http_request(
         URL,
         'POST',
