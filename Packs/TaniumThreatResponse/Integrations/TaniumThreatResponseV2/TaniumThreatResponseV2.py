@@ -236,35 +236,12 @@ def get_future_date(date_string: str) -> str:
         :rtype: ``str``
 
     """
-    units = {
-        'minute': 'minutes',
-        'hour': 'hours',
-        'day': 'days',
-        'week': 'weeks',
-        'month': 'months',
-        'year': 'years'
-    }
-
     try:
-        amount, unit = date_string.split()
-    except ValueError:
-        raise ValueError('Invalid date string format. Must be "<amount> <unit>"')
-
-    if not amount.isdigit():
-        raise ValueError("Invalid amount value. Must be a positive integer")
-
-    if unit[-1] == 's':
-        unit = unit[:-1]
-    if unit not in units:
-        raise ValueError(f'Invalid date unit. Must be one of {", ".join(units.keys())}')
-
-    delta = timedelta(**{units[unit]: int(amount)})
-
-    future_date = datetime.now() + delta
-
-    future_iso = datetime.strftime(future_date, '%Y-%m-%dT%H:%M:%S.%fZ')
-
-    return future_iso
+        if 'in' not in date_string:
+            date_string = f'in {date_string}'
+        return dateparser.parse(date_string).isoformat()
+    except Exception:
+        raise DemistoException('Invalid date string format. Must be "<amount> <unit>"')
 
 
 ''' EVIDENCE HELPER FUNCTIONS '''
