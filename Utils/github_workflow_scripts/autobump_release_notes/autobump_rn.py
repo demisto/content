@@ -25,11 +25,15 @@ t = Terminal()
 ORGANIZATION_NAME = "demisto"
 REPO_MANE = "content"
 BASE = "master"
-PR_COMMENT_TITLE = "### This PR was automatically updated by a [GitHub Action](https://github.com/demisto/content/actions/runs/{})\n"
+PR_COMMENT_TITLE = "### This PR was automatically updated by a " \
+                   "[GitHub Action](https://github.com/demisto/content/actions/runs/{})\n"
 PR_COMMENT = "- **{}** pack version was bumped to **{}**.\n"
 COMMIT_MESSAGE = "Bump version to: {}, for {} pack."
 MERGE_FROM_MASTER_COMMIT_MESSAGE = f"Merged {BASE} into current branch."
 PACKS_DIR = "Packs"
+NOT_UPDATE_RN_LABEL = "ignore-auto-bump-version"
+PR_COMMENT_STOP_AUTOMATION = f"\nIn order to prevent this automation updates, you can add `{NOT_UPDATE_RN_LABEL}` " \
+                             f"label to this PR.\n"
 
 
 class PackAutoBumper:
@@ -161,6 +165,7 @@ class BranchAutoBumper:
                     new_version,
                 )
             print(f"[{self.pr.number}] Committed the changes. Commenting on the pr: \n{body}.\n")
+            body += PR_COMMENT_STOP_AUTOMATION
             self.git_repo.git.push()
             self.pr.create_issue_comment(body)
         return body
