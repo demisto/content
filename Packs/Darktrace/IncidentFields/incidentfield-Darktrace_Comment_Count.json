@@ -1,0 +1,30 @@
+{
+ "associatedToAll": false,
+ "associatedTypes": [
+  "Darktrace Model Breach"
+ ],
+ "caseInsensitive": true,
+ "cliName": "darktracecommentcount",
+ "closeForm": false,
+ "content": true,
+ "description": "Number of comments on the Darktrace model breach",
+ "editForm": true,
+ "group": 0,
+ "hidden": false,
+ "id": "incident_darktracecommentcount",
+ "isReadOnly": false,
+ "locked": false,
+ "name": "Darktrace Comment Count",
+ "neverSetAsRequired": false,
+ "ownerOnly": false,
+ "required": false,
+ "sla": 0,
+ "system": false,
+ "threshold": 72,
+ "type": "number",
+ "unmapped": false,
+ "unsearchable": false,
+ "useAsKpi": false,
+ "version": -1,
+ "fromVersion": "6.0.0"
+}

@@ -1,0 +1,30 @@
+{
+ "associatedToAll": false,
+ "associatedTypes": [
+  "Darktrace Model Breach"
+ ],
+ "caseInsensitive": true,
+ "cliName": "darktracemodeluuid",
+ "closeForm": false,
+ "content": true,
+ "description": "Model UUID associated with the breached model in Darktrace",
+ "editForm": true,
+ "group": 0,
+ "hidden": false,
+ "id": "incident_darktracemodeluuid",
+ "isReadOnly": false,
+ "locked": false,
+ "name": "Darktrace Model UUID",
+ "neverSetAsRequired": false,
+ "ownerOnly": false,
+ "required": false,
+ "sla": 0,
+ "system": false,
+ "threshold": 72,
+ "type": "shortText",
+ "unmapped": false,
+ "unsearchable": false,
+ "useAsKpi": false,
+ "version": -1,
+ "fromVersion": "6.0.0"
+}
