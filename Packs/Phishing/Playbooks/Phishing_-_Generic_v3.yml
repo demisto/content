@@ -739,7 +739,7 @@ tasks:
       id: 8f9cdca2-c3cc-408b-8fc8-7620f3ac65be
       version: -1
       name: Manually search & delete emails
-      description: Search for and delete similar emails.
+      description: Search for and delete emails with similar attributes of the malicious email using your existing email platfrom. for example - EWS, Office 365, Gmail etc.
       type: regular
       iscommand: false
       brand: ""
@@ -2779,12 +2779,6 @@ tasks:
       AutoBlockIndicators:
         complex:
           root: inputs.BlockIndicators
-      AutoCommit:
-        simple: "No"
-      CustomBlockRule:
-        simple: "True"
-      CustomURLCategory:
-        simple: XSOAR Remediation - Malicious URLs
       DomainToBlock:
         complex:
           root: DBotScore
@@ -2797,6 +2791,7 @@ tasks:
               right:
                 value:
                   simple: domain
+              ignorecase: true
           - - operator: greaterThanOrEqual
               left:
                 value:
@@ -2820,6 +2815,7 @@ tasks:
               right:
                 value:
                   simple: email
+              ignorecase: true
           - - operator: greaterThanOrEqual
               left:
                 value:
@@ -2843,6 +2839,7 @@ tasks:
               right:
                 value:
                   simple: file
+              ignorecase: true
           - - operator: greaterThanOrEqual
               left:
                 value:
@@ -3008,7 +3005,7 @@ inputs:
     simple: "False"
   required: false
   description: |-
-    Enables the automated block Indicators capability.
+    manages the automated block Indicators capability.
     Set to "True" for automatically block all malicious indicators.
     Set to "False" for choosing manually which indicators to block, if any.
   playbookInputQuery:
