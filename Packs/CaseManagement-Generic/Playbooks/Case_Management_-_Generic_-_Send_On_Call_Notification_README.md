@@ -29,6 +29,7 @@ This playbook does not use any integrations.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | emails | The email addresses to send the message to, can be comma separated.  |  | Required |
+| minimum_severity | The minimum severity level for the Incident to send notification for.  Default is 3 \(High\).   XSOAR Severity values:<br/>Critical \(4\), High \(3\), Medium \(2\), Low \(1\), Information \(0.5\), Unknown \(0\) | 3 | Optional |
 
 ## Playbook Outputs
 

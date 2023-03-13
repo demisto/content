@@ -9,8 +9,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ### Sub-playbooks
 
 * Case Management - Generic - Start SLA Timers
-* Case Management - Generic - Send On Call Notification
 * Case Management - Generic - Set SLAs based on Severity
+* Case Management - Generic - Send On Call Notification
 * Calculate Severity - Standard
 
 ### Integrations
@@ -46,6 +46,7 @@ This playbook does not use any scripts.
 | LowTimeToAssignSLA | Number in minutes for the Time to Assignment Timer SLA, when the severity of the Incident is Low or Informational.  | 1440 | Optional |
 | SendOnCallNotification | Whether to send the on call notification email for a Critical or High Severity Incident.  <br/><br/>Set to Yes to send notifications, and add the emails to the NotificationEmails input. | No | Optional |
 | NotificationEmails | The email addresses to send the message to, can be comma separated.  |  | Optional |
+| MinimumSeverity | The minimum severity level for the Incident to send notification for.  Default is 3 \(High\).   XSOAR Severity values:<br/>Critical \(4\), High \(3\), Medium \(2\), Low \(1\), Information \(0.5\), Unknown \(0\) | 3 | Optional |
 
 ## Playbook Outputs
 

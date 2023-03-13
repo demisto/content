@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: a203e72c-aba1-470d-82e3-0daa49978fc0
+    taskid: 1063020a-0a72-444f-8625-f96814d6c2e8
     type: start
     task:
-      id: a203e72c-aba1-470d-82e3-0daa49978fc0
+      id: 1063020a-0a72-444f-8625-f96814d6c2e8
       version: -1
       name: ""
       iscommand: false
@@ -36,12 +36,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 774919f1-1231-4000-8574-f4fc89a59464
+    taskid: d88429a1-661a-4641-8e10-b2e4e3d787a1
     type: condition
     task:
-      id: 774919f1-1231-4000-8574-f4fc89a59464
+      id: d88429a1-661a-4641-8e10-b2e4e3d787a1
       version: -1
-      name: Is the Severity Critical or High?
+      name: Does the Incident Severity Require Notification?
       description: Check if the severity on the Incident is critical (3) or high (2)
       type: condition
       iscommand: false
@@ -64,7 +64,8 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "2"
+              simple: inputs.minimum_severity
+            iscontext: true
           ignorecase: true
     continueonerrortype: ""
     view: |-
@@ -83,10 +84,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: a5d376f2-a85c-4481-8b3c-f2c93faf4dba
+    taskid: e449fe0d-e25f-4eb4-8e9c-f626d1f06d60
     type: regular
     task:
-      id: a5d376f2-a85c-4481-8b3c-f2c93faf4dba
+      id: e449fe0d-e25f-4eb4-8e9c-f626d1f06d60
       version: -1
       name: Send Email Notification
       description: Send an email (doesn't actually send an email)
@@ -125,10 +126,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 92c9305c-f0bb-4288-8367-8bddc1f69c21
+    taskid: 4c5ba57a-ae40-485e-87ca-980b5b3ca3ce
     type: title
     task:
-      id: 92c9305c-f0bb-4288-8367-8bddc1f69c21
+      id: 4c5ba57a-ae40-485e-87ca-980b5b3ca3ce
       version: -1
       name: Done
       type: title
@@ -153,10 +154,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: c4e75922-9b6e-4e3e-80f8-1858973e26e8
+    taskid: 153cfea4-6712-4645-8f5a-d47daf496d0c
     type: regular
     task:
-      id: c4e75922-9b6e-4e3e-80f8-1858973e26e8
+      id: 153cfea4-6712-4645-8f5a-d47daf496d0c
       version: -1
       name: Set EscalationEmail to Yes
       description: Set a value in context under the key you entered.
@@ -193,10 +194,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: b83a116c-0234-47cb-8342-851f7bc23821
+    taskid: 17a0fa65-2580-48f5-890f-310b4608f546
     type: regular
     task:
-      id: b83a116c-0234-47cb-8342-851f7bc23821
+      id: 17a0fa65-2580-48f5-890f-310b4608f546
       version: -1
       name: Set EscalationEmail to No
       description: Set a value in context under the key you entered.
@@ -250,6 +251,14 @@ inputs:
   value: {}
   required: true
   description: 'The email addresses to send the message to, can be comma separated. '
+  playbookInputQuery:
+- key: minimum_severity
+  value:
+    simple: "3"
+  required: false
+  description: |-
+    The minimum severity level for the Incident to send notification for.  Default is 3 (High).   XSOAR Severity values:
+    Critical (4), High (3), Medium (2), Low (1), Information (0.5), Unknown (0)
   playbookInputQuery:
 outputs:
 - contextPath: EscalationEmailSent
