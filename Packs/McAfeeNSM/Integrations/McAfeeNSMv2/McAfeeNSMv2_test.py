@@ -1168,3 +1168,21 @@ def test_create_body_create_rule_for_v10__with_different_arguments(input, output
                                           address=input.get("address"), number=input.get("number"),
                                           state=input.get("state"))
     assert res == output
+
+
+def test_modify_v10_results_to_v9_format():
+    """
+    Given:
+        - A list of results from v10 api, that contains a list of dictionaries in the HostIPv4 key.
+    When:
+        - modify_v10_results_to_v9_format command is executed.
+    Then:
+        - The list is modified correctly, and the list of dictionaries is replaced with a list of strings of the address only.
+    """
+    from McAfeeNSMv2 import modify_v10_results_to_v9_format
+    test_input = [{'ruleobjId': '130', 'HostIPv4': {'hostIPv4AddressList': [{'ruleObjectID': 130,
+                                                                            'value': '1.1.1.1', 'state': 0,
+                                                                             'comment': '', 'userID': 0,
+                                                                             'changedState': 0}]}, 'HostIPv6': None}]
+    excepted_output = [{'ruleobjId': '130', 'HostIPv4': {'hostIPv4AddressList': ['1.1.1.1']}, 'HostIPv6': None}]
+    assert modify_v10_results_to_v9_format(test_input) == excepted_output
