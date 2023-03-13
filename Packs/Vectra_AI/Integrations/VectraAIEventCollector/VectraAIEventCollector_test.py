@@ -4,7 +4,7 @@ Unit tests for Vectra Event Collector
 
 import pytest
 from pytest_mock import MockerFixture
-from VectraEventCollector import (
+from Vectra_AIEventCollector import (
     VectraClient,
     test_module,
     DETECTION_NEXT_RUN_KEY,
