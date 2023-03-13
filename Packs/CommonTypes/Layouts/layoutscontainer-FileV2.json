@@ -1,10 +1,147 @@
 {
-    "id": "unifiedFileRep1",
+    "edit": {
+        "sections": [
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "indicator_value",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_indicatortype",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_score",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_expiration",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_comment",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_investigationids",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Basic Information",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": "basicInformationSection"
+            },
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "indicator_blocked",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_communitynotes",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_description",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_stixid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_tags",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_trafficlightprotocol",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Custom fields - core",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            },
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "indicator_creationdate",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_fileextension",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_associatedfilenames",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_filetype",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_imphash",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_md5",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_modified",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_path",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_quarantined",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_sha1",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_sha256",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_sha512",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_size",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_ssdeep",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Custom fields - unique",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            }
+        ]
+    },
     "group": "indicator",
-    "name": "File Indicator",
-    "version": -1,
-    "fromVersion": "6.0.0",
-    "toVersion": "6.9.9",
+    "id": "unifiedFileRep1",
     "indicatorsDetails": {
         "tabs": [
             {
@@ -107,15 +244,15 @@
                                 "startCol": 0
                             },
                             {
+                                "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "modified",
                                 "height": 22,
                                 "id": "2caa06a0-a2b6-11eb-b6c7-1f96e76b92a7",
                                 "index": 1,
+                                "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
                                 "sectionItemType": "field",
-                                "startCol": 0,
-                                "dropEffect": "move",
-                                "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a"
+                                "startCol": 0
                             },
                             {
                                 "endCol": 2,
@@ -158,48 +295,48 @@
                                 "startCol": 0
                             },
                             {
+                                "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "fileextension",
                                 "height": 22,
                                 "id": "0582dbf0-9880-11eb-a24d-4941fb0e06df",
                                 "index": 6,
+                                "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
                                 "sectionItemType": "field",
-                                "startCol": 0,
-                                "dropEffect": "move",
-                                "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a"
+                                "startCol": 0
                             },
                             {
+                                "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "path",
                                 "height": 22,
                                 "id": "1021d2a0-9880-11eb-a24d-4941fb0e06df",
                                 "index": 7,
+                                "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
                                 "sectionItemType": "field",
-                                "startCol": 0,
-                                "dropEffect": "move",
-                                "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a"
+                                "startCol": 0
                             },
                             {
+                                "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "size",
                                 "height": 22,
                                 "id": "fd18edb0-987f-11eb-a24d-4941fb0e06df",
                                 "index": 8,
+                                "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
                                 "sectionItemType": "field",
-                                "startCol": 0,
-                                "dropEffect": "move",
-                                "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a"
+                                "startCol": 0
                             },
                             {
+                                "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "trafficlightprotocol",
                                 "height": 22,
                                 "id": "b36304a0-b6dd-11ea-842d-c3903a6d3bd1",
                                 "index": 9,
+                                "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
                                 "sectionItemType": "field",
-                                "startCol": 0,
-                                "dropEffect": "move",
-                                "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a"
+                                "startCol": 0
                             },
                             {
                                 "endCol": 2,
@@ -211,38 +348,38 @@
                                 "startCol": 0
                             },
                             {
-                                "endCol": 1,
-                                "fieldId": "",
-                                "height": 44,
-                                "id": "78925e60-a751-11eb-8813-85174f038837",
-                                "index": 11,
-                                "sectionItemType": "button",
-                                "startCol": 0,
                                 "args": {
                                     "field": {
                                         "simple": "tags"
                                     }
                                 },
-                                "name": "Add tags",
-                                "scriptId": "Builtin|||appendIndicatorField"
-                            },
-                            {
-                                "endCol": 2,
+                                "endCol": 1,
                                 "fieldId": "",
                                 "height": 44,
-                                "id": "7a35ae20-a751-11eb-8813-85174f038837",
+                                "id": "78925e60-a751-11eb-8813-85174f038837",
                                 "index": 11,
+                                "name": "Add tags",
+                                "scriptId": "Builtin|||appendIndicatorField",
                                 "sectionItemType": "button",
-                                "startCol": 1,
+                                "startCol": 0
+                            },
+                            {
                                 "args": {
                                     "field": {
                                         "simple": "tags"
                                     }
                                 },
                                 "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "id": "7a35ae20-a751-11eb-8813-85174f038837",
+                                "index": 11,
                                 "listId": "main-0e19dbd0-4e74-11ea-8bf6-67db400d7da5",
                                 "name": "Remove tags",
-                                "scriptId": "Builtin|||removeIndicatorField"
+                                "scriptId": "Builtin|||removeIndicatorField",
+                                "sectionItemType": "button",
+                                "startCol": 1
                             }
                         ],
                         "maxW": 3,
@@ -319,16 +456,16 @@
                         "i": "main-d59381d0-aa49-11ea-9e46-5ff91c1cf9b7",
                         "items": [
                             {
+                                "args": {},
                                 "endCol": 1,
                                 "fieldId": "",
                                 "height": 44,
                                 "id": "e3595b00-aa49-11ea-9e46-5ff91c1cf9b7",
                                 "index": 0,
-                                "sectionItemType": "button",
-                                "startCol": 0,
-                                "args": {},
                                 "name": "Enrich indicator",
-                                "scriptId": "Builtin|||enrichIndicators"
+                                "scriptId": "Builtin|||enrichIndicators",
+                                "sectionItemType": "button",
+                                "startCol": 0
                             },
                             {
                                 "args": {},
@@ -361,10 +498,10 @@
                         "moved": false,
                         "name": "Relationships",
                         "static": false,
+                        "type": "relationshipsTable",
                         "w": 2,
                         "x": 0,
-                        "y": 4,
-                        "type": "relationshipsTable"
+                        "y": 4
                     },
                     {
                         "displayType": "ROW",
@@ -373,26 +510,26 @@
                         "i": "main-c7da3c80-779a-11ec-99cb-9b8c031b4139",
                         "items": [
                             {
+                                "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "md5",
                                 "height": 22,
                                 "id": "edc102d0-987f-11eb-a24d-4941fb0e06df",
                                 "index": 1,
+                                "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
                                 "sectionItemType": "field",
-                                "startCol": 0,
-                                "dropEffect": "move",
-                                "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a"
+                                "startCol": 0
                             },
                             {
+                                "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "sha1",
                                 "height": 22,
                                 "id": "ea561270-987f-11eb-a24d-4941fb0e06df",
                                 "index": 1,
+                                "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
                                 "sectionItemType": "field",
-                                "startCol": 0,
-                                "dropEffect": "move",
-                                "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a"
+                                "startCol": 0
                             },
                             {
                                 "endCol": 2,
@@ -470,6 +607,7 @@
                     {
                         "displayType": "ROW",
                         "h": 3,
+                        "hideName": false,
                         "i": "rrcrivpfll-ztqyjv2jej-894aad80-76df-11ec-a07d-2796602c12c6",
                         "items": [
                             {
@@ -498,8 +636,7 @@
                         "static": false,
                         "w": 3,
                         "x": 0,
-                        "y": 0,
-                        "hideName": false
+                        "y": 0
                     }
                 ],
                 "type": "custom"
@@ -532,10 +669,10 @@
                         "moved": false,
                         "name": "Related Incidents",
                         "static": false,
+                        "type": "relatedIncidents",
                         "w": 1,
                         "x": 0,
-                        "y": 8,
-                        "type": "relatedIncidents"
+                        "y": 8
                     },
                     {
                         "h": 3,
@@ -550,17 +687,10 @@
                         "y": 10
                     },
                     {
-                        "h": 2,
-                        "i": "indicator-quick-view-info-34c55dc0-ba19-11ea-96e1-0b84fdedf11e",
-                        "maxW": 3,
-                        "moved": false,
-                        "name": "File Details",
-                        "static": false,
-                        "w": 1,
-                        "x": 0,
-                        "y": 4,
                         "displayType": "ROW",
+                        "h": 2,
                         "hideName": false,
+                        "i": "indicator-quick-view-info-34c55dc0-ba19-11ea-96e1-0b84fdedf11e",
                         "items": [
                             {
                                 "endCol": 2,
@@ -664,7 +794,14 @@
                                 "startCol": 0
                             }
                         ],
-                        "minH": 1
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "File Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 4
                     },
                     {
                         "h": 1,
@@ -676,12 +813,13 @@
                         "moved": false,
                         "name": "Reputation Status",
                         "static": false,
+                        "type": "reputationStatus",
                         "w": 1,
                         "x": 0,
-                        "y": 1,
-                        "type": "reputationStatus"
+                        "y": 1
                     },
                     {
+                        "displayType": "ROW",
                         "h": 2,
                         "hideName": false,
                         "i": "indicator-quick-view-info-54ef93c0-84ef-11ec-a589-e73aadc98c9a",
@@ -748,8 +886,7 @@
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 6,
-                        "displayType": "ROW"
+                        "y": 6
                     },
                     {
                         "h": 2,
@@ -793,6 +930,9 @@
             }
         ]
     },
+    "name": "File Indicator",
     "system": false,
-    "description": ""
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "description": "File Indicator Layout"
 }

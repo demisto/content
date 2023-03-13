@@ -1,4 +1,94 @@
 {
+    "fromVersion": "6.10.0",
+    "edit": {
+        "sections": [
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "indicator_value",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_indicatortype",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_score",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_expiration",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_comment",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_investigationids",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Basic Information",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": "basicInformationSection"
+            },
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "indicator_communitynotes",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_description",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_stixid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_tags",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_trafficlightprotocol",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Custom fields - core",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            },
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "indicator_aliases",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_infrastructuretypes",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Custom fields - unique",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            }
+        ]
+    },
     "group": "indicator",
     "id": "Infrastructure",
     "indicatorsDetails": {
@@ -85,37 +175,37 @@
                                 "startCol": 0
                             },
                             {
+                                "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "modified",
                                 "height": 22,
                                 "id": "54038b80-ccca-11ea-a049-6b4b59f3b34f",
                                 "index": 1,
+                                "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
                                 "sectionItemType": "field",
-                                "startCol": 0,
-                                "dropEffect": "move",
-                                "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a"
+                                "startCol": 0
                             },
                             {
+                                "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "stixid",
                                 "height": 22,
                                 "id": "f1ebc8a0-d17d-11ea-b39d-69849bf59ed7",
                                 "index": 2,
+                                "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
                                 "sectionItemType": "field",
-                                "startCol": 0,
-                                "dropEffect": "move",
-                                "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a"
+                                "startCol": 0
                             },
                             {
+                                "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "aliases",
                                 "height": 22,
                                 "id": "18169330-a81e-11eb-8bae-034332f83c9b",
                                 "index": 3,
+                                "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
                                 "sectionItemType": "field",
-                                "startCol": 0,
-                                "dropEffect": "move",
-                                "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a"
+                                "startCol": 0
                             },
                             {
                                 "endCol": 2,
@@ -266,10 +356,10 @@
                         "moved": false,
                         "name": "Relationships",
                         "static": false,
+                        "type": "relationshipsTable",
                         "w": 2,
                         "x": 0,
-                        "y": 3,
-                        "type": "relationshipsTable"
+                        "y": 3
                     }
                 ],
                 "type": "custom"
@@ -331,10 +421,10 @@
                         "moved": false,
                         "name": "Related Incidents",
                         "static": false,
+                        "type": "relatedIncidents",
                         "w": 1,
                         "x": 0,
-                        "y": 4,
-                        "type": "relatedIncidents"
+                        "y": 4
                     },
                     {
                         "h": 2,
@@ -349,17 +439,10 @@
                         "y": 6
                     },
                     {
-                        "h": 2,
-                        "i": "indicator-quick-view-info-3518e4c0-cccc-11ea-a049-6b4b59f3b34f",
-                        "maxW": 3,
-                        "moved": false,
-                        "name": "Infrastructure Details",
-                        "static": false,
-                        "w": 1,
-                        "x": 0,
-                        "y": 2,
                         "displayType": "ROW",
+                        "h": 2,
                         "hideName": false,
+                        "i": "indicator-quick-view-info-3518e4c0-cccc-11ea-a049-6b4b59f3b34f",
                         "items": [
                             {
                                 "endCol": 2,
@@ -440,11 +523,19 @@
                                 "startCol": 0
                             }
                         ],
-                        "minH": 1
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Infrastructure Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 2
                     },
                     {
                         "displayType": "ROW",
                         "h": 2,
+                        "hideItemTitleOnlyOne": true,
                         "hideName": false,
                         "i": "indicator-quick-view-info-c9d165e0-d16f-11ea-b39d-69849bf59ed7",
                         "items": [
@@ -465,8 +556,7 @@
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 0,
-                        "hideItemTitleOnlyOne": true
+                        "y": 0
                     }
                 ],
                 "type": "custom"
@@ -498,7 +588,5 @@
     "name": "Infrastructure",
     "system": false,
     "version": -1,
-    "fromVersion": "6.0.0",
-    "toVersion": "6.9.9",
-    "description": ""
+    "description": "Infrastructure Indicator Layout"
 }

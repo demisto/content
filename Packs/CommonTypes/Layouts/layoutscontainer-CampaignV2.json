@@ -1,6 +1,96 @@
 {
+    "fromVersion": "6.10.0",
+    "edit": {
+        "sections": [
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "indicator_value",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_indicatortype",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_score",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_expiration",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_comment",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_investigationids",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Basic Information",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": "basicInformationSection"
+            },
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "indicator_communitynotes",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_description",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_stixid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_tags",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_trafficlightprotocol",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Custom fields - core",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            },
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "indicator_aliases",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_objective",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Custom fields - unique",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            }
+        ]
+    },
     "group": "indicator",
-    "id": "Infrastructure",
+    "id": "Campaign",
     "indicatorsDetails": {
         "tabs": [
             {
@@ -79,59 +169,50 @@
                                 "endCol": 2,
                                 "fieldId": "timestamp",
                                 "height": 22,
-                                "id": "0a4b4e10-81af-11ec-a247-cfbd25dcdbb6",
+                                "id": "62b34090-81ae-11ec-a247-cfbd25dcdbb6",
                                 "index": 0,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
+                                "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "modified",
                                 "height": 22,
                                 "id": "54038b80-ccca-11ea-a049-6b4b59f3b34f",
                                 "index": 1,
+                                "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
                                 "sectionItemType": "field",
-                                "startCol": 0,
-                                "dropEffect": "move",
-                                "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a"
+                                "startCol": 0
                             },
                             {
+                                "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "stixid",
                                 "height": 22,
                                 "id": "f1ebc8a0-d17d-11ea-b39d-69849bf59ed7",
                                 "index": 2,
+                                "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
                                 "sectionItemType": "field",
-                                "startCol": 0,
-                                "dropEffect": "move",
-                                "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a"
+                                "startCol": 0
                             },
                             {
+                                "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "aliases",
                                 "height": 22,
-                                "id": "18169330-a81e-11eb-8bae-034332f83c9b",
+                                "id": "9856d8f0-ccca-11ea-a049-6b4b59f3b34f",
                                 "index": 3,
-                                "sectionItemType": "field",
-                                "startCol": 0,
-                                "dropEffect": "move",
-                                "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a"
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "infrastructuretypes",
-                                "height": 22,
-                                "id": "1083f220-a81e-11eb-8bae-034332f83c9b",
-                                "index": 4,
+                                "listId": "main-e2c8c970-a09d-11e9-8956-390f602b039a",
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "killchainphases",
+                                "fieldId": "objective",
                                 "height": 22,
-                                "id": "1cec1010-a81e-11eb-8bae-034332f83c9b",
-                                "index": 5,
+                                "id": "0758a520-a81d-11eb-8bae-034332f83c9b",
+                                "index": 4,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -141,7 +222,7 @@
                                 "fieldId": "trafficlightprotocol",
                                 "height": 22,
                                 "id": "b36304a0-b6dd-11ea-842d-c3903a6d3bd1",
-                                "index": 6,
+                                "index": 5,
                                 "listId": "main-0e19dbd0-4e74-11ea-8bf6-67db400d7da5",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -152,7 +233,7 @@
                                 "fieldId": "tags",
                                 "height": 22,
                                 "id": "1cf1e850-4e74-11ea-8bf6-67db400d7da5",
-                                "index": 7,
+                                "index": 6,
                                 "listId": "main-0e19dbd0-4e74-11ea-8bf6-67db400d7da5",
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -167,7 +248,7 @@
                                 "fieldId": "",
                                 "height": 44,
                                 "id": "f1f63340-aa49-11ea-9e46-5ff91c1cf9b7",
-                                "index": 8,
+                                "index": 7,
                                 "name": "Add tags",
                                 "scriptId": "Builtin|||appendIndicatorField",
                                 "sectionItemType": "button",
@@ -184,7 +265,7 @@
                                 "fieldId": "",
                                 "height": 44,
                                 "id": "fb499720-aa49-11ea-9e46-5ff91c1cf9b7",
-                                "index": 8,
+                                "index": 7,
                                 "listId": "main-0e19dbd0-4e74-11ea-8bf6-67db400d7da5",
                                 "name": "Remove tags",
                                 "scriptId": "Builtin|||removeIndicatorField",
@@ -195,7 +276,7 @@
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
-                        "name": "Infrastructure Details",
+                        "name": "Campaign Details",
                         "static": false,
                         "w": 1,
                         "x": 1,
@@ -251,7 +332,7 @@
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
-                        "name": "Infrastructure Description",
+                        "name": "Campaign Description",
                         "static": false,
                         "w": 1,
                         "x": 0,
@@ -266,30 +347,30 @@
                         "moved": false,
                         "name": "Relationships",
                         "static": false,
+                        "type": "relationshipsTable",
                         "w": 2,
                         "x": 0,
-                        "y": 3,
-                        "type": "relationshipsTable"
+                        "y": 3
                     }
                 ],
                 "type": "custom"
             },
             {
                 "hidden": false,
-                "id": "ifyfdlsd7t",
-                "name": "Publications and notes",
+                "id": "pizc7sscyt",
+                "name": "Publications and Notes",
                 "sections": [
                     {
                         "displayType": "ROW",
-                        "h": 9,
+                        "h": 8,
                         "hideName": false,
-                        "i": "ifyfdlsd7t-zuteowyvsu-e768a150-7ebf-11ec-b7e4-a70f28a44ba6",
+                        "i": "pizc7sscyt-49f701e0-81ae-11ec-a247-cfbd25dcdbb6",
                         "items": [
                             {
                                 "endCol": 6,
                                 "fieldId": "publications",
                                 "height": 106,
-                                "id": "f6abcbb0-7ebf-11ec-b7e4-a70f28a44ba6",
+                                "id": "4fd478e0-81ae-11ec-a247-cfbd25dcdbb6",
                                 "index": 0,
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -298,7 +379,7 @@
                                 "endCol": 6,
                                 "fieldId": "communitynotes",
                                 "height": 106,
-                                "id": "f8eb5b70-7ebf-11ec-b7e4-a70f28a44ba6",
+                                "id": "546d13d0-81ae-11ec-a247-cfbd25dcdbb6",
                                 "index": 1,
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -307,7 +388,7 @@
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
-                        "name": "Publications and notes",
+                        "name": "New Section",
                         "static": false,
                         "w": 3,
                         "x": 0,
@@ -331,10 +412,10 @@
                         "moved": false,
                         "name": "Related Incidents",
                         "static": false,
+                        "type": "relatedIncidents",
                         "w": 1,
                         "x": 0,
-                        "y": 4,
-                        "type": "relatedIncidents"
+                        "y": 4
                     },
                     {
                         "h": 2,
@@ -349,23 +430,16 @@
                         "y": 6
                     },
                     {
-                        "h": 2,
-                        "i": "indicator-quick-view-info-3518e4c0-cccc-11ea-a049-6b4b59f3b34f",
-                        "maxW": 3,
-                        "moved": false,
-                        "name": "Infrastructure Details",
-                        "static": false,
-                        "w": 1,
-                        "x": 0,
-                        "y": 2,
                         "displayType": "ROW",
+                        "h": 2,
                         "hideName": false,
+                        "i": "indicator-quick-view-info-3518e4c0-cccc-11ea-a049-6b4b59f3b34f",
                         "items": [
                             {
                                 "endCol": 2,
                                 "fieldId": "timestamp",
                                 "height": 22,
-                                "id": "0cc59400-8a4e-11ec-a1ef-6369524b39c7",
+                                "id": "f1922d80-84ec-11ec-a589-e73aadc98c9a",
                                 "index": 0,
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -397,7 +471,7 @@
                                 "endCol": 2,
                                 "fieldId": "aliases",
                                 "height": 22,
-                                "id": "2564f270-a81e-11eb-8bae-034332f83c9b",
+                                "id": "28289290-d183-11ea-b1ee-39abdac77dba",
                                 "index": 3,
                                 "listId": "indicator-quick-view-info-3518e4c0-cccc-11ea-a049-6b4b59f3b34f",
                                 "sectionItemType": "field",
@@ -405,19 +479,10 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "infrastructuretypes",
+                                "fieldId": "objective",
                                 "height": 22,
-                                "id": "29794230-a81e-11eb-8bae-034332f83c9b",
+                                "id": "0430b130-a81d-11eb-8bae-034332f83c9b",
                                 "index": 4,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "killchainphases",
-                                "height": 22,
-                                "id": "221e2be0-a81e-11eb-8bae-034332f83c9b",
-                                "index": 5,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -426,7 +491,7 @@
                                 "fieldId": "trafficlightprotocol",
                                 "height": 22,
                                 "id": "acc3f580-d16f-11ea-b39d-69849bf59ed7",
-                                "index": 6,
+                                "index": 5,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -435,16 +500,24 @@
                                 "fieldId": "tags",
                                 "height": 22,
                                 "id": "indicator-quick-view-info-tags-field",
-                                "index": 7,
+                                "index": 6,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
                         ],
-                        "minH": 1
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Campaign Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 2
                     },
                     {
                         "displayType": "ROW",
                         "h": 2,
+                        "hideItemTitleOnlyOne": true,
                         "hideName": false,
                         "i": "indicator-quick-view-info-c9d165e0-d16f-11ea-b39d-69849bf59ed7",
                         "items": [
@@ -461,12 +534,11 @@
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
-                        "name": "Infrastructure Description",
+                        "name": "Campaign Description",
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 0,
-                        "hideItemTitleOnlyOne": true
+                        "y": 0
                     }
                 ],
                 "type": "custom"
@@ -495,10 +567,8 @@
             }
         ]
     },
-    "name": "Infrastructure",
+    "name": "Campaign",
     "system": false,
     "version": -1,
-    "fromVersion": "6.0.0",
-    "toVersion": "6.9.9",
-    "description": ""
+    "description": "Campaign Indicator Layout"
 }

@@ -1,4 +1,93 @@
 {
+    "edit": {
+        "sections": [
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "indicator_value",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_indicatortype",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_score",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_expiration",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_comment",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_investigationids",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Basic Information",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": "basicInformationSection"
+            },
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "indicator_communitynotes",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_description",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_stixid",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_tags",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_trafficlightprotocol",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Custom fields - core",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            },
+            {
+                "description": "",
+                "fields": [
+                    {
+                        "fieldId": "indicator_publications",
+                        "isVisible": true
+                    },
+                    {
+                        "fieldId": "indicator_published",
+                        "isVisible": true
+                    }
+                ],
+                "isVisible": true,
+                "name": "Custom fields - unique",
+                "query": null,
+                "queryType": "",
+                "readOnly": false,
+                "type": ""
+            }
+        ]
+    },
     "group": "indicator",
     "id": "STIX Report",
     "indicatorsDetails": {
@@ -24,44 +113,53 @@
                                 "startCol": 0
                             },
                             {
+                                "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "modified",
                                 "height": 22,
                                 "id": "dcbf9500-b30a-11eb-941c-e725acf1fbbc",
                                 "index": 1,
+                                "listId": "vug7e0qild-ceba8ff0-b30a-11eb-941c-e725acf1fbbc",
                                 "sectionItemType": "field",
-                                "startCol": 0,
-                                "dropEffect": "move",
-                                "listId": "vug7e0qild-ceba8ff0-b30a-11eb-941c-e725acf1fbbc"
+                                "startCol": 0
                             },
                             {
+                                "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "stixid",
                                 "height": 22,
                                 "id": "d500b3d0-b30a-11eb-941c-e725acf1fbbc",
                                 "index": 2,
+                                "listId": "vug7e0qild-ceba8ff0-b30a-11eb-941c-e725acf1fbbc",
                                 "sectionItemType": "field",
-                                "startCol": 0,
-                                "dropEffect": "move",
-                                "listId": "vug7e0qild-ceba8ff0-b30a-11eb-941c-e725acf1fbbc"
+                                "startCol": 0
+                            },
+                                                        {
+                                "endCol": 2,
+                                "fieldId": "reporttype",
+                                "height": 22,
+                                "id": "d6b393f0-b30a-11eb-941c-e725acf1fbbc",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
                             },
                             {
+                                "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "published",
                                 "height": 22,
                                 "id": "d9ab2910-b30a-11eb-941c-e725acf1fbbc",
-                                "index": 3,
+                                "index": 4,
+                                "listId": "vug7e0qild-ceba8ff0-b30a-11eb-941c-e725acf1fbbc",
                                 "sectionItemType": "field",
-                                "startCol": 0,
-                                "dropEffect": "move",
-                                "listId": "vug7e0qild-ceba8ff0-b30a-11eb-941c-e725acf1fbbc"
+                                "startCol": 0
                             },
                             {
                                 "endCol": 2,
                                 "fieldId": "downloadurl",
                                 "height": 22,
                                 "id": "057c7d60-81ae-11ec-a247-cfbd25dcdbb6",
-                                "index": 4,
+                                "index": 5,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -70,15 +168,6 @@
                                 "fieldId": "trafficlightprotocol",
                                 "height": 22,
                                 "id": "f47fc070-b30a-11eb-941c-e725acf1fbbc",
-                                "index": 5,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "reporttype",
-                                "height": 22,
-                                "id": "d6b393f0-b30a-11eb-941c-e725acf1fbbc",
                                 "index": 6,
                                 "sectionItemType": "field",
                                 "startCol": 0
@@ -88,7 +177,7 @@
                                 "fieldId": "tags",
                                 "height": 22,
                                 "id": "f2b8bc10-b30a-11eb-941c-e725acf1fbbc",
-                                "index": 6,
+                                "index": 7,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -102,7 +191,7 @@
                                 "fieldId": "",
                                 "height": 44,
                                 "id": "62bd3650-b313-11eb-941c-e725acf1fbbc",
-                                "index": 7,
+                                "index": 8,
                                 "name": "Add tags",
                                 "scriptId": "Builtin|||appendIndicatorField",
                                 "sectionItemType": "button",
@@ -119,7 +208,7 @@
                                 "fieldId": "",
                                 "height": 44,
                                 "id": "65ff41f0-b313-11eb-941c-e725acf1fbbc",
-                                "index": 7,
+                                "index": 8,
                                 "listId": "vug7e0qild-e3ab20a0-b30a-11eb-941c-e725acf1fbbc",
                                 "name": "Remove tags",
                                 "scriptId": "Builtin|||removeIndicatorField",
@@ -137,7 +226,10 @@
                         "y": 0
                     },
                     {
+                        "displayType": "ROW",
                         "h": 3,
+                        "hideItemTitleOnlyOne": true,
+                        "hideName": false,
                         "i": "vug7e0qild-ea684940-b30a-11eb-941c-e725acf1fbbc",
                         "items": [
                             {
@@ -157,10 +249,7 @@
                         "static": false,
                         "w": 1,
                         "x": 0,
-                        "y": 0,
-                        "displayType": "ROW",
-                        "hideItemTitleOnlyOne": true,
-                        "hideName": false
+                        "y": 0
                     },
                     {
                         "h": 3,
@@ -171,10 +260,10 @@
                         "moved": false,
                         "name": "Relationships",
                         "static": false,
+                        "type": "relationshipsTable",
                         "w": 2,
                         "x": 0,
-                        "y": 3,
-                        "type": "relationshipsTable"
+                        "y": 3
                     },
                     {
                         "h": 3,
@@ -185,10 +274,10 @@
                         "moved": false,
                         "name": "Timeline",
                         "static": false,
+                        "type": "indicatorTimeline",
                         "w": 1,
                         "x": 2,
-                        "y": 0,
-                        "type": "indicatorTimeline"
+                        "y": 0
                     },
                     {
                         "h": 3,
@@ -246,15 +335,15 @@
                                 "startCol": 0
                             },
                             {
+                                "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "modified",
                                 "height": 22,
                                 "id": "8717fb00-b30b-11eb-941c-e725acf1fbbc",
                                 "index": 1,
+                                "listId": "tpxxoxdvo8-59db5290-b30b-11eb-941c-e725acf1fbbc",
                                 "sectionItemType": "field",
-                                "startCol": 0,
-                                "dropEffect": "move",
-                                "listId": "tpxxoxdvo8-59db5290-b30b-11eb-941c-e725acf1fbbc"
+                                "startCol": 0
                             },
                             {
                                 "endCol": 2,
@@ -265,23 +354,23 @@
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
-                            {
-                                "endCol": 2,
-                                "fieldId": "published",
-                                "height": 22,
-                                "id": "8491ec60-b30b-11eb-941c-e725acf1fbbc",
-                                "index": 3,
-                                "sectionItemType": "field",
-                                "startCol": 0,
-                                "dropEffect": "move",
-                                "listId": "tpxxoxdvo8-59db5290-b30b-11eb-941c-e725acf1fbbc"
-                            },
-                            {
+                                                        {
                                 "endCol": 2,
                                 "fieldId": "reporttype",
                                 "height": 22,
                                 "id": "819c5310-b30b-11eb-941c-e725acf1fbbc",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "published",
+                                "height": 22,
+                                "id": "8491ec60-b30b-11eb-941c-e725acf1fbbc",
                                 "index": 4,
+                                "listId": "tpxxoxdvo8-59db5290-b30b-11eb-941c-e725acf1fbbc",
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -290,7 +379,7 @@
                                 "fieldId": "downloadurl",
                                 "height": 22,
                                 "id": "b5116120-8a4e-11ec-a1ef-6369524b39c7",
-                                "index": 4,
+                                "index": 5,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -299,7 +388,7 @@
                                 "fieldId": "trafficlightprotocol",
                                 "height": 22,
                                 "id": "920fe720-b30b-11eb-941c-e725acf1fbbc",
-                                "index": 5,
+                                "index": 6,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -308,7 +397,7 @@
                                 "fieldId": "tags",
                                 "height": 22,
                                 "id": "90370870-b30b-11eb-941c-e725acf1fbbc",
-                                "index": 6,
+                                "index": 7,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
@@ -357,10 +446,10 @@
                         "moved": false,
                         "name": "Comments",
                         "static": false,
+                        "type": "comments",
                         "w": 1,
                         "x": 0,
-                        "y": 6,
-                        "type": "comments"
+                        "y": 6
                     },
                     {
                         "h": 2,
@@ -406,7 +495,6 @@
     "name": "Report",
     "system": false,
     "version": -1,
-    "fromVersion": "6.0.0",
-    "toVersion": "6.9.9",
-    "description": ""
+    "fromVersion": "6.10.0",
+    "description": "Report Indicator Layout"
 }
