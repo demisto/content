@@ -3,6 +3,7 @@ import json
 import io
 import pytest
 from McAfeeNSMv2 import Client
+from CommonServerPython import *  # noqa: F401
 
 
 @pytest.fixture
@@ -1188,7 +1189,7 @@ def test_modify_v10_results_to_v9_format():
     assert modify_v10_results_to_v9_format(test_input) == excepted_output
 
 
-@pytest.mark.parametrize('input, output', [(None, [{'InterfaceId': 'mock'},{'InterfaceId': 'mock'}]), (1, [{'InterfaceId': 'mock'}])])
+@pytest.mark.parametrize('input, output', [(None, [{'InterfaceId': 'mock'}, {'InterfaceId': 'mock'}]), (1, [{'InterfaceId': 'mock'}])])
 def test_list_device_interface_command__with_and_without_limit(mocker, input, output, mcafeensmv2_client):
     """
     Given:
@@ -1204,7 +1205,8 @@ def test_list_device_interface_command__with_and_without_limit(mocker, input, ou
     res = list_device_interface_command(client=mcafeensmv2_client, args={"domain_id": 777, "device_id": 777, "limit": input})
     assert res.outputs == output
 
-@pytest.mark.parametrize('input, output', [(None, [{'PolicyId': 'mock'},{'PolicyId': 'mock'}]), (1, [{'PolicyId': 'mock'}])])
+
+@pytest.mark.parametrize('input, output', [(None, [{'PolicyId': 'mock'}, {'PolicyId': 'mock'}]), (1, [{'PolicyId': 'mock'}])])
 def test_list_device_policy_command__with_and_without_limit(mocker, input, output, mcafeensmv2_client):
     """
     Given:
@@ -1219,5 +1221,18 @@ def test_list_device_policy_command__with_and_without_limit(mocker, input, outpu
                         return_value={"policyAssignmentsList": [{"policyId": "mock"}, {"policyId": "mock"}]})
     res = list_device_policy_command(client=mcafeensmv2_client, args={"domain_id": 777, "limit": input})
     assert res.outputs == output
-    
-    
+
+
+def test_assign_interface_policy_command__without_policy(mocker, mcafeensmv2_client):
+    """
+    Given:
+    - A domain id and interface id with no policy.
+    When:
+    - nsm-assign_interface_policy_command command is executed.
+    Then:
+    - Confirm the output is as expected(error message).
+    """
+    from McAfeeNSMv2 import assign_interface_policy_command
+    with pytest.raises(DemistoException) as e:
+        assign_interface_policy_command(client=mcafeensmv2_client, args={"domain_id": 777, "interface_id": 777})
+    assert e.value.message == "Please provide at least one policy to assign"

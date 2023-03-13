@@ -2214,7 +2214,8 @@ def assign_interface_policy_command(client: Client, args: Dict) -> CommandResult
     firewall_policy = args.get('firewall_policy_name')
     firewall_port_policy = args.get('firewall_port_policy_name')
     ips_policy = args.get('ips_policy_name')
-    custom_policy_json = json.loads(args.get('custom_policy_json'))  # type: ignore
+    if args.get('custom_policy_json'):
+        custom_policy_json = json.loads(args.get('custom_policy_json'))  # type: ignore
 
     # Check if at least one policy was provided
     if len(args) < 3:
