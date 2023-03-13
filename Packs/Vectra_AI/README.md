@@ -5,6 +5,8 @@ Learn more at [Vectra Website](https://www.vectra.ai).
 
 This pack is designed to quickly integrate with Vectra Detect platform to detect and analyze malicious attacks in progress by creating incident based on Accounts, Hosts or Detections. It gives security engineers visibility into advanced threats to speed detection and remediation response times.
 
+This pack includes Cortex XSIAM content.
+
 ## What does this pack do?
 
 * Mirrors incidents between Cortex XSOAR incidents and Vectra Detect Accounts, Hosts and Detections alerts.
@@ -12,6 +14,7 @@ This pack is designed to quickly integrate with Vectra Detect platform to detect
 * Download detection PCAP
 * Push tags to Vectra Detect platform
 * Create/Update/Resolve Vectra assignments
+* Create XSIAM Events from Detections and Audits
 
 ## Before you start
 
@@ -27,4 +30,3 @@ To get up and running with this pack, you must have a valid API token on your Ve
 
 It can be retrieved from the Vectra UI > My Profile > General \(tab\) > API Token.  
 Be sure that the user has a role with sufficient permissions to do all the actions.
-
