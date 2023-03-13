@@ -2,9 +2,10 @@ commonfields:
   id: CiscoWSA
   version: -1
 name: CiscoWSA
-display: CiscoWSA
+display: CiscoWSA (Deprecated)
 category: Utilities
-description: Cisco WSA
+deprecated: true
+description: Deprecated. Use CiscoWSAV2 instead.
 configuration:
 - display: "Server URL"
   name: url
@@ -120,4 +121,4 @@ script:
   subtype: python3
 fromversion: 6.0.0
 tests:
-- No tests (auto formatted)
+- No tests (deprecated)
