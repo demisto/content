@@ -345,13 +345,13 @@ def test_get_audits_to_send_not_first_fetch(
 
 
 @pytest.mark.parametrize(
-    "event,expected_time",
+    "event,expected_time,format",
     [
-        (DETECTIONS.get("results")[0], "2022-09-01T02:15:48.000Z"),
-        (AUDITS.get("audits")[0], "1970-01-20T09:46:04.000Z"),
+        (DETECTIONS.get("results")[0], "2022-09-01T02:15:48.000Z", XSIAM_TIME_FORMAT),
+        (AUDITS.get("audits")[0], "2023-02-19T00:00:03.000Z", XSIAM_TIME_FORMAT),
     ],
 )
-def test_add_parsing_rules(event: Dict[str, Any], expected_time: str):
+def test_add_parsing_rules(event: Dict[str, Any], expected_time: str, format: str):
     """
     Given: An Event.
 
@@ -360,11 +360,11 @@ def test_add_parsing_rules(event: Dict[str, Any], expected_time: str):
         - Case B: The event is an audit.
 
     Then:
-        - Case A/B: The event should have a property _time in format %Y-%m-%dT%H:%M:%S.000Z.
+        - Case A/B: The event should have a property _time in format XSIAM_TIME_FORMAT.
     """
 
     actual = add_parsing_rules(event)
 
     assert "_time" in actual
     assert actual["_time"] == expected_time
-    assert datetime.strptime(actual["_time"], XSIAM_TIME_FORMAT)
+    assert datetime.strptime(actual["_time"], format)

@@ -135,7 +135,9 @@ def add_parsing_rules(event: Dict[str, Any]) -> Dict[str, Any]:
             ).strftime(XSIAM_TIME_FORMAT)
         # Process Audit
         else:
-            event[parsing_rules_to_add[0]] = timestamp_to_datestring(event.get(AUDIT_TIMESTAMP_KEY))
+            event[parsing_rules_to_add[0]] = timestamp_to_datestring(
+                float(event.get(AUDIT_TIMESTAMP_KEY)) * 1000
+            )
 
         return event
 
