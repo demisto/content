@@ -21,7 +21,7 @@ function UpdateIntegrationContext([OAuth2DeviceCodeClient]$client) {
         "AccessTokenCreationTime" = $client.access_token_creation_time
     }
 
-    $Demisto.setIntegrationContext($integration_context)
+    SetIntegrationContext $integration_context
     <#
         .DESCRIPTION
         Update integration context from OAuth2DeviceCodeClient client
@@ -255,7 +255,7 @@ class OAuth2DeviceCodeClient {
     }
 
     static [OAuth2DeviceCodeClient]CreateClientFromIntegrationContext([bool]$insecure, [bool]$proxy) {
-        $ic = $script:Demisto.getIntegrationContext()
+        $ic = GetIntegrationContext
         $client = [OAuth2DeviceCodeClient]::new($ic.DeviceCode, $ic.DeviceCodeExpiresIn, $ic.DeviceCodeCreationTime, $ic.AccessToken, $ic.RefreshToken,
             $ic.AccessTokenExpiresIn, $ic.AccessTokenCreationTime, $insecure, $proxy)
 
@@ -1332,10 +1332,28 @@ function Main {
     $proxy = (ConvertTo-Boolean $integration_params.proxy)
 
     try {
+        # Executing command
+        $Demisto.Debug("Command being called is $Command")
+
         # Creating Compliance and search client
         $oauth2_client = [OAuth2DeviceCodeClient]::CreateClientFromIntegrationContext($insecure, $no_proxy)
+
+        switch ($command) {
+            "$script:COMMAND_PREFIX-auth-start" {
+                ($human_readable, $entry_context, $raw_response) = StartAuthCommand $oauth2_client
+            }
+            "$script:COMMAND_PREFIX-auth-complete" {
+                ($human_readable, $entry_context, $raw_response) = CompleteAuthCommand $oauth2_client
+            }
+        }
+
         # Refreshing tokens if expired
-        $oauth2_client.RefreshTokenIfExpired()
+        # Need to complete auth before requesting access token
+        if ($command -ne "$script:COMMAND_PREFIX-auth-start")
+        {
+            $oauth2_client.RefreshTokenIfExpired()
+        }
+
         # Creating ExchangeOnline client
         $exo_client = [ExchangeOnlineClient]::new(
                 $integration_params.url,
@@ -1345,17 +1363,10 @@ function Main {
                 $insecure,
                 $proxy
         )
-        # Executing command
-        $Demisto.Debug("Command being called is $Command")
+
         switch ($command) {
             "test-module" {
                 ($human_readable, $entry_context, $raw_response) = TestModuleCommand $oauth2_client $exo_client
-            }
-            "$script:COMMAND_PREFIX-auth-start" {
-                ($human_readable, $entry_context, $raw_response) = StartAuthCommand $oauth2_client
-            }
-            "$script:COMMAND_PREFIX-auth-complete" {
-                ($human_readable, $entry_context, $raw_response) = CompleteAuthCommand $oauth2_client
             }
             "$script:COMMAND_PREFIX-auth-test" {
                 ($human_readable, $entry_context, $raw_response) = TestAuthCommand $oauth2_client $exo_client
