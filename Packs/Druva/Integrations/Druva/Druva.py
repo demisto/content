@@ -1,11 +1,9 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import base64
 
-import requests
-
-import demistomock as demisto
-from CommonServerPython import *
-
-requests.packages.urllib3.disable_warnings()
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.SecurityWarning)
 
 
 class Client(BaseClient):
@@ -37,12 +35,36 @@ class Client(BaseClient):
 
     def get_findDevice(self, search_string):
         params = {'hostname': search_string}
-        return self._http_request(method='GET', url_suffix='/realize/ransomwarerecovery/v1/search/resource',
+        return self._http_request(method='GET', url_suffix='/realize/ransomwarerecovery/v1/search/backupset',
                                   params=params, resp_type='response')
 
-    def post_quarantineResource(self, resource_id, resource_type, from_date, to_date):
-        json_data = {'resourceType': resource_type, 'fromDate': from_date, 'toDate': to_date}
-        url_suffix = '/realize/ransomwarerecovery/v1/quarantineranges/resource/' + resource_id
+    def get_findUser(self, user_string):
+        params = {'users': user_string}
+        return self._http_request(method='GET', url_suffix='realize/ransomwarerecovery/v1/users',
+                                  params=params, resp_type='response')
+
+    def get_findUserDevice(self,userId):
+        params = {'users[]':userId,'resourceTypes[]':['Endpoint','OneDrive','Google Drive']}
+        return self._http_request(method='GET', url_suffix='realize/ransomwarerecovery/v1/search/device',
+                                  params=params, resp_type='response')
+
+    def get_findSharePointSites(self,search_string):
+        params = {'siteTitlePrefix': search_string}
+        return self._http_request(method='GET', url_suffix='/realize/ransomwarerecovery/v1/search/sharepoint-sites',
+                                  params=params, resp_type='response')
+
+    def get_findSharedDrives(self,search_string):
+        params = {'accountTitlePrefix': search_string}
+        return self._http_request(method='GET', url_suffix='/realize/ransomwarerecovery/v1/search/shareddrive-accounts',
+                                  params=params, resp_type='response')
+
+
+    def post_quarantineResource(self,org_id,resource_id, resource_type, from_date, to_date):
+        if org_id is not None:
+            org_id=int(org_id)
+        json_data = {'orgID':org_id,'resourceType': resource_type, 'fromDate': from_date, 'toDate': to_date}
+
+        url_suffix = '/realize/ransomwarerecovery/v1/quarantineranges/resource/' + str(resource_id)
         return self._http_request(method='POST', url_suffix=url_suffix, json_data=json_data, resp_type='response')
 
     def delete_quarantineRange(self, resource_id, range_id):
@@ -122,9 +144,60 @@ def Druva_FindDevice_Command(clientObj, search_string):
     else:
         raise RuntimeError('Error: ' + str(response.status_code))
 
+def Druva_FindUser_Command(clientObj, user_string):
+    response = clientObj.get_findUser(user_string)
+    statusCode = response.status_code
+    if (statusCode==200):
+        responseJson = response.json()
+        readable_output = tableToMarkdown('Found Druva users', responseJson['users'])
+        outputs = {"Druva.User(val.userID == obj.userID)": responseJson['users']}
+        raw_response = responseJson
+        return (readable_output, outputs, raw_response)
 
-def Druva_QuarantineResource_Command(clientObj, resource_id, resource_type, from_date, to_date):
-    response = clientObj.post_quarantineResource(resource_id, resource_type, from_date, to_date)
+    else:
+        raise RuntimeError('Error: ' + str(response.status_code))
+
+def Druva_FindUserDevice_Command(clientObj, userID):
+    response = clientObj.get_findUserDevice(userID)
+    statusCode = response.status_code
+    if (statusCode == 200):
+        responseJson = response.json()
+        readable_output = tableToMarkdown('Found Druva Devices', responseJson['resources'])
+        outputs = {"Druva.Resource(val.resourceID == obj.resourceID)": responseJson['resources']}
+        raw_response = responseJson
+        return (readable_output, outputs, raw_response)
+
+    else:
+        raise RuntimeError('Error: ' + str(response.status_code))
+
+def Druva_FindSharePointSites_Command(clientObj,search_string):
+    response = clientObj.get_findSharePointSites(search_string)
+    statusCode = response.status_code
+    if (statusCode == 200):
+        responseJson = response.json()
+        readable_output = tableToMarkdown('Found Druva Devices', responseJson['siteCollections'])
+        outputs = {"Druva.Resource(val.resourceID == obj.resourceID)": responseJson['siteCollections']}
+        raw_response = responseJson
+        return (readable_output, outputs, raw_response)
+
+    else:
+        raise RuntimeError('Error: ' + str(response.status_code))
+
+def Druva_FindSharedDrives_Command(clientObj,search_string):
+    response = clientObj.get_findSharedDrives(search_string)
+    statusCode = response.status_code
+    if (statusCode == 200):
+        responseJson = response.json()
+        readable_output = tableToMarkdown('Found Druva Devices', responseJson['accountList'])
+        outputs = {"Druva.Resource(val.resourceID == obj.resourceID)": responseJson['accountList']}
+        raw_response = responseJson
+        return (readable_output, outputs, raw_response)
+
+    else:
+        raise RuntimeError('Error: ' + str(response.status_code))
+
+def Druva_QuarantineResource_Command(clientObj,org_id,resource_id, resource_type, from_date, to_date):
+    response = clientObj.post_quarantineResource(org_id,resource_id, resource_type, from_date, to_date)
     statusCode = response.status_code
     if (statusCode == 200):
         responseJson = response.json()
@@ -282,12 +355,29 @@ def main():
             search_string = demisto.args().get('search_string')
             return_outputs(*Druva_FindDevice_Command(clientObj, search_string))
 
+        if command == 'druva-find-user':
+            user_string=demisto.args().get('user_string')
+            return_outputs(*Druva_FindUser_Command(clientObj,user_string))
+
+        if command == 'druva-find-userDevice':
+            userID=demisto.args().get('userID')
+            return_outputs(*Druva_FindUserDevice_Command(clientObj,userID))
+
+        if command == 'druva-find-sharePointSites':
+            Site=demisto.args().get('search_string')
+            return_outputs(*Druva_FindSharePointSites_Command(clientObj,Site))
+
+        if command == 'druva-find-sharedDrives':
+            Site=demisto.args().get('search_string')
+            return_outputs(*Druva_FindSharedDrives_Command(clientObj,Site))
+
         if command == 'druva-quarantine-resource':
+            org_id=demisto.args().get('org_id')
             resource_id = demisto.args().get('resource_id')
             resource_type = demisto.args().get('resource_type')
             from_date = demisto.args().get('from_date')
             to_date = demisto.args().get('to_date')
-            return_outputs(*Druva_QuarantineResource_Command(clientObj, resource_id, resource_type, from_date, to_date))
+            return_outputs(*Druva_QuarantineResource_Command(clientObj,org_id,resource_id, resource_type, from_date, to_date))
             return_outputs(*Druva_ListQuarantineRanges_Command(clientObj))
 
         if command == 'druva-delete-quarantine-range':
@@ -339,9 +429,16 @@ def main():
             restore_id = demisto.args().get('restore_id')
             return_outputs(*Druva_Restore_Status(clientObj, restore_id))
 
-        if command == 'druva-endpoint-decommission':
-            resource_id = demisto.args().get('resource_id')
-            return_outputs(*Druva_Decommission(clientObj, resource_id))
+
+
+        if command == 'hi-command':
+            cur=str(demisto.args().get('name'))
+
+            if demisto.args().get('name') is not None:
+                demisto.results(cur)
+            else:
+                demisto.results("---------------")
+
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
@@ -355,3 +452,4 @@ def main():
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
+

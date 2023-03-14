@@ -1,5 +1,3 @@
-
-
 def test_Druva_FindDevice_Command(requests_mock):
     from Druva import Client, Druva_FindDevice_Command
     mock_response = {'resources': [{
@@ -10,7 +8,7 @@ def test_Druva_FindDevice_Command(requests_mock):
         'resourceStatus': 'enabled',
         'resourceType': 'endpoint'
     }]}
-    requests_mock.get('https://apis.druva.com/realize/ransomwarerecovery/v1/search/resource?hostname=test',
+    requests_mock.get('https://apis.druva.com/realize/ransomwarerecovery/v1/search/backupset?hostname=test',
                       json=mock_response)
     client = Client(
         base_url='https://apis.druva.com/',
@@ -29,8 +27,116 @@ def test_Druva_FindDevice_Command(requests_mock):
         'resourceStatus': 'enabled',
         'resourceType': 'endpoint'
     }]
-
-
+def test_Druva_FindUser_Command(requests_mock):
+    from Druva import Client, Druva_FindUser_Command
+    mock_response = {"users": [{
+        "userID": "100",
+        "userName": "test",
+        "emailID": "test@druva.org"
+    }]}
+    requests_mock.get('https://apis.druva.com/realize/ransomwarerecovery/v1/users?users=test',
+                      json=mock_response)
+    client = Client(
+        base_url='https://apis.druva.com/',
+        verify=False,
+        headers={
+            'Authentication': 'Bearer some_api_key'
+        }
+    )
+    search_string = 'test'
+    response = Druva_FindUser_Command(client, search_string)
+    assert response[1]["Druva.User(val.userID == obj.userID)"] == [{
+        "userID": "100",
+        "userName": "test",
+        "emailID": "test@druva.org"
+    }]
+def test_Druva_FindUserDevice_Command(requests_mock):
+    from Druva import Client, Druva_FindUserDevice_Command
+    mock_response = {"resources": [{
+      "resourceID": "100",
+      "resourceName": "test",
+      "resourceType": "OneDrive",
+      "resourceStatus": "Enabled",
+      "userID": "100",
+      "userName": "test",
+      "profileID": "100"
+    }]}
+    requests_mock.get('https://apis.druva.com/realize/ransomwarerecovery/v1/search/device',
+                      json=mock_response)
+    client = Client(
+        base_url='https://apis.druva.com/',
+        verify=False,
+        headers={
+            'Authentication': 'Bearer some_api_key'
+        }
+    )
+    search_string = '100'
+    response = Druva_FindUserDevice_Command(client, search_string)
+    assert response[1]["Druva.Resource(val.resourceID == obj.resourceID)"] == [{
+      "resourceID": "100",
+      "resourceName": "test",
+      "resourceType": "OneDrive",
+      "resourceStatus": "Enabled",
+      "userID": "100",
+      "userName": "test",
+      "profileID": "100"
+    }]
+def test_Druva_FindSharePointSites_Command(requests_mock):
+    from Druva import Client, Druva_FindSharePointSites_Command
+    mock_response = {"siteCollections": [{
+      "resourceID": "1",
+      "resourceName": "test",
+      "resourceType": "SharePoint",
+      "resourceStatus": "Disabled",
+      "resourceParentName": "https://druvainternal.sharepoint.com/sites/msteams_88b98c_693649-private123__0_",
+      "siteType": "M365 Groups Site"
+    }]}
+    requests_mock.get('https://apis.druva.com/realize/ransomwarerecovery/v1/search/sharepoint-sites?siteTitlePrefix=test',
+                      json=mock_response)
+    client = Client(
+        base_url='https://apis.druva.com/',
+        verify=False,
+        headers={
+            'Authentication': 'Bearer some_api_key'
+        }
+    )
+    search_string = 'test'
+    response = Druva_FindSharePointSites_Command(client, search_string)
+    assert response[1]["Druva.Resource(val.resourceID == obj.resourceID)"] == [{
+      "resourceID": "1",
+      "resourceName": "test",
+      "resourceType": "SharePoint",
+      "resourceStatus": "Disabled",
+      "resourceParentName": "https://druvainternal.sharepoint.com/sites/msteams_88b98c_693649-private123__0_",
+      "siteType": "M365 Groups Site"
+    }]
+def test_Druva_FindSharedDrives_Command(requests_mock):
+    from Druva import Client, Druva_FindSharedDrives_Command
+    mock_response = {'accountList': [{
+      'resourceID': '1',
+      'resourceName':'test',
+      'resourceType': 'Shared Drive',
+      'resourceStatus': 'Enabled',
+      'resourceParentName': 'https://drive.google.com/drive/folders/0ADBm3g-NG_F4Uk9PVA'
+    }]}
+    requests_mock.get('https://apis.druva.com/realize/ransomwarerecovery/v1/search/shareddrive-accounts?accountTitlePrefix=test',
+                      json=mock_response)
+    client = Client(
+        base_url='https://apis.druva.com/',
+        verify=False,
+        headers={
+            'Authentication': 'Bearer some_api_key'
+        }
+    )
+    search_string = 'test'
+    response = Druva_FindSharedDrives_Command(client, search_string)
+    assert response[1]["Druva.Resource(val.resourceID == obj.resourceID)"] == [{
+      'resourceID': '1',
+      'resourceName':'test',
+      'resourceType': 'Shared Drive',
+      'resourceStatus': 'Enabled',
+      'resourceParentName': 'https://drive.google.com/drive/folders/0ADBm3g-NG_F4Uk9PVA'
+    }]
 def test_Druva_ListQuarantineRanges_Command(requests_mock):
     from Druva import Client, Druva_ListQuarantineRanges_Command
     mock_response = {'quarantineRanges': [{
@@ -75,12 +181,13 @@ def test_Druva_QuarantineResource_Command(requests_mock):
             'Authentication': 'Bearer some_api_key'
         }
     )
+    org_id='-1'
     resource_id = '12345'
     resource_type = 'endpoint'
     from_date = '2020-12-01'
     to_date = '2020-12-10'
 
-    response = Druva_QuarantineResource_Command(client, resource_id, resource_type, from_date, to_date)
+    response = Druva_QuarantineResource_Command(client, org_id,resource_id, resource_type, from_date, to_date)
     assert response[1]["Druva.QuarantinedRangeID"] == '100'
 
 

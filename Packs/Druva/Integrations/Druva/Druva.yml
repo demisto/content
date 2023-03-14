@@ -15,10 +15,67 @@ configuration:
   name: clientId
   type: 4
   required: true
+  defaultvalue: K7QYkjixOag7f2P0J/t2sgXq9NMsbzj/
 - display: Secret Key
   name: secretKey
   type: 4
   required: true
+  defaultvalue: 7AHzEWu9yYgjeB4GdWVs9QopoWRlIGc3
+- display: Fetch indicators
+  name: feed
+  type: 8
+  required: false
+- display: Indicator Verdict
+  name: feedReputation
+  type: 18
+  required: false
+  options:
+  - Unknown
+  - None
+  - Benign
+  - Good
+  - Suspicious
+  - Malicious
+  - Bad
+  additionalinfo: Indicators from this integration instance will be marked with this verdict
+- display: Source Reliability
+  name: feedReliability
+  defaultvalue: F - Reliability cannot be judged
+  type: 15
+  required: true
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  additionalinfo: Reliability of the source providing the intelligence data
+- display: ""
+  name: feedExpirationPolicy
+  defaultvalue: indicatorType
+  type: 17
+  required: false
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+- display: ""
+  name: feedExpirationInterval
+  defaultvalue: "20160"
+  type: 1
+  required: false
+- display: Feed Fetch Interval
+  name: feedFetchInterval
+  defaultvalue: "240"
+  type: 19
+  required: false
+- display: Bypass exclusion list
+  name: feedBypassExclusionList
+  type: 8
+  required: false
+  additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
 script:
   script: ''
   type: python
@@ -40,6 +97,8 @@ script:
     - contextPath: Druva.Resource.resourceParent
       description: The name of the resource user for a device or server.
       type: string
+    - contextPath: Druva.Resource.orgID
+      description: 'The Organisation ID of device '
     description: Finds device information for a specific hostname.
   - name: druva-list-quarantine-ranges
     arguments: []
@@ -73,10 +132,12 @@ script:
     - name: resource_type
       required: true
       description: 'The resource type to quarantine. Can be: "Endpoint", "File Server", or "NAS".'
+    - name: org_id
+      description: 'Specify your org id for NAS and File server for End points set org_id to -1'
     - name: from_date
       description: 'Date from which a quarantine range should start. If not provided, it is considered open ended. For example, 2020-10-25.'
     - name: to_date
-      description: 'Date from which a quarantine range should end. If not provided, it is considered open ended. For example, 2020-10-25.'
+      description: Date from which a quarantine range should end. If not provided, it is considered open ended. For example, 2020-10-25.
     outputs:
     - contextPath: Druva.QuarantinedRangeID
       description: The range ID of the Quarantined Resource.
@@ -198,8 +259,54 @@ script:
       description: ID of endpoint resource to be decommissioned
     description: 'Wipes remotely an infected Endpoint Resource and deletes a quarantined Snapshot. This command remote wipes data from the endpoint. This action cannot be undone.'
     execution: true
-  dockerimage: demisto/python3:3.9.8.24399
-  isfetch: false
+  - name: druva-find-user
+    arguments:
+    - name: user_string
+      required: true
+      description: Complete user name or p
+    outputs:
+    - contextPath: Druva.User.userID
+      description: The full string or prefix from the user name to search.
+    description: Finds user information for a specific username.
+  - name: druva-find-userDevice
+    arguments:
+    - name: userID
+      required: true
+      description: The userID to search.
+    outputs:
+    - contextPath: Druva.Resource.resourceID
+      description: The ID of the Resource.
+      type: string
+    - contextPath: Druva.Resource.resourceType
+      description: The type of the Resource.
+      type: string
+    description: Finds device information for a specific user.
+  - name: druva-find-sharePointSites
+    arguments:
+    - name: search_string
+      required: true
+      description: The full string or prefix from the share point url to search.
+    outputs:
+    - contextPath: Druva.Resource.resourceID
+      description: The ID of the Resource.
+    - contextPath: Druva.Resource.resourceType
+      description: The type of the Resource.
+    description: 'Find all share point resources with given user name '
+  - name: druva-find-sharedDrives
+    arguments:
+    - name: search_string
+      required: true
+      description: The full string or prefix from the share drive name to search.
+    outputs:
+    - contextPath: Druva.Resource.resourceID
+      description: The ID of the Resource.
+    - contextPath: Druva.Resource.resourceType
+      description: The type of the Resource.
+    description: Finds shared drives resources specific to share drive name
+  dockerimage: demisto/python3:3.10.10.48392
   runonce: false
   subtype: python3
+  longRunningPort: true
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
