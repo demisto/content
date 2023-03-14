@@ -3394,11 +3394,11 @@ script:
     description: Delete the IOA exclusions by ID.
     name: cs-falcon-delete-ioa-exclusion
   - arguments:
-    - description: A custom filter by which the exclusions should be filtered. For example `value:”<value>”`.
+    - description: A custom filter by which the exclusions should be filtered. For example `name:”<name>”`.
       name: filter
       required: false
-    - description: The value by which the exclusions should be filtered.
-      name: value
+    - description: The name by which the exclusions should be filtered.
+      name: name
       required: false
     - description: The IDs of the exclusions to retrieve. The IDs overwrite the filter and value.
       name: ids

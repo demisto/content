@@ -4412,7 +4412,7 @@ def search_ioa_exclusion_command(args):
             offset=args.get('offset')
         )
         if name := args.get('name'):
-            ids = get_exclusions('ioa', f'name:{name}', search_args).get('resources')
+            ids = get_exclusions('ioa', f"name:'{name}'", search_args).get('resources')
         else:
             ids = get_exclusions('ioa', args.get('filter'), search_args).get('resources')
 
