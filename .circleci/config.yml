@@ -379,7 +379,7 @@ workflows:
     when:
       matches:
         # matching the environment variable "CIRCLE_BRANCH" from the setup environment step.
-        pattern: /^pull.*/
+        pattern: pull/[0-9]+
         value: << pipeline.git.branch >>
     jobs:
       - Setup Environment
