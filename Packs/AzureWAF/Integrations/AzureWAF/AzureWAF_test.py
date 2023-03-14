@@ -438,7 +438,7 @@ def test_resource_group_list_command(mocker):
     )
     expected_results = {
         'method': 'GET',
-        'full_url': 'https://management.azure.com/subscriptions/pol1/resourcegroups?api-version=2020-05-01&$filter=&top=10',
+        'full_url': 'https://management.azure.com/subscriptions/pol1/resourcegroups?$top=10&api-version=2020-05-01',
     }
     demisto_args = {
         'subscription_id': 'pol1',
