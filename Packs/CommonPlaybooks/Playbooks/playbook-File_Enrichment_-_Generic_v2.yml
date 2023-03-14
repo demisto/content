@@ -377,6 +377,8 @@ tasks:
     isautoswitchedtoquietmode: false
     isoversize: false
     nexttasks:
+      '#default#':
+      - "7"
       "yes":
       - "34"
     note: false
