@@ -100,7 +100,7 @@ def handle_html(htmlBody):
             'maintype': maintype,
             'subtype': subtype,
             'data': base64.b64decode(m.group(3)),
-            'name': 'image%d.%s' % (i, subtype)
+            'name': f'image{i}.{subtype}'
         }
         att['cid'] = f"{att['name']}@{randomword(8)}.{randomword(8)}"
         attachments.append(att)
@@ -170,8 +170,8 @@ def collect_attachments():
                 'cid': cid
             })
         except Exception as ex:
-            demisto.error("Invalid entry {} with exception: {}".format(aid, ex))
-            return_error_mail_sender('Entry %s is not valid or is not a file entry' % (aid))
+            demisto.error(f'Invalid entry {aid} with exception: {ex}')
+            return_error_mail_sender(f'Entry {aid} is not valid or is not a file entry')
 
     # handle transient files
     args = demisto.args()
@@ -210,7 +210,7 @@ def template_params():
             try:
                 params = json.loads(paramsStr)
             except (ValueError, TypeError) as e:
-                return_error_mail_sender('Unable to parse templateParams: %s' % (str(e)))
+                return_error_mail_sender(f'Unable to parse templateParams: {str(e)}')
         # Build a simple key/value
         for p in params:
             if params[p].get('value'):
@@ -224,7 +224,7 @@ def header(s):
     if not s:
         return None
     s_no_newlines = ' '.join(s.splitlines())
-    return Header(s_no_newlines, UTF_8)
+    return Header(s_no_newlines)
 
 
 def create_msg():
@@ -402,5 +402,5 @@ def main():
 
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ == "__builtin__" or __name__ == "builtins" or __name__ == "__main__":
+if __name__ in ['__main__', '__builtin__', 'builtins']:
     main()
