@@ -1471,8 +1471,7 @@ def file_result_creator(raw_response: dict) -> dict:
         data = base64.b64decode(data)  # type: ignore
         return fileResult(name, data)
     except binascii.Error:
-        return_error('Attachment could not be decoded')
-        return {}  # return_error will exit
+        raise DemistoException('Attachment could not be decoded')
 
 
 def item_result_creator(raw_response, user_id) -> CommandResults:
