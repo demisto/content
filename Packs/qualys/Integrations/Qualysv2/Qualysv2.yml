@@ -549,7 +549,7 @@ script:
       auto: PREDEFINED
     - auto: PREDEFINED
       defaultValue: Basic
-      description: '(Optional) Show the requested amount of host information for each host. A valid value is: Basic, Basic/AGs, All, All/AGs, or None.'
+      description: '(Optional) Show the requested amount of host information for each host. A valid value is: Basic, Basic/AGs, All, All/AGs, or None. AGs is equal to Asset Groups'
       name: details
       predefined:
       - Basic
