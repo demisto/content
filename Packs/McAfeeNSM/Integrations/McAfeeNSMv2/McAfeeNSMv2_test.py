@@ -1238,19 +1238,26 @@ def test_assign_interface_policy_command__without_no_policy(mcafeensmv2_client):
     assert e.value.message == "Please provide at least one policy to assign"
 
 
-def test_list_device_policy_command__with_limit_and_all_results(mocker, mcafeensmv2_client):
+@pytest.mark.parametrize('input, output', [({"interface_id": None,
+                                             "return_value": {"policyAssignmentsList": [{"policyId": "mock"},
+                                                                                        {"policyId": "mock"}]}},
+                                            [{'PolicyId': 'mock'}, {'PolicyId': 'mock'}]),
+                                           ({"interface_id": 777,
+                                             "return_value": [{"policyId": "mock"}, {"policyId": "mock"}]},
+                                            [{'PolicyId': 'mock'}, {'PolicyId': 'mock'}])])
+def test_list_interface_policy_command__with_multiple_different_arguments(mocker, mcafeensmv2_client, input, output):
     """
         Given:
-        - A domain id and device id.
+        - A domain id and or not device id, and limit and all_results is true.
         When:
         - nsm-list_device_policy_command command is executed.
         Then:
         - Confirm the output is as expected(all the results - ignoring the limit, and the capitalization).
     """
-    from McAfeeNSMv2 import list_device_policy_command
-    mocker.patch.object(mcafeensmv2_client, 'list_device_policy_request',
-                        return_value={"policyAssignmentsList": [{"policyId": "mock"}, {"policyId": "mock"}]})
-    res = list_device_policy_command(client=mcafeensmv2_client, args={"domain_id": 777, "device_id": 777,
-                                                                      "limit": 1, "all_results": True})
-    assert res.outputs == [{'PolicyId': 'mock'}, {'PolicyId': 'mock'}]
-
+    from McAfeeNSMv2 import list_interface_policy_command
+    mocker.patch.object(mcafeensmv2_client, 'list_interface_policy_request',
+                        return_value=input.get("return_value"))
+    res = list_interface_policy_command(client=mcafeensmv2_client,
+                                        args={"domain_id": 777, "interface_id": input.get("interface_id"),
+                                              "limit": 1, "all_results": True})
+    assert res.outputs == output
