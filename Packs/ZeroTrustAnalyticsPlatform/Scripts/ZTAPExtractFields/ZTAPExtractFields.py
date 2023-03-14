@@ -1,9 +1,14 @@
-from CommonServerPython import *
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
 
 from typing import Dict, Any, List
 import traceback
 
 """ STANDALONE FUNCTION """
+
+
+print("TESTING2")
 
 
 def extract_fields(value) -> List:
