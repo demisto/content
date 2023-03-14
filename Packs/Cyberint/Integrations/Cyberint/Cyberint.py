@@ -591,7 +591,7 @@ def fetch_incidents(
             alert['alert_data']['csv'] = extracted_csv_data
 
         alert_name = f'Cyberint alert {alert_id}: {alert_title}'
-        alert.update({'duplicated_alert_id': alert_name})
+        alert.update({'alert_name': alert_name})
 
         incident = {
             'name': alert_name,
@@ -607,7 +607,7 @@ def fetch_incidents(
                 alert.update({'attachments': alert_data})
 
                 alert_name = f'Cyberint alert {alert_id} ({index+1}): {alert_title}'
-                alert.update({'duplicated_alert_id': alert_name})
+                alert.update({'alert_name': alert_name})
 
                 incident.update({
                     'name': alert_name,
