@@ -102,7 +102,7 @@ def handle_html(htmlBody):
             'data': base64.b64decode(m.group(3)),
             'name': 'image%d.%s' % (i, subtype)
         }
-        att['cid'] = '%s@%s.%s' % (att['name'], randomword(8), randomword(8))
+        att['cid'] = f"{att['name']}@{randomword(8)}.{randomword(8)}"
         attachments.append(att)
         cleanBody += htmlBody[lastIndex:m.start(1)] + 'cid:' + att['cid']
         lastIndex = m.end() - 1
@@ -392,7 +392,7 @@ def main():
         else:
             return_error_mail_sender('Command not recognized')
     except SMTPRecipientsRefused as e:
-        error_msg = ''.join('{}\n'.format(val) for key, val in e.recipients.iteritems())
+        error_msg = ''.join('{}\n'.format(val) for key, val in e.recipients.items())
         return_error_mail_sender("Encountered error: {}".format(error_msg))
     except Exception as e:
         return_error_mail_sender(e)
