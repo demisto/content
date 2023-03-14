@@ -21,6 +21,7 @@ def extract_email(email_address: str) -> str:
     email_address = email_address.lower()
 
     if {"=", "?"}.issubset(set(email_address)):
+        # If we find these chars in a string it means the regex caught it as part of a url query and needs pruning.
         email_address = extract_email_from_url_query(email_address)
 
     email_format = re.compile("[<(\[{\"\'.]*"
@@ -69,14 +70,13 @@ def refang_email(email_address: str) -> str:
 def extract_email_from_url_query(email_address: str) -> str:
     """
     As most characters are valid in the content part of an email the regex can sometimes
-    catch a full URL path. This function will extract only the email from the path and query
-    that were returned.
+    catch a the email as part of a URL query. This function will extract only the email from it.
 
     Args:
-        email_address (str): extracted raw email address (with query and path)
+        email_address (str): extracted raw email address (within a query)
 
     Returns:
-        str: only the email address
+        str: an email address
     """
 
     extracted_email = re.match('(.*?)=', email_address[::-1])
