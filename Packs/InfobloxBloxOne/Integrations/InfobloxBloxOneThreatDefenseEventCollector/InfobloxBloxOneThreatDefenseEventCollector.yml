@@ -3,54 +3,71 @@ commonfields:
   id: InfobloxBloxOneThreatDefenseEventCollector
   version: -1
 configuration:
-- displaypassword: Service API Key
-  name: credentials
-  required: true
-  hiddenusername: true
-  type: 9
-  section: Connect
-- display: First fetch time interval
-  name: first_fetch
-  type: 0
-  defaultvalue: 1 day
-  required: false
-  section: Collect
-- additionalinfo: The maximum amount of events to retrieve for each event type (up to 10000 events). For more information about event types see the help section.
-  defaultvalue: "1000"
-  display: Max events per fetch
-  section: Collect
-  hidden: false
-  name: max_fetch
-  required: false
-  type: 0
-- display: Trust any certificate (not secure)
-  name: insecure
-  required: false
-  type: 8
-- display: Use system proxy settings
-  name: proxy
-  required: false
-  type: 8
-description: "[Enter a comprehensive, yet concise, description of what the integration does, what use cases it is designed for, etc.]"
+  - displaypassword: Service API Key
+    name: credentials
+    required: true
+    hiddenusername: true
+    type: 9
+    section: Connect
+  - display: First fetch time interval
+    name: first_fetch
+    type: 0
+    defaultvalue: 1 day
+    required: false
+    section: Collect
+  - additionalinfo: The maximum amount of events to retrieve for each event type (up to 10000 events). For more information about event types see the help section.
+    defaultvalue: "1000"
+    display: Max events per fetch
+    section: Collect
+    hidden: false
+    name: max_fetch
+    required: false
+    type: 0
+  - display: Trust any certificate (not secure)
+    name: insecure
+    required: false
+    type: 8
+  - display: Use system proxy settings
+    name: proxy
+    required: false
+    type: 8
+description: "BloxOne Threat Defense is a hybrid cybersecurity solution that leverages DNS as the first line of defense to detect and block cyber threats."
 display: "Infoblox BloxOne Threat Defense Event Collector"
 name: InfobloxBloxOneThreatDefenseEventCollector
 script:
   commands:
-  - arguments:
-    - default: false
-      description: "[Enter a description of the argument, including any important information users need to know, for example, default values.]"
-      isArray: false
-      name: dummy
-      required: true
-      secret: false
-    deprecated: false
-    description: "[Enter a description of the command, including any important information users need to know, for example required permissions.]"
-    execution: false
-    name: baseintegration-dummy
-    outputs:
-    - contextPath: BaseIntegration.Output
-      description: "[Enter a description of the data returned in this output.]"
-      type: String
+    - arguments:
+        - auto: PREDEFINED
+          defaultValue: "False"
+          description: Set this argument to True in order to create events, otherwise the command will only display them.
+          isArray: false
+          name: should_push_events
+          predefined:
+            - "True"
+            - "False"
+          required: true
+        - description: timestamp to start.
+          isArray: false
+          name: from
+          required: true
+        - description: timestamp to end.
+          isArray: false
+          name: to
+          required: true
+        - description: maximum events to fetch.
+          defaultValue: 1000
+          isArray: false
+          name: limit
+          required: true
+        - description: offset of the events.
+          defaultValue: 0
+          isArray: false
+          name: offset
+          required: true
+      deprecated: false
+      description: "this command is for debugging purposes."
+      execution: false
+      name: bloxone-td-event-collector-get-events
   isfetch: false
   runonce: false
   isfetchevents: true
@@ -60,6 +77,6 @@ script:
   dockerimage: demisto/python3:3.10.10.48392
 fromversion: 6.10.0
 marketplaces:
-- marketplacev2
+  - marketplacev2
 tests:
-- No tests (auto formatted)
+  - No tests (auto formatted)
