@@ -78,15 +78,14 @@ def main():
     command = demisto.command()
     results: Optional[CommandResults | str] = None
     try:
-        match command:
-            case 'test-module':
-                results = command_test_module(client)
-            case 'bloxone-td-event-collector-get-events':
-                results = get_events_command(client, demisto.args())
-            case 'fetch-events':
-                fetch_events_command(client, params, demisto.getLastRun() or {})
-            case _:
-                raise NotImplementedError(f'command {command} is not implemented.')
+        if command == 'test-module':
+            results = command_test_module(client)
+        elif command == 'bloxone-td-event-collector-get-events':
+            results = get_events_command(client, demisto.args())
+        elif command == 'fetch-events':
+            fetch_events_command(client, params, demisto.getLastRun() or {})
+        else:
+            raise NotImplementedError(f'command {command} is not implemented.')
 
         if results:
             return_results(results)
