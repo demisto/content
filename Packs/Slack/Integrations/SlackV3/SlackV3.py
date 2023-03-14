@@ -1240,7 +1240,7 @@ def is_bot_message(data: dict) -> bool:
         return True
     elif event.get('subtype') == 'bot_message':
         return True
-    elif not data.get('user', {}).get('id'):
+    elif not data.get('user', {}).get('id') and not data.get('envelope_id'):
         return True
     else:
         return False

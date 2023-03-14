@@ -159,6 +159,7 @@ INBOUND_MESSAGE_FROM_BOT = {
 
 INBOUND_MESSAGE_FROM_USER = {
     "token": "HRaWNBI1UXkKjvIntY29juPo",
+    "user": {'id': "ZSADAD12"},
     "team_id": "TABQMPKP0",
     "api_app_id": "A01TXQAGB2P",
     "event": {
