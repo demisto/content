@@ -11,17 +11,12 @@ import re
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-VERSION = demisto.params().get('version', 'V.9x')
+VERSION = demisto.params().get('version', 'V9x')
 STATE_TO_NUMBER = {"Disabled": 0, "Enabled": 1}
 DEPLOY_ARGUMENT_MAPPER = {"push_ssl_key": "SSLPercentageComplete",
                           "push_gam_updates": "GamUpdatePercentageComplete",
                           "push_configuration_signature_set": "sigsetConfigPercentageComplete",
                           "push_botnet": "botnetPercentageComplete"}
-
-PERCENTAGE_MAP = {"push_ssl_key": "SSLPercentageComplete",
-                  "push_gam_updates": "GamUpdatePercentageComplete",
-                  "push_configuration_signature_set": "sigsetConfigPercentageComplete",
-                  "push_botnet": "botnetPercentageComplete"}
 
 MESSAGE_MAP = {"push_ssl_key": "SSLStatusMessage",
                "push_gam_updates": "GamUpdateStatusMessage",
@@ -314,7 +309,7 @@ class Client(BaseClient):
         self.headers['Accept'] = 'application/octet-stream'
         return self._http_request(method='PUT', url_suffix=url_suffix, json_data=body, resp_type='response')
 
-    def list_domain_device_request(self, domain_id: int | None) -> Dict:
+    def list_domain_device_request(self, domain_id: int) -> Dict:
         """ Retrieves the list of devices in a domain.
             Args:
                 domain_id: int - The relevant domain id.
@@ -324,7 +319,7 @@ class Client(BaseClient):
         url_suffix = f'/domain/{domain_id}/device'
         return self._http_request(method='GET', url_suffix=url_suffix)
 
-    def list_device_interface_request(self, domain_id: int | None, device_id: int | None) -> Dict[str, List]:
+    def list_device_interface_request(self, domain_id: int, device_id: int) -> Dict[str, List]:
         """ Retrieves the list of interfaces realeted to a device.
             Args:
                 device_id: int - The relevant device id.
@@ -335,7 +330,7 @@ class Client(BaseClient):
         url_suffix = f'/domain/{domain_id}/sensor/{device_id}/allocatedinterfaces'
         return self._http_request(method='GET', url_suffix=url_suffix)
 
-    def assign_device_policy_request(self, domain_id: int | None, device_id: int | None, pre_firewall_policy: str | None,
+    def assign_device_policy_request(self, domain_id: int, device_id: int, pre_firewall_policy: str | None,
                                      post_firewall_policy: str | None) -> Dict:
         """ Assigns a policy to a device.
             Args:
@@ -349,7 +344,7 @@ class Client(BaseClient):
                      "firewallPolicyFirst": pre_firewall_policy}
         return self._http_request(method='PUT', url_suffix=url_suffix, json_data=json_data)
 
-    def list_device_policy_request(self, domain_id: int | None, device_id: int | None) -> Dict:
+    def list_device_policy_request(self, domain_id: int, device_id: int | None) -> Dict:
         """ Retrieves the list of policies assigned to a device.
             Args:
                 device_id: int - The relevant device id.
@@ -363,8 +358,9 @@ class Client(BaseClient):
             url_suffix = f'/domain/{domain_id}/policyassignments/device'
         return self._http_request(method='GET', url_suffix=url_suffix)
 
-    def assign_interface_policy_request(self, domain_id, interface_id, firewall_policy,
-                                        firewall_port_policy, ips_policy, custom_policy_json_key, custom_policy_json_value):
+    def assign_interface_policy_request(self, domain_id: int, interface_id: int, firewall_policy: str | None,
+                                        firewall_port_policy: str | None, ips_policy: str | None,
+                                        custom_policy_json_key: str | None, custom_policy_json_value: str | None):
         """ Assigns a policy to an interface.
             Args:
                 domain_id: int - The relevant domain id.
@@ -392,7 +388,7 @@ class Client(BaseClient):
 
         return self._http_request(method='PUT', url_suffix=url_suffix, json_data=json_data)
 
-    def list_interface_policy_request(self, domain_id: int | None, interface_id: int | None) -> Dict:
+    def list_interface_policy_request(self, domain_id: int, interface_id: int | None) -> Dict:
         """ Retrieves the list of policies assigned to an interface.
             Args:
                 domain_id: int - The relevant domain id.
@@ -406,7 +402,7 @@ class Client(BaseClient):
             url_suffix = f'/domain/{domain_id}/policyassignments/interface'
         return self._http_request(method='GET', url_suffix=url_suffix)
 
-    def get_device_configuration_request(self, device_id: int | None) -> Dict:
+    def get_device_configuration_request(self, device_id: int) -> Dict:
         """ Retrieves the configuration of a device.
             Args:
                 device_id: int - The relevant device id.
@@ -416,7 +412,7 @@ class Client(BaseClient):
         url_suffix = f'/sensor/{device_id}/action/update_sensor_config'
         return self._http_request(method='GET', url_suffix=url_suffix)
 
-    def deploy_device_configuration_request(self, device_id: int | None, isSSLPushRequired: bool = False,
+    def deploy_device_configuration_request(self, device_id: int, isSSLPushRequired: bool = False,
                                             isGAMUpdateRequired: bool = False,
                                             isSigsetConfigPushRequired: bool = False,
                                             isBotnetPushRequired: bool = False) -> Dict:
@@ -2080,6 +2076,8 @@ def list_domain_device_command(client: Client, args: Dict) -> CommandResults:
     Returns: A CommandResult object with a list of domain devices.
     """
     domain_id = arg_to_number(args.get('domain_id'))
+    if not domain_id:
+        raise DemistoException('Please provide a domain_id.')
     limit = arg_to_number(args.get('limit', 50))
     all_results = argToBoolean(args.get('all_results', False))
     response = client.list_domain_device_request(domain_id)
@@ -2113,7 +2111,11 @@ def list_device_interface_command(client: Client, args: Dict) -> CommandResults:
     Returns: A CommandResult object with a list of device interfaces.
     """
     device_id = arg_to_number(args.get('device_id'))
+    if not device_id:
+        raise DemistoException('Please provide a device_id.')
     domain_id = arg_to_number(args.get('domain_id'))
+    if not domain_id:
+        raise DemistoException('Please provide a domain_id.')
     limit = arg_to_number(args.get('limit', 50))
     all_results = argToBoolean(args.get('all_results', False))
 
@@ -2150,7 +2152,11 @@ def assign_device_policy_command(client: Client, args: Dict) -> CommandResults:
     Returns: A CommandResult object with a success or failure message.
     """
     device_id = arg_to_number(args.get('device_id'))
+    if not device_id:
+        raise DemistoException('Please provide a device_id.')
     domain_id = arg_to_number(args.get('domain_id'))
+    if not domain_id:
+        raise DemistoException('Please provide a domain_id.')
     pre_firewall_policy = args.get('pre_firewall_policy_name')
     post_firewall_policy = args.get('post_firewall_policy_name')
 
@@ -2177,6 +2183,8 @@ def list_device_policy_command(client: Client, args: Dict) -> CommandResults:
     """
     device_id = arg_to_number(args.get('device_id'))
     domain_id = arg_to_number(args.get('domain_id'))
+    if not domain_id:
+        raise DemistoException('Please provide a domain_id.')
     limit = arg_to_number(args.get('limit', 50))
     all_results = argToBoolean(args.get('all_results', False))
     response = client.list_device_policy_request(domain_id=domain_id, device_id=device_id)
@@ -2210,7 +2218,11 @@ def assign_interface_policy_command(client: Client, args: Dict) -> CommandResult
     Returns: A CommandResult object with a success or failure message.
     """
     domain_id = arg_to_number(args.get('domain_id'))
+    if not domain_id:
+        raise DemistoException('Please provide a domain_id.')
     interface_id = arg_to_number(args.get('interface_id'))
+    if not interface_id:
+        raise DemistoException('Please provide a interface_id.')
     firewall_policy = args.get('firewall_policy_name')
     firewall_port_policy = args.get('firewall_port_policy_name')
     ips_policy = args.get('ips_policy_name')
@@ -2249,6 +2261,8 @@ def list_interface_policy_command(client: Client, args: Dict) -> CommandResults:
         A CommandResult object with a list of policies.
     """
     domain_id = arg_to_number(args.get('domain_id'))
+    if not domain_id:
+        raise DemistoException('Please provide a domain_id.')
     interface_id = arg_to_number(args.get('interface_id'))
     limit = arg_to_number(args.get('limit', 50))
     all_results = argToBoolean(args.get('all_results', False))
@@ -2291,6 +2305,8 @@ def get_device_configuration_command(client: Client, args: Dict) -> CommandResul
         A CommandResult object with the device configuration information.
     """
     device_id = arg_to_number(args.get('device_id'))
+    if not device_id:
+        raise DemistoException('Please provide a device_id.')
 
     response = client.get_device_configuration_request(device_id=device_id)
     # Capitalize the keys of the policies list and keeping the rest of the keys as is.
@@ -2333,8 +2349,9 @@ def deploy_device_configuration_command(args: Dict, client: Client) -> PollResul
 
     request_id = arg_to_number(args.get('request_id'))
     device_id = arg_to_number(args.get('device_id'))
+    if not device_id:
+        raise DemistoException('Please provide a device_id.')
     if not request_id:       # if this is the first time the function is called
-        device_id = arg_to_number(args.get('device_id'))
         isSSLPushRequired = argToBoolean(args.get('push_ssl_key', False))
         isGAMUpdateRequired = argToBoolean(args.get('push_gam_updates', False))
         isSigsetConfigPushRequired = argToBoolean(args.get('push_configuration_signature_set', False))
@@ -2355,7 +2372,7 @@ def deploy_device_configuration_command(args: Dict, client: Client) -> PollResul
     build_a_massage = ""
     for k, v in args.items():
         if v == "true":  # if the argument is true we need to check it's status
-            current_percentage_status = status.get(PERCENTAGE_MAP.get(str(k)))
+            current_percentage_status = status.get(DEPLOY_ARGUMENT_MAPPER.get(str(k)))
             current_message_status = status.get(MESSAGE_MAP.get(str(k)))
             if current_percentage_status != 100 or current_message_status != "DOWNLOAD COMPLETE":
                 fail_or_success_list.append(0)

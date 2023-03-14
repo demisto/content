@@ -20,7 +20,7 @@ configuration:
 - display: Product Version
   name: version
   required: false
-  defaultvalue: V.9x
+  defaultvalue: V9x
   options:
   - V9x
   - V10x
