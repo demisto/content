@@ -6010,6 +6010,60 @@ def test_pan_os_delete_application_group_command_main_flow(mocker, args, params,
 
 
 @pytest.mark.parametrize(
+    'args, params, expected_url_params',
+    [
+        pytest.param(
+            {
+                'IPs': '2.2.2.2', 'tag': 'test'
+            },
+            integration_firewall_params,
+            {'type': 'user-id',
+             'cmd': '<uid-message><version>2.0</version><type>update</type><payload><register><entry ip="2.2.2.2" '
+                    'persistent="1"><tag><member>test</member></tag></entry></register></payload></uid-message>',
+             'key': 'thisisabogusAPIKEY!',
+             'vsys': 'vsys1'}
+        ),
+        pytest.param(
+            {
+                'IPs': '2.2.2.2', 'tag': 'test'
+            },
+            integration_panorama_params,
+            {'type': 'user-id',
+             'cmd': '<uid-message><version>2.0</version><type>update</type><payload><register><entry ip="2.2.2.2" '
+                    'persistent="1"><tag><member>test</member></tag></entry></register></payload></uid-message>',
+             'key': 'thisisabogusAPIKEY!'}
+        )
+    ]
+)
+def test_pan_os_register_ip_tag_command_main_flow(mocker, args, params, expected_url_params):
+    """
+    Given:
+     - Panorama instance with IP tag to register (without vsys).
+     - Firewall instance with IP tag to register (with vsys).
+
+    When:
+     - running the pan-os-register-ip-tag through the main flow.
+
+    Then:
+     - make sure the params and the request is correct for both panorama/firewall.
+    """
+    from Panorama import main
+
+    mock_request = mocker.patch(
+        "Panorama.http_request",
+        return_value={'response': {'@status': 'success', 'result': {'uid-response': {'version': '2.0',
+                                                                                     'payload': {'register': None}}}}}
+    )
+    mocker.patch('Panorama.get_pan_os_major_version', return_value=9)
+    mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(demisto, 'args', return_value=args)
+    mocker.patch.object(demisto, 'command', return_value='pan-os-register-ip-tag')
+
+    main()
+    assert mock_request.call_args.kwargs['body'] == expected_url_params
+
+
+@pytest.mark.parametrize(
     'args', [
         {'ip_netmask': '1', 'ip_range': '2', 'fqdn': '3', 'ip_wildcard': '4', 'name': 'test'},
         {'ip_netmask': '1', 'ip_range': '2', 'fqdn': '3', 'name': 'test'},

@@ -29,6 +29,8 @@ def execute_command(name, args=None):
             expected_script_arguments['team_member'] = 'Shaq'
         elif 'channel' in args:
             expected_script_arguments['channel'] = 'WhatAchannel'
+            if 'team' in args:
+                expected_script_arguments['team'] = 'TestTeam'
         assert args == expected_script_arguments
     else:
         raise ValueError('Unimplemented command called: {}'.format(name))
@@ -61,6 +63,7 @@ def test_microsoft_teams_ask(mocker):
 
     script_arguments['team_member'] = 'Shaq'
     script_arguments['channel'] = 'WhatAchannel'
+    script_arguments['team'] = 'TestTeam'
     mocker.patch.object(
         demisto,
         'args',
