@@ -4,15 +4,6 @@ import demistomock as demisto
 
 GET_COMMAND_DATA = [
     (
-        {'policy_name': 'pol1', 'resource_group_names': ['res1'], 'verbose': 'false', 'limit': '10'},
-        # args, case: custom resource_group
-        {"method": "GET",
-         "full_url":
-             "https://management.azure.com/subscriptions/test/resourceGroups/res1/providers/Microsoft.Network/\
-ApplicationGatewayWebApplicationFirewallPolicies/pol1"
-         }  # expected
-    ),
-    (
         {'policy_name': 'pol1', 'verbose': 'false', 'limit': '10'},  # args, case: default resource_group
         {"method": "GET",
          "full_url":
@@ -45,7 +36,6 @@ ApplicationGatewayWebApplicationFirewallPolicies"
 ApplicationGatewayWebApplicationFirewallPolicies"
          }  # expected
     ),
-
 ]
 
 
@@ -78,24 +68,66 @@ def test_get_policy_by_resource_body(mocker, demisto_args, expected_results):
     assert m.call_args[1].get('method') == expected_results.get("method")
 
 
+def test_get_array_policy_with_exception(mocker):
+    """
+    Given:
+        - search task's argument
+
+    When:
+        - retrieving policy's data
+
+    Then:
+        - validating the body sent to request is matching the search
+
+    """
+    demisto_args = {
+        'policy_name': 'pol1',
+        'resource_group_names': ['res1', 'res2'],
+        'verbose': 'false', 'limit': '10',
+        'subscription_id': 'sub1'
+    }
+    expected_results = {
+        "method": "GET",
+        "full_url": "https://management.azure.com/subscriptions/sub1/resourceGroups/res2/providers/Microsoft.Network/\
+ApplicationGatewayWebApplicationFirewallPolicies/pol1"
+    }
+    client = waf.AzureWAFClient(
+        app_id='',
+        subscription_id='test',
+        resource_group_name='test',
+        verify=True,
+        proxy=False,
+        auth_type='Device'
+    )
+    side_effect = [Exception('Test'), {'properties': 'test2'}]
+    expected_outputs = [{'properties': 'res1 threw Exception: Test'}, {'properties': 'test2'}]
+    m = mocker.patch.object(client, 'http_request', side_effect=side_effect)
+    commandResult = waf.policies_get_command(client, **demisto_args)
+    assert commandResult.outputs == expected_outputs
+    assert m.call_args[1].get('full_url') == expected_results.get("full_url")
+    assert m.call_args[1].get('method') == expected_results.get("method")
+
+
 UPSERT_COMMAND_DATA = [
     (
-        {'policy_name': 'pol1', 'resource_group_name': 'res1', 'verbose': 'false', 'limit': '10',
+        {'policy_name': 'pol1', 'resource_group_names': ['res1'], 'verbose': 'false', 'limit': '10',
          'managed_rules': '{"test": "test"}', 'location': 'east'
          },  # args, case: custom resource_group update rule
         {"method": "PUT",
-         "url_suffix":
-             "/resourceGroups/res1/providers/Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/pol1",
+         "full_url":
+             "https://management.azure.com/subscriptions/test/resourceGroups/res1/providers/Microsoft.Network/\
+ApplicationGatewayWebApplicationFirewallPolicies/pol1",
          "body": {'location': 'east', 'properties': {'managedRules': {'test': 'test'}}}
          }  # expected
     ),
     (
-        {'policy_name': 'pol1', 'resource_group_name': 'res1', 'verbose': 'false', 'limit': '10',
+        {'policy_name': 'pol1', 'resource_group_names': ['res1'], 'verbose': 'false', 'limit': '10',
          'managed_rules': '{"test": "test"}', 'custom_rules': '{"test": "test"}', 'location': 'east'
          },  # args, case: custom resource_group update rule with key hierarchy
         {"method": "PUT",
-         "url_suffix":
-             "/resourceGroups/res1/providers/Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies/pol1",
+         "full_url":
+             "https://management.azure.com/subscriptions/test/resourceGroups/res1/providers/Microsoft.Network/\
+ApplicationGatewayWebApplicationFirewallPolicies/pol1",
          "body": {'location': 'east', 'properties': {'customRules': {'test': 'test'},
                                                      'managedRules': {'test': 'test'}}}
          }  # expected
@@ -130,7 +162,62 @@ def test_policy_upsert_request_body_happy(mocker, demisto_args, expected_results
     m = mocker.patch.object(client, 'http_request', return_value={'name': 'pol1', 'id': 'id', 'properties': {}})
     waf.policy_upsert_command(client, **demisto_args)
     assert m.call_args[1].get('method') == expected_results.get("method")
-    assert m.call_args[1].get('url_suffix') == expected_results.get("url_suffix")
+    assert m.call_args[1].get('full_url') == expected_results.get("full_url")
+    assert m.call_args[1].get('data') == expected_results.get("body")
+
+
+def test_policy_array_group_names_upsert_request(mocker):
+    """
+    Given:
+        - a policy to update or a new policy
+
+    When:
+        - updating or creating policy's data
+
+    Then:
+        - validating the body sent to request is matching the api requires
+
+    """
+    demisto_args = {
+        'policy_name': 'pol1',
+        'resource_group_names': ['res1', 'res2'],
+        'verbose': 'false',
+        'limit': '10',
+        'managed_rules': '{"test": "test"}',
+        'custom_rules': '{"test": "test"}',
+        'location': 'east'
+    }
+    expected_results = {
+        "method": "PUT",
+        "full_url": "https://management.azure.com/subscriptions/test/resourceGroups/res2/providers/Microsoft.Network/\
+ApplicationGatewayWebApplicationFirewallPolicies/pol1",
+        "body": {
+            'location': 'east',
+            'properties': {
+                'customRules': {
+                    'test': 'test'
+                },
+                'managedRules': {
+                    'test': 'test'
+                }
+            }
+        }
+    }
+    mocker.patch.object(demisto, 'args', return_value=demisto_args)
+    client = waf.AzureWAFClient(
+        app_id='',
+        subscription_id='test',
+        resource_group_name='test',
+        verify=True,
+        proxy=False,
+        auth_type='Device'
+    )
+    expected_commandResult_output = [{'properties': 'res1 threw Exception: Test'}, {'name': 'pol1', 'id': 'id', 'properties': {}}]
+    m = mocker.patch.object(client, 'http_request', side_effect=[Exception('Test'), {'name': 'pol1', 'id': 'id', 'properties': {}}])
+    commandResult = waf.policy_upsert_command(client, **demisto_args)
+    assert commandResult.outputs == expected_commandResult_output
+    assert m.call_args[1].get('method') == expected_results.get("method")
+    assert m.call_args[1].get('full_url') == expected_results.get("full_url")
     assert m.call_args[1].get('data') == expected_results.get("body")
 
 
@@ -283,3 +370,112 @@ def test_generate_login_url(mocker):
                    f'&client_id={client_id}&redirect_uri={redirect_uri})'
     res = AzureWAF.return_results.call_args[0][0].readable_output
     assert expected_url in res
+
+
+def test_subscriptions_list_command(mocker):
+    client = waf.AzureWAFClient(
+        app_id='',
+        subscription_id='test',
+        resource_group_name='test',
+        verify=True,
+        proxy=False,
+        auth_type='Device'
+    )
+    expected_results = {
+        'method': 'GET',
+        'full_url': 'https://management.azure.com/subscriptions?api-version=2020-05-01',
+    }
+    m = mocker.patch.object(client, 'http_request', return_value={
+        "value": [
+            {
+                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb",
+                "authorizationSource": "Legacy, RoleBased",
+                "managedByTenants": [],
+                "subscriptionId": "0f907ea4-bc8b-4c11-9d7e-805c2fd144fb",
+                "tenantId": "ebac1a16-81bf-449b-8d43-5732c3c1d999",
+                "displayName": "Pay-As-You-Go",
+                "state": "Enabled",
+                "subscriptionPolicies": {
+                    "locationPlacementId": "Public_2014-09-01",
+                    "quotaId": "PayAsYouGo_2014-09-01",
+                    "spendingLimit": "Off"
+                }
+            },
+            {
+                "id": "/subscriptions/057b1785-fd7b-4ca3-ad1b-709e4b1668be",
+                "authorizationSource": "RoleBased",
+                "managedByTenants": [],
+                "subscriptionId": "057b1785-fd7b-4ca3-ad1b-709e4b1668be",
+                "tenantId": "ebac1a16-81bf-449b-8d43-5732c3c1d999",
+                "displayName": "Access to Azure Active Directory",
+                "state": "Enabled",
+                "subscriptionPolicies": {
+                    "locationPlacementId": "Public_2014-09-01",
+                    "quotaId": "AAD_2015-09-01",
+                    "spendingLimit": "On"
+                }
+            }
+        ]
+    })
+    commandResult = waf.subscriptions_list_command(client)
+    commandResult.readable_output == '''### Subscriptions: \n|displayName|state|subscriptionId|tenantId|\n|---|---|---|---|
+| Pay-As-You-Go | Enabled | 0f907ea4-bc8b-4c11-9d7e-805c2fd144fb | ebac1a16-81bf-449b-8d43-5732c3c1d999 |\n
+| Access to Azure Active Directory | Enabled | 057b1785-fd7b-4ca3-ad1b-709e4b1668be | ebac1a16-81bf-449b-8d43-5732c3c1d999 |\n'''
+    assert m.call_args[1].get('method') == expected_results.get("method")
+    assert m.call_args[1].get('full_url') == expected_results.get("full_url")
+
+
+def test_resource_group_list_command(mocker):
+    client = waf.AzureWAFClient(
+        app_id='',
+        subscription_id='test',
+        resource_group_name='test',
+        verify=True,
+        proxy=False,
+        auth_type='Device'
+    )
+    expected_results = {
+        'method': 'GET',
+        'full_url': 'https://management.azure.com/subscriptions/pol1/resourcegroups?api-version=2020-05-01&$filter=&top=10',
+    }
+    demisto_args = {
+        'subscription_id': 'pol1',
+        'verbose': 'false',
+        'limit': '10',
+        'location': 'east'
+    }
+    m = mocker.patch.object(client, 'http_request', return_value={
+        "value": [
+            {
+                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/cloud-shell-storage-eastus",
+                "name": "cloud-shell-storage-eastus",
+                "type": "Microsoft.Resources/resourceGroups",
+                "location": "eastus",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                }
+            },
+            {
+                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/demisto",
+                "name": "demisto",
+                "type": "Microsoft.Resources/resourceGroups",
+                "location": "centralus",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                }
+            },
+            {
+                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/compute-integration",
+                "name": "compute-integration",
+                "type": "Microsoft.Resources/resourceGroups",
+                "location": "eastus",
+                "properties": {
+                    "provisioningState": "Succeeded"
+                }
+            }
+        ]
+    })
+    commandResult = waf.resource_group_list_command(client, **demisto_args)
+    assert commandResult.readable_output == '### Resource Groups: \n|location|name|properties.provisioningState|\n|---|---|---|\n| eastus | cloud-shell-storage-eastus | Succeeded |\n| centralus | demisto | Succeeded |\n| eastus | compute-integration | Succeeded |\n'
+    assert m.call_args[1].get('method') == expected_results.get("method")
+    assert m.call_args[1].get('full_url') == expected_results.get("full_url")

@@ -95,58 +95,60 @@ class AzureWAFClient:
                                            return_empty_response=return_empty_response)
 
     def get_policy_by_name(self, policy_name: str, subscription_id: str, resource_group_name_list: list) -> List:
-        if subscription_id:
-            base_url = f'{BASE_URL}/{SUBSCRIPTION_PATH.format(subscription_id)}'
-        else:
-            base_url = f'{self.ms_client._base_url}'
-        res: List[Dict] = [
-            self.http_request(
-                method='GET',
-                full_url=f'{base_url}/{RESOURCE_PATH.format(resource_group_name)}/{POLICY_PATH}/{policy_name}',
-            )
-            for resource_group_name in resource_group_name_list
-        ]
+        base_url = f'{BASE_URL}/{SUBSCRIPTION_PATH.format(subscription_id)}'
+        res: List[Dict] = []
+        for resource_group_name in resource_group_name_list:
+            try:
+                res.append(self.http_request(
+                    method='GET',
+                    full_url=f'{base_url}/{RESOURCE_PATH.format(resource_group_name)}/{POLICY_PATH}/{policy_name}',
+                ))
+            except Exception as e:
+                res.append({'properties': f'{resource_group_name} threw Exception: {str(e)}'})
         return res
 
     def get_policy_list_by_resource_group_name(self, subscription_id: str, resource_group_name_list: list) -> List:
-        # TODO dont stop in case of failure print warn
-        if subscription_id:
-            base_url = f'{BASE_URL}/{SUBSCRIPTION_PATH.format(subscription_id)}'
-        else:
-            base_url = f'{self.ms_client._base_url}'
-        res: List[Dict] = [
-            self.http_request(
-                method='GET',
-                full_url=f'{base_url}/{RESOURCE_PATH.format(resource_group_name)}/{POLICY_PATH}'
-            )
-            for resource_group_name in resource_group_name_list
-        ]
+        base_url = f'{BASE_URL}/{SUBSCRIPTION_PATH.format(subscription_id)}'
+        res: List[Dict] = []
+        for resource_group_name in resource_group_name_list:
+            try:
+                res.append(self.http_request(
+                    method='GET',
+                    full_url=f'{base_url}/{RESOURCE_PATH.format(resource_group_name)}/{POLICY_PATH}'
+                ))
+            except Exception as e:
+                res.append({'properties': f'{resource_group_name} threw Exception: {str(e)}'})
         return res
 
     def get_policy_list_by_subscription_id(self, subscription_ids) -> List:
-        # TODO dont stop in case of failure print warn
         res: List[Dict] = []
         for subscription_id in subscription_ids:
             base_url = f'{BASE_URL}/{SUBSCRIPTION_PATH.format(subscription_id)}'
-            res += self.http_request(
-                method='GET',
-                full_url=f'{base_url}/{POLICY_PATH}'
-            )
+            try:
+                res.append(
+                    self.http_request(
+                        method='GET',
+                        full_url=f'{base_url}/{POLICY_PATH}'
+                    )
+                )
+            except Exception as e:
+                res.append({'properties': f'Listing {subscription_id} threw Exception: {str(e)}'})
         return res
 
     def update_policy_upsert(self, policy_name: str, resource_group_names: list, subscription_id: str, data: Dict) -> List:
-        # TODO dont stop in case of failure print warn
+        base_url = f'{BASE_URL}/{SUBSCRIPTION_PATH.format(subscription_id)}'
         res: List[Dict] = []
-        if subscription_id:
-            base_url = f'{BASE_URL}/{SUBSCRIPTION_PATH.format(subscription_id)}'
-        else:
-            base_url = f'{self.ms_client._base_url}'
         for resource_group_name in resource_group_names:
-            res += self.http_request(
-                method='PUT',
-                full_url=f'{base_url}/{RESOURCE_PATH.format(resource_group_name)}/{POLICY_PATH}/{policy_name}',
-                data=data
-            )
+            try:
+                res.append(
+                    self.http_request(
+                        method='PUT',
+                        full_url=f'{base_url}/{RESOURCE_PATH.format(resource_group_name)}/{POLICY_PATH}/{policy_name}',
+                        data=data
+                    )
+                )
+            except Exception as e:
+                res.append({'properties': f'{resource_group_name} threw Exception: {str(e)}'})
         return res
 
     def delete_policy(self, policy_name: str, resource_group_name: str):
@@ -155,6 +157,22 @@ class AzureWAFClient:
             return_empty_response=True,
             resp_type='response',
             url_suffix=f'/{RESOURCE_PATH.format(resource_group_name)}/{POLICY_PATH}/{policy_name}',
+        )
+
+    def subscriptions_list(self) -> Dict:
+        return self.http_request(
+            method='GET',
+            return_empty_response=True,
+            full_url=f'{BASE_URL}/subscriptions?api-version={API_VERSION}'
+        )
+
+    def resource_group_list(self, subscription_id, tag, limit) -> Dict:        
+        base_url = f'{BASE_URL}/{SUBSCRIPTION_PATH.format(subscription_id)}'
+        return self.http_request(
+            method='GET',
+            return_empty_response=True,
+            full_url=f'{base_url}/resourcegroups?api-version={API_VERSION}&$filter={tag}\
+&top={limit}'
         )
 
 
@@ -186,7 +204,7 @@ def policies_get_command(client: AzureWAFClient, **args) -> CommandResults:
     """
 
     policy_name: str = args.get('policy_name', '')
-    subscription_id: str = args.get('subscription_id', '')
+    subscription_id: str = args.get('subscription_id', client.subscription_id)
     resource_group_name_list: list = argToList(args.get('resource_group_names', client.resource_group_name))
     verbose = args.get("verbose", "false") == "true"
     limit = int(str(args.get("limit", '20')))
@@ -249,7 +267,7 @@ def policy_upsert_command(client: AzureWAFClient, **args: Dict[str, Any]) -> Com
 
     policy_name = str(args.get('policy_name', ''))
     resource_group_names = argToList(args.get('resource_group_names', client.resource_group_name))
-    subscription_id = args.get('subscription_id', '')
+    subscription_id = args.get('subscription_id', client.subscription_id)
     managed_rules = args.get('managed_rules', {})
     location = args.get("location", '')  # location is not required by documentation but is required by the api itself.
     verbose = args.get("verbose", "false") == "true"
@@ -372,6 +390,52 @@ def policies_to_markdown(policies: List[Dict], verbose: bool = False, limit: int
     return md
 
 
+def subscriptions_to_md(subscriptions: List[Dict]) -> str:
+    list_md = []
+    for subscription in subscriptions:
+        sub_md = {
+            key: subscription[key]
+            for key in subscription
+            if key in ('subscriptionId', 'tenantId', 'state', 'displayName')
+        }
+        list_md.append(sub_md)
+    return tableToMarkdown('Subscriptions: ', list_md)
+
+
+def resourcegroups_to_md(resource_groups: List[Dict]) -> str:
+    list_md = []
+    for resource in resource_groups:
+        sub_md = {}
+        for key in resource:
+            if key in ('name', 'location', 'tags'):
+                sub_md[key] = resource[key]
+            elif key == 'properties':
+                if resource[key]['provisioningState']:
+                    sub_md['properties.provisioningState'] = resource[key]['provisioningState']
+        list_md.append(sub_md)
+    return tableToMarkdown('Resource Groups: ', list_md)
+
+
+def subscriptions_list_command(client: AzureWAFClient):
+    subscriptions = client.subscriptions_list().get('value', [])
+    return CommandResults(readable_output=subscriptions_to_md(subscriptions),
+                          outputs=subscriptions,
+                          outputs_key_field='subscriptionId', outputs_prefix='AzureWAF.Subscription',
+                          raw_response=subscriptions)
+
+
+def resource_group_list_command(client: AzureWAFClient, **args: Dict[str, str]):
+    subscription_id = args.get('subscription_id', client.subscription_id)
+    tag = args.get('tag', '')
+    limit = args.get('limit', 50)
+    resource_groups = client.resource_group_list(subscription_id, tag, limit).get('value', [])
+    return CommandResults(readable_output=resourcegroups_to_md(resource_groups),
+                          outputs=resource_groups,
+                          outputs_key_field='subscriptionId', outputs_prefix='AzureWAF.ResourceGroup',
+                          raw_response=resource_groups)
+    
+
+
 @logger
 def reset_auth(client: AzureWAFClient):
     set_integration_context({})
@@ -415,6 +479,7 @@ def main() -> None:
         'azure-waf-auth-complete': complete_auth,
         'azure-waf-auth-test': test_connection,
         'azure-waf-auth-reset': reset_auth,
+        'azure-waf-resource-group-list': resource_group_list_command,
     }
     params = demisto.params()
     command = demisto.command()
@@ -445,6 +510,8 @@ def main() -> None:
             return_results(test_connection(client, params))
         elif command == 'azure-waf-generate-login-url':
             return_results(generate_login_url(client.ms_client))
+        elif command == 'azure-waf-subscriptions-list':
+            return_results(subscriptions_list_command(client))
         else:
             return_results(demisto_commands[command](client, **args))
 

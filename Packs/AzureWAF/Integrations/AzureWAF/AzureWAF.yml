@@ -546,6 +546,55 @@ script:
     execution: false
     name: azure-waf-generate-login-url
     arguments: []
+  - description: Gets all subscriptions for a tenant.
+    deprecated: false  
+    execution: false
+    name: azure-waf-subscriptions-list
+    arguments: []
+    outputs:
+    - contextPath: AzureWAF.Subscription.authorizationSource
+      description: Subscription authorization source.
+      type: String
+    - contextPath: AzureWAF.Subscription.displayName
+      description: Subscription display name.
+      type: String
+    - contextPath: AzureWAF.Subscription.id
+      description: Subscription ID with subscriptions prefix.
+      type: String
+    - contextPath: AzureWAF.Subscription.subscriptionId
+      description: Subscription ID.
+      type: String
+    - contextPath: AzureWAF.Subscription.locationPlacementId
+      description: Placmement ID of subscription.
+      type: String
+    - contextPath: AzureWAF.Subscription.tenantId
+      description: The tenatnt ID of the subscription.
+      type: String
+  - description: Gets all the resource groups for a subscription.
+    deprecated: false  
+    execution: false
+    name: azure-waf-resource-group-list
+    arguments: 
+    - default: false
+      description: Integration default subscription ID will be used. Unless argument provided.
+      isArray: true
+      name: subscription_id
+      required: false
+      secret: false
+    - default: false
+      description: You can filter by tag names and values. For example, to filter for a tag name and value, tagName=tagValue'
+      isArray: false
+      name: tag
+      required: false
+      secret: false
+    - default: false
+      description: Maximum number of resource groups to fetch. Default is "50".
+      defaultvalue: 50
+      isArray: false
+      name: limit
+      required: false
+      secret: false    
+  
   dockerimage: demisto/crypto:1.0.0.47970
   feed: false
   isfetch: false
