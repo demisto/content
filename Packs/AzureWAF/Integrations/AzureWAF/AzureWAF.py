@@ -166,13 +166,13 @@ class AzureWAFClient:
             full_url=f'{BASE_URL}/subscriptions?api-version={API_VERSION}'
         )
 
-    def resource_group_list(self, subscription_id, tag, limit) -> Dict:        
+    def resource_group_list(self, subscription_id, tag, limit) -> Dict:     
         base_url = f'{BASE_URL}/{SUBSCRIPTION_PATH.format(subscription_id)}'
+        # full_url=f'{base_url}/resourcegroups?api-version={API_VERSION}&filter={tag}\
         return self.http_request(
             method='GET',
             return_empty_response=True,
-            full_url=f'{base_url}/resourcegroups?api-version={API_VERSION}&$filter={tag}\
-&top={limit}'
+            full_url=f'{base_url}/resourcegroups?top={limit}&api-version={API_VERSION}'
         )
 
 
@@ -287,7 +287,8 @@ def policy_upsert_command(client: AzureWAFClient, **args: Dict[str, Any]) -> Com
             key_hierarchy = UPSERT_PARAMS[param].split('.')
             parse_nested_keys_to_dict(base_dict=body, keys=key_hierarchy, value=val)
 
-    updated_policy = client.update_policy_upsert(policy_name=policy_name, resource_group_names=resource_group_names, subscription_id=subscription_id, data=body)
+    updated_policy = client.update_policy_upsert(policy_name=policy_name, resource_group_names=resource_group_names,
+                                                 subscription_id=subscription_id, data=body)
 
     return CommandResults(readable_output=policies_to_markdown(updated_policy, verbose),
                           outputs=updated_policy,
@@ -433,7 +434,6 @@ def resource_group_list_command(client: AzureWAFClient, **args: Dict[str, str]):
                           outputs=resource_groups,
                           outputs_key_field='subscriptionId', outputs_prefix='AzureWAF.ResourceGroup',
                           raw_response=resource_groups)
-    
 
 
 @logger

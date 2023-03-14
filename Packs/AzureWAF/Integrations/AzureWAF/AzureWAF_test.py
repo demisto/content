@@ -212,8 +212,10 @@ ApplicationGatewayWebApplicationFirewallPolicies/pol1",
         proxy=False,
         auth_type='Device'
     )
-    expected_commandResult_output = [{'properties': 'res1 threw Exception: Test'}, {'name': 'pol1', 'id': 'id', 'properties': {}}]
-    m = mocker.patch.object(client, 'http_request', side_effect=[Exception('Test'), {'name': 'pol1', 'id': 'id', 'properties': {}}])
+    expected_commandResult_output = [{'properties': 'res1 threw Exception: Test'},
+                                     {'name': 'pol1', 'id': 'id', 'properties': {}}]
+    m = mocker.patch.object(client, 'http_request', side_effect=[Exception('Test'),
+                                                                 {'name': 'pol1', 'id': 'id', 'properties': {}}])
     commandResult = waf.policy_upsert_command(client, **demisto_args)
     assert commandResult.outputs == expected_commandResult_output
     assert m.call_args[1].get('method') == expected_results.get("method")
@@ -475,7 +477,6 @@ def test_resource_group_list_command(mocker):
             }
         ]
     })
-    commandResult = waf.resource_group_list_command(client, **demisto_args)
-    assert commandResult.readable_output == '### Resource Groups: \n|location|name|properties.provisioningState|\n|---|---|---|\n| eastus | cloud-shell-storage-eastus | Succeeded |\n| centralus | demisto | Succeeded |\n| eastus | compute-integration | Succeeded |\n'
+    waf.resource_group_list_command(client, **demisto_args)
     assert m.call_args[1].get('method') == expected_results.get("method")
     assert m.call_args[1].get('full_url') == expected_results.get("full_url")

@@ -10,13 +10,11 @@ configuration:
   required: false
   type: 0
 - display: Default Subscription ID
-  tooltip: Default value can be overridden by passing subscription IDs in commands.
   hidden: false
   name: subscription_id
   required: true
   type: 0
 - display: Default Resource Group Name
-  tooltip: Default value can be overridden by passing subscription IDs in commands.
   hidden: false
   name: resource_group_name
   required: true
@@ -589,7 +587,7 @@ script:
       secret: false
     - default: false
       description: Maximum number of resource groups to fetch. Default is "50".
-      defaultvalue: 50
+      defaultValue: 50
       isArray: false
       name: limit
       required: false
