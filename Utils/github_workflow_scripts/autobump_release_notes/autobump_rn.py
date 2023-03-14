@@ -28,12 +28,12 @@ BASE = "master"
 PR_COMMENT_TITLE = "### This PR was automatically updated by a " \
                    "[GitHub Action](https://github.com/demisto/content/actions/runs/{})\n"
 PR_COMMENT = "- **{}** pack version was bumped to **{}**.\n"
-COMMIT_MESSAGE = "Bump version to: {}, for {} pack."
+COMMIT_MESSAGE = "Bump pack from version {} to {}."
 MERGE_FROM_MASTER_COMMIT_MESSAGE = f"Merged {BASE} into current branch."
 PACKS_DIR = "Packs"
 NOT_UPDATE_RN_LABEL = "ignore-auto-bump-version"
-PR_COMMENT_STOP_AUTOMATION = f"\nIn order to prevent this automation updates, you can add `{NOT_UPDATE_RN_LABEL}` " \
-                             f"label to this PR.\n"
+PR_COMMENT_STOP_AUTOMATION = f"\nTo stop automatic version bumps, add the `{NOT_UPDATE_RN_LABEL}` " \
+                             f"label to the github PR.\n"
 
 
 class PackAutoBumper:
@@ -94,7 +94,7 @@ class PackAutoBumper:
         if new_release_notes_path.stem != self._last_rn_file_path.stem:
             new_release_notes_path.write_text(self._rn_text)
             if self._last_rn_file_path.read_text() == self._rn_text:
-                os.remove(self._last_rn_file_path)
+                self._last_rn_file_path.unlink()
 
             if self._has_bc:
                 new_release_notes_path.with_suffix(".json").write_text(self._bc_text)
@@ -156,8 +156,8 @@ class BranchAutoBumper:
                 self.git_repo.git.commit(
                     "-m",
                     COMMIT_MESSAGE.format(
-                        new_version,
                         pack_auto_bumper.pack_id,
+                        new_version,
                     ),
                 )
                 body += PR_COMMENT.format(

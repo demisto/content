@@ -1,4 +1,4 @@
-name: Autobump Release Notes Version
+name: Autobump Version
 on:
   push:
     branches:
@@ -13,6 +13,7 @@ permissions:
 jobs:
   autobump_rn_version:
     runs-on: ubuntu-latest
+    concurrency: autobump-version
     if: github.repository == 'demisto/content' && startsWith(github.head_ref, 'contrib/') == false
     steps:
       - name: Print out context
@@ -20,12 +21,6 @@ jobs:
           echo "$GITHUB_CONTEXT"
         env:
           GITHUB_CONTEXT: ${{ toJSON(github) }}
-      - name: Wait for "Autobump Release Notes Version" previous tasks to succeed
-        uses: lewagon/wait-on-check-action@v1.3.1   # disable-secrets-detection
-        with:
-          check-name: 'autobump_rn_version'
-          ref: new-autobump-rn
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
