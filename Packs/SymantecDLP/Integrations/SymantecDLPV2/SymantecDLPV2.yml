@@ -37,7 +37,7 @@ configuration:
   hidden: false
   name: incidentStatusId
   required: false
-  type: 16
+  type: 0
 - additionalinfo: If not selected, will fetch high and medium incidents.
   display: Incident Severity
   hidden: false
