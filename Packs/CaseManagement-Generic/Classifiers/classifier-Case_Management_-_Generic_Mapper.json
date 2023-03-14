@@ -5,11 +5,11 @@
     "mapping": {
         "Case": {
             "dontMapEventToLabels": false,
-            "internalMapping": null
+            "internalMapping": {}
         },
         "dbot_classification_incident_type_all": {
             "dontMapEventToLabels": false,
-            "internalMapping": null
+            "internalMapping": {}
         }
     },
     "name": "Case Management - Generic Mapper",
