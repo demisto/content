@@ -126,7 +126,6 @@ demisto-sdk-nightly:run-commands-against-instance:
     - python3 ./Tests/scripts/wait_until_server_ready.py "$INSTANCE_ROLE"
     - !reference [.download-demisto-conf]
     - |
-      export DEMISTO_API_KEY=$(cat $SECRET_CONF_PATH | jq -r '.temp_apikey')
       export DEMISTO_BASE_URL="https://localhost:$(cat $ARTIFACTS_FOLDER/env_results.json | jq -r '.[0].TunnelPort')"
       echo "Server URL: $DEMISTO_BASE_URL"
     - section_start "Unlock HelloWorld Integration and Playbook" --collapsed
