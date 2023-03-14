@@ -62,4 +62,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Phishing Alerts Investigation](../doc_files/Phishing_Alerts_Investigation.png)
+![Phishing Alerts Investigation](../doc_files/Phishing_Alerts_Investigation_6_5.png)

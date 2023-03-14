@@ -65,4 +65,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Cortex XDR incident handling v3](../doc_files/Cortex_XDR_incident_handling_v3.png)
+![Cortex XDR incident handling v3](../doc_files/Cortex_XDR_incident_handling_v3_6_5.png)
