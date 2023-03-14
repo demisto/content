@@ -20,6 +20,8 @@ This integration was integrated and tested with SailPoint IdentityNow.
 
 4. Click **Test** to validate the URLs, token, and connection.
 
+
+
 ## Important Note
 This integration pack does not fetch incidents from IdentityNow. It rather utilizes "Generic Webhook" to create incidents on event triggers published by IdentityNow. One can achieve this by following the steps below:
 
