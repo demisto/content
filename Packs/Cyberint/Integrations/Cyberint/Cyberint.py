@@ -590,8 +590,11 @@ def fetch_incidents(
                 alert_csv_id)
             alert['alert_data']['csv'] = extracted_csv_data
 
+        alert_name = f'Cyberint alert {alert_id}: {alert_title}'
+        alert.update({'duplicated_alert_id': alert_name})
+
         incident = {
-            'name': f'Cyberint alert {alert_id}: {alert_title}',
+            'name': alert_name,
             'occurred': datetime.strftime(alert_created_time, DATE_FORMAT),
             'rawJSON': json.dumps(alert),
             'severity': SEVERITIES.get(alert.get('severity', 'low')),
@@ -602,9 +605,12 @@ def fetch_incidents(
             for index, incident_csv_record in enumerate(incident_csv_records):
                 alert_data.update({'content': incident_csv_record})
                 alert.update({'attachments': alert_data})
+
+                alert_name = f'Cyberint alert {alert_id} ({index+1}): {alert_title}'
+                alert.update({'duplicated_alert_id': alert_name})
+
                 incident.update({
-                    'name':
-                    f'Cyberint alert {alert_id} ({index+1}): {alert_title}',
+                    'name': alert_name,
                     'rawJSON': json.dumps(alert)
                 })
                 incidents.append(copy.deepcopy(incident))
