@@ -2978,7 +2978,7 @@ def get_mapping_fields_command():
 
 
 def update_remote_incident(client: Client, threat_id: str, sentinelone_analyst_verdict: str,
-                           sentinelone_threat_status: str, closing_notes: str, close_sentinelone_incident: bool):
+                           sentinelone_threat_status: str, closing_notes: str):
     if sentinelone_analyst_verdict:
         action = ANALYST_VERDICT.get(sentinelone_analyst_verdict, None)
         if action:
@@ -2992,7 +2992,7 @@ def update_remote_incident(client: Client, threat_id: str, sentinelone_analyst_v
                 demisto.debug(f"Unable to update the analyst verdict of incident with remote ID [{threat_id}]")
     if sentinelone_threat_status:
         action = THREAT_STATUS.get(sentinelone_threat_status, None)
-        if action == "resolved" and close_sentinelone_incident:
+        if action == "resolved":
             response = client.update_threat_status_request(threat_ids=argToList(threat_id), status=action)
             if response.get("affected") and int(response.get("affected")) > 0:
                 demisto.debug(f"Successfully updated the threat status of incident"
@@ -3011,7 +3011,7 @@ def update_remote_incident(client: Client, threat_id: str, sentinelone_analyst_v
                 demisto.debug(f"Unable to update the threat status of incident with remote ID [{threat_id}]")
 
 
-def update_remote_system_command(client: Client, args: dict, params: dict) -> str:
+def update_remote_system_command(client: Client, args: dict) -> str:
     """update-remote-system command: pushes local changes to the remote system
 
     :type client: ``Client``
@@ -3041,9 +3041,8 @@ def update_remote_system_command(client: Client, args: dict, params: dict) -> st
             sentinelone_analyst_verdict = delta.get("sentinelonethreatanalystverdict", None)
             sentinelone_threat_status = delta.get("sentinelonethreatstatus", None)
             closing_notes = delta.get("closeNotes", "")
-            close_sentinelone_incident = params.get("close_sentinelone_incident", False)
             update_remote_incident(client, remote_incident_id, sentinelone_analyst_verdict,
-                                   sentinelone_threat_status, closing_notes, close_sentinelone_incident)
+                                   sentinelone_threat_status, closing_notes)
     except Exception as e:
         demisto.error(f'Error in SentinelOne outgoing mirror for incident {remote_incident_id}. '
                       f'Error message: {str(e)}')
@@ -3180,6 +3179,7 @@ def get_mirroring_fields(params):
     return {
         "mirror_direction": MIRROR_DIRECTION.get(params.get("mirror_direction")),
         "mirror_instance": demisto.integrationInstance(),
+        "incident_type": "SentinelOne Incident",
     }
 
 
@@ -3297,6 +3297,7 @@ def main():
             'sentinelone-initiate-endpoint-scan': initiate_endpoint_scan,
             'get-modified-remote-data': get_modified_remote_data_command,
             'get-mapping-fields': get_mapping_fields_command,
+            'update-remote-system': update_remote_system_command,
         },
         '2.0': {
             'sentinelone-mark-as-threat': mark_as_threat_command,
@@ -3332,7 +3333,6 @@ def main():
         },
         'commands_with_params': {
             'get-remote-data': get_remote_data_command,
-            'update-remote-system': update_remote_system_command,
         },
     }
 

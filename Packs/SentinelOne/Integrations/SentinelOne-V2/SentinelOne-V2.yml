@@ -109,12 +109,6 @@ configuration:
     name: close_xsoar_incident
     required: false
     type: 8
-  - additionalinfo: When selected, closing the XSOAR incident is mirrored in SentinelOne.
-    defaultvalue: 'false'
-    display: Close Mirrored SentinelOne Incident
-    name: close_sentinelone_incident
-    required: false
-    type: 8
 description: Use the SentinelOne integration to send requests to your management
   server and get responses with data pulled from agents or from the management
   database.
