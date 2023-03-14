@@ -11,6 +11,7 @@ This pack contains all of the integrations, automations, and playbooks necessary
 - Keeps human analysts in the loop to direct the desired remediation action depending on the type of risk and discovered context.
 - Includes automated notification and ticket creation workflows for delegating remediation tasks to the appropriate service owners.
 - Includes full automated remediation options for automatically removing risky services from the public internet.
+- Sends out a notification to identified service owners via email about the remediation action taken.
 - Supports validation re-scanning to ensure that remediation efforts have been applied successfully.
 - Includes PDF reporting capabilities for preserving and communicating the investigation summary.
 
