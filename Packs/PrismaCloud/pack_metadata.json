@@ -62,6 +62,18 @@
         "AzureKubernetesServices": {
             "mandatory": false,
             "display_name": "Azure Kubernetes Services"
+        },
+        "AzureSQLManagement": {
+            "mandatory": false,
+            "display_name": "Azure SQL Management (Beta)"
+        },
+        "AzureNetworkSecurityGroups": {
+            "mandatory": false,
+            "display_name": "Azure Network Security Group"
+        },
+        "AzureStorage": {
+            "mandatory": false,
+            "display_name": "Azure Storage Management"
         }
     },
     "marketplaces": [
