@@ -70,3 +70,6 @@ ignore=BA101
 
 [file:playbook-Cortex_XDR_-_Cloud_Cryptomining.yml]
 ignore=BA101
+
+[file:layoutscontainer-Cortex_XDR_-_XCLOUD_Cryptomining.json]
+ignore=BA101
