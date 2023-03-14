@@ -20,6 +20,6 @@ else:
 # ip1 = 10.1.1.1,10.2.2.2
 # ip2 = 10.1.1.1,10.1.1.2,10.1.1.3
 
-#!compare_list list1_name=ip1 list2_name=ip2
+# !compare_list list1_name=ip1 list2_name=ip2
 # DBot Result
 #  10.2.2.2
