@@ -11,6 +11,11 @@ configuration:
   name: proxy
   required: false
   type: 8
+- display: Project id
+  name: project_id
+  required: false
+  type: 0
+  additionalinfo: The id of the project in which to run the commands on.
 description: Google Compute Engine delivers virtual machines running in Google's innovative data centers and worldwide fiber network. Compute Engine's tooling and workflow support enable scaling from single instances to global, load-balanced cloud computing.
 display: Google Cloud Compute
 name: Google Cloud Compute
