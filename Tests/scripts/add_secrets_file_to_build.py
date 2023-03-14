@@ -87,6 +87,7 @@ def run(options):
             pack_path = f'{Path(__file__).absolute().parents[2]}/{f}'
             pack_path = '/'.join(pack_path.split('/')[:-1])
             changed_packs.append(pack_path)
+    print(f'changed_packs: {changed_packs}')
     for changed_pack in changed_packs:
         root_dir1 = changed_packs
         root_dir_instance1 = pathlib.Path(root_dir1)
@@ -115,7 +116,9 @@ def run(options):
     print('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^')
     print(yml_ids)
     secret_conf = GoogleSecreteManagerModule(options.service_account)
-    secrets = secret_conf.list_secrets(options.gsm_project_id, with_secret=True, attr_validation=('name', 'params'))
+    secrets = secret_conf.list_secrets(options.gsm_project_id, name_filter=yml_ids, with_secret=True, attr_validation=('name', 'params'))
+    print('************************')
+    print(f'secrets: {secrets}')
     secret_file = {
         "username": options.user,
         "userPassword": options.password,

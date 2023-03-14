@@ -21,8 +21,14 @@ class GoogleSecreteManagerModule:
         parent = f"projects/{project_id}"
         for secret in self.client.list_secrets(request={"parent": parent}):
             secret.name = str(secret.name).split('/')[-1]
+            try:
+                labels = dict(secret.labels)
+            except Exception as e:
+                labels = {}
+                logging.error(f'Error the secret: {secret.name} has no labels, got the error: {e}')
+            secret_pack_id = labels.get('pack_id')
             logging.debug(f'Getting the secret: {secret.name}')
-            if secret.name in name_filter:
+            if name_filter and secret_pack_id and secret_pack_id not in name_filter:
                 continue
             if with_secret:
                 try:
