@@ -89,18 +89,20 @@ def run(options):
             changed_packs.append(pack_path)
     print(f'changed_packs: {changed_packs}')
     for changed_pack in changed_packs:
-        root_dir1 = changed_packs
-        root_dir_instance1 = pathlib.Path(root_dir1)
-        filesindir1 = [item.name for item in root_dir_instance1.glob("*")]
-        print(branch_name)# the branch name
+        print(f'changed_pack: {changed_pack}')
+        pack_dir = changed_pack
+        print(f'pack_dir: {pack_dir}')
+        pack_dir_instance = pathlib.Path(pack_dir)
+        pack_files = [item.name for item in pack_dir_instance.glob("*")]
+        print(branch_name)  # the branch name
         print('******************************')
-        print(filesindir) # the files in content
+        print(filesindir)  # the files in content
         print('******************************')
-        print(changed_files) # the array of changed files
+        print(changed_files)  # the array of changed files
         print('******************************')
-        print(changed_pack) # the path of the changed integration
+        print(changed_pack)  # the path of the changed integration
         print('******************************')
-        print(filesindir1) # the content of the paath location
+        print(pack_files) # the content of the paath location
         root_dir = Path(changed_pack)
         root_dir_instance = pathlib.Path(root_dir)
         filesindir = [item.name for item in root_dir_instance.glob("*") if str(item.name).endswith('yml')]
