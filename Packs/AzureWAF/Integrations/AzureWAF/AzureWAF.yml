@@ -591,7 +591,26 @@ script:
       isArray: false
       name: limit
       required: false
-      secret: false    
+      secret: false  
+    outputs:
+    - contextPath: AzureWAF.ResourceGroup.id
+      description: Resource group ID.
+      type: String
+    - contextPath: AzureWAF.ResourceGroup.location
+      description: Resource group location.
+      type: String
+    - contextPath: AzureWAF.ResourceGroup.name
+      description: Resource group name.
+      type: String
+    - contextPath: AzureWAF.ResourceGroup.type
+      description: Resource group type.
+      type: String
+    - contextPath: AzureWAF.ResourceGroup.properties
+      description: Resource group properties.
+      type: String
+    - contextPath: AzureWAF.ResourceGroup.tags
+      description: Resource group tags.
+      type: String  
   
   dockerimage: demisto/crypto:1.0.0.49599
   feed: false
