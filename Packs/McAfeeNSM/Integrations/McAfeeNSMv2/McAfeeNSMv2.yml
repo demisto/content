@@ -1982,7 +1982,7 @@ script:
     - name: device_id
       description: The ID of the device. To get the device ID, use the !nsm-list-domain-device command.
     - name: limit
-      description: The maximum number of interfaces to return.
+      description: The maximum number of policies to return.
       defaultvalue: 50
     - name: all_results
       description: Return all policies assigned to a domain or a specific device.

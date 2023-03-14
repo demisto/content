@@ -320,7 +320,7 @@ class Client(BaseClient):
         return self._http_request(method='GET', url_suffix=url_suffix)
 
     def list_device_interface_request(self, domain_id: int, device_id: int) -> Dict[str, List]:
-        """ Retrieves the list of interfaces realeted to a device.
+        """ Retrieves the list of interfaces related to a device.
             Args:
                 device_id: int - The relevant device id.
                 domain_id: int - The relevant domain id.
@@ -330,21 +330,21 @@ class Client(BaseClient):
         url_suffix = f'/domain/{domain_id}/sensor/{device_id}/allocatedinterfaces'
         return self._http_request(method='GET', url_suffix=url_suffix)
 
-    def assign_device_policy_request(self, domain_id: int, device_id: int, pre_firewall_policy: str | None,
-                                     post_firewall_policy: str | None) -> Dict:
+    def assign_device_policy_request(self, domain_id: int, device_id: int, pre_firewall_policy: Optional[str],
+                                     post_firewall_policy: Optional[str]) -> Dict:
         """ Assigns a policy to a device.
             Args:
                 device_id: int - The relevant device id.
                 domain_id: int - The relevant domain id.
             Returns:
-                A suuccess or failure code
+                A success or failure code
         """
         url_suffix = f'/domain/{domain_id}/policyassignments/device/{device_id}'
         json_data = {"firewallPolicyLast": post_firewall_policy,
                      "firewallPolicyFirst": pre_firewall_policy}
         return self._http_request(method='PUT', url_suffix=url_suffix, json_data=json_data)
 
-    def list_device_policy_request(self, domain_id: int, device_id: int | None) -> Dict:
+    def list_device_policy_request(self, domain_id: int, device_id: Optional[int]) -> Dict:
         """ Retrieves the list of policies assigned to a device.
             Args:
                 device_id: int - The relevant device id.
@@ -358,9 +358,9 @@ class Client(BaseClient):
             url_suffix = f'/domain/{domain_id}/policyassignments/device'
         return self._http_request(method='GET', url_suffix=url_suffix)
 
-    def assign_interface_policy_request(self, domain_id: int, interface_id: int, firewall_policy: str | None,
-                                        firewall_port_policy: str | None, ips_policy: str | None,
-                                        custom_policy_json_key: str | None, custom_policy_json_value: str | None):
+    def assign_interface_policy_request(self, domain_id: int, interface_id: int, firewall_policy: Optional[str],
+                                        firewall_port_policy: Optional[str], ips_policy: Optional[str],
+                                        custom_policy_json_key: Optional[str], custom_policy_json_value: Optional[str]):
         """ Assigns a policy to an interface.
             Args:
                 domain_id: int - The relevant domain id.
@@ -371,7 +371,7 @@ class Client(BaseClient):
                 custom_policy_json_key: str - The custom policy json key.
                 custom_policy_json_value: str - The custom policy json value.
             Returns:
-                A suuccess or failure code
+                A success or failure code.
 
         """
         url_suffix = f'/domain/{domain_id}/policyassignments/interface/{interface_id}'
@@ -388,7 +388,7 @@ class Client(BaseClient):
 
         return self._http_request(method='PUT', url_suffix=url_suffix, json_data=json_data)
 
-    def list_interface_policy_request(self, domain_id: int, interface_id: int | None) -> Dict:
+    def list_interface_policy_request(self, domain_id: int, interface_id: Optional[int]) -> Dict:
         """ Retrieves the list of policies assigned to an interface.
             Args:
                 domain_id: int - The relevant domain id.
@@ -716,7 +716,7 @@ def create_body_firewall_policy(domain: int, name: str, visible_to_child: bool, 
 
 
 def create_body_create_rule(rule_type: str, address: List, number: int,
-                            from_to_list: list[dict[str, Any | None]]) -> tuple:
+                            from_to_list: list[dict[str, Optional[Any]]]) -> tuple:
     """ create part of the body for the command create_rule_object
         Args:
             rule_type: str - The type of the rule.
@@ -741,14 +741,14 @@ def create_body_create_rule(rule_type: str, address: List, number: int,
 
 
 def create_body_create_rule_for_v10(rule_type: str, address: List, number: int,
-                                    from_to_list: list[dict[str, Any | None]], state: str = "Enabled") -> tuple:
+                                    from_to_list: list[dict[str, Optional[Any]]], state: str = "Enabled") -> tuple:
     """ create part of the body for the command create/update_rule_object for v10
         Args:
             rule_type: str - The type of the rule.
             address: List - A list of addresses, if relevant.
             number: int - The number of the IPV.
             from_to_list: List - A list that contains dictionaries with from and do addresses.
-            stste: str - An Enabled or Disabled state.
+            state: str - An Enabled or Disabled state.
         Returns:
             Returns the body for the request.
         """
@@ -775,9 +775,13 @@ def create_body_create_rule_for_v10(rule_type: str, address: List, number: int,
 
 
 def modify_v10_results_to_v9_format(results: List[Dict[Any, Any]]) -> List[Dict[Any, Any]]:
-    # modify the results of v10 to be in the same format as in v9.
-    # in the nested dictionary,  the key is the name of the object,
-    # and the value instead of being a list of dictionaries, now the value is a list of strings
+    """
+    Modify the results of v10 to be in the same format as in v9.
+
+    Modifications In the nested dictionary:
+    - The key is the name of the object.
+    - The value is a list of strings instead of a list of dictionaries.
+    """
     key_list = ['IPv6AddressRange', 'HostIPv6', 'Network_IPV_6', 'Network_IPV_4',
                 'HostIPv4', 'IPv4AddressRange']
     for record in results:
@@ -786,13 +790,13 @@ def modify_v10_results_to_v9_format(results: List[Dict[Any, Any]]) -> List[Dict[
                 address_list: list = []
                 my_key = key
                 # iterate over the list of dictionaries and retrive the addresses
-                for iner_dict in value[next(iter(value))]:
+                for inner_dict in value[next(iter(value))]:
                     temp_dict = {}
-                    for key in iner_dict.keys():
+                    for key in inner_dict.keys():
                         if key == 'value':
-                            address_list.append(iner_dict[key])
+                            address_list.append(inner_dict[key])
                         elif key in ['FromAddress', 'ToAddress']:
-                            temp_dict[key] = iner_dict[key]
+                            temp_dict[key] = inner_dict[key]
                     if temp_dict:
                         address_list.append(temp_dict)
 
@@ -876,11 +880,11 @@ def update_source_destination_object(obj: List[Dict], rule_object_id: Optional[i
     return obj
 
 
-def overwrite_source_destination_object(rule_object_id: int | None, rule_object_type: Optional[str], dest_or_src: str,
+def overwrite_source_destination_object(rule_object_id: Optional[int], rule_object_type: Optional[str], dest_or_src: str,
                                         member_rule_list: Dict) -> List:
     """ overwrite the source and destination objects in the command update_firewall_policy.
         Args:
-            rule_object_id: int | None - The id of the rule.
+            rule_object_id: Optinal [int] - The id of the rule.
             rule_object_type: Optional[str] - The type of the rule.
             dest_or_src: str - Overwrite the destination or source object.
             member_rule_list: Dict - The first object in MemberRuleList in the API response.
@@ -2070,6 +2074,7 @@ def export_pcap_file_command(client: Client, args: Dict) -> List:
 
 def list_domain_device_command(client: Client, args: Dict) -> CommandResults:
     """
+    Retrieves the list of devices related to a given domain.
     Args:
         client(Client): client - A McAfeeNSM client.
         args(Dict): - The function arguments.
@@ -2084,9 +2089,9 @@ def list_domain_device_command(client: Client, args: Dict) -> CommandResults:
 
     devices = (response.get('DeviceResponseList') if all_results
                else
-               response.get('DeviceResponseList', {})[:limit])
+               response.get('DeviceResponseList', [])[:limit])
 
-    # Capitalize the keys of the devices list and keeping the rest of the keys as is.
+    # Capitalize the keys of the devices list and keep the rest of the keys as they are.
     capitalize_devices = []
     for device in devices:
         device = {k[:1].upper() + k[1:]: v for k, v in device.items()}
@@ -2105,6 +2110,7 @@ def list_domain_device_command(client: Client, args: Dict) -> CommandResults:
 
 def list_device_interface_command(client: Client, args: Dict) -> CommandResults:
     """
+    Retrieves the list of interfaces related to a given device.
     Args:
         client(Client): client - A McAfeeNSM client.
         args(Dict): - The function arguments.
@@ -2126,7 +2132,7 @@ def list_device_interface_command(client: Client, args: Dict) -> CommandResults:
                   response.get('allocatedInterfaceList', [])[:limit])
 
     key_list = ['interfaceId', 'interfaceName', 'interfaceType']
-    # Capitalize the keys of the interfaces list and keeping the rest of the keys as is.
+    # Capitalize the keys of the interfaces list and keep the rest of the keys as they are.
     capitalize_interfaces = []
     for interface in interfaces:
         interface = {k[:1].upper() + k[1:]: v for k, v in interface.items() if k in key_list}
@@ -2146,6 +2152,7 @@ def list_device_interface_command(client: Client, args: Dict) -> CommandResults:
 
 def assign_device_policy_command(client: Client, args: Dict) -> CommandResults:
     """
+    Assigns a policy to a device.
     Args:
         client(Client): client - A McAfeeNSM client.
         args(Dict): - The function arguments.
@@ -2164,16 +2171,16 @@ def assign_device_policy_command(client: Client, args: Dict) -> CommandResults:
                                                    pre_firewall_policy=pre_firewall_policy,
                                                    post_firewall_policy=post_firewall_policy
                                                    )
-
+    readable_output = 'Policy assigned successfully.' if response.get('status') == 1 else 'Policy assignment failed.'
     return CommandResults(
-        readable_output='Policy assigned successfully.',
+        readable_output=readable_output,
         raw_response=response
     )
 
 
 def list_device_policy_command(client: Client, args: Dict) -> CommandResults:
     """
-
+    Retrieves a list of policies related to the domain or a specific device.
     Args:
         client(Client): client - A McAfeeNSM client.
         args(Dict): - The function arguments.
@@ -2192,7 +2199,7 @@ def list_device_policy_command(client: Client, args: Dict) -> CommandResults:
     all_policies = (response.get('policyAssignmentsList') if all_results
                     else
                     response.get('policyAssignmentsList', {})[:limit])
-    # Capitalize the keys of the policies list and keeping the rest of the keys as is.
+    # Capitalize the keys of the policies list and keep the rest of the keys as they are.
     capitalize_policies = []
     for policy in all_policies:
         policy = {k[:1].upper() + k[1:]: v for k, v in policy.items()}
@@ -2212,6 +2219,7 @@ def list_device_policy_command(client: Client, args: Dict) -> CommandResults:
 
 def assign_interface_policy_command(client: Client, args: Dict) -> CommandResults:
     """
+    Assigns an existing policy to an interface.
     Args:
         client(Client): - A McAfeeNSM client.
         args(Dict): - The function arguments.
@@ -2243,16 +2251,16 @@ def assign_interface_policy_command(client: Client, args: Dict) -> CommandResult
                                                       custom_policy_json_key=custom_policy_json_key,
                                                       custom_policy_json_value=custum_policy_json_value
                                                       )
-
+    readble_output = 'Policy assigned successfully.' if response.get('status') == 1 else 'Policy assignment failed.'
     return CommandResults(
-        readable_output='Policy assigned successfully.',
+        readable_output=readble_output,
         raw_response=response
     )
 
 
 def list_interface_policy_command(client: Client, args: Dict) -> CommandResults:
     """
-
+    Retrieves a list of policies related to the domain or a specific interface.
     Args:
         client (Client):  - A McAfeeNSM client.
         args (Dict): - The function arguments.
@@ -2272,13 +2280,13 @@ def list_interface_policy_command(client: Client, args: Dict) -> CommandResults:
         all_policies = (
             response.get('policyAssignmentsList')
             if all_results
-            else response.get('policyAssignmentsList', {})[:limit]
+            else response.get('policyAssignmentsList', [])[:limit]
         )
     elif all_results:
         all_policies = response
     else:
         all_policies = [response][:limit]
-    # Capitalize the keys of the policies list and keeping the rest of the keys as is.
+    # Capitalize the keys of the policies list and keep the rest of the keys as they are.
     capitalize_policies = []
     for policy in all_policies:
         policy = {k[:1].upper() + k[1:]: v for k, v in policy.items()}
@@ -2296,7 +2304,7 @@ def list_interface_policy_command(client: Client, args: Dict) -> CommandResults:
 
 def get_device_configuration_command(client: Client, args: Dict) -> CommandResults:
     """
-
+    Retrieves the configuration of a device(e.g pending changes)
     Args:
         client (Client):  - A McAfeeNSM client.
         args (Dict): - The function arguments.
@@ -2309,29 +2317,29 @@ def get_device_configuration_command(client: Client, args: Dict) -> CommandResul
         raise DemistoException('Please provide a device_id.')
 
     response = client.get_device_configuration_request(device_id=device_id)
-    # Capitalize the keys of the policies list and keeping the rest of the keys as is.
-    capitlize_response: Dict[str, Any] = {k[:1].upper() + k[1:]: v for k, v in response.items()}
+    # Capitalize the keys of the policies list and keep the rest of the keys as they are.
+    capitalize_response: Dict[str, Any] = {k[:1].upper() + k[1:]: v for k, v in response.items()}
     # build a new dict with the keys and values of the nested dict
-    iner_dict: Any = capitlize_response.get('PendingChanges') or {}
-    add_on_dict = {"IsPolicyConfigurationChanged": iner_dict.get("isPolicyConfigurationChanged"),
-                   "IsConfigurationChanged": iner_dict.get("isConfigurationChanged"),
-                   "IsMalwareConfigurationChanged": iner_dict.get("isMalwareConfigurationChanged"),
-                   "IsSignatureSetConfigurationChanged": iner_dict.get("isSignatureSetConfigurationChanged"),
-                   "IsSSLConfigurationChanged": iner_dict.get("isSSLConfigurationChanged"),
-                   "IsBotnetConfigurationChanged": iner_dict.get("isBotnetConfigurationChanged"),
-                   "IsGloablPolicyConfigurationChanged": iner_dict.get("isGloablPolicyConfigurationChanged")
+    inner_dict: Any = capitalize_response.get('PendingChanges') or {}
+    add_on_dict = {"IsPolicyConfigurationChanged": inner_dict.get("isPolicyConfigurationChanged"),
+                   "IsConfigurationChanged": inner_dict.get("isConfigurationChanged"),
+                   "IsMalwareConfigurationChanged": inner_dict.get("isMalwareConfigurationChanged"),
+                   "IsSignatureSetConfigurationChanged": inner_dict.get("isSignatureSetConfigurationChanged"),
+                   "IsSSLConfigurationChanged": inner_dict.get("isSSLConfigurationChanged"),
+                   "IsBotnetConfigurationChanged": inner_dict.get("isBotnetConfigurationChanged"),
+                   "IsGloablPolicyConfigurationChanged": inner_dict.get("isGloablPolicyConfigurationChanged")
                    }
 
-    capitlize_response |= add_on_dict
-    capitlize_response.pop('PendingChanges') if capitlize_response.get('PendingChanges') else None
+    capitalize_response |= add_on_dict
+    capitalize_response.pop('PendingChanges') if capitalize_response.get('PendingChanges') else None
     readable_output = tableToMarkdown(
-        name='Device Configuration', t=capitlize_response, removeNull=True
+        name='Device Configuration', t=capitalize_response, removeNull=True
     )
 
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='NSM.DeviceConfiguration',
-        outputs=capitlize_response,
+        outputs=capitalize_response,
         raw_response=response
     )
 
@@ -2339,6 +2347,7 @@ def get_device_configuration_command(client: Client, args: Dict) -> CommandResul
 @polling_function(name='nsm-deploy-device-configuration', interval=INTERVAL, requires_polling_arg=False)
 def deploy_device_configuration_command(args: Dict, client: Client) -> PollResult:
     """
+    Deploy the configuration of a device.(e.g activate pending changes)
     Args:
         args (Dict): - The function arguments.
         client (Client): - A McAfeeNSM client.
@@ -2352,18 +2361,18 @@ def deploy_device_configuration_command(args: Dict, client: Client) -> PollResul
     if not device_id:
         raise DemistoException('Please provide a device_id.')
     if not request_id:       # if this is the first time the function is called
-        isSSLPushRequired = argToBoolean(args.get('push_ssl_key', False))
-        isGAMUpdateRequired = argToBoolean(args.get('push_gam_updates', False))
-        isSigsetConfigPushRequired = argToBoolean(args.get('push_configuration_signature_set', False))
-        isBotnetPushRequired = argToBoolean(args.get('push_botnet', False))
+        is_ssl_push_required = argToBoolean(args.get('push_ssl_key', False))
+        is_gam_update_required = argToBoolean(args.get('push_gam_updates', False))
+        is_sigset_config_push_required = argToBoolean(args.get('push_configuration_signature_set', False))
+        is_botnet_push_required = argToBoolean(args.get('push_botnet', False))
 
-        if not any([isSSLPushRequired, isGAMUpdateRequired, isSigsetConfigPushRequired, isBotnetPushRequired]):
+        if not any([is_ssl_push_required, is_gam_update_required, is_sigset_config_push_required, is_botnet_push_required]):
             raise DemistoException("Please provide at least one argument to deploy")
 
-        requests_id = client.deploy_device_configuration_request(device_id=device_id, isSSLPushRequired=isSSLPushRequired,
-                                                                 isGAMUpdateRequired=isGAMUpdateRequired,
-                                                                 isSigsetConfigPushRequired=isSigsetConfigPushRequired,
-                                                                 isBotnetPushRequired=isBotnetPushRequired).get('RequestId')
+        requests_id = client.deploy_device_configuration_request(device_id=device_id, isSSLPushRequired=is_ssl_push_required,
+                                                                 isGAMUpdateRequired=is_gam_update_required,
+                                                                 isSigsetConfigPushRequired=is_sigset_config_push_required,
+                                                                 isBotnetPushRequired=is_botnet_push_required).get('RequestId')
         args["request_id"] = requests_id
     status = client.check_deploy_device_configuration_request_status(device_id=device_id,
                                                                      request_id=request_id)
