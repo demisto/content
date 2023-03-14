@@ -26,6 +26,7 @@ from demisto_sdk.commands.content_graph.interface.neo4j.neo4j_graph import Neo4j
 from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
 import traceback
+from Tests.Marketplace.pack_readme_handler import upload_readme_images
 
 METADATA_FILE_REGEX_GET_VERSION = r'metadata\-([\d\.]+)\.json'
 
@@ -880,7 +881,7 @@ def handle_private_content(public_index_folder_path, private_bucket_name, extrac
         return False, [], []
 
 
-def get_images_data(packs_list: list):
+def get_images_data(packs_list: list, readme_images_dict: dict):
     """ Returns a data structure of all packs that an integration/author image of them was uploaded
 
     Args:
@@ -899,11 +900,10 @@ def get_images_data(packs_list: list):
             pack_image_data[pack.name][BucketUploadFlow.INTEGRATIONS] = pack.uploaded_integration_images
         if pack.uploaded_preview_images:
             pack_image_data[pack.name][BucketUploadFlow.PREVIEW_IMAGES] = pack.uploaded_preview_images
-        if pack.uploaded_readme_images:
-            pack_image_data[pack.name][BucketUploadFlow.README_IMAGES] = pack.uploaded_readme_images
         if pack_image_data[pack.name]:
             images_data.update(pack_image_data)
 
+    pack_image_data[BucketUploadFlow.README_IMAGES] = readme_images_dict
     return images_data
 
 
@@ -1302,11 +1302,17 @@ def main():
     index_v2_local_path = os.path.join(extract_destination_path, f"{GCPConfig.INDEX_V2_NAME}")
     index_v2_blob = storage_bucket.blob(index_v2_gcs_path)
     shutil.copytree(index_folder_path, index_v2_local_path)
-    for filename in os.listdir(index_v2_local_path):
-        pack_readme_path = os.path.join(index_v2_local_path, filename, 'README.md')
+    readme_images_dict = {}
+    for pack_name in os.listdir(index_v2_local_path):
+        pack_readme_path = os.path.join(index_v2_local_path, pack_name, 'README.md')
+        logging.info(f'{pack_readme_path=}')
         if not os.path.exists(pack_readme_path):
             continue
         logging.info(f'Index V2 {pack_readme_path=}')
+        if pack_readme_images_list := upload_readme_images(storage_bucket=storage_bucket, storage_base_path=storage_base_path,
+                                                           pack_readme_path=pack_readme_path, pack_name=pack_name):
+            logging.info(f'{pack_name=}, {pack_readme_images_list=}')
+            readme_images_dict[pack_name] = pack_readme_images_list
         with open(pack_readme_path, 'w') as f:
             f.write('This is the new readme')
 
@@ -1342,7 +1348,7 @@ def main():
     store_successful_and_failed_packs_in_ci_artifacts(
         packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING, successful_packs,
         successful_uploaded_dependencies_zip_packs, failed_packs, updated_private_packs_ids,
-        images_data=get_images_data(packs_list)
+        images_data=get_images_data(packs_list, readme_images_dict=readme_images_dict)
     )
 
     # summary of packs status
