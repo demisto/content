@@ -1974,4 +1974,4 @@ inputs:
 outputs: []
 tests:
 - Test XDR Playbook
-fromversion: 6.0.0
+fromversion: 6.5.0
