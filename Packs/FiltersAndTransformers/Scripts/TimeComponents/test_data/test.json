@@ -82,7 +82,7 @@
       "period_12_clock": "PM",
       "time_zone_hhmm": "-0400",
       "time_zone_offset": -240.0,
-      "time_zone_abbreviations": ["AST"],
+      "time_zone_abbreviations": ["AST", "CDT", "EDT"],
       "unix_epoch_time": 1642868625,
       "iso_8601": "2022-01-22T12:23:45-04:00",
       "y-m-d": "2022-1-22",

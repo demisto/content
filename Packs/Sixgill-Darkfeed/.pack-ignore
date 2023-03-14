@@ -10,6 +10,9 @@ ignore=BA108,BA109,IN145
 [file:Darkfeed_IOC_detonation_and_proactive_blocking.yml]
 ignore=PB115
 
+[file:Darkfeed_Threat_hunting_research.yml]
+ignore=PB118,PB119
+
 [file:SixgillDVEFeed.yml]
 ignore=IN145
 
