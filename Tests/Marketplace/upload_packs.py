@@ -349,12 +349,6 @@ def upload_index_v2(index_folder_path: str,
         logging.exception(f"Failed in uploading {index_name}.")
         sys.exit(1)
     finally:
-        if artifacts_dir:
-            # Store index.json in CircleCI artifacts
-            shutil.copyfile(
-                os.path.join(index_folder_path, f'{index_name}.json'),
-                os.path.join(artifacts_dir, f'{index_name}.json'),
-            )
         shutil.rmtree(index_folder_path)
 
 
