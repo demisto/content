@@ -282,14 +282,16 @@ def prepare_index_json(index_folder_path: str, build_number: str, private_packs:
 def upload_index_to_storage(index_folder_path: str,
                             extract_destination_path: str,
                             index_blob: Any,
-                            index_generation: int, is_private: bool = False,
+                            index_generation: int,
+                            is_private: bool = False,
                             artifacts_dir: Optional[str] = None,
-                            storage_bucket: Optional[Bucket] = None,
+                            index_name: str = GCPConfig.INDEX_NAME
                             ):
     """
     Upload updated index zip to cloud storage.
 
     :param index_folder_path: index folder full path.
+    :param extract_destination_path 
     :param index_blob: google cloud storage object that represents index.zip blob.
     :param index_generation: downloaded index generation.
     :param is_private: Indicates if upload is private.
@@ -304,33 +306,56 @@ def upload_index_to_storage(index_folder_path: str,
     try:
         logging.info(f'index zip path: {index_zip_path}')
 
-        if index_blob.exists():
-            index_blob.reload()
-            current_index_generation = index_blob.generation
+        index_blob.reload()
+        current_index_generation = index_blob.generation
 
-            index_blob.cache_control = "no-cache,max-age=0"  # disabling caching for index blob
+        index_blob.cache_control = "no-cache,max-age=0"  # disabling caching for index blob
 
-            if is_private or current_index_generation == index_generation:
-                # we upload both index.json and the index.zip to allow usage of index.json without having to unzip
-                index_blob.upload_from_filename(index_zip_path)
-                logging.success(f"Finished uploading {GCPConfig.INDEX_NAME}.zip to storage.")
-            else:
-                logging.critical(f"Failed in uploading {GCPConfig.INDEX_NAME}, mismatch in index file generation.")
-                logging.critical(f"Downloaded index generation: {index_generation}")
-                logging.critical(f"Current index generation: {current_index_generation}")
-                sys.exit(0)
-
-        else:
+        if is_private or current_index_generation == index_generation:
+            # we upload both index.json and the index.zip to allow usage of index.json without having to unzip
             index_blob.upload_from_filename(index_zip_path)
+            logging.success(f"Finished uploading {index_name}.zip to storage.")
+        else:
+            logging.critical(f"Failed in uploading {index_name}, mismatch in index file generation.")
+            logging.critical(f"Downloaded index generation: {index_generation}")
+            logging.critical(f"Current index generation: {current_index_generation}")
+            sys.exit(0)
+
     except Exception:
-        logging.exception(f"Failed in uploading {GCPConfig.INDEX_NAME}.")
+        logging.exception(f"Failed in uploading {index_name}.")
         sys.exit(1)
     finally:
         if artifacts_dir:
             # Store index.json in CircleCI artifacts
             shutil.copyfile(
-                os.path.join(index_folder_path, f'{GCPConfig.INDEX_NAME}.json'),
-                os.path.join(artifacts_dir, f'{GCPConfig.INDEX_NAME}.json'),
+                os.path.join(index_folder_path, f'{index_name}.json'),
+                os.path.join(artifacts_dir, f'{index_name}.json'),
+            )
+        shutil.rmtree(index_folder_path)
+
+
+def upload_index_v2(index_folder_path: str,
+                    extract_destination_path: str,
+                    index_blob: Any,
+                    artifacts_dir: Optional[str] = None,
+                    index_name: str = GCPConfig.INDEX_NAME):
+
+    index_zip_name = os.path.basename(index_folder_path)
+    index_zip_path = shutil.make_archive(base_name=index_folder_path, format="zip",
+                                         root_dir=extract_destination_path, base_dir=index_zip_name)
+
+    try:
+        index_blob.upload_from_filename(index_zip_path)
+        logging.success(f"Finished uploading {index_name}.zip to storage.")
+    except Exception:
+        logging.exception(f"Failed in uploading {index_name}.")
+        sys.exit(1)
+    finally:
+        if artifacts_dir:
+            # Store index.json in CircleCI artifacts
+            shutil.copyfile(
+                os.path.join(index_folder_path, f'{index_name}.json'),
+                os.path.join(artifacts_dir, f'{index_name}.json'),
             )
         shutil.rmtree(index_folder_path)
 
@@ -1295,22 +1320,21 @@ def main():
 
     logging.info('uploading new index')
 
-    upload_index_to_storage(index_folder_path=index_v2_local_path,
-                            extract_destination_path=extract_destination_path,
-                            index_blob=index_v2_blob,
-                            index_generation=index_generation,
-                            artifacts_dir=os.path.dirname(packs_artifacts_path),
-                            storage_bucket=storage_bucket,
-                            index_name=GCPConfig.INDEX_V2_NAME)
+    upload_index_v2(index_folder_path=index_v2_local_path,
+                    extract_destination_path=extract_destination_path,
+                    index_blob=index_v2_blob,
+                    artifacts_dir=os.path.dirname(packs_artifacts_path),
+                    index_name=GCPConfig.INDEX_V2_NAME)
 
     logging.info('finished uploading new index')
+
     # finished iteration over content packs
     upload_index_to_storage(index_folder_path=index_folder_path,
                             extract_destination_path=extract_destination_path,
                             index_blob=index_blob,
                             index_generation=index_generation,
-                            artifacts_dir=os.path.dirname(packs_artifacts_path),
-                            storage_bucket=storage_bucket)
+                            artifacts_dir=os.path.dirname(packs_artifacts_path)
+                            )
 
     # dependencies zip is currently supported only for marketplace=xsoar, not for xsiam/xpanse
     if is_create_dependencies_zip and marketplace == 'xsoar':
