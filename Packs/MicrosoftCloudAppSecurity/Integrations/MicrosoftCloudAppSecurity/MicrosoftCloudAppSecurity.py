@@ -1,4 +1,5 @@
 from dateparser import parse
+from pytz import utc
 import urllib3
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 
@@ -6,7 +7,7 @@ from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 urllib3.disable_warnings()
 
 # CONSTANTS
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%f'
 DEFAULT_INCIDENT_TO_FETCH = 50
 
 SEVERITY_OPTIONS = {
@@ -661,7 +662,7 @@ def list_users_accounts_command(client: Client, args: dict):
 
 
 def format_fetch_start_time_to_timestamp(fetch_start_time: Optional[str]):
-    fetch_start_time_datetime = parse(fetch_start_time)  # type: ignore
+    fetch_start_time_datetime = parse(fetch_start_time).replace(tzinfo=utc)  # type: ignore
     start_fetch_timestamp = fetch_start_time_datetime.timestamp()  # type: ignore
     if fetch_start_time_datetime.microsecond == 0:  # type: ignore
         return int(start_fetch_timestamp) * 1000
@@ -676,15 +677,10 @@ def format_fetch_start_time_to_timestamp(fetch_start_time: Optional[str]):
 
 
 def timestamp_to_datetime_string(timestamp: int, include_miliseconds: bool = True):
-    timestamp_as_datetime = datetime.fromtimestamp(timestamp / 1000.0)  # type: ignore
-    iso_format_datetime = timestamp_as_datetime.isoformat()
+    datetime_string = timestamp_to_datestring(timestamp, DATE_FORMAT)
     if include_miliseconds:
-        if timestamp_as_datetime.microsecond != 0:
-            return iso_format_datetime[:-3]
-        else:
-            return f'{iso_format_datetime}.000'
-    else:
-        return iso_format_datetime.split('.')[0]
+        return datetime_string[:-3]
+    return datetime_string.split('.')[0]
 
 
 def arrange_alerts_by_incident_type(alerts: List[dict]):
@@ -720,7 +716,6 @@ def alerts_to_xsoar_incidents(alerts: List[dict]):
 
 def fetch_incidents(client: Client, max_results: Optional[str], last_run: dict, first_fetch: Optional[str],
                     filters: dict, look_back: int):
-    date_format = '%Y-%m-%dT%H:%M:%S.%f'
     if not first_fetch:
         first_fetch = '3 days'
     max_results = int(max_results) if max_results else DEFAULT_INCIDENT_TO_FETCH
@@ -731,7 +726,7 @@ def fetch_incidents(client: Client, max_results: Optional[str], last_run: dict, 
         last_run.update({"time": last_fetch_time})
 
     fetch_start_time, fetch_end_time = get_fetch_run_time_range(
-        last_run=last_run, first_fetch=first_fetch, look_back=look_back, date_format=date_format
+        last_run=last_run, first_fetch=first_fetch, look_back=look_back, date_format=DATE_FORMAT
     )
 
     # removing last 3 digits since api supports 13-digits
@@ -761,7 +756,7 @@ def fetch_incidents(client: Client, max_results: Optional[str], last_run: dict, 
         look_back=look_back,
         created_time_field='timestamp',
         id_field='_id',
-        date_format=date_format,
+        date_format=DATE_FORMAT,
         increase_last_run_time=True
     )
     if 'last_fetch_id' in last_run:  # no need to save last fetch id, remove support from older versions of fetch

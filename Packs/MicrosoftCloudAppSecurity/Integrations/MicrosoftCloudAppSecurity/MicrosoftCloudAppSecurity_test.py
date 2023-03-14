@@ -862,7 +862,7 @@ def test_format_fetch_start_time_to_timestamp(mocker, fetch_time):
         (1652611812123, "2022-05-15T10:50:12.123")
     ]
 )
-def test_timestamp_to_datetime_string(mocker, timestamp, expected_datetime_string):
+def test_timestamp_to_datetime_string(timestamp, expected_datetime_string):
     """
     Given
     - 13 characters timestamps
