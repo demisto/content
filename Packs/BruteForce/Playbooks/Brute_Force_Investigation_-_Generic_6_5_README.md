@@ -1,7 +1,4 @@
-This playbook investigates a "Brute Force" incident by gathering user and IP information, and calculating the incident severity based on the gathered information and information received from the user. It then performs remediation.
-This is done based on the phases for handling an incident as they are described in the SANS Institute â€˜Incident Handlerâ€™s Handbookâ€™ by Patrick Kral.
-
-https://www.sans.org/reading-room/whitepapers/incident/incident-handlers-handbook-33901
+This playbook investigates a "Brute Force" incident by gathering user and IP information, calculating the incident severity based on the gathered information and information received from the user, and performs remediation.
 
 The playbook handles the following use-cases:
 
@@ -15,9 +12,7 @@ Used Sub-playbooks:
 - Calculate Severity - Critical Assets v2
 - Isolate Endpoint - Generic v2
 - Block Indicators - Generic v3
-- SANS - Lessons Learned
 
-***Disclaimer: This playbook does not ensure compliance to SANS regulations.
 
 ## Dependencies
 
@@ -25,12 +20,11 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Isolate Endpoint - Generic V2
-* Account Enrichment - Generic v2.1
 * Block Indicators - Generic v3
-* SANS - Lessons Learned
+* Account Enrichment - Generic v2.1
 * Calculate Severity - Critical Assets v2
 * IP Enrichment - Generic v2
+* Isolate Endpoint - Generic V2
 
 ### Integrations
 
@@ -42,12 +36,12 @@ This playbook does not use any integrations.
 
 ### Commands
 
+* ad-disable-account
 * send-mail
-* closeInvestigation
 * setIncident
+* closeInvestigation
 * ad-enable-account
 * ad-expire-password
-* ad-disable-account
 
 ## Playbook Inputs
 
@@ -56,10 +50,11 @@ This playbook does not use any integrations.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | username | Username of the user who is suspected of the activity. | incident.username | Required |
+| src | Source endpoint that triggered the incident. | incident.src | Required |
 | traps_endpoint_id | Traps endpoint ID, used for endpoint isolation. | incident.agentid | Optional |
-| logins_count_threshold | The threshold for number of logins, from which the investigation and remediation will start automatically without waiting for the user's reply. Default is 10. | 10 | Optional |
-| severity_threshold | The threshold for the severity value from which an automatic remediation takes place. <br/>Specify the severity number \(default is Critical\):<br/>0 - Unknown<br/>0.5 - Informational<br/>1 - Low<br/>2 - Medium<br/>3 - High<br/>4 - Critical | 4 | Optional |
-| internal_range | A list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation, separated by commas. An example of a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" \(without quotes\). If a list is not provided, will use default list provided in the IsIPInRanges script \(the known IPv4 private address ranges\). |  | Optional |
+| logins_count_threshold | The threshold for number of logins, from which the investigation and remediation will start automatically without waiting for the user"s reply. Default is 10. | 10 | Optional |
+| severity_threshold | The threshold for the severity value from which an automatic remediation takes place. Specify the severity number \(default is Critical\): 0 - Unknown, 0.5 - Informational. 1 - Low, 2 - Medium, 3 - High, 4 - Critical | 4 | Optional |
+| internal_range | A list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation, separated by commas. An example of a list of ranges would be: '172.16.0.0/12,10.0.0.0/8,192.168.0.0/16' \(without quotes\). If a list is not provided, will use default list provided in the IsIPInRanges script \(the known IPv4 private address ranges\). |  | Optional |
 | critical_users | Critical users, separated by comma. |  | Optional |
 | critical_endpoints | Critical endpoints, separated by comma. |  | Optional |
 | critical_groups | Critical groups, separated by comma. |  | Optional |
@@ -74,8 +69,6 @@ This playbook does not use any integrations.
 | EDLServerIP | This input determines whether Palo Alto Networks Panorama or Firewall External Dynamic Lists are used:<br/>\* The IP address of the web server on which the files are stored.<br/>\* The web server IP address is configured in the integration instance. |  | Optional |
 | UserVerification | Possible values: True/False. <br/>Whether to provide user verification for blocking IPs. <br/><br/>False - No prompt will be displayed to the user.<br/>True - The server will ask the user for blocking verification and will display the blocking list. | False | Optional |
 | AutoBlockIndicators | Possible values: True/False.  Default: True.<br/>Should the given indicators be automatically blocked, or should the user be given the option to choose?<br/><br/>If set to False - no prompt will appear, and all provided indicators will be blocked automatically.<br/>If set to True - the user will be prompted to select which indicators to block. | True | Optional |
-| Email | Email address to which to send the questions. |  | Optional |
-| DataCollection | Use a data collection task to answer lessons learned questions based on SANS. Specify 'True' to automatically send the communication task, and 'False'  to prevent it. |  | Optional |
 
 ## Playbook Outputs
 
@@ -86,4 +79,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Brute Force Investigation - Generic - SANS](../doc_files/Brute_Force_Investigation_-_Generic_-_SANS_6_5.png)
+![Brute Force Investigation - Generic](../doc_files/Brute_Force_Investigation_-_Generic_6_5.png)
