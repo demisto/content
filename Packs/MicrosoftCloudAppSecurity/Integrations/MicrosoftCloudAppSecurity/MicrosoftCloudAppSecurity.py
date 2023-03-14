@@ -662,7 +662,7 @@ def list_users_accounts_command(client: Client, args: dict):
 
 
 def format_fetch_start_time_to_timestamp(fetch_start_time: Optional[str]):
-    fetch_start_time_datetime = parse(fetch_start_time)  # type: ignore
+    fetch_start_time_datetime = parse(fetch_start_time).replace(tzinfo=utc)  # type: ignore
     start_fetch_timestamp = fetch_start_time_datetime.timestamp()  # type: ignore
     if fetch_start_time_datetime.microsecond == 0:  # type: ignore
         return int(start_fetch_timestamp) * 1000
@@ -676,8 +676,8 @@ def format_fetch_start_time_to_timestamp(fetch_start_time: Optional[str]):
         return int(timestamp)
 
 
-def timestamp_to_datetime_string(timestamp: int, include_miliseconds: bool = True):
-    datetime_string = timestamp_to_datestring(timestamp, DATE_FORMAT)
+def timestamp_to_datetime_string(timestamp: int, include_miliseconds: bool = True, is_utc: bool = False):
+    datetime_string = timestamp_to_datestring(timestamp, DATE_FORMAT, is_utc=is_utc)
     if include_miliseconds:
         # return datetime string including miliseconds
         return datetime_string[:-3]
@@ -702,16 +702,16 @@ def alerts_to_xsoar_incidents(alerts: List[dict]):
 
     for alert in alerts:
         alert_timestamp = alert['timestamp']
-        alert_occurred_time = timestamp_to_datetime_string(alert_timestamp)
+        alert_occurred_time_utc = timestamp_to_datetime_string(alert_timestamp, is_utc=True)
         alert_id = alert.get('_id') or ''
-        demisto.debug(f"{alert_id=}, {alert_occurred_time=}, {alert_timestamp=}")
+        demisto.debug(f"{alert_id=}, {alert_timestamp=}, {alert_occurred_time_utc=}")
         incident = {
             'name': alert['title'],
             'occurred': timestamp_to_datetime_string(alert_timestamp, include_miliseconds=False) + 'Z',
             'rawJSON': json.dumps(alert)
         }
         incidents.append(incident)
-        alert['timestamp'] = alert_occurred_time
+        alert['timestamp'] = alert_occurred_time_utc
 
     return incidents
 
@@ -761,6 +761,7 @@ def fetch_incidents(client: Client, max_results: Optional[str], last_run: dict, 
         date_format=DATE_FORMAT,
         increase_last_run_time=True
     )
+
     if 'last_fetch_id' in last_run:  # no need to save last fetch id, remove support from older versions of fetch
         last_run.pop('last_fetch_id', None)
     demisto.debug(f'setting last run to: {last_run}')
