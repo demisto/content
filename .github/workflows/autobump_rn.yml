@@ -20,10 +20,11 @@ jobs:
           echo "$GITHUB_CONTEXT"
         env:
           GITHUB_CONTEXT: ${{ toJSON(github) }}
-      - name: Wait for tests to succeed
+      - name: Wait for "Autobump Release Notes Version" previous tasks to succeed
         uses: lewagon/wait-on-check-action@v1.3.1
         with:
           check-name: 'autobump_rn_version'
+          ref: new-autobump-rn
           repo-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Checkout repository
         uses: actions/checkout@v3
