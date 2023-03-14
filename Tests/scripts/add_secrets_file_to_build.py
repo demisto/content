@@ -101,13 +101,17 @@ def run(options):
     root_dir_instance = pathlib.Path(root_dir)
     filesindir = [item.name for item in root_dir_instance.glob("*") if str(item.name).endswith('yml')]
     print(filesindir)
+    yml_ids = []
     for yml_file in filesindir:
         with open(f'{paath}/{yml_file}', "r") as stream:
             try:
                 d = yaml.safe_load(stream)
                 print(d['commonfields']['id'])
+                yml_ids.append(d['commonfields']['id'])
             except yaml.YAMLError as exc:
                 print(exc)
+    print('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^')
+    print(yml_ids)
     secret_conf = GoogleSecreteManagerModule(options.service_account)
     secrets = secret_conf.list_secrets(options.gsm_project_id, with_secret=True, attr_validation=('name', 'params'))
     secret_file = {
