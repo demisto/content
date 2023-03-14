@@ -10,30 +10,30 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Calculate Severity - Generic v2
+* Entity Enrichment - Generic v3
+* Block Indicators - Generic v3
 * Cortex XDR device control violations
 * Cortex XDR Alerts Handling
-* Block Indicators - Generic v3
 * Palo Alto Networks - Hunting And Threat Detection
-* Entity Enrichment - Generic v3
+* Calculate Severity - Generic v2
 
 ### Integrations
 
-* Cortex XDR - IR
 * CortexXDRIR
+* Cortex XDR - IR
 
 ### Scripts
 
-* DBotFindSimilarIncidents
-* SetGridField
 * Set
+* SetGridField
+* DBotFindSimilarIncidents
 
 ### Commands
 
-* linkIncidents
 * xdr-update-incident
 * closeInvestigation
 * xdr-get-incident-extra-data
+* linkIncidents
 
 ## Playbook Inputs
 
@@ -65,4 +65,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Cortex XDR incident handling v3](../doc_files/Cortex_XDR_incident_handling_v3_6_5.png)
+![Cortex XDR incident handling v3](../doc_files/Cortex_XDR_incident_handling_v3.png)
