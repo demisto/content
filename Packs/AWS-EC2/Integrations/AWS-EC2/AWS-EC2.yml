@@ -1,7 +1,4 @@
 category: IT Services
-sectionOrder:
-- Connect
-- Collect
 commonfields:
   id: AWS - EC2
   version: -1
@@ -3497,6 +3494,8 @@ script:
       name: UserIdGroupPairsVpcPeeringConnectionId
       required: false
       secret: false
+    - description: 'Full IpPermissions argument as a string to more easily copy rules (e.x. """[{"IpProtocol": "-1", "IpRanges": [{"CidrIp": "0.0.0.0/0"}], "Ipv6Ranges": [], "PrefixListIds": [], "UserIdGroupPairs": []}]""").'
+      name: IpPermissionsFull
     deprecated: false
     description: Adds ingress rule to a security group.
     execution: true
@@ -3640,6 +3639,8 @@ script:
       name: UserIdGroupPairsVpcPeeringConnectionId
       required: false
       secret: false
+    - description: 'Full IpPermissions argument as a string to more easily copy rules (e.x. """[{"IpProtocol": "-1", "IpRanges": [{"CidrIp": "0.0.0.0/0"}], "Ipv6Ranges": [], "PrefixListIds": [], "UserIdGroupPairs": []}]""").'
+      name: IpPermissionsFull
     deprecated: false
     description: Adds egress rule to a security group.
     execution: true
@@ -3711,6 +3712,8 @@ script:
       name: roleSessionDuration
       required: false
       secret: false
+    - description: 'Full IpPermissions argument as a string to more easily target rules (e.x. """[{"IpProtocol": "-1", "IpRanges": [{"CidrIp": "0.0.0.0/0"}], "Ipv6Ranges": [], "PrefixListIds": [], "UserIdGroupPairs": []}]""").'
+      name: IpPermissionsFull
     deprecated: false
     description: Removes egress rule from a security group. To remove a rule, the values that you specify (for example, ports) must match the existing rule's values exactly.
     execution: true
@@ -6262,6 +6265,8 @@ script:
       name: roleSessionDuration
       required: false
       secret: false
+    - description: 'Full IpPermissions argument as a string to more easily target rules (e.x. """[{"IpProtocol": "-1", "IpRanges": [{"CidrIp": "0.0.0.0/0"}], "Ipv6Ranges": [], "PrefixListIds": [], "UserIdGroupPairs": []}]""").'
+      name: IpPermissionsFull
     deprecated: false
     description: Removes egress rule from a security group. To remove a rule, the values that you specify (for example, ports) must match the existing rule's values exactly.
     execution: true
@@ -6384,7 +6389,7 @@ script:
     description: Release on demand dedicated host.
     execution: false
     name: aws-ec2-release-hosts
-  dockerimage: demisto/boto3py3:1.0.0.47470
+  dockerimage: demisto/boto3py3:1.0.0.49886
   feed: false
   isfetch: false
   longRunning: false
@@ -6396,3 +6401,6 @@ script:
 tests:
 - AWS - EC2 Test Playbook
 fromversion: 5.0.0
+sectionOrder:
+- Connect
+- Collect
