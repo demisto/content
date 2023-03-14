@@ -9,9 +9,7 @@ import prettytable
 import glob
 import requests
 from datetime import datetime
-from google.cloud.storage import Bucket
 from pathlib import Path
-
 from zipfile import ZipFile
 from typing import Any, List, Tuple, Union, Optional
 
@@ -291,7 +289,7 @@ def upload_index_to_storage(index_folder_path: str,
     Upload updated index zip to cloud storage.
 
     :param index_folder_path: index folder full path.
-    :param extract_destination_path 
+    :param extract_destination_path
     :param index_blob: google cloud storage object that represents index.zip blob.
     :param index_generation: downloaded index generation.
     :param is_private: Indicates if upload is private.
