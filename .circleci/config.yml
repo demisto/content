@@ -392,9 +392,10 @@ workflows:
   version: 2
   commit:
     when:
-      not:
-        or:
-          - << pipeline.parameters.nightly >>
+      matches:
+        # matching the environment variable "CIRCLE_BRANCH" from the setup environment step.
+        pattern: pull/[0-9]+
+        value: << pipeline.git.branch >>
     jobs:
       - Setup Environment
       - Run Unit Testing And Lint:
