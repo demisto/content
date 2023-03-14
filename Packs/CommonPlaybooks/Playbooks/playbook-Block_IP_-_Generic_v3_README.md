@@ -28,39 +28,39 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Sophos Firewall - Block IP
-* Checkpoint - Block IP - Custom Block Rule
-* PAN-OS - Block IP - Custom Block Rule
-* Cisco FirePower- Append network group object
-* PAN-OS DAG Configuration
 * PAN-OS - Block IP - Static Address Group
+* PAN-OS - Block IP - Custom Block Rule
+* PAN-OS DAG Configuration
+* Sophos Firewall - Block IP
+* Cisco FirePower- Append network group object
+* Checkpoint - Block IP - Custom Block Rule
 
 ### Integrations
 
-* Zscaler
 * F5Silverline
+* Zscaler
 
 ### Scripts
 
-* SetAndHandleEmpty
 * IsIntegrationAvailable
 * IsIPInRanges
+* SetAndHandleEmpty
 
 ### Commands
 
-* setIndicators
-* threatx-blacklist-ip
-* enrichIndicators
-* sw-block-domain-or-ip
-* f5-silverline-ip-object-add
-* cisco-asa-create-rule
-* sigsci-blacklist-add-ip
-* createNewIndicator
-* aria-block-dest-subnet
 * fortigate-ban-ip
-* threatx-block-ip
+* cisco-asa-create-rule
+* aria-block-dest-subnet
+* threatx-blacklist-ip
+* createNewIndicator
+* enrichIndicators
 * zscaler-blacklist-ip
+* threatx-block-ip
+* setIndicators
+* sw-block-domain-or-ip
 * akamai-add-elements-to-network-list
+* sigsci-blacklist-add-ip
+* f5-silverline-ip-object-add
 
 ## Playbook Inputs
 
