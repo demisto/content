@@ -192,7 +192,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "10"
+      - "13"
     scriptarguments:
       text:
         complex:
@@ -204,37 +204,6 @@ tasks:
         "position": {
           "x": 402.5,
           "y": 520
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "10":
-    id: "10"
-    taskid: e6df7983-dd60-487d-8fce-70f7f5766175
-    type: playbook
-    task:
-      id: e6df7983-dd60-487d-8fce-70f7f5766175
-      version: -1
-      name: Entity Enrichment - Generic v2
-      playbookName: Entity Enrichment - Generic v2
-      type: playbook
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "11"
-    separatecontext: true
-    view: |-
-      {
-        "position": {
-          "x": 402.5,
-          "y": 690
         }
       }
     note: false

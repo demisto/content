@@ -219,7 +219,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - '10'
+      - '13'
     scriptarguments:
       entryID: {}
       filePath: {}
@@ -234,33 +234,6 @@ tasks:
         "position": {
           "x": 402.5,
           "y": 520
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-  '10':
-    id: '10'
-    taskid: e6df7983-dd60-487d-8fce-70f7f5766175
-    type: playbook
-    task:
-      id: e6df7983-dd60-487d-8fce-70f7f5766175
-      version: -1
-      name: Entity Enrichment - Generic v2
-      playbookName: Entity Enrichment - Generic v2
-      type: playbook
-      iscommand: false
-      brand: ''
-      description: ''
-    nexttasks:
-      '#none#':
-      - '11'
-    separatecontext: true
-    view: |-
-      {
-        "position": {
-          "x": 402.5,
-          "y": 690
         }
       }
     note: false
@@ -316,6 +289,109 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '13':
+    id: '13'
+    taskid: 8decff13-01bc-4535-8bde-62157f3d7c66
+    type: playbook
+    task:
+      id: 8decff13-01bc-4535-8bde-62157f3d7c66
+      version: -1
+      name: Entity Enrichment - Generic v3
+      playbookName: Entity Enrichment - Generic v3
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - '11'
+    scriptarguments:
+      CVE:
+        complex:
+          root: CVE
+          accessor: ID
+      Domain:
+        complex:
+          root: Domain
+          accessor: Name
+          transformers:
+          - operator: uniq
+      Email:
+        complex:
+          root: Account
+          accessor: Email.Address
+          transformers:
+          - operator: uniq
+      Hostname:
+        complex:
+          root: Endpoint
+          accessor: Hostname
+          transformers:
+          - operator: uniq
+      IP:
+        complex:
+          root: IP
+          accessor: Address
+          transformers:
+          - operator: uniq
+      MD5:
+        complex:
+          root: File
+          accessor: MD5
+          transformers:
+          - operator: uniq
+      ResolveIP:
+        simple: "False"
+      SHA1:
+        complex:
+          root: File
+          accessor: SHA1
+          transformers:
+          - operator: uniq
+      SHA256:
+        complex:
+          root: File
+          accessor: SHA256
+          transformers:
+          - operator: uniq
+      URL:
+        complex:
+          root: URL
+          accessor: Data
+          transformers:
+          - operator: uniq
+      Username:
+        complex:
+          root: Account
+          accessor: Username
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 402.5,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
