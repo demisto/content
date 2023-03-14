@@ -8,8 +8,8 @@ The following should be configured for Kubernetes;
 2. Place the audit policy file in a folder that can be accessed by **kube-apiserver** pod through a volume mapping:
     Code --> Kubectl describe pod <kube-apiserver pod> —namespace kube-system
 3. Configure the kube-apiserver to output in log mode:
-    * --audit-policy-file
-    * --audit-log-path
+    * **--audit-policy-file**
+    * **--audit-log-path**
 
 ## Collect Events from Vendor
 
