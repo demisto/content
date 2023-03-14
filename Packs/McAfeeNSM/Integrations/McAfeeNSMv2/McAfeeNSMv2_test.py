@@ -1261,3 +1261,23 @@ def test_list_interface_policy_command__with_multiple_different_arguments(mocker
                                         args={"domain_id": 777, "interface_id": input.get("interface_id"),
                                               "limit": 1, "all_results": True})
     assert res.outputs == output
+
+
+def test_get_device_configuration_command(mocker, mcafeensmv2_client):
+    """
+    Given:
+    - A device id.
+    When:
+    - nsm-get_device_configuration_command command is executed.
+    Then:
+    - Confirm the output is as expected.
+    """
+    from McAfeeNSMv2 import get_device_configuration_command
+    mocker.patch.object(mcafeensmv2_client, 'get_device_configuration_request',
+                        return_value={"deviceConfiguration": {"deviceConfigurationId": "mock"}})
+    res = get_device_configuration_command(client=mcafeensmv2_client, args={"device_id": 777})
+    assert res.outputs == {'DeviceConfiguration': {'deviceConfigurationId': 'mock'}, 'IsPolicyConfigurationChanged': None,
+                           'IsConfigurationChanged': None, 'IsMalwareConfigurationChanged': None,
+                           'IsSignatureSetConfigurationChanged': None,
+                           'IsSSLConfigurationChanged': None, 'IsBotnetConfigurationChanged': None,
+                           'IsGloablPolicyConfigurationChanged': None}

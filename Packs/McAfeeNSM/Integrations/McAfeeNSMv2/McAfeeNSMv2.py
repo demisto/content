@@ -2296,7 +2296,7 @@ def get_device_configuration_command(client: Client, args: Dict) -> CommandResul
     # Capitalize the keys of the policies list and keeping the rest of the keys as is.
     capitlize_response: Dict[str, Any] = {k[:1].upper() + k[1:]: v for k, v in response.items()}
     # build a new dict with the keys and values of the nested dict
-    iner_dict: Any = capitlize_response.get('PendingChanges')
+    iner_dict: Any = capitlize_response.get('PendingChanges') or {}
     add_on_dict = {"IsPolicyConfigurationChanged": iner_dict.get("isPolicyConfigurationChanged"),
                    "IsConfigurationChanged": iner_dict.get("isConfigurationChanged"),
                    "IsMalwareConfigurationChanged": iner_dict.get("isMalwareConfigurationChanged"),
@@ -2307,7 +2307,7 @@ def get_device_configuration_command(client: Client, args: Dict) -> CommandResul
                    }
 
     capitlize_response |= add_on_dict
-    capitlize_response.pop('PendingChanges')
+    capitlize_response.pop('PendingChanges') if capitlize_response.get('PendingChanges') else None
     readable_output = tableToMarkdown(
         name='Device Configuration', t=capitlize_response, removeNull=True
     )
@@ -2315,7 +2315,7 @@ def get_device_configuration_command(client: Client, args: Dict) -> CommandResul
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='NSM.DeviceConfiguration',
-        outputs=response,
+        outputs=capitlize_response,
         raw_response=response
     )
 
