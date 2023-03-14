@@ -42,7 +42,7 @@ WEB_REQUEST_COMPONENT_MAP = {"Headers": "Headers",
 ''' HELPER FUNCTIONS '''
 
 
-def get_tags_dict_from_args(tag_keys: list, tag_values: list) -> List[dict]:
+def get_tags_dict_from_args(tag_keys: list, tag_values: list) -> list:
     """
     Creates a list of dictionaries containing the tag key, and it's corresponding value
     Args:
@@ -52,7 +52,7 @@ def get_tags_dict_from_args(tag_keys: list, tag_values: list) -> List[dict]:
     Returns:
         List of tags
     """
-    tags: list = []
+    tags = []
     if len(tag_keys) != len(tag_values):
         raise DemistoException('Tha tags_keys and tag_values arguments must be at the same length.')
 
@@ -188,8 +188,8 @@ def build_string_match_statement(args: dict) -> dict:
 
     elif match_statement == BYTE_MATCH_STATEMENT and not string_to_match:
         raise DemistoException('string_to_match must be provided when using strings match_type')
-    web_request_component = WEB_REQUEST_COMPONENT_MAP.get(args.get('web_request_component')) or ''
-    oversize_handling = args.get('oversize_handling') or ''
+    web_request_component = WEB_REQUEST_COMPONENT_MAP.get(args.get('web_request_component', '')) or ''
+    oversize_handling = args.get('oversize_handling', '')
     text_transformation = args.get('text_transformation') or 'NONE'
     if match_statement == BYTE_MATCH_STATEMENT:
         statement = build_byte_match_statement(web_request_component=web_request_component,
@@ -523,9 +523,12 @@ def list_ip_set_command(client: boto3.client, args) -> CommandResults:
 
     response = client.list_ip_sets(**kwargs)
     ip_sets = response.get('IPSets', [])
-    readable_output = tableToMarkdown('List IP Sets', ip_sets, is_auto_json_transform=True)
+    readable_output = tableToMarkdown('List IP Sets',
+                                      ip_sets,
+                                      headers=['Name', 'Id', 'ARN', 'Description'],
+                                      is_auto_json_transform=True)
     outputs = {f'{OUTPUT_PREFIX}.IpSet(val.Id === obj.Id)': ip_sets,
-               f'{OUTPUT_PREFIX}.IpSetNextToken': response.get('NextMarker', '')}
+               f'{OUTPUT_PREFIX}(true)': {'IpSetNextToken': response.get('NextMarker', '')}}
 
     return CommandResults(readable_output=readable_output,
                           outputs=outputs,
@@ -645,13 +648,17 @@ def list_regex_set_command(client: boto3.client, args) -> CommandResults:
 
     response = client.list_regex_pattern_sets(**kwargs)
     regex_patterns = response.get('RegexPatternSets', [])
-    readable_output = tableToMarkdown('List regex Sets', regex_patterns, is_auto_json_transform=True)
+    readable_output = tableToMarkdown('List regex Sets',
+                                      regex_patterns,
+                                      headers=['Name', 'Id', 'ARN', 'Description'],
+                                      is_auto_json_transform=True)
     outputs = {f'{OUTPUT_PREFIX}.RegexSet(val.Id === obj.Id)': regex_patterns,
-               'RegexSetNextToken': response.get('NextMarker', '')}
+               f'{OUTPUT_PREFIX}(true)': {'RegexSetNextToken': response.get('NextMarker', '')}}
 
     return CommandResults(readable_output=readable_output,
                           outputs=outputs,
-                          raw_response=response)
+                          raw_response=response,
+                          outputs_key_field='Id')
 
 
 def delete_regex_set_command(client: boto3.client, args) -> CommandResults:
@@ -687,7 +694,7 @@ def list_rule_group_command(client: boto3.client, args) -> CommandResults:
     response = client.list_rule_groups(**kwargs)
     rule_groups = response.get('RuleGroups', [])
     outputs = {f'{OUTPUT_PREFIX}.RuleGroup(val.Id === obj.Id)': rule_groups,
-               f'{OUTPUT_PREFIX}.RuleGroupNextToken': response.get('NextMarker', '')}
+               f'{OUTPUT_PREFIX}(true)': {'RuleGroupNextToken': response.get('NextMarker', '')}}
     readable_output = tableToMarkdown('List rule groups',
                                       rule_groups,
                                       headers=['Name', 'Id', 'ARN', 'Description'],
@@ -695,7 +702,8 @@ def list_rule_group_command(client: boto3.client, args) -> CommandResults:
 
     return CommandResults(readable_output=readable_output,
                           outputs=outputs,
-                          raw_response=response)
+                          raw_response=response,
+                          outputs_key_field='Id')
 
 
 def get_rule_group_command(client: boto3.client, args) -> CommandResults:

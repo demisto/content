@@ -238,6 +238,7 @@ script:
     - name: addresses
       description: A comma separated list of the IP set addresses in CIDR notation.
       isArray: true
+      required: true
     - name: description
       description: The IP set description.
     - name: region
@@ -386,6 +387,7 @@ script:
     - name: regex_pattern
       description: A comma separated list of the regex patterns.
       isArray: true
+      required: true
     - name: description
       description: The regex set description.
     - name: region
@@ -509,6 +511,7 @@ script:
     - name: regex_pattern
       description: A comma separated list of the regex patterns.
       isArray: true
+      required: true
     - name: description
       description: The regex set description.
     - name: region
