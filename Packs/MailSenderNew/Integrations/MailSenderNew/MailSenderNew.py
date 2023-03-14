@@ -100,9 +100,9 @@ def handle_html(htmlBody):
             'maintype': maintype,
             'subtype': subtype,
             'data': base64.b64decode(m.group(3)),
-            'name': f'image{i}.{subtype}'
+            'name': 'image%d.%s' % (i, subtype)
         }
-        att['cid'] = f"{att['name']}@{randomword(8)}.{randomword(8)}"
+        att['cid'] = '%r@%r.%r' % (att['name'], randomword(8), randomword(8))
         attachments.append(att)
         cleanBody += htmlBody[lastIndex:m.start(1)] + 'cid:' + att['cid']
         lastIndex = m.end() - 1
@@ -117,6 +117,7 @@ def collect_manual_attachments():
 
         path = res['path']
         maintype, subtype = guess_type(attachment['FileName'])
+        data: str | bytes  # Because of mypy errors.
         if maintype == 'text':
             with open(path) as fp:
                 data = fp.read()
@@ -156,6 +157,7 @@ def collect_attachments():
             else:
                 cid = ''
             maintype, subtype = guess_type(filename)
+            data: str | bytes  # Because of mypy errors.
             if maintype == 'text':
                 with open(path) as fp:
                     data = fp.read()
@@ -182,7 +184,7 @@ def collect_attachments():
     f_cids = args.get('transientFileCID', [])
     f_cids = f_cids if isinstance(f_cids, (list, tuple)) else f_cids.split(',')
 
-    for name, data, cid in map(None, f_names, f_contents, f_cids):
+    for name, data, cid in zip(f_names, f_contents, f_cids):
         if name is None or data is None:
             break
         maintype, subtype = guess_type(name)
