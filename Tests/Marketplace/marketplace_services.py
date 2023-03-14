@@ -3237,7 +3237,7 @@ class Pack(object):
             marketplace_bucket = "marketplace-v2-dist"
 
         google_api_readme_images_url = f'https://storage.googleapis.com/{marketplace_bucket}/content/packs/{self.name}'
-        url_regex = r"^!\[(.*)\]\((?P<url>.*)\)"
+        url_regex = r"!\[(.*)\]\((?P<url>.*)\)"
         urls_list = []
 
         for line in fileinput.input(pack_readme_path, inplace=True):
