@@ -99,8 +99,7 @@ class TestFetchIndicators:
         nondefault_id = 2
         mock_client.collections = [MockCollection(default_id, 'default'), MockCollection(nondefault_id, 'not_default')]
 
-        mocker.patch.object(mock_client, 'poll_collection')
-        mocker.patch.object(mock_client, 'load_stix_objects_from_envelope', side_effect=[CORTEX_IOCS_1, CORTEX_IOCS_2])
+        mocker.patch.object(mock_client, 'build_iterator', side_effect=[CORTEX_IOCS_1, CORTEX_IOCS_2])
         indicators, last_run = fetch_indicators_command(mock_client, '1 day', -1, {})
         assert len(indicators) == 14
         assert mock_client.collection_to_fetch.id in last_run
@@ -127,7 +126,8 @@ class TestFetchIndicators:
         nondefault_id = 2
         mock_client.collections = [MockCollection(default_id, 'default'), MockCollection(nondefault_id, 'not_default')]
 
-        mocker.patch.object(mock_client, 'build_iterator', side_effect=[CORTEX_IOCS_1, CORTEX_IOCS_2])
+        mocker.patch.object(mock_client, 'poll_collection')
+        mocker.patch.object(mock_client, 'load_stix_objects_from_envelope', side_effect=[CORTEX_IOCS_1, CORTEX_IOCS_2])
         indicators, last_run = fetch_indicators_command(mock_client, '1 day', -1, {})
         assert len(indicators) == 14
         assert mock_client.collection_to_fetch.id in last_run
