@@ -264,6 +264,6 @@ outputs:
 - contextPath: EscalationEmailSent
   description: Whether an escalation email was sent, will be Yes or No
   type: string
-fromversion: 6.8.0
+fromversion: 6.2.0
 tests:
 - No tests (auto formatted)
