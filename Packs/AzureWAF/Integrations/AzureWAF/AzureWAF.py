@@ -166,7 +166,7 @@ class AzureWAFClient:
             full_url=f'{BASE_URL}/subscriptions?api-version={API_VERSION}'
         )
 
-    def resource_group_list(self, subscription_id, tag, limit) -> Dict:     
+    def resource_group_list(self, subscription_id, tag, limit) -> Dict:
         base_url = f'{BASE_URL}/{SUBSCRIPTION_PATH.format(subscription_id)}'
         full_url = f'{base_url}/resourcegroups?$top={limit}'
         if tag:
