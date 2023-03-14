@@ -172,8 +172,8 @@ def collect_attachments():
                 'cid': cid
             })
         except Exception as ex:
-            demisto.error(f'Invalid entry {aid} with exception: {ex}')
-            return_error_mail_sender(f'Entry {aid} is not valid or is not a file entry')
+            demisto.error("Invalid entry {} with exception: {}".format(aid, ex))
+            return_error_mail_sender('Entry %s is not valid or is not a file entry' % (aid))
 
     # handle transient files
     args = demisto.args()
@@ -212,7 +212,7 @@ def template_params():
             try:
                 params = json.loads(paramsStr)
             except (ValueError, TypeError) as e:
-                return_error_mail_sender(f'Unable to parse templateParams: {str(e)}')
+                return_error_mail_sender('Unable to parse templateParams: %s' % (str(e)))
         # Build a simple key/value
         for p in params:
             if params[p].get('value'):
