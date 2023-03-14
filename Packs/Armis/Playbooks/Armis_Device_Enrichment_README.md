@@ -26,7 +26,7 @@ This playbook does not use any scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| Armis_Device_ID | Get the device ID that is associated with the alert. | ${incident.armisdeviceid} | Required |
+| Armis_Device_Identifier | Get the device ID that is associated with the alert. | ${incident.armisdeviceidentifier} | Required |
 
 ## Playbook Outputs
 

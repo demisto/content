@@ -74,7 +74,7 @@ tasks:
       - "3"
     scriptarguments:
       device_id:
-        simple: ${inputs.Armis_Device_ID}
+        simple: ${inputs.Armis_Device_Identifier}
       device_type: {}
       ip_address: {}
       mac_address: {}
@@ -109,7 +109,7 @@ tasks:
     - incidentfield: Device Local IP
       output:
         simple: ${Armis.Device.ipAddress}
-    - incidentfield: Armis Device ID
+    - incidentfield: Armis Device Identifier
       output:
         simple: ${Armis.Device.id}
     skipunavailable: false
@@ -127,9 +127,9 @@ view: |-
     }
   }
 inputs:
-- key: Armis_Device_ID
+- key: Armis_Device_Identifier
   value:
-    simple: ${incident.armisdeviceid}
+    simple: ${incident.armisdeviceidentifier}
   required: true
   description: Get the device ID that is associated with the alert.
   playbookInputQuery:

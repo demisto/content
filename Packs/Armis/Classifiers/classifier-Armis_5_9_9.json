@@ -33,7 +33,7 @@
                     "complex": null,
                     "simple": "severity"
                 },
-                "Armis Alert Status": {
+                "Armis Alert Status ": {
                     "complex": null,
                     "simple": "status"
                 },
@@ -41,7 +41,11 @@
                     "complex": null,
                     "simple": "type"
                 },
-                "Armis Device ID": {
+                "Armis Device Identifier": {
+                    "complex": null,
+                    "simple": "deviceIds.[0]"
+                },
+                "Armis Device IDs": {
                     "complex": null,
                     "simple": "deviceIds.[0]"
                 },
@@ -106,7 +110,7 @@
                     "complex": null,
                     "simple": "severity"
                 },
-                "Armis Alert Status": {
+                "Armis Alert Status ": {
                     "complex": null,
                     "simple": "status"
                 },
@@ -171,7 +175,7 @@
                     "complex": null,
                     "simple": "severity"
                 },
-                "Armis Alert Status": {
+                "Armis Alert Status ": {
                     "complex": null,
                     "simple": "status"
                 },
@@ -236,7 +240,7 @@
                     "complex": null,
                     "simple": "severity"
                 },
-                "Armis Alert Status": {
+                "Armis Alert Status ": {
                     "complex": null,
                     "simple": "status"
                 },
@@ -289,7 +293,11 @@
                     "complex": null,
                     "simple": "title"
                 },
-                "Armis Device ID": {
+                "Armis Device Identifier": {
+                    "complex": null,
+                    "simple": "deviceIds.[0]"
+                },
+                "Armis Device IDs": {
                     "complex": null,
                     "simple": "deviceIds.[0]"
                 },
