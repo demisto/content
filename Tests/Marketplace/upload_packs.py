@@ -248,33 +248,9 @@ def clean_non_existing_packs(index_folder_path: str, private_packs: list, storag
     return False
 
 
-def upload_index_to_storage(index_folder_path: str, extract_destination_path: str, index_blob: Any,
-                            build_number: str, private_packs: list, current_commit_hash: str,
-                            index_generation: int, is_private: bool = False, force_upload: bool = False,
-                            previous_commit_hash: str = None, landing_page_sections: dict = None,
-                            artifacts_dir: Optional[str] = None,
-                            storage_bucket: Optional[Bucket] = None,
-                            index_name: str = GCPConfig.INDEX_NAME,
-                            ):
-    """
-    Upload updated index zip to cloud storage.
-
-    :param index_folder_path: index folder full path.
-    :param extract_destination_path: extract folder full path.
-    :param index_blob: google cloud storage object that represents index.zip blob.
-    :param build_number: CI build number, used as an index revision.
-    :param private_packs: List of private packs and their price.
-    :param current_commit_hash: last commit hash of head.
-    :param index_generation: downloaded index generation.
-    :param is_private: Indicates if upload is private.
-    :param force_upload: Indicates if force upload or not.
-    :param previous_commit_hash: The previous commit hash to diff with.
-    :param landing_page_sections: landingPage sections.
-    :param artifacts_dir: The CI artifacts directory to upload the index.json to.
-    :param storage_bucket: The storage bucket object
-    :returns None.
-
-    """
+def prepare_index_json(index_folder_path: str, build_number: str, private_packs: list,
+                       current_commit_hash: str, force_upload: bool = False, previous_commit_hash: str = None,
+                       landing_page_sections: dict = None):
     if force_upload:
         # If we force upload we don't want to update the commit in the index.json file,
         # this is to be able to identify all changed packs in the next upload
@@ -289,7 +265,7 @@ def upload_index_to_storage(index_folder_path: str, extract_destination_path: st
         landing_page_sections = load_json(LANDING_PAGE_SECTIONS_PATH)
 
     logging.debug(f'commit hash is: {commit}')
-    index_json_path = os.path.join(index_folder_path, f'{index_name}.json')
+    index_json_path = os.path.join(index_folder_path, f'{GCPConfig.INDEX_NAME}.json')
     logging.info(f'index json path: {index_json_path}')
     logging.info(f'Private packs are: {private_packs}')
     with open(index_json_path, "w+") as index_file:
@@ -302,24 +278,50 @@ def upload_index_to_storage(index_folder_path: str, extract_destination_path: st
         }
         json.dump(index, index_file, indent=4)
 
+
+def upload_index_to_storage(index_folder_path: str,
+                            extract_destination_path: str,
+                            index_blob: Any,
+                            index_generation: int, is_private: bool = False,
+                            artifacts_dir: Optional[str] = None,
+                            storage_bucket: Optional[Bucket] = None,
+                            ):
+    """
+    Upload updated index zip to cloud storage.
+
+    :param index_folder_path: index folder full path.
+    :param index_blob: google cloud storage object that represents index.zip blob.
+    :param index_generation: downloaded index generation.
+    :param is_private: Indicates if upload is private.
+    :param artifacts_dir: The CI artifacts directory to upload the index.json to.
+    :param storage_bucket: The storage bucket object
+    :returns None.
+
+    """
     index_zip_name = os.path.basename(index_folder_path)
     index_zip_path = shutil.make_archive(base_name=index_folder_path, format="zip",
                                          root_dir=extract_destination_path, base_dir=index_zip_name)
     try:
         logging.info(f'index zip path: {index_zip_path}')
-        index_blob.reload()
-        current_index_generation = index_blob.generation
-        index_blob.cache_control = "no-cache,max-age=0"  # disabling caching for index blob
 
-        if is_private or current_index_generation == index_generation:
-            # we upload both index.json and the index.zip to allow usage of index.json without having to unzip
-            index_blob.upload_from_filename(index_zip_path)
-            logging.success(f"Finished uploading {GCPConfig.INDEX_NAME}.zip to storage.")
+        if index_blob.exists():
+            index_blob.reload()
+            current_index_generation = index_blob.generation
+
+            index_blob.cache_control = "no-cache,max-age=0"  # disabling caching for index blob
+
+            if is_private or current_index_generation == index_generation:
+                # we upload both index.json and the index.zip to allow usage of index.json without having to unzip
+                index_blob.upload_from_filename(index_zip_path)
+                logging.success(f"Finished uploading {GCPConfig.INDEX_NAME}.zip to storage.")
+            else:
+                logging.critical(f"Failed in uploading {GCPConfig.INDEX_NAME}, mismatch in index file generation.")
+                logging.critical(f"Downloaded index generation: {index_generation}")
+                logging.critical(f"Current index generation: {current_index_generation}")
+                sys.exit(0)
+
         else:
-            logging.critical(f"Failed in uploading {GCPConfig.INDEX_NAME}, mismatch in index file generation.")
-            logging.critical(f"Downloaded index generation: {index_generation}")
-            logging.critical(f"Current index generation: {current_index_generation}")
-            sys.exit(0)
+            index_blob.upload_from_filename(index_zip_path)
     except Exception:
         logging.exception(f"Failed in uploading {GCPConfig.INDEX_NAME}.")
         sys.exit(1)
@@ -1270,8 +1272,16 @@ def main():
     create_corepacks_config(storage_bucket, build_number, index_folder_path,
                             os.path.dirname(packs_artifacts_path), storage_base_path, marketplace)
 
+    prepare_index_json(index_folder_path=index_folder_path,
+                       build_number=build_number,
+                       private_packs=private_packs,
+                       current_commit_hash=current_commit_hash,
+                       force_upload=force_upload,
+                       previous_commit_hash=previous_commit_hash,
+                       landing_page_sections=statistics_handler.landing_page_sections)
+
     logging.info('Strting new code index_v2')
-    index_v2_gcs_path = os.path.join(storage_base_path, f"{GCPConfig.INDEX_V2_NAME}")
+    index_v2_gcs_path = os.path.join(storage_base_path, f"{GCPConfig.INDEX_V2_NAME}.zip")
     index_v2_local_path = os.path.join(extract_destination_path, f"{GCPConfig.INDEX_V2_NAME}")
     index_v2_blob = storage_bucket.blob(index_v2_gcs_path)
     shutil.copytree(index_folder_path, index_v2_local_path)
@@ -1284,21 +1294,21 @@ def main():
             f.write('This is the new readme')
 
     logging.info('uploading new index')
-    upload_index_to_storage(index_folder_path=index_v2_local_path, extract_destination_path=extract_destination_path,
-                            index_blob=index_v2_blob, build_number=build_number, private_packs=private_packs,
-                            current_commit_hash=current_commit_hash, index_generation=index_generation,
-                            force_upload=force_upload, previous_commit_hash=previous_commit_hash,
-                            landing_page_sections=statistics_handler.landing_page_sections,
+
+    upload_index_to_storage(index_folder_path=index_v2_local_path,
+                            extract_destination_path=extract_destination_path,
+                            index_blob=index_v2_blob,
+                            index_generation=index_generation,
                             artifacts_dir=os.path.dirname(packs_artifacts_path),
-                            storage_bucket=storage_bucket, index_name=GCPConfig.INDEX_V2_NAME)
+                            storage_bucket=storage_bucket,
+                            index_name=GCPConfig.INDEX_V2_NAME)
 
     logging.info('finished uploading new index')
     # finished iteration over content packs
-    upload_index_to_storage(index_folder_path=index_folder_path, extract_destination_path=extract_destination_path,
-                            index_blob=index_blob, build_number=build_number, private_packs=private_packs,
-                            current_commit_hash=current_commit_hash, index_generation=index_generation,
-                            force_upload=force_upload, previous_commit_hash=previous_commit_hash,
-                            landing_page_sections=statistics_handler.landing_page_sections,
+    upload_index_to_storage(index_folder_path=index_folder_path,
+                            extract_destination_path=extract_destination_path,
+                            index_blob=index_blob,
+                            index_generation=index_generation,
                             artifacts_dir=os.path.dirname(packs_artifacts_path),
                             storage_bucket=storage_bucket)
 
