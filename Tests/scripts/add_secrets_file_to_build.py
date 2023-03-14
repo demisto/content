@@ -80,36 +80,38 @@ def run(options):
     root_dir_instance = pathlib.Path(root_dir)
     filesindir = [item.name for item in root_dir_instance.glob("*")]
     changed_files = get_git_diff(branch_name, PATHS.content_repo)
-    paath = ''
-    for p in changed_files:
-        if 'Packs' in p:
-            paath = f'{Path(__file__).absolute().parents[2]}/{p}'
-            paath = '/'.join(paath.split('/')[:-1])
-    root_dir1 = paath
-    root_dir_instance1 = pathlib.Path(root_dir1)
-    filesindir1 = [item.name for item in root_dir_instance1.glob("*")]
-    print(branch_name)# the branch name
-    print('******************************')
-    print(filesindir) # the files in content
-    print('******************************')
-    print(changed_files) # the array of changed files
-    print('******************************')
-    print(paath) # the path of the changed integration
-    print('******************************')
-    print(filesindir1) # the content of the paath location
-    root_dir = Path(paath)
-    root_dir_instance = pathlib.Path(root_dir)
-    filesindir = [item.name for item in root_dir_instance.glob("*") if str(item.name).endswith('yml')]
-    print(filesindir)
+    changed_packs = []
     yml_ids = []
-    for yml_file in filesindir:
-        with open(f'{paath}/{yml_file}', "r") as stream:
-            try:
-                d = yaml.safe_load(stream)
-                print(d['commonfields']['id'])
-                yml_ids.append(d['commonfields']['id'])
-            except yaml.YAMLError as exc:
-                print(exc)
+    for f in changed_files:
+        if 'Packs' in f:
+            pack_path = f'{Path(__file__).absolute().parents[2]}/{f}'
+            pack_path = '/'.join(pack_path.split('/')[:-1])
+            changed_packs.append(pack_path)
+    for changed_pack in changed_packs:
+        root_dir1 = changed_packs
+        root_dir_instance1 = pathlib.Path(root_dir1)
+        filesindir1 = [item.name for item in root_dir_instance1.glob("*")]
+        print(branch_name)# the branch name
+        print('******************************')
+        print(filesindir) # the files in content
+        print('******************************')
+        print(changed_files) # the array of changed files
+        print('******************************')
+        print(changed_pack) # the path of the changed integration
+        print('******************************')
+        print(filesindir1) # the content of the paath location
+        root_dir = Path(changed_pack)
+        root_dir_instance = pathlib.Path(root_dir)
+        filesindir = [item.name for item in root_dir_instance.glob("*") if str(item.name).endswith('yml')]
+        print(filesindir)
+        for yml_file in filesindir:
+            with open(f'{changed_pack}/{yml_file}', "r") as stream:
+                try:
+                    d = yaml.safe_load(stream)
+                    print(d['commonfields']['id'])
+                    yml_ids.append(d['commonfields']['id'])
+                except yaml.YAMLError as exc:
+                    print(exc)
     print('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^')
     print(yml_ids)
     secret_conf = GoogleSecreteManagerModule(options.service_account)
