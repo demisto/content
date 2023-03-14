@@ -1223,7 +1223,7 @@ def test_list_device_policy_command__with_and_without_limit(mocker, input, outpu
     assert res.outputs == output
 
 
-def test_assign_interface_policy_command__without_policy(mocker, mcafeensmv2_client):
+def test_assign_interface_policy_command__without_no_policy(mcafeensmv2_client):
     """
     Given:
     - A domain id and interface id with no policy.
@@ -1236,3 +1236,20 @@ def test_assign_interface_policy_command__without_policy(mocker, mcafeensmv2_cli
     with pytest.raises(DemistoException) as e:
         assign_interface_policy_command(client=mcafeensmv2_client, args={"domain_id": 777, "interface_id": 777})
     assert e.value.message == "Please provide at least one policy to assign"
+
+
+def test_list_device_policy_command__with_limit_and_all_results(mocker, mcafeensmv2_client):
+    """
+        Given:
+        - A domain id and device id.
+        When:
+        - nsm-list_device_policy_command command is executed.
+        Then:
+        - Confirm the output is as expected(all the results - ignoring the limit, and the capitalization).
+    """
+    from McAfeeNSMv2 import list_device_policy_command
+    mocker.patch.object(mcafeensmv2_client, 'list_device_policy_request',
+                        return_value={"policyAssignmentsList": [{"policyId": "mock"}, {"policyId": "mock"}]})
+    res = list_device_policy_command(client=mcafeensmv2_client, args={"domain_id": 777, "device_id": 777,
+                                                                      "limit": 1, "all_results": True})
+    assert res.outputs == [{'PolicyId': 'mock'}, {'PolicyId': 'mock'}]
