@@ -1,4 +1,5 @@
 from InfobloxBloxOneThreatDefenseEventCollector import *
 
 
-class
+class Test:
+    pass
