@@ -1253,3 +1253,4 @@ def test_list_device_policy_command__with_limit_and_all_results(mocker, mcafeens
     res = list_device_policy_command(client=mcafeensmv2_client, args={"domain_id": 777, "device_id": 777,
                                                                       "limit": 1, "all_results": True})
     assert res.outputs == [{'PolicyId': 'mock'}, {'PolicyId': 'mock'}]
+
