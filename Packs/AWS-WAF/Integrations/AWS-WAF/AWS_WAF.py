@@ -12,16 +12,19 @@ urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # IfrSO8601 format with UTC, default in XSOAR
 SERVICE = 'wafv2'
 OUTPUT_PREFIX = 'AWS.Waf'
 DEFAULT_SCOPE = 'Regional'
+REGEX_MATCH_STATEMENT = 'RegexPatternSetReferenceStatement'
+BYTE_MATCH_STATEMENT = 'ByteMatchStatement'
+TEXT_TRANSFORMATIONS = 'NONE | COMPRESS_WHITE_SPACE | HTML_ENTITY_DECODE | LOWERCASE | CMD_LINE | URL_DECODE | ' \
+                       'BASE64_DECODE | HEX_DECODE | MD5 | REPLACE_COMMENTS | ESCAPE_SEQ_DECODE | SQL_HEX_DECODE | ' \
+                       'CSS_DECODE | JS_DECODE | NORMALIZE_PATH | NORMALIZE_PATH_WIN | REMOVE_NULLS | ' \
+                       'REPLACE_NULLS | BASE64_DECODE_EXT | URL_DECODE_UNI | UTF8_TO_UNICODE'
 
 SCOPE_MAP = {'Regional': 'REGIONAL',
              'Global': 'CLOUDFRONT'}
 OPERATOR_TO_STATEMENT_OPERATOR = {'And': 'AndStatement', 'Or': 'OrStatement', 'Not': 'NotStatement'}
-REGEX_MATCH_STATEMENT = 'RegexPatternSetReferenceStatement'
-BYTE_MATCH_STATEMENT = 'ByteMatchStatement'
 MATCH_TYPE_TO_POSITIONAL_CONSTRAIN = {'Exactly Matches String': 'EXACTLY',
                                       'Starts With String': 'STARTS_WITH',
                                       'Ends With String': 'ENDS_WITH',
@@ -35,15 +38,20 @@ WEB_REQUEST_COMPONENT_MAP = {"Headers": "Headers",
                              "Query String": "QueryString",
                              "Body": "Body",
                              "HTTP Method": "Method"}
-TEXT_TRANSFORMATIONS = 'NONE | COMPRESS_WHITE_SPACE | HTML_ENTITY_DECODE | LOWERCASE | CMD_LINE | URL_DECODE | ' \
-                       'BASE64_DECODE | HEX_DECODE | MD5 | REPLACE_COMMENTS | ESCAPE_SEQ_DECODE | SQL_HEX_DECODE | ' \
-                       'CSS_DECODE | JS_DECODE | NORMALIZE_PATH | NORMALIZE_PATH_WIN | REMOVE_NULLS | ' \
-                       'REPLACE_NULLS | BASE64_DECODE_EXT | URL_DECODE_UNI | UTF8_TO_UNICODE'
 
 ''' HELPER FUNCTIONS '''
 
 
 def get_tags_dict_from_args(tag_keys: list, tag_values: list) -> List[dict]:
+    """
+    Creates a list of dictionaries containing the tag key, and it's corresponding value
+    Args:
+        tag_keys: tag keys list
+        tag_values: tag values list
+
+    Returns:
+        List of tags
+    """
     tags: list = []
     if len(tag_keys) != len(tag_values):
         raise DemistoException('Tha tags_keys and tag_values arguments must be at the same length.')
@@ -58,6 +66,14 @@ def get_tags_dict_from_args(tag_keys: list, tag_values: list) -> List[dict]:
 
 
 def build_regex_pattern_object(regex_patterns: list) -> List[dict]:
+    """
+    Creates a list of dictionaries which represent a regex set object
+    Args:
+        regex_patterns: regex patterns
+
+    Returns:
+        List of regex patterns objects
+    """
     regex_patterns_objects: list = [
         {'RegexString': regex_pattern} for regex_pattern in regex_patterns
     ]
@@ -67,6 +83,16 @@ def build_regex_pattern_object(regex_patterns: list) -> List[dict]:
 def build_visibility_config_object(metric_name: str,
                                    cloud_watch_metrics_enabled: bool,
                                    sampled_requests_enabled: bool) -> dict:
+    """
+    Creates a dictionary which represents visibility config
+    Args:
+        metric_name: The metric name
+        cloud_watch_metrics_enabled: whether to enable cloud metrics
+        sampled_requests_enabled: whether to enable sample requests
+
+    Returns:
+        Visibility config object
+    """
     return {
         'CloudWatchMetricsEnabled': cloud_watch_metrics_enabled,
         'MetricName': metric_name,
@@ -75,6 +101,14 @@ def build_visibility_config_object(metric_name: str,
 
 
 def build_ip_rule_object(args: dict) -> dict:
+    """
+    Creates an ip rule statement object that can be added to a rule
+    Args:
+        args: The command arguments
+
+    Returns:
+        Ip rule statement object
+    """
     ip_rule: dict = {'Statement': {}}
     ip_set_arn = argToList(args.get('ip_set_arn')) or []
     condition_operator = args.get('condition_operator', '')
@@ -93,6 +127,14 @@ def build_ip_rule_object(args: dict) -> dict:
 
 
 def build_ip_statement(ip_set_arn: list) -> list | dict:
+    """
+    Creates an ip statement that can be added to a statements list of a rule
+    Args:
+        ip_set_arn: The ip set ARN representation
+
+    Returns:
+        An ip statement object if ip_set_arn contains only one value, a list of statements otherwise
+    """
     ip_statements = [
         {'IPSetReferenceStatement': {'ARN': ip_set}} for ip_set in ip_set_arn
     ]
@@ -100,10 +142,26 @@ def build_ip_statement(ip_set_arn: list) -> list | dict:
 
 
 def build_country_statement(country_codes: list) -> dict:
+    """
+    Creates a country statement that can be added to a statements list of a rule
+    Args:
+        country_codes: The country codes
+
+    Returns:
+        A country statement object
+    """
     return {'GeoMatchStatement': {'CountryCodes': country_codes}}
 
 
 def build_country_rule_object(args: dict) -> dict:
+    """
+    Creates a country rule statement object that can be added to a rule
+    Args:
+        args: The command arguments
+
+    Returns:
+        Country rule statement object
+    """
     country_codes = argToList(args.get('country_codes')) or []
     country_rule: dict = {
         'Statement': build_country_statement(country_codes)
@@ -112,6 +170,14 @@ def build_country_rule_object(args: dict) -> dict:
 
 
 def build_string_match_statement(args: dict) -> dict:
+    """
+    Creates a byte/regex match statement that can be added to a statements list of a rule
+    Args:
+        args: The command arguments
+
+    Returns:
+        A byte/regex match statement object
+    """
     match_type = args.get('match_type') or ''
     match_statement = REGEX_MATCH_STATEMENT if match_type == 'Matches Regex Pattern Set' \
         else BYTE_MATCH_STATEMENT
@@ -189,8 +255,20 @@ def build_byte_match_statement(web_request_component: str,
                                text_transformation: str,
                                string_to_match: str,
                                match_type: str) -> dict:
-    web_request_component_object = build_web_component_match_object(web_request_component, oversize_handling)
+    """
+    Creates a byte match statement
+    Args:
+        web_request_component: The web request component to inspect
+        oversize_handling: Which oversize handling to perform on web request contents
+        that are larger than AWS WAF can inspect
+        text_transformation: The text transformation to perform on the component
+        string_to_match: The string to match to
+        match_type: Which match type should be performed
 
+    Returns:
+        A byte match statement value
+    """
+    web_request_component_object = build_web_component_match_object(web_request_component, oversize_handling)
     return {
         'SearchString': string_to_match,
         'FieldToMatch': {
@@ -207,8 +285,19 @@ def build_regex_match_statement(web_request_component: str,
                                 oversize_handling: str,
                                 text_transformation: str,
                                 regex_set_arn: str) -> dict:
-    web_request_component_object = build_web_component_match_object(web_request_component, oversize_handling)
+    """
+    Creates a byte match statement
+    Args:
+        web_request_component: The web request component to inspect
+        oversize_handling: Which oversize handling to perform on web request contents
+        that are larger than AWS WAF can inspect
+        text_transformation: The text transformation to perform on the component
+        regex_set_arn: The regex set to match to
 
+    Returns:
+        A regex match statement value
+    """
+    web_request_component_object = build_web_component_match_object(web_request_component, oversize_handling)
     return {
         'ARN': regex_set_arn,
         'FieldToMatch': {
@@ -222,6 +311,14 @@ def build_regex_match_statement(web_request_component: str,
 
 
 def build_string_match_rule_object(args: dict) -> dict:
+    """
+    Creates a string match rule statement object that can be added to a rule
+    Args:
+        args: The command arguments
+
+    Returns:
+        String match rule statement object
+    """
     string_match_statement: dict = {
         'Statement': build_string_match_statement(args)
     }
@@ -230,6 +327,16 @@ def build_string_match_rule_object(args: dict) -> dict:
 
 def build_new_rule_object(args: dict, rule_group_visibility_config: dict,
                           build_rule_func: Callable[[dict], dict]) -> dict:
+    """
+    Creates a country rule object that can be added to a rule group rules list
+    Args:
+        args: The command arguments
+        rule_group_visibility_config: The rule visibility config
+        build_rule_func: A generic function that builds the statement of the rule
+
+    Returns:
+        Entire rule object
+    """
     name = args.get('rule_name', '')
     rule_visibility_config = build_visibility_config_object(
         metric_name=name,
@@ -251,6 +358,15 @@ def build_new_rule_object(args: dict, rule_group_visibility_config: dict,
 
 
 def delete_rule(rule_name: str, rules: list) -> list:
+    """
+    Deletes a rule from a rules list
+    Args:
+        rule_name: The rule name to delete
+        rules: The rules list of a rule group
+
+    Returns:
+        A new rules list without the rule to delete
+    """
     updated_rules = rules.copy()
     for rule in rules:
         if rule.get('Name') == rule_name:
@@ -260,6 +376,15 @@ def delete_rule(rule_name: str, rules: list) -> list:
 
 
 def append_new_rule(rules: list, rule: dict) -> list:
+    """
+    Adds a rule from a rules list
+    Args:
+        rule: The rule object to add
+        rules: The rules list of a rule group
+
+    Returns:
+        A new rules list with the rule to delete
+    """
     updated_rules = rules.copy()
     updated_rules.append(rule)
     return updated_rules
@@ -274,6 +399,15 @@ def build_kwargs(args: dict) -> dict:
 
 
 def get_required_response_fields_from_rule_group(client: boto3.client, kwargs: dict) -> Tuple[list, dict, str]:
+    """
+    Gets all the fields from the response that are required for the update request
+    Args:
+        client: AWS WF client
+        kwargs: args required for get rule group
+
+    Returns:
+        rules, visibility config object and lockToken associated to a rule group
+    """
     response = client.get_rule_group(**kwargs)
 
     rule_group = response.get('RuleGroup', {})
@@ -288,18 +422,7 @@ def get_required_response_fields_from_rule_group(client: boto3.client, kwargs: d
 
 
 def connection_test(client: boto3.client) -> str:
-    """Tests API connectivity and authentication'
-
-    Returning 'ok' indicates that the integration works like it is supposed to.
-    Connection to the service is successful.
-    Raises exceptions if something goes wrong.
-
-    :type client: ``Client``
-    :param Client: client to use
-
-    :return: 'ok' if test passed, anything else will fail the test.
-    :rtype: ``str``
-    """
+    """ Command to test the connection to the API"""
     try:
         client.list_ip_sets(args={'scope': SCOPE_MAP[DEFAULT_SCOPE]})
     except Exception as e:
@@ -309,6 +432,7 @@ def connection_test(client: boto3.client) -> str:
 
 
 def create_ip_set_command(client: boto3.client, args) -> CommandResults:
+    """ Command to create an IP set"""
     tag_keys = argToList(args.get('tag_key')) or []
     tag_values = argToList(args.get('tag_value')) or []
     kwargs = {
@@ -336,6 +460,7 @@ def create_ip_set_command(client: boto3.client, args) -> CommandResults:
 
 
 def get_ip_set_command(client: boto3.client, args) -> CommandResults:
+    """ Command to get a specific IP set"""
     kwargs = {
         'Name': args.get('name', ''),
         'Scope': SCOPE_MAP[args.get('scope') or DEFAULT_SCOPE],
@@ -356,6 +481,7 @@ def get_ip_set_command(client: boto3.client, args) -> CommandResults:
 
 
 def update_ip_set_command(client: boto3.client, args) -> CommandResults:
+    """ Command to update a specific IP set"""
     kwargs = {
         'Name': args.get('name', ''),
         'Scope': SCOPE_MAP[args.get('scope') or DEFAULT_SCOPE],
@@ -386,6 +512,7 @@ def update_ip_set_command(client: boto3.client, args) -> CommandResults:
 
 
 def list_ip_set_command(client: boto3.client, args) -> CommandResults:
+    """ Command to get a list of all IP sets"""
     kwargs = {
         'Scope': SCOPE_MAP[args.get('scope') or DEFAULT_SCOPE],
         'Limit': arg_to_number(args.get('limit')) or 50
@@ -407,6 +534,7 @@ def list_ip_set_command(client: boto3.client, args) -> CommandResults:
 
 
 def delete_ip_set_command(client: boto3.client, args) -> CommandResults:
+    """ Command to delete a specific IP set"""
     kwargs = {
         'Name': args.get('name', ''),
         'Scope': SCOPE_MAP[args.get('scope') or DEFAULT_SCOPE],
@@ -426,6 +554,7 @@ def delete_ip_set_command(client: boto3.client, args) -> CommandResults:
 
 
 def create_regex_set_command(client: boto3.client, args) -> CommandResults:
+    """ Command to create a regex set"""
     tag_keys = argToList(args.get('tag_key')) or []
     tag_values = argToList(args.get('tag_value')) or []
     regex_patterns = argToList(args.get('regex_pattern')) or []
@@ -453,6 +582,7 @@ def create_regex_set_command(client: boto3.client, args) -> CommandResults:
 
 
 def get_regex_set_command(client: boto3.client, args) -> CommandResults:
+    """ Command to get a specific regex set"""
     kwargs = {
         'Name': args.get('name', ''),
         'Scope': SCOPE_MAP[args.get('scope') or DEFAULT_SCOPE],
@@ -473,6 +603,7 @@ def get_regex_set_command(client: boto3.client, args) -> CommandResults:
 
 
 def update_regex_set_command(client: boto3.client, args) -> CommandResults:
+    """ Command to update a specific regex set"""
     kwargs = {
         'Name': args.get('name', ''),
         'Scope': SCOPE_MAP[args.get('scope') or DEFAULT_SCOPE],
@@ -503,6 +634,7 @@ def update_regex_set_command(client: boto3.client, args) -> CommandResults:
 
 
 def list_regex_set_command(client: boto3.client, args) -> CommandResults:
+    """ Command to get a list of all regex sets"""
     kwargs = {
         'Scope': SCOPE_MAP[args.get('scope') or DEFAULT_SCOPE],
         'Limit': arg_to_number(args.get('limit')) or 50
@@ -523,6 +655,7 @@ def list_regex_set_command(client: boto3.client, args) -> CommandResults:
 
 
 def delete_regex_set_command(client: boto3.client, args) -> CommandResults:
+    """ Command to delete a specific regex set"""
     kwargs = {
         'Name': args.get('name', ''),
         'Scope': SCOPE_MAP[args.get('scope') or DEFAULT_SCOPE],
@@ -542,6 +675,7 @@ def delete_regex_set_command(client: boto3.client, args) -> CommandResults:
 
 
 def list_rule_group_command(client: boto3.client, args) -> CommandResults:
+    """ Command to get a list of all rule groups"""
     kwargs = {
         'Scope': SCOPE_MAP[args.get('scope') or DEFAULT_SCOPE],
         'Limit': arg_to_number(args.get('limit')) or 50
@@ -565,6 +699,7 @@ def list_rule_group_command(client: boto3.client, args) -> CommandResults:
 
 
 def get_rule_group_command(client: boto3.client, args) -> CommandResults:
+    """ Command to get a specific rule group"""
     kwargs = {
         'Name': args.get('name', ''),
         'Scope': SCOPE_MAP[args.get('scope') or DEFAULT_SCOPE],
@@ -603,6 +738,7 @@ def get_rule_group_command(client: boto3.client, args) -> CommandResults:
 
 
 def delete_rule_group_command(client: boto3.client, args) -> CommandResults:
+    """ Command to delete a specific rule group"""
     kwargs = {
         'Name': args.get('name', ''),
         'Scope': SCOPE_MAP[args.get('scope') or DEFAULT_SCOPE],
@@ -621,7 +757,12 @@ def delete_rule_group_command(client: boto3.client, args) -> CommandResults:
                           raw_response=response)
 
 
-def update_rule(client: boto3.client, kwargs, lock_token, updated_rules, rule_group_visibility_config) -> dict:
+def update_rule_group_rules(client: boto3.client,
+                            kwargs: dict,
+                            lock_token: str,
+                            updated_rules: list,
+                            rule_group_visibility_config: dict) -> dict:
+    """ Updates rule group with new rules list"""
     kwargs |= {'LockToken': lock_token,
                'Rules': updated_rules,
                'VisibilityConfig': rule_group_visibility_config
@@ -631,6 +772,7 @@ def update_rule(client: boto3.client, kwargs, lock_token, updated_rules, rule_gr
 
 
 def create_rule_group_command(client: boto3.client, args) -> CommandResults:
+    """ Command to create a rule group"""
     tag_keys = argToList(args.get('tag_key')) or []
     tag_values = argToList(args.get('tag_value')) or []
     name = args.get('name', '')
@@ -665,6 +807,7 @@ def create_rule_group_command(client: boto3.client, args) -> CommandResults:
 
 
 def create_ip_rule_command(client: boto3.client, args) -> CommandResults:
+    """ Command to create an ip rule"""
     kwargs = build_kwargs(args)
 
     rules, rule_group_visibility_config, lock_token = get_required_response_fields_from_rule_group(client, kwargs)
@@ -672,11 +815,11 @@ def create_ip_rule_command(client: boto3.client, args) -> CommandResults:
     rule = build_new_rule_object(args, rule_group_visibility_config, build_ip_rule_object)
     updated_rules = append_new_rule(rules, rule)
 
-    response = update_rule(client=client,
-                           kwargs=kwargs,
-                           lock_token=lock_token,
-                           updated_rules=updated_rules,
-                           rule_group_visibility_config=rule_group_visibility_config)
+    response = update_rule_group_rules(client=client,
+                                       kwargs=kwargs,
+                                       lock_token=lock_token,
+                                       updated_rules=updated_rules,
+                                       rule_group_visibility_config=rule_group_visibility_config)
 
     readable_output = f'AWS Waf ip rule with name {args.get("rule_name", "")} was created successfully.'
 
@@ -685,6 +828,7 @@ def create_ip_rule_command(client: boto3.client, args) -> CommandResults:
 
 
 def create_country_rule_command(client: boto3.client, args) -> CommandResults:
+    """ Command to create a country rule"""
     kwargs = build_kwargs(args)
 
     rules, rule_group_visibility_config, lock_token = get_required_response_fields_from_rule_group(client, kwargs)
@@ -692,11 +836,11 @@ def create_country_rule_command(client: boto3.client, args) -> CommandResults:
     rule = build_new_rule_object(args, rule_group_visibility_config, build_country_rule_object)
     updated_rules = append_new_rule(rules, rule)
 
-    response = update_rule(client=client,
-                           kwargs=kwargs,
-                           lock_token=lock_token,
-                           updated_rules=updated_rules,
-                           rule_group_visibility_config=rule_group_visibility_config)
+    response = update_rule_group_rules(client=client,
+                                       kwargs=kwargs,
+                                       lock_token=lock_token,
+                                       updated_rules=updated_rules,
+                                       rule_group_visibility_config=rule_group_visibility_config)
 
     readable_output = f'AWS Waf country rule with name {args.get("rule_name", "")} was created successfully.'
 
@@ -705,6 +849,7 @@ def create_country_rule_command(client: boto3.client, args) -> CommandResults:
 
 
 def create_string_match_rule_command(client: boto3.client, args) -> CommandResults:
+    """ Command to create a string match rule"""
     kwargs = build_kwargs(args)
 
     rules, rule_group_visibility_config, lock_token = get_required_response_fields_from_rule_group(client, kwargs)
@@ -712,11 +857,11 @@ def create_string_match_rule_command(client: boto3.client, args) -> CommandResul
     rule = build_new_rule_object(args, rule_group_visibility_config, build_string_match_rule_object)
     updated_rules = append_new_rule(rules, rule)
 
-    response = update_rule(client=client,
-                           kwargs=kwargs,
-                           lock_token=lock_token,
-                           updated_rules=updated_rules,
-                           rule_group_visibility_config=rule_group_visibility_config)
+    response = update_rule_group_rules(client=client,
+                                       kwargs=kwargs,
+                                       lock_token=lock_token,
+                                       updated_rules=updated_rules,
+                                       rule_group_visibility_config=rule_group_visibility_config)
 
     readable_output = f'AWS Waf string match rule with name {args.get("rule_name", "")} was created successfully.'
 
@@ -725,17 +870,18 @@ def create_string_match_rule_command(client: boto3.client, args) -> CommandResul
 
 
 def delete_rule_command(client: boto3.client, args) -> CommandResults:
+    """ Command to delete a specific rule"""
     kwargs = build_kwargs(args)
 
     rules, rule_group_visibility_config, lock_token = get_required_response_fields_from_rule_group(client, kwargs)
     rule_name = args.get('rule_name', '')
     updated_rules = delete_rule(rule_name, rules)
 
-    response = update_rule(client=client,
-                           kwargs=kwargs,
-                           lock_token=lock_token,
-                           updated_rules=updated_rules,
-                           rule_group_visibility_config=rule_group_visibility_config)
+    response = update_rule_group_rules(client=client,
+                                       kwargs=kwargs,
+                                       lock_token=lock_token,
+                                       updated_rules=updated_rules,
+                                       rule_group_visibility_config=rule_group_visibility_config)
 
     readable_output = f'AWS Waf rule with id {args.get("Id", "")} was deleted successfully.'
 
@@ -744,18 +890,18 @@ def delete_rule_command(client: boto3.client, args) -> CommandResults:
 
 
 def add_ip_statement_command(client: boto3.client, args) -> CommandResults:
+    """ Command to add an ip statement to a rule"""
     kwargs = build_kwargs(args)
-
     rules, rule_group_visibility_config, lock_token = get_required_response_fields_from_rule_group(client, kwargs)
     ip_set_arn = argToList(args.get('ip_set_arn')) or []
     statement = build_ip_statement(ip_set_arn)
     updated_rules = add_statement_to_rule(args, statement, rules)  # type: ignore
 
-    response = update_rule(client=client,
-                           kwargs=kwargs,
-                           lock_token=lock_token,
-                           updated_rules=updated_rules,
-                           rule_group_visibility_config=rule_group_visibility_config)
+    response = update_rule_group_rules(client=client,
+                                       kwargs=kwargs,
+                                       lock_token=lock_token,
+                                       updated_rules=updated_rules,
+                                       rule_group_visibility_config=rule_group_visibility_config)
 
     readable_output = f'AWS Waf ip statement was added to rule with name {args.get("rule_name", "")} successfully.'
 
@@ -764,6 +910,7 @@ def add_ip_statement_command(client: boto3.client, args) -> CommandResults:
 
 
 def add_country_statement_command(client: boto3.client, args) -> CommandResults:
+    """ Command to add a country statement to a rule"""
     kwargs = build_kwargs(args)
 
     rules, rule_group_visibility_config, lock_token = get_required_response_fields_from_rule_group(client, kwargs)
@@ -771,11 +918,11 @@ def add_country_statement_command(client: boto3.client, args) -> CommandResults:
     statement = build_country_statement(country_codes)
     updated_rules = add_statement_to_rule(args, statement, rules)
 
-    response = update_rule(client=client,
-                           kwargs=kwargs,
-                           lock_token=lock_token,
-                           updated_rules=updated_rules,
-                           rule_group_visibility_config=rule_group_visibility_config)
+    response = update_rule_group_rules(client=client,
+                                       kwargs=kwargs,
+                                       lock_token=lock_token,
+                                       updated_rules=updated_rules,
+                                       rule_group_visibility_config=rule_group_visibility_config)
 
     readable_output = f'AWS Waf country statement was added to rule with name {args.get("rule_name", "")} ' \
                       f'successfully.'
@@ -785,6 +932,7 @@ def add_country_statement_command(client: boto3.client, args) -> CommandResults:
 
 
 def add_string_match_statement_command(client: boto3.client, args) -> CommandResults:
+    """ Command to add a string mstch statement to a rule"""
     kwargs = build_kwargs(args)
 
     rules, rule_group_visibility_config, lock_token = get_required_response_fields_from_rule_group(client, kwargs)
@@ -792,22 +940,21 @@ def add_string_match_statement_command(client: boto3.client, args) -> CommandRes
     statement = build_string_match_statement(args)
     updated_rules = add_statement_to_rule(args, statement, rules)
 
-    response = update_rule(client=client,
-                           kwargs=kwargs,
-                           lock_token=lock_token,
-                           updated_rules=updated_rules,
-                           rule_group_visibility_config=rule_group_visibility_config)
+    response = update_rule_group_rules(client=client,
+                                       kwargs=kwargs,
+                                       lock_token=lock_token,
+                                       updated_rules=updated_rules,
+                                       rule_group_visibility_config=rule_group_visibility_config)
 
     readable_output = f'AWS Waf string match statement was added to rule with name {args.get("rule_name", "")} ' \
                       f'successfully.'
-
-    # response = update_rule(client, args, build_string_match_statement, action='ADD')
 
     return CommandResults(readable_output=readable_output,
                           raw_response=response)
 
 
 def add_json_statement_command(client: boto3.client, args) -> CommandResults:
+    """ Command to add a json object represents a statement to a rule"""
     kwargs = build_kwargs(args)
 
     rules, rule_group_visibility_config, lock_token = get_required_response_fields_from_rule_group(client, kwargs)
@@ -815,11 +962,11 @@ def add_json_statement_command(client: boto3.client, args) -> CommandResults:
     statement = json.loads(args.get('statement_json') or '{}')
     updated_rules = add_statement_to_rule(args, statement, rules)
 
-    response = update_rule(client=client,
-                           kwargs=kwargs,
-                           lock_token=lock_token,
-                           updated_rules=updated_rules,
-                           rule_group_visibility_config=rule_group_visibility_config)
+    response = update_rule_group_rules(client=client,
+                                       kwargs=kwargs,
+                                       lock_token=lock_token,
+                                       updated_rules=updated_rules,
+                                       rule_group_visibility_config=rule_group_visibility_config)
 
     readable_output = f'AWS Waf json statement was added to rule with name {args.get("rule_name", "")} successfully.'
 
@@ -827,10 +974,8 @@ def add_json_statement_command(client: boto3.client, args) -> CommandResults:
                           raw_response=response)
 
 
-''' MAIN FUNCTION '''
-
-
 def template_json_command(args):
+    """ Command to get a json template represents a statement"""
     statement_type = args.get('statement_type', '')
     web_request_component = args.get('web_request_component', '')
     if statement_type == 'Ip Set':
@@ -864,19 +1009,15 @@ def template_json_command(args):
     return CommandResults(readable_output=readable_output)
 
 
-def main() -> None:
-    """main function, parses params and runs command functions
+''' MAIN FUNCTION '''
 
-    :return:
-    :rtype:
-    """
 
+def main() -> None:  # pragma: no cover
     params = demisto.params()
     aws_default_region = params.get('defaultRegion')
     aws_role_arn = params.get('roleArn')
     aws_role_session_name = params.get('roleSessionName')
     aws_role_session_duration = params.get('sessionDuration')
-    aws_role_policy = None
     aws_access_key_id = params.get('access_key', {}).get('password') or params.get('access_key')
     aws_secret_access_key = params.get('secret_key', {}).get('password') or params.get('secret_key')
     verify_certificate = not params.get('insecure', True)
@@ -887,9 +1028,16 @@ def main() -> None:
         validate_params(aws_default_region, aws_role_arn, aws_role_session_name, aws_access_key_id,
                         aws_secret_access_key)
 
-        aws_client = AWSClient(aws_default_region, aws_role_arn, aws_role_session_name, aws_role_session_duration,
-                               aws_role_policy, aws_access_key_id, aws_secret_access_key, verify_certificate,
-                               timeout, retries)
+        aws_client = AWSClient(aws_default_region=aws_default_region,
+                               aws_role_arn=aws_role_arn,
+                               aws_role_session_name=aws_role_session_name,
+                               aws_role_policy=None,
+                               aws_role_session_duration=aws_role_session_duration,
+                               aws_access_key_id=aws_access_key_id,
+                               aws_secret_access_key=aws_secret_access_key,
+                               verify_certificate=verify_certificate,
+                               timeout=timeout,
+                               retries=retries)
         args = demisto.args()
         command = demisto.command()
         client = aws_client.aws_session(service=SERVICE, region=args.get('region'))
