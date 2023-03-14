@@ -380,7 +380,7 @@ workflows:
       matches:
         # matching the environment variable "CIRCLE_BRANCH" from the setup environment step.
         pattern: /^pull.*/
-        value: $CIRCLE_BRANCH
+        value: << pipeline.parameters.contrib_branch >>
     jobs:
       - Setup Environment
       - Run Unit Testing And Lint:
