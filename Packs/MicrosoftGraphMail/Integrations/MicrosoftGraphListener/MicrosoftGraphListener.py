@@ -4,6 +4,7 @@ from CommonServerPython import *  # noqa: F401
 
 ''' IMPORTS '''
 import base64
+import binascii
 import os
 import json
 import urllib3
