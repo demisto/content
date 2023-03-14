@@ -662,7 +662,7 @@ def list_users_accounts_command(client: Client, args: dict):
 
 
 def format_fetch_start_time_to_timestamp(fetch_start_time: Optional[str]):
-    fetch_start_time_datetime = parse(fetch_start_time).replace(tzinfo=utc)  # type: ignore
+    fetch_start_time_datetime = parse(fetch_start_time)  # type: ignore
     start_fetch_timestamp = fetch_start_time_datetime.timestamp()  # type: ignore
     if fetch_start_time_datetime.microsecond == 0:  # type: ignore
         return int(start_fetch_timestamp) * 1000
@@ -679,7 +679,9 @@ def format_fetch_start_time_to_timestamp(fetch_start_time: Optional[str]):
 def timestamp_to_datetime_string(timestamp: int, include_miliseconds: bool = True):
     datetime_string = timestamp_to_datestring(timestamp, DATE_FORMAT)
     if include_miliseconds:
+        # return datetime string including miliseconds
         return datetime_string[:-3]
+    # return datetime string includes only seconds
     return datetime_string.split('.')[0]
 
 
