@@ -813,7 +813,7 @@ def redlock_get_scan_results():
         })
 
 
-def expire_stored_ids(fetched_ids: Dict[float, List[str]]):
+def expire_stored_ids(fetched_ids: Dict[int, List[str]]):
     """
     Expires stored ids after 2 hours.
 
