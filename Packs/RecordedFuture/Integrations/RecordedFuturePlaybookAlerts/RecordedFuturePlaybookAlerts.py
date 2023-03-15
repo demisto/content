@@ -220,7 +220,7 @@ def main() -> None:
         proxy = demisto_params.get('proxy', False)
 
         headers = {
-            'X-RFToken': demisto_params['token'],
+            'X-RFToken': demisto_params['token'].get('password'),
             'X-RF-User-Agent': (
                 f'RecordedFuturePlaybookAlerts.py/{__version__} ({platform.platform()}) '
                 f'XSOAR/{__version__} '
