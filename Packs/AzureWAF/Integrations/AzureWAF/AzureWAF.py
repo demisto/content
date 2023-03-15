@@ -19,8 +19,6 @@ UPSERT_PARAMS = {'resource_id': 'id', 'policy_settings': 'properties.policySetti
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 API_VERSION = '2020-05-01'
 BASE_URL = 'https://management.azure.com'
-SUBSCRIPTION_PATH = 'subscriptions/{}'
-RESOURCE_PATH = 'resourceGroups/{}'
 POLICY_PATH = 'providers/Microsoft.Network/ApplicationGatewayWebApplicationFirewallPolicies'
 
 ''' CLIENT CLASS '''
@@ -50,7 +48,7 @@ class AzureWAFClient:
             integration_context = get_integration_context()
             integration_context.update(current_refresh_token=refresh_token)
             set_integration_context(integration_context)
-        base_url = f'{BASE_URL}/{SUBSCRIPTION_PATH.format(subscription_id)}'
+        base_url = f'{BASE_URL}/subscriptions/{subscription_id}'
         self.subscription_id = subscription_id
         self.resource_group_name = resource_group_name
         client_args = assign_params(
@@ -78,8 +76,8 @@ class AzureWAFClient:
         self.ms_client = MicrosoftClient(**client_args)
 
     @logger
-    def http_request(self, method: str, url_suffix: str = None, full_url: str = None, params: Dict = None,
-                     data: Dict = None, resp_type: str = 'json', return_empty_response: bool = False):
+    def http_request(self, method: str, url_suffix: str = None, full_url: str = None, params: dict = None,
+                     data: dict = None, resp_type: str = 'json', return_empty_response: bool = False):
         if not params:
             params = {}
         if not full_url:
@@ -94,36 +92,36 @@ class AzureWAFClient:
                                            timeout=20,
                                            return_empty_response=return_empty_response)
 
-    def get_policy_by_name(self, policy_name: str, subscription_id: str, resource_group_name_list: list) -> List:
-        base_url = f'{BASE_URL}/{SUBSCRIPTION_PATH.format(subscription_id)}'
-        res: List[Dict] = []
+    def get_policy_by_name(self, policy_name: str, subscription_id: str, resource_group_name_list: list) -> list:
+        base_url = f'{BASE_URL}/subscriptions/{subscription_id}'
+        res: list[dict] = []
         for resource_group_name in resource_group_name_list:
             try:
                 res.append(self.http_request(
                     method='GET',
-                    full_url=f'{base_url}/{RESOURCE_PATH.format(resource_group_name)}/{POLICY_PATH}/{policy_name}',
+                    full_url=f'{base_url}/resourceGroups/{resource_group_name}/{POLICY_PATH}/{policy_name}',
                 ))
             except Exception as e:
                 res.append({'properties': f'{resource_group_name} threw Exception: {str(e)}'})
         return res
 
-    def get_policy_list_by_resource_group_name(self, subscription_id: str, resource_group_name_list: list) -> List:
-        base_url = f'{BASE_URL}/{SUBSCRIPTION_PATH.format(subscription_id)}'
-        res: List[Dict] = []
+    def get_policy_list_by_resource_group_name(self, subscription_id: str, resource_group_name_list: list) -> list:
+        base_url = f'{BASE_URL}/subscriptions/{subscription_id}'
+        res: list[dict] = []
         for resource_group_name in resource_group_name_list:
             try:
                 res.append(self.http_request(
                     method='GET',
-                    full_url=f'{base_url}/{RESOURCE_PATH.format(resource_group_name)}/{POLICY_PATH}'
+                    full_url=f'{base_url}/resourceGroups/{resource_group_name}/{POLICY_PATH}'
                 ))
             except Exception as e:
                 res.append({'properties': f'{resource_group_name} threw Exception: {str(e)}'})
         return res
 
-    def get_policy_list_by_subscription_id(self, subscription_ids) -> List:
-        res: List = []
+    def get_policy_list_by_subscription_id(self, subscription_ids) -> list:
+        res: list = []
         for subscription_id in subscription_ids:
-            base_url = f'{BASE_URL}/{SUBSCRIPTION_PATH.format(subscription_id)}'
+            base_url = f'{BASE_URL}/subscriptions/{subscription_id}'
             try:
                 res.append(
                     self.http_request(
@@ -135,15 +133,15 @@ class AzureWAFClient:
                 res.append({'properties': f'Listing {subscription_id} threw Exception: {str(e)}'})
         return res
 
-    def update_policy_upsert(self, policy_name: str, resource_group_names: list, subscription_id: str, data: Dict) -> List:
-        base_url = f'{BASE_URL}/{SUBSCRIPTION_PATH.format(subscription_id)}'
-        res: List[Dict] = []
+    def update_policy_upsert(self, policy_name: str, resource_group_names: list, subscription_id: str, data: dict) -> list:
+        base_url = f'{BASE_URL}/subscriptions/{subscription_id}'
+        res: list[dict] = []
         for resource_group_name in resource_group_names:
             try:
                 res.append(
                     self.http_request(
                         method='PUT',
-                        full_url=f'{base_url}/{RESOURCE_PATH.format(resource_group_name)}/{POLICY_PATH}/{policy_name}',
+                        full_url=f'{base_url}/resourceGroups/{resource_group_name}/{POLICY_PATH}/{policy_name}',
                         data=data
                     )
                 )
@@ -156,21 +154,21 @@ class AzureWAFClient:
             method='DELETE',
             return_empty_response=True,
             resp_type='response',
-            url_suffix=f'/{RESOURCE_PATH.format(resource_group_name)}/{POLICY_PATH}/{policy_name}',
+            url_suffix=f'/resourceGroups/{resource_group_name}/{POLICY_PATH}/{policy_name}',
         )
 
-    def subscriptions_list(self) -> Dict:
+    def subscriptions_list(self) -> dict:
         return self.http_request(
             method='GET',
             return_empty_response=True,
             full_url=f'{BASE_URL}/subscriptions?api-version={API_VERSION}'
         )
 
-    def resource_group_list(self, subscription_id, tag, limit) -> Dict:
-        base_url = f'{BASE_URL}/{SUBSCRIPTION_PATH.format(subscription_id)}'
+    def resource_group_list(self, subscription_id, tag, limit) -> dict:
+        base_url = f'{BASE_URL}/subscriptions/{subscription_id}'
         full_url = f'{base_url}/resourcegroups?$top={limit}'
         if tag:
-            full_url = f'{full_url}&$filter={tag}'
+            full_url += f'{full_url}&$filter={tag}'
         return self.http_request(
             method='GET',
             return_empty_response=True,
@@ -181,7 +179,7 @@ class AzureWAFClient:
 ''' COMMAND FUNCTIONS '''
 
 
-def test_connection(client: AzureWAFClient, params: Dict):
+def test_connection(client: AzureWAFClient, params: dict):
     client.ms_client.get_access_token()  # If fails, MicrosoftApiModule returns an error
     return CommandResults(readable_output='✅ Success!')
 
@@ -211,14 +209,14 @@ def policies_get_command(client: AzureWAFClient, **args) -> CommandResults:
     verbose = args.get("verbose", "false") == "true"
     limit = int(str(args.get("limit", '20')))
 
-    policies: List[Dict] = []
+    policies: list[dict] = []
     try:
         if policy_name:
             policies = client.get_policy_by_name(policy_name, subscription_id, resource_group_name_list)
         else:
             raw_policy_list = client.get_policy_list_by_resource_group_name(subscription_id, resource_group_name_list)
             for policy in raw_policy_list:
-                policies.extend(policy.get('valie', []))
+                policies.extend(policy.get('value', []))
 
         # only showing number of policies until reaching the limit provided.
         policies_num = len(policies)
@@ -234,7 +232,7 @@ def policies_get_list_by_subscription_command(client: AzureWAFClient, **args) ->
     """
     Retrieve all policies within the subscription id.
     """
-    policies: List[Dict] = []
+    policies: list[dict] = []
     verbose = args.get("verbose", "false") == "true"
     limit = int(str(args.get("limit", '20')))
     subscription_ids = argToList(args.get('subscription_id', ''))
@@ -258,7 +256,7 @@ def policy_upsert_command(client: AzureWAFClient, **args) -> CommandResults:
     Updates the policy if exists, otherwise creates a new policy.
     """
 
-    def parse_nested_keys_to_dict(base_dict: Dict, keys: List, value: Union[str, Dict]) -> None:
+    def parse_nested_keys_to_dict(base_dict: dict, keys: list, value: Union[str, dict]) -> None:
         """ A recursive function to make a list of type [x,y,z] and value a to a dictionary of type {x:{y:{z:a}}}"""
         if len(keys) == 1:
             base_dict[keys[0]] = value
@@ -278,7 +276,7 @@ def policy_upsert_command(client: AzureWAFClient, **args) -> CommandResults:
         raise Exception('In order to add/ update policy, '
                         'please provide policy_name, location and managed_rules. ')
 
-    body: Dict[str, Any] = {}
+    body: dict[str, Any] = {}
 
     # creating the body for the request, using pre-defined fields.
     for param in UPSERT_PARAMS:
@@ -309,11 +307,11 @@ def policy_delete_command(client: AzureWAFClient, **args):
 
     for resource_group_name in resource_group_names:
         # policy_path is unique and used as unique id in the product.
-        policy_id = f'/{SUBSCRIPTION_PATH.format(subscription_id)}/' \
-                    f'{RESOURCE_PATH.format(resource_group_name)}/{POLICY_PATH}/{policy_name}'
+        policy_id = f'/subscriptions/{subscription_id}/' \
+                    f'resourceGroups/{resource_group_name}/{POLICY_PATH}/{policy_name}'
         status = client.delete_policy(policy_name, resource_group_name)
         md = ""
-        context: Dict = {}
+        context: dict = {}
         if status.status_code in [200, 202]:
             if not context:
                 context = {}
@@ -333,12 +331,12 @@ def policy_delete_command(client: AzureWAFClient, **args):
     return CommandResults(outputs=context, readable_output=md)
 
 
-def policies_to_markdown(policies: List[Dict], verbose: bool = False, limit: int = 10) -> str:
+def policies_to_markdown(policies: list[dict], verbose: bool = False, limit: int = 10) -> str:
     """
     Gets a list of json representing policies and create a markdown of relevant data in it.
     """
 
-    def policy_to_full_markdown(policy_data: Dict):
+    def policy_to_full_markdown(policy_data: dict):
         """
         Creates a full markdown with all data field of the policy.
         """
@@ -361,7 +359,7 @@ def policies_to_markdown(policies: List[Dict], verbose: bool = False, limit: int
             raise Exception("Policy does not have 'properties' section, "
                             "therefore has invalid structure, please contact a developer.")
 
-    def policy_to_short_markdown(policy_data: Dict):
+    def policy_to_short_markdown(policy_data: dict):
         """
         Creates a short markdown containing only basic information on policy.
         """
@@ -393,11 +391,27 @@ def policies_to_markdown(policies: List[Dict], verbose: bool = False, limit: int
     return md
 
 
-def subscriptions_to_md(subscriptions: List[Dict]) -> str:
+def subscriptions_to_md(subscriptions: list[dict]) -> str:
+    """
+    Formats a list of subscription dictionaries as a Markdown table.
+
+    Args:
+        subscriptions (list[dict]): A list of subscription dictionaries. Each dictionary hold keys for
+        'subscriptionId', 'tenantId', 'state', and 'displayName'.
+
+    Returns:
+        str: A Markdown-formatted string representing the subscription data as a table.
+
+    Example:
+        >>> subs = [{'subscriptionId': '123', 'tenantId': '456', 'state': 'Active', 'displayName': 'My Subscription'}]
+        >>> subscriptions_to_md(subs)
+        '| subscriptionId | tenantId | state  | displayName       |\n|----------------|----------|--------|-------------------|\n/
+        | 123            | 456      | Active | My Subscription   |'
+    """
     list_md = []
     for subscription in subscriptions:
         sub_md = {
-            key: subscription[key]
+            key: subscription.get(key)
             for key in subscription
             if key in ('subscriptionId', 'tenantId', 'state', 'displayName')
         }
@@ -405,7 +419,25 @@ def subscriptions_to_md(subscriptions: List[Dict]) -> str:
     return tableToMarkdown('Subscriptions: ', list_md)
 
 
-def resourcegroups_to_md(resource_groups: List[Dict]) -> str:
+def resourcegroups_to_md(resource_groups: list[dict]) -> str:
+    """
+    Formats a list of resource group dictionaries as a Markdown table.
+
+    Args:
+        resource_groups (list[dict]): A list of resource group dictionaries. Each dictionary hold keys for
+            'name', 'location', 'tags', and 'properties.provisioningState'.
+
+    Returns:
+        str: A Markdown-formatted string representing the resource group data as a table.
+
+    Example:
+        >>> rg_list = [{'name': 'my-resource-group', 'location': 'eastus', 'tags': {'env': 'prod'}, 'properties': /
+        {'provisioningState': 'Succeeded'}}]
+        >>> resourcegroups_to_md(rg_list)
+        '| name                | location | tags             | properties.provisioningState |\n|---------------------|----------|/
+        -----------------|------------------------------|\n| my-resource-group   | eastus   | {"env": "prod"} | Succeeded       /
+        |'
+    """
     list_md = []
     for resource in resource_groups:
         sub_md = {}
@@ -413,14 +445,15 @@ def resourcegroups_to_md(resource_groups: List[Dict]) -> str:
             if key in ('name', 'location', 'tags'):
                 sub_md[key] = resource[key]
             elif key == 'properties':
-                if resource[key]['provisioningState']:
+                if demisto.get(resource, 'key.provisioningState'):
                     sub_md['properties.provisioningState'] = resource[key]['provisioningState']
         list_md.append(sub_md)
     return tableToMarkdown('Resource Groups: ', list_md)
 
 
 def subscriptions_list_command(client: AzureWAFClient):
-    subscriptions = client.subscriptions_list().get('value', [])
+    subscriptions_res = client.subscriptions_list()
+    subscriptions = subscriptions_res.get('value', []) if subscriptions_res else {}
     return CommandResults(readable_output=subscriptions_to_md(subscriptions),
                           outputs=subscriptions,
                           outputs_key_field='subscriptionId', outputs_prefix='AzureWAF.Subscription',
