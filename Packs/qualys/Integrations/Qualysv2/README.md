@@ -817,6 +817,7 @@ View a list of scanned hosts in the user account.
 | show_cloud_tags | (Optional) Specify 1 to display cloud provider tags for each scanned host asset in the output. The default value of the parameter is set to 0. When set to 0, we will not show the cloud provider tags for the scanned assets. Possible values are: 0, 1. | Optional | 
 | cloud_tag_fields | (Optional when show_cloud_tags is specified) Specify cloud tags or cloud tag and name combinations to only return information for specified cloud tags. A cloud tag name and value combination is specified with a colon (for example:SomeTag6:AY_ec2). For each cloud tag, we show the cloud tag’s name, its value, and last success date (the tag last success date/time, fetched from instance). If this parameter is not specified and "show_cloud_tags" is set to 1, we will show all the cloud provider tags for the assets. | Optional | 
 | limit | Specify a positive numeric value to limit the amount of results in the requested list. | Optional | 
+| details | (Optional) Show the requested amount of host information for each host. A valid value is: Basic, Basic/AGs, All, All/AGs, or None. | Optional |
 
 
 #### Context Output
