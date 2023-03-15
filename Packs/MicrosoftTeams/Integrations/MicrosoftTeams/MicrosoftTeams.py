@@ -2444,13 +2444,11 @@ def long_running_loop():
                 certificate_path = certificate_file.name
                 certificate_file.write(bytes(certificate, 'utf-8'))
                 certificate_file.close()
-                # ssl_args['certfile'] = certificate_path
 
                 private_key_file = NamedTemporaryFile(delete=False)
                 private_key_path = private_key_file.name
                 private_key_file.write(bytes(private_key, 'utf-8'))
                 private_key_file.close()
-                # ssl_args['keyfile'] = private_key_path
 
                 context = SSLContext(PROTOCOL_TLSv1_2)
                 context.load_cert_chain(certificate_path, private_key_path)
