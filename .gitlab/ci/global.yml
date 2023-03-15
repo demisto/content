@@ -221,6 +221,7 @@
     DOCKER_TLS_CERTDIR: ""
   extends:
     - .default-job-settings
+    - .parallel
   script:
     - section_start "Test Infrastructure"
     - python3 -m pytest ./Tests/scripts/infrastructure_tests/ -v
@@ -277,6 +278,11 @@
   parallel:
     matrix:
       - DOCKER_FOR_PR: ['native:ga,native:dev', 'native:maintenance,from-yml']
+      
+
+.parallel:
+  parallel:
+    matrix:
       - DOCKER_FOR_NIGHTLY: ['native:ga,native:maintenance', 'from-yml']
 
 .run-validations:
