@@ -93,13 +93,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: Comma separated value list of the names of the resource groups. If not provided, the instance's default resource group name will be used.
+      description: Comma-separated value list of the names of the resource groups. If not provided, the instance's default resource group name will be used.
       isArray: true
       name: resource_group_name
       required: false
       secret: false
     - default: false
-      description: Integration default subscription ID will be used. Unless argument provided.
+      description: The subscription ID. If not provided, the integration default subscription ID will be used.
       isArray: false
       name: subscription_id
       required: false
@@ -240,7 +240,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Comma separated list of subscription IDs. Will override the default subscription ID.        
+      description: Comma-separated list of subscription IDs. Will override the default subscription ID.        
       isArray: true
       name: subscription_id
       required: false
@@ -351,13 +351,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: Comma separated list of the name of the resource group. If not provided, the instance's default resource group name will be used.
+      description: Comma-separated list of the names of the resource groups. If not provided, the instance's default resource group name will be used.
       isArray: true
       name: resource_group_name
       required: false
       secret: false
     - default: false
-      description: Integration default subscription ID will be used. Unless argument provided.
+      description: The subscription ID. If not provided, the integration default subscription ID will be used.
       isArray: false
       name: subscription_id
       required: false
@@ -506,13 +506,13 @@ script:
       required: true
       secret: false
     - default: false
-      description: Integration default subscription ID will be used. Unless argument provided.
+      description: The subscription ID. If not provided, the integration default subscription ID will be used.
       isArray: false
       name: subscription_id
       required: false
       secret: false
     - default: false
-      description: Comma separated list of the name of the resource group. If not provided, the instance's default resource group name will be used.
+      description: Comma-separated list of the name of the resource group. If not provided, the instance's default resource group name will be used.
       isArray: true
       name: resource_group_name
       required: false
@@ -563,7 +563,7 @@ script:
       description: Subscription ID.
       type: String
     - contextPath: AzureWAF.Subscription.locationPlacementId
-      description: Placmement ID of subscription.
+      description: Placement ID of subscription.
       type: String
     - contextPath: AzureWAF.Subscription.tenantId
       description: The tenatnt ID of the subscription.
@@ -574,19 +574,19 @@ script:
     name: azure-waf-resource-group-list
     arguments: 
     - default: false
-      description: Integration default subscription ID will be used. Unless argument provided.
+      description: The subscription ID. If not provided, the integration default subscription ID will be used.
       isArray: true
       name: subscription_id
       required: false
       secret: false
     - default: false
-      description: You can filter by tag names and values. For example, to filter for a tag name and value, tagName=tagValue'
+      description: The tag name and value by which to filter the results. For example, tagName=tagValue.
       isArray: false
       name: tag
       required: false
       secret: false
     - default: false
-      description: Maximum number of resource groups to fetch. Default is "50".
+      description: Maximum number of resource groups to fetch.
       defaultValue: 50
       isArray: false
       name: limit
