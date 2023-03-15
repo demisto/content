@@ -1,6 +1,7 @@
 import uuid
 from dataclasses import dataclass
 from typing import Callable, Tuple
+from urllib.parse import quote
 
 import urllib3
 
@@ -272,7 +273,7 @@ class Client:
         """
         get_file_path_res = demisto.getFilePath(file)
         file_path = get_file_path_res["path"]
-        file_name = file_name or get_file_path_res.get('name', '')
+        file_name = quote(file_name or get_file_path_res.get('name', ''))
 
         url_suffix = f"/samples/entities/samples/v2?file_name={file_name}&is_confidential={is_confidential}" \
                      f"&comment={comment}"
@@ -352,7 +353,7 @@ class Client:
         body = {
             "sandbox": [
                 {
-                    "url": url,
+                    "url": quote(url, safe=":/"),
                     "environment_id": convert_environment_id_string_to_int(environment_id),
                     "action_script": action_script,
                     "command_line": command_line,
@@ -711,7 +712,7 @@ def parse_indicator(sandbox: dict, reliability_str: str) -> Optional[Common.File
                                 score=score_field,
                                 reliability=reliability)
 
-        info = {item['id']: item['value'] for item in sandbox.get('version_info', [])}
+        info = {item['id']: item.get('value') for item in sandbox.get('version_info', [])}
         relationships: Optional[List[EntityRelationship]] = None
         if sandbox.get('submission_type', '') in ('file_url', 'file'):
             relationships = parse_indicator_relationships(sandbox, indicator_value=sha256, reliability=reliability)
@@ -851,6 +852,23 @@ def upload_file_command(  # type: ignore[return]
                                                               submit_name, system_date, system_time)
 
 
+def get_uploaded_file_name(hash_file: str) -> str | None:
+    """Returns a file name from the context based on his sha256.
+
+    Args:
+        hash_file (str): The sha256 that represents the file.
+
+    Returns:
+        str: The file name.
+    """
+    if context := demisto.get(demisto.context(), OUTPUTS_PREFIX, []):
+        if isinstance(context, dict):
+            context = [context]
+        if filtered_context := list(filter(lambda x: x.get('sha256') == hash_file, context)):
+            return filtered_context[0].get('file_name')
+    return None
+
+
 def send_uploaded_file_to_sandbox_analysis_command(
         client: Client,
         sha256: str,
@@ -886,6 +904,8 @@ def send_uploaded_file_to_sandbox_analysis_command(
     if result.output:  # the "if" is here to calm mypy down
         # in order identify the id source, upload or submit command, the id name changed
         result.output["submitted_id"] = result.output.pop("id")
+        # We should get the file name from the context since the API does not return it.
+        result.output["file_name"] = get_uploaded_file_name(sha256)
 
     return CommandResults(
         outputs_key_field='submitted_id',
@@ -931,6 +951,7 @@ def send_url_to_sandbox_analysis_command(
     if result.output:  # the "if" is here to calm mypy down
         # in order identify the id source, upload or submit command, the id name changed
         result.output["submitted_id"] = result.output.pop("id")
+        result.output['url_name'] = url
 
     return CommandResults(
         outputs_key_field='submitted_id',

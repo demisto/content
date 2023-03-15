@@ -4,7 +4,7 @@ Hunt using available tools
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Search Endpoints By Hash - CrowdStrike
+* CrowdStrike Falcon - Search Endpoints By Hash
 * Search Endpoints By Hash - Cybereason
 * Search Endpoints By Hash - TIE
 * Search Endpoints By Hash - Carbon Black Response V2
@@ -35,3 +35,7 @@ This playbook does not use any commands.
 | --- | --- | --- |
 | Endpoint.Hostname | Device hostname | string |
 | Endpoint | The endpoint | unknown |
+
+## Playbook Image
+---
+![Search Endpoints By Hash - Generic V2](../doc_files/Search_Endpoints_By_Hash_-_Generic_V2.png)

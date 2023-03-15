@@ -653,12 +653,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: f5d652a9-5af8-467b-8fc5-1146c9b63a4d
+    taskid: 5d7e754b-c507-46f5-8e99-6eed74057025
     type: regular
     task:
-      id: f5d652a9-5af8-467b-8fc5-1146c9b63a4d
+      id: 5d7e754b-c507-46f5-8e99-6eed74057025
       version: -1
-      name: Get Endpoint f8a2f58846b542579c12090652e79f3d
+      name: Get Endpoint aeec6a2cc92e46fab3b6f621722e9916
       description: Gets a list of endpoints, according to the passed filters. Filtering
         by multiple fields will be concatenated using AND condition (OR is not supported).
         Maximum result set size is 100. Offset is the zero-based number of endpoint
@@ -672,7 +672,7 @@ tasks:
       - "16"
     scriptarguments:
       endpoint_id_list:
-        simple: f8a2f58846b542579c12090652e79f3d
+        simple: aeec6a2cc92e46fab3b6f621722e9916
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1336,10 +1336,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: 31249a17-80f9-4224-889c-8bd4688bbc4f
+    taskid: cab48ae2-8215-4976-8716-f0d4f686b05b
     type: regular
     task:
-      id: 31249a17-80f9-4224-889c-8bd4688bbc4f
+      id: cab48ae2-8215-4976-8716-f0d4f686b05b
       version: -1
       name: xdr-get-policy
       description: Gets the policy name for a specific endpoint.
@@ -1352,11 +1352,7 @@ tasks:
       - "38"
     scriptarguments:
       endpoint_id:
-        complex:
-          root: PaloAltoNetworksXDR.Endpoint
-          accessor: endpoint_id
-          transformers:
-          - operator: FirstArrayElement
+        simple: aeec6a2cc92e46fab3b6f621722e9916
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2204,4 +2200,5 @@ view: |-
   }
 inputs: []
 outputs: []
+quiet: false
 fromversion: 5.0.0

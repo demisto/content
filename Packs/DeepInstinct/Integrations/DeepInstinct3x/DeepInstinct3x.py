@@ -1,8 +1,9 @@
 import requests
 import json
+import urllib3
 from CommonServerPython import *
 
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 
 def http_request(method, url_suffix, json=None):

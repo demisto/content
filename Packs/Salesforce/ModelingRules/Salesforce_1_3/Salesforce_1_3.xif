@@ -10,7 +10,7 @@ filter
     xdm.event.duration = to_integer(run_time),
     xdm.network.session_id = session_key,
     xdm.network.http.url = uri,
-    xdm.source.user.user_type = user_type;
+    xdm.source.user.groups = arraycreate(coalesce(user_type, ""));
 
 filter
     event_type in("Login","Logout")
@@ -19,7 +19,7 @@ filter
     xdm.logon.type = authentication_method_reference,
     xdm.event.type = event_type,
     xdm.logon.logon_guid = login_key,
-    xdm.event.outcome = login_status,
+    xdm.event.description = login_status,
     xdm.source.user.badge_id = organization_id,
     xdm.network.session_id = session_key,
     xdm.source.ipv4 = source_ip,
