@@ -104,37 +104,10 @@ class TestFetchIndicators:
         assert len(indicators) == 14
         assert mock_client.collection_to_fetch.id in last_run
 
-    def test_empty_string_collection_to_fetch(self, mocker):
+    @pytest.mark.parametrize('empty_collection_type', [None, ""])
+    def test_multi_with_context(self, mocker, empty_collection_type):
         """
-        Scenario: Test multi collection fetch with an empty string as collection_to_fetch
-
-        Given:
-        - collection to fetch is set to None
-        - there is no integration context
-        - limit is -1
-        - initial interval is `1 day`
-
-        When:
-        - fetch_indicators_command is called
-
-        Then:
-        - fetch 14 indicators
-        - update last run with latest collection fetch time
-        """
-        mock_client = Taxii2FeedClient(url='', collection_to_fetch="", proxies=[], verify=False, objects_to_fetch=[])
-        default_id = 1
-        nondefault_id = 2
-        mock_client.collections = [MockCollection(default_id, 'default'), MockCollection(nondefault_id, 'not_default')]
-
-        mocker.patch.object(mock_client, 'poll_collection')
-        mocker.patch.object(mock_client, 'load_stix_objects_from_envelope', side_effect=[CORTEX_IOCS_1, CORTEX_IOCS_2])
-        indicators, last_run = fetch_indicators_command(mock_client, '1 day', -1, {})
-        assert len(indicators) == 14
-        assert mock_client.collection_to_fetch.id in last_run
-
-    def test_multi_with_context(self, mocker):
-        """
-        Scenario: Test multi collection fetch with no last run
+        Scenario: Test multi collection fetch with no last run, testing both types of empty collection
 
         Given:
         - collection to fetch is set to None
@@ -149,7 +122,7 @@ class TestFetchIndicators:
         - fetch 7 indicators
         - update last run with latest collection fetch time
         """
-        mock_client = Taxii2FeedClient(url='', collection_to_fetch=None, proxies=[], verify=False, objects_to_fetch=[])
+        mock_client = Taxii2FeedClient(url='', collection_to_fetch=empty_collection_type, proxies=[], verify=False, objects_to_fetch=[])
         id_1 = 1
         id_2 = 2
         mock_client.collections = [MockCollection(id_1, 'a'), MockCollection(id_2, 'b')]
