@@ -26,7 +26,7 @@ urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%S'  # ISO8601 format with UTC, default in XSOAR
 VENDOR = 'orca'
 PRODUCT = 'security'
 
@@ -67,7 +67,7 @@ def get_alerts(client: Client, max_fetch: int, last_fetch: str, next_page_token:
     Args:
         client: client - An Orca client.
         max_fetch: int - The maximum number of events per fetch
-        last_fetch: int - the timeand date of the last fetch alert
+        last_fetch: int - The time and date of the last fetch alert
         next_page_token: str - The token to the next page.
     Returns:
         - list of alerts
@@ -102,7 +102,7 @@ def main() -> None:
         arg_name='First fetch time',
         required=True
     )
-    first_fetch_time = first_fetch_time.strftime("%Y-%m-%dT%H:%M:%S") if first_fetch_time else ''
+    first_fetch_time = first_fetch_time.strftime(DATE_FORMAT) if first_fetch_time else ''
     demisto.info(f'{first_fetch_time=}')
     demisto.info(f'Orca Security. Command being called is {command}')
     try:
