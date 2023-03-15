@@ -1189,20 +1189,24 @@ def test_modify_v10_results_to_v9_format():
     assert modify_v10_results_to_v9_format(test_input) == excepted_output
 
 
-@pytest.mark.parametrize('input, output', [(None, [{'InterfaceId': 'mock'}, {'InterfaceId': 'mock'}]), (1, [{'InterfaceId': 'mock'}])])
-def test_list_device_interface_command__with_and_without_limit(mocker, input, output, mcafeensmv2_client):
+@pytest.mark.parametrize('input, output', [({"domain_id": 777, "device_id": 777},
+                                            [{'InterfaceId': 'mock'}, {'InterfaceId': 'mock'}]),
+                                           ({"domain_id": 777, "device_id": 777, "limit": 1}, [{'InterfaceId': 'mock'}]),
+                                           ({"domain_id": 777, "device_id": 777, "limit": 1, "all_results": True},
+                                            [{'InterfaceId': 'mock'}, {'InterfaceId': 'mock'}])])
+def test_list_device_interface_command__with_different_arguments(mocker, input, output, mcafeensmv2_client):
     """
     Given:
-    - A limit is given or not.
+    - A domain id, device id.
     When:
-    - nsm-list_device_interface_command command is executed.
+    - nsm-list_device_interface_command command is executed, with and without limit, with and without all_results.
     Then:
     - Confirm the output is as expected(the number of results and the capitalization).
     """
     from McAfeeNSMv2 import list_device_interface_command
     mocker.patch.object(mcafeensmv2_client, 'list_device_interface_request',
                         return_value={"allocatedInterfaceList": [{"interfaceId": "mock"}, {"interfaceId": "mock"}]})
-    res = list_device_interface_command(client=mcafeensmv2_client, args={"domain_id": 777, "device_id": 777, "limit": input})
+    res = list_device_interface_command(client=mcafeensmv2_client, args=input)
     assert res.outputs == output
 
 
