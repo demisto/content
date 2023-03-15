@@ -9,3 +9,9 @@ ignore=IF115
 
 [file:playbook-Phishing_Alerts_Investigation_6_5_README.md]
 ignore=RM106
+
+[file:playbook-Phishing_Alerts_Investigation_README.md]
+ignore=RM106
+
+[file:playbook-Phishing_Alerts_Investigation_6_5_README.md]
+ignore=RM106
