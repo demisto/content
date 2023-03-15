@@ -222,7 +222,7 @@
   extends:
     - .default-job-settings
   job1:
-    script: echo "images=$images"
+    script: echo "hello"
   parallel:
     matrix:
       - DOCKER: 
