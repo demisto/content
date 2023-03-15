@@ -730,6 +730,9 @@ def build_xpath_filter(name_match: str = None, name_contains: str = None, filter
 
 
 def filter_rules_by_status(disabled: str, rules: list) -> list:
+    for rule in rules:
+        parse_pan_os_un_committed_data(rule, ['@admin', '@dirtyId', '@time'])
+
     if disabled.lower() == 'yes':
         return list(filter(lambda x: x.get('disabled', '').lower() == 'yes', rules))
     else:
@@ -4605,8 +4608,11 @@ def panorama_register_ip_tag(tag: str, ips: List, persistent: str, timeout: int)
         'type': 'user-id',
         'cmd': f'<uid-message><version>2.0</version><type>update</type><payload><register>{entry}'
                f'</register></payload></uid-message>',
-        'key': API_KEY
+        'key': API_KEY,
     }
+    if VSYS:
+        params['vsys'] = VSYS
+
     result = http_request(
         URL,
         'POST',
@@ -4674,8 +4680,11 @@ def panorama_unregister_ip_tag(tag: str, ips: list):
         'type': 'user-id',
         'cmd': '<uid-message><version>2.0</version><type>update</type><payload><unregister>' + entry
                + '</unregister></payload></uid-message>',
-        'key': API_KEY
+        'key': API_KEY,
     }
+    if VSYS:
+        params['vsys'] = VSYS
+
     result = http_request(
         URL,
         'POST',
@@ -4719,8 +4728,10 @@ def panorama_register_user_tag(tag: str, users: List, timeout: Optional[int]):
         'type': 'user-id',
         'cmd': f'<uid-message><version>2.0</version><type>update</type><payload><register-user>{entry}'
                f'</register-user></payload></uid-message>',
-        'key': API_KEY
+        'key': API_KEY,
     }
+    if VSYS:
+        params['vsys'] = VSYS
 
     result = http_request(
         URL,
@@ -4780,8 +4791,11 @@ def panorama_unregister_user_tag(tag: str, users: list):
         'type': 'user-id',
         'cmd': f'<uid-message><version>2.0</version><type>update</type><payload><unregister-user>{entry}'
                f'</unregister-user></payload></uid-message>',
-        'key': API_KEY
+        'key': API_KEY,
     }
+    if VSYS:
+        params['vsys'] = VSYS
+
     result = http_request(
         URL,
         'POST',

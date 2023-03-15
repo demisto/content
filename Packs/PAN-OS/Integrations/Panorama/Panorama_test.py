@@ -142,6 +142,24 @@ def test_add_argument_target():
     assert response == expected
 
 
+@pytest.mark.parametrize('disabled, rules_file, expected_results_file',
+                         [
+                             ('yes', 'test_data/filter_rules_sample.json',
+                              'test_data/filter_rules_expected_result.json'),
+                         ])
+def test_filter_rules_by_status(disabled: str, rules_file: str, expected_results_file: str):
+    from Panorama import filter_rules_by_status
+
+    with open(rules_file, 'r') as f:
+        rules = json.loads(f.read())
+
+    with open(expected_results_file, 'r') as f:
+        expected_result = json.loads(f.read())
+
+    result = filter_rules_by_status(disabled, rules)
+    assert result == expected_result
+
+
 def test_prettify_addresses_arr():
     from Panorama import prettify_addresses_arr
     addresses_arr = [{'@name': 'my_name', 'fqdn': 'a.com'},
@@ -5989,6 +6007,60 @@ def test_pan_os_delete_application_group_command_main_flow(mocker, args, params,
 
     main()
     assert mock_request.call_args.kwargs['params'] == expected_url_params
+
+
+@pytest.mark.parametrize(
+    'args, params, expected_url_params',
+    [
+        pytest.param(
+            {
+                'IPs': '2.2.2.2', 'tag': 'test'
+            },
+            integration_firewall_params,
+            {'type': 'user-id',
+             'cmd': '<uid-message><version>2.0</version><type>update</type><payload><register><entry ip="2.2.2.2" '
+                    'persistent="1"><tag><member>test</member></tag></entry></register></payload></uid-message>',
+             'key': 'thisisabogusAPIKEY!',
+             'vsys': 'vsys1'}
+        ),
+        pytest.param(
+            {
+                'IPs': '2.2.2.2', 'tag': 'test'
+            },
+            integration_panorama_params,
+            {'type': 'user-id',
+             'cmd': '<uid-message><version>2.0</version><type>update</type><payload><register><entry ip="2.2.2.2" '
+                    'persistent="1"><tag><member>test</member></tag></entry></register></payload></uid-message>',
+             'key': 'thisisabogusAPIKEY!'}
+        )
+    ]
+)
+def test_pan_os_register_ip_tag_command_main_flow(mocker, args, params, expected_url_params):
+    """
+    Given:
+     - Panorama instance with IP tag to register (without vsys).
+     - Firewall instance with IP tag to register (with vsys).
+
+    When:
+     - running the pan-os-register-ip-tag through the main flow.
+
+    Then:
+     - make sure the params and the request is correct for both panorama/firewall.
+    """
+    from Panorama import main
+
+    mock_request = mocker.patch(
+        "Panorama.http_request",
+        return_value={'response': {'@status': 'success', 'result': {'uid-response': {'version': '2.0',
+                                                                                     'payload': {'register': None}}}}}
+    )
+    mocker.patch('Panorama.get_pan_os_major_version', return_value=9)
+    mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(demisto, 'args', return_value=args)
+    mocker.patch.object(demisto, 'command', return_value='pan-os-register-ip-tag')
+
+    main()
+    assert mock_request.call_args.kwargs['body'] == expected_url_params
 
 
 @pytest.mark.parametrize(

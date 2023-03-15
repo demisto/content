@@ -2,27 +2,39 @@ This playbook is used to loop over every alert in a Cortex XDR incident.
 Supported alert categories:
 - Malware
 - Port Scan
+- Cryptojacking
+- RDP Brute-Force
+- First SSO Access
+- Cloud IAM User Access Investigation
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Cortex XDR - Port Scan - Adjusted
-* Cortex XDR - Possible External RDP Brute-Force
-* Cortex XDR - Malware Investigation
-* Cortex XDR - Cloud Cryptojacking
+
 * GenericPolling
+* Cortex XDR - Port Scan - Adjusted
+* Cortex XDR - First SSO Access
+* Cortex XDR - Cloud IAM User Access Investigation
+* Cortex XDR - Possible External RDP Brute-Force
+* Cortex XDR - XCloud Cryptojacking
+* Cortex XDR - Malware Investigation
 
 ### Integrations
+
 * Cortex XDR - IR
 
 ### Scripts
+
 This playbook does not use any scripts.
 
 ### Commands
+
 * xdr-get-incident-extra-data
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
@@ -31,6 +43,7 @@ This playbook does not use any scripts.
 | alert_id | Alert ID. | PaloAltoNetworksXDR.Incident.alerts.alert_id | Optional |
 
 ## Playbook Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -75,5 +88,7 @@ This playbook does not use any scripts.
 | PaloAltoNetworksXDR.Incident.shouldRetrieveFile | Files hashes which are not present and were marked as "not retrieve" by the user. | unknown |
 
 ## Playbook Image
+
 ---
+
 ![Cortex XDR Alerts Handling](../doc_files/Cortex_XDR_Alerts_Handling.png)

@@ -1505,7 +1505,7 @@ script:
     - contextPath: AWS.GuardDuty.Members.UpdatedAt
       description: The time a member was last updated.
       type: string
-  dockerimage: demisto/boto3py3:1.0.0.48376
+  dockerimage: demisto/boto3py3:1.0.0.49694
   feed: false
   isfetch: true
   longRunning: false
@@ -1517,5 +1517,5 @@ script:
 tests:
 - No tests
 fromversion: 5.0.0
-defaultmapperin: AWSGuardDuty Mapper (incoming)
-defaultclassifier: AWSGuardDuty classifier
+defaultmapperin: AWSGuardDuty - Incoming Mapper
+defaultclassifier: AWSGuardDuty - Classifier

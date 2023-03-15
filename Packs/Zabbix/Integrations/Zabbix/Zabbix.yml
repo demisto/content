@@ -455,7 +455,7 @@ script:
       description: Whether the event is suppressed.
       type: number
     description: Get events
-  dockerimage: demisto/py3-tools:1.0.0.47433
+  dockerimage: demisto/py3-tools:1.0.0.49703
   isfetch: false
   longRunning: false
   longRunningPort: false

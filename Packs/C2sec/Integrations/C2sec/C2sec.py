@@ -5,9 +5,10 @@ from CommonServerUserPython import *
 ''' IMPORTS '''
 
 import requests
+import urllib3
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 API_KEY = demisto.params()['apikey']
 HEADERS = {
