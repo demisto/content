@@ -1,4 +1,3 @@
-import logging
 import os
 from pathlib import Path
 import requests
@@ -8,6 +7,7 @@ import fileinput
 import re
 from Tests.Marketplace.marketplace_constants import BucketUploadFlow
 from typing import List
+from Tests.scripts.utils import logging_wrapper as logging
 
 
 def upload_readme_images(storage_bucket, storage_base_path, pack_readme_path, pack_name, marketplace='xsoar') -> None | List[str]:
@@ -28,19 +28,19 @@ def upload_readme_images(storage_bucket, storage_base_path, pack_readme_path, pa
     reademe_images = []
     try:
         if not os.path.exists(pack_readme_path):
-            return
+            return None
 
         storage_pack_path = os.path.join(storage_base_path, pack_name)  # disable-secrets-detection
 
         # detect added/modified integration readme files
         logging.info(f'found a pack: {pack_name} with changes in README')
         readme_images_storage_paths = collect_images_from_readme_and_replace_with_storage_path(
-            pack_readme_path, storage_pack_path, marketplace)
+            pack_readme_path, storage_pack_path, pack_name, marketplace)
 
         # no external image urls were found in the readme file
         if not readme_images_storage_paths:
             logging.info(f'no image links were found in {pack_name} readme file')
-            return
+            return None
 
         for image_info in readme_images_storage_paths:
             readme_original_url = image_info.get('original_read_me_url')
@@ -51,7 +51,7 @@ def upload_readme_images(storage_bucket, storage_base_path, pack_readme_path, pa
                                                              gcs_storage_path,
                                                              image_name, storage_bucket)
             reademe_images.append(image_name)
-            return reademe_images
+        return reademe_images
     except Exception:
         logging.exception(f"Failed uploading {pack_name} pack readme image.")
 
