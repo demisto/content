@@ -1,4 +1,7 @@
 category: Analytics & SIEM
+description: Palo Alto Networks FireEye HX Event Collector integration for XSIAM.
+display: FireEye HX Event Collector
+name: FireEye HX Event Collector
 commonfields:
   id: FireEye HX Event Collector
   version: -1
@@ -42,9 +45,6 @@ configuration:
   name: first_fetch
   required: false
   type: 0
-description: Palo Alto Networks FireEye HX Event Collector integration for XSIAM.
-display: FireEye HX Event Collector
-name: FireEye HX Event Collector
 script:
   commands:
   - deprecated: false
