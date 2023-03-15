@@ -9,8 +9,8 @@ urllib3.disable_warnings()  # pylint: disable=no-member
 
 ''' CONSTANTS '''
 
-VENDOR = 'paloaltonetworks'
-PRODUCT = 'fireeye'
+VENDOR = 'FireEye'
+PRODUCT = 'HX'
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.000Z'
 
 

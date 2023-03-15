@@ -1,0 +1,2 @@
+[INGEST:vendor="FireEye", product="HX", target_dataset="FireEye_HX_raw", no_hit = keep]
+alter _time = event_at;

@@ -56,7 +56,7 @@ script:
     - name: since
       description: Occurrence time of the least recent event to include (inclusive).
       defaultValue: 3 days
-  dockerimage: demisto/python3:3.10.9.46032
+  dockerimage: demisto/python3:3.10.10.49934
   isfetchevents: true
   script: '-'
   subtype: python3
