@@ -443,7 +443,7 @@ def test_fetch_incidents_with_changed_fetch_limit(mocker):
     set_last_run = mocker.patch.object(demisto, 'setLastRun')
     fetch_incidents(client)
 
-    assert set_last_run.call_args[0][0].get('limit') == 22
+    assert set_last_run.call_args[0][0].get('limit') == 20
 
 
 @freeze_time('2022-05-01 12:52:29')

@@ -7702,26 +7702,26 @@ class TestFetchWithLookBack:
 
     @pytest.mark.parametrize('params, result_phase1, result_phase2, expected_last_run', [
         ({'limit': 2, 'first_fetch': '40 minutes'}, [INCIDENTS[2], INCIDENTS[3]], [INCIDENTS[4]],
-         {'limit': 4, 'time': INCIDENTS[3]['created']}),
+         {'limit': 2, 'time': INCIDENTS[3]['created']}),
         ({'limit': 2, 'first_fetch': '40 minutes', 'look_back': None}, [INCIDENTS[2], INCIDENTS[3]], [INCIDENTS[4]],
-         {'limit': 4, 'time': INCIDENTS[3]['created']}),
+         {'limit': 2, 'time': INCIDENTS[3]['created']}),
         ({'limit': 3, 'first_fetch': '40 minutes'}, [INCIDENTS[2], INCIDENTS[3], INCIDENTS[4]], [],
-         {'limit': 6, 'time': INCIDENTS[4]['created']}),
+         {'limit': 3, 'time': INCIDENTS[4]['created']}),
         ({'limit': 2, 'first_fetch': '2 hours'}, [INCIDENTS[1], INCIDENTS[2]], [INCIDENTS[3], INCIDENTS[4]],
-         {'limit': 4, 'time': INCIDENTS[2]['created']}),
+         {'limit': 2, 'time': INCIDENTS[2]['created']}),
         ({'limit': 3, 'first_fetch': '2 hours'}, [INCIDENTS[1], INCIDENTS[2], INCIDENTS[3]], [INCIDENTS[4]],
-         {'limit': 6, 'time': INCIDENTS[3]['created']}),
+         {'limit': 3, 'time': INCIDENTS[3]['created']}),
 
         ({'limit': 2, 'first_fetch': '40 minutes'}, [INCIDENTS_TIME_AWARE[2], INCIDENTS_TIME_AWARE[3]], [INCIDENTS_TIME_AWARE[4]],
-         {'limit': 4, 'time': INCIDENTS_TIME_AWARE[3]['created']}),
+         {'limit': 2, 'time': INCIDENTS_TIME_AWARE[3]['created']}),
         ({'limit': 3, 'first_fetch': '40 minutes'}, [INCIDENTS_TIME_AWARE[2], INCIDENTS_TIME_AWARE[3], INCIDENTS_TIME_AWARE[4]], [],
-         {'limit': 6, 'time': INCIDENTS_TIME_AWARE[4]['created']}),
+         {'limit': 3, 'time': INCIDENTS_TIME_AWARE[4]['created']}),
         ({'limit': 2, 'first_fetch': '2 hours'}, [INCIDENTS_TIME_AWARE[1], INCIDENTS_TIME_AWARE[2]], [INCIDENTS_TIME_AWARE[3],
                                                                                                       INCIDENTS_TIME_AWARE[4]],
-         {'limit': 4, 'time': INCIDENTS_TIME_AWARE[2]['created']}),
+         {'limit': 2, 'time': INCIDENTS_TIME_AWARE[2]['created']}),
         ({'limit': 3, 'first_fetch': '2 hours'}, [INCIDENTS_TIME_AWARE[1], INCIDENTS_TIME_AWARE[2], INCIDENTS_TIME_AWARE[3]],
          [INCIDENTS_TIME_AWARE[4]],
-         {'limit': 6, 'time': INCIDENTS_TIME_AWARE[3]['created']}),
+         {'limit': 3, 'time': INCIDENTS_TIME_AWARE[3]['created']}),
     ])
     def test_regular_fetch(self, mocker, params, result_phase1, result_phase2, expected_last_run):
         """
