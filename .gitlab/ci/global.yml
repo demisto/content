@@ -281,7 +281,7 @@
         - 'native:maintenance,from-yml'
       - DOCKER_FOR_NIGHTLY: 
         - 'native:ga,native:maintenance'
-        - 'from-yml']
+        - 'from-yml'
       
 .run-validations:
   stage: unittests-and-validations
