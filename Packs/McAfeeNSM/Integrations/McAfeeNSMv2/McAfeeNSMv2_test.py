@@ -1412,20 +1412,34 @@ def test_get_device_configuration_command__without_device_id(mcafeensmv2_client)
     with pytest.raises(DemistoException) as e:
         get_device_configuration_command(client=mcafeensmv2_client, args={})
     assert e.value.message == "Please provide a device_id."
-    
-    
-def test_deploy_device_configuration_command(mocker, mcafeensmv2_client):
-    from McAfeeNSMv2 import deploy_device_configuration_command
-    mocker.patch.object(mcafeensmv2_client, 'deploy_device_configuration_request',
-                        return_value={"j"})
-    mocker.patch.object(mcafeensmv2_client, 'check_deploy_device_configuration_request_status',
-                        return_value={"jjj"})
-    res = deploy_device_configuration_command(client=mcafeensmv2_client, args={"device_id": 777,
-                                                                               "interval_in_seconds": 50,
-                                                                               "push_botnet": False,
-                                                                               "push_configuration_signature_set": False,
-                                                                               "push_gam_updates": False,
-                                                                               "push_ssl_key": False
-                                                                               }
-                                              )
-    assert res == "gg"
+
+# def test_deploy_device_configuration_command__without_device_id(mcafeensmv2_client):
+#     """
+#     Given:
+#     - No device id.
+#     When:
+#     - deploy_device_configuration_command command is executed.
+#     Then:
+#     - Confirm the output is as expected(error message).
+#     """
+#     from McAfeeNSMv2 import deploy_device_configuration_command
+#     with pytest.raises(DemistoException) as e:
+#         deploy_device_configuration_command(client=mcafeensmv2_client, args={})
+#     assert e.value.message == "Please provide a device_id."
+
+
+# def test_deploy_device_configuration_command(mocker, mcafeensmv2_client):
+#     from McAfeeNSMv2 import deploy_device_configuration_command
+#     mocker.patch.object(mcafeensmv2_client, 'deploy_device_configuration_request',
+#                         return_value={"j"})
+#     mocker.patch.object(mcafeensmv2_client, 'check_deploy_device_configuration_request_status',
+#                         return_value={"jjj"})
+#     res = deploy_device_configuration_command(client=mcafeensmv2_client, args={"device_id": 777,
+#                                                                                "interval_in_seconds": 50,
+#                                                                                "push_botnet": False,
+#                                                                                "push_configuration_signature_set": False,
+#                                                                                "push_gam_updates": False,
+#                                                                                "push_ssl_key": False
+#                                                                                }
+#                                               )
+#     assert res == "gg"

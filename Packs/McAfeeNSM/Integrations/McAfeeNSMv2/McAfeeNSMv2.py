@@ -360,7 +360,7 @@ class Client(BaseClient):
 
     def assign_interface_policy_request(self, domain_id: int, interface_id: int, firewall_policy: Optional[str],
                                         firewall_port_policy: Optional[str], ips_policy: Optional[str],
-                                        custom_policy_json_key: Optional[str], custom_policy_json_value: Optional[str]):
+                                        custom_policy_json: Optional[Dict]) -> Dict:
         """ Assigns a policy to an interface.
             Args:
                 domain_id: int - The relevant domain id.
@@ -368,23 +368,17 @@ class Client(BaseClient):
                 firewall_policy: str - The firewall policy.
                 firewall_port_policy: str - The firewall port policy.
                 ips_policy: str - The IPS policy.
-                custom_policy_json_key: str - The custom policy json key.
-                custom_policy_json_value: str - The custom policy json value.
+                custom_policy_json: Dict - A dict of custom policys.
             Returns:
                 A success or failure code.
 
         """
         url_suffix = f'/domain/{domain_id}/policyassignments/interface/{interface_id}'
-        if custom_policy_json_key:
-            json_data = {"firewallPolicy": firewall_policy,
-                         "firewallPortPolicy": firewall_port_policy,
-                         "ipsPolicy": ips_policy,
-                         f"{custom_policy_json_key}": custom_policy_json_value
-                         }
-        else:
-            json_data = {"firewallPolicy": firewall_policy,
-                         "firewallPortPolicy": firewall_port_policy,
-                         "ipsPolicy": ips_policy}
+        json_data = {"firewallPolicy": firewall_policy,
+                     "firewallPortPolicy": firewall_port_policy,
+                     "ipsPolicy": ips_policy}
+        if custom_policy_json:
+            json_data |= custom_policy_json
 
         return self._http_request(method='PUT', url_suffix=url_suffix, json_data=json_data)
 
@@ -2240,16 +2234,13 @@ def assign_interface_policy_command(client: Client, args: Dict) -> CommandResult
     # Check if at least one policy was provided
     if len(args) < 3:
         raise DemistoException("Please provide at least one policy to assign.")
-    custom_policy_json_key = next(iter(custom_policy_json)) if custom_policy_json else None
-    custum_policy_json_value = custom_policy_json[custom_policy_json_key] if custom_policy_json else None
 
     response = client.assign_interface_policy_request(domain_id=domain_id,
                                                       interface_id=interface_id,
                                                       firewall_policy=firewall_policy,
                                                       firewall_port_policy=firewall_port_policy,
                                                       ips_policy=ips_policy,
-                                                      custom_policy_json_key=custom_policy_json_key,
-                                                      custom_policy_json_value=custum_policy_json_value
+                                                      custom_policy_json=custom_policy_json
                                                       )
     readble_output = 'Policy assigned successfully.' if response.get('status') == 1 else 'Policy assignment failed.'
     return CommandResults(
