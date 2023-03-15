@@ -121,7 +121,7 @@ class AzureWAFClient:
         return res
 
     def get_policy_list_by_subscription_id(self, subscription_ids) -> List:
-        res: List[Dict] = []
+        res: List = []
         for subscription_id in subscription_ids:
             base_url = f'{BASE_URL}/{SUBSCRIPTION_PATH.format(subscription_id)}'
             try:
@@ -207,7 +207,7 @@ def policies_get_command(client: AzureWAFClient, **args) -> CommandResults:
 
     policy_name: str = args.get('policy_name', '')
     subscription_id: str = args.get('subscription_id', client.subscription_id)
-    resource_group_name_list: list = argToList(args.get('resource_group_names', client.resource_group_name))
+    resource_group_name_list: list = argToList(args.get('resource_group_name', client.resource_group_name))
     verbose = args.get("verbose", "false") == "true"
     limit = int(str(args.get("limit", '20')))
 
@@ -230,7 +230,7 @@ def policies_get_command(client: AzureWAFClient, **args) -> CommandResults:
                           raw_response=policies)
 
 
-def policies_get_list_by_subscription_command(client: AzureWAFClient, **args: Dict[str, Any]) -> CommandResults:
+def policies_get_list_by_subscription_command(client: AzureWAFClient, **args) -> CommandResults:
     """
     Retrieve all policies within the subscription id.
     """
@@ -240,7 +240,7 @@ def policies_get_list_by_subscription_command(client: AzureWAFClient, **args: Di
     subscription_ids = argToList(args.get('subscription_id', ''))
 
     try:
-        policies.extend(client.get_policy_list_by_subscription_id(subscription_ids).get("value", []))
+        policies.extend(client.get_policy_list_by_subscription_id(subscription_ids))
 
         # only showing number of policies until reaching the limit provided.
         policies_num = len(policies)
@@ -252,7 +252,7 @@ def policies_get_list_by_subscription_command(client: AzureWAFClient, **args: Di
                           outputs_prefix='AzureWAF.Policy', raw_response=policies)
 
 
-def policy_upsert_command(client: AzureWAFClient, **args: Dict[str, Any]) -> CommandResults:
+def policy_upsert_command(client: AzureWAFClient, **args) -> CommandResults:
     """
     Gets a policy name, resource group (or taking instance's default), location and rules.
     Updates the policy if exists, otherwise creates a new policy.
@@ -268,7 +268,7 @@ def policy_upsert_command(client: AzureWAFClient, **args: Dict[str, Any]) -> Com
             parse_nested_keys_to_dict(base_dict[keys[0]], keys[1:], value)
 
     policy_name = str(args.get('policy_name', ''))
-    resource_group_names = argToList(args.get('resource_group_names', client.resource_group_name))
+    resource_group_names = argToList(args.get('resource_group_name', client.resource_group_name))
     subscription_id = args.get('subscription_id', client.subscription_id)
     managed_rules = args.get('managed_rules', {})
     location = args.get("location", '')  # location is not required by documentation but is required by the api itself.
@@ -298,14 +298,14 @@ def policy_upsert_command(client: AzureWAFClient, **args: Dict[str, Any]) -> Com
                           raw_response=updated_policy)
 
 
-def policy_delete_command(client: AzureWAFClient, **args: Dict[str, str]):
+def policy_delete_command(client: AzureWAFClient, **args):
     """
     Gets a policy name and resource group (or taking instance's default)
     and delete the policy from the resource group.
     """
     policy_name = str(args.get('policy_name', ''))
     subscription_id = args.get('subscription_id', client.subscription_id)
-    resource_group_names = argToList(args.get('resource_group_names', client.resource_group_name))
+    resource_group_names = argToList(args.get('resource_group_name', client.resource_group_name))
 
     for resource_group_name in resource_group_names:
         # policy_path is unique and used as unique id in the product.
@@ -427,7 +427,7 @@ def subscriptions_list_command(client: AzureWAFClient):
                           raw_response=subscriptions)
 
 
-def resource_group_list_command(client: AzureWAFClient, **args: Dict[str, str]):
+def resource_group_list_command(client: AzureWAFClient, **args):
     subscription_id = args.get('subscription_id', client.subscription_id)
     tag = args.get('tag', '')
     limit = args.get('limit', 50)

@@ -95,7 +95,7 @@ script:
     - default: false
       description: Comma separated value list of the names of the resource groups. If not provided, the instance's default resource group name will be used.
       isArray: true
-      name: resource_group_names
+      name: resource_group_name
       required: false
       secret: false
     - default: false
@@ -353,7 +353,7 @@ script:
     - default: false
       description: Comma separated list of the name of the resource group. If not provided, the instance's default resource group name will be used.
       isArray: true
-      name: resource_group_names
+      name: resource_group_name
       required: false
       secret: false
     - default: false
@@ -514,7 +514,7 @@ script:
     - default: false
       description: Comma separated list of the name of the resource group. If not provided, the instance's default resource group name will be used.
       isArray: true
-      name: resource_group_names
+      name: resource_group_name
       required: false
       secret: false
     deprecated: false

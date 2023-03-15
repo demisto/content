@@ -28,7 +28,7 @@ ApplicationGatewayWebApplicationFirewallPolicies"
          }  # expected
     ),
     (
-        {'resource_group_names': ['res1'], 'verbose': 'false', 'limit': '10'},
+        {'resource_group_name': ['res1'], 'verbose': 'false', 'limit': '10'},
         # args, case: list of policies in custom resource_group
         {"method": "GET",
          "full_url":
@@ -82,7 +82,7 @@ def test_get_array_policy_with_exception(mocker):
     """
     demisto_args = {
         'policy_name': 'pol1',
-        'resource_group_names': ['res1', 'res2'],
+        'resource_group_name': ['res1', 'res2'],
         'verbose': 'false', 'limit': '10',
         'subscription_id': 'sub1'
     }
@@ -110,7 +110,7 @@ ApplicationGatewayWebApplicationFirewallPolicies/pol1"
 
 UPSERT_COMMAND_DATA = [
     (
-        {'policy_name': 'pol1', 'resource_group_names': ['res1'], 'verbose': 'false', 'limit': '10',
+        {'policy_name': 'pol1', 'resource_group_name': ['res1'], 'verbose': 'false', 'limit': '10',
          'managed_rules': '{"test": "test"}', 'location': 'east'
          },  # args, case: custom resource_group update rule
         {"method": "PUT",
@@ -121,7 +121,7 @@ ApplicationGatewayWebApplicationFirewallPolicies/pol1",
          }  # expected
     ),
     (
-        {'policy_name': 'pol1', 'resource_group_names': ['res1'], 'verbose': 'false', 'limit': '10',
+        {'policy_name': 'pol1', 'resource_group_name': ['res1'], 'verbose': 'false', 'limit': '10',
          'managed_rules': '{"test": "test"}', 'custom_rules': '{"test": "test"}', 'location': 'east'
          },  # args, case: custom resource_group update rule with key hierarchy
         {"method": "PUT",
@@ -180,7 +180,7 @@ def test_policy_array_group_names_upsert_request(mocker):
     """
     demisto_args = {
         'policy_name': 'pol1',
-        'resource_group_names': ['res1', 'res2'],
+        'resource_group_name': ['res1', 'res2'],
         'verbose': 'false',
         'limit': '10',
         'managed_rules': '{"test": "test"}',
