@@ -1,0 +1,43 @@
+args:
+- auto: PREDEFINED
+  description: The action to perform on the image.
+  name: action
+  predefined:
+  - grayscale
+  - sharpened
+  - original
+  required: true
+- default: false
+  description: Dimensions for resize to.
+  isArray: false
+  name: image_resize
+  required: false
+  secret: false
+- default: false
+  description: The entryID of the file to process.
+  isArray: false
+  name: file_entry_id
+  required: true
+  secret: false
+comment: This script pre-process an image file from context.
+commonfields:
+  id: PreProcessImage
+  version: -1
+enabled: true
+name: PreProcessImage
+outputs:
+- contextPath: PreProcessImage.file_entry_id_new
+  description: The entryID of the created file.
+  type: String
+- contextPath: PreProcessImage.action
+  description: The action that were performed,.
+  type: String
+script: '-'
+subtype: python3
+system: false
+timeout: 480ns
+type: python
+dockerimage: devdemisto/processing-image-file:1.0.0.49771
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
