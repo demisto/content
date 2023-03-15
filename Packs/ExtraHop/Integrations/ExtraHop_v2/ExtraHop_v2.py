@@ -2304,7 +2304,7 @@ def main():
         args = demisto.args()
 
         on_cloud = params.get("on_cloud", False)
-        api_key = params.get("api_key")
+        api_key = params.get("apiKey")
         base_url = params.get("url").strip("/")
         client_id = params.get("client_id", "")
         client_secret = params.get("client_secret", "")
