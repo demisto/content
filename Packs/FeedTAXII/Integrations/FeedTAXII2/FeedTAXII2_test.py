@@ -122,7 +122,8 @@ class TestFetchIndicators:
         - fetch 7 indicators
         - update last run with latest collection fetch time
         """
-        mock_client = Taxii2FeedClient(url='', collection_to_fetch=empty_collection_type, proxies=[], verify=False, objects_to_fetch=[])
+        mock_client = Taxii2FeedClient(url='', collection_to_fetch=empty_collection_type, proxies=[],
+                                       verify=False, objects_to_fetch=[])
         id_1 = 1
         id_2 = 2
         mock_client.collections = [MockCollection(id_1, 'a'), MockCollection(id_2, 'b')]
