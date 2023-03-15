@@ -1250,6 +1250,24 @@ def test_list_device_policy_command__with_different_arguments(mocker, input, out
     assert res.outputs == output
 
 
+def test_list_device_policy_command__with_missing_arguments(mocker, mcafeensmv2_client):
+    """
+    Given:
+    - No domain_id.
+    When:
+    - list_device_policy_command command is executed, with missing arguments.
+    Then:
+    - Confirm the output is as expected(error message).
+    """
+    from McAfeeNSMv2 import list_device_policy_command
+    mocker.patch.object(mcafeensmv2_client, 'list_device_policy_request',
+                        return_value={None})
+    with pytest.raises(DemistoException) as e:
+        list_device_policy_command(client=mcafeensmv2_client, args={})
+
+    assert e.value.message == "Please provide a domain_id."
+
+
 @pytest.mark.parametrize('input, output', [({"domain_id": 777}, [{'DeviceId': 'mock'}, {'DeviceId': 'mock'}]),
                                            ({"domain_id": 777, "limit": 1}, [{'DeviceId': 'mock'}]),
                                            ({"domain_id": 777, "limit": 1, "all_results": True}, [{'DeviceId': 'mock'}, {'DeviceId': 'mock'}])])
