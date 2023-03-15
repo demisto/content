@@ -810,8 +810,8 @@ def capitalize_key_first_letter(input_lst: List[Dict], check_lst: List = None) -
         Returns:
             Returns the dict with the first letter of all keys capitalized.
     """
-    if check_lst is None:
-        check_lst = []
+    # if check_lst is None:
+    #     check_lst = []
     capitalize_lst = []
     for my_dict in input_lst:
         my_dict = (
@@ -823,7 +823,7 @@ def capitalize_key_first_letter(input_lst: List[Dict], check_lst: List = None) -
             if check_lst
             else {k[:1].upper() + k[1:]: v for k, v in my_dict.items()}
         )
-        capitalize_lst.append(my_dict)
+        capitalize_lst.append(my_dict) if my_dict else None
     return capitalize_lst
 
 

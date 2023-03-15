@@ -1189,10 +1189,28 @@ def test_modify_v10_results_to_v9_format():
     assert modify_v10_results_to_v9_format(test_input) == excepted_output
 
 
-@pytest.mark.parametrize('input, output', [({"domain_id": 0, "device_id": 0},
+@pytest.mark.parametrize('input, output', [({"input_lst": [{'mOCK': '130', 'Hos': "7"}, {'mocER': '130', 'MOCKER': "7"}],
+                                             "check_lst": ['mOCK']}, [{'MOCK': '130'}]),
+                                           ({"input_lst": [{'mOCK': '130', 'Host': "7"}, {'mocER': '130', 'MOCKER': "7"}]},
+                                            [{'MOCK': '130', 'Host': '7'}, {'MocER': '130', 'MOCKER': '7'}])])
+def test_capitalize_key_first_letter(input, output):
+    """
+    Given:
+        - A dictionary contaning dictionaries.
+        - A list of keys to compare or not.
+    When:
+        - capitalize_key_first_letter command is executed.
+    Then:
+        - The keys of the dictionary are capitalized if they are in the list, if a check list was given.
+    """
+    from McAfeeNSMv2 import capitalize_key_first_letter
+    assert capitalize_key_first_letter(input_lst=input.get("input_lst"), check_lst=input.get("check_lst")) == output
+
+
+@ pytest.mark.parametrize('input, output', [({"domain_id": 0, "device_id": 0},
                                             [{'InterfaceId': 'mock'}, {'InterfaceId': 'mock'}]),
-                                           ({"domain_id": 777, "device_id": 777, "limit": 1}, [{'InterfaceId': 'mock'}]),
-                                           ({"domain_id": 777, "device_id": 777, "limit": 1, "all_results": True},
+                                            ({"domain_id": 777, "device_id": 777, "limit": 1}, [{'InterfaceId': 'mock'}]),
+                                            ({"domain_id": 777, "device_id": 777, "limit": 1, "all_results": True},
                                             [{'InterfaceId': 'mock'}, {'InterfaceId': 'mock'}])])
 def test_list_device_interface_command__with_different_arguments(mocker, input, output, mcafeensmv2_client):
     """
@@ -1210,8 +1228,8 @@ def test_list_device_interface_command__with_different_arguments(mocker, input, 
     assert res.outputs == output
 
 
-@pytest.mark.parametrize('input, output', [({"domain_id": 777}, "Please provide a device_id."),
-                                           ({"device_id": 777}, "Please provide a domain_id.")])
+@ pytest.mark.parametrize('input, output', [({"domain_id": 777}, "Please provide a device_id."),
+                                            ({"device_id": 777}, "Please provide a domain_id.")])
 def test_list_device_interface_command__with_missing_arguments(mocker, mcafeensmv2_client, input, output):
     """
     Given:
@@ -1230,9 +1248,9 @@ def test_list_device_interface_command__with_missing_arguments(mocker, mcafeensm
     assert e.value.message == output
 
 
-@pytest.mark.parametrize('input, output', [({"domain_id": 0}, [{'PolicyId': 'mock'}, {'PolicyId': 'mock'}]),
-                                           ({"domain_id": 777, "limit": 1}, [{'PolicyId': 'mock'}]),
-                                           ({"domain_id": 777, "limit": 1, "all_results": True},
+@ pytest.mark.parametrize('input, output', [({"domain_id": 0}, [{'PolicyId': 'mock'}, {'PolicyId': 'mock'}]),
+                                            ({"domain_id": 777, "limit": 1}, [{'PolicyId': 'mock'}]),
+                                            ({"domain_id": 777, "limit": 1, "all_results": True},
                                             [{'PolicyId': 'mock'}, {'PolicyId': 'mock'}])])
 def test_list_device_policy_command__with_different_arguments(mocker, input, output, mcafeensmv2_client):
     """
@@ -1268,9 +1286,9 @@ def test_list_device_policy_command__with_missing_arguments(mocker, mcafeensmv2_
     assert e.value.message == "Please provide a domain_id."
 
 
-@pytest.mark.parametrize('input, output', [({"domain_id": 0}, [{'DeviceId': 'mock'}, {'DeviceId': 'mock'}]),
-                                           ({"domain_id": 777, "limit": 1}, [{'DeviceId': 'mock'}]),
-                                           ({"domain_id": 777, "limit": 1, "all_results": True}, [{'DeviceId': 'mock'}, {'DeviceId': 'mock'}])])
+@ pytest.mark.parametrize('input, output', [({"domain_id": 0}, [{'DeviceId': 'mock'}, {'DeviceId': 'mock'}]),
+                                            ({"domain_id": 777, "limit": 1}, [{'DeviceId': 'mock'}]),
+                                            ({"domain_id": 777, "limit": 1, "all_results": True}, [{'DeviceId': 'mock'}, {'DeviceId': 'mock'}])])
 def test_list_domain_device_command_with_diffrent_arguments(mocker, mcafeensmv2_client, input, output):
     """
     Given:
@@ -1302,10 +1320,10 @@ def test_list_domain_device_command__without_domain_id(mcafeensmv2_client):
     assert e.value.message == "Please provide a domain_id."
 
 
-@pytest.mark.parametrize('input, output', [({"domain_id": 777, "interface_id": 777, },
+@ pytest.mark.parametrize('input, output', [({"domain_id": 777, "interface_id": 777, },
                                             "Please provide at least one policy to assign."),
-                                           ({"domain_id": 777}, "Please provide a interface_id."),
-                                           ({"interface_id": 777, }, "Please provide a domain_id.")])
+                                            ({"domain_id": 777}, "Please provide a interface_id."),
+                                            ({"interface_id": 777, }, "Please provide a domain_id.")])
 def test_assign_interface_policy_command__with_missing_arguments(mocker, mcafeensmv2_client, input, output):
     """
     Given:
@@ -1321,11 +1339,11 @@ def test_assign_interface_policy_command__with_missing_arguments(mocker, mcafeen
     assert e.value.message == output
 
 
-@pytest.mark.parametrize('input, output', [({"interface_id": None,
+@ pytest.mark.parametrize('input, output', [({"interface_id": None,
                                              "return_value": {"policyAssignmentsList": [{"policyId": "mock"},
                                                                                         {"policyId": "mock"}]}},
                                             [{'PolicyId': 'mock'}, {'PolicyId': 'mock'}]),
-                                           ({"interface_id": 777,
+                                            ({"interface_id": 777,
                                              "return_value": [{"policyId": "mock"}, {"policyId": "mock"}]},
                                             [{'PolicyId': 'mock'}, {'PolicyId': 'mock'}])])
 def test_list_interface_policy_command__with_multiple_different_arguments(mocker, mcafeensmv2_client, input, output):
@@ -1361,8 +1379,8 @@ def test_list_interface_policy_command__without_domain_id(mcafeensmv2_client):
     assert e.value.message == "Please provide a domain_id."
 
 
-@pytest.mark.parametrize('input, output', [({"domain_id": 777}, "Please provide a device_id."),
-                                           ({"device_id": 777}, "Please provide a domain_id.")])
+@ pytest.mark.parametrize('input, output', [({"domain_id": 777}, "Please provide a device_id."),
+                                            ({"device_id": 777}, "Please provide a domain_id.")])
 def test_assign_device_policy_command__with_missing_arguments(mocker, mcafeensmv2_client, input, output):
     """
     Given:
