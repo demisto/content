@@ -59,6 +59,44 @@ def upload_readme_images(storage_bucket, storage_base_path, pack_readme_path, pa
         return None
 
 
+def replace_readme_urls(index_local_path, storage_base_path, pack_readme_path, pack_name,
+                        marketplace='xsoar', use_api=False) -> tuple:
+    """
+    This function goes over the index.zip folder. iterates over all the pack README.md files.
+    It replaces inplace the readme images path to point to there new location gcp or api.
+
+    Returns:
+        - readme_images(dict): {key - pack_name : value - readme_images_list}
+        - readme_images_storage_paths(list): list of dicts with all the data related to the urls.
+            (original_url, new_gcs_path, image_name).
+
+    """
+    readme_urls_data_list = []
+    readme_images = {}
+    for pack_name in os.listdir(index_local_path):
+        pack_readme_path = os.path.join(index_local_path, pack_name, 'README.md')
+        logging.info(f'{pack_readme_path=}')
+
+        if not os.path.exists(pack_readme_path):
+            continue
+
+        storage_pack_path = os.path.join(storage_base_path, pack_name)  # disable-secrets-detection
+        readme_images_storage_paths = collect_images_from_readme_and_replace_with_storage_path(
+            pack_readme_path, storage_pack_path, pack_name, marketplace=marketplace, use_api=use_api)
+
+        # no external image urls were found in the readme file
+        if not readme_images_storage_paths:
+            logging.info(f'no image links were found in {pack_name} readme file')
+            continue
+
+        pack_readme_images_list = [image_info.get('image_name') for image_info in readme_images_storage_paths]
+        readme_images[pack_name] = pack_readme_images_list
+        logging.info(f'Added {pack_readme_images_list=} from pack {pack_name=} to the artifact dict')
+        readme_urls_data_list.append(readme_images_storage_paths)
+
+    return readme_images, readme_images_storage_paths
+
+
 def collect_images_from_readme_and_replace_with_storage_path(pack_readme_path, gcs_pack_path, pack_name, marketplace='xsoar',
                                                              use_api=False):
     """

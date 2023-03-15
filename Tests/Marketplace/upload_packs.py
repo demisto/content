@@ -26,7 +26,7 @@ from demisto_sdk.commands.content_graph.interface.neo4j.neo4j_graph import Neo4j
 from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
 import traceback
-from Tests.Marketplace.pack_readme_handler import upload_readme_images
+from Tests.Marketplace.pack_readme_handler import upload_readme_images, replace_readme_urls
 
 METADATA_FILE_REGEX_GET_VERSION = r'metadata\-([\d\.]+)\.json'
 
@@ -1303,12 +1303,10 @@ def main():
     index_v2_blob = storage_bucket.blob(index_v2_gcs_path)
     shutil.copytree(index_folder_path, index_v2_local_path)
     readme_images_dict = {}
-    for pack_name in os.listdir(index_v2_local_path):
-        pack_readme_path = os.path.join(index_v2_local_path, pack_name, 'README.md')
-        logging.info(f'{pack_readme_path=}')
-        if not os.path.exists(pack_readme_path):
-            continue
-        logging.info(f'Index V2 {pack_readme_path=}')
+    
+        replace_readme_urls(index_v2_local_path, storage_base_path=storage_base_path,
+                            pack_readme_path=pack_readme_path, pack_name=pack_name,
+                            marketplace=marketplace, use_api=True)
         if pack_readme_images_list := upload_readme_images(storage_bucket=storage_bucket, storage_base_path=storage_base_path,
                                                            pack_readme_path=pack_readme_path, pack_name=pack_name,
                                                            marketplace=marketplace, use_api=True):
