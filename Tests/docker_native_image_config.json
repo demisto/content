@@ -144,6 +144,14 @@
             "native:8.1",
             "native:8.2"
          ]
+      },
+      {
+         "id": "RegexExtractAll",
+         "reason": "Issue: CIAC-6005",
+         "ignored_native_images": [
+            "native:8.2",
+            "native:dev"
+         ]
       }
    ],
    "flags_versions_mapping": {
