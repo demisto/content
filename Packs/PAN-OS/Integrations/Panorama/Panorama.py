@@ -52,7 +52,7 @@ QUERY_DATE_FORMAT = '%Y/%m/%d %H:%M:%S'
 FETCH_DEFAULT_TIME = '1 day'
 MAX_INCIDENTS_TO_FETCH = 100
 FETCH_INCIDENTS_LOG_TYPES = ['Traffic', 'Threat', 'URL', 'Data', 'Correlation', 'System', 'Wildfire', 'Decryption']
-GET_JOB_ID_MAX_RETRIES = 15
+GET_LOG_JOB_ID_MAX_RETRIES = 15
 
 XPATH_SECURITY_RULES = ''
 DEVICE_GROUP = ''
@@ -13058,15 +13058,15 @@ def get_query_entries_by_id_request(job_id: str) -> Dict[str, Any]:
     params = assign_params(key=API_KEY, type='log', action='get', job_id=job_id)
     
     # if the job has not finished, wait for 1 second and try again (until success or max retries)
-    for _ in range(GET_JOB_ID_MAX_RETRIES):
+    for try_num in range(1, GET_LOG_JOB_ID_MAX_RETRIES + 1):
         response = http_request(URL, 'GET', params=params)
         status = response.get('response', {}).get('result', {}).get('job', {}).get('status', '')
-        demisto.debug(f'Job ID response status: {status}')
+        demisto.debug(f'Job ID {job_id}, response status: {status}')
+        demisto.debug(f'{response=}')
         if status == 'FIN':
-            demisto.debug(f'{response=}')
             return response
         else:
-            demisto.debug('Job not completed, Retrying in 1 second...')
+            demisto.debug(f'{try_num=}. Job not completed, Retrying in 1 second...')
             time.sleep(1)
     return {}
 
