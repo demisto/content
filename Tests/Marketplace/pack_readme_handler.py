@@ -10,7 +10,8 @@ from typing import List
 from Tests.scripts.utils import logging_wrapper as logging
 
 
-def upload_readme_images(storage_bucket, storage_base_path, pack_readme_path, pack_name, marketplace='xsoar') -> None | List[str]:
+def upload_readme_images(storage_bucket, storage_base_path, pack_readme_path, pack_name,
+                         marketplace='xsoar', use_api=False) -> None | List[str]:
     """ Downloads pack readme links to images, and upload them to gcs.
 
         Searches for image links in pack readme.
@@ -35,7 +36,7 @@ def upload_readme_images(storage_bucket, storage_base_path, pack_readme_path, pa
         # detect added/modified integration readme files
         logging.info(f'found a pack: {pack_name} with changes in README')
         readme_images_storage_paths = collect_images_from_readme_and_replace_with_storage_path(
-            pack_readme_path, storage_pack_path, pack_name, marketplace)
+            pack_readme_path, storage_pack_path, pack_name, marketplace=marketplace, use_api=use_api)
 
         # no external image urls were found in the readme file
         if not readme_images_storage_paths:
@@ -47,9 +48,10 @@ def upload_readme_images(storage_bucket, storage_base_path, pack_readme_path, pa
             gcs_storage_path = str(image_info.get('new_gcs_image_path'))
             image_name = str(image_info.get('image_name'))
 
-            download_readme_image_from_url_and_upload_to_gcs(readme_original_url,
-                                                             gcs_storage_path,
-                                                             image_name, storage_bucket)
+            if not use_api:
+                download_readme_image_from_url_and_upload_to_gcs(readme_original_url,
+                                                                 gcs_storage_path,
+                                                                 image_name, storage_bucket)
             reademe_images.append(image_name)
         return reademe_images
     except Exception:
@@ -57,7 +59,8 @@ def upload_readme_images(storage_bucket, storage_base_path, pack_readme_path, pa
         return None
 
 
-def collect_images_from_readme_and_replace_with_storage_path(pack_readme_path, gcs_pack_path, pack_name, marketplace):
+def collect_images_from_readme_and_replace_with_storage_path(pack_readme_path, gcs_pack_path, pack_name, marketplace='xsoar',
+                                                             use_api=False):
     """
     Replaces inplace all images links in the pack README.md with their new gcs location
 
@@ -70,12 +73,16 @@ def collect_images_from_readme_and_replace_with_storage_path(pack_readme_path, g
         A list of dicts of all the image urls found in the README.md file with all related data
         (original_url, new_gcs_path, image_name)
     """
-    if marketplace == 'xsoar':
-        marketplace_bucket = "marketplace-dist"
+    if use_api:
+        google_api_readme_images_url = f'api/marketplace/file?name=content/packs/{pack_name}'
     else:
-        marketplace_bucket = "marketplace-v2-dist"
+        marketplace_bucket = (
+            "marketplace-dist"
+            if marketplace == 'xsoar'
+            else "marketplace-v2-dist"
+        )
+        google_api_readme_images_url = f'https://storage.googleapis.com/{marketplace_bucket}/content/packs/{pack_name}'
 
-    google_api_readme_images_url = f'https://storage.googleapis.com/{marketplace_bucket}/content/packs/{pack_name}'
     url_regex = r"^!\[(.*)\]\((?P<url>.*)\)"
     urls_list = []
 

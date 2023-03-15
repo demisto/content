@@ -1310,7 +1310,8 @@ def main():
             continue
         logging.info(f'Index V2 {pack_readme_path=}')
         if pack_readme_images_list := upload_readme_images(storage_bucket=storage_bucket, storage_base_path=storage_base_path,
-                                                           pack_readme_path=pack_readme_path, pack_name=pack_name):
+                                                           pack_readme_path=pack_readme_path, pack_name=pack_name,
+                                                           marketplace=marketplace, use_api=True):
             logging.info(f'{pack_name=}, {pack_readme_images_list=}')
             readme_images_dict[pack_name] = pack_readme_images_list
         with open(pack_readme_path, 'w') as f:
