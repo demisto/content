@@ -25,7 +25,7 @@ contentitemexportablefields:
 dependson:
   must:
   - '|||servicenow-add-comment'
-dockerimage: demisto/python3:3.10.10.48392
+dockerimage: demisto/python3:3.10.10.49934
 enabled: true
 name: ServiceNowAddComment
 runas: DBotWeakRole

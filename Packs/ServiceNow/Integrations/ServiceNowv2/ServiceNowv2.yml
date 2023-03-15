@@ -77,7 +77,7 @@ configuration:
   required: false
   type: 15
   hidden:
-    - marketplacev2
+  - marketplacev2
 - additionalinfo: Select this checkbox to retrieve comments and work notes without accessing the `sys_field_journal` table.
   display: Use Display Value
   name: use_display_value
@@ -102,7 +102,7 @@ configuration:
   required: false
   type: 0
   hidden:
-    - marketplacev2
+  - marketplacev2
 - additionalinfo: Choose the tag to add to an entry to mirror it as a comment from ServiceNow.
   defaultvalue: CommentFromServiceNow
   display: Comment Entry Tag From ServiceNow
@@ -110,7 +110,7 @@ configuration:
   required: false
   type: 0
   hidden:
-    - marketplacev2
+  - marketplacev2
 - additionalinfo: Choose the tag to add to an entry to mirror it as a work note in ServiceNow.
   defaultvalue: work_notes
   display: Work Note Entry Tag To ServiceNow
@@ -118,7 +118,7 @@ configuration:
   required: false
   type: 0
   hidden:
-    - marketplacev2
+  - marketplacev2
 - additionalinfo: Choose the tag to add to an entry to mirror it as a work note from ServiceNow.
   defaultvalue: WorkNoteFromServiceNow
   display: Work Note Entry Tag From ServiceNow
@@ -126,7 +126,7 @@ configuration:
   required: false
   type: 0
   hidden:
-    - marketplacev2
+  - marketplacev2
 - additionalinfo: Choose the tag to add to an entry to mirror it as a file in ServiceNow.
   defaultvalue: ForServiceNow
   display: File Entry Tag To ServiceNow
@@ -134,7 +134,7 @@ configuration:
   required: false
   type: 0
   hidden:
-    - marketplacev2
+  - marketplacev2
 - additionalinfo: Choose the tag to add to an entry to mirror it as a file from ServiceNow.
   defaultvalue: 'FromServiceNow'
   display: File Entry Tag From ServiceNow
@@ -142,14 +142,14 @@ configuration:
   required: false
   type: 0
   hidden:
-    - marketplacev2
+  - marketplacev2
 - additionalinfo: "According to the timestamp in this field, records will be queried to check for updates."
   display: Timestamp field to query for updates as part of the mirroring flow
   name: update_timestamp_field
   required: false
   type: 0
   hidden:
-    - marketplacev2
+  - marketplacev2
   defaultvalue: sys_updated_on
 - additionalinfo: If a greater number of incidents than the limit were modified, then they won't be mirrored in.
   defaultvalue: '100'
@@ -158,14 +158,14 @@ configuration:
   required: false
   type: 0
   hidden:
-    - marketplacev2
+  - marketplacev2
 - additionalinfo: "Custom (user defined) fields in the format: u_fieldname1,u_fieldname2 custom fields start with a 'u_'. These fields will be included in the mirroring capabilities, if added here."
   display: Custom Fields to Mirror
   name: custom_fields
   required: false
   type: 12
   hidden:
-    - marketplacev2
+  - marketplacev2
 - additionalinfo: When selected, closing the ServiceNow ticket is mirrored in Cortex XSOAR.
   defaultvalue: 'None'
   display: Mirrored XSOAR Ticket closure method
@@ -178,7 +178,14 @@ configuration:
   - resolved
   hidden:
     - marketplacev2
-- defaultvalue: 'None'
+- additionalinfo: 'Define how to close the mirrored tickets in Cortex XSOAR with a custom state. Enter here a comma-separated list of custom closure state codes and their labels (acceptable format example: “10=Design,11=Development,12=Testing”) to override the default closure method. Note that a matching user-defined list of custom close reasons must be configured as a "Server configuration" in Cortex XSOAR. Not following this format will result in closing the incident with a default close reason.'
+  defaultvalue: ''
+  display: Mirrored XSOAR Ticket custom close state code
+  name: server_close_custom_state
+  required: false
+  type: 0
+- additionalinfo: Define how to close the mirrored tickets in ServiceNow. Choose 'resolved' to enable reopening from the UI. Otherwise, choose 'closed'.
+  defaultvalue: 'None'
   display: Mirrored ServiceNow Ticket closure method
   name: close_ticket_multiple_options
   required: false
@@ -192,9 +199,9 @@ configuration:
   name: close_custom_state
   required: false
   type: 0
-  hidden:
-    - marketplacev2
   additionalinfo: Define how to close the mirrored tickets in ServiceNow with a custom state. Enter here the custom closure state code (should be an integer) to override the default closure method. If the closure code does not exist, the default code will be used instead.
+  hidden:
+  - marketplacev2
 - defaultvalue: 'false'
   display: Close Mirrored ServiceNow Ticket
   name: close_ticket
@@ -217,9 +224,9 @@ configuration:
   name: incidentFetchInterval
   required: false
   type: 19
-- additionalinfo: Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created.
-  defaultvalue: '0'
+- defaultvalue: 0
   display: 'Advanced: Minutes to look back when fetching'
+  additionalinfo: Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created.
   name: look_back
   required: false
   type: 0
@@ -1589,7 +1596,7 @@ script:
     - contextPath: ServiceNow.Generic.Response
       description: Generic response to servicenow api
       type: string
-  dockerimage: demisto/python3:3.10.10.48392
+  dockerimage: demisto/python3:3.10.10.49934
   isfetch: true
   ismappable: true
   isremotesyncin: true
