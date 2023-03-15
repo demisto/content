@@ -1399,6 +1399,21 @@ def test_get_device_configuration_command(mocker, mcafeensmv2_client):
                            'IsGloablPolicyConfigurationChanged': None}
 
 
+def test_get_device_configuration_command__without_device_id(mcafeensmv2_client):
+    """
+    Given:
+    - No device id.
+    When:
+    - get_device_configuration_command command is executed.
+    Then:
+    - Confirm the output is as expected(error message).
+    """
+    from McAfeeNSMv2 import get_device_configuration_command
+    with pytest.raises(DemistoException) as e:
+        get_device_configuration_command(client=mcafeensmv2_client, args={})
+    assert e.value.message == "Please provide a device_id."
+    
+    
 def test_deploy_device_configuration_command(mocker, mcafeensmv2_client):
     from McAfeeNSMv2 import deploy_device_configuration_command
     mocker.patch.object(mcafeensmv2_client, 'deploy_device_configuration_request',
