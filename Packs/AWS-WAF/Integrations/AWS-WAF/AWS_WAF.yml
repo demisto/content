@@ -316,21 +316,21 @@ script:
     execution: false
     name: aws-waf-ip-set-list
     outputs:
-    - contextPath: AWS.Waf.IpSet.IPSets.Id
+    - contextPath: AWS.Waf.IpSet.Id
       description: The ip set ID.
       type: String
-    - contextPath: AWS.Waf.IpSet.IPSets.Name
+    - contextPath: AWS.Waf.IpSet.Name
       description: The ip set name.
       type: String
-    - contextPath: AWS.Waf.IpSet.IPSets.Description
+    - contextPath: AWS.Waf.IpSet.Description
       description: The ip set description.
       type: String
-    - contextPath: AWS.Waf.IpSet.IPSets.LockToken
+    - contextPath: AWS.Waf.IpSet.LockToken
       description: The ip set lock token.
       type: String
-    - contextPath: AWS.Waf.IpSet.IPSets.ARN
+    - contextPath: AWS.Waf.IpSet.ARN
       description: The ip set Amazon Resource Name.
-    - contextPath: AWS.Waf.IpSet.NextMarker
+    - contextPath: AWS.Waf.IpSetNextToken
       description: The token for the next page.
       type: String
   - arguments:
@@ -589,21 +589,21 @@ script:
     execution: false
     name: aws-waf-regex-set-list
     outputs:
-    - contextPath: AWS.Waf.RegexSet.RegexPatternSets.Id
+    - contextPath: AWS.Waf.RegexSet.Id
       description: The regex set ID.
       type: String
-    - contextPath: AWS.Waf.RegexSet.RegexPatternSets.Name
+    - contextPath: AWS.Waf.RegexSet.Name
       description: The regex set name.
       type: String
-    - contextPath: AWS.Waf.RegexSet.RegexPatternSets.Description
+    - contextPath: AWS.Waf.RegexSet.Description
       description: The regex set description.
       type: String
-    - contextPath: AWS.Waf.RegexSet.RegexPatternSets.LockToken
+    - contextPath: AWS.Waf.RegexSet.LockToken
       description: The regex set lock token.
       type: String
     - contextPath: AWS.Waf.RegexSet.RegexPatternSets.ARN
       description: The regex set Amazon Resource Name.
-    - contextPath: AWS.Waf.RegexSet.NextMarker
+    - contextPath: AWS.Waf.RegexSetNextToken
       description: The token for the next page.
       type: String
   - arguments:
@@ -689,18 +689,18 @@ script:
     - contextPath: AWS.Waf.RuleGroup.Id
       description: The rule group ID.
       type: String
-    - contextPath: AWS.Waf.RuleGroup.RuleGroups.Name
+    - contextPath: AWS.Waf.RuleGroup.Name
       description: The rule group name.
       type: String
-    - contextPath: AWS.Waf.RuleGroup.RuleGroups.Description
+    - contextPath: AWS.Waf.RuleGroup.Description
       description: The rule group description.
       type: String
-    - contextPath: AWS.Waf.RuleGroup.RuleGroups.LockToken
+    - contextPath: AWS.Waf.RuleGroup.LockToken
       description: The rule group lock token.
       type: String
-    - contextPath: AWS.Waf.RuleGroup.RuleGroups.ARN
+    - contextPath: AWS.Waf.RuleGroup.ARN
       description: The rule group Amazon Resource Name.
-    - contextPath: AWS.Waf.RuleGroup.NextMarker
+    - contextPath: AWS.Waf.RuleGroupNextToken
       description: The token for the next page.
       type: String
   - arguments:

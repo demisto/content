@@ -52,17 +52,11 @@ def get_tags_dict_from_args(tag_keys: list, tag_values: list) -> list:
     Returns:
         List of tags
     """
-    tags = []
     if len(tag_keys) != len(tag_values):
-        raise DemistoException('Tha tags_keys and tag_values arguments must be at the same length.')
+        raise DemistoException('The tags_keys and tag_values arguments must be at the same length.')
 
     # keys and values are in the same length
-    n = len(tag_keys)
-    for i in range(n):
-        tag = {'Key': tag_keys[i], 'Value': tag_values[i]}
-        tags.append(tag)
-
-    return tags
+    return [{'Key': k, 'Value': v} for k, v in zip(tag_keys, tag_values)]
 
 
 def build_regex_pattern_object(regex_patterns: list) -> List[dict]:
@@ -162,7 +156,7 @@ def build_country_rule_object(args: dict) -> dict:
     Returns:
         Country rule statement object
     """
-    country_codes = argToList(args.get('country_codes')) or []
+    country_codes = argToList(args.get('country_codes'))
     country_rule: dict = {
         'Statement': build_country_statement(country_codes)
     }
@@ -455,7 +449,7 @@ def create_ip_set_command(client: boto3.client, args) -> CommandResults:
     return CommandResults(readable_output=readable_output,
                           outputs=outputs,
                           raw_response=response,
-                          outputs_prefix=f'{OUTPUT_PREFIX}.IPSet',
+                          outputs_prefix=f'{OUTPUT_PREFIX}.IpSet',
                           outputs_key_field='Id')
 
 
