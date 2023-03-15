@@ -1,0 +1,16 @@
+{
+    "res_code": 200,
+    "res_data": {
+        "update_failure": [],
+        "update_success": [
+            {
+                "domain_name": "test.com",
+                "order": 1,
+                "server_list": [
+                    "1.1.1.1"
+                ]
+            }
+        ]
+    },
+    "res_message": "Success: 1, Failure: 0"
+}

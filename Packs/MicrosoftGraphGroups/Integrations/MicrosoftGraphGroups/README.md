@@ -832,6 +832,11 @@ If the group collection includes DynamicMembership, the group has dynamic member
       <td>Filters members results. For example, startswith(displayName,'user').</td>
       <td>Optional</td>
     </tr>
+    <tr>
+      <td>count</td>
+      <td>Retrieves the total count of matching resources.</td>
+      <td>Optional</td>
+    </tr>
   </tbody>
 </table>
 
