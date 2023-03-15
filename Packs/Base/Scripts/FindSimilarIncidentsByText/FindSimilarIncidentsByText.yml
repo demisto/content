@@ -111,7 +111,7 @@ tags:
 - incidents
 timeout: '0'
 type: python
-dockerimage: demisto/sklearn:1.0.0.47448
+dockerimage: demisto/sklearn:1.0.0.49796
 runonce: true
 tests:
 - No test
