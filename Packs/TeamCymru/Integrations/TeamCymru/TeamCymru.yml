@@ -157,4 +157,4 @@ script:
   dockerimage: demisto/cymruwhois:1.0.0.48655
 fromversion: 6.5.0
 tests:
-- No tests (auto formatted)
+- TeamCymruTest

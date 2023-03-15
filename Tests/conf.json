@@ -2278,6 +2278,10 @@
             "fromversion": "4.1.0"
         },
         {
+            "integrations": "TeamCymru",
+            "playbookID": "TeamCymruTest"
+        },
+        {
             "integrations": "RSA NetWitness Endpoint",
             "playbookID": "NetWitness Endpoint Test"
         },
