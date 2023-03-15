@@ -834,6 +834,7 @@ def expire_stored_ids(fetched_ids: Dict[float, set]):
     cleaned_cache = {}
 
     for fetch_time, incidents_ids in fetched_ids.items():
+        demisto.debug(f'{fetch_time=}, {incidents_ids=}')
         timediff = now - fetch_time
         if timediff < two_hours:
             cleaned_cache[fetch_time] = incidents_ids
@@ -897,6 +898,7 @@ def fetch_incidents():
     incidents = []
 
     fetched_ids[now] = []
+    demisto.debug(f'{now=}, {type(now)=}')
 
     for alert in response:
         alert_id = alert.get('id')
