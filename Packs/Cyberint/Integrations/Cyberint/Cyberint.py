@@ -590,6 +590,7 @@ def fetch_incidents(
                 alert_csv_id)
             alert['alert_data']['csv'] = extracted_csv_data
 
+        # add alert_name key to alert response
         alert_name = f'Cyberint alert {alert_id}: {alert_title}'
         alert.update({'alert_name': alert_name})
 
