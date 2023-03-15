@@ -138,11 +138,6 @@ class BranchAutoBumper:
         6. Pushes the changes.
         """
         body = PR_COMMENT_TITLE.format(self.github_run_id)
-        if self.branch not in ["conflict_in_cs", "conflicts_in_base", "conflict_in_xdr",
-                               "conflict_in_nx", "conflicts_in_msg", "conflicts-in-snow", "conflict_in_base_bc",
-                               "conflicts-inaws"]:
-            # todo: delete it, only for testing
-            return "Pack MyPack version was automatically bumped to 1.0.2."
         with Checkout(self.git_repo, self.branch):
             for pack_auto_bumper in self.packs_to_autobump:
                 pack_auto_bumper.set_pr_changed_rn_related_data()
