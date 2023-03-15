@@ -285,7 +285,7 @@
 .parallel2:
   parallel:
     matrix:
-      - DOCKER_FOR_PR: ['native:ga,native:maintenance', 'from-yml']
+      - DOCKER_FOR_PR: ['native:ga,native:dev', 'native:maintenance,from-yml']
 
 .run-validations:
   stage: unittests-and-validations
