@@ -2,10 +2,23 @@ from google.cloud import secretmanager
 import json5
 from Tests.scripts.utils import logging_wrapper as logging
 
+SPECIAL_CHARS = [' ', '(', '(', ')', '.', '']
+
 
 class GoogleSecreteManagerModule:
     def __init__(self, service_account_file: str):
         self.client = self.init_secret_manager_client(service_account_file)
+
+    @staticmethod
+    def convert_to_gsm_format(name: str) -> str:
+        """
+        param name: the name to transform
+        return: the name after it's been transformed to a GSM supported format
+        """
+
+        for char in SPECIAL_CHARS:
+            name = name.replace(char, '')
+        return name
 
     def get_secret(self, project_id: str, secret_id: str, version_id: str = 'latest') -> dict:
         name = f"projects/{project_id}/secrets/{secret_id}/versions/{version_id}"
@@ -28,7 +41,9 @@ class GoogleSecreteManagerModule:
                 logging.error(f'Error the secret: {secret.name} has no labels, got the error: {e}')
             secret_pack_id = labels.get('pack_id')
             logging.debug(f'Getting the secret: {secret.name}')
-            if name_filter and not secret_pack_id and secret_pack_id not in [s.lower() for s in name_filter]:
+            formatted_integration_search_ids = [GoogleSecreteManagerModule.convert_to_gsm_format(s.lower()) for s in
+                                                name_filter]
+            if name_filter and not secret_pack_id and secret_pack_id not in formatted_integration_search_ids:
                 continue
             if with_secret:
                 try:
