@@ -219,21 +219,15 @@
     DOCKER_HOST: tcp://docker:2375
     DOCKER_DRIVER: overlay2
     DOCKER_TLS_CERTDIR: ""
-  extends:
-    - .default-job-settings
-  job1:
-    script: echo "hello"
+    variables:
+    DOCKER: ['native:ga,native:dev','native:maintenance,from-yml']
   parallel:
     matrix:
-      - DOCKER: 
-        - 'native:ga,native:dev'
-        - 'native:maintenance,from-yml'
-    rules:
-      - if: $DEMISTO_SDK_NIGHTLY || $NIGHTLY || BUCKET_UPLOAD
-        matrix:
-          DOCKER: 
-            - 'native:ga,native:maintenance'
-            - 'from-yml'        
+      - DOCKERS_TO_RUN: $DOCKER
+  rules:
+    - if: $DEMISTO_SDK_NIGHTLY || $NIGHTLY || $BUCKET_UPLOAD  
+      variables:
+        DOCKER: ['native:ga,native:maintenance', 'from-yml']
   script:
     - section_start "Test Infrastructure"
     - python3 -m pytest ./Tests/scripts/infrastructure_tests/ -v
@@ -266,12 +260,12 @@
         mkdir ./unit-tests
         if [ -n "$SHOULD_LINT_ALL" ]; then
           echo -e  "----------\nLinting all because:\n${SHOULD_LINT_ALL}\n----------"
-          demisto-sdk lint -vvv -p 10 -a --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report -dt 120 --time-measurements-dir $ARTIFACTS_FOLDER --docker-image ${DOCKER}
+          demisto-sdk lint -vvv -p 10 -a --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report -dt 120 --time-measurements-dir $ARTIFACTS_FOLDER --docker-image ${DOCKERS_TO_RUN}
         else
           if [[ -n $BUCKET_UPLOAD ]]; then
-            demisto-sdk lint -vvv -p 8 -g --no-mypy --prev-ver $LAST_UPLOAD_COMMIT -v --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report -cdam --docker-image ${DOCKER}
+            demisto-sdk lint -vvv -p 8 -g --no-mypy --prev-ver $LAST_UPLOAD_COMMIT -v --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report -cdam --docker-image ${DOCKERS_TO_RUN}
           else
-            demisto-sdk lint -p 8 -g -vvv --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts --coverage-report $ARTIFACTS_FOLDER/coverage_report -cdam --docker-image ${DOCKER}
+            demisto-sdk lint -p 8 -g -vvv --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts --coverage-report $ARTIFACTS_FOLDER/coverage_report -cdam --docker-image ${DOCKERS_TO_RUN}
           fi
         fi
         if [[ -f $ARTIFACTS_FOLDER/coverage_report/.coverage ]]; then
