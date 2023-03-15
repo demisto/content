@@ -152,3 +152,63 @@ def download_readme_image_from_url_and_upload_to_gcs(readme_original_url: str, g
             f'Failed downloading the image in url {readme_original_url}. '
             f'or failed uploading it to GCP error message {e}')
         return False
+
+
+def copy_readme_images(production_bucket, build_bucket, images_data, storage_base_path,
+                       build_bucket_base_path):
+    """ Copies pack's readme_images from the build bucket to the production bucket
+
+    Args:
+        production_bucket (google.cloud.storage.bucket.Bucket): The production bucket
+        build_bucket (google.cloud.storage.bucket.Bucket): The build bucket
+        images_data (dict): The images data structure from Prepare Content step
+        storage_base_path (str): The target destination of the upload in the target bucket.
+        build_bucket_base_path (str): The path of the build bucket in gcp.
+    Returns:
+        bool: Whether the operation succeeded.
+    """
+    logging.info('Starting readme images copy.')
+    readme_images = {}
+    if readme_images := images_data.get(BucketUploadFlow.README_IMAGES, None):
+        for pack_name, pack_readme_images_list in readme_images.items():
+            task_status = True
+            err_msg = f"Failed copying {pack_name} pack readme images."
+            pc_uploaded_readme_images = pack_readme_images_list
+
+            if not pc_uploaded_readme_images:
+                logging.info(f"No added/modified readme images were detected in {pack_name} pack.")
+
+            for readme_image_name in pc_uploaded_readme_images:
+                logging.info(f'copying image {readme_image_name}')
+                build_bucket_readme_image_path = os.path.join(build_bucket_base_path, pack_name,
+                                                              BucketUploadFlow.README_IMAGES, readme_image_name)
+                build_bucket_image_blob = build_bucket.blob(build_bucket_readme_image_path)
+
+                if not build_bucket_image_blob.exists():
+                    logging.error(f"Found changed/added readme image in pack {pack_name} in content repo but "
+                                  f"{build_bucket_image_blob} does not exist in build bucket")
+                    task_status = False
+                else:
+                    logging.info(f"Copying {pack_name} pack readme {readme_image_name} image")
+                    try:
+                        copied_blob = build_bucket.copy_blob(
+                            blob=build_bucket_image_blob, destination_bucket=production_bucket,
+                            new_name=os.path.join(storage_base_path, pack_name, BucketUploadFlow.README_IMAGES,
+                                                  readme_image_name)
+                        )
+                        if not copied_blob.exists():
+                            logging.error(
+                                f"Copy {pack_name} integration readme image: {build_bucket_image_blob.name} "
+                                f"blob to {copied_blob.name} blob failed.")
+                            task_status = False
+
+                    except Exception as e:
+                        logging.exception(f"{err_msg}. Additional Info: {str(e)}")
+                        return False
+
+            if not task_status:
+                logging.error(err_msg)
+            else:
+                logging.success(f"Copied readme images for {pack_name} pack.")
+
+            return task_status

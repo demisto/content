@@ -15,6 +15,7 @@ from Tests.Marketplace.marketplace_constants import PackStatus, GCPConfig, Bucke
     PACKS_FULL_PATH, IGNORED_FILES
 from Tests.Marketplace.upload_packs import extract_packs_artifacts, print_packs_summary, get_packs_summary
 from Tests.scripts.utils import logging_wrapper as logging
+from Tests.Marketplace.pack_readme_handler import copy_readme_images
 
 LATEST_ZIP_REGEX = re.compile(fr'^{GCPConfig.GCS_PUBLIC_URL}/[\w./-]+/content/packs/([A-Za-z0-9-_.]+/\d+\.\d+\.\d+/'
                               r'[A-Za-z0-9-_.]+\.zip$)')
@@ -415,13 +416,6 @@ def main():
             pack.cleanup()
             continue
 
-        task_status = pack.copy_readme_images(
-            production_bucket, build_bucket, pc_uploaded_images, production_base_path, build_bucket_base_path)
-        if not task_status:
-            pack.status = PackStatus.FAILED_README_IMAGE_UPLOAD.name
-            pack.cleanup()
-            continue
-
         task_status, skipped_pack_uploading = pack.copy_and_upload_to_storage(
             production_bucket, build_bucket, pc_successful_packs_dict, pc_successful_uploaded_dependencies_zip_packs_dict,
             production_base_path, build_bucket_base_path)
@@ -440,6 +434,7 @@ def main():
         elif pack.name in pc_successful_uploaded_dependencies_zip_packs_dict:
             pack.status = PackStatus.SUCCESS_CREATING_DEPENDENCIES_ZIP_UPLOADING.name
 
+    copy_readme_images(production_bucket, build_bucket, pc_uploaded_images, production_base_path, build_bucket_base_path)
     # upload core packs json to bucket
     upload_core_packs_config(production_bucket, build_number, extract_destination_path, build_bucket,
                              production_base_path, build_bucket_base_path)
