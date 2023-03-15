@@ -6,6 +6,7 @@ description: |-
   Enrich domains using one or more integrations.
   Domain enrichment includes:
   * Threat information
+  * Domain reputation using !domain command
 starttaskid: "0"
 tasks:
   "0":
@@ -16,9 +17,9 @@ tasks:
       id: 3f6b8522-c653-4608-800d-f7da232392fb
       version: -1
       name: ""
-      description: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "16"
@@ -26,13 +27,18 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 281,
-          "y": 41
+          "x": 60,
+          "y": 370
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    quietmode: 0
+    skipunavailable: false
   "16":
     id: "16"
     taskid: b0ff1fa7-e741-4cb0-8fb6-98929d4d6e7d
@@ -46,11 +52,10 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      '#default#':
-      - "24"
       "yes":
-      - "26"
-      - "30"
+      - "32"
+      - "33"
+      - "31"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -63,13 +68,18 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 281,
-          "y": 171
+          "x": 60,
+          "y": 530
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    quietmode: 0
+    skipunavailable: false
   "24":
     id: "24"
     taskid: f6da103d-6baa-4afb-8b7d-65740714dcf2
@@ -78,21 +88,26 @@ tasks:
       id: f6da103d-6baa-4afb-8b7d-65740714dcf2
       version: -1
       name: Done
-      description: ""
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 281,
-          "y": 765
+          "x": 60,
+          "y": 1365
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    quietmode: 0
+    skipunavailable: false
   "26":
     id: "26"
     taskid: 3ab86896-10aa-45be-83cf-7dcca9b6aa92
@@ -143,13 +158,18 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 578.5,
-          "y": 365
+          "x": -437.5,
+          "y": 845
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    quietmode: 0
+    skipunavailable: false
   "28":
     id: "28"
     taskid: a30a5504-f8f1-41cc-8dcb-bb0b2a940bc3
@@ -172,20 +192,23 @@ tasks:
           root: inputs.Domain
           transformers:
           - operator: uniq
-      fullResponse: {}
-      threshold: {}
     reputationcalc: 1
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 578.5,
-          "y": 580
+          "x": -437.5,
+          "y": 1080
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    quietmode: 0
+    skipunavailable: false
   "29":
     id: "29"
     taskid: 369e9301-a4f9-415f-8c45-902304453296
@@ -213,13 +236,18 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -10,
-          "y": 580
+          "x": 60,
+          "y": 1080
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    quietmode: 0
+    skipunavailable: false
   "30":
     id: "30"
     taskid: 29cca13b-1b82-4db3-8463-2a4f537546d0
@@ -270,28 +298,206 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -10,
-          "y": 365
+          "x": 62.5,
+          "y": 885
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
+    continueonerrortype: ""
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    quietmode: 0
+    skipunavailable: false
+  "31":
+    continueonerrortype: ""
+    id: "31"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "26"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 8052dff1-6242-4689-8698-c2d6fb1072be
+      iscommand: false
+      name: VirusTotal Private API enrichment
+      type: title
+      version: -1
+      description: ''
+    taskid: 8052dff1-6242-4689-8698-c2d6fb1072be
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": -437.5,
+          "y": 720
+        }
+      }
+  "32":
+    continueonerrortype: ""
+    id: "32"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "34"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 230be3d0-b15b-446e-8e9e-5eaf8aa47c2b
+      iscommand: false
+      name: Domain Reputation
+      type: title
+      version: -1
+      description: ''
+    taskid: 230be3d0-b15b-446e-8e9e-5eaf8aa47c2b
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": 720
+        }
+      }
+  "33":
+    continueonerrortype: ""
+    id: "33"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "30"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 1dd7328d-b062-4a7c-8b80-55acc42bb92b
+      iscommand: false
+      name: Cisco Umbrella enrichment
+      type: title
+      version: -1
+      description: ''
+    taskid: 1dd7328d-b062-4a7c-8b80-55acc42bb92b
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 720
+        }
+      }
+  "34":
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.UseReputationCommand
+          operator: isEqualString
+          right:
+            value:
+              simple: "True"
+      label: "yes"
+    continueonerrortype: ""
+    id: "34"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "24"
+      "yes":
+      - "35"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b077e2fc-cf78-4bba-8810-9bebca2cc5f6
+      iscommand: false
+      name: Should use !domain command?
+      description: Check if should run domain reputation command
+      type: condition
+      version: -1
+    taskid: b077e2fc-cf78-4bba-8810-9bebca2cc5f6
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": 885
+        }
+      }
+  "35":
+    continueonerrortype: ""
+    id: "35"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "24"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      domain:
+        complex:
+          root: inputs.Domain
+    separatecontext: false
+    skipunavailable: true
+    task:
+      brand: ""
+      description: Checks the reputation of a domain.
+      id: 1cc32acf-ef90-4392-8f3c-9aa33eaa54d9
+      iscommand: true
+      name: Check Reputation
+      script: '|||domain'
+      type: regular
+      version: -1
+    taskid: 1cc32acf-ef90-4392-8f3c-9aa33eaa54d9
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 550,
+          "y": 1080
+        }
+      }
 view: |-
   {
     "linkLabelsPosition": {
-      "16_24_#default#": 0.18,
-      "26_24_#default#": 0.55,
       "26_28_yes": 0.61,
       "30_24_#default#": 0.57,
       "30_29_yes": 0.58
     },
     "paper": {
       "dimensions": {
-        "height": 789,
-        "width": 968.5,
-        "x": -10,
-        "y": 41
+        "height": 1060,
+        "width": 1367.5,
+        "x": -437.5,
+        "y": 370
       }
     }
   }
@@ -305,6 +511,16 @@ inputs:
       - operator: uniq
   required: false
   description: The domain name to enrich.
+  playbookInputQuery:
+- description: |-
+    Define if you would like to use the !url command.
+    Note: This input should be used whenever there is no auto-extract enabled in the investigation flow.
+    Possible values: True / False.
+  key: UseReputationCommand
+  playbookInputQuery:
+  required: true
+  value:
+    simple: "False"
 outputs:
 - contextPath: Domain
   description: The domain objects.
@@ -312,6 +528,18 @@ outputs:
 - contextPath: DBotScore
   description: Indicator, Score, Type, and Vendor.
   type: unknown
+- contextPath: Domain.Name
+  description: Bad domain found.
+- contextPath: Domain.Malicious.Vendor
+  description: For malicious domains, the vendor that made the decision.
+- contextPath: DBotScore.Indicator
+  description: The indicator that was tested.
+- contextPath: DBotScore.Type
+  description: The indicator type.
+- contextPath: DBotScore.Score
+  description: The actual DBot score.
+- contextPath: DBotScore.Reliability
+  description: Reliability of the source providing the intelligence data.
 tests:
 - Domain Enrichment - Generic v2 - Test
 marketplaces:
