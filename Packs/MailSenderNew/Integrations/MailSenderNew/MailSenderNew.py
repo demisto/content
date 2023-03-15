@@ -19,6 +19,7 @@ import string
 import smtplib
 import traceback
 import sys
+from itertools import zip_longest
 
 SERVER = None
 UTF_8 = 'utf-8'
@@ -184,7 +185,7 @@ def collect_attachments():
     f_cids = args.get('transientFileCID', [])
     f_cids = f_cids if isinstance(f_cids, (list, tuple)) else f_cids.split(',')
 
-    for name, data, cid in zip(f_names, f_contents, f_cids):
+    for name, data, cid in zip_longest(f_names, f_contents, f_cids):
         if name is None or data is None:
             break
         maintype, subtype = guess_type(name)
