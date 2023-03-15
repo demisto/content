@@ -13062,12 +13062,13 @@ def get_query_entries_by_id_request(job_id: str) -> Dict[str, Any]:
         response = http_request(URL, 'GET', params=params)
         status = response.get('response', {}).get('result', {}).get('job', {}).get('status', '')
         demisto.debug(f'Job ID {job_id}, response status: {status}')
-        demisto.debug(f'{response=}')
+        demisto.debug(f'raw response: {response}')
         if status == 'FIN':
             return response
         else:
-            demisto.debug(f'{try_num=}. Job not completed, Retrying in 1 second...')
+            demisto.debug(f'Attempt number: {try_num}. Job not completed, Retrying in 1 second...')
             time.sleep(1)
+    demisto.debug(f'Maximum attempt number: {try_num} has reached. Job ID {job_id} might be not completed which could result in missing incidents.')
     return {}
 
 

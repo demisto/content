@@ -6221,14 +6221,16 @@ class TestFetchIncidentsHelperFunctions:
     def test_get_query_entries_by_id_request(self, mocker, response, debug_msg, expected_result):
         """
         Given:
-        - a valid query id
+            - A valid Panorama job id.
 
         When:
-        - get_query_entries_by_id_request function is called
+            1. The Panorama job has already finished.
+            2. The Panorama job is still running (not finished).
 
         Then:
-        - assert that the returned response is valid, or retry if the job is not finished
-        """
+            1. Verify the command output is the returned response, and the debug message is called with 'FIN' status.
+            2. Retry to query the job status in 1 second, and return empty dict if max retries exceeded.
+         """
         from Panorama import get_query_entries_by_id_request
         mocker.patch('Panorama.http_request', return_value=response)
         debug = mocker.patch('demistomock.debug')
