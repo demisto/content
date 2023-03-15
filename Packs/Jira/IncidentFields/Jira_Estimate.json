@@ -18,7 +18,7 @@
     "ownerOnly": false,
     "placeholder": "",
     "template": "",
-    "description": "The estimated timeline of a Jira issue, where a day is considered to be 8 hours.",
+    "description": "The estimated timeline of a Jira issue in seconds. Please take a look at your `Time tracking settings` in Jira to identify what is considered an hour and a week.",
     "cliName": "jiraestimate",
     "type": "shortText",
     "orgType": "shortText",

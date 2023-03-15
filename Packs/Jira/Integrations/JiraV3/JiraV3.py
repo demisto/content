@@ -244,7 +244,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
 
     @abstractmethod
     def issues_from_sprint_to_backlog(self, json_data: Dict[str, Any]) -> requests.Response:
-        """This method is in charge of moving issues from a specific spring, back to the backlog board of a specific board.
+        """This method is in charge of moving issues from a sprint, back to backlog of their board.
 
         Args:
             json_data (Dict[str, Any]): The data that is sent to the endpoint to move the issues from a sprint
@@ -576,6 +576,10 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
 
 
 class JiraCloudClient(JiraBaseClient):
+    """This class inherits the JiraBaseClient class and implements the required abstract methods,
+    with the addition of any required configurations and implementations of methods that are specific
+    for Jira Cloud.
+    """
 
     def __init__(self, proxy: bool, verify: bool, client_id: str, client_secret: str,
                  callback_url: str, cloud_id: str, server_url: str):
@@ -793,6 +797,15 @@ class JiraCloudClient(JiraBaseClient):
         )
 
     def issues_to_backlog(self, board_id, json_data: Dict[str, Any]) -> requests.Response:
+        """This method is in charge of moving issues, back to backlog of their board.
+
+        Args:
+            board_id (_type_): The id of the board that the issues reside in.
+            json_data (Dict[str, Any]): The data that is sent to the endpoint to move the issues back to backlog.
+
+        Returns:
+            requests.Response: The raw response of the endpoint.
+        """
         return self.http_request_with_access_token(
             method='POST',
             url_suffix=f'rest/agile/1.0/backlog/{board_id}/issue',
@@ -801,6 +814,16 @@ class JiraCloudClient(JiraBaseClient):
         )
 
     def issues_to_board(self, board_id, json_data: Dict[str, Any]) -> requests.Response:
+        """This method is in charge of moving issues from backlog to board.
+
+        Args:
+            board_id (_type_): The id of the board that the issues reside in.
+            json_data (Dict[str, Any]): The data that is sent to the endpoint to move the issues back to the
+            board from the backlog.
+
+        Returns:
+            requests.Response: The raw response of the endpoint.
+        """
         return self.http_request_with_access_token(
             method='POST',
             url_suffix=f'rest/agile/1.0/board/{board_id}/issue',
@@ -1087,7 +1110,7 @@ class JiraIssueFieldsParser():
                 else (demisto.get(issue_data, 'fields.description', '') or '')}
 
     @staticmethod
-    def get_attachments_context(issue_data: Dict[str, Any]) -> Dict[str, Any]:
+    def get_attachments_context(issue_data: Dict[str, Any]) -> Dict[str, List[Dict[str, Any]]]:
         attachments: List[Dict[str, Any]] = [
             {
                 'id': attachment.get('id'),
@@ -2190,9 +2213,8 @@ def link_issue_to_issue_command(client: JiraBaseClient, args: Dict[str, Any]) ->
     client.create_issue_link(json_data=json_data)
     return CommandResults(readable_output='Issue link created successfully')
 
+
 # Board Commands
-
-
 def issues_to_backlog_command(client: JiraBaseClient, args: Dict[str, Any]) -> CommandResults:
     issues = argToList(args.get('issues', ''))
     board_id = args.get('board_id', '')
@@ -2214,6 +2236,8 @@ def issues_to_backlog_command(client: JiraBaseClient, args: Dict[str, Any]) -> C
         else:
             raise DemistoException('This argument is not supported for a Jira OnPrem instance.')
     else:
+        # If the board_id is not given, then the issues that are meant to be moved to backlog, must be
+        # part of a sprint, or in other words, the issues must be part of a board that supports sprints.
         client.issues_from_sprint_to_backlog(json_data=json_data)
     return CommandResults(readable_output='Issues were moved to Backlog successfully')
 
@@ -2431,49 +2455,68 @@ def fetch_incidents(client: JiraBaseClient, issue_field_to_fetch_from: str, fetc
     # so we convert the list to hold integer values
     last_fetch_issue_ids: List[int] = convert_list_of_str_to_int(last_run.get('issue_ids', []))
     last_fetch_id = last_run.get('id', id_offset)
-    last_fetch_created_time = last_run.get('created_date', '')
-    last_fetch_updated_time = last_run.get('updated_date', '')
-    last_fetch_status_category_change_date = last_run.get('status_category_change_date', '')
+    new_fetch_created_time = last_fetch_created_time = last_run.get('created_date', '')
+    new_fetch_updated_time = last_fetch_updated_time = last_run.get('updated_date', '')
     incidents: List[Dict[str, Any]] = []
     demisto.debug('Creating the fetch query')
     fetch_incidents_query = create_fetch_incidents_query(
         issue_field_to_fetch_from=issue_field_to_fetch_from,
-        fetch_interval=fetch_interval or DEFAULT_FETCH_INTERVAL,
         fetch_query=fetch_query,
         last_fetch_id=last_fetch_id,
         last_fetch_created_time=last_fetch_created_time,
         last_fetch_updated_time=last_fetch_updated_time,
-        last_fetch_status_category_change_date=last_fetch_status_category_change_date,
-        first_fetch_interval=first_fetch_interval,
+        first_fetch_interval=convert_string_date_to_specific_format(
+            string_date=first_fetch_interval),
         last_fetch_issue_ids=last_fetch_issue_ids)
     demisto.debug(f'The fetch query: {fetch_incidents_query}' if fetch_incidents_query else 'No fetch query created')
     query_params = create_query_params(jql_query=fetch_incidents_query, max_results=max_fetch_incidents)
-    issue_ids: List[int] = []
+    new_issue_ids: List[int] = []
     demisto.debug(f'Running the query with the following parameters {query_params}')
     if query_res := client.run_query(query_params=query_params):
         for issue in query_res.get('issues', []):
             issue_id: int = issue.get('id')  # The ID returned by the API is an integer
-            # if issue_id not in last_fetch_issue_ids:
-            issue_ids.append(issue_id)
-            # Making sure that this issue was not fetched during the previous fetch
+            new_issue_ids.append(issue_id)
             last_fetch_id = issue_id
-            last_fetch_created_time = demisto.get(issue, 'fields.created') or ''
-            last_fetch_updated_time = demisto.get(issue, 'fields.updated') or ''
-            last_fetch_status_category_change_date = demisto.get(issue, 'fields.statuscategorychangedate') or ''
+            new_fetch_created_time = convert_string_date_to_specific_format(
+                string_date=demisto.get(issue, 'fields.created') or '')
+            new_fetch_updated_time = convert_string_date_to_specific_format(
+                string_date=demisto.get(issue, 'fields.updated') or '')
             demisto.debug(f'Creating an incident for Jira issue with ID: {issue_id}')
-            incidents.append(create_incident_from_ticket(
+            remove_empty_custom_fields(issue=issue, issue_fields_id_to_name_mapping=query_res.get('names', {}))
+            incidents.append(create_incident_from_issue(
                 client=client, issue=issue, fetch_attachments=fetch_attachments, fetch_comments=fetch_comments,
                 incoming_mirror=incoming_mirror, outgoing_mirror=outgoing_mirror,
                 comment_tag=comment_tag,
                 attachment_tag=attachment_tag))
+    if (
+        (issue_field_to_fetch_from == 'created date'
+         and new_fetch_created_time == last_fetch_created_time)
+        or (issue_field_to_fetch_from == 'updated date'
+            and new_fetch_updated_time == last_fetch_updated_time)
+    ):
+        new_issue_ids.extend(last_fetch_issue_ids)
     demisto.setLastRun({
-        'issue_ids': issue_ids or last_fetch_issue_ids,
+        'issue_ids': new_issue_ids or last_fetch_issue_ids,
         'id': last_fetch_id,
-        'created_date': last_fetch_created_time,
-        'updated_date': last_fetch_updated_time,
-        'status_category_change_date': last_fetch_status_category_change_date,
+        'created_date': new_fetch_created_time or last_fetch_created_time,
+        'updated_date': new_fetch_updated_time or last_fetch_updated_time,
     })
     return incidents
+
+
+def remove_empty_custom_fields(issue: Dict[str, Any], issue_fields_id_to_name_mapping: Dict[str, str]):
+    issue_fields = issue.get('fields', {})
+    #  It is important to iterate over list(issue_fields) and not issue_fields or issue_fields.items(),
+    # because we are deleting entries while iterating over the dictionary, if we do not, we will get the error,
+    # RuntimeError: dictionary changed size during iteration
+    for issue_field_id in list(issue_fields):
+        if issue_field_id.startswith('customfield'):
+            if issue_fields.get(issue_field_id):
+                issue_fields |= JiraIssueFieldsParser.get_raw_field_data_context(
+                    issue_data=issue, issue_field_id=issue_field_id,
+                    issue_fields_id_to_name_mapping=issue_fields_id_to_name_mapping)
+            else:
+                del issue_fields[issue_field_id]
 
 
 def convert_list_of_str_to_int(list_to_convert: List[str] | List[int]) -> List[int]:
@@ -2488,9 +2531,8 @@ def convert_list_of_str_to_int(list_to_convert: List[str] | List[int]) -> List[i
     return converted_list
 
 
-def create_fetch_incidents_query(issue_field_to_fetch_from: str, fetch_interval: int, fetch_query: str,
+def create_fetch_incidents_query(issue_field_to_fetch_from: str, fetch_query: str,
                                  last_fetch_id: int, last_fetch_created_time: str, last_fetch_updated_time: str,
-                                 last_fetch_status_category_change_date: str,
                                  first_fetch_interval: str, last_fetch_issue_ids: List[int]) -> str:
     """_summary_
     NOTE: It is important to add 'ORDER BY {the issue field to fetch from} ASC' in order to retrieve the data in ascending order,
@@ -2515,25 +2557,11 @@ def create_fetch_incidents_query(issue_field_to_fetch_from: str, fetch_interval:
     exclude_issue_ids_query = f"AND ID NOT IN ({', '.join(map(str, last_fetch_issue_ids))})" if last_fetch_issue_ids else ''
     if issue_field_to_fetch_from == 'id':
         return f'{fetch_query} AND id >= {last_fetch_id} {exclude_issue_ids_query} ORDER BY id ASC'
-    first_fetch_date = ''
-    if parsed_first_fetch_interval := dateparser.parse(first_fetch_interval):
-        first_fetch_date = parsed_first_fetch_interval.strftime('%Y-%m-%d %H:%M')
-    else:
-        raise DemistoException('Could not parse the time for the first fetch interval, please make sure it is a valid value')
-    if issue_field_to_fetch_from == 'status category change date':
-        interval_to_fetch_from = safe_get_last_interval_for_fetch(last_fetch_date=last_fetch_status_category_change_date,
-                                                                  fetch_interval=fetch_interval)
-        return (f'{fetch_query} AND statusCategoryChangedDate >= "{interval_to_fetch_from or first_fetch_date}"'
-                f' {exclude_issue_ids_query} ORDER BY statusCategoryChangedDate ASC')
-    elif issue_field_to_fetch_from == 'created date':
-        interval_to_fetch_from = safe_get_last_interval_for_fetch(last_fetch_date=last_fetch_created_time,
-                                                                  fetch_interval=fetch_interval)
-        return (f'{fetch_query} AND created >= "{interval_to_fetch_from or first_fetch_date}" {exclude_issue_ids_query}'
+    if issue_field_to_fetch_from == 'created date':
+        return (f'{fetch_query} AND created >= "{last_fetch_created_time or first_fetch_interval}" {exclude_issue_ids_query}'
                 ' ORDER BY created ASC')
     elif issue_field_to_fetch_from == 'updated date':
-        interval_to_fetch_from = safe_get_last_interval_for_fetch(last_fetch_date=last_fetch_updated_time,
-                                                                  fetch_interval=fetch_interval)
-        return (f'{fetch_query} AND updated >= "{interval_to_fetch_from or first_fetch_date}" {exclude_issue_ids_query}'
+        return (f'{fetch_query} AND updated >= "{last_fetch_updated_time or first_fetch_interval}" {exclude_issue_ids_query}'
                 ' ORDER BY updated ASC')
     raise DemistoException('Could not create the proper fetch query')
 
@@ -2588,9 +2616,9 @@ def get_attachments_entries_for_fetched_incident(client: JiraBaseClient, attachm
     return attachments_entries
 
 
-def create_incident_from_ticket(client: JiraBaseClient, issue: Dict[str, Any], fetch_attachments: bool, fetch_comments: bool,
-                                incoming_mirror: bool, outgoing_mirror: bool,
-                                comment_tag: str, attachment_tag: str) -> Dict[str, Any]:
+def create_incident_from_issue(client: JiraBaseClient, issue: Dict[str, Any], fetch_attachments: bool, fetch_comments: bool,
+                               incoming_mirror: bool, outgoing_mirror: bool,
+                               comment_tag: str, attachment_tag: str) -> Dict[str, Any]:
     issue_description: str = JiraIssueFieldsParser.get_description_context(issue_data=issue).get('Description') or ''
     issue_id = str(issue.get('id'))
     labels = [
@@ -2609,6 +2637,7 @@ def create_incident_from_ticket(client: JiraBaseClient, issue: Dict[str, Any], f
 
     ]
     issue['parsedDescription'] = issue_description
+    issue['extractedAttachments'] = JiraIssueFieldsParser.get_attachments_context(issue_data=issue).get('Attachments') or []
     issue['extractedSubtasks'] = JiraIssueFieldsParser.get_subtasks_context(issue_data=issue).get('Subtasks') or []
     issue['extractedCreator'] = JiraIssueFieldsParser.get_creator_context(issue_data=issue).get('Creator') or ''
     issue['extractedComponents'] = JiraIssueFieldsParser.get_components_context(issue_data=issue).get('Components') or []
@@ -2658,7 +2687,6 @@ def create_incident_from_ticket(client: JiraBaseClient, issue: Dict[str, Any], f
         attachment_tag
     ]
     issue['mirror_instance'] = demisto.integrationInstance()
-
     return {
         "name": name,
         "labels": labels,
@@ -2683,34 +2711,28 @@ def get_jira_issue_severity(issue_field_priority: Dict[str, Any]) -> int:
     return severity
 
 
-def safe_get_last_interval_for_fetch(last_fetch_date: str, fetch_interval: int) -> str:
-    """Since the fetch_incidents function is supposed to run periodically according to the fetch_interval
-    argument, there can be a situation where it gets delayed for some reason (maybe connection problems),
-    so in order to not lose any data if a delay should occur, we fetch data from 1 minute behind of the argument
-    last_fetch_date to ensure no issues are neglected. Duplicate data can be returned, therefore, the fetch_incidents
-    command must handle such duplications.
-
+def convert_string_date_to_specific_format(string_date: str, date_format: str = '%Y-%m-%d %H:%M') -> str:
+    """Convert a string that acts as a date to a specific format. Default is %Y-%m-%d %H:%M
 
     Args:
-        last_fetch_date (str): The last fetch date, or an empty string if there is not last fetch date.
-        fetch_interval (int): The fetch interval in minutes
+        string_date (str): The date as a string, or an empty string if there is not last fetch date.
+        date_format (str): The format of the date to return. Default is %Y-%m-%d %H:%M
 
     Raises:
         DemistoException: When last_fetch_date is not a valid date.
 
     Returns:
-        str: A string representing the last_fetch_date minus 1 minute, or an empty string if last_fetch_date is an empty string.
+        str: A string representing the date in %Y-%m-%d %H:%M format, or an empty string if string_date is an
+        empty string.
     """
-    if not last_fetch_date:
+    if not string_date:
         return ''
-    if parsed_last_fetch_date := dateparser.parse(last_fetch_date):
-        return parsed_last_fetch_date.strftime('%Y-%m-%d %H:%M')
-        # return (parsed_last_fetch_date - timedelta(minutes=fetch_interval + 1)).strftime('%Y-%m-%d %H:%M')
-    raise DemistoException('Could not parse the time of the last fetch.')
+    if parsed_string_date := dateparser.parse(string_date):
+        return parsed_string_date.strftime(date_format)
+    raise DemistoException(f'Could not parse the following date: {string_date}.')
 
 
 def main() -> None:
-
     params: Dict[str, Any] = demisto.params()
     args: Dict[str, Any] = demisto.args()
     verify_certificate: bool = not params.get('insecure', False)

@@ -63,7 +63,7 @@
                     "simple": "fields.created"
                 },
                 "Jira Attachments": {
-                    "simple": "fields.attachment"
+                    "simple": "extractedAttachments"
                 },
                 "Jira Description": {
                     "simple": "parsedDescription"

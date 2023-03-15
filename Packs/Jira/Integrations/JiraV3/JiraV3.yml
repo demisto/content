@@ -44,10 +44,9 @@ configuration:
   name: issue_field_to_fetch_from
   required: false
   options:
+  - id
   - created date
   - updated date
-  - status category change date
-  - id
   type: 15
 - additionalinfo: This parameter is dismissed while not choosing "id" in "Issue Field to Fetch from".
   display: Issue index to start fetching incidents from
@@ -1120,7 +1119,7 @@ script:
       secret: false
     - default: false
       description: The board ID, can be only used with a Jira Cloud instance. Run the command `jira-board-list` to retrieve the
-                  boards' ID. This argument is required when the issues supplied are NOT part of a board with sprints.
+                  boards' ID.
       isArray: false
       name: board_id
       required: false
@@ -1138,7 +1137,8 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Moves issues to backlog. At most 50 issues may be moved at once.
+    description: Moves issues to backlog. If the issues supplied are NOT part of a board that supports sprints,
+     then the board_id argument is required. At most 50 issues may be moved at once.
     execution: false
     name: jira-issue-to-backlog
   - arguments:
