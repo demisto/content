@@ -1171,8 +1171,8 @@ class MsGraphClient:
             no_folder = f'/users/{self._mailbox_to_fetch}/messages/{message_id}/attachments/{attachment_id}/' \
                         f'?$expand=microsoft.graph.itemattachment/item'
             with_folder = (f'/users/{self._mailbox_to_fetch}/{build_folders_path(folder_id)}/'  # type: ignore
-                        f'messages/{message_id}/attachments/{attachment_id}/'
-                        f'?$expand=microsoft.graph.itemattachment/item')
+                           f'messages/{message_id}/attachments/{attachment_id}/'
+                           f'?$expand=microsoft.graph.itemattachment/item')
         else:
             no_folder = f'/users/{self._mailbox_to_fetch}/messages/{message_id}/attachments'
             with_folder = (f'/users/{self._mailbox_to_fetch}/{build_folders_path(folder_id)}/'  # type: ignore

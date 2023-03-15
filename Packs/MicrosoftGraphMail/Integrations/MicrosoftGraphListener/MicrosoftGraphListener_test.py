@@ -691,7 +691,6 @@ def test_get_attachment_unsupported_type(client):
         assert 'Integration does not support attachments from type #microsoft.graph.contact' in output
 
 
-
 class MockedResponse:
 
     def __init__(self, status_code):
