@@ -1,2 +1,7 @@
 !datadog-event-list limit=2
 !datadog-event-create title="Event Title" text="Event Text"
+!datadog-tag-list limit=10
+!datadog-host-tag-get host_name="host_name"
+!datadog-host-tag-create host_name="host_name" tags="env:prod"
+!datadog-host-tag-update host_name="host_name"
+!datadog-host-tag-delete host_name="host_name"

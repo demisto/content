@@ -1,7 +1,7 @@
 {
     "name": "DatadogCloudSIEM",
     "description": "Datadog is an observability service for cloud-scale applications, providing monitoring of servers, databases, tools, and services, through a SaaS-based data analytics platform",
-    "support": "partner",
+    "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "DatadogCloudSIEM",
     "url": "",

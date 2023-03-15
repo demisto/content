@@ -2,8 +2,8 @@ from datetime import datetime
 from math import floor
 from typing import Any, Dict
 
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-from CommonServerUserPython import *  # noqa
+from CommonServerPython import *  # noqa: F401 # pylint: disable=unused-wildcard-import
+from CommonServerUserPython import *  # noqa: F401
 from datadog_api_client import ApiClient, Configuration
 from datadog_api_client.v1.api.authentication_api import AuthenticationApi
 from datadog_api_client.v1.api.events_api import EventsApi
@@ -11,6 +11,8 @@ from datadog_api_client.v1.model.event import Event
 from datadog_api_client.v1.model.event_alert_type import EventAlertType
 from datadog_api_client.v1.model.event_create_request import EventCreateRequest
 from datadog_api_client.v1.model.event_priority import EventPriority
+from datadog_api_client.v1.api.tags_api import TagsApi
+from datadog_api_client.v1.model.host_tags import HostTags
 from dateparser import parse
 from urllib3 import disable_warnings
 
@@ -27,19 +29,27 @@ PAGE_SIZE_ERROR_MSG = "Invalid Input Error: page size should be greater than zer
 DEFAULT_FROM_DATE = "-7days"
 DEFAULT_TO_DATE = "now"
 INTEGRATION_CONTEXT_NAME = "Datadog"
+HOUR_SECONDS = 3600
+NO_RESULTS_FROM_API_MSG = "API didn't return any results for given search parameters."
+ERROR_MSG = "Something went wrong!\n"
+
 
 # """ HELPER FUNCTIONS """
 
 
-def get_command_title_string(
+def get_paginated_results(results: List, offset: int, limit: int) -> List:
+    return results[offset : offset + limit]
+
+
+def table_header(
     sub_context: str, page: Optional[int], page_size: Optional[int]
 ) -> str:
     """
-    Define command title
+    The header for table with pagination.
     Args:
         sub_context: Commands sub_context
-        page: page_number
-        page_size: page_size
+        page: The page number.
+        page_size: The number of requested results per page.
     Returns:
         Returns the title for the readable output
     """
@@ -52,21 +62,22 @@ def get_command_title_string(
     return f"{sub_context} List"
 
 
-def is_within_18_hours(timestamp: int) -> bool:
+def is_within_time(timestamp: int, time: int = 18) -> bool:
     """
-    Check if a given Unix timestamp is within the last 18 hours.
+    Check if a given Unix timestamp is within the time.
 
     Args:
-        timestamp (int): A Unix timestamp.
+        timestamp (int): A Unix timestamp(in seconds).
+        time (int): Time in hours.
 
     Returns:
-        bool: True if the given timestamp is within the last 18 hours, False otherwise.
+        bool: True if the given timestamp is within the time, False otherwise.
     """
     current_time = datetime.now()
     timestamp_time = datetime.fromtimestamp(timestamp)
     time_diff = current_time - timestamp_time
-    time_diff_hours = time_diff.total_seconds() / 3600
-    return time_diff_hours <= 18
+    time_diff_hours = time_diff.total_seconds() / HOUR_SECONDS
+    return time_diff_hours <= time
 
 
 def lookup_to_markdown(results: List[Dict], title: str) -> str:
@@ -124,16 +135,16 @@ def pagination(limit: Optional[int], page: Optional[int], page_size: Optional[in
         limit (int): Records per page.
         offset (int): The number of records to be skipped.
     """
-    if page is not None and page <= 0:
+    if page and page <= 0:
         raise DemistoException(PAGE_NUMBER_ERROR_MSG)
-    if page_size is not None and page_size <= 0:
+    if page_size and page_size <= 0:
         raise DemistoException(PAGE_SIZE_ERROR_MSG)
 
+    if page_size and limit:
+        limit = page_size
     page = page - 1 if page else DEFAULT_OFFSET
     page_size = page_size or DEFAULT_PAGE_SIZE
-    # page_size = DEFAULT_PAGE_SIZE if page_size is None else page_size
 
-    # limit = limit if limit else (page_size if page_size else DEFAULT_PAGE_SIZE)
     limit = limit or page_size or DEFAULT_PAGE_SIZE
     offset = page * page_size
 
@@ -143,7 +154,7 @@ def pagination(limit: Optional[int], page: Optional[int], page_size: Optional[in
 """ COMMAND FUNCTIONS """
 
 
-def test_module(configuration) -> str:
+def test_module(configuration: Configuration) -> str:
     """Tests API connectivity and authentication'
 
     Returning 'ok' indicates that the integration works like it is supposed to.
@@ -153,13 +164,15 @@ def test_module(configuration) -> str:
     :return: 'ok' if test passed, anything else will fail the test.
     :rtype: ``str``
     """
-    try:
-        with ApiClient(configuration) as api_client:
+    with ApiClient(configuration) as api_client:
+        # Testing api key
+        try:
             api_instance = AuthenticationApi(api_client)
             api_instance.validate()
-
-            # Testing application key
-
+        except Exception:
+            return "Authorization Error: Invalid API Key. Make sure API Key, Server URL is correctly set."
+        # Testing application key
+        try:
             api_instance = EventsApi(api_client)
             start_time = parse("1 min ago", settings={"TIMEZONE": "UTC"})
             end_time = parse(DEFAULT_TO_DATE, settings={"TIMEZONE": "UTC"})
@@ -167,16 +180,16 @@ def test_module(configuration) -> str:
                 start=int(start_time.timestamp() if start_time else 0),
                 end=int(end_time.timestamp() if end_time else 0),
             )
-            return "ok"
-    except Exception:
-        return "Authorization Error: Make sure API Key, Application Key, Server URL is correctly set."
+        except Exception:
+            return "Authorization Error: Invalid Application Key."
+        return "ok"
 
 
 def create_event_command(
     configuration: Configuration, args: Dict[str, Any]
 ) -> Union[CommandResults, DemistoException]:
     """
-    Creates an event in the Datadog.
+    Creates an event in Datadog.
 
     Args:
         configuration (Configuration): The configuration object for Datadog.
@@ -196,11 +209,11 @@ def create_event_command(
     date_happened = args.get("date_happened")
     if date_happened:
         date_happened_timestamp = parse(date_happened, settings={"TIMEZONE": "UTC"})
-        if not is_within_18_hours(
+        if not is_within_time(
             int(date_happened_timestamp.timestamp() if date_happened_timestamp else 0)
         ):
             return CommandResults(
-                readable_output="The time of the event shall not be older than 18 hours!\n"
+                readable_output="The time of the event cannot be older than 18 hours!\n"
             )
     date_happened = parse(date_happened, settings={"TIMEZONE": "UTC"})
     event_body = {
@@ -228,7 +241,7 @@ def create_event_command(
         readable_output = (
             "Event created successfully!"
             if response and response.status == "ok"
-            else "Something went wrong!"
+            else ERROR_MSG
         )
         return CommandResults(
             readable_output=readable_output,
@@ -297,21 +310,221 @@ def get_events_command(
                 **{key: value for key, value in body_dict.items() if value is not None}
             )
             results: List[Event] = response.get("events", [])
-            resp: List[Event] = results[offset: offset + limit]
+            resp: List[Event] = get_paginated_results(results, offset, limit)
             data = [event.to_dict() for event in resp]
             if data:
                 events_list = [event_for_lookup(event) for event in data]
                 readable_output = lookup_to_markdown(
-                    events_list, get_command_title_string("Events", page, page_size)
+                    events_list, table_header("Events", page, page_size)
                 )
             else:
-                readable_output = "No Events to present.\n"
+                readable_output = NO_RESULTS_FROM_API_MSG
         return CommandResults(
             readable_output=readable_output,
             outputs_prefix=f"{INTEGRATION_CONTEXT_NAME}.Event",
             outputs_key_field="id",
             outputs=data,
         )
+
+
+def get_tags_command(
+    configuration: Configuration, args: Dict[str, Any]
+) -> Union[CommandResults, DemistoException]:
+    """
+    Retrieve a list of tags, and paginate them according to the specified page, page size, and limit parameters.
+    Args:
+        configuration (Configuration): The configuration object for Datadog.
+        args (dict): A dictionary containing the command arguments, including:
+            - page (int): The page number of the results to retrieve.
+            - page_size (int): The number of results per page.
+            - limit (int): The maximum number of results to return.
+            - source (str): The source of the tags to retrieve.
+    Returns:
+        CommandResults: The object containing the command results, including the readable output, outputs prefix,
+         outputs key field, and outputs data.
+    """
+    page = arg_to_number(args.get("page"), arg_name="page")
+    page_size = arg_to_number(args.get("page_size"), arg_name="page_size")
+    limit = arg_to_number(args.get("limit"), arg_name="limit")
+    limit, offset = pagination(limit, page, page_size)
+    source = args.get("source")
+    with ApiClient(configuration) as api_client:
+        tags_api = TagsApi(api_client)
+        response = (
+            tags_api.list_host_tags()
+            if not source
+            else tags_api.list_host_tags(source=source)
+        )
+        results = response.get("tags", {})
+        if results:
+            tags_list = [{"Tag": k, "Host": v} for k, v in results.items()]
+            tags_list = get_paginated_results(tags_list, offset, limit)
+            tags = [obj.get("Tag") for obj in tags_list]
+            context_output = {"Tag": tags}
+            readable_output = lookup_to_markdown(
+                tags_list, table_header("Tags", page, page_size)
+            )
+        else:
+            readable_output = NO_RESULTS_FROM_API_MSG
+        return CommandResults(
+            readable_output=readable_output,
+            outputs_prefix=INTEGRATION_CONTEXT_NAME,
+            outputs_key_field="Tag",
+            outputs=context_output if results else [],
+        )
+
+
+def get_host_tags_command(
+    configuration: Configuration, args: Dict[str, Any]
+) -> Union[CommandResults, DemistoException]:
+    """
+     Retrieves the tags for a given host name and optional source.
+
+      Args:
+        configuration (Configuration): The configuration object for Datadog.
+        args (dict): A dictionary containing the command arguments, including:
+            - host_name (str): The name of the host to retrieve tags for.
+            - page (int): The page number of the results to retrieve.
+            - page_size (int): The number of results per page.
+            - limit (int): The maximum number of results to return.
+            - source (str): The source of the tags to retrieve.
+    Returns:
+        CommandResults: The object containing the command results, including the readable output, outputs prefix,
+         outputs key field, and outputs data.
+    """
+    host_name = args.get("host_name")
+    source = args.get("source")
+    page = arg_to_number(args.get("page"), arg_name="page")
+    page_size = arg_to_number(args.get("page_size"), arg_name="page_size")
+    limit = arg_to_number(args.get("limit"), arg_name="limit")
+    limit, offset = pagination(limit, page, page_size)
+    with ApiClient(configuration) as api_client:
+        tags_api = TagsApi(api_client)
+        response = (
+            tags_api.get_host_tags(host_name=host_name)
+            if not source
+            else tags_api.get_host_tags(host_name=host_name, source=source)
+        )
+        tags = response.get("tags", [])
+    if tags:
+        host_tags_list = get_paginated_results(
+            [{"Tags": tag} for tag in tags], offset, limit
+        )
+        host_tags = [obj.get("Tags") for obj in host_tags_list]
+        context_output = {"Tag": host_tags, "HostTag": host_name}
+        readable_output = lookup_to_markdown(
+            host_tags_list, table_header("Host Tags", page, page_size)
+        )
+    else:
+        readable_output = NO_RESULTS_FROM_API_MSG
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=INTEGRATION_CONTEXT_NAME,
+        outputs_key_field="Tag",
+        outputs=context_output if tags else [],
+    )
+
+
+def add_tags_to_host_command(
+    configuration: Configuration, args: Dict[str, Any]
+) -> Union[CommandResults, DemistoException]:
+    """
+     This function adds tags to a specified host in Datadog.
+
+     Args:
+     configuration (Configuration): The configuration object for Datadog.
+     args (Dict[str, Any]): A dictionary containing the following keys:
+     - host_name (str): The name of the host to add tags to.
+     - tags (str or List[str]): The tags to add to the host, separated by commas or provided as a list.
+
+    Returns:
+     CommandResults: The object containing the command results, including the readable output, outputs prefix,
+      outputs key field, and outputs data.
+    """
+    host_name = args.get("host_name")
+    tags = argToList(args.get("tags"), ",")
+
+    body = HostTags(host=host_name, tags=tags)
+
+    with ApiClient(configuration) as api_client:
+        tags_api = TagsApi(api_client)
+        response = tags_api.create_host_tags(host_name=host_name, body=body)
+    if response and response.get("host"):
+        readable_output = "Tags added to host successfully!"
+        output_context = {"Tag": response.get("tags"), "HostTag": response.get("host")}
+    else:
+        readable_output = ERROR_MSG
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=INTEGRATION_CONTEXT_NAME,
+        outputs_key_field="Tag",
+        outputs=output_context if response else [],
+    )
+
+
+def update_host_tags_command(
+    configuration: Configuration, args: Dict[str, Any]
+) -> Union[CommandResults, DemistoException]:
+    """
+    This function updates the tags of a specified host in Datadog.
+
+    Args:
+     configuration (Configuration): The configuration object for Datadog.
+     args (Dict[str, Any]): A dictionary containing the following keys:
+    - host_name (str): The name of the host to update tags for.
+    - tags (str or List[str]): The new tags to set for the host, separated by commas or provided as a list.
+
+    Returns:
+    CommandResults: The object containing the command results, including the readable output, outputs prefix,
+     outputs key field, and outputs data.
+
+    """
+    host_name = args.get("host_name")
+    tags = argToList(args.get("tags"), ",")
+
+    body = HostTags(host=host_name, tags=tags)
+
+    with ApiClient(configuration) as api_client:
+        tags_api = TagsApi(api_client)
+        response = tags_api.update_host_tags(host_name=host_name, body=body)
+
+    if response and response.get("host"):
+        output_context = {"Tag": response.get("tags"), "HostTag": response.get("host")}
+        readable_output = "Tags updated to host successfully!"
+    else:
+        readable_output = ERROR_MSG
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_NAME}",
+        outputs_key_field="Tag",
+        outputs=output_context if response else [],
+    )
+
+
+def delete_host_tags_command(
+    configuration: Configuration, args: Dict[str, Any]
+) -> Union[CommandResults, DemistoException]:
+    """
+    Deletes all tags associated with the specified host name.
+
+    Args:
+     configuration (Configuration): The configuration object for Datadog.
+     args: A dictionary of arguments for the command, containing:
+        - host_name (str): The name of the host to delete tags from.
+
+    Returns:
+        A CommandResults object containing the following fields:
+            - readable_output (str): A message indicating that the host tags were deleted successfully.
+    """
+    host_name = args.get("host_name")
+    with ApiClient(configuration) as api_client:
+        tags_api = TagsApi(api_client)
+        tags_api.delete_host_tags(host_name=host_name)
+        readable_output = "Host tags deleted successfully!"
+    return CommandResults(readable_output=readable_output)
 
 
 """ MAIN FUNCTION """
@@ -332,6 +545,11 @@ def main() -> None:
         commands = {
             "datadog-event-create": create_event_command,
             "datadog-event-list": get_events_command,
+            "datadog-tag-list": get_tags_command,
+            "datadog-host-tag-create": add_tags_to_host_command,
+            "datadog-host-tag-get": get_host_tags_command,
+            "datadog-host-tag-update": update_host_tags_command,
+            "datadog-host-tag-delete": delete_host_tags_command,
         }
         if command == "test-module":
             return_results(test_module(configuration))

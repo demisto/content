@@ -13,7 +13,7 @@ This integration was integrated and tested with version xx of DatadogCloudSIEM
     | --- | --- | --- |
     | Server URL | Datadog webiste URL | True |
     | API Key | The API Key to use for authentication | True |
-    | Application Key | The API Key to use for authentication. | True |
+    | Application Key | The application key to use for authentication. | True |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
 
@@ -102,3 +102,118 @@ Get a list of Events / Get the details of a particular Event.
 | Datadog.Event.status | String | The status of the event. | 
 | Datadog.Event.host | String | Host name to associate with the event. Any tags associated with the host are also applied to this event. | 
 | Datadog.Event.title | String | The Event title. | 
+
+### datadog-tag-list
+
+***
+Return a mapping of tags to hosts for your whole infrastructure.
+
+#### Base Command
+
+`datadog-tag-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| page | The page number. Default is 1. | Optional | 
+| page_size | The number of requested results per page. Default is 50. | Optional | 
+| limit | The maximum number of records to return from the collection. Limit default value is 50. If the page_size argument is set by the user then the limit argument will be ignored. | Optional | 
+| source | When specified, filters host list to those tags with the specified source. <br/>A complete list of source attribute values availble here. https://docs.datadoghq.com/integrations/faq/list-of-api-source-attribute-value/. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Datadog.Tag | Unknown | A list of tags to apply to the host. | 
+
+### datadog-host-tag-create
+
+***
+This endpoint allows you to add new tags to a host, optionally specifying where these tags come from.
+
+#### Base Command
+
+`datadog-host-tag-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| host_name | The host name. | Required | 
+| tags | A list of tags to apply to the host. <br/>Comma seperated values. Ex: "environment:production, region:East” . | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Datadog.Tag | Unknown | A list of tags to apply to the host. | 
+| Datadog.HostTag | String | The host name. | 
+
+### datadog-host-tag-get
+
+***
+Return the list of tags that apply to a given host.
+
+#### Base Command
+
+`datadog-host-tag-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| host_name | The host name. | Required | 
+| source | When specified, filters host list to those tags with the specified source. <br/>A complete list of source attribute values availble here. https://docs.datadoghq.com/integrations/faq/list-of-api-source-attribute-value/. | Optional | 
+| page | The page number. Default is 1. . | Optional | 
+| page_size | The number of requested results per page. <br/>Default is 50. . | Optional | 
+| limit | The maximum number of records to return from the collection. Limit default value is 50. If the page_size argument is set by the user, then the limit argument will be ignored. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Datadog.Tag | Unknown | A list of tags to apply to the host. | 
+| Datadog.HostTag | String | The host name. | 
+
+### datadog-host-tag-update
+
+***
+This endpoint allows you to replace all tags in an integration source with those supplied in the request.
+
+#### Base Command
+
+`datadog-host-tag-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| host_name | The host name. | Required | 
+| tags | A list of tags to apply to the host  <br/>Previous tags will be replaced by new tags. <br/>Comma seperated values. Ex: "environment:production, region:East”  . | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Datadog.Tag | Unknown | A list of tags to apply to the host. | 
+| Datadog.HostTag | String | The host name. | 
+
+### datadog-host-tag-delete
+
+***
+This endpoint allows you to remove all user-assigned tags for a single host.
+
+#### Base Command
+
+`datadog-host-tag-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| host_name | Host name to remove associated tags. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
