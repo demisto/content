@@ -258,7 +258,7 @@
           if [[ -n $BUCKET_UPLOAD ]]; then
             demisto-sdk lint -vvv -p 8 -g --no-mypy --prev-ver $LAST_UPLOAD_COMMIT -v --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report -cdam --docker-image $DOCKER
           else
-            demisto-sdk lint -p 8 -g -vvv --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts --coverage-report $ARTIFACTS_FOLDER/coverage_report -cdam --docker-image $DOCKER
+            demisto-sdk lint -p 8 -g -vvv --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts --coverage-report $ARTIFACTS_FOLDER/coverage_report -cdam --docker-image $DOCKER_FOR_PR
           fi
         fi
         if [[ -f $ARTIFACTS_FOLDER/coverage_report/.coverage ]]; then
@@ -276,7 +276,8 @@
     - job-done
   parallel:
     matrix:
-      - DOCKER: ['native:ga,native:maintenance', 'native:dev,from-yml']
+      - DOCKER_FOR_PR: ['native:ga,native:dev', 'native:maintenance,from-yml']
+      - DOCKER_FOR_NIGHTLY: ['native:ga,native:maintenance', 'from-yml']
 
 .run-validations:
   stage: unittests-and-validations

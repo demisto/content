@@ -393,7 +393,7 @@ workflows:
   commit:
     when:
       matches:
-        # matching the environment variable "CIRCLE_BRANCH" from the setup environment step.
+        # matching the environment variable << pipeline.git.branch >> to contributions branch pattern.
         pattern: pull/[0-9]+
         value: << pipeline.git.branch >>
     jobs:
