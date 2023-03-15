@@ -12,7 +12,7 @@
   9. Click [here](https://support.atlassian.com/bitbucket-cloud/docs/create-an-app-password/) for more information.
   
 ### Known Limitations
-* In order to perform the ***test-module*** command (the "Test" button) add to the app password **Read** permissions to the project. 
+* In order to perform the ***test-module*** command (the "Test" button) add to the **app password**, **Read** permissions to **Projects**. 
 * In order to perform the ***bitbucket-issue-create*** command, an issue tracker is required. 
 * In order to create an issue tracker, click the relevant repo > Repository settings > Issue tracker, and create it.
 
