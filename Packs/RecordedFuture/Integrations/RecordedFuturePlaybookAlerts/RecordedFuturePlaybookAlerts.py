@@ -175,8 +175,8 @@ class Actions:
                         for screenshot_data in incident_json["panel_evidence_summary"][
                             "screenshots"
                         ]:
-                            file_name = f'{screenshot_data.get("image_id").replace("img:","")}.png'
-                            file_data = screenshot_data.get("base64")
+                            file_name = f'{screenshot_data.get("image_id", "").replace("img:","")}.png'
+                            file_data = screenshot_data.get("base64", "")
                             file = fileResult(file_name, base64.b64decode(file_data))
                             attachment = {
                                 "description": screenshot_data.get('description'),
