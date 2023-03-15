@@ -862,6 +862,7 @@ def fetch_incidents():
                 if timestamp not in fetched_ids:
                     fetched_ids[timestamp] = []
                 fetched_ids[timestamp].append(incident_id)
+        fetched_ids_copy.clear()
 
     now = int((datetime.utcnow() - datetime.utcfromtimestamp(0)).total_seconds() * 1000)
     if not last_run_time:
@@ -909,7 +910,7 @@ def fetch_incidents():
 
         demisto.debug(f"{alert_id} has not been fetched. Processing.")
         incidents.append({
-            'name': alert.get('policy.name', 'No policy') + ' - ' + alert.get('id'),
+            'name': alert.get('policy.name', 'No policy') + ' - ' + alert_id,
             'occurred': convert_unix_to_demisto(alert.get('alertTime')),
             'severity': translate_severity(alert),
             'rawJSON': json.dumps(alert)
