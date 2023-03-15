@@ -35,39 +35,21 @@ def split_rule(rule: Dict, port: int, protocol: str) -> List[Dict]:
             rule_copy['FromPort'] = port + 1
             res_list.append(rule_copy)
     else:
-        # TODO good place for some clean up
+        # Splitting up "all traffic" rules.
         if protocol == 'tcp':
-            rule1 = rule.copy()
-            rule2 = rule.copy()
-            rule3 = rule.copy()
-            rule1['FromPort'] = 0
-            rule1['ToPort'] = port - 1
-            rule1["IpProtocol"] = 'tcp'
-            rule2['FromPort'] = port + 1
-            rule2['ToPort'] = 65535
-            rule2["IpProtocol"] = 'tcp'
-            rule3['FromPort'] = 0
-            rule3['ToPort'] = 65535
-            rule3["IpProtocol"] = 'udp'
-            res_list.append(rule1)
-            res_list.append(rule2)
-            res_list.append(rule3)
+            res_list = [{'IpProtocol': 'tcp', 'IpRanges': [{'CidrIp': '0.0.0.0/0'}], 'Ipv6Ranges': [], 'PrefixListIds': [],
+                         'UserIdGroupPairs': [], 'FromPort': 0, 'ToPort': port - 1},
+                        {'IpProtocol': 'tcp', 'IpRanges': [{'CidrIp': '0.0.0.0/0'}], 'Ipv6Ranges': [], 'PrefixListIds': [],
+                         'UserIdGroupPairs': [], 'FromPort': port + 1, 'ToPort': 65535},
+                        {'IpProtocol': 'udp', 'IpRanges': [{'CidrIp': '0.0.0.0/0'}], 'Ipv6Ranges': [], 'PrefixListIds': [],
+                         'UserIdGroupPairs': [], 'FromPort': 0, 'ToPort': 65535}]
         else:
-            rule1 = rule.copy()
-            rule2 = rule.copy()
-            rule3 = rule.copy()
-            rule1['FromPort'] = 0
-            rule1['ToPort'] = port - 1
-            rule1["IpProtocol"] = 'udp'
-            rule2['FromPort'] = port + 1
-            rule2['ToPort'] = 65535
-            rule2["IpProtocol"] = 'udp'
-            rule3['FromPort'] = 0
-            rule3['ToPort'] = 65535
-            rule3["IpProtocol"] = 'tcp'
-            res_list.append(rule1)
-            res_list.append(rule2)
-            res_list.append(rule3)
+            res_list = [{'IpProtocol': 'udp', 'IpRanges': [{'CidrIp': '0.0.0.0/0'}], 'Ipv6Ranges': [], 'PrefixListIds': [],
+                         'UserIdGroupPairs': [], 'FromPort': 0, 'ToPort': port - 1},
+                        {'IpProtocol': 'udp', 'IpRanges': [{'CidrIp': '0.0.0.0/0'}], 'Ipv6Ranges': [], 'PrefixListIds': [],
+                         'UserIdGroupPairs': [], 'FromPort': port + 1, 'ToPort': 65535},
+                        {'IpProtocol': 'tcp', 'IpRanges': [{'CidrIp': '0.0.0.0/0'}], 'Ipv6Ranges': [], 'PrefixListIds': [],
+                         'UserIdGroupPairs': [], 'FromPort': 0, 'ToPort': 65535}]
     return(res_list)
 
 
@@ -86,35 +68,36 @@ def sg_fix(sg_info: Dict, port: int, protocol: str) -> Dict:
     """
     info = sg_info[0]['Contents']['AWS.EC2.SecurityGroups(val.GroupId === obj.GroupId)'][0]
     recreate_list = []
-    no_change = True
+    # Keep track of change in SG or not.
+    change = False
     for rule in info['IpPermissions']:
         # Check if 'FromPort' is in rule, else it is an "all traffic rule".
         if rule.get('FromPort'):
             # Don't recrete if it targets just the port of interest.
             if rule['FromPort'] == port and port == rule['ToPort'] and rule['IpRanges'][0]['CidrIp'] == "0.0.0.0/0" and \
                rule['IpProtocol'] == protocol:
-                no_change = False
+                change = True
             elif rule['FromPort'] <= port and port <= rule['ToPort'] and rule['IpRanges'][0]['CidrIp'] == "0.0.0.0/0" and \
                  rule['IpProtocol'] == protocol:  # noqa: E127
                 fixed = split_rule(rule, port, protocol)
                 for rule_fix in fixed:
                     new_rule = (str([rule_fix])).replace("'", "\"")
                     recreate_list.append(new_rule)
-                    no_change = False
+                    change = True
             else:
                 new_rule = (str([rule])).replace("'", "\"")
                 recreate_list.append(new_rule)
         elif rule['IpRanges'][0]['CidrIp'] == "0.0.0.0/0":
             fixed = split_rule(rule, port, protocol)
-            no_change = False
+            change = True
             for rule_fix in fixed:
                 new_rule = (str([rule_fix])).replace("'", "\"")
                 recreate_list.append(new_rule)
         else:
             new_rule = (str([rule])).replace("'", "\"")
             recreate_list.append(new_rule)
-    if no_change:
-        return False
+    if change is False:
+        return {}
     else:
         # Add rules that allow private_ips to specific port.
         priv_ips_list = [[{'IpProtocol': protocol, 'IpRanges': [{'CidrIp': '10.0.0.0/8'}], 'Ipv6Ranges': [],
@@ -142,7 +125,6 @@ def sg_fix(sg_info: Dict, port: int, protocol: str) -> Dict:
         e_format = str([egress]).replace("'", "\"")
         demisto.executeCommand("aws-ec2-authorize-security-group-egress-rule", {"groupId": new_id, "IpPermissionsFull": e_format})
     # If `all traffic` rule before, remove the default one.
-    # TODO CHECK THAT THIS WORKS
     if match_all_trafic is True:
         all_traffic_rule = """[{"IpProtocol": "-1", "IpRanges": [{"CidrIp": "0.0.0.0/0"}], "Ipv6Ranges": [],""" + \
                            """"PrefixListIds": [], "UserIdGroupPairs": []}]"""
@@ -189,7 +171,7 @@ def determine_excessive_access(int_sg_mapping: Dict, port: int, protocol: str) -
             if sg_info:
                 res = sg_fix(sg_info, port, protocol)
                 # Need interface, old sg and new sg.
-                if res:
+                if res.get('new-sg'):
                     res['old-sg'] = sg
                     res['int'] = mapping
                     replace_list.append(res)

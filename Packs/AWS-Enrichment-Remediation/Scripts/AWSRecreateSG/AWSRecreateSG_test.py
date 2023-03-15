@@ -2,7 +2,7 @@ import demistomock as demisto  # noqa: F401
 
 
 def test_split_rule(mocker):
-    """Tests get_asm_args helper function.
+    """Tests split_rule helper function.
 
         Given:
             - Mocked arguments
@@ -16,22 +16,97 @@ def test_split_rule(mocker):
             "PrefixListIds": [], "UserIdGroupPairs": []}
     args = {"rule": rule, "port": 22, "protocol": "tcp"}
     result = split_rule(**args)
-    assert result[0] == {'IpProtocol': 'tcp', 'IpRanges': [{'CidrIp': '0.0.0.0/0'}], 'Ipv6Ranges': [], 'PrefixListIds': [], 'UserIdGroupPairs': [], 'FromPort': 0, 'ToPort': 21}
+    assert result[0] == {'IpProtocol': 'tcp', 'IpRanges': [{'CidrIp': '0.0.0.0/0'}],
+                         'Ipv6Ranges': [], 'PrefixListIds': [], 'UserIdGroupPairs': [], 'FromPort': 0, 'ToPort': 21}
 
-#TODO
-def instance_info(mocker):
-    """Tests get_asm_args helper function.
-        
+
+def test_instance_info(mocker):
+    """Tests instance_info helper function.
+
         Given:
             - Mocked arguments
         When:
-            - Sending args to split_rule helper function.
+            - Sending args to instance_info helper function.
         Then:
             - Checks the output of the helper function with the expected output.
     """
     from AWSRecreateSG import instance_info
-    example_output= [{"NetworkInterfaces":[{"Association":{"IpOwnerId":"717007404259","PublicDnsName":"","PublicIp":"52.22.120.51"},"Attachment":{"AttachTime":"2022-08-10T11:59:30","AttachmentId":"eni-attach-0feb71c931c2b2cfc","DeleteOnTermination":true,"DeviceIndex":0,"NetworkCardIndex":0,"Status":"attached"},"Description":"","Groups":[{"GroupId":"sg-0c63e43b0b6a2fd9e","GroupName":"1852-bad"}],"InterfaceType":"interface","Ipv6Addresses":[],"MacAddress":"12:aa:43:f9:e4:55","NetworkInterfaceId":"eni-0db6b9d77a7032858","OwnerId":"717007404259","PrivateIpAddress":"10.0.101.59","PrivateIpAddresses":[{"Association":{"IpOwnerId":"717007404259","PublicDnsName":"","PublicIp":"52.22.120.51"},"Primary":true,"PrivateIpAddress":"10.0.101.59"}]}]}]
-    mocker.patch.object(demisto, "executeCommand", return_value=date_result)
+    from test_data.sample import INSTANCE_INFO
+    mocker.patch.object(demisto, "executeCommand", return_value=INSTANCE_INFO)
     args = {"instance_id": "fake-instance-id", "public_ip": "1.1.1.1"}
     result = instance_info(**args)
-    assert result[0] == {'IpProtocol': 'tcp', 'IpRanges': [{'CidrIp': '0.0.0.0/0'}], 'Ipv6Ranges': [], 'PrefixListIds': [], 'UserIdGroupPairs': [], 'FromPort': 0, 'ToPort': 21}
+    assert result == {'eni-00000000000000000': ['sg-00000000000000000']}
+
+
+def test_sg_fix(mocker):
+    """Tests sg_fix helper function.
+
+        Given:
+            - Mocked arguments
+        When:
+            - Sending args to sg_fix helper function.
+        Then:
+            - Checks the output of the helper function with the expected output.
+    """
+    from AWSRecreateSG import sg_fix
+    from test_data.sample import SG_INFO
+    new_sg = [{'Contents': {'AWS.EC2.SecurityGroups': {'GroupId': 'sg-00000000000000001'}}}]
+    mocker.patch.object(demisto, "executeCommand", return_value=new_sg)
+    args = {"sg_info": SG_INFO, "port": 22, "protocol": "tcp"}
+    result = sg_fix(**args)
+    assert result == {'new-sg': 'sg-00000000000000001'}
+
+
+def test_determine_excessive_access(mocker):
+    """Tests determine_excessive_access helper function.
+
+        Given:
+            - Mocked arguments
+        When:
+            - Sending args to determine_excessive_access helper function.
+        Then:
+            - Checks the output of the helper function with the expected output.
+    """
+    from AWSRecreateSG import determine_excessive_access
+    from test_data.sample import SG_INFO
+    new_sg = [{'Contents': {'AWS.EC2.SecurityGroups': {'GroupId': 'sg-00000000000000001'}}}]
+
+    def executeCommand(name, args):
+        if name == "aws-ec2-describe-security-groups":
+            return SG_INFO
+        elif name == "aws-ec2-create-security-group":
+            return new_sg
+
+    mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
+    args = {"int_sg_mapping": {'eni-00000000000000000': ['sg-00000000000000000']}, "port": 22, "protocol": "tcp"}
+    result = determine_excessive_access(**args)
+    assert result == [{'int': 'eni-00000000000000000', 'old-sg': 'sg-00000000000000000', 'new-sg': 'sg-00000000000000001'}]
+
+
+def test_aws_recreate_sg_command(mocker):
+    """Tests aws_recreate_sg_command  function.
+
+        Given:
+            - Mocked arguments
+        When:
+            - Sending args to aws_recreate_sg_command  function.
+        Then:
+            - Checks the output of the function with the expected output.
+    """
+    from AWSRecreateSG import aws_recreate_sg_command
+    from test_data.sample import SG_INFO, INSTANCE_INFO
+    new_sg = [{'Contents': {'AWS.EC2.SecurityGroups': {'GroupId': 'sg-00000000000000001'}}}]
+
+    def executeCommand(name, args):
+        if name == "aws-ec2-describe-security-groups":
+            return SG_INFO
+        elif name == "aws-ec2-create-security-group":
+            return new_sg
+        elif name == "aws-ec2-describe-instances":
+            return INSTANCE_INFO
+
+    mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
+    args = {"instance_id": "fake-instance-id", "public_ip": "1.1.1.1", "port": "22", "protocol": "tcp"}
+    result = aws_recreate_sg_command(args)
+    correct_output = "For interface eni-00000000000000000: \r\nreplaced SG sg-00000000000000000 with sg-00000000000000001 \r\n"
+    assert result == correct_output
