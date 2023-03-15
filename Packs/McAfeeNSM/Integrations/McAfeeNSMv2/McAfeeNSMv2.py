@@ -801,6 +801,32 @@ def modify_v10_results_to_v9_format(results: List[Dict[Any, Any]]) -> List[Dict[
     return results
 
 
+def capitalize_key_first_letter(input_lst: List[Dict], check_lst: List = None) -> List[Dict]:
+    """
+        Capitalize the first letter of all keys in all dictionaries, while keeping the rest of the key as is.
+        Args:
+            input_lst: List - A list of dictionaries.
+            check_lst: List - A list of keys to check if they exist in the dictionary.
+        Returns:
+            Returns the dict with the first letter of all keys capitalized.
+    """
+    if check_lst is None:
+        check_lst = []
+    capitalize_lst = []
+    for my_dict in input_lst:
+        my_dict = (
+            {
+                k[:1].upper() + k[1:]: v
+                for k, v in my_dict.items()
+                if k in check_lst
+            }
+            if check_lst
+            else {k[:1].upper() + k[1:]: v for k, v in my_dict.items()}
+        )
+        capitalize_lst.append(my_dict)
+    return capitalize_lst
+
+
 def check_args_create_rule(rule_type: str, address: List, from_address: str, to_address: str, number: int):
     """ Validate the arguments of the function
         Args:
@@ -2085,11 +2111,7 @@ def list_domain_device_command(client: Client, args: Dict) -> CommandResults:
                else
                response.get('DeviceResponseList', [])[:limit])
 
-    # Capitalize the keys of the devices list and keep the rest of the keys as they are.
-    capitalize_devices = []
-    for device in devices:
-        device = {k[:1].upper() + k[1:]: v for k, v in device.items()}
-        capitalize_devices.append(device)
+    capitalize_devices = capitalize_key_first_letter(devices)
 
     readable_output = tableToMarkdown(
         name='Domain devices List', t=capitalize_devices, removeNull=True)
@@ -2127,10 +2149,7 @@ def list_device_interface_command(client: Client, args: Dict) -> CommandResults:
 
     key_list = ['interfaceId', 'interfaceName', 'interfaceType']
     # Capitalize the keys of the interfaces list and keep the rest of the keys as they are.
-    capitalize_interfaces = []
-    for interface in interfaces:
-        interface = {k[:1].upper() + k[1:]: v for k, v in interface.items() if k in key_list}
-        capitalize_interfaces.append(interface)
+    capitalize_interfaces = capitalize_key_first_letter(interfaces, key_list)
 
     readable_output = tableToMarkdown(
         name='Device interfaces List', t=capitalize_interfaces, removeNull=True
@@ -2193,12 +2212,8 @@ def list_device_policy_command(client: Client, args: Dict) -> CommandResults:
     all_policies = (response.get('policyAssignmentsList') if all_results
                     else
                     response.get('policyAssignmentsList', {})[:limit])
-    # Capitalize the keys of the policies list and keep the rest of the keys as they are.
-    capitalize_policies = []
-    for policy in all_policies:
-        policy = {k[:1].upper() + k[1:]: v for k, v in policy.items()}
-        capitalize_policies.append(policy)
 
+    capitalize_policies = capitalize_key_first_letter(all_policies)
     readable_output = tableToMarkdown(
         name='Device policy List', t=capitalize_policies, removeNull=True
     )
@@ -2277,12 +2292,8 @@ def list_interface_policy_command(client: Client, args: Dict) -> CommandResults:
         all_policies = response
     else:
         all_policies = [response][:limit]
-    # Capitalize the keys of the policies list and keep the rest of the keys as they are.
-    capitalize_policies = []
-    for policy in all_policies:
-        policy = {k[:1].upper() + k[1:]: v for k, v in policy.items()}
-        capitalize_policies.append(policy)
 
+    capitalize_policies = capitalize_key_first_letter(all_policies)
     return CommandResults(
         readable_output=tableToMarkdown(
             name='Interface policy List', t=capitalize_policies, removeNull=True
@@ -2308,8 +2319,10 @@ def get_device_configuration_command(client: Client, args: Dict) -> CommandResul
         raise DemistoException('Please provide a device_id.')
 
     response = client.get_device_configuration_request(device_id=device_id)
-    # Capitalize the keys of the policies list and keep the rest of the keys as they are.
-    capitalize_response: Dict[str, Any] = {k[:1].upper() + k[1:]: v for k, v in response.items()}
+
+    capitalize_response = capitalize_key_first_letter([response])
+    capitalize_response = capitalize_response[0]
+
     # build a new dict with the keys and values of the nested dict
     inner_dict: Any = capitalize_response.get('PendingChanges') or {}
     add_on_dict = {"IsPolicyConfigurationChanged": inner_dict.get("isPolicyConfigurationChanged"),
