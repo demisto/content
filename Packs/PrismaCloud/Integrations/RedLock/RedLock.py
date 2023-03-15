@@ -896,8 +896,7 @@ def fetch_incidents():
     response = req('POST', 'alert', payload, {'detailed': 'true'})
     incidents = []
 
-    if response:
-        fetched_ids[now] = set()
+    fetched_ids[now] = set()
 
     for alert in response:
         alert_id = alert.get('id')
@@ -913,6 +912,9 @@ def fetch_incidents():
             'rawJSON': json.dumps(alert)
         })
         fetched_ids[now].add(alert_id)
+
+    if not fetched_ids[now]:  # if no new incidents were added, no need to keep the date, saving space
+        fetched_ids.pop(now, None)
 
     return incidents, fetched_ids, last_run_time
 
