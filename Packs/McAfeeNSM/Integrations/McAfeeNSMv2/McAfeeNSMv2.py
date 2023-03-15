@@ -2105,13 +2105,11 @@ def list_domain_device_command(client: Client, args: Dict) -> CommandResults:
         raise DemistoException('Please provide a domain_id.')
     limit = arg_to_number(args.get('limit', 50))
     all_results = argToBoolean(args.get('all_results', False))
+
     response = client.list_domain_device_request(domain_id)
+    devices = response.get('DeviceResponseList')
 
-    devices = (response.get('DeviceResponseList') if all_results
-               else
-               response.get('DeviceResponseList', [])[:limit])
-
-    capitalize_devices = capitalize_key_first_letter(devices)
+    capitalize_devices = capitalize_key_first_letter(devices) if all_results else capitalize_key_first_letter(devices)[:limit]
 
     readable_output = tableToMarkdown(
         name='Domain devices List', t=capitalize_devices, removeNull=True)
@@ -2142,14 +2140,11 @@ def list_device_interface_command(client: Client, args: Dict) -> CommandResults:
     all_results = argToBoolean(args.get('all_results', False))
 
     response = client.list_device_interface_request(domain_id=domain_id, device_id=device_id)
-
-    interfaces = (response.get('allocatedInterfaceList', []) if all_results
-                  else
-                  response.get('allocatedInterfaceList', [])[:limit])
+    interfaces = (response.get('allocatedInterfaceList', []))
 
     key_list = ['interfaceId', 'interfaceName', 'interfaceType']
-    # Capitalize the keys of the interfaces list and keep the rest of the keys as they are.
-    capitalize_interfaces = capitalize_key_first_letter(interfaces, key_list)
+    capitalize_interfaces = capitalize_key_first_letter(interfaces, key_list) if all_results else \
+        capitalize_key_first_letter(interfaces, key_list)[:limit]
 
     readable_output = tableToMarkdown(
         name='Device interfaces List', t=capitalize_interfaces, removeNull=True
@@ -2207,13 +2202,13 @@ def list_device_policy_command(client: Client, args: Dict) -> CommandResults:
         raise DemistoException('Please provide a domain_id.')
     limit = arg_to_number(args.get('limit', 50))
     all_results = argToBoolean(args.get('all_results', False))
+
     response = client.list_device_policy_request(domain_id=domain_id, device_id=device_id)
+    all_policies = response.get('policyAssignmentsList')
 
-    all_policies = (response.get('policyAssignmentsList') if all_results
-                    else
-                    response.get('policyAssignmentsList', {})[:limit])
+    capitalize_policies = capitalize_key_first_letter(all_policies) if all_results else \
+        capitalize_key_first_letter(all_policies)[:limit]
 
-    capitalize_policies = capitalize_key_first_letter(all_policies)
     readable_output = tableToMarkdown(
         name='Device policy List', t=capitalize_policies, removeNull=True
     )
@@ -2282,18 +2277,10 @@ def list_interface_policy_command(client: Client, args: Dict) -> CommandResults:
     all_results = argToBoolean(args.get('all_results', False))
 
     response = client.list_interface_policy_request(domain_id=domain_id, interface_id=interface_id)
-    if not interface_id:
-        all_policies = (
-            response.get('policyAssignmentsList')
-            if all_results
-            else response.get('policyAssignmentsList', [])[:limit]
-        )
-    elif all_results:
-        all_policies = response
-    else:
-        all_policies = [response][:limit]
+    all_policies = [response] if interface_id else response.get('policyAssignmentsList')
 
-    capitalize_policies = capitalize_key_first_letter(all_policies)
+    capitalize_policies = capitalize_key_first_letter(all_policies) if all_results else \
+        capitalize_key_first_letter(all_policies)[:limit]
     return CommandResults(
         readable_output=tableToMarkdown(
             name='Interface policy List', t=capitalize_policies, removeNull=True

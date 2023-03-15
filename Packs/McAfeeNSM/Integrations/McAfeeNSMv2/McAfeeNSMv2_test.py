@@ -1,5 +1,5 @@
-
 import json
+import McAfeeNSMv2
 import io
 import pytest
 from McAfeeNSMv2 import Client
@@ -1208,10 +1208,10 @@ def test_capitalize_key_first_letter(input, output):
 
 
 @ pytest.mark.parametrize('input, output', [({"domain_id": 0, "device_id": 0},
-                                            [{'InterfaceId': 'mock'}, {'InterfaceId': 'mock'}]),
-                                            ({"domain_id": 777, "device_id": 777, "limit": 1}, [{'InterfaceId': 'mock'}]),
+                                            [{'interfaceId': 'mock'}, {'interfaceId': 'mock'}]),
+                                            ({"domain_id": 777, "device_id": 777, "limit": 1}, [{'interfaceId': 'mock'}]),
                                             ({"domain_id": 777, "device_id": 777, "limit": 1, "all_results": True},
-                                            [{'InterfaceId': 'mock'}, {'InterfaceId': 'mock'}])])
+                                            [{'interfaceId': 'mock'}, {'interfaceId': 'mock'}])])
 def test_list_device_interface_command__with_different_arguments(mocker, input, output, mcafeensmv2_client):
     """
     Given:
@@ -1219,11 +1219,13 @@ def test_list_device_interface_command__with_different_arguments(mocker, input, 
     When:
     - nsm-list_device_interface_command command is executed, with and without limit, with and without all_results.
     Then:
-    - Confirm the output is as expected(the number of results and the capitalization, and ID = 0 dose not raise an error.).
+    - Confirm the output is as expected(number of results, and ID = 0 dose not raise an error).
     """
     from McAfeeNSMv2 import list_device_interface_command
     mocker.patch.object(mcafeensmv2_client, 'list_device_interface_request',
-                        return_value={"allocatedInterfaceList": [{"interfaceId": "mock"}, {"interfaceId": "mock"}]})
+                        return_value={})
+    mocker.patch.object(McAfeeNSMv2, 'capitalize_key_first_letter', return_value=[{"interfaceId": "mock"},
+                                                                                  {"interfaceId": "mock"}])
     res = list_device_interface_command(client=mcafeensmv2_client, args=input)
     assert res.outputs == output
 
@@ -1248,10 +1250,10 @@ def test_list_device_interface_command__with_missing_arguments(mocker, mcafeensm
     assert e.value.message == output
 
 
-@ pytest.mark.parametrize('input, output', [({"domain_id": 0}, [{'PolicyId': 'mock'}, {'PolicyId': 'mock'}]),
-                                            ({"domain_id": 777, "limit": 1}, [{'PolicyId': 'mock'}]),
+@ pytest.mark.parametrize('input, output', [({"domain_id": 0}, [{'policyId': 'mock'}, {'policyId': 'mock'}]),
+                                            ({"domain_id": 777, "limit": 1}, [{'policyId': 'mock'}]),
                                             ({"domain_id": 777, "limit": 1, "all_results": True},
-                                            [{'PolicyId': 'mock'}, {'PolicyId': 'mock'}])])
+                                            [{'policyId': 'mock'}, {'policyId': 'mock'}])])
 def test_list_device_policy_command__with_different_arguments(mocker, input, output, mcafeensmv2_client):
     """
     Given:
@@ -1259,11 +1261,12 @@ def test_list_device_policy_command__with_different_arguments(mocker, input, out
     When:
     - nsm-list_device_policy_command command is executed with and without limit, with and without all_results.
     Then:
-    - Confirm the output is as expected(the number of results and the capitalization, and ID = 0 dose not raise an error).
+    - Confirm the output is as expected(number of results, and ID = 0 dose not raise an error).
     """
     from McAfeeNSMv2 import list_device_policy_command
     mocker.patch.object(mcafeensmv2_client, 'list_device_policy_request',
-                        return_value={"policyAssignmentsList": [{"policyId": "mock"}, {"policyId": "mock"}]})
+                        return_value={})
+    mocker.patch.object(McAfeeNSMv2, 'capitalize_key_first_letter', return_value=[{"policyId": "mock"}, {"policyId": "mock"}]),
     res = list_device_policy_command(client=mcafeensmv2_client, args=input)
     assert res.outputs == output
 
@@ -1286,9 +1289,9 @@ def test_list_device_policy_command__with_missing_arguments(mocker, mcafeensmv2_
     assert e.value.message == "Please provide a domain_id."
 
 
-@ pytest.mark.parametrize('input, output', [({"domain_id": 0}, [{'DeviceId': 'mock'}, {'DeviceId': 'mock'}]),
-                                            ({"domain_id": 777, "limit": 1}, [{'DeviceId': 'mock'}]),
-                                            ({"domain_id": 777, "limit": 1, "all_results": True}, [{'DeviceId': 'mock'}, {'DeviceId': 'mock'}])])
+@ pytest.mark.parametrize('input, output', [({"domain_id": 0}, [{'deviceId': 'mock'}, {'deviceId': 'mock'}]),
+                                            ({"domain_id": 777, "limit": 1}, [{'deviceId': 'mock'}]),
+                                            ({"domain_id": 777, "limit": 1, "all_results": True}, [{'deviceId': 'mock'}, {'deviceId': 'mock'}])])
 def test_list_domain_device_command_with_diffrent_arguments(mocker, mcafeensmv2_client, input, output):
     """
     Given:
@@ -1296,11 +1299,12 @@ def test_list_domain_device_command_with_diffrent_arguments(mocker, mcafeensmv2_
     When:
     - nsm-list_domain_device_command command is executed, with and without limit and with and without all_results.
     Then:
-    - Confirm the output is as expected(the number of results and the capitalization, and ID = 0 dose not raise an error).
+    - Confirm the output is as expected(number of results, and ID = 0 dose not raise an error).
     """
     from McAfeeNSMv2 import list_domain_device_command
     mocker.patch.object(mcafeensmv2_client, 'list_domain_device_request',
-                        return_value={"DeviceResponseList": [{"deviceId": "mock"}, {"deviceId": "mock"}]})
+                        return_value={})
+    mocker.patch.object(McAfeeNSMv2, 'capitalize_key_first_letter', return_value=[{"deviceId": "mock"}, {"deviceId": "mock"}])
     res = list_domain_device_command(client=mcafeensmv2_client, args=input)
     assert res.outputs == output
 
@@ -1340,12 +1344,11 @@ def test_assign_interface_policy_command__with_missing_arguments(mocker, mcafeen
 
 
 @ pytest.mark.parametrize('input, output', [({"interface_id": None,
-                                             "return_value": {"policyAssignmentsList": [{"policyId": "mock"},
-                                                                                        {"policyId": "mock"}]}},
-                                            [{'PolicyId': 'mock'}, {'PolicyId': 'mock'}]),
+                                             "return_value": [{"policyId": "mock"},{"policyId": "mock"}]},
+                                            [{'policyId': 'mock'}, {'policyId': 'mock'}]),
                                             ({"interface_id": 777,
                                              "return_value": [{"policyId": "mock"}, {"policyId": "mock"}]},
-                                            [{'PolicyId': 'mock'}, {'PolicyId': 'mock'}])])
+                                            [{'policyId': 'mock'}, {'policyId': 'mock'}])])
 def test_list_interface_policy_command__with_multiple_different_arguments(mocker, mcafeensmv2_client, input, output):
     """
         Given:
@@ -1353,11 +1356,12 @@ def test_list_interface_policy_command__with_multiple_different_arguments(mocker
         When:
         - nsm-list_interface_policy_command command is executed with and without limit, with and without all_results.
         Then:
-        - Confirm the output is as expected(number of results, and the capitalization, and ID = 0 dose not raise an error ).
+        - Confirm the output is as expected(number of results, and ID = 0 dose not raise an error ).
     """
     from McAfeeNSMv2 import list_interface_policy_command
     mocker.patch.object(mcafeensmv2_client, 'list_interface_policy_request',
-                        return_value=input.get("return_value"))
+                        return_value={})
+    mocker.patch.object(McAfeeNSMv2, 'capitalize_key_first_letter', return_value=input.get("return_value"))
     res = list_interface_policy_command(client=mcafeensmv2_client,
                                         args={"domain_id": 0, "interface_id": input.get("interface_id"),
                                               "limit": 1, "all_results": True})
