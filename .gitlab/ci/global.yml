@@ -221,6 +221,14 @@
     DOCKER_TLS_CERTDIR: ""
   extends:
     - .default-job-settings
+  parallel:
+    matrix:
+      - DOCKER_FOR_PR: 
+        - 'native:ga,native:dev'
+        - 'native:maintenance,from-yml'
+      - DOCKER_FOR_NIGHTLY: 
+        - 'native:ga,native:maintenance'
+        - 'from-yml'
   script:
     - section_start "Test Infrastructure"
     - python3 -m pytest ./Tests/scripts/infrastructure_tests/ -v
@@ -274,14 +282,6 @@
       fi
     - section_end "Run Unit Testing and Lint"
     - job-done
-  parallel:
-    matrix:
-      - DOCKER_FOR_PR: 
-        - 'native:ga,native:dev'
-        - 'native:maintenance,from-yml'
-      - DOCKER_FOR_NIGHTLY: 
-        - 'native:ga,native:maintenance'
-        - 'from-yml'
       
 .run-validations:
   stage: unittests-and-validations
