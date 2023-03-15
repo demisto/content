@@ -100,3 +100,24 @@ def test_template_params(mocker, template_params_arg):
         assert actual_params == {'name': 'value_from_context'}
     else:
         assert actual_params == {'name': 'hello3'}
+
+
+def test_attachments(mocker):
+    mocker.patch.object(demisto, 'args', return_value={
+        "attachIDs": "123456",
+        "attachNames": "attach.txt",
+        "body": "this is a test by UT",
+        "subject": "special test via UT",
+        "to": "admin@test.com",
+        "transientFile": "test.txt,test2.txt",
+        "transientFileContent": "this is a test text inside a test attachment mail!,another mail content."
+    })
+    mocker.patch.object(demisto, 'params', return_value={'from': 'test@test.com'})
+    mocker.patch.object(demisto, 'getFilePath', return_value={
+        'path': 'test_data/attachment.txt',
+        'name': 'attachment.txt'
+    })
+
+    result = MailSenderNew.create_msg()
+
+    assert result
