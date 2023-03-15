@@ -2239,7 +2239,7 @@ def assign_interface_policy_command(client: Client, args: Dict) -> CommandResult
 
     # Check if at least one policy was provided
     if len(args) < 3:
-        raise DemistoException("Please provide at least one policy to assign")
+        raise DemistoException("Please provide at least one policy to assign.")
     custom_policy_json_key = next(iter(custom_policy_json)) if custom_policy_json else None
     custum_policy_json_value = custom_policy_json[custom_policy_json_key] if custom_policy_json else None
 

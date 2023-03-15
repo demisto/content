@@ -1301,8 +1301,10 @@ def test_list_domain_device_command__without_domain_id(mcafeensmv2_client):
         list_domain_device_command(client=mcafeensmv2_client, args={})
     assert e.value.message == "Please provide a domain_id."
 
-
-def test_assign_interface_policy_command__without_no_policy(mcafeensmv2_client):
+@pytest.mark.parametrize('input, output', [({"domain_id": 777, "interface_id": 777,}, "Please provide at least one policy to assign."),
+                                           ({"domain_id": 777}, "Please provide a interface_id."),
+                                           ({"interface_id": 777,}, "Please provide a domain_id.")])
+def test_assign_interface_policy_command__with_missing_arguments(mocker, mcafeensmv2_client, input, output):
     """
     Given:
     - A domain id and interface id with no policy.
@@ -1313,8 +1315,8 @@ def test_assign_interface_policy_command__without_no_policy(mcafeensmv2_client):
     """
     from McAfeeNSMv2 import assign_interface_policy_command
     with pytest.raises(DemistoException) as e:
-        assign_interface_policy_command(client=mcafeensmv2_client, args={"domain_id": 777, "interface_id": 777})
-    assert e.value.message == "Please provide at least one policy to assign"
+        assign_interface_policy_command(client=mcafeensmv2_client, args=input)
+    assert e.value.message == output
 
 
 @pytest.mark.parametrize('input, output', [({"interface_id": None,
