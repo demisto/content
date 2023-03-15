@@ -255,7 +255,7 @@
           echo "In should lint all / bucket upload."
           if [ $DOCKER == "native:dev,from-yml" ]; then
             echo "removing native:dev from docker list."
-            DOCKER = 'from-yml'
+            DOCKER='from-yml'
           fi
         fi
         if [ -n "$SHOULD_LINT_ALL" ]; then
