@@ -1,64 +1,19 @@
-import boto3
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 from datetime import date
+from http import HTTPStatus
+import demistomock as demisto  # noqa :F401
+import urllib3.util
 
-AWS_DEFAULT_REGION = None
-AWS_roleArn = demisto.params()['roleArn']
-AWS_roleSessionName = demisto.params()['roleSessionName']
-AWS_roleSessionDuration = demisto.params()['sessionDuration']
-AWS_rolePolicy = None
+from AWSApiModule import *  # noqa : E402
+from CommonServerPython import *  # noqa :F401
+
+# Disable insecure warnings
+urllib3.disable_warnings()
+
+SERVICE = 'route53'
+DEFAULT_RETRIES = 5
 
 
-def aws_session(service='route53', region=None, roleArn=None, roleSessionName=None, roleSessionDuration=None, rolePolicy=None):
-    kwargs = {}
-    if roleArn and roleSessionName is not None:
-        kwargs.update({
-            'RoleArn': roleArn,
-            'RoleSessionName': roleSessionName,
-        })
-    elif AWS_roleArn and AWS_roleSessionName is not None:
-        kwargs.update({
-            'RoleArn': AWS_roleArn,
-            'RoleSessionName': AWS_roleSessionName,
-        })
-
-    if roleSessionDuration is not None:
-        kwargs.update({'DurationSeconds': int(roleSessionDuration)})
-    elif AWS_roleSessionDuration is not None:
-        kwargs.update({'DurationSeconds': int(AWS_roleSessionDuration)})
-
-    if rolePolicy is not None:
-        kwargs.update({'Policy': rolePolicy})
-    elif AWS_rolePolicy is not None:
-        kwargs.update({'Policy': AWS_rolePolicy})
-
-    if kwargs:
-        sts_client = boto3.client('sts')
-        sts_response = sts_client.assume_role(**kwargs)
-        if region is not None:
-            client = boto3.client(
-                service_name=service,
-                region_name=region,
-                aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
-                aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
-                aws_session_token=sts_response['Credentials']['SessionToken']
-            )
-        else:
-            client = boto3.client(
-                service_name=service,
-                region_name=AWS_DEFAULT_REGION,
-                aws_access_key_id=sts_response['Credentials']['AccessKeyId'],
-                aws_secret_access_key=sts_response['Credentials']['SecretAccessKey'],
-                aws_session_token=sts_response['Credentials']['SessionToken']
-            )
-    else:
-        if region is not None:
-            client = boto3.client(service_name=service, region_name=region)
-        else:
-            client = boto3.client(service_name=service, region_name=AWS_DEFAULT_REGION)
-
-    return client
+"""HELPER FUNCTIONS"""
 
 
 class DatetimeEncoder(json.JSONEncoder):
@@ -71,32 +26,23 @@ class DatetimeEncoder(json.JSONEncoder):
         return json.JSONEncoder.default(self, obj)
 
 
-def create_entry(title, data, ec):
-    return {
-        'ContentsFormat': formats['json'],
-        'Type': entryTypes['note'],
-        'Contents': data,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(title, data) if data else 'No result were found',
-        'EntryContext': ec
-    }
+def create_entry(title: str, data: Union[Dict[str, Any], List[Any]],
+                 outputs: Any, outputs_prefix: str) -> CommandResults:
+
+    return CommandResults(entry_type=EntryType.NOTE, content_format=EntryFormat.JSON,
+                          readable_output=tableToMarkdown(title, data) if data else 'No result were found',
+                          outputs=outputs,
+                          outputs_prefix=outputs_prefix)
 
 
-def raise_error(error):
-    return {
-        'Type': entryTypes['error'],
-        'ContentsFormat': formats['text'],
-        'Contents': str(error)
-    }
-
-
-def create_record(args):
+def create_record(
+        args: Dict[str, Any],
+        aws_client: AWSClient  # noqa
+) -> CommandResults:
     try:
-        client = aws_session(
-            roleArn=args.get('roleArn'),
-            roleSessionName=args.get('roleSessionName'),
-            roleSessionDuration=args.get('roleSessionDuration'),
-        )
+        client = aws_client.aws_session(service=SERVICE, region=args.get('region'), role_arn=args.get('roleArn'),
+                                        role_session_name=args.get('roleSessionName'),
+                                        role_session_duration=args.get('roleSessionDuration'), )
         kwargs = {
             'HostedZoneId': args.get('hostedZoneId'),
             'ChangeBatch': {
@@ -124,22 +70,21 @@ def create_record(args):
             'Status': record['Status']
         })
 
-        output = json.dumps(response['ChangeInfo'], cls=DatetimeEncoder)
-        raw = json.loads(output)
-        ec = {'AWS.Route53.RecordSetsChange': raw}
-        return create_entry('AWS Route53 record created', data, ec)
+        output = json.loads(json.dumps(response['ChangeInfo'], cls=DatetimeEncoder))
+        return create_entry('AWS Route53 record created', data, output, 'AWS.Route53.RecordSetsChange')
 
-    except Exception as e:
-        return raise_error(e)
+    except Exception as error:
+        return CommandResults(content_format=EntryFormat.TEXT, entry_type=EntryType.ERROR, readable_output=str(error))
 
 
-def delete_record(args):
+def delete_record(
+        args: Dict[str, Any],
+        aws_client: AWSClient  # noqa
+) -> CommandResults:
     try:
-        client = aws_session(
-            roleArn=args.get('roleArn'),
-            roleSessionName=args.get('roleSessionName'),
-            roleSessionDuration=args.get('roleSessionDuration'),
-        )
+        client = aws_client.aws_session(service=SERVICE, region=args.get('region'), role_arn=args.get('roleArn'),
+                                        role_session_name=args.get('roleSessionName'),
+                                        role_session_duration=args.get('roleSessionDuration'), )
         kwargs = {
             'HostedZoneId': args.get('hostedZoneId'),
             'ChangeBatch': {
@@ -164,22 +109,21 @@ def delete_record(args):
             'Status': record['Status']
         })
 
-        output = json.dumps(response['ChangeInfo'], cls=DatetimeEncoder)
-        raw = json.loads(output)
-        ec = {'AWS.Route53.RecordSetsChange': raw}
-        return create_entry('AWS Route53 record deleted', data, ec)
+        output = json.loads(json.dumps(response['ChangeInfo'], cls=DatetimeEncoder))
+        return create_entry('AWS Route53 record deleted', data, output, 'AWS.Route53.RecordSetsChange')
 
-    except Exception as e:
-        return raise_error(e)
+    except Exception as error:
+        return CommandResults(content_format=EntryFormat.TEXT, entry_type=EntryType.ERROR, readable_output=str(error))
 
 
-def upsert_record(args):
+def upsert_record(
+        args: Dict[str, Any],
+        aws_client: AWSClient  # noqa
+) -> CommandResults:
     try:
-        client = aws_session(
-            roleArn=args.get('roleArn'),
-            roleSessionName=args.get('roleSessionName'),
-            roleSessionDuration=args.get('roleSessionDuration'),
-        )
+        client = aws_client.aws_session(service=SERVICE, region=args.get('region'), role_arn=args.get('roleArn'),
+                                        role_session_name=args.get('roleSessionName'),
+                                        role_session_duration=args.get('roleSessionDuration'), )
         kwargs = {
             'HostedZoneId': args.get('hostedZoneId'),
             'ChangeBatch': {
@@ -207,47 +151,44 @@ def upsert_record(args):
             'Status': record['Status']
         })
 
-        output = json.dumps(response['ChangeInfo'], cls=DatetimeEncoder)
-        raw = json.loads(output)
-        ec = {'AWS.Route53.RecordSetsChange': raw}
-        return create_entry('AWS Route53 record Upsert', data, ec)
+        output = json.loads(json.dumps(response['ChangeInfo'], cls=DatetimeEncoder))
+        return create_entry('AWS Route53 record Upsert', data, output, 'AWS.Route53.RecordSetsChange')
 
-    except Exception as e:
-        return raise_error(e)
+    except Exception as error:
+        return CommandResults(content_format=EntryFormat.TEXT, entry_type=EntryType.ERROR, readable_output=str(error))
 
 
-def list_hosted_zones(args):
+def list_hosted_zones(
+        args: Dict[str, Any],
+        aws_client: AWSClient  # noqa
+) -> CommandResults:
     try:
-        client = aws_session(
-            roleArn=args.get('roleArn'),
-            roleSessionName=args.get('roleSessionName'),
-            roleSessionDuration=args.get('roleSessionDuration'),
-        )
+        client = aws_client.aws_session(service=SERVICE, region=args.get('region'), role_arn=args.get('roleArn'),
+                                        role_session_name=args.get('roleSessionName'),
+                                        role_session_duration=args.get('roleSessionDuration'), )
         data = []
         response = client.list_hosted_zones()
-        for hostedzone in response['HostedZones']:
+        for hosted_zone in response['HostedZones']:
             data.append({
-                'Name': hostedzone['Name'],
-                'Id': hostedzone['Id'],
-                'ResourceRecordSetCount': hostedzone['ResourceRecordSetCount'],
+                'Name': hosted_zone['Name'],
+                'Id': hosted_zone['Id'],
+                'ResourceRecordSetCount': hosted_zone['ResourceRecordSetCount'],
             })
-        output = json.dumps(response['HostedZones'], cls=DatetimeEncoder)
-        raw = json.loads(output)
-        ec = {'AWS.Route53.HostedZones': raw}
-        return create_entry('AWS Route53 Hosted Zones', data, ec)
+        output = json.loads(json.dumps(response['HostedZones'], cls=DatetimeEncoder))
+        return create_entry('AWS Route53 Hosted Zones', data, output, 'AWS.Route53.HostedZones')
 
-    except Exception as e:
-        return raise_error(e)
+    except Exception as error:
+        return CommandResults(content_format=EntryFormat.TEXT, entry_type=EntryType.ERROR, readable_output=str(error))
 
 
-def list_resource_record_sets(args):
+def list_resource_record_sets(
+        args: Dict[str, Any],
+        aws_client: AWSClient  # noqa
+) -> CommandResults:
     try:
-        client = aws_session(
-            roleArn=args.get('roleArn'),
-            roleSessionName=args.get('roleSessionName'),
-            roleSessionDuration=args.get('roleSessionDuration'),
-        )
-
+        client = aws_client.aws_session(service=SERVICE, region=args.get('region'), role_arn=args.get('roleArn'),
+                                        role_session_name=args.get('roleSessionName'),
+                                        role_session_duration=args.get('roleSessionDuration'), )
         kwargs = {'HostedZoneId': args.get('hostedZoneId')}
         if args.get('startRecordName') is not None:
             kwargs.update({'StartRecordName': args.get('startRecordName')})
@@ -266,22 +207,21 @@ def list_resource_record_sets(args):
                 'TTL': record['TTL'],
                 'ResourceRecords': record['ResourceRecords'][0]['Value']
             })
-        output = json.dumps(response['ResourceRecordSets'], cls=DatetimeEncoder)
-        raw = json.loads(output)
-        ec = {'AWS.Route53.RecordSets': raw}
-        return create_entry('AWS Route53 Record Sets', data, ec)
+        output = json.loads(json.dumps(response['ResourceRecordSets'], cls=DatetimeEncoder))
+        return create_entry('AWS Route53 Record Sets', data, output, 'AWS.Route53.RecordSets')
 
     except Exception as error:
-        return error
+        return CommandResults(content_format=EntryFormat.TEXT, entry_type=EntryType.ERROR, readable_output=str(error))
 
 
-def waiter_resource_record_sets_changed(args):
+def waiter_resource_record_sets_changed(
+        args: Dict[str, Any],
+        aws_client: AWSClient  # noqa
+) -> CommandResults:
     try:
-        client = aws_session(
-            roleArn=args.get('roleArn'),
-            roleSessionName=args.get('roleSessionName'),
-            roleSessionDuration=args.get('roleSessionDuration'),
-        )
+        client = aws_client.aws_session(service=SERVICE, region=args.get('region'), role_arn=args.get('roleArn'),
+                                        role_session_name=args.get('roleSessionName'),
+                                        role_session_duration=args.get('roleSessionDuration'), )
         kwargs = {'Id': args.get('id')}
         if args.get('waiterDelay') is not None:
             kwargs.update({'WaiterConfig': {'Delay': int(args.get('waiterDelay'))}})
@@ -290,19 +230,20 @@ def waiter_resource_record_sets_changed(args):
 
         waiter = client.get_waiter('resource_record_sets_changed')
         waiter.wait(**kwargs)
-        return "success"
+        return CommandResults(entry_type=EntryType.NOTE, content_format=EntryFormat.JSON, readable_output="success")
 
-    except Exception as e:
-        return raise_error(e)
+    except Exception as error:
+        return CommandResults(content_format=EntryFormat.TEXT, entry_type=EntryType.ERROR, readable_output=str(error))
 
 
-def test_dns_answer(args):
+def test_dns_answer(
+        args: Dict[str, Any],
+        aws_client: AWSClient  # noqa
+) -> CommandResults:
     try:
-        client = aws_session(
-            roleArn=args.get('roleArn'),
-            roleSessionName=args.get('roleSessionName'),
-            roleSessionDuration=args.get('roleSessionDuration'),
-        )
+        client = aws_client.aws_session(service=SERVICE, region=args.get('region'), role_arn=args.get('roleArn'),
+                                        role_session_name=args.get('roleSessionName'),
+                                        role_session_duration=args.get('roleSessionDuration'), )
         kwargs = {
             'HostedZoneId': args.get('hostedZoneId'),
             'RecordName': args.get('recordName'),
@@ -320,47 +261,70 @@ def test_dns_answer(args):
             'Protocol': response['Protocol']
         })
 
-        ec = {'AWS.Route53.TestDNSAnswer': response}
-        return create_entry('AWS Route53 Test DNS Answer', data, ec)
+        return create_entry('AWS Route53 Test DNS Answer', data, response, 'AWS.Route53.TestDNSAnswer')
 
     except Exception as error:
-        return error
+        return CommandResults(content_format=EntryFormat.TEXT, entry_type=EntryType.ERROR, readable_output=str(error))
 
 
-def test_function():
+def main():  # pragma: no cover
+    params = demisto.params()
+    command = demisto.command()
+    aws_default_region = params.get('defaultRegion')
+    aws_role_arn = params.get('roleArn')
+    aws_role_session_name = params.get('roleSessionName')
+    aws_role_session_duration = params.get('sessionDuration')
+    aws_role_policy = None
+    aws_access_key_id = params.get('credentials', {}).get('identifier') or params.get('access_key')
+    aws_secret_access_key = params.get('credentials', {}).get('password') or params.get('secret_key')
+    verify_certificate = not params.get('insecure', True)
+    timeout = params.get('timeout')
+    retries = params.get('retries', DEFAULT_RETRIES)
+
     try:
-        client = aws_session()
-        response = client.list_hosted_zones()
-        if response['ResponseMetadata']['HTTPStatusCode'] == 200:
-            return 'ok'
+        validate_params(aws_default_region, aws_role_arn, aws_role_session_name, aws_access_key_id,  # noqa
+                        aws_secret_access_key)
 
-    except Exception as error:
-        return error
+        aws_client = AWSClient(aws_default_region, aws_role_arn, aws_role_session_name,   # noqa
+                               aws_role_session_duration, aws_role_policy, aws_access_key_id, aws_secret_access_key,
+                               verify_certificate, timeout, retries)
+
+        args = demisto.args()
+
+        demisto.info(f'Command being called is {demisto.command()}')
+        if command == 'test-module':
+            client = aws_client.aws_session(service=SERVICE)
+
+            response = client.list_hosted_zones()
+            if response['ResponseMetadata']['HTTPStatusCode'] == HTTPStatus.OK:
+                demisto.results('ok')
+
+        elif command == 'aws-route53-create-record':
+            return_results(create_record(args, aws_client))
+
+        elif command == 'aws-route53-upsert-record':
+            return_results(upsert_record(args, aws_client))
+
+        elif command == 'aws-route53-delete-record':
+            return_results(delete_record(args, aws_client))
+
+        elif command == 'aws-route53-list-hosted-zones':
+            return_results(list_hosted_zones(args, aws_client))
+
+        elif command == 'aws-route53-list-resource-record-sets':
+            return_results(list_resource_record_sets(args, aws_client))
+
+        elif command == 'aws-route53-waiter-resource-record-sets-changed':
+            return_results(waiter_resource_record_sets_changed(args, aws_client))
+
+        elif command == 'aws-route53-test-dns-answer':
+            return_results(test_dns_answer(args, aws_client))
+        else:
+            raise NotImplementedError(f'{command} command is not implemented.')
+
+    except Exception as e:
+        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
 
-if demisto.command() == 'test-module':
-    # This is the call made when pressing the integration test button.
-    result = test_function()
-
-if demisto.command() == 'aws-route53-create-record':
-    result = create_record(demisto.args())
-
-if demisto.command() == 'aws-route53-upsert-record':
-    result = upsert_record(demisto.args())
-
-if demisto.command() == 'aws-route53-delete-record':
-    result = delete_record(demisto.args())
-
-if demisto.command() == 'aws-route53-list-hosted-zones':
-    result = list_hosted_zones(demisto.args())
-
-if demisto.command() == 'aws-route53-list-resource-record-sets':
-    result = list_resource_record_sets(demisto.args())
-
-if demisto.command() == 'aws-route53-waiter-resource-record-sets-changed':
-    result = waiter_resource_record_sets_changed(demisto.args())
-
-if demisto.command() == 'aws-route53-test-dns-answer':
-    result = test_dns_answer(demisto.args())
-
-demisto.results(result)
+if __name__ in ('__builtin__', 'builtins', '__main__'):
+    main()
