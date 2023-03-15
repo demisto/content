@@ -1301,9 +1301,10 @@ def test_list_domain_device_command__without_domain_id(mcafeensmv2_client):
         list_domain_device_command(client=mcafeensmv2_client, args={})
     assert e.value.message == "Please provide a domain_id."
 
-@pytest.mark.parametrize('input, output', [({"domain_id": 777, "interface_id": 777,}, "Please provide at least one policy to assign."),
+
+@pytest.mark.parametrize('input, output', [({"domain_id": 777, "interface_id": 777, }, "Please provide at least one policy to assign."),
                                            ({"domain_id": 777}, "Please provide a interface_id."),
-                                           ({"interface_id": 777,}, "Please provide a domain_id.")])
+                                           ({"interface_id": 777, }, "Please provide a domain_id.")])
 def test_assign_interface_policy_command__with_missing_arguments(mocker, mcafeensmv2_client, input, output):
     """
     Given:
@@ -1342,6 +1343,21 @@ def test_list_interface_policy_command__with_multiple_different_arguments(mocker
                                         args={"domain_id": 777, "interface_id": input.get("interface_id"),
                                               "limit": 1, "all_results": True})
     assert res.outputs == output
+
+
+def test_list_interface_policy_command__without_domain_id(mcafeensmv2_client):
+    """
+    Given:
+    - No domain id.
+    When:
+    - list_interface_policy_command command is executed.
+    Then:
+    - Confirm the output is as expected(error message).
+    """
+    from McAfeeNSMv2 import list_interface_policy_command
+    with pytest.raises(DemistoException) as e:
+        list_interface_policy_command(client=mcafeensmv2_client, args={})
+    assert e.value.message == "Please provide a domain_id."
 
 
 @pytest.mark.parametrize('input, output', [({"domain_id": 777}, "Please provide a device_id."),
