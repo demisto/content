@@ -2367,7 +2367,7 @@ def main():
             remove_nulls_from_dictionary(trim_spaces_from_args(args))
             return_results(get_modified_remote_data_command(client, args, params))
 
-        ## Deprecated commands.
+        # Deprecated commands.
         elif demisto.command() in ('extrahop-get-alert-rules', 'extrahop-get-alerts'):
             return_results(alerts_rules_get_command(client))
         elif demisto.command() == 'extrahop-query-records':  # Removed this command.

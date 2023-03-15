@@ -604,7 +604,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      defaultValue: =
+      defaultValue: '='
       description: The compare method applied when matching the fields against their
         values. For example, to find devices with names that begin with 'SEA1' (set
         name=SEA1, operator=startswith)
@@ -612,10 +612,10 @@ script:
       name: operator
       predefined:
       - '>'
-      - <
-      - <=
+      - '<'
+      - '<='
       - '>='
-      - =
+      - '='
       - '!='
       - startswith
       - exists
