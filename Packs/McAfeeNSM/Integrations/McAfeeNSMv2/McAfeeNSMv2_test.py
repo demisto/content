@@ -1302,7 +1302,8 @@ def test_list_domain_device_command__without_domain_id(mcafeensmv2_client):
     assert e.value.message == "Please provide a domain_id."
 
 
-@pytest.mark.parametrize('input, output', [({"domain_id": 777, "interface_id": 777, }, "Please provide at least one policy to assign."),
+@pytest.mark.parametrize('input, output', [({"domain_id": 777, "interface_id": 777, },
+                                            "Please provide at least one policy to assign."),
                                            ({"domain_id": 777}, "Please provide a interface_id."),
                                            ({"interface_id": 777, }, "Please provide a domain_id.")])
 def test_assign_interface_policy_command__with_missing_arguments(mocker, mcafeensmv2_client, input, output):
