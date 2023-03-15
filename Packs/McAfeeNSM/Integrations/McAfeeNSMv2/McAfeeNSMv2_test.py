@@ -1274,11 +1274,11 @@ def test_assign_interface_policy_command__without_no_policy(mcafeensmv2_client):
 def test_list_interface_policy_command__with_multiple_different_arguments(mocker, mcafeensmv2_client, input, output):
     """
         Given:
-        - A domain id and or not device id, and limit and all_results is true.
+        - A domain id.
         When:
-        - nsm-list_interface_policy_command command is executed.
+        - nsm-list_interface_policy_command command is executed with and without limit, with and without all_results.
         Then:
-        - Confirm the output is as expected(all the results - ignoring the limit, and the capitalization).
+        - Confirm the output is as expected(number of results, and the capitalization).
     """
     from McAfeeNSMv2 import list_interface_policy_command
     mocker.patch.object(mcafeensmv2_client, 'list_interface_policy_request',
