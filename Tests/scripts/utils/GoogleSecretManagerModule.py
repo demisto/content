@@ -28,7 +28,7 @@ class GoogleSecreteManagerModule:
                 logging.error(f'Error the secret: {secret.name} has no labels, got the error: {e}')
             secret_pack_id = labels.get('pack_id')
             logging.debug(f'Getting the secret: {secret.name}')
-            if name_filter and secret_pack_id and secret_pack_id not in name_filter:
+            if name_filter and not secret_pack_id and secret_pack_id not in [s.lower() for s in name_filter]:
                 continue
             if with_secret:
                 try:
