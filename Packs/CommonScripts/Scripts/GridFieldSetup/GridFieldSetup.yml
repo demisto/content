@@ -29,7 +29,7 @@ comment: |-
 commonfields:
   id: GridFieldSetup
   version: -1
-dockerimage: demisto/python3:3.10.8.36650
+dockerimage: demisto/python3:3.10.10.48392
 enabled: true
 name: GridFieldSetup
 runas: DBotWeakRole

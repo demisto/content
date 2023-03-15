@@ -297,8 +297,8 @@
     - section_end "Copy Tests To Artifact Folder"
     - section_start "Validate Files and Yaml"
     - |
-      if [[ -n $FORCE_BUCKET_UPLOAD || -n $BUCKET_UPLOAD ]] && [[ "$(echo "$GCS_MARKET_BUCKET" | tr '[:upper:]' '[:lower:]')" != "marketplace-dist" ]] && [[ $CI_COMMIT_BRANCH != "master" ]]; then
-        echo "Skipping the -Validate Files and Yaml- step when uploading to a test bucket."
+      if [[ -n $FORCE_BUCKET_UPLOAD ]]; then
+        echo "Skipping the -Validate Files and Yaml- step when force uploading to a bucket."
       else
         ./Tests/scripts/linters_runner.sh
         ./Tests/scripts/validate.sh
