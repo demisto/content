@@ -3164,6 +3164,6 @@ inputs:
   playbookInputQuery:
 outputs: []
 tests:
-- Phishing v3 - Get Original Email + Search & Delete - Test
+- Phishing v3 - Get Original Email + Search & Delete 6 5 - Test
 - Phishing v3 - DomainSquatting+EML+MaliciousIndicators - Test
 fromversion: 6.5.0
