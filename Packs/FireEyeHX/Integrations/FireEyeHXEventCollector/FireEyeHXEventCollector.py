@@ -49,7 +49,7 @@ class Client(BaseClient):
             res = super()._http_request(*args, headers=headers, **kwargs)  # type: ignore[misc]
         except Exception as e:
             # in case the token expired - create the token again and make the request.
-            if e.res.status_code == 401:
+            if e.res.status_code == 401:  # type: ignore[attr-defined]
                 token = self.get_access_token()
                 headers = {'X-FeApi-Token': token}
                 res = super()._http_request(*args, headers=headers, **kwargs)  # type: ignore[misc]
@@ -106,7 +106,7 @@ def test_module(client: Client):
 
 def get_events_command(
     client: Client,
-    max_fetch: int,
+    max_fetch: str,
     first_fetch: str
 ) -> Union[str, CommandResults]:
     """
@@ -134,7 +134,7 @@ def get_events_command(
 
 def fetch_events(
     client: Client, max_fetch: str, first_fetch: str, resolution: str = None, min_id: str = None
-) -> Tuple[List[Dict]]:
+) -> List[Dict]:
     """
     Fetches events from fireye.
     """
@@ -166,7 +166,7 @@ def main() -> None:  # pragma: no cover
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     resolution = params.get('resolution')
-    max_fetch = arg_to_number(args.get('limit') or params.get('max_fetch'))
+    max_fetch = args.get('limit') or params.get('max_fetch')
 
     last_run = demisto.getLastRun()
 
@@ -174,7 +174,7 @@ def main() -> None:  # pragma: no cover
         last_fetch = last_run.get('last_alert_time')
     else:
         first_fetch = params.get("first_fetch") if params.get("first_fetch") else "3 days"
-        last_fetch = arg_to_datetime(first_fetch).strftime(DATE_FORMAT)
+        last_fetch = arg_to_datetime(first_fetch).strftime(DATE_FORMAT)  # type: ignore[union-attr]
 
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
@@ -194,7 +194,7 @@ def main() -> None:  # pragma: no cover
                 min_id=last_run.get('last_alert_id'))
 
             if events:
-                last_alert = events[-1]
+                last_alert: dict = events[-1]
                 demisto.setLastRun({'last_alert_id': str(last_alert.get('_id')),
                                     'last_alert_time': last_alert.get('event_at')})
             try:
@@ -208,7 +208,7 @@ def main() -> None:  # pragma: no cover
                 demisto.info(f'got error when trying to send events to XSIAM: [{e}]')
         elif command == 'fireeye-hx-get-events':
             since = args.get("since") if args.get("since") else "3 days"
-            first_fetch = arg_to_datetime(since).strftime(DATE_FORMAT)
+            first_fetch = arg_to_datetime(since).strftime(DATE_FORMAT)  # type: ignore[union-attr]
             return_results(get_events_command(client, max_fetch=max_fetch, first_fetch=first_fetch))
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')
