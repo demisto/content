@@ -1104,8 +1104,8 @@ def test_list_device_policy_request__with_and_without_device_id(mocker, mcafeens
     assert http_request.call_args[1] == output
 
 
-@pytest.mark.parametrize('input, output', [(777, {'firewallPolicy': 'mock', 'firewallPortPolicy': 'mock',
-                                                  'ipsPolicy': 'mock', '777': 'mock'}),
+@pytest.mark.parametrize('input, output', [({"mock": 777}, {'firewallPolicy': 'mock', 'firewallPortPolicy': 'mock',
+                                                            'ipsPolicy': 'mock', 'mock': 777}),
                                            (None, {'firewallPolicy': 'mock', 'firewallPortPolicy': 'mock', 'ipsPolicy': 'mock'})])
 def test_assign_interface_policy_request__with_and_without_custom_json(mocker, mcafeensmv2_client, input, output):
     """
@@ -1118,9 +1118,9 @@ def test_assign_interface_policy_request__with_and_without_custom_json(mocker, m
     """
     from McAfeeNSMv2 import Client
     http_request = mocker.patch.object(mcafeensmv2_client, '_http_request')
-    Client.assign_interface_policy_request(mcafeensmv2_client, domain_id=9, interface_id=9, custom_policy_json_key=input,
+    Client.assign_interface_policy_request(mcafeensmv2_client, domain_id=9, interface_id=9, custom_policy_json=input,
                                            firewall_policy="mock", firewall_port_policy="mock",
-                                           ips_policy="mock", custom_policy_json_value="mock")
+                                           ips_policy="mock")
     assert http_request.call_args[1].get('json_data') == output
 
 
@@ -1189,7 +1189,7 @@ def test_modify_v10_results_to_v9_format():
     assert modify_v10_results_to_v9_format(test_input) == excepted_output
 
 
-@pytest.mark.parametrize('input, output', [({"domain_id": 777, "device_id": 777},
+@pytest.mark.parametrize('input, output', [({"domain_id": 0, "device_id": 0},
                                             [{'InterfaceId': 'mock'}, {'InterfaceId': 'mock'}]),
                                            ({"domain_id": 777, "device_id": 777, "limit": 1}, [{'InterfaceId': 'mock'}]),
                                            ({"domain_id": 777, "device_id": 777, "limit": 1, "all_results": True},
@@ -1201,7 +1201,7 @@ def test_list_device_interface_command__with_different_arguments(mocker, input, 
     When:
     - nsm-list_device_interface_command command is executed, with and without limit, with and without all_results.
     Then:
-    - Confirm the output is as expected(the number of results and the capitalization).
+    - Confirm the output is as expected(the number of results and the capitalization, and ID = 0 dose not raise an error.).
     """
     from McAfeeNSMv2 import list_device_interface_command
     mocker.patch.object(mcafeensmv2_client, 'list_device_interface_request',
@@ -1230,7 +1230,7 @@ def test_list_device_interface_command__with_missing_arguments(mocker, mcafeensm
     assert e.value.message == output
 
 
-@pytest.mark.parametrize('input, output', [({"domain_id": 777}, [{'PolicyId': 'mock'}, {'PolicyId': 'mock'}]),
+@pytest.mark.parametrize('input, output', [({"domain_id": 0}, [{'PolicyId': 'mock'}, {'PolicyId': 'mock'}]),
                                            ({"domain_id": 777, "limit": 1}, [{'PolicyId': 'mock'}]),
                                            ({"domain_id": 777, "limit": 1, "all_results": True},
                                             [{'PolicyId': 'mock'}, {'PolicyId': 'mock'}])])
@@ -1241,7 +1241,7 @@ def test_list_device_policy_command__with_different_arguments(mocker, input, out
     When:
     - nsm-list_device_policy_command command is executed with and without limit, with and without all_results.
     Then:
-    - Confirm the output is as expected(the number of results and the capitalization).
+    - Confirm the output is as expected(the number of results and the capitalization, and ID = 0 dose not raise an error).
     """
     from McAfeeNSMv2 import list_device_policy_command
     mocker.patch.object(mcafeensmv2_client, 'list_device_policy_request',
@@ -1268,7 +1268,7 @@ def test_list_device_policy_command__with_missing_arguments(mocker, mcafeensmv2_
     assert e.value.message == "Please provide a domain_id."
 
 
-@pytest.mark.parametrize('input, output', [({"domain_id": 777}, [{'DeviceId': 'mock'}, {'DeviceId': 'mock'}]),
+@pytest.mark.parametrize('input, output', [({"domain_id": 0}, [{'DeviceId': 'mock'}, {'DeviceId': 'mock'}]),
                                            ({"domain_id": 777, "limit": 1}, [{'DeviceId': 'mock'}]),
                                            ({"domain_id": 777, "limit": 1, "all_results": True}, [{'DeviceId': 'mock'}, {'DeviceId': 'mock'}])])
 def test_list_domain_device_command_with_diffrent_arguments(mocker, mcafeensmv2_client, input, output):
@@ -1278,7 +1278,7 @@ def test_list_domain_device_command_with_diffrent_arguments(mocker, mcafeensmv2_
     When:
     - nsm-list_domain_device_command command is executed, with and without limit and with and without all_results.
     Then:
-    - Confirm the output is as expected(the number of results and the capitalization).
+    - Confirm the output is as expected(the number of results and the capitalization, and ID = 0 dose not raise an error).
     """
     from McAfeeNSMv2 import list_domain_device_command
     mocker.patch.object(mcafeensmv2_client, 'list_domain_device_request',
@@ -1334,13 +1334,13 @@ def test_list_interface_policy_command__with_multiple_different_arguments(mocker
         When:
         - nsm-list_interface_policy_command command is executed with and without limit, with and without all_results.
         Then:
-        - Confirm the output is as expected(number of results, and the capitalization).
+        - Confirm the output is as expected(number of results, and the capitalization, and ID = 0 dose not raise an error ).
     """
     from McAfeeNSMv2 import list_interface_policy_command
     mocker.patch.object(mcafeensmv2_client, 'list_interface_policy_request',
                         return_value=input.get("return_value"))
     res = list_interface_policy_command(client=mcafeensmv2_client,
-                                        args={"domain_id": 777, "interface_id": input.get("interface_id"),
+                                        args={"domain_id": 0, "interface_id": input.get("interface_id"),
                                               "limit": 1, "all_results": True})
     assert res.outputs == output
 
@@ -1386,12 +1386,12 @@ def test_get_device_configuration_command(mocker, mcafeensmv2_client):
     When:
     - nsm-get_device_configuration_command command is executed.
     Then:
-    - Confirm the output is as expected.
+    - Confirm the output is as expected, and ID = 0 dose not raise an error.
     """
     from McAfeeNSMv2 import get_device_configuration_command
     mocker.patch.object(mcafeensmv2_client, 'get_device_configuration_request',
                         return_value={"deviceConfiguration": {"deviceConfigurationId": "mock"}})
-    res = get_device_configuration_command(client=mcafeensmv2_client, args={"device_id": 777})
+    res = get_device_configuration_command(client=mcafeensmv2_client, args={"device_id": 0})
     assert res.outputs == {'DeviceConfiguration': {'deviceConfigurationId': 'mock'}, 'IsPolicyConfigurationChanged': None,
                            'IsConfigurationChanged': None, 'IsMalwareConfigurationChanged': None,
                            'IsSignatureSetConfigurationChanged': None,
@@ -1434,7 +1434,7 @@ def test_get_device_configuration_command__without_device_id(mcafeensmv2_client)
 #                         return_value={"j"})
 #     mocker.patch.object(mcafeensmv2_client, 'check_deploy_device_configuration_request_status',
 #                         return_value={"jjj"})
-#     res = deploy_device_configuration_command(client=mcafeensmv2_client, args={"device_id": 777,
+#     res = deploy_device_configuration_command(client=mcafeensmv2_client, args={"device_id": 0,
 #                                                                                "interval_in_seconds": 50,
 #                                                                                "push_botnet": False,
 #                                                                                "push_configuration_signature_set": False,
