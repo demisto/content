@@ -1,23 +1,71 @@
 [file:incidentfield-ExtraHop_Appliance_ID.json]
-ignore=IF107
+ignore=IF107,IF115
 
 [file:incidentfield-ExtraHop_Hostname.json]
-ignore=IF107
+ignore=IF107,IF115
 
 [file:incidentfield-ExtraHop_Detection_Raw_Participants.json]
-ignore=IF107
+ignore=IF107,IF115
 
 [file:incidentfield-ExtraHop_Detection_Ticketed.json]
-ignore=IF107
+ignore=IF107,IF115
 
 [file:incidentfield-ExtraHop_Detection_Participants.json]
-ignore=IF107
+ignore=IF107,IF115
 
 [file:ExtraHop]
 ignore=PA116
 
 [file:ExtraHop_v2.yml]
-ignore=BA108,BA109,IN145
+ignore=BA108,BA109,IN145,IN124
 
 [file:README.md]
 ignore=RM106
+
+[file:incidentfield-Extrahop-Detection-Devices.json]
+ignore=IF115
+
+[file:incidentfield-ExtraHop-Detection-ID.json]
+ignore=IF115
+
+[file:incidentfield-ExtraHop-Detection-Status.json]
+ignore=IF115
+
+[file:incidentfield-ExtraHop-Detection-Type.json]
+ignore=IF115
+
+[file:incidentfield-ExtraHop-Mod-Time.json]
+ignore=IF115
+
+[file:incidentfield-ExtraHop-Resolution.json]
+ignore=IF115
+
+[file:incidentfield-ExtraHop-Risk-Score.json]
+ignore=IF115
+
+[file:incidentfield-ExtraHop-Update-Time.json]
+ignore=IF115
+
+[file:incidentfield-ExtraHop-User-Created.json]
+ignore=IF115
+
+[known_words]
+Extrahop
+Mappers
+Mapper
+Reveal(x
+CVE-2019-0708
+extrahop-detections-list
+extrahop-metrics-list
+extrahop-watchlist-get
+extrahop-peers-get
+extrahop-devices-search
+extrahop-protocols-get
+extrahop-activity-map-get
+extrahop-alert-rules-get
+extrahop-packets-search
+extrahop-ticket-track
+extrahop-devices-tag
+extrahop-alert-rule-create
+extrahop-alert-rule-edit
+extrahop-watchlist-edit
