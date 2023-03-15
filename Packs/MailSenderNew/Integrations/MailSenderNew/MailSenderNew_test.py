@@ -109,8 +109,8 @@ def test_attachments(mocker):
         "body": "this is a test by UT",
         "subject": "special test via UT",
         "to": "admin@test.com",
-        "transientFile": "test.txt,test2.txt",
-        "transientFileContent": "this is a test text inside a test attachment mail!,another mail content."
+        "transientFile": "test1.txt,test2.txt",
+        "transientFileContent": "content1,content2"
     })
     mocker.patch.object(demisto, 'params', return_value={'from': 'test@test.com'})
     mocker.patch.object(demisto, 'getFilePath', return_value={
@@ -119,5 +119,7 @@ def test_attachments(mocker):
     })
 
     result = MailSenderNew.create_msg()
+    decode_files_content = ['Y29udGVudA==', 'Y29udGVudDE=', 'Y29udGVudDI=']
 
-    assert result
+    assert all([file_name in result[0] for file_name in ['attach.txt', 'test1.txt', 'test2.txt']])
+    assert all([decode_file_content in result[0] for decode_file_content in decode_files_content])
