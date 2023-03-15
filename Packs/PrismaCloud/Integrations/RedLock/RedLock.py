@@ -821,7 +821,7 @@ def expire_stored_ids(fetched_ids: Dict[float, set]):
         fetched_ids: dict of fetched ids.
 
     Returns:
-        dict: incidents that are in the last run for more than 2 hours.
+        dict: incidents that are in the last run for less than 2 hours.
 
     """
     if not fetched_ids:
@@ -838,6 +838,8 @@ def expire_stored_ids(fetched_ids: Dict[float, set]):
         timediff = now - int(fetch_time)
         if timediff < two_hours:
             cleaned_cache[fetch_time] = incidents_ids
+        else:
+            demisto.debug(f'incidents {incidents_ids} removed from fetched_ids')
 
     return cleaned_cache
 
