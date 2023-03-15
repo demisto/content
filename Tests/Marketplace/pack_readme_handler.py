@@ -54,6 +54,7 @@ def upload_readme_images(storage_bucket, storage_base_path, pack_readme_path, pa
         return reademe_images
     except Exception:
         logging.exception(f"Failed uploading {pack_name} pack readme image.")
+        return None
 
 
 def collect_images_from_readme_and_replace_with_storage_path(pack_readme_path, gcs_pack_path, pack_name, marketplace):
@@ -120,9 +121,9 @@ def download_readme_image_from_url_and_upload_to_gcs(readme_original_url: str, g
 
     """
     # Open the url image, set stream to True, this will return the stream content.
-    readme_original_url = urllib.parse.urlparse(readme_original_url)
+    readme_original_url_parsed = urllib.parse.urlparse(readme_original_url)
     try:
-        r = requests.get(readme_original_url.geturl(), stream=True)
+        r = requests.get(readme_original_url_parsed.geturl(), stream=True)
 
         # Check if the image was retrieved successfully
         if r.status_code == 200:
@@ -149,7 +150,7 @@ def download_readme_image_from_url_and_upload_to_gcs(readme_original_url: str, g
         return False
     except Exception as e:
         logging.error(
-            f'Failed downloading the image in url {readme_original_url}. '
+            f'Failed downloading the image in url {readme_original_url_parsed}. '
             f'or failed uploading it to GCP error message {e}')
         return False
 
