@@ -12,7 +12,7 @@ def main():
     default_contents = f"""# Default Response Process\nCreate a List called **DefaultResponseProcess** list under 
     **Settings** to display a custom response.\n\nAlternatively create a list called **{incident_type}ResponseProcess**
      (copy and paste) to display a custom response specific to the {incident_type} incident type.
-    """ # noqa W291
+    """  # noqa W291
 
     # get the list for the IncidentType
     # list name must be formatted as follows: IncidentType Response Process
