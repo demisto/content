@@ -1223,6 +1223,25 @@ def test_list_device_policy_command__with_and_without_limit(mocker, input, outpu
     assert res.outputs == output
 
 
+@pytest.mark.parametrize('input, output', [({"domain_id": 777}, [{'DeviceId': 'mock'}, {'DeviceId': 'mock'}]),
+                                           ({"domain_id": 777, "limit": 1}, [{'DeviceId': 'mock'}]),
+                                           ({"domain_id": 777, "limit": 1, "all_results": True}, [{'DeviceId': 'mock'}, {'DeviceId': 'mock'}])])
+def test_list_domain_device_command_with_diffrent_arguments(mocker, mcafeensmv2_client, input, output):
+    """
+    Given:
+    - A domain id.
+    When:
+    - nsm-list_domain_device_command command is executed, with and without limit and with and without all_results.
+    Then:
+    - Confirm the output is as expected(the number of results and the capitalization).
+    """
+    from McAfeeNSMv2 import list_domain_device_command
+    mocker.patch.object(mcafeensmv2_client, 'list_domain_device_request',
+                        return_value={"DeviceResponseList": [{"deviceId": "mock"}, {"deviceId": "mock"}]})
+    res = list_domain_device_command(client=mcafeensmv2_client, args=input)
+    assert res.outputs == output
+
+
 def test_assign_interface_policy_command__without_no_policy(mcafeensmv2_client):
     """
     Given:
