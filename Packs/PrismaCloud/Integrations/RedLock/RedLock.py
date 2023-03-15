@@ -850,7 +850,7 @@ def fetch_incidents():
         fetched_ids.clear()
         fetched_ids = {}
         for record in fetched_ids_copy:
-            for timestamp, incident_id in record.items():
+            for incident_id, timestamp in record.items():
                 if timestamp not in fetched_ids:
                     fetched_ids[timestamp] = set()
                 fetched_ids[timestamp].add(incident_id)
