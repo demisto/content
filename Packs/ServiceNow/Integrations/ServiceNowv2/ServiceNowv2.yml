@@ -190,7 +190,6 @@ configuration:
   name: close_ticket_multiple_options
   required: false
   type: 15
-  additionalinfo: Define how to close the mirrored tickets in ServiceNow. Choose 'resolved' to enable reopening from the UI. Otherwise, choose 'closed'.
   options:
   - None
   - closed

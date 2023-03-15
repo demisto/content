@@ -1294,8 +1294,8 @@ def test_assigned_to_field_user_exists():
     assert res == 'oscar@example.com'
 
 
-CLOSING_RESPONSE = {'dbotIncidentClose': True, 'closeNotes': 'From ServiceNow: Test', 'closeReason': 'Resolved'}
-CLOSING_RESPONSE_CUSTOM = {'dbotIncidentClose': True, 'closeNotes': 'From ServiceNow: Test', 'closeReason': 'Test'}
+CLOSING_RESPONSE = {'dbotIncidentClose': True, 'closeNotes': 'Test', 'closeReason': 'Resolved'}
+CLOSING_RESPONSE_CUSTOM = {'dbotIncidentClose': True, 'closeNotes': 'Test', 'closeReason': 'Test'}
 
 closed_ticket_state = (RESPONSE_CLOSING_TICKET_MIRROR_CLOSED, {
                        'close_incident': 'closed'}, 'closed_at', CLOSING_RESPONSE)
