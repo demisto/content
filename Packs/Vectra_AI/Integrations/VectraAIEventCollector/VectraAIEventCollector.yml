@@ -1,6 +1,6 @@
 category: Network Security
 commonfields:
-  id: VectraEventCollector
+  id: VectraAIEventCollector
   version: -1
 configuration:
 - name: url
@@ -34,8 +34,8 @@ configuration:
   required: false
   type: 8
 description: 'Collects Vectra Detections and Audits into XSIAM Events'
-display: 'Vectra Event Collector'
-name: VectraEventCollector
+display: 'Vectra AI Event Collector'
+name: VectraAIEventCollector
 script:
   commands:
   - name: vectra-get-events

@@ -1,6 +1,6 @@
 {
   "count": 6212,
-  "next": "mock://vectra-v22.dev.local/api/v2.2/detections?min_id=7412&ordering=id&page=2&page_size=5",
+  "next": "mock://vectra-v22.dev.local/api/v2.2/search/detections?page_size=5",
   "previous": null,
   "results": [
     {

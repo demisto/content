@@ -7,16 +7,20 @@ from pytest_mock import MockerFixture
 from VectraAIEventCollector import (
     VectraClient,
     test_module,
-    DETECTION_NEXT_RUN_KEY,
-    AUDIT_NEXT_RUN_KEY,
     XSIAM_TIME_FORMAT,
     AUDIT_START_TIMESTAMP_FORMAT,
+    AUDIT_NEXT_RUN_KEY,
+    DETECTION_TIMESTAMP_FORMAT,
+    DETECTION_TIMESTAMP_QUERY_FORMAT,
+    DETECTION_NEXT_RUN_KEY,
+    DETECTION_TIMESTAMP_KEY,
     get_detections_cmd,
     get_audits_cmd,
     get_events,
     fetch_events,
     get_audits_to_send,
     add_parsing_rules,
+    get_most_recent_detection,
 )
 from typing import Dict, Any
 import json
@@ -148,7 +152,7 @@ class TestCommands:
         """
 
         mocker.patch.object(client, "get_detections", return_value=detections)
-        cmd_res = get_detections_cmd(client)
+        cmd_res = get_detections_cmd(client, last_timestamp="")
 
         if detections:
             assert len(cmd_res.outputs) == len(detections.get("results"))
@@ -235,12 +239,9 @@ class TestCommands:
 
         if detections_actual:
             assert len(detections_actual) == 5
-            assert (
-                int(next_fetch.get(DETECTION_NEXT_RUN_KEY))
-                == DETECTIONS.get("results")[0].get("id") + 1
-            )
+            assert next_fetch.get(DETECTION_NEXT_RUN_KEY) == "2022-09-30T0557"
         else:
-            assert int(next_fetch.get(DETECTION_NEXT_RUN_KEY)) == 1
+            assert next_fetch.get(DETECTION_NEXT_RUN_KEY) == "1969-12-29T0000"
 
     @freeze_time("2023-02-19 00:00:13")
     def test_not_first_fetch(
@@ -269,7 +270,7 @@ class TestCommands:
             demisto,
             "getLastRun",
             return_value={
-                DETECTION_NEXT_RUN_KEY: 2,
+                DETECTION_NEXT_RUN_KEY: datetime.now().strftime(DETECTION_TIMESTAMP_QUERY_FORMAT),
                 AUDIT_NEXT_RUN_KEY: str(datetime.now().timestamp()),
             },
         )
@@ -283,12 +284,9 @@ class TestCommands:
             )
 
         if detections_actual:
-            assert (
-                int(next_fetch.get(DETECTION_NEXT_RUN_KEY))
-                == detections_actual[0].get(DETECTION_NEXT_RUN_KEY) + 1
-            )
+            assert next_fetch.get(DETECTION_NEXT_RUN_KEY) == "2022-09-30T0557"
         else:
-            assert int(next_fetch.get(DETECTION_NEXT_RUN_KEY)) == 2
+            assert next_fetch.get(DETECTION_NEXT_RUN_KEY) == "2023-02-19T0000"
 
 
 """ Helper Functions Tests """
@@ -371,3 +369,33 @@ def test_add_parsing_rules(event: Dict[str, Any], expected_time: str, format: st
     assert "_time" in actual
     assert actual["_time"] == expected_time
     assert datetime.strptime(actual["_time"], format)
+
+
+@pytest.mark.parametrize(
+    "detections,expected",
+    [
+        (
+            [
+                {DETECTION_NEXT_RUN_KEY: "2022-09-14T00:54:56Z"},
+                {DETECTION_NEXT_RUN_KEY: "2022-09-16T00:54:56Z"},
+                {DETECTION_NEXT_RUN_KEY: "2022-09-15T00:54:56Z"},
+            ],
+            "2022-09-16T00:54:56Z",
+        ),
+        (DETECTIONS.get("results"), "2022-09-30T05:56:02Z"),
+    ],
+)
+def test_get_most_recent_detection(detections: List[Dict[str, Any]], expected: str):
+
+    """
+    Given: A list of detections
+
+    When:
+        - Case A: A list of adjacent timewise detections are provided.
+        - Case B: A list of far off detections are provided.
+
+    """
+
+    actual = get_most_recent_detection(detections=detections)
+    assert isinstance(actual, Dict)
+    assert actual.get(DETECTION_NEXT_RUN_KEY) == expected
