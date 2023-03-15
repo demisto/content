@@ -1,45 +1,56 @@
-Enriches an endpoint by hostname using one or more integrations.
-
+Enrich an endpoint by hostname using one or more integrations.
 Supported integrations:
 - Active Directory Query v2
 - McAfee ePolicy Orchestrator
-- McAfee ePolicy Orchestrator v2
 - Carbon Black Enterprise Response v2
 - Cylance Protect v2
 - CrowdStrike Falcon Host
 - ExtraHop Reveal(x)
 
+- Endpoint reputation using !endpoint command
+
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+
 * Endpoint Enrichment - Cylance Protect v2
 
 ### Integrations
+
 * epo
-* carbonblack-v2
 * Active Directory Query v2
+* carbonblack-v2
+* McAfee ePO v2
 
 ### Scripts
+
 * Exists
 
 ### Commands
-* epo-find-system
-* extrahop-device-search
-* cb-sensor-info
-* ad-get-computer
-* cs-device-details
-* cs-device-search
 
+* endpoint
+* extrahop-device-search
+* ad-get-computer
+* cb-sensor-info
+* cs-device-search
+* epo-find-system
+* cs-device-details
 
 ## Playbook Inputs
+
 ---
 
-| **Name** | **Description** | **Default Value** | **Source** | **Required** |
-| --- | --- | --- | --- | --- |
-| Hostname | The hostname of the endpoint to enrich. | Hostname | Endpoint | Optional |
+| **Name** | **Description** | **Default Value** | **Required** |
+| --- | --- | --- | --- |
+| Hostname | The hostname of the endpoint to enrich. | Endpoint.Hostname | Optional |
+| UseReputationCommand | Define if you would like to use the \!endpoint command.<br/>Note: This input should be used whenever there is no auto-extract enabled in the investigation flow.<br/>Possible values: True / False. | False | Required |
+| IPAddress | The IP address of the endpoint to enrich. |  | Optional |
+| EndpointID | The endpoint ID of the endpoint to enrich. |  | Optional |
 
 ## Playbook Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -77,7 +88,15 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | ExtraHop.Device.CdpName | The Cisco Discovery Protocol name associated with the device. | string |
 | ExtraHop.Device.NetbiosName | The NetBIOS name associated with the device. | string |
 | ExtraHop.Device.Url | Link to the device details page in ExtraHop. | string |
+| Endpoint.IPAddress | The endpoint IP address. | unknown |
+| Endpoint.ID | The endpoint ID. | unknown |
+| Endpoint.Status | The endpoint status. | unknown |
+| Endpoint.IsIsolated | The endpoint isolation status. | unknown |
+| Endpoint.MACAddress | The endpoint MAC address. | unknown |
+| Endpoint.Vendor | The integration name of the endpoint vendor. | unknown |
 
 ## Playbook Image
+
 ---
-![Endpoint_Enrichment_Generic_v2.1](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Endpoint_Enrichment_Generic_v2.1.png)
+
+![Endpoint Enrichment - Generic v2.1](../doc_files/Endpoint_Enrichment_-_Generic_v2.1.png)

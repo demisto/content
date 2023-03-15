@@ -6395,16 +6395,3 @@ files = [
     {file = "zope.interface-5.5.2-cp39-cp39-win_amd64.whl", hash = "sha256:7e66f60b0067a10dd289b29dceabd3d0e6d68be1504fc9d0bc209cf07f56d189"},
     {file = "zope.interface-5.5.2.tar.gz", hash = "sha256:bfee1f3ff62143819499e348f5b8a7f3aa0259f9aca5e0ddae7391d059dce671"},
 ]
-
-[package.dependencies]
-setuptools = "*"
-
-[package.extras]
-docs = ["Sphinx", "repoze.sphinx.autointerface"]
-test = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
-testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
-
-[metadata]
-lock-version = "2.0"
-python-versions = "^3.8,<3.11"
-content-hash = "4de7dcca292ae5079f5a6646bcb99d6bda1daa185f887b1c7c467d56c3d0d38f"
