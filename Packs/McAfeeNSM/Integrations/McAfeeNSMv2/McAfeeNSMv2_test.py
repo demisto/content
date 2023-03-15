@@ -1219,7 +1219,7 @@ def test_list_device_interface_command__with_missing_arguments(mocker, mcafeensm
     When:
         list_device_interface_command command is executed, with missing arguments.
     Then:
-    - Confirm the output is as expected(er).
+    - Confirm the output is as expected(error message).
     """
     from McAfeeNSMv2 import list_device_interface_command
     mocker.patch.object(mcafeensmv2_client, 'list_device_interface_request',
@@ -1322,6 +1322,25 @@ def test_list_interface_policy_command__with_multiple_different_arguments(mocker
                                         args={"domain_id": 777, "interface_id": input.get("interface_id"),
                                               "limit": 1, "all_results": True})
     assert res.outputs == output
+
+
+@pytest.mark.parametrize('input, output', [({"domain_id": 777}, "Please provide a device_id."),
+                                           ({"device_id": 777}, "Please provide a domain_id.")])
+def test_assign_device_policy_command__with_missing_arguments(mocker, mcafeensmv2_client, input, output):
+    """
+    Given:
+    - A domain id or a device id.
+    When:
+    - assign_device_policy command command is executed, with missing arguments.
+    Then:
+    - Confirm the output is as expected(error message).
+    """
+    from McAfeeNSMv2 import assign_device_policy_command
+    mocker.patch.object(mcafeensmv2_client, 'assign_device_policy_request',
+                        return_value={None})
+    with pytest.raises(DemistoException) as e:
+        assign_device_policy_command(client=mcafeensmv2_client, args=input)
+    assert e.value.message == output
 
 
 def test_get_device_configuration_command(mocker, mcafeensmv2_client):
