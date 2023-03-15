@@ -831,9 +831,14 @@ def expire_stored_ids(fetched_ids: Dict[float, set]):
     now = int((datetime.utcnow() - datetime.utcfromtimestamp(0)).total_seconds() * 1000)
 
     # remove incidents that are stored more than two hours in the last run object.
-    return {
-        {fetch_time: incident_ids for fetch_time, incident_ids in fetched_ids.items() if now - fetch_time < two_hours}
-    }
+    cleaned_cache = {}
+
+    for fetch_time, incidents_ids in fetched_ids.items():
+        timediff = now - fetch_time
+        if timediff < two_hours:
+            cleaned_cache[fetch_time] = incidents_ids
+
+    return cleaned_cache
 
 
 def fetch_incidents():

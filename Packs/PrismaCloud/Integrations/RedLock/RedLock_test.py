@@ -85,7 +85,7 @@ def test_fetch_incidents_fetch_all_new(mocker):
 
     incidents, fetched_ids, next_run = fetch_incidents()
     assert next_run == 1625938454758
-    assert len(fetched_ids) == 2
+    assert fetched_ids[1625938454758] == 2
     assert incidents == expected_incidents
 
 
@@ -130,10 +130,10 @@ def test_expire_stored_ids_should_not_expire():
             - Validate that cleaned IDs returned contains the unexpired ID.
     """
     from RedLock import expire_stored_ids
-    fetched_ids = [{'P-12345': 1625938454758}]
+    fetched_ids = {1625938454758: {'P-12345'}}
 
     cleaned_ids = expire_stored_ids(fetched_ids=fetched_ids)
-    assert cleaned_ids == [{'P-12345': 1625938454758}]
+    assert cleaned_ids == fetched_ids
 
 
 @freeze_time("2022-07-10T16:34:14.758295 UTC+1")
@@ -147,10 +147,10 @@ def test_expire_stored_ids_should_expire():
             - Validate that the ID is expired and an empty array is returned
     """
     from RedLock import expire_stored_ids
-    fetched_ids = [{'P-12345': 1625927654758}]
+    fetched_ids = {1625927654758: {'P-12345'}}
 
     cleaned_ids = expire_stored_ids(fetched_ids=fetched_ids)
-    assert cleaned_ids == []
+    assert cleaned_ids == {}
 
 
 def test_redlock_list_scans(mocker):
