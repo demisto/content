@@ -1314,8 +1314,6 @@ def main():
                                                            marketplace=marketplace, use_api=True):
             logging.info(f'{pack_name=}, {pack_readme_images_list=}')
             readme_images_dict[pack_name] = pack_readme_images_list
-        with open(pack_readme_path, 'w') as f:
-            f.write('This is the new readme')
 
     logging.info('uploading new index')
 
