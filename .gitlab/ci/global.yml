@@ -249,13 +249,6 @@
         echo "vulture py3 version: $(python3 -m vulture --version 2>&1)"
         SHOULD_LINT_ALL=$(./Tests/scripts/should_lint_all.sh)
         mkdir ./unit-tests
-        if [[ -n "${SHOULD_LINT_ALL}" || -n "${BUCKET_UPLOAD}" ]]; then
-          echo "In should lint all / bucket upload."
-          if [ $DOCKER == "native:dev,from-yml" ]; then
-            echo "removing native:dev from docker list."
-            DOCKER = 'from-yml'
-          fi
-        fi
         if [ -n "$SHOULD_LINT_ALL" ]; then
           echo -e  "----------\nLinting all because:\n${SHOULD_LINT_ALL}\n----------"
           demisto-sdk lint -vvv -p 10 -a --test-xml ./unit-tests --log-path $ARTIFACTS_FOLDER --failure-report $ARTIFACTS_FOLDER --coverage-report $ARTIFACTS_FOLDER/coverage_report -dt 120 --time-measurements-dir $ARTIFACTS_FOLDER --docker-image ${DOCKERS_TO_RUN}
