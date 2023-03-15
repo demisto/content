@@ -654,7 +654,7 @@ def test_get_attachments_without_attachment_id(mocker, client):
         - Validate that the message object created successfully and all the attachment where downloaded.
 
     """
-    from MicrosoftGraphMail import get_attachment_command
+    from MicrosoftGraphListener import get_attachment_command
     output_prefix = 'MSGraphMail(val.ID && val.ID == obj.ID)'
     with open('test_data/mail_with_attachments') as mail_json:
         test_args = {}
