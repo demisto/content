@@ -834,7 +834,8 @@ def expire_stored_ids(fetched_ids: Dict[int, List[str]]):
     cleaned_cache = {}
 
     for fetch_time, incidents_ids in fetched_ids.items():
-        timediff = now - int(fetch_time)
+        fetch_time = int(fetch_time)
+        timediff = now - fetch_time
         if timediff < two_hours:
             cleaned_cache[fetch_time] = incidents_ids
         else:
