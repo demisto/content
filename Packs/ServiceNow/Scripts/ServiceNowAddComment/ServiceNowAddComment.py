@@ -1,6 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+
 def update_comment_or_worknote(args: Dict[str, Any]) -> CommandResults:
     ticket_id = args.get('ticket_id', 'none')
     note = args.get('note')
@@ -43,6 +44,7 @@ def update_comment_or_worknote(args: Dict[str, Any]) -> CommandResults:
     except Exception as ex1:
         return_error(str(ex1))
     return CommandResults(readable_output=md)
+
 
 def main():
     try:
