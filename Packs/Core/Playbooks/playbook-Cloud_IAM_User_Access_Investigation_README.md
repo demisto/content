@@ -1,5 +1,5 @@
 Investigate and respond to Cortex XSIAM alerts where a Cloud IAM user`s access key is used suspiciously to access the cloud environment.
-The following alerts are supported for AWS, Azure, and GCP environments.
+The following alerts are supported for AWS, Azure, and GCP environments:
 Penetration testing tool attempt
 Penetration testing tool activity
 Suspicious API call from a Tor exit node
@@ -10,10 +10,10 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
+* Cloud IAM Enrichment - Generic
+* Handle False Positive Alerts
 * Cloud Response - Generic
 * Enrichment for Verdict
-* Handle False Positive Alerts
-* Cloud IAM Enrichment - Generic
 
 ### Integrations
 
@@ -25,8 +25,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Commands
 
-* closeInvestigation
 * core-get-cloud-original-alerts
+* closeInvestigation
 
 ## Playbook Inputs
 
