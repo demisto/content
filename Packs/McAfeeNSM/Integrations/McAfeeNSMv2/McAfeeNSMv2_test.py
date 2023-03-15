@@ -1210,20 +1210,23 @@ def test_list_device_interface_command__with_different_arguments(mocker, input, 
     assert res.outputs == output
 
 
-@pytest.mark.parametrize('input, output', [(None, [{'PolicyId': 'mock'}, {'PolicyId': 'mock'}]), (1, [{'PolicyId': 'mock'}])])
-def test_list_device_policy_command__with_and_without_limit(mocker, input, output, mcafeensmv2_client):
+@pytest.mark.parametrize('input, output', [({"domain_id": 777}, [{'PolicyId': 'mock'}, {'PolicyId': 'mock'}]),
+                                           ({"domain_id": 777, "limit": 1}, [{'PolicyId': 'mock'}]),
+                                           ({"domain_id": 777, "limit": 1, "all_results": True},
+                                            [{'PolicyId': 'mock'}, {'PolicyId': 'mock'}])])
+def test_list_device_policy_command__with_different_arguments(mocker, input, output, mcafeensmv2_client):
     """
     Given:
-    - A limit is given or not.
+    - A domain_id.
     When:
-    - nsm-list_device_policy_command command is executed.
+    - nsm-list_device_policy_command command is executed with and without limit, with and without all_results.
     Then:
     - Confirm the output is as expected(the number of results and the capitalization).
     """
     from McAfeeNSMv2 import list_device_policy_command
     mocker.patch.object(mcafeensmv2_client, 'list_device_policy_request',
                         return_value={"policyAssignmentsList": [{"policyId": "mock"}, {"policyId": "mock"}]})
-    res = list_device_policy_command(client=mcafeensmv2_client, args={"domain_id": 777, "limit": input})
+    res = list_device_policy_command(client=mcafeensmv2_client, args=input)
     assert res.outputs == output
 
 
@@ -1273,7 +1276,7 @@ def test_list_interface_policy_command__with_multiple_different_arguments(mocker
         Given:
         - A domain id and or not device id, and limit and all_results is true.
         When:
-        - nsm-list_device_policy_command command is executed.
+        - nsm-list_interface_policy_command command is executed.
         Then:
         - Confirm the output is as expected(all the results - ignoring the limit, and the capitalization).
     """
