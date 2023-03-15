@@ -624,7 +624,7 @@ def test_branch_auto_bumper(mocker):
         run_id="1",
     )
     res = branch_auto_bumper.autobump()
-    assert "Pack MyPack version was automatically bumped to 1.0.2." in res
+    assert "**MyPack** pack version was bumped to **1.0.2**" in res
 
 
 def test_autobump_manager(mocker):
