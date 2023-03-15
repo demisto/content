@@ -821,7 +821,7 @@ def expire_stored_ids(fetched_ids: Dict[float, set]):
         fetched_ids: dict of fetched ids.
 
     Returns:
-        The list of fetched ids.
+        dict: incidents that are in the last run for more than 2 hours.
 
     """
     if not fetched_ids:
@@ -857,8 +857,8 @@ def fetch_incidents():
         for record in fetched_ids_copy:
             for incident_id, timestamp in record.items():
                 if timestamp not in fetched_ids:
-                    fetched_ids[timestamp] = set()
-                fetched_ids[timestamp].add(incident_id)
+                    fetched_ids[timestamp] = []
+                fetched_ids[timestamp].append(incident_id)
 
     now = int((datetime.utcnow() - datetime.utcfromtimestamp(0)).total_seconds() * 1000)
     if not last_run_time:
@@ -896,7 +896,7 @@ def fetch_incidents():
     response = req('POST', 'alert', payload, {'detailed': 'true'})
     incidents = []
 
-    fetched_ids[now] = set()
+    fetched_ids[now] = []
 
     for alert in response:
         alert_id = alert.get('id')
@@ -911,7 +911,7 @@ def fetch_incidents():
             'severity': translate_severity(alert),
             'rawJSON': json.dumps(alert)
         })
-        fetched_ids[now].add(alert_id)
+        fetched_ids[now].append(alert_id)
 
     if not fetched_ids[now]:  # if no new incidents were added, no need to keep the date, saving space
         fetched_ids.pop(now, None)
