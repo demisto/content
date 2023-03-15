@@ -1,4 +1,4 @@
-Investigate and respond to Cortex XSIAM alerts where a Cloud IAM user`s access key is used suspiciously to access the cloud environment.
+Investigate and respond to Cortex XSIAM alerts where a Cloud IAM user access key is used suspiciously to access the cloud environment.
 The following alerts are supported for AWS, Azure, and GCP environments.
 Penetration testing tool attempt
 Penetration testing tool activity
