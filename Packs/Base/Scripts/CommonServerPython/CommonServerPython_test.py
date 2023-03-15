@@ -7797,7 +7797,7 @@ class TestFetchWithLookBack:
                     {'limit': 3, 'first_fetch': '20 minutes', 'look_back': 30},
                     [INCIDENTS[2], INCIDENTS[3], INCIDENTS[4]], [NEW_INCIDENTS[1], NEW_INCIDENTS[2]], [],
                     {'found_incident_ids': {3: '', 4: '', 5: ''}, 'limit': 6},
-                    {'found_incident_ids': {3: '', 4: '', 5: '', 7: '', 8: ''}, 'limit': 3},
+                    {'found_incident_ids': {3: '', 4: '', 5: '', 7: '', 8: ''}, 'limit': 8},
                     [NEW_INCIDENTS[1], NEW_INCIDENTS[2]], 3
             ),
 
@@ -7829,7 +7829,7 @@ class TestFetchWithLookBack:
                     [INCIDENTS_TIME_AWARE[2], INCIDENTS_TIME_AWARE[3], INCIDENTS_TIME_AWARE[4]],
                     [NEW_INCIDENTS_TIME_AWARE[1], NEW_INCIDENTS_TIME_AWARE[2]], [],
                     {'found_incident_ids': {3: '', 4: '', 5: ''}, 'limit': 6},
-                    {'found_incident_ids': {3: '', 4: '', 5: '', 7: '', 8: ''}, 'limit': 3},
+                    {'found_incident_ids': {3: '', 4: '', 5: '', 7: '', 8: ''}, 'limit': 8},
                     [NEW_INCIDENTS_TIME_AWARE[1], NEW_INCIDENTS_TIME_AWARE[2]], 3
             ),
         ])
@@ -8007,7 +8007,7 @@ class TestFetchWithLookBack:
                 },
                 {
                     'time': '2022-04-02T10:12:00',
-                    'limit': 3,
+                    'limit': 8,
                     'found_incident_ids': {'4': '', '5': ''}
                 },
                 {
@@ -8027,7 +8027,7 @@ class TestFetchWithLookBack:
                 },
                 {
                     'time': '2022-04-02T10:12:00',
-                    'limit': 6,
+                    'limit': 8,
                     'found_incident_ids': {'4': '', '5': '',
                                            '7': '', '8': '', '9': ''}
                 }
@@ -8066,7 +8066,7 @@ class TestFetchWithLookBack:
                 },
                 {
                     'time': '2022-04-06T10:11:00',
-                    'limit': 3,
+                    'limit': 6,
                     'found_incident_ids': {'1': '', '2': '', '3': ''}
                 },
                 {
@@ -8082,7 +8082,7 @@ class TestFetchWithLookBack:
                 },
                 {
                     'time': '2022-04-07T10:11:00',
-                    'limit': 3,
+                    'limit': 6,
                     'found_incident_ids': {'1': '', '2': '', '3': ''}
                 }
             )
