@@ -2644,7 +2644,6 @@ def conversation_history():
         'limit': limit
     }
 
-
     raw_response = send_slack_request_sync(CLIENT, 'conversations.history', http_verb="GET", body=body)
     messages = raw_response['messages']
 
@@ -2653,24 +2652,25 @@ def conversation_history():
         for message in messages:
             if 'subtype' not in message:
                 user_id = message['user']
-                user_id_body = {
-                    'user': user_id
+                body = {
+                    'user':user_id
                 }
-                user_response = get_user_by_id_async(AsyncWebClient, user_id)
-                user = user_response
-                demisto.results(user)
+                user_details_response = send_slack_request_sync(CLIENT, 'users.info', http_verb="GET", body=body)
+                user_details = user_details_response['user']
                 context = {
                     'TYPE': message['type'],
                     'TEXT': message['text'],
                     'USER ID': message['user'],
-                    #'USERNAME': user_response
+                    'NAME': user_details['name'],
+                    'FULL NAME': user_details['real_name']
                 }
             else:
                 context = {
                     'TYPE': message['type'],
                     'TEXT': message['text'],
                     'USER ID': message['username'],
-                    #'USERNAME': user_response
+                    'NAME': message['username'],
+                    'FULL NAME': message['username']
                 }
             readable_output = tableToMarkdown(f'Channel details from Channel ID - {channel_id}', context)
 
@@ -2680,17 +2680,17 @@ def conversation_history():
         for message in messages:
             if 'subtype' not in message:
                 user_id = message['user']
-                user_id_body = {
-                    'user': user_id
+                body = {
+                    'user':user_id
                 }
-                user_response = get_user_by_id_async(AsyncWebClient, user_id)
-                user = user_response
-                demisto.results(user)
+                user_details_response = send_slack_request_sync(CLIENT, 'users.info', http_verb="GET", body=body)
+                user_details = user_details_response['user']
                 entry ={
                     'TYPE': message['type'],
                     'TEXT': message['text'],
                     'USER ID': message['user'],
-                    #'USERNAME': user_response
+                    'NAME': user_details['name'],
+                    'FULL NAME': user_details['real_name']
                 }
                 context.append(entry)
             else:
@@ -2698,7 +2698,8 @@ def conversation_history():
                     'TYPE': message['type'],
                     'TEXT': message['text'],
                     'USER ID': message['username'],
-                    #'USERNAME': user_response
+                    'NAME': message['username'],
+                    'FULL NAME': message['username']
                 }
                 context.append(entry)
         readable_output = tableToMarkdown(f'Channel details from Channel ID - {channel_id}', context)
