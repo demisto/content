@@ -2075,7 +2075,7 @@ def list_domain_device_command(client: Client, args: Dict) -> CommandResults:
     Returns: A CommandResult object with a list of domain devices.
     """
     domain_id = arg_to_number(args.get('domain_id'))
-    if not domain_id:
+    if not domain_id and domain_id != 0:
         raise DemistoException('Please provide a domain_id.')
     limit = arg_to_number(args.get('limit', 50))
     all_results = argToBoolean(args.get('all_results', False))
@@ -2111,10 +2111,10 @@ def list_device_interface_command(client: Client, args: Dict) -> CommandResults:
     Returns: A CommandResult object with a list of device interfaces.
     """
     device_id = arg_to_number(args.get('device_id'))
-    if not device_id:
+    if not device_id and device_id != 0:
         raise DemistoException('Please provide a device_id.')
     domain_id = arg_to_number(args.get('domain_id'))
-    if not domain_id:
+    if not domain_id and domain_id != 0:
         raise DemistoException('Please provide a domain_id.')
     limit = arg_to_number(args.get('limit', 50))
     all_results = argToBoolean(args.get('all_results', False))
@@ -2153,10 +2153,10 @@ def assign_device_policy_command(client: Client, args: Dict) -> CommandResults:
     Returns: A CommandResult object with a success or failure message.
     """
     device_id = arg_to_number(args.get('device_id'))
-    if not device_id:
+    if not device_id and device_id != 0:
         raise DemistoException('Please provide a device_id.')
     domain_id = arg_to_number(args.get('domain_id'))
-    if not domain_id:
+    if not domain_id and domain_id != 0:
         raise DemistoException('Please provide a domain_id.')
     pre_firewall_policy = args.get('pre_firewall_policy_name')
     post_firewall_policy = args.get('post_firewall_policy_name')
@@ -2184,7 +2184,7 @@ def list_device_policy_command(client: Client, args: Dict) -> CommandResults:
     """
     device_id = arg_to_number(args.get('device_id'))
     domain_id = arg_to_number(args.get('domain_id'))
-    if not domain_id:
+    if not domain_id and domain_id != 0:
         raise DemistoException('Please provide a domain_id.')
     limit = arg_to_number(args.get('limit', 50))
     all_results = argToBoolean(args.get('all_results', False))
@@ -2220,10 +2220,10 @@ def assign_interface_policy_command(client: Client, args: Dict) -> CommandResult
     Returns: A CommandResult object with a success or failure message.
     """
     domain_id = arg_to_number(args.get('domain_id'))
-    if not domain_id:
+    if not domain_id and domain_id != 0:
         raise DemistoException('Please provide a domain_id.')
     interface_id = arg_to_number(args.get('interface_id'))
-    if not interface_id:
+    if not interface_id and interface_id != 0:
         raise DemistoException('Please provide a interface_id.')
     firewall_policy = args.get('firewall_policy_name')
     firewall_port_policy = args.get('firewall_port_policy_name')
@@ -2260,7 +2260,7 @@ def list_interface_policy_command(client: Client, args: Dict) -> CommandResults:
         A CommandResult object with a list of policies.
     """
     domain_id = arg_to_number(args.get('domain_id'))
-    if not domain_id:
+    if not domain_id and domain_id != 0:
         raise DemistoException('Please provide a domain_id.')
     interface_id = arg_to_number(args.get('interface_id'))
     limit = arg_to_number(args.get('limit', 50))
@@ -2304,7 +2304,7 @@ def get_device_configuration_command(client: Client, args: Dict) -> CommandResul
         A CommandResult object with the device configuration information.
     """
     device_id = arg_to_number(args.get('device_id'))
-    if not device_id:
+    if not device_id and device_id != 0:
         raise DemistoException('Please provide a device_id.')
 
     response = client.get_device_configuration_request(device_id=device_id)
@@ -2349,7 +2349,7 @@ def deploy_device_configuration_command(args: Dict, client: Client) -> PollResul
 
     request_id = arg_to_number(args.get('request_id'))
     device_id = arg_to_number(args.get('device_id'))
-    if not device_id:
+    if not device_id and device_id != 0:
         raise DemistoException('Please provide a device_id.')
     if not request_id:       # if this is the first time the function is called
         is_ssl_push_required = argToBoolean(args.get('push_ssl_key', False))
