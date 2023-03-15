@@ -43,9 +43,10 @@ class GoogleSecreteManagerModule:
             logging.debug(f'Getting the secret: {secret.name}')
             formatted_integration_search_ids = [GoogleSecreteManagerModule.convert_to_gsm_format(s.lower()) for s in
                                                 name_filter]
-            print(f'formatted_integration_search_ids:{formatted_integration_search_ids}')
             if name_filter and not secret_pack_id and secret_pack_id not in formatted_integration_search_ids:
                 continue
+            print(f'formatted_integration_search_ids:{formatted_integration_search_ids}')
+            print(f'secret_pack_id:{secret_pack_id}')
             if with_secret:
                 try:
                     secret_value = self.get_secret(project_id, secret.name)
