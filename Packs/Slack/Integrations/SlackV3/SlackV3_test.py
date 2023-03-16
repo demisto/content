@@ -4847,3 +4847,22 @@ def test_check_for_unanswered_questions(mocker):
     total_questions = js.loads(updated_context.get('questions'))
 
     assert len(total_questions) == 0
+
+
+def test_conversation_history(mocker):
+    """
+    Given:
+        Intration Context containing two conversations.
+    When:
+        Checking to see if a conversation is a Bot or User
+    Then:
+        Assert that the conversation is a Bot or User
+    """
+    from SlackV3 import conversation_history
+    mocker.patch.object(demisto, 'setIntegrationContext', side_effect=set_integration_context)
+
+    expected_results = {
+       "type": "message",
+       "text": "Hopa this is a test. ",
+       "bot_id": "BMWFS6KSA"
+    }
