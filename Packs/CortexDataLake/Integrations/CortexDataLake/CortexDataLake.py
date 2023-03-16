@@ -246,7 +246,7 @@ class Client(BaseClient):
             except AttributeError:
                 error_message = query_result
 
-            raise DemistoException(f'Error in query to Cortex Data Lake [{status_code}] - {error_message}')
+            raise DemistoException(f'Error in query to Cortex XSOAR Data Lake [{status_code}] - {error_message}')
 
         try:
             raw_results = [r.json() for r in query_service.iter_job_results(job_id=query_result.get('jobId'),
