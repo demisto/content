@@ -751,6 +751,7 @@ def main():
             formatted_url = URLFormatter(url).output
 
         except Exception:
+            demisto.debug(f"FormatURL could not format {url}")
             demisto.debug(traceback.format_exc())
 
         finally:
