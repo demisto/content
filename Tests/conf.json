@@ -4526,6 +4526,7 @@
         {
             "playbookID": "Phishing v3 - DomainSquatting+EML+MaliciousIndicators - Test",
             "fromversion": "6.2.0",
+            "toversion": "6.4.9",
             "timeout": 7000,
             "integrations": [
                 "EWSO365",
