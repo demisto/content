@@ -20,7 +20,7 @@ This integration was integrated and tested with versions 2.0 and 2.1 of Sentinel
     | Block Site IDs | Comma-separated list of site IDs for where hashes should be blocked. If left blank all hashes will be blocked globally. If filled out with site ids all hashes will be no longer be blocked globally, they will now be blocked in the scope of those sites. | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
-    | Mirroring Direction | Choose the direction to mirror the detection: Incoming \(from SentinelOne to XSOAR\), Outgoing \(from XSOAR to SentinelOne\), or Incoming and Outgoing \(to/from SentinelOne and XSOAR\). | False |
+    | Mirroring Direction | Choose the direction to mirror the detection: Incoming \(from SentinelOne to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to SentinelOne\), or Incoming and Outgoing \(to/from SentinelOne and Cortex XSOAR\). | False |
     | API Token (Deprecated) | Use the "API Token \(Recommended\)" parameter instead. | False |
     | Incidents Fetch Interval |  | False |
 
@@ -35,15 +35,15 @@ To setup the mirroring follow these instructions:
 2. Search for **SentinelOne** and select your integration instance.
 3. Enable **Fetches incidents**.
 4. In the *Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored:
-    - Incoming - Any changes in SentinelOne incidents (`Analyst verdict`, `Threat status`) will be reflected in XSOAR incidents.
-    - Outgoing - Any changes in XSOAR incidents will be reflected in SentinelOne incidents (`SentinelOne Threat Analyst Verdict`, `SentinelOne Threat Status`).
-    - Incoming And Outgoing - Changes in XSOAR incidents and SentinelOne incidents  will be reflected in both directions.
+    - Incoming - Any changes in SentinelOne incidents (`Analyst verdict`, `Threat status`) will be reflected in Cortex XSOAR incidents.
+    - Outgoing - Any changes in Cortex XSOAR incidents will be reflected in SentinelOne incidents (`SentinelOne Threat Analyst Verdict`, `SentinelOne Threat Status`).
+    - Incoming And Outgoing - Changes in Cortex XSOAR incidents and SentinelOne incidents will be reflected in both directions.
     - None - Turns off incident mirroring.
 
 Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
 
 **Important Notes**
- - To ensure the mirroring works as expected, `mappers` and `Incident type` are required, both for incoming and outgoing, to map the expected fields in XSOAR and SentinelOne.
+ - To ensure the mirroring works as expected, `mappers` and `Incident type` are required, both for incoming and outgoing incidents, to map the expected fields in Cortex XSOAR and SentinelOne.
 
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
@@ -2776,19 +2776,19 @@ Run a remote script that was uploaded to the SentinelOne Script Library.
 #### Input
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| output_destination | Output Destination : DataSetCloud/Local/None/SentinelCloud | Required | 
-| task_description | Task description | Required |
-| script_id | script ID | Required |
-| output_directory | Output Directory | Required |
-| account_ids | A comma-separated list of Account IDs. | Required |
-| agent_ids | A comma-separated list of Agent IDs on which script should run. | Required |
+| output_destination | Output Destination: DataSetCloud/Local/None/SentinelCloud. | Required | 
+| task_description | Task description. | Required |
+| script_id | Script ID. | Required |
+| output_directory | Output directory. | Required |
+| account_ids | A comma-separated list of account IDs. | Required |
+| agent_ids | A comma-separated list of agent IDs on which the script should run. | Required |
 #### Context Output
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SentinelOne.RunRemoteScript.pendingExecutionId | String | ID of created pending execution, present only if pending flag is true. | 
+| SentinelOne.RunRemoteScript.pendingExecutionId | String | ID of created pending execution. Present only if pending flag is true. | 
 | SentinelOne.RunRemoteScript.pending | Boolean | Flag indicating if requested script execution requires approval and is created as pending execution. |
-| SentinelOne.RunRemoteScript.affected | Number | Number of entities affected by the requested operation |
-| SentinelOne.RunRemoteScript.parentTaskId | String | The parent task id of the script execution task, null in case of pending execution.|
+| SentinelOne.RunRemoteScript.affected | Number | Number of entities affected by the requested operation. |
+| SentinelOne.RunRemoteScript.parentTaskId | String | The parent task ID of the script execution task. Null in case of pending execution. |
 #### Command Example
 ```!sentinelone-run-remote-script account_ids="1431991147831493698" output_destination="None" task_description="a test" script_id="1235462642391383844" output_directory="file" agent_ids="1508658407921320788"```
 
