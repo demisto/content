@@ -1,7 +1,9 @@
 id: 97d62768-a09d-4f5f-83d1-8d07ddec12f4
-version: 19
+version: 26
 vcShouldKeepItemLegacyProdMachine: false
 name: Druva-Ransomware-Response-User-resource-URL
+description: Automate response actions like quarantining effected resources or snapshots
+  to stop the spread of ransomware and avoid reinfection or contamination spread.
 starttaskid: "0"
 tasks:
   "0":
@@ -231,10 +233,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: c3e1fc1a-7608-4665-8933-b05a6efd6f70
+    taskid: eded1ecf-7fa5-4fad-808a-c295f521739a
     type: regular
     task:
-      id: c3e1fc1a-7608-4665-8933-b05a6efd6f70
+      id: eded1ecf-7fa5-4fad-808a-c295f521739a
       version: -1
       name: Quarantine-Device
       description: Quarantines a resource.
@@ -246,6 +248,8 @@ tasks:
       '#none#':
       - "9"
     scriptarguments:
+      from_date:
+        simple: ${inputs.DateOfOccurrence}
       org_id:
         simple: ${Druva.Resource.orgID}
       resource_id:
@@ -400,56 +404,14 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "12":
-    id: "12"
-    taskid: 8baabcb4-ff65-4881-8b92-26d4e74cc9cb
-    type: regular
-    task:
-      id: 8baabcb4-ff65-4881-8b92-26d4e74cc9cb
-      version: -1
-      name: Delete context
-      description: |-
-        Delete field from context.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "1"
-      - "2"
-      - "3"
-    scriptarguments:
-      all:
-        simple: "yes"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 470,
-          "y": 40
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: a3a3dcdb-d63d-40fa-8a11-008380d77679
+    taskid: b481c125-7582-40e7-8e3f-05d752dac63d
     type: condition
     task:
-      id: a3a3dcdb-d63d-40fa-8a11-008380d77679
+      id: b481c125-7582-40e7-8e3f-05d752dac63d
       version: -1
-      name: Find-User-Device
+      name: Is User Present
       type: condition
       iscommand: false
       brand: Druva Ransomware Response
@@ -467,6 +429,8 @@ tasks:
             value:
               simple: Druva.User.userID
             iscontext: true
+          right:
+            value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -500,7 +464,9 @@ tasks:
       "no":
       - "9"
       "yes":
-      - "12"
+      - "1"
+      - "2"
+      - "3"
     scriptarguments:
       brandname:
         simple: Druva Ransomware Response
@@ -511,8 +477,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 470,
-          "y": -100
+          "x": 260,
+          "y": -70
         }
       }
     note: false
@@ -539,17 +505,35 @@ inputs:
   value:
     simple: ${incident.users}
   required: false
-  description: ""
+  description: UserName is used to search userID  of user
   playbookInputQuery: null
 - key: ResourceName
-  value: {}
+  value:
+    simple: ${incident.devicename}
   required: false
-  description: ""
+  description: ResourceName is used to search resource of type FS,NAS and VMware
   playbookInputQuery: null
 - key: SiteURL
   value:
     simple: ${incident.urls}
   required: false
-  description: ""
+  description: 'SiteURL is used to search sharedrive and sharepoint resources  '
+  playbookInputQuery: null
+- key: DateOfOccurrence
+  value:
+    complex:
+      root: incident
+      accessor: occurred
+      transformers:
+      - operator: TimeComponents
+        args:
+          key:
+            value:
+              simple: yyyy-mm-dd
+          time_zone:
+            value:
+              simple: "+09:00"
+  required: false
+  description: 'Date is used to quarantine device '
   playbookInputQuery: null
 outputs: []

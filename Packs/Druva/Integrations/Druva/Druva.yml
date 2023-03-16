@@ -15,12 +15,10 @@ configuration:
   name: clientId
   type: 4
   required: true
-  defaultvalue: K7QYkjixOag7f2P0J/t2sgXq9NMsbzj/
 - display: Secret Key
   name: secretKey
   type: 4
   required: true
-  defaultvalue: 7AHzEWu9yYgjeB4GdWVs9QopoWRlIGc3
 - display: Fetch indicators
   name: feed
   type: 8

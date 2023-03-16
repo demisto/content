@@ -1,3 +1,8 @@
+### Partner Contributed Integration
+#### Integration Author: Druva
+Support and maintenance for this integration are provided by the author. Please use the following contact details:
+- **Email**: [techpartners@druva.com](mailto:techpartners@druva.com)
+***
 Important: The integration is applicable to customers using Realize Ransomware Recovery module with inSync and Phoenix on Druva Public Cloud
 
 We recommend familiarizing yourself with the content before you begin to use the APIs.
