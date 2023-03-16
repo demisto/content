@@ -2,29 +2,31 @@ import pytest
 import AzureWAF as waf
 import demistomock as demisto
 
+API_VERSION = '2020-05-01'
+
 GET_COMMAND_DATA = [
     (
         {'policy_name': 'pol1', 'verbose': 'false', 'limit': '10'},  # args, case: default resource_group
         {"method": "GET",
          "full_url":
-             "https://management.azure.com/subscriptions/test/resourceGroups/test/providers/Microsoft.Network/\
-ApplicationGatewayWebApplicationFirewallPolicies/pol1"
+             f"https://management.azure.com/subscriptions/test/resourceGroups/test/providers/Microsoft.Network/\
+ApplicationGatewayWebApplicationFirewallPolicies/pol1?api-version={API_VERSION}"
          }  # expected
     ),
     (
         {'verbose': 'false', 'limit': '10'},  # args, case: list of policies in default resource_group
         {"method": "GET",
          "full_url":
-             "https://management.azure.com/subscriptions/test/resourceGroups/test/providers/Microsoft.Network/\
-ApplicationGatewayWebApplicationFirewallPolicies"
+             f"https://management.azure.com/subscriptions/test/resourceGroups/test/providers/Microsoft.Network/\
+ApplicationGatewayWebApplicationFirewallPolicies?api-version={API_VERSION}"
          }  # expected
     ),
     (
         {'verbose': 'true', 'limit': '10'},  # args, case: list of policies in default resource_group with full data
         {"method": "GET",
          "full_url":
-             "https://management.azure.com/subscriptions/test/resourceGroups/test/providers/Microsoft.Network/\
-ApplicationGatewayWebApplicationFirewallPolicies"
+             f"https://management.azure.com/subscriptions/test/resourceGroups/test/providers/Microsoft.Network/\
+ApplicationGatewayWebApplicationFirewallPolicies?api-version={API_VERSION}"
          }  # expected
     ),
     (
@@ -32,8 +34,8 @@ ApplicationGatewayWebApplicationFirewallPolicies"
         # args, case: list of policies in custom resource_group
         {"method": "GET",
          "full_url":
-             "https://management.azure.com/subscriptions/test/resourceGroups/res1/providers/Microsoft.Network/\
-ApplicationGatewayWebApplicationFirewallPolicies"
+             f"https://management.azure.com/subscriptions/test/resourceGroups/res1/providers/Microsoft.Network/\
+ApplicationGatewayWebApplicationFirewallPolicies?api-version={API_VERSION}"
          }  # expected
     ),
 ]
@@ -88,8 +90,8 @@ def test_get_array_policy_with_exception(mocker):
     }
     expected_results = {
         "method": "GET",
-        "full_url": "https://management.azure.com/subscriptions/sub1/resourceGroups/res2/providers/Microsoft.Network/\
-ApplicationGatewayWebApplicationFirewallPolicies/pol1"
+        "full_url": f"https://management.azure.com/subscriptions/sub1/resourceGroups/res2/providers/Microsoft.Network/\
+ApplicationGatewayWebApplicationFirewallPolicies/pol1?api-version={API_VERSION}",
     }
     client = waf.AzureWAFClient(
         app_id='',
@@ -115,8 +117,8 @@ UPSERT_COMMAND_DATA = [
          },  # args, case: custom resource_group update rule
         {"method": "PUT",
          "full_url":
-             "https://management.azure.com/subscriptions/test/resourceGroups/res1/providers/Microsoft.Network/\
-ApplicationGatewayWebApplicationFirewallPolicies/pol1",
+             f"https://management.azure.com/subscriptions/test/resourceGroups/res1/providers/Microsoft.Network/\
+ApplicationGatewayWebApplicationFirewallPolicies/pol1?api-version={API_VERSION}",
          "body": {'location': 'east', 'properties': {'managedRules': {'test': 'test'}}}
          }  # expected
     ),
@@ -126,8 +128,8 @@ ApplicationGatewayWebApplicationFirewallPolicies/pol1",
          },  # args, case: custom resource_group update rule with key hierarchy
         {"method": "PUT",
          "full_url":
-             "https://management.azure.com/subscriptions/test/resourceGroups/res1/providers/Microsoft.Network/\
-ApplicationGatewayWebApplicationFirewallPolicies/pol1",
+             f"https://management.azure.com/subscriptions/test/resourceGroups/res1/providers/Microsoft.Network/\
+ApplicationGatewayWebApplicationFirewallPolicies/pol1?api-version={API_VERSION}",
          "body": {'location': 'east', 'properties': {'customRules': {'test': 'test'},
                                                      'managedRules': {'test': 'test'}}}
          }  # expected
@@ -189,19 +191,15 @@ def test_policy_array_group_names_upsert_request(mocker):
     }
     expected_results = {
         "method": "PUT",
-        "full_url": "https://management.azure.com/subscriptions/test/resourceGroups/res2/providers/Microsoft.Network/\
-ApplicationGatewayWebApplicationFirewallPolicies/pol1",
+        "full_url": f"https://management.azure.com/subscriptions/test/resourceGroups/res2/providers/Microsoft.Network/\
+ApplicationGatewayWebApplicationFirewallPolicies/pol1?api-version={API_VERSION}",
         "body": {
             'location': 'east',
             'properties': {
-                'customRules': {
-                    'test': 'test'
-                },
-                'managedRules': {
-                    'test': 'test'
-                }
-            }
-        }
+                'customRules': {'test': 'test'},
+                'managedRules': {'test': 'test'},
+            },
+        },
     }
     mocker.patch.object(demisto, 'args', return_value=demisto_args)
     client = waf.AzureWAFClient(
