@@ -12,3 +12,6 @@ ignore=BA101
 
 [file:layoutscontainer-Expanse_Behavior.json]
 ignore=BA101
+
+[file:Expanse_image.png]
+ignore=IM111

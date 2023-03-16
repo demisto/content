@@ -1,0 +1,339 @@
+id: AWS - S3 Test Playbook
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: AWS - S3 Test Playbook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 20d3e914-b75a-480d-808c-276703c9615d
+    type: start
+    task:
+      id: 20d3e914-b75a-480d-808c-276703c9615d
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 6a27f975-faf8-4785-86fc-73d6ad40a75a
+    type: regular
+    task:
+      id: 6a27f975-faf8-4785-86fc-73d6ad40a75a
+      version: -1
+      name: aws-s3-list-buckets
+      description: List all S3 buckets in AWS account
+      script: AWS - S3|||aws-s3-list-buckets
+      type: regular
+      iscommand: true
+      brand: AWS - S3
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 29b82426-c918-4b54-8c3b-9675fe322742
+    type: regular
+    task:
+      id: 29b82426-c918-4b54-8c3b-9675fe322742
+      version: -1
+      name: aws-s3-upload-file
+      description: Upload file to S3 bucket
+      script: AWS - S3|||aws-s3-upload-file
+      type: regular
+      iscommand: true
+      brand: AWS - S3
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      bucket:
+        simple: demisto-test1234
+      entryID:
+        simple: ${File.EntryID}
+      key:
+        simple: ${File.Name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 2899941d-4a4d-4f62-8a6f-e8623896e559
+    type: regular
+    task:
+      id: 2899941d-4a4d-4f62-8a6f-e8623896e559
+      version: -1
+      name: aws-s3-download-file
+      description: Download a file from S3 bucket to war room.
+      script: AWS - S3|||aws-s3-download-file
+      type: regular
+      iscommand: true
+      brand: AWS - S3
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      bucket:
+        simple: demisto-test1234
+      key:
+        simple: ${File.Name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 1dd6840e-51c9-40b1-8f45-11270990f7ce
+    type: regular
+    task:
+      id: 1dd6840e-51c9-40b1-8f45-11270990f7ce
+      version: -1
+      name: aws-s3-get-bucket-policy
+      description: Get AWS S3 Bucket Policy
+      script: AWS - S3|||aws-s3-get-bucket-policy
+      type: regular
+      iscommand: true
+      brand: AWS - S3
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      bucket:
+        simple: demisto-test1234
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: f21a1d62-cf3d-4919-8f5f-6b31349fa277
+    type: regular
+    task:
+      id: f21a1d62-cf3d-4919-8f5f-6b31349fa277
+      version: -1
+      name: aws-s3-list-bucket-objects
+      description: List object in S3 bucket.
+      script: AWS - S3|||aws-s3-list-bucket-objects
+      type: regular
+      iscommand: true
+      brand: AWS - S3
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      bucket:
+        simple: demisto-test1234
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 41747932-d8aa-4d33-8462-fea8d16c1968
+    type: regular
+    task:
+      id: 41747932-d8aa-4d33-8462-fea8d16c1968
+      version: -1
+      name: http
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      filename:
+        simple: file_to_upload
+      method:
+        simple: GET
+      saveAsFile:
+        simple: "yes"
+      url:
+        simple: https://upload.wikimedia.org/wikipedia/en/4/4b/Jjportrait.jpg
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 7024a8cc-09bb-41c8-8c93-ec1bd401c066
+    type: regular
+    task:
+      id: 7024a8cc-09bb-41c8-8c93-ec1bd401c066
+      version: -1
+      name: DeleteContext
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 45
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 1c042622-b4c5-4261-8ef6-5cdac6b03690
+    type: regular
+    task:
+      id: 1c042622-b4c5-4261-8ef6-5cdac6b03690
+      version: -1
+      name: aws-s3-get-bucket-encryption
+      description: Get AWS S3 Bucket Encryption
+      script: AWS - S3|||aws-s3-get-bucket-encryption
+      type: regular
+      iscommand: true
+      brand: AWS - S3
+    scriptarguments:
+      bucket:
+        simple: demisto-test1234
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1385,
+        "width": 380,
+        "x": 50,
+        "y": -60
+      }
+    }
+  }
+inputs: []
+fromversion: 5.0.0
+outputs: []
+description: A test playbook for AWS - S3

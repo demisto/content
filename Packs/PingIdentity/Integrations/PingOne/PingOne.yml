@@ -3,16 +3,14 @@ commonfields:
   version: -1
 name: PingOne
 display: PingOne
-category: Identity and Access Management
-description: 'Integrates with the PingOne Management API to unlock, create, delete
-  and update users. '
+category: Authentication & Identity Management
+description: 'Integrates with the PingOne Management API to unlock, create, delete and update users. '
 configuration:
 - display: Your PingOne Environment ID
   name: environment_id
   type: 0
   required: true
-  additionalinfo: Environment ID is available under the PingOne Dashboard->Environment
-    Properties.
+  additionalinfo: Environment ID is available under the PingOne Dashboard->Environment Properties.
 - display: PingOne Region
   name: region
   defaultvalue: US
@@ -70,8 +68,7 @@ script:
     - name: password
       required: true
       description: The new password.
-    description: "Sets a user's password. Further password details available here:
-    https://apidocs.pingidentity.com/pingone/platform/v1/api/#put-update-password-self ."
+    description: "Sets a user's password. Further password details available here: https://apidocs.pingidentity.com/pingone/platform/v1/api/#put-update-password-self ."
   - name: pingone-add-to-group
     arguments:
     - name: username
@@ -223,7 +220,7 @@ script:
     - name: userId
       description: User id.
     description: Delete a PingOne user. One of the following has to be given username or userId.
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.10.48392
   runonce: false
   subtype: python3
 fromversion: 6.0.0

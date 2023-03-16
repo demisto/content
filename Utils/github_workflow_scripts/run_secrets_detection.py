@@ -7,7 +7,7 @@ import urllib3
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-SECRETS_INSTANCE_URL = "https://content-gold.paloaltonetworks.com/instance/execute/GenericWebhook_Secrets"
+SECRETS_INSTANCE_URL_SUFFIX = "/instance/execute/GenericWebhook_Secrets"
 
 
 def arguments_handler():
@@ -22,6 +22,7 @@ def arguments_handler():
     parser.add_argument('-b', '--branch_name', help='The branch name.')
     parser.add_argument('-u', '--username', help='The instance username.')
     parser.add_argument('-s', '--password', help='The instance password.')
+    parser.add_argument('-gs', '--gold_server_url', help='The content gold instance url.')
     return parser.parse_args()
 
 
@@ -30,12 +31,15 @@ def trigger_generic_webhook(options):
     branch_name = options.branch_name
     username = options.username
     password = options.password
+    gold_server_url = options.gold_server_url
+    secrets_instance_url = f"{gold_server_url}/instance/execute/GenericWebhook_Secrets"
+
     body = {
         "name": "GenericWebhook_Secrets",
         "raw_json": {"BranchName": branch_name, "PullRequestNumber": pr_number},
     }
     # post to Content Gold
-    res = requests.post(SECRETS_INSTANCE_URL, json=body, auth=(username, password))
+    res = requests.post(secrets_instance_url, json=body, auth=(username, password))
 
     if res.status_code != 200:
         raise ConnectionError(

@@ -24,7 +24,7 @@ This playbook does not use any integrations.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| File | An EML or MSG file. | File.None | Optional |
+| File | An EML or MSG file. | File | Optional |
 | Email | The receiving email address. | incident.emailto | Optional |
 | EmailCC | CC addresses | incident.emailcc | Optional |
 | EmailFrom | The originator of the email. | incident.emailfrom | Optional |

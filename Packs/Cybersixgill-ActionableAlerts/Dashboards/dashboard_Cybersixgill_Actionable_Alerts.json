@@ -59,7 +59,7 @@
                 "params": {
                     "groupBy": [
                         "occurred(d)",
-                        "type"
+                        "rawType"
                     ]
                 },
                 "size": 0,

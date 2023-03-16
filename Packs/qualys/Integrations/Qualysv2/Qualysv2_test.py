@@ -3,11 +3,26 @@ import re
 import Qualysv2
 import pytest
 import requests
-from Qualysv2 import is_empty_result, format_and_validate_response, \
-    parse_two_keys_dict, create_ip_list_dicts, build_args_dict, handle_general_result, \
-    change_dict_keys, COMMANDS_ARGS_DATA, limit_ip_results, Client, build_host_list_detection_outputs, \
-    COMMANDS_PARSE_AND_OUTPUT_DATA, validate_depended_args, Dict, validate_at_most_one_group, parse_raw_response, \
-    get_simple_response_from_raw, validate_required_group
+from Qualysv2 import (
+    is_empty_result,
+    format_and_validate_response,
+    parse_two_keys_dict,
+    create_ip_list_dicts,
+    build_args_dict,
+    handle_general_result,
+    change_dict_keys,
+    COMMANDS_ARGS_DATA,
+    limit_ip_results,
+    Client,
+    build_host_list_detection_outputs,
+    COMMANDS_PARSE_AND_OUTPUT_DATA,
+    validate_depended_args,
+    Dict,
+    validate_at_most_one_group,
+    parse_raw_response,
+    get_simple_response_from_raw,
+    validate_required_group,
+)
 
 from CommonServerPython import DemistoException
 
@@ -35,7 +50,7 @@ class TestIsEmptyResult:
         Then
             - return true since result has no content
         """
-        response = {'DATETIME': 'sometime'}
+        response = {"DATETIME": "sometime"}
         res = is_empty_result(response)
         assert res
 
@@ -48,8 +63,7 @@ class TestIsEmptyResult:
         Then
             - return false since result has content
         """
-        response = {'IP_SET': {'IP': ['1.1.1.1']},
-                    'DATETIME': 'sometime'}
+        response = {"IP_SET": {"IP": ["1.1.1.1"]}, "DATETIME": "sometime"}
         res = is_empty_result(response)
         assert not res
 
@@ -67,25 +81,25 @@ class TestIsEmptyResult:
 
 
 class TestFormatAndValidateResponse:
-    raw_xml_response_success = '''<?xml version="1.0" encoding="UTF-8" ?>
+    raw_xml_response_success = """<?xml version="1.0" encoding="UTF-8" ?>
                            <!DOCTYPE SIMPLE_RETURN SYSTEM
                             "https://qualysapi.qg2.apps.qualys.com/api/2.0/simple_return.dtd">
                            <SIMPLE_RETURN><RESPONSE>
                            <DATETIME>2021-03-24T15:40:23Z</DATETIME>
                            <TEXT>IPs successfully added to Vulnerability Management</TEXT>
-                           </RESPONSE></SIMPLE_RETURN>'''
-    raw_xml_response_failue = '''<?xml version="1.0" encoding="UTF-8" ?>
+                           </RESPONSE></SIMPLE_RETURN>"""
+    raw_xml_response_failue = """<?xml version="1.0" encoding="UTF-8" ?>
                                <!DOCTYPE SIMPLE_RETURN SYSTEM
                                "https://qualysapi.qg2.apps.qualys.com/api/2.0/simple_return.dtd">
                                <SIMPLE_RETURN>
                                <RESPONSE><DATETIME>2021-03-24T16:35:44Z</DATETIME>
-                               <CODE>1905</CODE><TEXT>IP(s) do not exist.</TEXT></RESPONSE></SIMPLE_RETURN>'''
-    bad_format_raw_xml_response = '''<?xml version="1.0" encoding="UTF-8" ?>
+                               <CODE>1905</CODE><TEXT>IP(s) do not exist.</TEXT></RESPONSE></SIMPLE_RETURN>"""
+    bad_format_raw_xml_response = """<?xml version="1.0" encoding="UTF-8" ?>
                            <!DOCTYPE SIMPLE_RETURN SYSTEM
                            "https://qualysapi.qg2.apps.qualys.com/api/2.0/simple_return.dtd">
                            <SIMPLE_RETURN>
                            <RESPONSE><DATETIME>2021-03-24T16:35:44Z</DATETIME>
-                           <CODE>1905</CODE><TEXT>IP(s) do not exist.</TEXT></RESPONSE>'''
+                           <CODE>1905</CODE><TEXT>IP(s) do not exist.</TEXT></RESPONSE>"""
 
     def test_format_and_validate_response_proper_response(self):
         """
@@ -97,8 +111,8 @@ class TestFormatAndValidateResponse:
             - return the parsed response
         """
         raw_json_response = format_and_validate_response(self.raw_xml_response_success)
-        assert raw_json_response.get('SIMPLE_RETURN').get('RESPONSE')
-        assert not raw_json_response.get('CODE')
+        assert raw_json_response.get("SIMPLE_RETURN").get("RESPONSE")
+        assert not raw_json_response.get("CODE")
 
     def test_format_and_validate_response_error_response(self):
         """
@@ -163,14 +177,21 @@ class TestFormatAndValidateResponse:
         result = format_and_validate_response(raw_json_response)
         assert not result
 
-    PARSE_RAW_RESPONSE_INPUTS = [('[{"ip": "1.1.1.1"},{"ip": "1.1.1.1"}]', [{'ip': '1.1.1.1'}, {'ip': '1.1.1.1'}]),
-                                 (raw_xml_response_success, {'SIMPLE_RETURN': {
-                                     'RESPONSE': {'DATETIME': '2021-03-24T15:40:23Z',
-                                                  'TEXT': 'IPs successfully added to Vulnerability Management'}}}),
-                                 # Invalid case - should return empty dict
-                                 ('[{"ip": "1.1.1.1"ip": "1.1.1.1"}]', {})]
+    PARSE_RAW_RESPONSE_INPUTS = [
+        ('[{"ip": "1.1.1.1"},{"ip": "1.1.1.1"}]', [{"ip": "1.1.1.1"}, {"ip": "1.1.1.1"}]),
+        (
+            raw_xml_response_success,
+            {
+                "SIMPLE_RETURN": {
+                    "RESPONSE": {"DATETIME": "2021-03-24T15:40:23Z", "TEXT": "IPs successfully added to Vulnerability Management"}
+                }
+            },
+        ),
+        # Invalid case - should return empty dict
+        ('[{"ip": "1.1.1.1"ip": "1.1.1.1"}]', {}),
+    ]
 
-    @pytest.mark.parametrize('response, expected', PARSE_RAW_RESPONSE_INPUTS)
+    @pytest.mark.parametrize("response, expected", PARSE_RAW_RESPONSE_INPUTS)
     def test_parse_raw_response(self, response, expected):
         """
         Given
@@ -182,13 +203,21 @@ class TestFormatAndValidateResponse:
         """
         assert parse_raw_response(response) == expected
 
-    SIMPLE_FROM_RAW_INPUTS = [({'SIMPLE_RETURN': {'RESPONSE': {'DATETIME': '2021-03-24T15:40:23Z',
-                                                               'TEXT': 'IPs successfully added to Vulnerability '
-                                                                       'Management'}}},
-                               {'DATETIME': '2021-03-24T15:40:23Z',
-                                'TEXT': 'IPs successfully added to Vulnerability Management'})]
+    SIMPLE_FROM_RAW_INPUTS = [
+        (
+            {
+                "SIMPLE_RETURN": {
+                    "RESPONSE": {
+                        "DATETIME": "2021-03-24T15:40:23Z",
+                        "TEXT": "IPs successfully added to Vulnerability " "Management",
+                    }
+                }
+            },
+            {"DATETIME": "2021-03-24T15:40:23Z", "TEXT": "IPs successfully added to Vulnerability Management"},
+        )
+    ]
 
-    @pytest.mark.parametrize('raw_response, expected', SIMPLE_FROM_RAW_INPUTS)
+    @pytest.mark.parametrize("raw_response, expected", SIMPLE_FROM_RAW_INPUTS)
     def test_get_simple_response_from_raw(self, raw_response, expected):
         """
         Given
@@ -213,12 +242,11 @@ class TestHandleGeneralResult:
         Then
             - return the path requested
         """
-        json_obj = {'IP_LIST_OUTPUT': {'RESPONSE': {'DATETIME': 'sometime', 'IP_SET': {'IP': ['1.1.1.1']}}}}
-        mocker.patch.object(Qualysv2, 'format_and_validate_response', return_value=json_obj)
+        json_obj = {"IP_LIST_OUTPUT": {"RESPONSE": {"DATETIME": "sometime", "IP_SET": {"IP": ["1.1.1.1"]}}}}
+        mocker.patch.object(Qualysv2, "format_and_validate_response", return_value=json_obj)
         dummy_response = requests.Response()
 
-        assert handle_general_result(dummy_response, 'qualys-ip-list') == {'DATETIME': 'sometime',
-                                                                           'IP_SET': {'IP': ['1.1.1.1']}}
+        assert handle_general_result(dummy_response, "qualys-ip-list") == {"DATETIME": "sometime", "IP_SET": {"IP": ["1.1.1.1"]}}
 
     def test_handle_general_result_doesnt_exist(self, mocker):
         """
@@ -232,13 +260,13 @@ class TestHandleGeneralResult:
             - raise DemistoException Exception
         """
         with pytest.raises(ValueError):
-            json_obj = {'IP_LIST_OUTPUT': {'RESPONSE': {'DATETIME': 'sometime', 'IP_SET': {'IP': ['1.1.1.1']}}}}
-            path = {'qualys-ip-list': {'json_path': ['IP_SET', 'WHAT']}}
-            mocker.patch.object(Qualysv2, 'format_and_validate_response', return_value=json_obj)
-            mocker.patch.object(Qualysv2, 'COMMANDS_PARSE_AND_OUTPUT_DATA', path)
+            json_obj = {"IP_LIST_OUTPUT": {"RESPONSE": {"DATETIME": "sometime", "IP_SET": {"IP": ["1.1.1.1"]}}}}
+            path = {"qualys-ip-list": {"json_path": ["IP_SET", "WHAT"]}}
+            mocker.patch.object(Qualysv2, "format_and_validate_response", return_value=json_obj)
+            mocker.patch.object(Qualysv2, "COMMANDS_PARSE_AND_OUTPUT_DATA", path)
             dummy_response = requests.Response()
 
-            handle_general_result(dummy_response, 'qualys-ip-list')
+            handle_general_result(dummy_response, "qualys-ip-list")
 
     def test_handle_general_result_empty_json(self, mocker):
         """
@@ -253,12 +281,12 @@ class TestHandleGeneralResult:
         """
         with pytest.raises(ValueError):
             json_obj = {}
-            path = {'qualys-ip-list': {'json_path': ['IP_SET', 'WHAT']}}
-            mocker.patch.object(Qualysv2, 'format_and_validate_response', return_value=json_obj)
-            mocker.patch.object(Qualysv2, 'COMMANDS_PARSE_AND_OUTPUT_DATA', path)
+            path = {"qualys-ip-list": {"json_path": ["IP_SET", "WHAT"]}}
+            mocker.patch.object(Qualysv2, "format_and_validate_response", return_value=json_obj)
+            mocker.patch.object(Qualysv2, "COMMANDS_PARSE_AND_OUTPUT_DATA", path)
             dummy_response = requests.Response()
 
-            handle_general_result(dummy_response, 'qualys-ip-list')
+            handle_general_result(dummy_response, "qualys-ip-list")
 
     def test_handle_general_result_none_value(self, mocker):
         """
@@ -273,12 +301,12 @@ class TestHandleGeneralResult:
         """
         with pytest.raises(ValueError):
             json_obj = None
-            path = {'qualys-ip-list': {'json_path': ['IP_SET', 'WHAT']}}
-            mocker.patch.object(Qualysv2, 'format_and_validate_response', return_value=json_obj)
-            mocker.patch.object(Qualysv2, 'COMMANDS_PARSE_AND_OUTPUT_DATA', path)
+            path = {"qualys-ip-list": {"json_path": ["IP_SET", "WHAT"]}}
+            mocker.patch.object(Qualysv2, "format_and_validate_response", return_value=json_obj)
+            mocker.patch.object(Qualysv2, "COMMANDS_PARSE_AND_OUTPUT_DATA", path)
             dummy_response = requests.Response()
 
-            handle_general_result(dummy_response, 'qualys-ip-list')
+            handle_general_result(dummy_response, "qualys-ip-list")
 
     def test_handle_general_result_empty_path(self, mocker):
         """
@@ -291,13 +319,13 @@ class TestHandleGeneralResult:
         Then
             - return the json object without any changes
         """
-        json_obj = {'IP_LIST_OUTPUT': {'RESPONSE': {'DATETIME': 'sometime', 'IP_SET': {'IP': ['1.1.1.1']}}}}
-        path = {'qualys-ip-list': {'json_path': []}}
-        mocker.patch.object(Qualysv2, 'format_and_validate_response', return_value=json_obj)
-        mocker.patch.object(Qualysv2, 'COMMANDS_PARSE_AND_OUTPUT_DATA', path)
+        json_obj = {"IP_LIST_OUTPUT": {"RESPONSE": {"DATETIME": "sometime", "IP_SET": {"IP": ["1.1.1.1"]}}}}
+        path = {"qualys-ip-list": {"json_path": []}}
+        mocker.patch.object(Qualysv2, "format_and_validate_response", return_value=json_obj)
+        mocker.patch.object(Qualysv2, "COMMANDS_PARSE_AND_OUTPUT_DATA", path)
         dummy_response = requests.Response()
 
-        result = handle_general_result(dummy_response, 'qualys-ip-list')
+        result = handle_general_result(dummy_response, "qualys-ip-list")
         assert result == json_obj
 
 
@@ -312,7 +340,7 @@ class TestParseTwoKeysDict:
             - raise a KeyError Exception
         """
         with pytest.raises(KeyError):
-            json_obj = {'not_key': ' ', 'not_val': ' '}
+            json_obj = {"not_key": " ", "not_val": " "}
             parse_two_keys_dict(json_obj)
 
     def test_parse_two_keys_dict_expected_format(self):
@@ -324,9 +352,9 @@ class TestParseTwoKeysDict:
         Then
             - return a new dictionary with correct key and value
         """
-        json_obj = {'KEY': 'a key', 'VALUE': 'a value'}
+        json_obj = {"KEY": "a key", "VALUE": "a value"}
         res = parse_two_keys_dict(json_obj)
-        assert res['a key'] == 'a value'
+        assert res["a key"] == "a value"
 
     def test_parse_two_keys_dict_none_value(self):
         """
@@ -353,15 +381,13 @@ class TestChangeDictKeys:
         Then
             -  return the dictionary with the new keys
         """
-        new_names_dict = {'old_name_1': 'new_name_1',
-                          'old_name_2': 'new_name_2'}
-        dict_to_change = {'old_name_1': 'some_value_1',
-                          'old_name_2': 'some_value_2'}
+        new_names_dict = {"old_name_1": "new_name_1", "old_name_2": "new_name_2"}
+        dict_to_change = {"old_name_1": "some_value_1", "old_name_2": "some_value_2"}
         changed_dict = change_dict_keys(new_names_dict, dict_to_change)
-        assert changed_dict['new_name_1']
-        assert changed_dict['new_name_2']
-        assert 'old_name_1' not in changed_dict
-        assert 'old_name_2' not in changed_dict
+        assert changed_dict["new_name_1"]
+        assert changed_dict["new_name_2"]
+        assert "old_name_1" not in changed_dict
+        assert "old_name_2" not in changed_dict
 
     def test_change_dict_keys_missing_key(self):
         """
@@ -373,14 +399,13 @@ class TestChangeDictKeys:
         Then
             - change only the keys that exist
         """
-        new_names_dict = {'old_name_1': 'new_name_1',
-                          'old_name_2': 'new_name_2'}
-        dict_to_change = {'old_name_2': 'some_value_2'}
+        new_names_dict = {"old_name_1": "new_name_1", "old_name_2": "new_name_2"}
+        dict_to_change = {"old_name_2": "some_value_2"}
         changed_dict = change_dict_keys(new_names_dict, dict_to_change)
-        assert changed_dict['new_name_2']
-        assert 'new_name_1' not in changed_dict
-        assert 'old_name_1' not in changed_dict
-        assert 'old_name_2' not in changed_dict
+        assert changed_dict["new_name_2"]
+        assert "new_name_1" not in changed_dict
+        assert "old_name_1" not in changed_dict
+        assert "old_name_2" not in changed_dict
 
     def test_change_dict_keys_output_is_none(self):
         """
@@ -393,14 +418,13 @@ class TestChangeDictKeys:
             - raise a TypeError Exception
         """
         with pytest.raises(TypeError):
-            new_names_dict = {'old_name_1': 'new_name_1',
-                              'old_name_2': 'new_name_2'}
+            new_names_dict = {"old_name_1": "new_name_1", "old_name_2": "new_name_2"}
             dict_to_change = None
             changed_dict = change_dict_keys(new_names_dict, dict_to_change)
-            assert changed_dict['new_name_1']
-            assert changed_dict['new_name_2']
-            assert 'old_name_1' not in changed_dict
-            assert 'old_name_2' not in changed_dict
+            assert changed_dict["new_name_1"]
+            assert changed_dict["new_name_2"]
+            assert "old_name_1" not in changed_dict
+            assert "old_name_2" not in changed_dict
 
 
 class TestCreateIPListDicts:
@@ -413,8 +437,7 @@ class TestCreateIPListDicts:
         Then
             - create a list of dictionaries
         """
-        ip_dict = {'Address': ['1.1.1.1', '1.2.3.4'],
-                   'Range': ['1.1.1.3-1.1.2.1']}
+        ip_dict = {"Address": ["1.1.1.1", "1.2.3.4"], "Range": ["1.1.1.3-1.1.2.1"]}
 
         dicts = create_ip_list_dicts(ip_dict)
 
@@ -430,7 +453,7 @@ class TestCreateIPListDicts:
         Then
             - create a list of dictionaries
         """
-        ip_dict = {'Address': '1.1.1.1'}
+        ip_dict = {"Address": "1.1.1.1"}
 
         dicts = create_ip_list_dicts(ip_dict)
 
@@ -447,7 +470,7 @@ class TestCreateIPListDicts:
         Then
             - create a list of dictionaries
         """
-        ip_dict = {'Address': {'key1': 'value1', 'key2': 'value2'}}
+        ip_dict = {"Address": {"key1": "value1", "key2": "value2"}}
 
         dicts = create_ip_list_dicts(ip_dict)
 
@@ -464,8 +487,7 @@ class TestCreateIPListDicts:
             - raise DemistoException exception
         """
         with pytest.raises(DemistoException):
-            ip_dict = {'bad_key_1': ['1.1.1.1', '1.2.3.4'],
-                       'bad_key_2': ['1.1.1.3-1.1.2.1']}
+            ip_dict = {"bad_key_1": ["1.1.1.1", "1.2.3.4"], "bad_key_2": ["1.1.1.3-1.1.2.1"]}
 
             create_ip_list_dicts(ip_dict)
 
@@ -478,8 +500,7 @@ class TestCreateIPListDicts:
         Then
             - change only one key
         """
-        ip_dict = {'Address': ['1.1.1.1', '1.2.3.4'],
-                   'bad_key_2': ['1.1.1.3-1.1.2.1']}
+        ip_dict = {"Address": ["1.1.1.1", "1.2.3.4"], "bad_key_2": ["1.1.1.3-1.1.2.1"]}
 
         dicts = create_ip_list_dicts(ip_dict)
         assert len(dicts) == 1
@@ -511,15 +532,12 @@ class TestLimitIPResults:
         Then
             - Change the lists so all addresses will show and part of the Ranges
         """
-        data = {
-            'Address': ['1.1.1.1', '1.2.3.4'],
-            'Range': ['1.4.3.1-1.4.3.5', '1.4.3.6-1.4.3.9']
-        }
+        data = {"Address": ["1.1.1.1", "1.2.3.4"], "Range": ["1.4.3.1-1.4.3.5", "1.4.3.6-1.4.3.9"]}
         limit = 3
 
         data = limit_ip_results(data, limit)
-        assert len(data['Address']) == 2
-        assert len(data['Range']) == 1
+        assert len(data["Address"]) == 2
+        assert len(data["Range"]) == 1
 
     def test_limit_ip_results_low_limit(self):
         """
@@ -531,15 +549,12 @@ class TestLimitIPResults:
         Then
             - Data will be changed so only Address's list can be shown
         """
-        data = {
-            'Address': ['1.1.1.1', '1.2.3.4'],
-            'Range': ['1.4.3.1-1.4.3.5', '1.4.3.6-1.4.3.9']
-        }
+        data = {"Address": ["1.1.1.1", "1.2.3.4"], "Range": ["1.4.3.1-1.4.3.5", "1.4.3.6-1.4.3.9"]}
         limit = 1
 
         limit_ip_results(data, limit)
-        assert len(data['Address']) == 1
-        assert len(data['Range']) == 0
+        assert len(data["Address"]) == 1
+        assert len(data["Range"]) == 0
 
     def test_limit_ip_results_only_range_entry(self):
         """
@@ -551,13 +566,11 @@ class TestLimitIPResults:
         Then
             - data will have a Range list with up to 'limit' entries
         """
-        data = {
-            'Range': ['1.4.3.1-1.4.3.5', '1.4.3.6-1.4.3.9']
-        }
+        data = {"Range": ["1.4.3.1-1.4.3.5", "1.4.3.6-1.4.3.9"]}
         limit = 1
 
         limit_ip_results(data, limit)
-        assert len(data['Range']) == 1
+        assert len(data["Range"]) == 1
 
     def test_limit_ip_results_single_ip_and_range(self):
         """
@@ -569,15 +582,12 @@ class TestLimitIPResults:
         Then
             - create a dictionary with all the arguments
         """
-        data = {
-            'Address': '1.1.1.1',
-            'Range': '1.4.3.1-1.4.3.5'
-        }
+        data = {"Address": "1.1.1.1", "Range": "1.4.3.1-1.4.3.5"}
         limit = 1
 
         limit_ip_results(data, limit)
-        assert data['Address'] == '1.1.1.1'
-        assert len(data['Range']) == 0
+        assert data["Address"] == "1.1.1.1"
+        assert len(data["Range"]) == 0
 
 
 class TestBuildArgsDict:
@@ -591,11 +601,8 @@ class TestBuildArgsDict:
         Then
             - create a dictionary with all the arguments
         """
-        args = {'ips': 'ip',
-                'network_id': 'id',
-                'tracking_method': 'method',
-                'compliance_enabled': True}
-        command_args_data = COMMANDS_ARGS_DATA['qualys-ip-list']
+        args = {"ips": "ip", "network_id": "id", "tracking_method": "method", "compliance_enabled": True}
+        command_args_data = COMMANDS_ARGS_DATA["qualys-ip-list"]
 
         build_args_dict(args, command_args_data, False)
         assert Qualysv2.args_values == args
@@ -611,8 +618,8 @@ class TestBuildArgsDict:
             - create a dictionary with the provided arguments values and
               None value for arguments that were not provided
         """
-        args = {'ips': 'ip'}
-        command_args_data = COMMANDS_ARGS_DATA['qualys-ip-list']
+        args = {"ips": "ip"}
+        command_args_data = COMMANDS_ARGS_DATA["qualys-ip-list"]
 
         build_args_dict(args, command_args_data, False)
         assert Qualysv2.args_values == args
@@ -628,8 +635,8 @@ class TestBuildArgsDict:
             - create a dictionary with the provided arguments values and
               None value for arguments that were not provided
         """
-        args = {'published_before': ''}
-        command_args_data = COMMANDS_ARGS_DATA['qualys-vulnerability-list']
+        args = {"published_before": ""}
+        command_args_data = COMMANDS_ARGS_DATA["qualys-vulnerability-list"]
 
         build_args_dict(args, command_args_data, False)
         assert Qualysv2.args_values == {}
@@ -644,11 +651,11 @@ class TestBuildArgsDict:
         Then
             - create a dictionary with all the arguments
         """
-        args = {'id': 'id', 'file_format': 'xml'}
-        command_args_data = COMMANDS_ARGS_DATA['qualys-report-fetch']
+        args = {"id": "id", "file_format": "xml"}
+        command_args_data = COMMANDS_ARGS_DATA["qualys-report-fetch"]
 
         build_args_dict(args, command_args_data, True)
-        assert Qualysv2.inner_args_values == {'file_format': 'xml'}
+        assert Qualysv2.inner_args_values == {"file_format": "xml"}
 
     def test_build_args_dict_none_args(self):
         """
@@ -661,7 +668,7 @@ class TestBuildArgsDict:
             - create a dictionary with no arguments' values
         """
         args = None
-        command_args_data = COMMANDS_ARGS_DATA['test-module']
+        command_args_data = COMMANDS_ARGS_DATA["test-module"]
         build_args_dict(args, command_args_data, False)
         assert Qualysv2.args_values == {}
 
@@ -677,14 +684,14 @@ class TestBuildArgsDict:
         Then:
         - Ensure date parameters values are updated accordingly.
         """
-        args = {'published_before': '1640508554',
-                'launched_after_datetime': '2021-12-26T08:49:29Z',
-                'start_date': '2021-12-26T08:49:29Z'}
-        expected_result = {'launched_after_datetime': '2021-12-26',
-                           'published_before': '2021-12-26',
-                           'start_date': '12/26/2021'}
+        args = {
+            "published_before": "1640508554",
+            "launched_after_datetime": "2021-12-26T08:49:29Z",
+            "start_date": "2021-12-26T08:49:29Z",
+        }
+        expected_result = {"launched_after_datetime": "2021-12-26", "published_before": "2021-12-26", "start_date": "12/26/2021"}
 
-        build_args_dict(args, {'args': ['published_before', 'launched_after_datetime', 'start_date']}, False)
+        build_args_dict(args, {"args": ["published_before", "launched_after_datetime", "start_date"]}, False)
         assert Qualysv2.args_values == expected_result
 
     def test_build_args_dict_default_added_depended_args(self):
@@ -699,10 +706,13 @@ class TestBuildArgsDict:
         Then:
         - Ensure arguments are added as expected.
         """
-        args = {'arg_to_depend_on': '1'}
-        expected_result = {'arg_to_depend_on': '1', 'dep1': 2, 'dep2': 3}
-        build_args_dict(args, {'args': ['arg_to_depend_on'],
-                               'default_added_depended_args': {'arg_to_depend_on': {'dep1': 2, 'dep2': 3}}}, False)
+        args = {"arg_to_depend_on": "1"}
+        expected_result = {"arg_to_depend_on": "1", "dep1": 2, "dep2": 3}
+        build_args_dict(
+            args,
+            {"args": ["arg_to_depend_on"], "default_added_depended_args": {"arg_to_depend_on": {"dep1": 2, "dep2": 3}}},
+            False,
+        )
         assert Qualysv2.args_values == expected_result
 
 
@@ -718,44 +728,79 @@ def test_handle_general_result_missing_output_builder():
         - raise a TypeError exception, None is not callable, must be provided
     """
     with pytest.raises(TypeError):
-        raw_xml_response = '<?xml version="1.0" encoding="UTF-8" ?>' \
-                           '<!DOCTYPE SIMPLE_RETURN SYSTEM' \
-                           ' "https://qualysapi.qg2.apps.qualys.com/api/2.0/simple_return.dtd">' \
-                           '<SIMPLE_RETURN><RESPONSE>' \
-                           '<DATETIME>2021-03-24T15:40:23Z</DATETIME>' \
-                           '<TEXT>IPs successfully added to Vulnerability Management</TEXT>' \
-                           '</RESPONSE></SIMPLE_RETURN>'
-        command_name = 'qualys-ip-add'
+        raw_xml_response = (
+            '<?xml version="1.0" encoding="UTF-8" ?>'
+            "<!DOCTYPE SIMPLE_RETURN SYSTEM"
+            ' "https://qualysapi.qg2.apps.qualys.com/api/2.0/simple_return.dtd">'
+            "<SIMPLE_RETURN><RESPONSE>"
+            "<DATETIME>2021-03-24T15:40:23Z</DATETIME>"
+            "<TEXT>IPs successfully added to Vulnerability Management</TEXT>"
+            "</RESPONSE></SIMPLE_RETURN>"
+        )
+        command_name = "qualys-ip-add"
         handle_general_result(result=raw_xml_response, command_name=command_name, output_builder=None)
 
 
 class TestHostDetectionOutputBuilder:
-    DETECTION_INPUTS = [({'HOST_LIST': {'HOST_ITEM': []}}, '', []),
-                        ({'HOST_LIST': {'HOST_ITEM': [{'ID': 'ID123', 'IP': '1.1.1.1', 'DNS_DATA': {'data': 'dns data'},
-                                                       'DETECTION_LIST': {
-                                                           'DETECTION': [
-                                                               {'QID': '123', 'RESULTS': 'FOUND DETECTION'}]}}]}},
-                         '### Host Detection List - 1.1.1.1\n'
-                         '\n'
-                         '|ID|IP|DNS_DATA|QID: 123|\n'
-                         '|---|---|---|---|\n'
-                         '| ID123 | 1.1.1.1 | data: dns data | FOUND DETECTION |\n',
-                         [{'ID': 'ID123', 'IP': '1.1.1.1', 'DNS_DATA': {'data': 'dns data'},
-                           'DETECTION_LIST': {'DETECTION': [{'QID': '123', 'RESULTS': 'FOUND DETECTION'}]}}]),
-                        ({'HOST_LIST': {'HOST_ITEM': [{'ID': 'ID123', 'IP': '1.1.1.1', 'DNS_DATA': {'data': 'dns data'},
-                                                       'DETECTION_LIST': {
-                                                           'DETECTION':
-                                                               {'QID': '123', 'RESULTS': 'FOUND DETECTION'}}}]}},
-                         '### Host Detection List - 1.1.1.1\n'
-                         '\n'
-                         '|ID|IP|DNS_DATA|QID: 123|\n'
-                         '|---|---|---|---|\n'
-                         '| ID123 | 1.1.1.1 | data: dns data | FOUND DETECTION |\n',
-                         [{'ID': 'ID123', 'IP': '1.1.1.1', 'DNS_DATA': {'data': 'dns data'},
-                           'DETECTION_LIST': {'DETECTION': {'QID': '123', 'RESULTS': 'FOUND DETECTION'}}}])
-                        ]
+    DETECTION_INPUTS = [
+        ({"HOST_LIST": {"HOST_ITEM": []}}, "", []),
+        (
+            {
+                "HOST_LIST": {
+                    "HOST_ITEM": [
+                        {
+                            "ID": "ID123",
+                            "IP": "1.1.1.1",
+                            "DNS_DATA": {"data": "dns data"},
+                            "DETECTION_LIST": {"DETECTION": [{"QID": "123", "RESULTS": "FOUND DETECTION"}]},
+                        }
+                    ]
+                }
+            },
+            "### Host Detection List - 1.1.1.1\n"
+            "\n"
+            "|ID|IP|DNS_DATA|QID: 123|\n"
+            "|---|---|---|---|\n"
+            "| ID123 | 1.1.1.1 | data: dns data | FOUND DETECTION |\n",
+            [
+                {
+                    "ID": "ID123",
+                    "IP": "1.1.1.1",
+                    "DNS_DATA": {"data": "dns data"},
+                    "DETECTION_LIST": {"DETECTION": [{"QID": "123", "RESULTS": "FOUND DETECTION"}]},
+                }
+            ],
+        ),
+        (
+            {
+                "HOST_LIST": {
+                    "HOST_ITEM": [
+                        {
+                            "ID": "ID123",
+                            "IP": "1.1.1.1",
+                            "DNS_DATA": {"data": "dns data"},
+                            "DETECTION_LIST": {"DETECTION": {"QID": "123", "RESULTS": "FOUND DETECTION"}},
+                        }
+                    ]
+                }
+            },
+            "### Host Detection List - 1.1.1.1\n"
+            "\n"
+            "|ID|IP|DNS_DATA|QID: 123|\n"
+            "|---|---|---|---|\n"
+            "| ID123 | 1.1.1.1 | data: dns data | FOUND DETECTION |\n",
+            [
+                {
+                    "ID": "ID123",
+                    "IP": "1.1.1.1",
+                    "DNS_DATA": {"data": "dns data"},
+                    "DETECTION_LIST": {"DETECTION": {"QID": "123", "RESULTS": "FOUND DETECTION"}},
+                }
+            ],
+        ),
+    ]
 
-    @pytest.mark.parametrize('result, readable, expected_outputs', DETECTION_INPUTS)
+    @pytest.mark.parametrize("result, readable, expected_outputs", DETECTION_INPUTS)
     def test_build_host_list_detection_outputs(self, result, readable, expected_outputs):
         """
         Given:
@@ -767,10 +812,10 @@ class TestHostDetectionOutputBuilder:
         Then:
         - Ensure resultes are parsed as expected.
         """
-        Qualysv2.inner_args_values['limit'] = 1
-        assert build_host_list_detection_outputs(handled_result=result,
-                                                 command_parse_and_output_data=COMMANDS_PARSE_AND_OUTPUT_DATA[
-                                                     'qualys-host-list-detection']) == (expected_outputs, readable)
+        Qualysv2.inner_args_values["limit"] = 1
+        assert build_host_list_detection_outputs(
+            handled_result=result, command_parse_and_output_data=COMMANDS_PARSE_AND_OUTPUT_DATA["qualys-host-list-detection"]
+        ) == (expected_outputs, readable)
 
 
 class MockResponse:
@@ -783,12 +828,14 @@ class MockResponse:
     def json(self):
         if self.json:
             return self.json
-        raise Exception('No JSON')
+        raise Exception("No JSON")
 
 
 class TestClientClass:
     ERROR_HANDLER_INPUTS = [
-        (MockResponse('''<?xml version="1.0" encoding="UTF-8" ?>
+        (
+            MockResponse(
+                """<?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE SIMPLE_RETURN SYSTEM "https://qualysapi.qg2.apps.qualys.com/api/2.0/simple_return.dtd">
 <SIMPLE_RETURN>
   <RESPONSE>
@@ -802,13 +849,15 @@ class TestClientClass:
       </ITEM>
     </ITEM_LIST>
   </RESPONSE>
-</SIMPLE_RETURN>''', 500),
-         'Error in API call [500] - None\nError Code: 999\nError Message: Internal error. Please '
-         'contact customer support.'),
-        (MockResponse('Invalid XML', 500), 'Error in API call [500] - None\nInvalid XML')
+</SIMPLE_RETURN>""",
+                500,
+            ),
+            "Error in API call [500] - None\nError Code: 999\nError Message: Internal error. Please " "contact customer support.",
+        ),
+        (MockResponse("Invalid XML", 500), "Error in API call [500] - None\nInvalid XML"),
     ]
 
-    @pytest.mark.parametrize('response, error_message', ERROR_HANDLER_INPUTS)
+    @pytest.mark.parametrize("response, error_message", ERROR_HANDLER_INPUTS)
     def test_error_handler(self, response, error_message):
         """
         Given:
@@ -820,20 +869,25 @@ class TestClientClass:
         Then:
         - Ensure readable message is as expected
         """
-        client: Client = Client('test.com', 'testuser', 'testpassword', False, False, None)
+        client: Client = Client("test.com", "testuser", "testpassword", False, False, None)
         with pytest.raises(DemistoException, match=re.escape(error_message)):
             client.error_handler(response)
 
 
 class TestInputValidations:
-    DEPENDANT_ARGS = {'day_of_month': 'frequency_months', 'day_of_week': 'frequency_months',
-                      'week_of_month': 'frequency_months', 'weekdays': 'frequency_weeks', }
-    VALIDATE_DEPENDED_ARGS_INPUT = [({}, {}),
-                                    ({'required_depended_args': DEPENDANT_ARGS}, {}),
-                                    ({'required_depended_args': DEPENDANT_ARGS},
-                                     {k: 3 for k, v in DEPENDANT_ARGS.items() if v == 'frequency_months'})]
+    DEPENDANT_ARGS = {
+        "day_of_month": "frequency_months",
+        "day_of_week": "frequency_months",
+        "week_of_month": "frequency_months",
+        "weekdays": "frequency_weeks",
+    }
+    VALIDATE_DEPENDED_ARGS_INPUT = [
+        ({}, {}),
+        ({"required_depended_args": DEPENDANT_ARGS}, {}),
+        ({"required_depended_args": DEPENDANT_ARGS}, {k: 3 for k, v in DEPENDANT_ARGS.items() if v == "frequency_months"}),
+    ]
 
-    @pytest.mark.parametrize('command_data, args', VALIDATE_DEPENDED_ARGS_INPUT)
+    @pytest.mark.parametrize("command_data, args", VALIDATE_DEPENDED_ARGS_INPUT)
     def test_validate_depended_args_valid(self, command_data: Dict, args: Dict):
         """
         Given:
@@ -861,24 +915,34 @@ class TestInputValidations:
         Then:
         - Ensure exception is thrown.
         """
-        Qualysv2.args_values = {'frequency_months': 1}
-        with pytest.raises(DemistoException,
-                           match='Argument day_of_month is required when argument frequency_months is given.'):
-            validate_depended_args({'required_depended_args': self.DEPENDANT_ARGS})
+        Qualysv2.args_values = {"frequency_months": 1}
+        with pytest.raises(DemistoException, match="Argument day_of_month is required when argument frequency_months is given."):
+            validate_depended_args({"required_depended_args": self.DEPENDANT_ARGS})
 
-    EXACTLY_ONE_GROUP_ARGS = [['asset_group_ids', 'asset_groups', 'ip', ],
-                              ['frequency_days', 'frequency_weeks', 'frequency_months', ],
-                              ['scanners_in_ag', 'default_scanner', ], ]
-    EXACTLY_ONE_ARGS_INPUT = [({}, {}),
-                              ({'required_groups': EXACTLY_ONE_GROUP_ARGS},
-                               {'asset_group_ids': 1, 'scanners_in_ag': 1, 'frequency_days': 1}),
-                              ({'required_groups': EXACTLY_ONE_GROUP_ARGS},
-                               {'asset_groups': 1, 'scanners_in_ag': 1, 'frequency_weeks': 1}),
-                              ({'required_groups': EXACTLY_ONE_GROUP_ARGS},
-                               {'ip': '1.1.1.1', 'default_scanner': 1, 'frequency_months': 1})
-                              ]
+    EXACTLY_ONE_GROUP_ARGS = [
+        [
+            "asset_group_ids",
+            "asset_groups",
+            "ip",
+        ],
+        [
+            "frequency_days",
+            "frequency_weeks",
+            "frequency_months",
+        ],
+        [
+            "scanners_in_ag",
+            "default_scanner",
+        ],
+    ]
+    EXACTLY_ONE_ARGS_INPUT = [
+        ({}, {}),
+        ({"required_groups": EXACTLY_ONE_GROUP_ARGS}, {"asset_group_ids": 1, "scanners_in_ag": 1, "frequency_days": 1}),
+        ({"required_groups": EXACTLY_ONE_GROUP_ARGS}, {"asset_groups": 1, "scanners_in_ag": 1, "frequency_weeks": 1}),
+        ({"required_groups": EXACTLY_ONE_GROUP_ARGS}, {"ip": "1.1.1.1", "default_scanner": 1, "frequency_months": 1}),
+    ]
 
-    @pytest.mark.parametrize('command_data, args', EXACTLY_ONE_ARGS_INPUT)
+    @pytest.mark.parametrize("command_data, args", EXACTLY_ONE_ARGS_INPUT)
     def test_validate_required_group_valid(self, command_data: Dict, args: Dict):
         """
         Given:
@@ -894,9 +958,9 @@ class TestInputValidations:
         Qualysv2.args_values = args
         validate_required_group(command_data)
 
-    EXACTLY_ONE_INVALID_INPUT = [({}), ({'ip': '1.1.1.1', 'asset_group_ids': 1, 'frequency_months': 1})]
+    EXACTLY_ONE_INVALID_INPUT = [({}), ({"ip": "1.1.1.1", "asset_group_ids": 1, "frequency_months": 1})]
 
-    @pytest.mark.parametrize('args', EXACTLY_ONE_INVALID_INPUT)
+    @pytest.mark.parametrize("args", EXACTLY_ONE_INVALID_INPUT)
     def test_validate_required_group_invalid(self, args):
         """
         Given:
@@ -912,22 +976,33 @@ class TestInputValidations:
         Qualysv2.args_values = args
         err_msg = "Exactly one of the arguments ['asset_group_ids', 'asset_groups', 'ip'] must be provided."
         with pytest.raises(DemistoException, match=re.escape(err_msg)):
-            validate_required_group({'required_groups': self.EXACTLY_ONE_GROUP_ARGS})
+            validate_required_group({"required_groups": self.EXACTLY_ONE_GROUP_ARGS})
 
-    AT_MOST_ONE_GROUP_ARGS = [['asset_group_ids', 'asset_groups', 'ip', ],
-                              ['frequency_days', 'frequency_weeks', 'frequency_months', ],
-                              ['scanners_in_ag', 'default_scanner', ], ]
-    AT_MOST_ONE_ARGS_INPUT = [({}, {}),
-                              ({'at_most_one_groups': AT_MOST_ONE_GROUP_ARGS}, {}),
-                              ({'at_most_one_groups': AT_MOST_ONE_GROUP_ARGS},
-                               {'asset_group_ids': 1, 'scanners_in_ag': 1, 'frequency_days': 1}),
-                              ({'at_most_one_groups': AT_MOST_ONE_GROUP_ARGS},
-                               {'asset_groups': 1, 'scanners_in_ag': 1, 'frequency_weeks': 1}),
-                              ({'at_most_one_groups': AT_MOST_ONE_GROUP_ARGS},
-                               {'ip': '1.1.1.1', 'default_scanner': 1, 'frequency_months': 1})
-                              ]
+    AT_MOST_ONE_GROUP_ARGS = [
+        [
+            "asset_group_ids",
+            "asset_groups",
+            "ip",
+        ],
+        [
+            "frequency_days",
+            "frequency_weeks",
+            "frequency_months",
+        ],
+        [
+            "scanners_in_ag",
+            "default_scanner",
+        ],
+    ]
+    AT_MOST_ONE_ARGS_INPUT = [
+        ({}, {}),
+        ({"at_most_one_groups": AT_MOST_ONE_GROUP_ARGS}, {}),
+        ({"at_most_one_groups": AT_MOST_ONE_GROUP_ARGS}, {"asset_group_ids": 1, "scanners_in_ag": 1, "frequency_days": 1}),
+        ({"at_most_one_groups": AT_MOST_ONE_GROUP_ARGS}, {"asset_groups": 1, "scanners_in_ag": 1, "frequency_weeks": 1}),
+        ({"at_most_one_groups": AT_MOST_ONE_GROUP_ARGS}, {"ip": "1.1.1.1", "default_scanner": 1, "frequency_months": 1}),
+    ]
 
-    @pytest.mark.parametrize('command_data, args', AT_MOST_ONE_ARGS_INPUT)
+    @pytest.mark.parametrize("command_data, args", AT_MOST_ONE_ARGS_INPUT)
     def test_validate_at_most_one_group_valid(self, command_data: Dict, args: Dict):
         """
         Given:
@@ -955,7 +1030,220 @@ class TestInputValidations:
         Then:
         - Ensure exception is thrown.
         """
-        Qualysv2.args_values = {'scanners_in_ag': 1, 'default_scanner': 1}
+        Qualysv2.args_values = {"scanners_in_ag": 1, "default_scanner": 1}
         err_msg = "At most one of the following args can be given: ['scanners_in_ag', 'default_scanner']"
         with pytest.raises(DemistoException, match=re.escape(err_msg)):
-            validate_at_most_one_group({'at_most_one_groups': self.AT_MOST_ONE_GROUP_ARGS})
+            validate_at_most_one_group({"at_most_one_groups": self.AT_MOST_ONE_GROUP_ARGS})
+
+
+class TestAssetTags:
+    case_valid_asset_tag_list_args = (
+        "qualys-asset-tag-list",
+        {"criteria": "name", "operator": "EQUALS", "search_data": "parent_tag"},
+        b'<ServiceRequest><filters><Criteria field="name" operator="EQUALS">parent_tag</Criteria></filters></ServiceRequest>',
+    )
+    case_valid_asset_tag_create_command = (
+        "qualys-asset-tag-create",
+        {
+            "name": "parent_tag",
+            "rule_type": "NAME_CONTAINS",
+            "rule_text": "NetworkManager",
+            "child_name": "child_1,child_2,child_3",
+            "criticality_score": "2",
+        },
+        b"<ServiceRequest><data><Tag><name>parent_tag</name><ruleType>NAME_CONTAINS</ruleType><ruleText>NetworkManager</ruleText>"
+        + b"<criticalityScore>2</criticalityScore><children><set><TagSimple><name>child_1</name></TagSimple><TagSimple><name>"
+        + b"child_2</name></TagSimple><TagSimple><name>child_3</name></TagSimple></set></children></Tag></data></ServiceRequest>",
+    )
+    case_valid_asset_tag_update_command = (
+        "qualys-asset-tag-update",
+        {
+            "name": "parent_tag",
+            "rule_type": "NAME_CONTAINS",
+            "rule_text": "NetworkManager",
+            "child_to_remove": "child_1,child_2,child_3",
+            "criticality_score": "2",
+        },
+        b"<ServiceRequest><data><Tag><name>parent_tag</name><ruleType>NAME_CONTAINS</ruleType><ruleText>NetworkManager</ruleText>"
+        + b"<criticalityScore>2</criticalityScore><children><remove><TagSimple><id>child_1</id></TagSimple><TagSimple><id>"
+        + b"child_2</id></TagSimple><TagSimple><id>child_3</id></TagSimple>"
+        + b"</remove></children></Tag></data></ServiceRequest>",
+    )
+    VALID_ASSET_TAG_COMMAND_ARGS = [
+        case_valid_asset_tag_list_args,
+        case_valid_asset_tag_create_command,
+        case_valid_asset_tag_update_command,
+    ]
+
+    @pytest.mark.parametrize("command_name, args, xml_request_body", VALID_ASSET_TAG_COMMAND_ARGS)
+    def test_generate_asset_tag_xml_request_body(self, command_name: str, args: Dict, xml_request_body: bytes):
+        assert Qualysv2.generate_asset_tag_xml_request_body(args, command_name) == xml_request_body
+
+    def test_handle_asset_tag_result(self):
+        raw_response = (
+            '<?xml version="1.0" encoding="UTF-8"?>\n<ServiceResponse xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"'
+            + ' xsi:noNamespaceSchemaLocation="https://qualysapi.qg2.apps.qualys.com/qps/xsd/2.0/am/tag.xsd">\n '
+            + " <responseCode>SUCCESS</responseCode>\n  <count>1</count>\n  <hasMoreRecords>false</hasMoreRecords>\n "
+            + " <data>\n    <Tag>\n      <id>71163393</id>\n      <name>parent_tag</name>\n      "
+            + "<created>2022-11-24T12:38:13Z</created>\n      <modified>2022-11-24T13:09:35Z</modified>\n     "
+            + " <ruleType>INSTALLED_SOFTWARE</ruleType>\n      <children>\n        <list>\n          <TagSimple>\n"
+            + "            <id>71163395</id>\n            <name>child_1</name>\n          </TagSimple>\n          "
+            + "<TagSimple>\n            <id>71163394</id>\n            <name>child_2</name>\n          </TagSimple>\n"
+            + "          <TagSimple>\n            <id>71163396</id>\n            <name>child_3</name>\n          "
+            + "</TagSimple>\n        </list>\n      </children>\n      <criticalityScore>3</criticalityScore>\n"
+            + "    </Tag>\n  </data>\n</ServiceResponse>"
+        )
+        command_name = "qualys-asset-tag-list"
+        expected_result = {
+            "id": "71163393",
+            "name": "parent_tag",
+            "created": "2022-11-24T12:38:13Z",
+            "modified": "2022-11-24T13:09:35Z",
+            "ruleType": "INSTALLED_SOFTWARE",
+            "children": {
+                "list": {
+                    "TagSimple": [
+                        {"id": "71163395", "name": "child_1"},
+                        {"id": "71163394", "name": "child_2"},
+                        {"id": "71163396", "name": "child_3"},
+                    ]
+                }
+            },
+            "criticalityScore": "3",
+        }
+        assert Qualysv2.handle_asset_tag_result(raw_response, command_name) == expected_result
+
+    def test_handle_asset_tag_result_fail(self, mocker):
+        mocker.patch.object(
+            Qualysv2,
+            "format_and_validate_response",
+            return_value={"ServiceResponse": {"responseErrorDetails": {"errorMessage": "response with error message"}}},
+        )
+
+        with pytest.raises(DemistoException):
+            Qualysv2.handle_asset_tag_result(raw_response=requests.Response(), command_name="")
+
+    def test_build_tag_asset_output(self):
+        args = {
+            "command_parse_and_output_data": {
+                "table_name": "Tags identified by the specified filter",
+                "json_path": ["ServiceResponse", "data", "Tag"],
+                "table_headers": ["ID", "name", "criticalityScore", "ruleText", "ruleType", "Child Tags"],
+            },
+            "handled_result": {
+                "id": "0",
+                "name": "parent_tag",
+                "created": "2022-11-24T12:38:13Z",
+                "modified": "2022-11-24T13:09:35Z",
+                "ruleType": "INSTALLED_SOFTWARE",
+                "children": {
+                    "list": {
+                        "TagSimple": [
+                            {"id": "1", "name": "child_1"},
+                            {"id": "2", "name": "child_2"},
+                            {"id": "3", "name": "child_3"},
+                        ]
+                    }
+                },
+                "criticalityScore": "3",
+            },
+        }
+        handled_result = {
+            "id": "0",
+            "name": "parent_tag",
+            "created": "2022-11-24T12:38:13Z",
+            "modified": "2022-11-24T13:09:35Z",
+            "ruleType": "INSTALLED_SOFTWARE",
+            "criticalityScore": "3",
+            "criticalityScore": "3",
+            "childTags": [
+                {"id": "1", "name": "child_1"},
+                {"id": "2", "name": "child_2"},
+                {"id": "3", "name": "child_3"},
+            ],
+        }
+        assert Qualysv2.build_tag_asset_output(**args)[0] == handled_result
+
+
+def test_handle_asset_tag_request_parameters():
+    """
+    Given
+        - id argument
+        - the command supports sending an XML request body
+    When
+        - Am asset-tag command is run
+    Then
+        - add an id to the http request and generate a request body
+    """
+    Qualysv2.handle_asset_tag_request_parameters({'id': '1234'}, "qualys-asset-tag-list")
+
+
+def test_input_validation():
+    """
+    Given
+        - A command name
+    When
+        - Any command is run
+    Then
+        - the input_validation command will validate the command name exists
+    """
+    assert Qualysv2.input_validation("qualys-asset-tag-list") is None
+
+
+def test_calculate_ip_original_amount():
+    """
+    Given
+        - A Parsed output, a dictionary that might contain a list of single ips and a list of ranges of ips.
+        IP addresses and ranges are represented by a list of items, unless there's only a single item,
+        then it's a string.
+    When
+        - A command that returns a list of IP's is run.
+    Then
+        - An integer which is the amount of ip addresses and ranges will be returned
+    """
+    result = {'Address': 'address', 'Range': 'range'}
+    assert Qualysv2.calculate_ip_original_amount(result) == 2
+
+
+def test_create_ip_list_markdown_table():
+    """
+    Given
+        - A dictionary of IP's
+    When
+        - Dictionary IP's is a part of the API result
+    Then
+        - create_ip_list_markdown_table will generate a markdown for the IP's
+    """
+    dicts_of_ranges_and_ips = [{'1': 1}, {'2': 2}]
+    readable_output = '|1|\n|---|\n| 1 |\n\n|2|\n|---|\n| 2 |\n'
+    assert Qualysv2.create_ip_list_markdown_table(dicts_of_ranges_and_ips) == readable_output
+
+
+def test_create_single_host_list():
+    """
+    Given
+        - ip_and_range_lists: A dictionary that can have either a single ip as a string or
+        a list of single ips in the key 'Address' and/or a single range as a string or
+        a list of range of ips in the key 'Range'
+    When
+        - build_ip_list_output is run
+    Then
+        - create_single_host_list function will generate a list that has both ips and ranges of ips
+    """
+    ip_and_range_lists = {'Address': 'address', 'Range': 'range'}
+    assert Qualysv2.create_single_host_list(ip_and_range_lists) == ['address', 'range']
+
+
+def test_build_ip_and_range_dicts():
+    """
+    Given
+        - ips_and_ranges: A list that might contain both ips and ranges of ips
+        Returns: A list that has one list which consists of single value dictionaries of ips
+        and another list which consists of single values dictionaries of ranges
+    When
+        - build_ip_list_from_single_value or build_ip_list_output functions are run
+    Then
+        - build_ip_and_range_dicts will generate a list that has one list which consists of single value dictionaries of ips
+             and another list which consists of single values dictionaries of ranges
+    """
+    assert Qualysv2.build_ip_and_range_dicts(['-', 'example']) == [[{'ip': 'example'}], [{'range': '-'}]]

@@ -141,7 +141,8 @@ SAMPLE_RESPONSE = [{
     'sourcetype': 'stash',
     'splunk_server': 'ip-172-31-44-193',
     'urgency': 'low',
-    'owner': 'unassigned'
+    'owner': 'unassigned',
+    'event_id': '66D21DF4-F4FD-4886-A986-82E72ADCBFE9@@notable@@5aa44496ec8e5cf45c78ab230189a4ca',
 }]
 
 EXPECTED = {
@@ -199,25 +200,34 @@ RAW_JSON_AND_STANDARD_OUTPUT = {"Test": "success"}
 
 
 class Jobs:
-    def __init__(self, status):
-        self.oneshot = None
+    def __init__(self, status, service):
+        self.oneshot = lambda x, **kwargs: x
         state = namedtuple('state', 'content')
         self.state = state(content={'dispatchState': str(status)})
+        self.service = service
 
     def __getitem__(self, arg):
         return 0
 
-    def create(self, query, latest_time, app, earliest_time, exec_mode):
-        return {'sid': '123456', 'resultCount': 0}
+    def create(self, query, **kwargs):
+        job = client.Job(sid='123456', service=self.service, **kwargs)
+        job.resultCount = 0
+        return job
 
 
 class Service:
     def __init__(self, status):
-        self.jobs = Jobs(status)
+        self.jobs = Jobs(status, self)
         self.status = status
+        self.disable_v2_api = False
+        self.namespace = {'app': 'test', 'owner': 'test', 'sharing': 'global'}
+        self._abspath = lambda x, **kwargs: x
+
+    def get(self, path_segment, owner=None, app=None, headers=None, sharing=None, **query):
+        return {'status': '200', 'body': 'test', 'headers': {'content-type': 'application/json'}, 'reason': 'OK'}
 
     def job(self, sid):
-        return Jobs(self.status)
+        return self.jobs
 
 
 def test_raw_to_dict():
@@ -613,18 +623,34 @@ def test_fetch_notables(mocker):
     - make sure the incident response is valid.
     - make sure that the owner is not part of the incident response
     """
+    mocker.patch.object(splunk.client.Job, 'is_done', return_value=True)
+    mocker.patch.object(splunk.client.Job, 'results', return_value=None)
+    mocker.patch.object(splunk, 'ENABLED_ENRICHMENTS', [splunk.ASSET_ENRICHMENT,
+                        splunk.DRILLDOWN_ENRICHMENT, splunk.IDENTITY_ENRICHMENT])
     mocker.patch.object(demisto, 'incidents')
     mocker.patch.object(demisto, 'setLastRun')
     mock_last_run = {'time': '2018-10-24T14:13:20'}
     mock_params = {'fetchQuery': "something"}
     mocker.patch('demistomock.getLastRun', return_value=mock_last_run)
     mocker.patch('demistomock.params', return_value=mock_params)
-    service = mocker.patch('splunklib.client.connect', return_value=None)
+    service = Service('DONE')
     mocker.patch('splunklib.results.ResultsReader', return_value=SAMPLE_RESPONSE)
     mapper = splunk.UserMappingObject(service, False)
-    splunk.fetch_notables(service, enrich_notables=False, mapper=mapper)
+    splunk.fetch_incidents(service, mapper=mapper)
+    cache_object = splunk.Cache.load_from_integration_context(get_integration_context())
+    assert cache_object.submitted_notables
+    notable = cache_object.submitted_notables[0]
+    incident_from_cache = notable.to_incident(mapper)
     incidents = demisto.incidents.call_args[0][0]
     assert demisto.incidents.call_count == 1
+    assert len(incidents) == 0
+    assert incident_from_cache["name"] == "Endpoint - Recurring Malware Infection - Rule : Endpoint - " \
+                                          "Recurring Malware Infection - Rule"
+    assert not incident_from_cache.get('owner')
+
+    # now call second time to make sure that the incident fetched
+    splunk.fetch_incidents(service, mapper=mapper)
+    incidents = demisto.incidents.call_args[0][0]
     assert len(incidents) == 1
     assert incidents[0]["name"] == "Endpoint - Recurring Malware Infection - Rule : Endpoint - " \
                                    "Recurring Malware Infection - Rule"
@@ -872,7 +898,6 @@ def test_get_last_update_in_splunk_time(last_update, demisto_params, splunk_time
     Then:
         - Conversion is correct
         - An Exception is raised in case that Splunk Server timezone is not specified in Demisto params
-
     """
     mocker.patch.object(demisto, 'params', return_value=demisto_params)
     if demisto_params:
@@ -884,12 +909,80 @@ def test_get_last_update_in_splunk_time(last_update, demisto_params, splunk_time
             splunk.get_last_update_in_splunk_time(last_update)
 
 
-def test_get_remote_data_command(mocker):
-    updated_notable = {'status': '1', 'event_id': 'id'}
+@pytest.mark.parametrize("notable_data, func_call_kwargs, expected_closure_data",
+                         [
+                             # A Notable with a "Closed" status label
+                             ({'status_label': 'Closed', 'event_id': 'id', 'status_end': 'true'},
+                              {'close_incident': True, 'close_end_statuses': False, 'close_extra_labels': []},
+                              {'Type': EntryType.NOTE,
+                               'Contents': {
+                                   'dbotIncidentClose': True,
+                                   'closeReason': 'Notable event was closed on Splunk with status "Closed".',
+                               },
+                               'ContentsFormat': EntryFormat.JSON,
+                               },
+                              ),
 
+                             # A Notable with a "New" status label (shouldn't close)
+                             ({'status_label': 'New', 'event_id': 'id', 'status_end': 'false'},
+                              {'close_incident': True, 'close_end_statuses': False, 'close_extra_labels': []},
+                              None,
+                              ),
+
+                             # A Notable with a custom status label that is on close_extra_labels (should close)
+                             ({'status_label': 'Custom', 'event_id': 'id', 'status_end': 'false'},
+                              {'close_incident': True, 'close_end_statuses': False, 'close_extra_labels': ['Custom']},
+                              {'Type': EntryType.NOTE,
+                               'Contents': {
+                                   'dbotIncidentClose': True,
+                                   'closeReason': 'Notable event was closed on Splunk with status "Custom".',
+                               },
+                               'ContentsFormat': EntryFormat.JSON,
+                               },
+                              ),
+
+                             # A Notable with close_extra_labels that don't include status_label (shouldn't close)
+                             ({'status_label': 'Custom', 'event_id': 'id', 'status_end': 'false'},
+                              {'close_incident': True, 'close_end_statuses': False, 'close_extra_labels': ['A', 'B']},
+                              None,
+                              ),
+
+                             # A Notable that has status_end as true with close_end_statuses as true (should close)
+                             ({'status_label': 'Custom', 'event_id': 'id', 'status_end': 'true'},
+                              {'close_incident': True, 'close_end_statuses': True, 'close_extra_labels': []},
+                              {'Type': EntryType.NOTE,
+                               'Contents': {
+                                   'dbotIncidentClose': True,
+                                   'closeReason': 'Notable event was closed on Splunk with status "Custom".',
+                               },
+                               'ContentsFormat': EntryFormat.JSON,
+                               },
+                              ),
+
+                             # A Notable that has status_end as true with close_end_statuses as false (shouldn't close)
+                             ({'status_label': 'Custom', 'event_id': 'id', 'status_end': 'true'},
+                              {'close_incident': True, 'close_end_statuses': False, 'close_extra_labels': []},
+                              None,
+                              ),
+
+                             # A Notable that is both on close_extra_labels,
+                             # and has status_end as true with close_end_statuses as true (should close)
+                             ({'status_label': 'Custom', 'event_id': 'id', 'status_end': 'true'},
+                              {'close_incident': True, 'close_end_statuses': True, 'close_extra_labels': ['Custom']},
+                              {'Type': EntryType.NOTE,
+                               'Contents': {
+                                   'dbotIncidentClose': True,
+                                   'closeReason': 'Notable event was closed on Splunk with status "Custom".',
+                               },
+                               'ContentsFormat': EntryFormat.JSON,
+                               },
+                              ),
+                         ])
+def test_get_remote_data_command_close_incident(mocker, notable_data: dict,
+                                                func_call_kwargs: dict, expected_closure_data: dict):
     class Jobs:
         def __init__(self):
-            self.oneshot = lambda x: updated_notable
+            self.oneshot = lambda x: notable_data
 
     class Service:
         def __init__(self):
@@ -899,46 +992,19 @@ def test_get_remote_data_command(mocker):
     mocker.patch.object(demisto, 'params', return_value={'timezone': '0'})
     mocker.patch.object(demisto, 'debug')
     mocker.patch.object(demisto, 'info')
-    mocker.patch('SplunkPy.results.ResultsReader', return_value=[updated_notable])
+    mocker.patch('SplunkPy.results.ResultsReader', return_value=[notable_data])
     mocker.patch.object(demisto, 'results')
     service = Service()
-    splunk.get_remote_data_command(service, args, close_incident=False, mapper=splunk.UserMappingObject(service, False))
+    splunk.get_remote_data_command(service, args, mapper=splunk.UserMappingObject(service, False), **func_call_kwargs)
     results = demisto.results.call_args[0][0]
+
+    expected_results = [notable_data]
+
+    if expected_closure_data:
+        expected_results.append(expected_closure_data)
+
     assert demisto.results.call_count == 1
-    assert results == [{'event_id': 'id', 'status': '1'}]
-
-
-def test_get_remote_data_command_close_incident(mocker):
-    updated_notable = {'status': '5', 'event_id': 'id'}
-
-    class Jobs:
-        def __init__(self):
-            self.oneshot = lambda x: updated_notable
-
-    class Service:
-        def __init__(self):
-            self.jobs = Jobs()
-
-    args = {'lastUpdate': '2021-02-09T16:41:30.589575+02:00', 'id': 'id'}
-    mocker.patch.object(demisto, 'params', return_value={'timezone': '0'})
-    mocker.patch.object(demisto, 'debug')
-    mocker.patch.object(demisto, 'info')
-    mocker.patch('SplunkPy.results.ResultsReader', return_value=[updated_notable])
-    mocker.patch.object(demisto, 'results')
-    service = Service()
-    splunk.get_remote_data_command(service, args, close_incident=True, mapper=splunk.UserMappingObject(service, False))
-    results = demisto.results.call_args[0][0]
-    assert demisto.results.call_count == 1
-    assert results == [
-        {'event_id': 'id', 'status': '5'},
-        {
-            'Type': EntryType.NOTE,
-            'Contents': {
-                'dbotIncidentClose': True,
-                'closeReason': 'Notable event was closed on Splunk.'
-            },
-            'ContentsFormat': EntryFormat.JSON
-        }]
+    assert results == expected_results
 
 
 def test_get_modified_remote_data_command(mocker):
@@ -946,7 +1012,7 @@ def test_get_modified_remote_data_command(mocker):
 
     class Jobs:
         def __init__(self):
-            self.oneshot = lambda x: [updated_incidet_review]
+            self.oneshot = lambda x, count: [updated_incidet_review]
 
     class Service:
         def __init__(self):
@@ -1219,7 +1285,7 @@ def test_build_search_human_readable(mocker):
     expected_headers = ['ID', 'Header with space', 'header3', 'header_without_space',
                         'comma', 'separated', 'Single,Header,with,Commas', 'new_header_1', 'new_header_2']
 
-    splunk.build_search_human_readable(args, results)
+    splunk.build_search_human_readable(args, results, sid='123456')
     headers = func_patch.call_args[0][1]
     assert headers == expected_headers
 
@@ -1242,12 +1308,12 @@ def test_build_search_human_readable_multi_table_in_query(mocker):
         {'header_1': 'val_1', 'header_2': 'val_2', 'header_3': 'val_3', 'header_4': 'val_4'},
     ]
     expected_headers_hr = "|header_1|header_2|header_3|header_4|\n|---|---|---|---|"
-    hr = splunk.build_search_human_readable(args, results)
+    hr = splunk.build_search_human_readable(args, results, sid='123456')
     assert expected_headers_hr in hr
 
 
-@pytest.mark.parametrize('polling', [False, True])
-def test_build_search_kwargs(polling):
+@pytest.mark.parametrize('polling, fast_mode', [(False, True), (True, True)])
+def test_build_search_kwargs(polling, fast_mode):
     """
     Given:
         The splunk-search command args.
@@ -1257,10 +1323,9 @@ def test_build_search_kwargs(polling):
 
     Then:
         Ensure the query kwargs as expected.
-
     """
     args = {'earliest_time': '2021-11-23T10:10:10', 'latest_time': '2021-11-23T10:10:20', 'app': 'test_app',
-            'polling': polling}
+            'fast_mode': fast_mode, 'polling': polling}
     kwargs_normalsearch = splunk.build_search_kwargs(args, polling)
     for field in args:
         if field == 'polling':
@@ -1269,6 +1334,8 @@ def test_build_search_kwargs(polling):
                 assert kwargs_normalsearch['exec_mode'] == 'normal'
             else:
                 assert kwargs_normalsearch['exec_mode'] == 'blocking'
+        elif field == 'fast_mode' and fast_mode:
+            assert kwargs_normalsearch['adhoc_search_level'] == 'fast'
         else:
             assert field in kwargs_normalsearch
 
@@ -1286,14 +1353,11 @@ def test_splunk_search_command(mocker, polling, status):
 
     Then:
         Ensure the result as expected in polling and in regular search.
-
     """
-
     mocker.patch.object(demisto, 'args', return_value={'query': 'query', 'earliest_time': '2021-11-23T10:10:10',
                                                        'latest_time': '2020-10-20T10:10:20', 'app': 'test_app',
-                                                       'polling': polling})
+                                                       'fast_mode': 'false', 'polling': polling})
     mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported')
-
     search_result = splunk.splunk_search_command(Service(status))
 
     if search_result.scheduled_command:
@@ -1301,7 +1365,8 @@ def test_splunk_search_command(mocker, polling, status):
         assert search_result.scheduled_command._args['sid'] == '123456'
     else:
         assert search_result.outputs['Splunk.Result'] == []
-        assert search_result.readable_output == '### Splunk Search results for query: query\n**No entries.**\n'
+        assert search_result.readable_output == '### Splunk Search results for query:\n' \
+                                                'sid: 123456\n**No entries.**\n'
 
 
 @pytest.mark.parametrize(
@@ -1319,7 +1384,6 @@ def test_module_test(mocker, credentials):
     Then:
         - Validate the info method was called
     """
-
     # prepare
     mocker.patch.object(client.Service, 'info')
     mocker.patch.object(client.Service, 'login')
@@ -1347,7 +1411,6 @@ def test_module__exception_raised(mocker, credentials):
     Then:
         - Validate the expected message was returned
     """
-
     # prepare
     def exception_raiser():
         raise AuthenticationError()
@@ -1358,8 +1421,8 @@ def test_module__exception_raised(mocker, credentials):
 
     return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
     service = client.Service(**credentials)
-    # run
 
+    # run
     splunk.test_module(service)
 
     # validate
@@ -1377,17 +1440,15 @@ def test_module_hec_url(mocker):
     Then:
         - Validate taht the request.get was called with the expected args
     """
-
     # prepare
-
     mocker.patch.object(demisto, 'params', return_value={'hec_url': 'test_hec_url'})
     mocker.patch.object(client.Service, 'info')
     mocker.patch.object(client.Service, 'login')
     mocker.patch.object(requests, 'get')
 
     service = client.Service(username='test', password='test')
-    # run
 
+    # run
     splunk.test_module(service)
 
     # validate
@@ -1405,7 +1466,6 @@ def test_labels_with_non_str_values(mocker):
     Then:
         - Validate the Labels created in the incident are well formatted to avoid server errors on json.Unmarshal
     """
-
     from SplunkPy import UserMappingObject
     # prepare
     raw = {
@@ -1462,7 +1522,6 @@ def test_empty_string_as_app_param_value(mocker):
     Then:
         - Validate that the value of the 'app' key in connection_args is '-'
     """
-
     # prepare
     mock_params = {'app': '', 'host': '111', 'port': '111'}
     mocker.patch('demistomock.params', return_value=mock_params)
@@ -1499,7 +1558,6 @@ def test_owner_mapping_mechanism_xsoar_to_splunk(mocker, xsoar_name, expected_sp
     Then:
         - validates the splunk user is correct
     """
-
     def mocked_get_record(col, value_to_search):
         return filter(lambda x: x[col] == value_to_search, OWNER_MAPPING[:-1])
 
@@ -1539,7 +1597,6 @@ def test_owner_mapping_mechanism_splunk_to_xsoar(mocker, splunk_name, expected_x
     Then:
         - validates the splunk user is correct
     """
-
     def mocked_get_record(col, value_to_search):
         return filter(lambda x: x[col] == value_to_search, OWNER_MAPPING)
 
@@ -1585,7 +1642,6 @@ def test_get_splunk_user_by_xsoar_command(mocker, xsoar_names, expected_outputs)
     When: trying to get splunk matching users
     Then: validates correctness of list
     """
-
     def mocked_get_record(col, value_to_search):
         return filter(lambda x: x[col] == value_to_search, OWNER_MAPPING[:-1])
 
@@ -1599,3 +1655,33 @@ def test_get_splunk_user_by_xsoar_command(mocker, xsoar_names, expected_outputs)
     mocker.patch.object(mapper, '_get_record', side_effect=mocked_get_record)
     res = mapper.get_splunk_user_by_xsoar_command(xsoar_names)
     assert res.outputs == expected_outputs
+
+
+@pytest.mark.parametrize(argnames='username, expected_username, basic_auth', argvalues=[
+    ('test_user', 'test_user', False),
+    ('test@_basic', 'test', True)])
+def test_basic_authentication_param(mocker, username, expected_username, basic_auth):
+    """
+    Given: - the username contain '@_basic' suffix
+    When:  - connecting to Splunk server
+    Then:  - validate the connection args was sent as expected
+
+    """
+    mocked_params = {
+        'host': 'test_host',
+        'port': '8089',
+        'proxy': 'false',
+        'authentication': {
+            'identifier': username,
+            'password': 'test_password'
+        }
+    }
+    mocker.patch.object(client, 'connect')
+    mocker.patch.object(demisto, 'params', return_value=mocked_params)
+    mocker.patch.object(demisto, 'command', return_value='not_impl_command')
+
+    with pytest.raises(NotImplementedError):
+        splunk.main()
+
+    assert client.connect.call_args[1]['username'] == expected_username
+    assert ('basic' in client.connect.call_args[1]) == basic_auth

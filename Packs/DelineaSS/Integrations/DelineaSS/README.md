@@ -1154,3 +1154,40 @@ Change a secret's password
 }
 ```
 
+### delinea-fetch-users
+***
+Fetch credentials from secret
+
+
+#### Base Command
+
+`delinea-fetch-users`
+#### Input
+NO input argumets
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Delinea.User.Credentials | String | Secret credential objects | 
+
+
+#### Command Example
+```!delinea-fetch-users```
+
+#### Context Example
+```json
+[
+    {
+        "name": "4219",
+        "password": "test3",
+        "user": "test3"
+    },
+    {
+        "name": "4217",
+        "password": "dhPQhf1d@!E",
+        "user": "secret2"
+    }
+]
+```

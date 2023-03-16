@@ -51,7 +51,7 @@ CreateIndicatorRelationship
 CommonServerPython
 CommonServer
 mergeVersionedIntegrationContext
-SearchIndicatorRelationships 
+SearchIndicatorRelationships
 CommandResults
 YMLMetadataCollector
 siam
@@ -60,3 +60,8 @@ EntryType
 Enums
 CustomIndicator
 Mutex
+SSLAdapter
+SSL
+appendContext
+refang
+IndicatorsSearcher

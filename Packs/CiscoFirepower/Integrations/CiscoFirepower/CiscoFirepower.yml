@@ -25,10 +25,1579 @@ display: Cisco Firepower
 name: Cisco Firepower
 script:
   commands:
+  - name: ciscofp-upload-intrusion-rule-file
+    description: 'Imports or validates custom Snort 3 intrusion rules within a file. Import arguments: rule_import_mode, rule_group_ids.'
+    arguments:
+    - name: entry_id
+      description: 'A file containing the custom Snort 3 intrusion rules. Supported file formats are .rules and .txt.'
+      required: true
+      isArray: false
+    - name: rule_import_mode
+      description: 'Merge or replace the rules in the rule groups.'
+      required: false
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+      - 'MERGE'
+      - 'REPLACE'
+    - name: rule_group_ids
+      description: 'A comma-separated list of rule groups to which rules should belong. Example are group-id1,group-id2. This is required when importing rules and can be acquired from: ciscofp-list-intrusion-rule-group'
+      required: false
+      isArray: true
+    - name: validate_only
+      description: 'Define whether to validate or to validate and import rules. True is the default value and sets that rules should be validated and not imported.'
+      required: false
+      isArray: false
+      defaultValue: 'True'
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+    outputs:
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleUpload.summary.type
+      description: 'Type of the response object. This value is always ruleimportsummary.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleUpload.summary.deleted.type
+      description: 'Type of the response object. This value is always ruleimportsummaryentry.'
+    - type: Number
+      contextPath: CiscoFP.IntrusionRuleUpload.summary.deleted.count
+      description: 'The number of deleted rules. By default shows 0.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleUpload.summary.deleted.rules
+      description: 'Details of deleted rules in the format GID:SID.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleUpload.summary.added.type
+      description: 'Type of the response object. This value is always ruleimportsummaryentry.'
+    - type: Number
+      contextPath: CiscoFP.IntrusionRuleUpload.summary.added.count
+      description: 'The number of added rules. By default shows 0.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleUpload.summary.added.rules
+      description: 'Details of added rules in the format GID:SID.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleUpload.summary.unassociated.type
+      description: 'Type of the response object. This value is always ruleimportsummaryentry.'
+    - type: Number
+      contextPath: CiscoFP.IntrusionRuleUpload.summary.unassociated.count
+      description: 'The number of unassociated rules. By default shows 0.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleUpload.summary.unassociated.rules
+      description: 'Details of unassociated rules in the format GID:SID.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleUpload.summary.updated.type
+      description: 'Type of the response object. This value is always ruleimportsummaryentry.'
+    - type: Number
+      contextPath: CiscoFP.IntrusionRuleUpload.summary.updated.count
+      description: 'The number of updated rules. By default shows 0.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleUpload.summary.updated.rules
+      description: 'Details of updated rules in the format GID:SID.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleUpload.summary.skipped.type
+      description: 'Type of the response object. This value is always ruleimportsummaryentry.'
+    - type: Number
+      contextPath: CiscoFP.IntrusionRuleUpload.summary.skipped.count
+      description: 'The number of skipped rules. By default shows 0.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleUpload.summary.skipped.rules
+      description: 'Details of skipped rules in the format GID:SID.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleUpload.validateOnly
+      description: 'Specifies if rules should be validated or validated and imported. Default value is true.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleUpload.ruleImportMode
+      description: 'The rule import mode. Can be either MERGE or REPLACE.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleUpload.files.path
+      description: 'The file path.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleUpload.files.attrib
+      description: 'The file attribute, payloadFile.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleUpload.files.name
+      description: 'The file name.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleUpload.files.id
+      description: 'The file ID.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleUpload.files.type
+      description: 'The file type.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleUpload.ruleGroups.id
+      description: 'Snort 3 intrusion rule group ID.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleUpload.ruleGroups.name
+      description: 'Snort 3 intrusion rule group name.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleUpload.ruleGroups.type
+      description: 'Type of the response object. This value is always IntrusionRuleGroup.'
+  - name: ciscofp-list-intrusion-rule
+    description: 'Retrieves the Snort3 Intrusion rule group. If no ID is specified, it retrieves a list of all Snort3 Intrusion rule groups. Default list size is 50. GET argument: intrusion_rule_id | LIST arguments: sort, filter, expanded_response, limit, page, page_size.'
+    arguments:
+    - name: intrusion_rule_id
+      description: 'Snort 3 intrusion rule ID.'
+      required: false
+      isArray: false
+    - name: expanded_response
+      description: 'Whether to display an expanded response with a list of objects with additional attributes.'
+      required: false
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+    - name: sort
+      description: 'Sorting parameters to be provided e.g. sid,-sid,gid,-gid,msg,-msg.'
+      required: false
+      isArray: true
+    - name: filter
+      description: 'Filter the results. Can be any of the following formats: "gid:123;sid:456" or "fts:789" or "overrides:true;ipspolicy:{uuid1,uuid2,...}, where "ipspolicy" is a comma-separated list of Snort 3 Intrusion Policy IDs.'
+      required: false
+      isArray: false
+    - name: limit
+      description: 'The number of items to return.'
+      required: false
+      isArray: false
+    - name: page
+      description: 'The number of pages to return.'
+      required: false
+      isArray: false
+    - name: page_size
+      description: 'The number of items to return in a page.'
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: CiscoFP.IntrusionRule.type
+      description: 'Type of the response object. This value is always IntrusionRule.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRule.id
+      description: 'The intrusion rule ID.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRule.name
+      description: 'The intrusion rule name.'
+    - type: Number
+      contextPath: CiscoFP.IntrusionRule.gid
+      description: 'The generator identifier (GID) used to identify the part of Snort which generates an event.'
+    - type: Number
+      contextPath: CiscoFP.IntrusionRule.sid
+      description: 'The signature identifier (SID) used to uniquely identify Snort rules.'
+    - type: Number
+      contextPath: CiscoFP.IntrusionRule.revision
+      description: 'The revision number of a given Snort rule. Incremented by one each time a change is made to a rule.'
+    - type: Boolean
+      contextPath: CiscoFP.IntrusionRule.isSystemDefined
+      description: 'Read-only field indicating if the rule is system-defined (i.e., Talos provided). If the value is false, then the rule is user-defined.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRule.msg
+      description: 'User-defined rule description.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRule.ruleData
+      description: 'The details of the rule based on which rule created or updated.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRule.description
+      description: 'User-defined resource description.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRule.overrideState
+      description: 'The override state of the rule. One of: DROP, BLOCK, ALERT, DISABLE, DEFAULT.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRule.defaultState
+      description: 'The default rule state. One of: DROP, BLOCK, ALERT, DISABLE, DEFAULT.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRule.ruleAction.defaultState
+      description: 'The default rule state for the specified intrusion policy. One of: DROP, BLOCK, ALERT, DISABLE, DEFAULT, PASS, REJECT, REACT, REWRITE.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRule.ruleAction.overrideState
+      description: 'The override state of the rule for the specified intrusion policy. One of: DROP, BLOCK, ALERT, DISABLE, DEFAULT, PASS, REJECT, REACT, REWRITE.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRule.ruleAction.policy.name
+      description: 'The intrusion policy name'
+    - type: String
+      contextPath: CiscoFP.IntrusionRule.ruleAction.policy.id
+      description: 'The intrusion Policy ID'
+    - type: String
+      contextPath: CiscoFP.IntrusionRule.ruleAction.policy.type
+      description: 'The type must be intrusionpolicy'
+    - type: Boolean
+      contextPath: CiscoFP.IntrusionRule.ruleAction.policy.isSystemDefined
+      description: 'Whether the rule is system-defined or user-defined. If the value is false, then rule is user-defined.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRule.metadata.domain.name
+      description: 'The domain name.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRule.metadata.domain.id
+      description: 'The domain ID.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRule.metadata.domain.type
+      description: 'The domain type (fixed).'
+    - type: String
+      contextPath: CiscoFP.IntrusionRule.ruleGroups.name
+      description: 'User-defined resource name.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRule.ruleGroups.id
+      description: 'The resource ID.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRule.ruleGroups.type
+      description: 'The resource response object.'
+  - name: ciscofp-create-intrusion-rule
+    description: 'Creates or overrides the Snort 3 Intrusion rule group with the specified parameters. Guide to Snort 3 rule writing: https://docs.snort.org/welcome.'
+    arguments:
+    - name: rule_data
+      description: 'The Snort Rule structure data. Guide to Snort rule structure: https://docs.snort.org/rules/'
+      required: true
+      isArray: false
+    - name: rule_group_ids
+      description: 'Rule group IDs in a comma-separated list. Can be acquired from: ciscofp-list-intrusion-rule-group.'
+      required: true
+      isArray: true
+    outputs:
+    - type: String
+      contextPath: CiscoFP.IntrusionRule.type
+      description: 'The response object type. This value is always IntrusionRule.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRule.id
+      description: 'The intrusion rule ID.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRule.name
+      description: 'The intrusion rule name.'
+    - type: Number
+      contextPath: CiscoFP.IntrusionRule.gid
+      description: 'The generator ID (GID) used to identify the part of Snort that generated an event.'
+    - type: Number
+      contextPath: CiscoFP.IntrusionRule.sid
+      description: 'The signature ID (SID) used to uniquely identify Snort rules.'
+    - type: Number
+      contextPath: CiscoFP.IntrusionRule.revision
+      description: 'The revision number of a given Snort rule. Incremented by one each time a change is made to a rule.'
+    - type: Boolean
+      contextPath: CiscoFP.IntrusionRule.isSystemDefined
+      description: 'Read-only field indicating if the rule is system-defined (i.e., Talos provided). If the value is false, then the rule is user-defined.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRule.msg
+      description: 'User-provided rule description.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRule.ruleData
+      description: 'The details of the rule based on which rule created or updated.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRule.description
+      description: 'User provided resource description.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRule.overrideState
+      description: 'The override state of the rule. One of: DROP, BLOCK, ALERT, DISABLE, DEFAULT.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRule.defaultState
+      description: 'The rule default state. One of: DROP, BLOCK, ALERT, DISABLE, DEFAULT.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRule.ruleAction.defaultState
+      description: 'The rule default state for the specified intrusion policy. One of: DROP, BLOCK, ALERT, DISABLE, DEFAULT, PASS, REJECT, REACT, REWRITE.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRule.ruleAction.overrideState
+      description: 'The rule override state for the specified intrusion policy. One of: DROP, BLOCK, ALERT, DISABLE, DEFAULT, PASS, REJECT, REACT, REWRITE.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRule.ruleAction.policy.name
+      description: 'The intrusion policy name.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRule.ruleAction.policy.id
+      description: 'The intrusion Policy ID'
+    - type: String
+      contextPath: CiscoFP.IntrusionRule.ruleAction.policy.type
+      description: 'The type must be intrusionpolicy'
+    - type: Boolean
+      contextPath: CiscoFP.IntrusionRule.ruleAction.policy.isSystemDefined
+      description: 'Whether the rule is system-defined or user-defined. If the value is false, then the rule is user-defined.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRule.metadata.domain.name
+      description: 'The domain name.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRule.metadata.domain.id
+      description: 'The domain ID.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRule.metadata.domain.type
+      description: 'The domain type (fixed).'
+    - type: String
+      contextPath: CiscoFP.IntrusionRule.ruleGroups.name
+      description: 'User-defined resource name.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRule.ruleGroups.id
+      description: 'The resource ID.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRule.ruleGroups.type
+      description: 'The resource response object.'
+  - name: ciscofp-update-intrusion-rule
+    description: 'Modifies the Snort3 Intrusion rule group with the specified ID. You must enter one or both of the following: rule_data | rule_group_ids. The variable that was not entered will remain the same. If merging, rule_group_ids must be entered.'
+    arguments:
+    - name: intrusion_rule_id
+      description: 'The Snort 3 intrusion rule ID.'
+      required: true
+      isArray: false
+    - name: rule_data
+      description: 'The Snort rule structure data. Guide to Snort rule structure: https://docs.snort.org/rules/'
+      required: false
+      isArray: false
+    - name: rule_group_ids
+      description: 'Rule group IDs in a comma-separated list. Can be acquired from: ciscofp-list-intrusion-rule-group'
+      required: false
+      isArray: true
+    - name: update_strategy
+      description: 'The update method to use in the command. Can be "MERGE" or "OVERRIDE". If "MERGE" is used, new rule groups will be appended. If "OVERRIDE" is used, old rule groups will be overwritten.'
+      required: false
+      isArray: false
+      defaultValue: OVERRIDE
+      auto: PREDEFINED
+      predefined:
+      - MERGE
+      - OVERRIDE
+    outputs:
+    - type: String
+      contextPath: CiscoFP.IntrusionRule.type
+      description: 'The response object type. This value is always IntrusionRule.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRule.id
+      description: 'The intrusion rule ID.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRule.name
+      description: 'The intrusion rule name.'
+    - type: Number
+      contextPath: CiscoFP.IntrusionRule.gid
+      description: 'The generator identifier (GID) used to identify the part of Snort that generated an event.'
+    - type: Number
+      contextPath: CiscoFP.IntrusionRule.sid
+      description: 'The signature identifier (SID) used to uniquely identify Snort rules.'
+    - type: Number
+      contextPath: CiscoFP.IntrusionRule.revision
+      description: 'The revision number of a given Snort rule. Incremented by one each time a change is made to a rule.'
+    - type: Boolean
+      contextPath: CiscoFP.IntrusionRule.isSystemDefined
+      description: 'Read-only field indicating if the rule is system-defined (i.e., Talos provided). If the value is false, then the rule is user-defined.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRule.msg
+      description: 'User-provided rule description.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRule.ruleData
+      description: 'The details of the rule based on which rule created or updated.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRule.description
+      description: 'User provided resource description.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRule.overrideState
+      description: 'The override state of the rule. One of: DROP, BLOCK, ALERT, DISABLE, DEFAULT.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRule.defaultState
+      description: 'The default rule state. One of: DROP, BLOCK, ALERT, DISABLE, DEFAULT.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRule.ruleAction.defaultState
+      description: 'The default rule state for the specified intrusion policy. One of: DROP, BLOCK, ALERT, DISABLE, DEFAULT, PASS, REJECT, REACT, REWRITE.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRule.ruleAction.overrideState
+      description: 'The override state of the rule for the specified intrusion policy. One of: DROP, BLOCK, ALERT, DISABLE, DEFAULT, PASS, REJECT, REACT, REWRITE.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRule.ruleAction.policy.name
+      description: 'The intrusion policy name.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRule.ruleAction.policy.id
+      description: 'The intrusion Policy ID.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRule.ruleAction.policy.type
+      description: 'The type must be intrusionpolicy.'
+    - type: Boolean
+      contextPath: CiscoFP.IntrusionRule.ruleAction.policy.isSystemDefined
+      description: 'Whether the rule is system-defined or user-defined. If the value is false, then the rule is user-defined.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRule.metadata.domain.name
+      description: 'The domain name.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRule.metadata.domain.id
+      description: 'The domain ID.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRule.metadata.domain.type
+      description: 'The domain type (fixed).'
+    - type: String
+      contextPath: CiscoFP.IntrusionRule.ruleGroups.name
+      description: 'User-defined resource name.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRule.ruleGroups.id
+      description: 'The resource ID.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRule.ruleGroups.type
+      description: 'The resource response object.'
+  - name: ciscofp-delete-intrusion-rule
+    description: 'Deletes the specified Snort3 rule.'
+    arguments:
+    - name: intrusion_rule_id
+      description: 'The Snort 3 intrusion rule ID.'
+      required: true
+      isArray: false
+  - name: ciscofp-list-intrusion-policy
+    description: 'Retrieves the intrusion policy associated with the specified ID. If no ID is specified, retrieves a list of all intrusion policies. Default list size is 50. GET arguments: intrusion_policy_id, include_count | LIST arguments: expanded_response, limit, page, page_size.'
+    arguments:
+    - name: intrusion_policy_id
+      description: 'The intrusion policy ID.'
+      required: false
+      isArray: false
+    - name: include_count
+      description: 'Whether the number of rules should be included in the response.'
+      required: false
+      isArray: false
+      defaultValue: 'False'
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+    - name: expanded_response
+      description: 'Whether to display an expanded response with a list of objects with additional attributes.'
+      required: false
+      isArray: false
+      defaultValue: 'False'
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+    - name: limit
+      description: 'The number of items to return.'
+      required: false
+      isArray: false
+    - name: page
+      description: 'The number of pages to return.'
+      required: false
+      isArray: false
+    - name: page_size
+      description: 'The number of items to return in a page.'
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: CiscoFP.IntrusionPolicy.name
+      description: 'The intrusion policy name.'
+    - type: String
+      contextPath: CiscoFP.IntrusionPolicy.id
+      description: 'The intrusion policy ID.'
+    - type: String
+      contextPath: CiscoFP.IntrusionPolicy.type
+      description: 'The type of object. This value is always "intrusionpolicy".'
+    - type: String
+      contextPath: CiscoFP.IntrusionPolicy.description
+      description: 'The intrusion policy description.'
+    - type: Number
+      contextPath: CiscoFP.IntrusionPolicy.inlineDrop
+      description: 'The inspection mode for Snort 2 engine only. Can be 0 or 1.'
+    - type: String
+      contextPath: CiscoFP.IntrusionPolicy.version
+      description: 'The version number of the response object.'
+    - type: String
+      contextPath: CiscoFP.IntrusionPolicy.inspectionMode
+      description: 'The inspection mode for Snort 3 engine only. Can be either DETECTION or PREVENTION.'
+    - type: Boolean
+      contextPath: CiscoFP.IntrusionPolicy.isSystemDefined
+      description: 'Whether the policy is system-defined or user-defined. If the value is false, then the policy is user-defined.'
+    - type: String
+      contextPath: CiscoFP.IntrusionPolicy.snortEngine
+      description: 'The Snort engine version. Can be either SNORT2 or SNORT3.'
+    - type: String
+      contextPath: CiscoFP.IntrusionPolicy.metadata.mappedPolicy.name
+      description: 'The mapped policy name.'
+    - type: String
+      contextPath: CiscoFP.IntrusionPolicy.metadata.mappedPolicy.id
+      description: 'The mapped policy ID.'
+    - type: String
+      contextPath: CiscoFP.IntrusionPolicy.metadata.mappedPolicy.type
+      description: 'The object type.'
+    - type: String
+      contextPath: CiscoFP.IntrusionPolicy.metadata.mappedPolicy.inspectionMode
+      description: 'The inspection mode for Snort 3 engine. Can be either DETECTION or PREVENTION.'
+    - type: String
+      contextPath: CiscoFP.IntrusionPolicy.metadata.mappedPolicy.snortEngine
+      description: 'The Snort engine version. Can be either SNORT2 or SNORT3.'
+    - type: Number
+      contextPath: CiscoFP.IntrusionPolicy.metadata.ruleCount.alert
+      description: 'The number of alert rules.'
+    - type: Number
+      contextPath: CiscoFP.IntrusionPolicy.metadata.ruleCount.block
+      description: 'The number of block rules.'
+    - type: Number
+      contextPath: CiscoFP.IntrusionPolicy.metadata.ruleCount.disabled
+      description: 'The number of disabled rules.'
+    - type: Number
+      contextPath: CiscoFP.IntrusionPolicy.metadata.ruleCount.overridden
+      description: 'The number of overridden rules.'
+    - type: Number
+      contextPath: CiscoFP.IntrusionPolicy.metadata.usage.accesspolicy
+      description: 'The number of access policies.'
+    - type: Number
+      contextPath: CiscoFP.IntrusionPolicy.metadata.usage.devices
+      description: 'The number of devices.'
+    - type: String
+      contextPath: CiscoFP.IntrusionPolicy.metadata.usage.asscoiatedAcPolicies.name
+      description: 'User-defined resource name.'
+    - type: String
+      contextPath: CiscoFP.IntrusionPolicy.metadata.usage.asscoiatedAcPolicies.id
+      description: 'The resource ID.'
+    - type: String
+      contextPath: CiscoFP.IntrusionPolicy.metadata.usage.asscoiatedAcPolicies.type
+      description: 'The resource response object.'
+    - type: String
+      contextPath: CiscoFP.IntrusionPolicy.metadata.domain.name
+      description: 'The domain name.'
+    - type: String
+      contextPath: CiscoFP.IntrusionPolicy.metadata.domain.id
+      description: 'The domain ID.'
+    - type: String
+      contextPath: CiscoFP.IntrusionPolicy.metadata.domain.type
+      description: 'The domain type.'
+    - type: String
+      contextPath: CiscoFP.IntrusionPolicy.metadata.snortEngine
+      description: 'The Snort engine version. Can be either SNORT2 or SNORT3.'
+    - type: Number
+      contextPath: CiscoFP.IntrusionPolicy.metadata.timestamp
+      description: 'The metadata timestamp.'
+    - type: String
+      contextPath: CiscoFP.IntrusionPolicy.basePolicy.name
+      description: 'User-defined resource name.'
+    - type: String
+      contextPath: CiscoFP.IntrusionPolicy.basePolicy.id
+      description: 'The resource ID.'
+    - type: String
+      contextPath: CiscoFP.IntrusionPolicy.basePolicy.type
+      description: 'The resource response object.'
+  - name: ciscofp-create-intrusion-policy
+    description: 'Creates an intrusion policy with the specified parameters. This command may take a while, you can set the "execution-timeout" field if necessary (X > 300).'
+    arguments:
+    - name: name
+      description: 'The intrusion policy name.'
+      required: true
+      isArray: false
+    - name: description
+      description: 'The intrusion policy description.'
+      required: false
+      isArray: false
+    - name: basepolicy_id
+      description: 'The base intrusion policy ID. Can be acquired from: ciscofp-list-intrusion-policy.'
+      required: true
+      isArray: false
+    - name: inspection_mode
+      description: 'The inspection mode for Snort 3 engine. Can be either DETECTION or PREVENTION.'
+      required: false
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+      - DETECTION
+      - PREVENTION
+    outputs:
+    - type: String
+      contextPath: CiscoFP.IntrusionPolicy.name
+      description: 'The intrusion policy name.'
+    - type: String
+      contextPath: CiscoFP.IntrusionPolicy.id
+      description: 'The intrusion policy ID.'
+    - type: String
+      contextPath: CiscoFP.IntrusionPolicy.type
+      description: 'The object type. This value is always "intrusionpolicy".'
+    - type: String
+      contextPath: CiscoFP.IntrusionPolicy.description
+      description: 'The intrusion policy description.'
+    - type: Number
+      contextPath: CiscoFP.IntrusionPolicy.inlineDrop
+      description: 'The inspection mode for Snort 2 engine only. Can be 0 or 1.'
+    - type: String
+      contextPath: CiscoFP.IntrusionPolicy.version
+      description: 'The response object version number.'
+    - type: String
+      contextPath: CiscoFP.IntrusionPolicy.inspectionMode
+      description: 'The inspection mode for Snort 3 engine. Can be either DETECTION or PREVENTION.'
+    - type: Boolean
+      contextPath: CiscoFP.IntrusionPolicy.isSystemDefined
+      description: 'Whether the policy is system-defined or user-defined. If the value is false, then the policy is user-defined.'
+    - type: String
+      contextPath: CiscoFP.IntrusionPolicy.snortEngine
+      description: 'The Snort engine version. Can be either SNORT2 or SNORT3.'
+    - type: String
+      contextPath: CiscoFP.IntrusionPolicy.metadata.mappedPolicy.name
+      description: 'The mapped policy name.'
+    - type: String
+      contextPath: CiscoFP.IntrusionPolicy.metadata.mappedPolicy.id
+      description: 'The mapped policy ID.'
+    - type: String
+      contextPath: CiscoFP.IntrusionPolicy.metadata.mappedPolicy.type
+      description: 'The object type.'
+    - type: String
+      contextPath: CiscoFP.IntrusionPolicy.metadata.mappedPolicy.inspectionMode
+      description: 'The inspection mode for Snort 3 engine only. Can be either DETECTION or PREVENTION.'
+    - type: String
+      contextPath: CiscoFP.IntrusionPolicy.metadata.mappedPolicy.snortEngine
+      description: 'The Snort engine version. Can be either SNORT2 or SNORT3.'
+    - type: Number
+      contextPath: CiscoFP.IntrusionPolicy.metadata.ruleCount.alert
+      description: 'The number of alert rules.'
+    - type: Number
+      contextPath: CiscoFP.IntrusionPolicy.metadata.ruleCount.block
+      description: 'The number of block rules.'
+    - type: Number
+      contextPath: CiscoFP.IntrusionPolicy.metadata.ruleCount.disabled
+      description: 'The number of disabled rules.'
+    - type: Number
+      contextPath: CiscoFP.IntrusionPolicy.metadata.ruleCount.overridden
+      description: 'The number of overridden rules.'
+    - type: Number
+      contextPath: CiscoFP.IntrusionPolicy.metadata.usage.accesspolicy
+      description: 'The number of access policies.'
+    - type: Number
+      contextPath: CiscoFP.IntrusionPolicy.metadata.usage.devices
+      description: 'The number of devices.'
+    - type: String
+      contextPath: CiscoFP.IntrusionPolicy.metadata.usage.asscoiatedAcPolicies.name
+      description: 'User-defined resource name.'
+    - type: String
+      contextPath: CiscoFP.IntrusionPolicy.metadata.usage.asscoiatedAcPolicies.id
+      description: 'The resource ID.'
+    - type: String
+      contextPath: CiscoFP.IntrusionPolicy.metadata.usage.asscoiatedAcPolicies.type
+      description: 'The resource response object.'
+    - type: String
+      contextPath: CiscoFP.IntrusionPolicy.metadata.domain.name
+      description: 'The domain name.'
+    - type: String
+      contextPath: CiscoFP.IntrusionPolicy.metadata.domain.id
+      description: 'The domain ID.'
+    - type: String
+      contextPath: CiscoFP.IntrusionPolicy.metadata.domain.type
+      description: 'The domain type.'
+    - type: String
+      contextPath: CiscoFP.IntrusionPolicy.metadata.snortEngine
+      description: 'The Snort engine version. Can be either SNORT2 or SNORT3.'
+    - type: Number
+      contextPath: CiscoFP.IntrusionPolicy.metadata.timestamp
+      description: 'The metadata timestamp.'
+    - type: String
+      contextPath: CiscoFP.IntrusionPolicy.basePolicy.name
+      description: 'User-defined resource name.'
+    - type: String
+      contextPath: CiscoFP.IntrusionPolicy.basePolicy.id
+      description: 'The resource ID.'
+    - type: String
+      contextPath: CiscoFP.IntrusionPolicy.basePolicy.type
+      description: 'The resource response object.'
+  - name: ciscofp-update-intrusion-policy
+    description: 'Modifies the intrusion policy associated with the specified ID. This command may take a while, you can set the "execution-timeout" field if necessary (X > 300).'
+    arguments:
+    - name: intrusion_policy_id
+      description: 'The intrusion policy ID.'
+      required: true
+      isArray: false
+    - name: replicate_inspection_mode
+      description: 'Whether to replicate inspection mode from Snort 3 to Snort 2.'
+      required: false
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+    - name: name
+      description: 'The intrusion policy name.'
+      required: false
+      isArray: false
+    - name: description
+      description: 'The intrusion policy description.'
+      required: false
+      isArray: false
+    - name: basepolicy_id
+      description: 'The base intrusion policy ID. Can be acquired from: ciscofp-list-intrusion-policy.'
+      required: false
+      isArray: false
+    - name: inspection_mode
+      description: 'The inspection mode for Snort 3 engine only. Can be either DETECTION or PREVENTION.'
+      required: false
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+      - DETECTION
+      - PREVENTION
+    outputs:
+    - type: String
+      contextPath: CiscoFP.IntrusionPolicy.name
+      description: 'The intrusion policy name.'
+    - type: String
+      contextPath: CiscoFP.IntrusionPolicy.id
+      description: 'The intrusion policy ID.'
+    - type: String
+      contextPath: CiscoFP.IntrusionPolicy.type
+      description: 'The object type. This value is always "intrusionpolicy".'
+    - type: String
+      contextPath: CiscoFP.IntrusionPolicy.description
+      description: 'The intrusion policy description.'
+    - type: Number
+      contextPath: CiscoFP.IntrusionPolicy.inlineDrop
+      description: 'The inspection mode for Snort 2 engine only. Can be 0 or 1.'
+    - type: String
+      contextPath: CiscoFP.IntrusionPolicy.version
+      description: 'The response object version number.'
+    - type: String
+      contextPath: CiscoFP.IntrusionPolicy.inspectionMode
+      description: 'The inspection mode for Snort 3 engine only. Can be either DETECTION or PREVENTION.'
+    - type: Boolean
+      contextPath: CiscoFP.IntrusionPolicy.isSystemDefined
+      description: 'Whether the policy is system-defined or user-defined. If the value is false, then the policy is user-defined.'
+    - type: String
+      contextPath: CiscoFP.IntrusionPolicy.snortEngine
+      description: 'The Snort engine version. Can be either SNORT2 or SNORT3.'
+    - type: String
+      contextPath: CiscoFP.IntrusionPolicy.metadata.mappedPolicy.name
+      description: 'The mapped policy name.'
+    - type: String
+      contextPath: CiscoFP.IntrusionPolicy.metadata.mappedPolicy.id
+      description: 'The mapped policy ID.'
+    - type: String
+      contextPath: CiscoFP.IntrusionPolicy.metadata.mappedPolicy.type
+      description: 'The object type.'
+    - type: String
+      contextPath: CiscoFP.IntrusionPolicy.metadata.mappedPolicy.inspectionMode
+      description: 'The inspection mode for Snort 3 engine only. Can be either DETECTION or PREVENTION.'
+    - type: String
+      contextPath: CiscoFP.IntrusionPolicy.metadata.mappedPolicy.snortEngine
+      description: 'The Snort engine version. Can be either SNORT2 or SNORT3.'
+    - type: Number
+      contextPath: CiscoFP.IntrusionPolicy.metadata.ruleCount.alert
+      description: 'The number of alert rules.'
+    - type: Number
+      contextPath: CiscoFP.IntrusionPolicy.metadata.ruleCount.block
+      description: 'The number of block rules.'
+    - type: Number
+      contextPath: CiscoFP.IntrusionPolicy.metadata.ruleCount.disabled
+      description: 'The number of disabled rules.'
+    - type: Number
+      contextPath: CiscoFP.IntrusionPolicy.metadata.ruleCount.overridden
+      description: 'The number of overridden rules.'
+    - type: Number
+      contextPath: CiscoFP.IntrusionPolicy.metadata.usage.accesspolicy
+      description: 'The number of access policies.'
+    - type: Number
+      contextPath: CiscoFP.IntrusionPolicy.metadata.usage.devices
+      description: 'The number of devices.'
+    - type: String
+      contextPath: CiscoFP.IntrusionPolicy.metadata.usage.asscoiatedAcPolicies.name
+      description: 'User-defined resource name.'
+    - type: String
+      contextPath: CiscoFP.IntrusionPolicy.metadata.usage.asscoiatedAcPolicies.id
+      description: 'The resource ID.'
+    - type: String
+      contextPath: CiscoFP.IntrusionPolicy.metadata.usage.asscoiatedAcPolicies.type
+      description: 'The resource response object.'
+    - type: String
+      contextPath: CiscoFP.IntrusionPolicy.metadata.domain.name
+      description: 'The domain name.'
+    - type: String
+      contextPath: CiscoFP.IntrusionPolicy.metadata.domain.id
+      description: 'The domain ID.'
+    - type: String
+      contextPath: CiscoFP.IntrusionPolicy.metadata.domain.type
+      description: 'The domain type.'
+    - type: String
+      contextPath: CiscoFP.IntrusionPolicy.metadata.snortEngine
+      description: 'The Snort engine version. Can be either SNORT2 or SNORT3.'
+    - type: Number
+      contextPath: CiscoFP.IntrusionPolicy.metadata.timestamp
+      description: 'The metadata timestamp.'
+    - type: String
+      contextPath: CiscoFP.IntrusionPolicy.basePolicy.name
+      description: 'User-defined resource name.'
+    - type: String
+      contextPath: CiscoFP.IntrusionPolicy.basePolicy.id
+      description: 'The resource ID.'
+    - type: String
+      contextPath: CiscoFP.IntrusionPolicy.basePolicy.type
+      description: 'The resource response object.'
+  - name: ciscofp-delete-intrusion-policy
+    description: 'Deletes the intrusion policy associated with the specified ID.'
+    arguments:
+    - name: intrusion_policy_id
+      description: 'The intrusion policy ID.'
+      required: true
+      isArray: false
+  - name: ciscofp-list-intrusion-rule-group
+    description: 'Retrieves the Snort 3 intrusion rule group. If no ID is specified, retrieves a list of all Snort 3 Intrusion rule groups. The default list size is 50. GET arguments: rule_group_id | LIST arguments: expanded_response, filter, limit, page, page_size.'
+    arguments:
+    - name: rule_group_id
+      description: 'The Snort 3 intrusion rule group ID.'
+      required: false
+      isArray: false
+    - name: expanded_response
+      description: 'Whether to display an expanded response with a list of objects with additional attributes.'
+      required: false
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+    - name: filter
+      description: 'Filter the results. Can be any of the following formats: "name:Browser/Firefox" or "currentSecurityLevel:DISABLED" or "showonlyparents:{true/false}" or "includeCount:true".'
+      required: false
+      isArray: false
+    - name: limit
+      description: 'The number of items to return.'
+      required: false
+      isArray: false
+    - name: page
+      description: 'The number of pages to return.'
+      required: false
+      isArray: false
+    - name: page_size
+      description: 'The number of items to return in a page.'
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleGroup.name
+      description: 'The name of the Snort 3 intrusion rule group.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleGroup.id
+      description: 'The Snort 3 intrusion rule group ID.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleGroup.type
+      description: 'The response object type. This value is always IntrusionRuleGroup.'
+    - type: Boolean
+      contextPath: CiscoFP.IntrusionRuleGroup.isSystemDefined
+      description: 'Read-only field indicating if the rule group is system-defined (i.e., Talos provided). If the value is false, then the rule is user-defined.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleGroup.description
+      description: 'Description of the Snort 3 intrusion rule group.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleGroup.version
+      description: 'The rule group version.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleGroup.overrideSecurityLevel
+      description: 'The override level in context of a policy. Allowed only for a custom intrusion policy. One of: DISABLED, LEVEL_1, LEVEL_2, LEVEL_3, LEVEL_4.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleGroup.defaultSecurityLevel
+      description: 'The default level in context of a policy. One of: DISABLED, LEVEL_1, LEVEL_2, LEVEL_3, LEVEL_4.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleGroup.childGroups.name
+      description: 'The rule group name associated with the parent rule group.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleGroup.childGroups.id
+      description: 'The rule group ID associated with the parent rule group.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleGroup.childGroups.type
+      description: 'The rule group type associated with the parent rule group.'
+    - type: Boolean
+      contextPath: CiscoFP.IntrusionRuleGroup.childGroups.isSystemDefined
+      description: 'Read-only field indicating whether the rule group is system-defined (i.e., Talos provided). If the value is false, then the rule group is user-defined.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleGroup.childGroups.description
+      description: 'Description of rule group associated with the parent rule group.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleGroup.childGroups.overrideSecurityLevel
+      description: 'The override level in context of a policy. Allowed only for a custom intrusion policy. One of: DISABLED, LEVEL_1, LEVEL_2, LEVEL_3, LEVEL_4.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleGroup.childGroups.defaultSecurityLevel
+      description: 'The default level in context of a policy. One of: DISABLED, LEVEL_1, LEVEL_2, LEVEL_3, LEVEL_4.'
+    - type: Number
+      contextPath: CiscoFP.IntrusionRuleGroup.childGroups.metadata.timestamp
+      description: 'The metadata timestamp.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleGroup.childGroups.metadata.lastUser.name
+      description: 'The last username.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleGroup.childGroups.metadata.lastUser.id
+      description: 'The last user ID.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleGroup.childGroups.metadata.lastUser.type
+      description: 'The last user type.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleGroup.childGroups.metadata.domain.name
+      description: 'The domain name.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleGroup.childGroups.metadata.domain.id
+      description: 'The domain ID.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleGroup.childGroups.metadata.domain.type
+      description: 'The domain type.'
+    - type: Number
+      contextPath: CiscoFP.IntrusionRuleGroup.metadata.timestamp
+      description: 'The metadata timestamp.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleGroup.metadata.lastUser.name
+      description: 'The last username.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleGroup.metadata.lastUser.id
+      description: 'The last user ID.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleGroup.metadata.lastUser.type
+      description: 'The last user type.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleGroup.metadata.domain.name
+      description: 'The domain name.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleGroup.metadata.domain.id
+      description: 'The domain ID.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleGroup.metadata.domain.type
+      description: 'The domain type.'
+  - name: ciscofp-create-intrusion-rule-group
+    description: 'Creates or overrides the Snort 3 intrusion rule group with the specified parameters.'
+    arguments:
+    - name: name
+      description: 'The Snort 3 intrusion rule group name.'
+      required: true
+      isArray: false
+    - name: description
+      description: 'The Snort 3 intrusion rule group description.'
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleGroup.name
+      description: 'The Snort 3 intrusion rule group name.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleGroup.id
+      description: 'The Snort 3 intrusion rule group ID.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleGroup.type
+      description: 'The response object type. This value is always IntrusionRuleGroup.'
+    - type: Boolean
+      contextPath: CiscoFP.IntrusionRuleGroup.isSystemDefined
+      description: 'Read-only field indicating whether the rule group is system-defined (i.e., Talos provided). If the value is false, then the rule is user-defined.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleGroup.description
+      description: 'The Snort 3 intrusion rule group description.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleGroup.version
+      description: 'The rule group version.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleGroup.overrideSecurityLevel
+      description: 'The override level in context of a policy. Allowed only for a custom intrusion policy. One of: DISABLED, LEVEL_1, LEVEL_2, LEVEL_3, LEVEL_4.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleGroup.defaultSecurityLevel
+      description: 'The default level in context of a policy. One of: DISABLED, LEVEL_1, LEVEL_2, LEVEL_3, LEVEL_4.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleGroup.childGroups.name
+      description: 'The rule group name associated with the parent rule group.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleGroup.childGroups.id
+      description: 'The rule group ID associated with the parent rule group.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleGroup.childGroups.type
+      description: 'The rule group type associated with the parent rule group.'
+    - type: Boolean
+      contextPath: CiscoFP.IntrusionRuleGroup.childGroups.isSystemDefined
+      description: 'Read-only field indicating whether the rule group is system-defined (i.e., Talos provided). If the value is false, then the rule group is user-defined.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleGroup.childGroups.description
+      description: 'Description of the rule group associated with the parent rule group.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleGroup.childGroups.overrideSecurityLevel
+      description: 'The override level in context of a policy. Allowed only for a custom intrusion policy. One of: DISABLED, LEVEL_1, LEVEL_2, LEVEL_3, LEVEL_4.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleGroup.childGroups.defaultSecurityLevel
+      description: 'The default level in context of a policy. One of: DISABLED, LEVEL_1, LEVEL_2, LEVEL_3, LEVEL_4.'
+    - type: Number
+      contextPath: CiscoFP.IntrusionRuleGroup.childGroups.metadata.timestamp
+      description: 'The metadata timestamp.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleGroup.childGroups.metadata.lastUser.name
+      description: 'The last username.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleGroup.childGroups.metadata.lastUser.id
+      description: 'The last user ID.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleGroup.childGroups.metadata.lastUser.type
+      description: 'The last user type.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleGroup.childGroups.metadata.domain.name
+      description: 'The domain name.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleGroup.childGroups.metadata.domain.id
+      description: 'The domain ID.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleGroup.childGroups.metadata.domain.type
+      description: 'The domain type.'
+    - type: Number
+      contextPath: CiscoFP.IntrusionRuleGroup.metadata.timestamp
+      description: 'The metadata timestamp.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleGroup.metadata.lastUser.name
+      description: 'The last username.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleGroup.metadata.lastUser.id
+      description: 'The last user ID.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleGroup.metadata.lastUser.type
+      description: 'The last user type.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleGroup.metadata.domain.name
+      description: 'The domain name.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleGroup.metadata.domain.id
+      description: 'The domain ID.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleGroup.metadata.domain.type
+      description: 'The domain type.'
+  - name: ciscofp-update-intrusion-rule-group
+    description: 'Modifies the Snort 3 intrusion rule group with the specified ID.'
+    arguments:
+    - name: rule_group_id
+      description: 'The Snort 3 intrusion rule group ID.'
+      required: true
+      isArray: false
+    - name: name
+      description: 'The Snort 3 intrusion rule group name.'
+      required: true
+      isArray: false
+    - name: description
+      description: 'The Snort 3 intrusion rule group description.'
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleGroup.name
+      description: 'The Snort 3 intrusion rule group name.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleGroup.id
+      description: 'The Snort 3 intrusion rule group ID.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleGroup.type
+      description: 'The response object type. This value is always IntrusionRuleGroup.'
+    - type: Boolean
+      contextPath: CiscoFP.IntrusionRuleGroup.isSystemDefined
+      description: 'Read-only field indicating whether the rule group is system-defined (i.e., Talos provided). If the value is false, then the rule group is user-defined.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleGroup.description
+      description: 'The Snort 3 intrusion rule group description.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleGroup.version
+      description: 'The rule group version.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleGroup.overrideSecurityLevel
+      description: 'The override level in context of a policy. Allowed only for a custom intrusion policy. One of: DISABLED, LEVEL_1, LEVEL_2, LEVEL_3, LEVEL_4.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleGroup.defaultSecurityLevel
+      description: 'The default level in context of a policy. One of: DISABLED, LEVEL_1, LEVEL_2, LEVEL_3, LEVEL_4.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleGroup.childGroups.name
+      description: 'The rule group name associated with the parent rule group.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleGroup.childGroups.id
+      description: 'The rule group ID associated with the parent rule group.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleGroup.childGroups.type
+      description: 'The rule group type associated with the parent rule group.'
+    - type: Boolean
+      contextPath: CiscoFP.IntrusionRuleGroup.childGroups.isSystemDefined
+      description: 'Read-only field indicating whether the rule group is system-defined (i.e., Talos provided). If the value is false, then the rule group is user-defined.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleGroup.childGroups.description
+      description: 'Rule group description associated with the parent rule group.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleGroup.childGroups.overrideSecurityLevel
+      description: 'The override level in context of a policy. Allowed only for a custom intrusion policy. One of: DISABLED, LEVEL_1, LEVEL_2, LEVEL_3, LEVEL_4.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleGroup.childGroups.defaultSecurityLevel
+      description: 'The default level in context of a policy. One of: DISABLED, LEVEL_1, LEVEL_2, LEVEL_3, LEVEL_4.'
+    - type: Number
+      contextPath: CiscoFP.IntrusionRuleGroup.childGroups.metadata.timestamp
+      description: 'The metadata timestamp.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleGroup.childGroups.metadata.lastUser.name
+      description: 'The last username.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleGroup.childGroups.metadata.lastUser.id
+      description: 'The last user ID.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleGroup.childGroups.metadata.lastUser.type
+      description: 'The last user type.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleGroup.childGroups.metadata.domain.name
+      description: 'The domain name.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleGroup.childGroups.metadata.domain.id
+      description: 'The domain ID.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleGroup.childGroups.metadata.domain.type
+      description: 'The domain type.'
+    - type: Number
+      contextPath: CiscoFP.IntrusionRuleGroup.metadata.timestamp
+      description: 'The metadata timestamp.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleGroup.metadata.lastUser.name
+      description: 'The last username.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleGroup.metadata.lastUser.id
+      description: 'The last user ID.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleGroup.metadata.lastUser.type
+      description: 'The last user type.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleGroup.metadata.domain.name
+      description: 'The domain name.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleGroup.metadata.domain.id
+      description: 'The domain ID.'
+    - type: String
+      contextPath: CiscoFP.IntrusionRuleGroup.metadata.domain.type
+      description: 'The domain type.'
+  - name: ciscofp-delete-intrusion-rule-group
+    description: 'Deletes the specified Snort 3 intrusion rule group.'
+    arguments:
+    - name: rule_group_id
+      description: 'The Snort 3 intrusion rule group ID.'
+      required: true
+      isArray: false
+    - name: delete_related_rules
+      description: 'Whether or not to delete orphan rules. Mandatory if a custom rule group has unique/unshared rules which become orphans after custom rule group delete.'
+      required: false
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+  - name: ciscofp-list-network-analysis-policy
+    description: 'Retrieves the network analysis policy with the specified ID. If no ID is specified, retrieves a list of all network analysis policies. The default list size is 50. GET arguments: network_analysis_policy_id | LIST arguments: expanded_response, limit, page, page_size.'
+    arguments:
+    - name: network_analysis_policy_id
+      description: 'The network analysis policy ID.'
+      required: false
+      isArray: false
+    - name: expanded_response
+      description: 'Whether to display an expanded response with a list of objects with additional attributes.'
+      required: false
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+    - name: limit
+      description: 'The number of items to return.'
+      required: false
+      isArray: false
+    - name: page
+      description: 'The number of pages to return.'
+      required: false
+      isArray: false
+    - name: page_size
+      description: 'The number of items to return in a page.'
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.name
+      description: 'The network analysis policy name.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.id
+      description: 'The network analysis policy ID.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.type
+      description: 'The network analysis policy type.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.description
+      description: 'The network analysis policy description.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.version
+      description: 'The version number of the response object.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.snortEngine
+      description: 'The Snort engine version. Can be either SNORT2 or SNORT3.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.inspectionMode
+      description: 'The inspection mode for Snort 3 engine only. Can be either DETECTION or PREVENTION.'
+    - type: Boolean
+      contextPath: CiscoFP.NetworkAnalysisPolicy.isSystemDefined
+      description: 'Whether the policy is system-defined or user-defined. If the value is false, then the policy is user-defined.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.metadata.mappedPolicy.name
+      description: 'The mapped policy name.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.metadata.mappedPolicy.id
+      description: 'The mapped policy ID.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.metadata.mappedPolicy.type
+      description: 'The mapped policy type.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.metadata.mappedPolicy.inspectionMode
+      description: 'The inspection mode for Snort 3 engine only. Can be either DETECTION or PREVENTION.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.metadata.mappedPolicy.snortEngine
+      description: 'The Snort engine version. Can be either SNORT2 or SNORT3.'
+    - type: Number
+      contextPath: CiscoFP.NetworkAnalysisPolicy.metadata.ruleCount.alert
+      description: 'The number of alert rules.'
+    - type: Number
+      contextPath: CiscoFP.NetworkAnalysisPolicy.metadata.ruleCount.block
+      description: 'The number of block rules.'
+    - type: Number
+      contextPath: CiscoFP.NetworkAnalysisPolicy.metadata.ruleCount.disabled
+      description: 'The number of disabled rules.'
+    - type: Number
+      contextPath: CiscoFP.NetworkAnalysisPolicy.metadata.ruleCount.overridden
+      description: 'The number of overridden rules.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.metadata.usage.asscoiatedAcPolicies.type
+      description: 'The resource response object.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.metadata.usage.asscoiatedAcPolicies.name
+      description: 'User-defined resource name.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.metadata.usage.asscoiatedAcPolicies.id
+      description: 'The resource ID.'
+    - type: Number
+      contextPath: CiscoFP.NetworkAnalysisPolicy.metadata.usage.accesspolicy
+      description: 'The number of access policies.'
+    - type: Number
+      contextPath: CiscoFP.NetworkAnalysisPolicy.metadata.usage.devices
+      description: 'The number of devices.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.metadata.lastUser.name
+      description: 'The last username.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.metadata.lastUser.id
+      description: 'The last user ID.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.metadata.lastUser.type
+      description: 'The last user type.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.metadata.domain.name
+      description: 'The domain name.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.metadata.domain.id
+      description: 'The domain ID.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.metadata.domain.type
+      description: 'The domain type.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.metadata.snortEngine
+      description: 'The Snort engine version. Can be either SNORT2 or SNORT3.'
+    - type: Number
+      contextPath: CiscoFP.NetworkAnalysisPolicy.metadata.timestamp
+      description: 'The metadata timestamp.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.inspectorConfig.name
+      description: 'User-defined resource name.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.inspectorConfig.id
+      description: 'The resource ID.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.inspectorConfig.type
+      description: 'The resource response object.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.inspectorOverrideConfig.name
+      description: 'User-defined resource name.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.inspectorOverrideConfig.id
+      description: 'The resource ID.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.inspectorOverrideConfig.type
+      description: 'The resource response object.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.basePolicy.name
+      description: 'User-defined resource name.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.basePolicy.id
+      description: 'The resource ID.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.basePolicy.type
+      description: 'The resource response object.'
+  - name: ciscofp-create-network-analysis-policy
+    description: 'Creates a network analysis policy. This command may take a while, you can set the "execution-timeout" field if necessary (X > 300).'
+    arguments:
+    - name: name
+      description: 'The network analysis policy name.'
+      required: true
+      isArray: false
+    - name: description
+      description: 'The network analysis policy description.'
+      required: false
+      isArray: false
+    - name: inspection_mode
+      description: 'The inspection mode for Snort 3 engine only. Can be either DETECTION or PREVENTION.'
+      required: false
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+      - DETECTION
+      - PREVENTION
+    - name: basepolicy_id
+      description: 'The base network analysis policy ID. Can be acquired from: ciscofp-list-network-analysis-policy.'
+      required: true
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.name
+      description: 'The network analysis policy name.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.id
+      description: 'The network analysis policy ID.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.type
+      description: 'The type must be NetworkAnalysisPolicy.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.description
+      description: 'The network analysis policy description.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.version
+      description: 'The version number of the response object.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.snortEngine
+      description: 'The Snort engine version. Can be either SNORT2 or SNORT3.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.inspectionMode
+      description: 'The inspection mode for Snort 3 engine only. Can be either DETECTION or PREVENTION.'
+    - type: Boolean
+      contextPath: CiscoFP.NetworkAnalysisPolicy.isSystemDefined
+      description: 'Whether the policy is system-defined or user-defined. If the value is false, then the policy is user-defined.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.metadata.mappedPolicy.name
+      description: 'The mapped policy name.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.metadata.mappedPolicy.id
+      description: 'The mapped policy ID.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.metadata.mappedPolicy.type
+      description: 'The mapped policy type.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.metadata.mappedPolicy.inspectionMode
+      description: 'The inspection mode for Snort 3 engine only. Can be either DETECTION or PREVENTION.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.metadata.mappedPolicy.snortEngine
+      description: 'The Snort engine version. Can be either SNORT2 or SNORT3.'
+    - type: Number
+      contextPath: CiscoFP.NetworkAnalysisPolicy.metadata.ruleCount.alert
+      description: 'The number of alert rules.'
+    - type: Number
+      contextPath: CiscoFP.NetworkAnalysisPolicy.metadata.ruleCount.block
+      description: 'The number of block rules.'
+    - type: Number
+      contextPath: CiscoFP.NetworkAnalysisPolicy.metadata.ruleCount.disabled
+      description: 'The number of disabled rules.'
+    - type: Number
+      contextPath: CiscoFP.NetworkAnalysisPolicy.metadata.ruleCount.overridden
+      description: 'The number of overridden rules.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.metadata.usage.asscoiatedAcPolicies.type
+      description: 'The resource response object.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.metadata.usage.asscoiatedAcPolicies.name
+      description: 'User-defined resource name.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.metadata.usage.asscoiatedAcPolicies.id
+      description: 'The resource ID.'
+    - type: Number
+      contextPath: CiscoFP.NetworkAnalysisPolicy.metadata.usage.accesspolicy
+      description: 'The number of access policies.'
+    - type: Number
+      contextPath: CiscoFP.NetworkAnalysisPolicy.metadata.usage.devices
+      description: 'The number of devices.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.metadata.lastUser.name
+      description: 'The last username.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.metadata.lastUser.id
+      description: 'The last user ID.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.metadata.lastUser.type
+      description: 'The last user type.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.metadata.domain.name
+      description: 'The domain name.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.metadata.domain.id
+      description: 'The domain ID.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.metadata.domain.type
+      description: 'The domain type.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.metadata.snortEngine
+      description: 'The Snort engine version. Can be either SNORT2 or SNORT3.'
+    - type: Number
+      contextPath: CiscoFP.NetworkAnalysisPolicy.metadata.timestamp
+      description: 'The metadata timestamp.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.inspectorConfig.name
+      description: 'User-defined resource name.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.inspectorConfig.id
+      description: 'The resource ID.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.inspectorConfig.type
+      description: 'The resource response object.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.inspectorOverrideConfig.name
+      description: 'User-defined resource name.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.inspectorOverrideConfig.id
+      description: 'The resource ID.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.inspectorOverrideConfig.type
+      description: 'The resource response object.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.basePolicy.name
+      description: 'User-defined resource name.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.basePolicy.id
+      description: 'The resource ID.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.basePolicy.type
+      description: 'The resource response object.'
+  - name: ciscofp-update-network-analysis-policy
+    description: 'Modifies the network analysis policy associated with the specified ID. This command may take a while, you can set the "execution-timeout" field if necessary (X > 300).'
+    arguments:
+    - name: network_analysis_policy_id
+      description: 'The network analysis policy ID.'
+      required: true
+      isArray: false
+    - name: replicate_inspection_mode
+      description: 'Whether to replicate inspection mode from Snort 3 to Snort 2.'
+      required: false
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+    - name: name
+      description: 'The network analysis policy name.'
+      required: false
+      isArray: false
+    - name: description
+      description: 'The network analysis policy description.'
+      required: false
+      isArray: false
+    - name: inspection_mode
+      description: 'The inspection mode for Snort 3 engine only. Can be either DETECTION or PREVENTION.'
+      required: false
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+      - DETECTION
+      - PREVENTION
+    - name: basepolicy_id
+      description: 'The base network analysis policy ID. Can be acquired from: ciscofp-list-network-analysis-policy.'
+      required: false
+      isArray: false
+    outputs:
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.name
+      description: 'The network analysis policy name.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.id
+      description: 'The network analysis policy ID.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.type
+      description: 'The type must be NetworkAnalysisPolicy.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.description
+      description: 'The network analysis policy description.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.version
+      description: 'The version number of the response object.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.snortEngine
+      description: 'The Snort engine version. Can be either SNORT2 or SNORT3.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.inspectionMode
+      description: 'The inspection mode for Snort 3 engine only. Can be either DETECTION or PREVENTION.'
+    - type: Boolean
+      contextPath: CiscoFP.NetworkAnalysisPolicy.isSystemDefined
+      description: 'Whether the policy is system-defined or user-defined. If the value is false, then the policy is user-defined.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.metadata.mappedPolicy.name
+      description: 'The mapped policy name.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.metadata.mappedPolicy.id
+      description: 'The mapped policy ID.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.metadata.mappedPolicy.type
+      description: 'The mapped policy type.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.metadata.mappedPolicy.inspectionMode
+      description: 'The inspection mode for Snort 3 engine only. Can be either DETECTION or PREVENTION.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.metadata.mappedPolicy.snortEngine
+      description: 'The Snort engine version. Can be either SNORT2 or SNORT3.'
+    - type: Number
+      contextPath: CiscoFP.NetworkAnalysisPolicy.metadata.ruleCount.alert
+      description: 'The number of alert rules.'
+    - type: Number
+      contextPath: CiscoFP.NetworkAnalysisPolicy.metadata.ruleCount.block
+      description: 'The number of block rules.'
+    - type: Number
+      contextPath: CiscoFP.NetworkAnalysisPolicy.metadata.ruleCount.disabled
+      description: 'The number of disabled rules.'
+    - type: Number
+      contextPath: CiscoFP.NetworkAnalysisPolicy.metadata.ruleCount.overridden
+      description: 'The number of overridden rules.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.metadata.usage.asscoiatedAcPolicies.type
+      description: 'The resource response object.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.metadata.usage.asscoiatedAcPolicies.name
+      description: 'User-defined resource name.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.metadata.usage.asscoiatedAcPolicies.id
+      description: 'The resource ID.'
+    - type: Number
+      contextPath: CiscoFP.NetworkAnalysisPolicy.metadata.usage.accesspolicy
+      description: 'The number of access policies.'
+    - type: Number
+      contextPath: CiscoFP.NetworkAnalysisPolicy.metadata.usage.devices
+      description: 'The number of devices.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.metadata.lastUser.name
+      description: 'The last username.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.metadata.lastUser.id
+      description: 'The last user ID.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.metadata.lastUser.type
+      description: 'The last user type.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.metadata.domain.name
+      description: 'The domain name.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.metadata.domain.id
+      description: 'The domain ID.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.metadata.domain.type
+      description: 'The domain type.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.metadata.snortEngine
+      description: 'The Snort engine version. Can be either SNORT2 or SNORT3.'
+    - type: Number
+      contextPath: CiscoFP.NetworkAnalysisPolicy.metadata.timestamp
+      description: 'The metadata timestamp.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.inspectorConfig.name
+      description: 'User-defined resource name.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.inspectorConfig.id
+      description: 'The resource ID.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.inspectorConfig.type
+      description: 'The resource response object.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.inspectorOverrideConfig.name
+      description: 'User-defined resource name.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.inspectorOverrideConfig.id
+      description: 'The resource ID.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.inspectorOverrideConfig.type
+      description: 'The resource response object.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.basePolicy.name
+      description: 'User-defined resource name.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.basePolicy.id
+      description: 'The resource ID.'
+    - type: String
+      contextPath: CiscoFP.NetworkAnalysisPolicy.basePolicy.type
+      description: 'The resource response object.'
+  - name: ciscofp-delete-network-analysis-policy
+    description: 'Deletes the network analysis policy associated with the specified ID.'
+    arguments:
+    - name: network_analysis_policy_id
+      description: 'The network analysis policy ID.'
+      required: true
+      isArray: false
   - arguments:
     - description: |-
         The number of items to return.
-        The default is 50
+        The default is 50.
       name: limit
     - description: |-
         Index of the first item to return.
@@ -38,19 +1607,19 @@ script:
     name: ciscofp-list-zones
     outputs:
     - contextPath: CiscoFP.Zone.ID
-      description: Zone ID.
+      description: The zone ID.
       type: String
     - contextPath: CiscoFP.Zone.Name
-      description: Zone name.
+      description: The zone name.
       type: String
     - contextPath: CiscoFP.Zone.InterfaceMode
-      description: Zone interface mode.
+      description: The zone interface mode.
       type: String
     - contextPath: CiscoFP.Zone.Interfaces.Name
-      description: Name of interfaces belonging to the security zone.
+      description: The name of interfaces belonging to the security zone.
       type: String
     - contextPath: CiscoFP.Zone.Interfaces.ID
-      description: ID of interfaces belonging to the security zone.
+      description: The ID of interfaces belonging to the security zone.
       type: String
   - arguments:
     - default: true
@@ -59,23 +1628,23 @@ script:
         The default is 50.
       name: limit
     - description: |-
-        Index of first item to return.
-        by default is 0
+        Index of the first item to return.
+        The default is 0.
       name: offset
-    description: Retrieves list of all port objects.
+    description: Retrieves a list of all port objects.
     name: ciscofp-list-ports
     outputs:
     - contextPath: CiscoFP.Port.ID
-      description: Port ID.
+      description: The port ID.
       type: String
     - contextPath: CiscoFP.Port.Name
-      description: Port name.
+      description: The port name.
       type: String
     - contextPath: CiscoFP.Port.Protocol
-      description: Port protocol.
+      description: The port protocol.
       type: String
     - contextPath: CiscoFP.Port.Port
-      description: Port number.
+      description: The port number.
       type: String
   - arguments:
     - default: true
@@ -85,47 +1654,47 @@ script:
         The default is 50.
       name: limit
     - description: |-
-        Index of first item to return.
+        Index of the first item to return.
         The default is 0.
       name: offset
     description: Retrieves a list of all URL category objects.
     name: ciscofp-list-url-categories
     outputs:
     - contextPath: CiscoFP.Category.ID
-      description: ID of the category.
+      description: The category ID.
       type: String
     - contextPath: CiscoFP.Category.Name
-      description: Name of the category.
+      description: The category name.
       type: String
   - arguments:
-    - description: Object ID.
+    - description: The object ID.
       name: object_id
     - description: |-
         The number of items to return.
         The default is 50.
       name: limit
     - description: |-
-        Index of first item to return.
+        Index of the first item to return.
         The default is 0.
       name: offset
     description: Retrieves the network objects associated with the specified ID. If
-      not supplied, retrieves a list of all network objects.
+      no ID is supplied, retrieves a list of all network objects.
     name: ciscofp-get-network-object
     outputs:
     - contextPath: CiscoFP.Network.ID
-      description: ID of network object
+      description: The network ID.
       type: String
     - contextPath: CiscoFP.Network.Name
-      description: Name of network object
+      description: The network name.
       type: String
     - contextPath: CiscoFP.Network.Value
       description: CIDR
       type: String
     - contextPath: CiscoFP.Network.Overrideable
-      description: Boolean indicating whether object can be overridden.
+      description: Whether the object can be overridden.
       type: String
     - contextPath: CiscoFP.Network.Description
-      description: Description of the network object.
+      description: The network description.
       type: String
   - arguments:
     - description: The name of the new object.
@@ -138,8 +1707,8 @@ script:
       name: description
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: Boolean indicating whether objects can be overridden. Can be "true"
-        or "false". The default is "false".
+      description: Whether the objects can be overridden. Can be TRUE or FALSE.
+        The default is FALSE.
       name: overridable
       predefined:
       - 'false'
@@ -148,22 +1717,22 @@ script:
     name: ciscofp-create-network-object
     outputs:
     - contextPath: CiscoFP.Network.ID
-      description: ID of network object.
+      description: The network ID.
       type: String
     - contextPath: CiscoFP.Network.Name
-      description: Name of network object.
+      description: The network name.
       type: String
     - contextPath: CiscoFP.Network.Value
       description: CIDR.
       type: String
     - contextPath: CiscoFP.Network.Overridable
-      description: Boolean indicating whether the object can be overridden.
+      description: Whether the object can be overridden.
       type: String
     - contextPath: CiscoFP.Network.Description
-      description: Description of the network object.
+      description: The network object description.
       type: String
   - arguments:
-    - description: ID of the object to update.
+    - description: The ID of the object to update.
       name: id
       required: true
     - description: The object name.
@@ -176,7 +1745,7 @@ script:
       name: description
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: Boolean indicating whether the object can be overridden.
+      description: Whether the object can be overridden.
       name: overridable
       predefined:
       - 'false'
@@ -185,22 +1754,22 @@ script:
     name: ciscofp-update-network-object
     outputs:
     - contextPath: CiscoFP.Network.ID
-      description: ID of the network object.
+      description: The network ID.
       type: String
     - contextPath: CiscoFP.Network.Name
-      description: Name of the network object.
+      description: The network name.
       type: String
     - contextPath: CiscoFP.Network.Value
       description: CIDR.
       type: String
     - contextPath: CiscoFP.Network.Overridable
-      description: Boolean indicating whether the object can be overridden.
+      description: Whether the object can be overridden.
       type: String
     - contextPath: CiscoFP.Network.Description
-      description: Description of the network object.
+      description: The network object description.
       type: String
   - arguments:
-    - description: ID of the object group for which to return groups and addresses.
+    - description: The ID of the object group for which to return groups and addresses.
       name: id
     - description: |-
         The number of items to return.
@@ -211,35 +1780,35 @@ script:
         The default is 0.
       name: offset
     description: Retrieves the groups of network objects and addresses associated
-      with the specified ID. If not supplied, retrieves a list of all network objects.
+      with the specified ID. If no ID is supplied, retrieves a list of all network objects.
     name: ciscofp-get-network-groups-object
     outputs:
     - contextPath: CiscoFP.NetworkGroups.ID
-      description: The group ID.
+      description: The network group ID.
       type: String
     - contextPath: CiscoFP.NetworkGroups.Name
-      description: The group name.
+      description: The network group name.
       type: String
     - contextPath: CiscoFP.NetworkGroups.Overridable
-      description: Boolean indicating whether the object can be overridden.
+      description: Whether the network group can be overridden.
       type: String
     - contextPath: CiscoFP.NetworkGroups.Description
-      description: The group description.
+      description: The network group description.
       type: String
     - contextPath: CiscoFP.NetworkGroups.Addresses.Value
-      description: IP address / CIDR range.
+      description: The network group IP address/CIDR range.
       type: String
     - contextPath: CiscoFP.NetworkGroups.Addresses.Type
-      description: The address type.
+      description: The network group address type.
       type: String
     - contextPath: CiscoFP.NetworkGroups.Objects.Name
-      description: The object name.
+      description: The network group object name.
       type: String
     - contextPath: CiscoFP.NetworkGroups.Objects.ID
-      description: The object ID.
+      description: The network group object ID.
       type: String
     - contextPath: CiscoFP.NetworkGroups.Objects.Type
-      description: The object type.
+      description: The network group object type.
       type: String
   - arguments:
     - description: The group name.
@@ -254,8 +1823,7 @@ script:
       name: description
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: Boolean indicating whether object values can be overridden. Can
-        be "true" or "false". The default is "false".
+      description: Whether object values can be overridden. Can be TRUE or FALSE. The default is FALSE.
       name: overridable
       predefined:
       - 'false'
@@ -264,147 +1832,153 @@ script:
     name: ciscofp-create-network-groups-objects
     outputs:
     - contextPath: CiscoFP.NetworkGroups.ID
-      description: The group ID.
+      description: The network group ID.
       type: String
     - contextPath: CiscoFP.NetworkGroups.Name
-      description: The group name.
+      description: The network group name.
       type: String
     - contextPath: CiscoFP.NetworkGroups.Overridable
-      description: Boolean indicating whether the object can be overridden.
+      description: Whether the network group can be overridden.
       type: String
     - contextPath: CiscoFP.NetworkGroups.Description
-      description: The group description.
+      description: The network group description.
       type: String
     - contextPath: CiscoFP.NetworkGroups.Addresses.Value
-      description: IP address or CIDR range.
+      description: The network group IP address or CIDR range.
       type: String
     - contextPath: CiscoFP.NetworkGroups.Addresses.Type
-      description: The address type.
+      description: The network group address type.
       type: String
     - contextPath: CiscoFP.NetworkGroups.Objects.Name
-      description: The object name.
+      description: The network group object name.
       type: String
     - contextPath: CiscoFP.NetworkGroups.Objects.ID
-      description: The object ID.
+      description: The network group object ID.
       type: String
     - contextPath: CiscoFP.NetworkGroups.Objects.Type
-      description: The object type.
+      description: The network group object type.
       type: String
   - arguments:
     - description: The ID of the group to update.
       name: id
       required: true
-    - description: A comma-separated list of object IDs to add the group.
+    - description: A comma-separated list of object IDs to add to the group.
       name: network_objects_id_list
-    - description: A comma-separated list of IP addresses or CIDR ranges to add the
-        group.
+    - description: A comma-separated list of IP addresses or CIDR ranges to add to the group.
       name: network_address_list
     - description: The new description for the object.
       name: description
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: Boolean indicating whether object values can be overridden. Can
-        be "true" or "false". The default is "false".
+      description: Whether object values can be overridden. Can be "TRUE" or "FALSE". The default is "FALSE".
       name: overridable
       predefined:
       - 'true'
       - 'false'
+    - name: update_strategy
+      description: The update method to use in the command. Can be "MERGE" or "OVERRIDE". When merging, the changes requested are added to the existing rule. When overriding, the fields with the inputs provided will be overridden and any fields that were not provided will be deleted.
+      required: false
+      defaultValue: OVERRIDE
+      auto: PREDEFINED
+      predefined:
+      - MERGE
+      - OVERRIDE
     - description: The group name.
       name: name
-      required: true
+      required: false
     description: Updates a group of network objects.
     name: ciscofp-update-network-groups-objects
     outputs:
     - contextPath: CiscoFP.NetworkGroups.ID
-      description: The group ID.
+      description: The network group ID.
       type: String
     - contextPath: CiscoFP.NetworkGroups.Name
-      description: The group name.
+      description: The network group name.
       type: String
     - contextPath: CiscoFP.NetworkGroups.Overridable
-      description: Boolean indicating whether objects can be overridden.
+      description: Whether the network groups can be overridden.
       type: String
     - contextPath: CiscoFP.NetworkGroups.Description
-      description: The group description.
+      description: The network group description.
       type: String
     - contextPath: CiscoFP.NetworkGroups.Addresses.Value
-      description: IP address or CIDR range.
+      description: The network group IP address or CIDR range.
       type: String
     - contextPath: CiscoFP.NetworkGroups.Addresses.Type
-      description: The address type.
+      description: The network group address type.
       type: String
     - contextPath: CiscoFP.NetworkGroups.Objects.Name
-      description: The object name.
+      description: The network group object name.
       type: String
     - contextPath: CiscoFP.NetworkGroups.Objects.ID
-      description: The object ID.
+      description: The network group object ID.
       type: String
     - contextPath: CiscoFP.NetworkGroups.Objects.Type
-      description: The object type.
+      description: The network group object type.
       type: String
   - arguments:
-    - description: ID of the object to delete.
+    - description: The ID of the object to delete.
       name: id
       required: true
     description: Deletes a group of network objects.
     name: ciscofp-delete-network-groups-objects
     outputs:
     - contextPath: CiscoFP.NetworkGroups.ID
-      description: The group ID.
+      description: The network group ID.
       type: String
     - contextPath: CiscoFP.NetworkGroups.Name
-      description: The group name.
+      description: The network group name.
       type: String
     - contextPath: CiscoFP.NetworkGroups.Overridable
-      description: Boolean indicating whether object values can be overridden.
+      description: Whether network groups values can be overridden.
       type: String
     - contextPath: CiscoFP.NetworkGroups.Description
-      description: The group description.
+      description: The network group description.
       type: String
     - contextPath: CiscoFP.NetworkGroups.Addresses.Value
-      description: IP address or CIDR range.
+      description: The network group IP address or CIDR range.
       type: String
     - contextPath: CiscoFP.NetworkGroups.Addresses.Type
-      description: The address type.
+      description: The network group address type.
       type: String
     - contextPath: CiscoFP.NetworkGroups.Objects.Name
-      description: The object name
+      description: The network group object name
       type: String
     - contextPath: CiscoFP.NetworkGroups.Objects.ID
-      description: The object ID.
+      description: The network group object ID.
       type: String
     - contextPath: CiscoFP.NetworkGroups.Objects.Type
-      description: The object type.
+      description: The network group object type.
       type: String
   - arguments:
-    - description: ID of the object for which to retrieve host objects.
+    - description: The ID of the object for which to retrieve host objects.
       name: object_id
     - description: |-
-        Number of items to return.
-        The default is 50
+        The number of items to return.
+        The default is 50.
       name: limit
     - description: |-
         Index of the first item to return.
         The default is 0.
       name: offset
     description: Retrieves the groups of host objects associated with the specified
-      ID. If no ID is passed, the input ID retrieves a list of all network objects.
+      ID. If no ID is passed, retrieves a list of all network objects.
     name: ciscofp-get-host-object
     outputs:
     - contextPath: CiscoFP.Host.ID
-      description: ID of the host object.
+      description: The host ID.
       type: String
     - contextPath: CiscoFP.Host.Name
-      description: Name of host object.
+      description: The host name.
       type: String
     - contextPath: CiscoFP.Host.Value
-      description: The IP address.
+      description: The host IP address.
       type: String
     - contextPath: CiscoFP.Host.Overridable
-      description: Boolean indicating whether object values can be overridden.
+      description: Whether object values can be overridden.
       type: String
     - contextPath: CiscoFP.Host.Description
-      description: A description of the host object.
+      description: A description of the host.
       type: String
   - arguments:
     - description: The name of the new object.
@@ -417,8 +1991,7 @@ script:
       name: description
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: Boolean indicating whether object values can be overridden. Can
-        be "true" or "false". The default is "false".
+      description: Whether object values can be overridden. Can  be "TRUE" or "FALSE". The default is "FALSE".
       name: overridable
       predefined:
       - 'false'
@@ -427,36 +2000,35 @@ script:
     name: ciscofp-create-host-object
     outputs:
     - contextPath: CiscoFP.Host.ID
-      description: ID of the host object.
+      description: The host object ID.
       type: String
     - contextPath: CiscoFP.Host.Name
-      description: Name of the host object.
+      description: The host object name.
       type: String
     - contextPath: CiscoFP.Host.Value
-      description: The IP address.
+      description: The host IP address.
       type: String
     - contextPath: CiscoFP.Host.Overridable
-      description: Boolean indicating whether object values can be overridden.
+      description: Whether object values can be overridden.
       type: String
     - contextPath: CiscoFP.Host.Description
-      description: Description of the host object.
+      description: The host object description.
       type: String
   - arguments:
-    - description: ID of the object to update.
+    - description: The ID of the object to update.
       name: id
       required: true
-    - description: Name of the object.
+    - description: The object name.
       name: name
       required: true
     - description: The IP address.
       name: value
       required: true
-    - description: Description of the object.
+    - description: The description of the object.
       name: description
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: Boolean indicating whether object values can be overridden. Can
-        be "true" or "false". The default is "false".
+      description: Whether object values can be overridden. Can be "TRUE" or "FALSE". The default is "FALSE".
       name: overridable
       predefined:
       - 'false'
@@ -465,41 +2037,41 @@ script:
     name: ciscofp-update-host-object
     outputs:
     - contextPath: CiscoFP.Host.ID
-      description: ID of the host object.
+      description: The host object ID.
       type: String
     - contextPath: CiscoFP.Host.Name
-      description: Name of the host object.
+      description: The host object name.
       type: String
     - contextPath: CiscoFP.Host.Value
-      description: The IP address.
+      description: The host IP address.
       type: String
     - contextPath: CiscoFP.Host.Overridable
-      description: Boolean indicating whether object values can be overridden.
+      description: Whether object values can be overridden.
       type: String
     - contextPath: CiscoFP.Host.Description
-      description: Description of the host object.
+      description: The description of the host object.
       type: String
   - arguments:
-    - description: ID of the object to delete.
+    - description: The ID of the object to delete.
       name: id
       required: true
     description: Deletes the specified network object.
     name: ciscofp-delete-network-object
     outputs:
     - contextPath: CiscoFP.Network.ID
-      description: ID of the network object.
+      description: The network object ID.
       type: String
     - contextPath: CiscoFP.Network.Name
-      description: Name of the network object.
+      description: The network object name.
       type: String
     - contextPath: CiscoFP.Network.Value
       description: CISR range.
       type: String
     - contextPath: CiscoFP.Network.Overridable
-      description: Boolean indicating whether object values can be overridden.
+      description: Whether object values can be overridden.
       type: String
     - contextPath: CiscoFP.Network.Description
-      description: Description of the network object.
+      description: The network object description.
       type: String
   - arguments:
     - description: ID of the host object to delete.
@@ -509,29 +2081,29 @@ script:
     name: ciscofp-delete-host-object
     outputs:
     - contextPath: CiscoFP.Host.ID
-      description: ID of the host object.
+      description: The host object ID.
       type: String
     - contextPath: CiscoFP.Host.Name
-      description: Name of the host object.
+      description: The host object name.
       type: String
     - contextPath: CiscoFP.Host.Value
       description: CIDR range.
       type: String
     - contextPath: CiscoFP.Host.Overridable
-      description: Whether the  object can be overridden.
+      description: Whether the object can be overridden.
       type: String
     - contextPath: CiscoFP.Host.Description
-      description: Description of the host object.
+      description: The description of the host object.
       type: String
   - arguments:
-    - description: ID of the access policy.
+    - description: The access policy ID.
       name: id
     - description: |-
         The maximum number of items to return.
         The default is 50.
       name: limit
     - description: |-
-        Index of first item to return.
+        Index of the first item to return.
         The default is 0.
       name: offset
     description: Retrieves the access control policy associated with the specified
@@ -542,7 +2114,7 @@ script:
       description: The policy ID.
       type: String
     - contextPath: CiscoFP.Policy.Name
-      description: The name of the policy.
+      description: The policy name.
       type: String
     - contextPath: CiscoFP.Policy.DefaultActionID
       description: The default action ID of the policy.
@@ -567,7 +2139,7 @@ script:
       description: The policy ID.
       type: String
     - contextPath: CiscoFP.Policy.Name
-      description: The name of the policy.
+      description: The policy name.
       type: String
     - contextPath: CiscoFP.Policy.DefaultActionID
       description: The default action ID of the policy.
@@ -576,10 +2148,10 @@ script:
     - description: The access policy name.
       name: name
       required: true
-    - description: ID of the access policy.
+    - description: The access policy ID.
       name: id
       required: true
-    - description: ID of the default action.
+    - description: The default action ID.
       name: default_action_id
       required: true
     - auto: PREDEFINED
@@ -598,13 +2170,13 @@ script:
       description: The policy ID.
       type: String
     - contextPath: CiscoFP.Policy.Name
-      description: The name of the policy.
+      description: The policy name.
       type: String
     - contextPath: CiscoFP.Policy.DefaultActionID
       description: The default action ID of the policy.
       type: String
   - arguments:
-    - description: ID of the access policy.
+    - description: The access policy ID.
       name: id
       required: true
     description: Deletes the specified access control policy.
@@ -614,7 +2186,7 @@ script:
       description: The policy ID.
       type: String
     - contextPath: CiscoFP.Policy.Name
-      description: The name of the policy.
+      description: The policy name.
       type: String
     - contextPath: CiscoFP.Policy.DefaultActionID
       description: The default action ID of the policy.
@@ -622,20 +2194,20 @@ script:
   - arguments:
     - description: |-
         The maximum number of items to return.
-        The default is 50
+        The default is 50.
       name: limit
     - description: |-
-        Index of first item to return.
+        Index of the first item to return.
         The default is 0.
       name: offset
     description: Retrieves a list of all custom security group tag objects.
     name: ciscofp-list-security-group-tags
     outputs:
     - contextPath: CiscoFP.SecurityGroupTags.ID
-      description: ID of security group tag.
+      description: The security group tag ID.
       type: String
     - contextPath: CiscoFP.SecurityGroupTags.Name
-      description: Name of security group tag.
+      description: The security group tag name.
       type: String
     - contextPath: CiscoFP.SecurityGroupTags.Tag
       description: The tag number.
@@ -646,17 +2218,17 @@ script:
         The default is 50.
       name: limit
     - description: |-
-        Index of first item to return.
+        Index of the first item to return.
         The default is 0.
       name: offset
     description: Retrieves a list of all ISE security group tag objects.
     name: ciscofp-list-ise-security-group-tag
     outputs:
     - contextPath: CiscoFP.SecurityGroupTags.ID
-      description: ID of security group tag.
+      description: The security group tag ID.
       type: String
     - contextPath: CiscoFP.SecurityGroupTags.Name
-      description: Name of security group tag.
+      description: The security group tag name.
       type: String
     - contextPath: CiscoFP.SecurityGroupTags.Tag
       description: The tag number.
@@ -667,23 +2239,23 @@ script:
         The default is 50.
       name: limit
     - description: |-
-        Index of first item to return.
+        Index of the first item to return.
         The default is 0.
       name: offset
-    description: Retrieves a list of all vlantag objects.
+    description: Retrieves a list of all VLAN tag objects.
     name: ciscofp-list-vlan-tags
     outputs:
     - contextPath: CiscoFP.VlanTags.ID
-      description: ID of the vlan tag.
+      description: The VLAN tag ID.
       type: String
     - contextPath: CiscoFP.VlanTags.Name
-      description: Name of the vlan tag.
+      description: The VLAN tag name.
       type: String
     - contextPath: CiscoFP.VlanTags.Overridable
-      description: Boolean indicating whether object values can be overridden.
+      description: Whether object values can be overridden.
       type: Boolean
     - contextPath: CiscoFP.VlanTags.Description
-      description: Description of the vlan tag.
+      description: The VLAN tag description.
       type: String
     - contextPath: CiscoFP.VlanTags.StartTag
       description: Start tag number.
@@ -697,35 +2269,35 @@ script:
         The default is 50.
       name: limit
     - description: |-
-        Index of first item to return.
+        Index of the first item to return.
         The default is 0.
       name: offset
-    description: Retrieves a list of all vlan group tag objects.
+    description: Retrieves a list of all VLAN group tag objects.
     name: ciscofp-list-vlan-tags-group
     outputs:
     - contextPath: CiscoFP.VlanTagsGroup.Name
-      description: Name of the group.
+      description: The group name.
       type: String
     - contextPath: CiscoFP.VlanTagsGroup.ID
-      description: ID of the group.
+      description: The group ID.
       type: String
     - contextPath: CiscoFP.VlanTagsGroup.Description
       description: Description of the object.
       type: String
     - contextPath: CiscoFP.VlanTagsGroup.Overridable
-      description: Boolean indicating whether object values can be overridden.
+      description: Whether object values can be overridden.
       type: Boolean
     - contextPath: CiscoFP.VlanTagsGroup.Objects.Name
-      description: Name of the object.
+      description: The object name.
       type: String
     - contextPath: CiscoFP.VlanTagsGroup.Objects.ID
-      description: ID of the object.
+      description: The object ID.
       type: String
     - contextPath: CiscoFP.VlanTagsGroup.Objects.Description
-      description: Description of the vlan tag.
+      description: The VLAN tag description.
       type: String
     - contextPath: CiscoFP.VlanTagsGroup.Objects.Overridable
-      description: Boolean indicating whether object values can be overridden.
+      description: Whether object values can be overridden.
       type: Boolean
     - contextPath: CiscoFP.VlanTagsGroup.Objects.StartTag
       description: Start tag number.
@@ -739,41 +2311,41 @@ script:
         The default is 50.
       name: limit
     - description: |-
-        Index of first item to return.
+        Index of the first item to return.
         The default is 0
       name: offset
     description: Retrieves a list of all application objects.
     name: ciscofp-list-applications
     outputs:
     - contextPath: CiscoFP.Applications.Name
-      description: Name of the application.
+      description: The application name.
       type: String
     - contextPath: CiscoFP.Applications.ID
-      description: ID of the application.
+      description: The application ID.
       type: String
     - contextPath: CiscoFP.Applications.Risk
-      description: Risk of the application.
+      description: The application risk.
       type: String
     - contextPath: CiscoFP.Applications.AppProductivity
-      description: AppProductivity of the application.
+      description: The application productivity.
       type: String
     - contextPath: CiscoFP.Applications.ApplicationTypes
       description: The application type.
       type: String
     - contextPath: CiscoFP.Applications.AppCategories.ID
-      description: AppCategory ID.
+      description: The application category ID.
       type: String
     - contextPath: CiscoFP.Applications.AppCategories.Name
-      description: AppCategory name.
+      description: The application category name.
       type: String
     - contextPath: CiscoFP.Applications.AppCategories.Count
-      description: AppCategory count.
+      description: The application category count.
       type: String
   - arguments:
-    - description: Policy ID.
+    - description: The policy ID.
       name: policy_id
       required: true
-    - description: Rule ID.
+    - description: The rule ID.
       name: rule_id
     description: Retrieves the access control rule associated with the specified policy
       ID and rule ID. If no rule ID is specified, retrieves a list of all access rules
@@ -781,152 +2353,152 @@ script:
     name: ciscofp-get-access-rules
     outputs:
     - contextPath: CiscoFP.Rule.Action
-      description: Rule action.
+      description: The rule action.
       type: String
     - contextPath: CiscoFP.Rule.Applications.ID
-      description: Application object ID.
+      description: The application ID.
       type: String
     - contextPath: CiscoFP.Rule.Applications.Name
-      description: Application object name.
+      description: The application name.
       type: String
     - contextPath: CiscoFP.Rule.Category
-      description: Category of rule.
+      description: The rule category.
       type: String
     - contextPath: CiscoFP.Rule.DestinationNetworks.Addresses.Type
-      description: Address type.
+      description: The address type.
       type: String
     - contextPath: CiscoFP.Rule.DestinationNetworks.Addresses.Value
-      description: IP address or CIDR range.
+      description: The IP address or CIDR range.
       type: String
     - contextPath: CiscoFP.Rule.DestinationNetworks.Objects.ID
-      description: Object ID.
+      description: The object ID.
       type: String
     - contextPath: CiscoFP.Rule.DestinationNetworks.Objects.Name
-      description: Object name.
+      description: The object name.
       type: String
     - contextPath: CiscoFP.Rule.DestinationNetworks.Objects.Type
-      description: Object type.
+      description: The object type.
       type: String
     - contextPath: CiscoFP.Rule.DestinationPorts.Addresses.Port
-      description: Port number.
+      description: The port number.
       type: String
     - contextPath: CiscoFP.Rule.DestinationPorts.Addresses.Protocol
-      description: Port protocol.
+      description: The port protocol.
       type: String
     - contextPath: CiscoFP.Rule.DestinationPorts.Objects.ID
-      description: Port object ID.
+      description: The port object ID.
       type: String
     - contextPath: CiscoFP.Rule.DestinationPorts.Objects.Name
-      description: Port object name.
+      description: The port object name.
       type: String
     - contextPath: CiscoFP.Rule.DestinationPorts.Objects.Protocol
-      description: Port object protocol.
+      description: The port object protocol.
       type: String
     - contextPath: CiscoFP.Rule.DestinationPorts.Objects.Type
-      description: Port object type.
+      description: The port object type.
       type: String
     - contextPath: CiscoFP.Rule.DestinationZones.Objects.ID
-      description: Zone ID.
+      description: The zone ID.
       type: String
     - contextPath: CiscoFP.Rule.DestinationZones.Objects.Name
-      description: Zone name.
+      description: The zone name.
       type: String
     - contextPath: CiscoFP.Rule.DestinationZones.Objects.Type
-      description: Zone type.
+      description: The zone type.
       type: String
     - contextPath: CiscoFP.Rule.Enabled
       description: Whether the rule is enabled.
       type: Number
     - contextPath: CiscoFP.Rule.ID
-      description: Rule ID.
+      description: The rule ID.
       type: String
     - contextPath: CiscoFP.Rule.Name
-      description: Rule name.
+      description: The rule name.
       type: String
     - contextPath: CiscoFP.Rule.RuleIndex
-      description: The index of the rule.
+      description: The rule index.
       type: Number
     - contextPath: CiscoFP.Rule.Section
-      description: The section of the rule.
+      description: The rule section.
       type: String
     - contextPath: CiscoFP.Rule.SendEventsToFMC
-      description: Boolean indicating whether the device will send events to Cisco
+      description: Whether the device will send events to Cisco.
         Firepower.
       type: Number
     - contextPath: CiscoFP.Rule.SourceNetworks.Addresses.Type
       description: The address type.
       type: String
     - contextPath: CiscoFP.Rule.SourceNetworks.Addresses.Value
-      description: IP address or CIDR range.
+      description: The IP address or CIDR range.
       type: String
     - contextPath: CiscoFP.Rule.SourceNetworks.Objects.ID
-      description: Object ID.
+      description: The object ID.
       type: String
     - contextPath: CiscoFP.Rule.SourceNetworks.Objects.Name
-      description: Object name.
+      description: The object name.
       type: String
     - contextPath: CiscoFP.Rule.SourceNetworks.Objects.Type
-      description: Object type.
+      description: The object type.
       type: String
     - contextPath: CiscoFP.Rule.SourcePorts.Addresses.Port
-      description: Port number.
+      description: The port number.
       type: String
     - contextPath: CiscoFP.Rule.SourcePorts.Addresses.Protocol
-      description: Port protocol.
+      description: The port protocol.
       type: String
     - contextPath: CiscoFP.Rule.SourcePorts.Objects.ID
-      description: Object ID.
+      description: The object ID.
       type: String
     - contextPath: CiscoFP.Rule.SourcePorts.Objects.Name
-      description: Object name.
+      description: The object name.
       type: String
     - contextPath: CiscoFP.Rule.SourcePorts.Objects.Protocol
-      description: Object protocol.
+      description: The object protocol.
       type: String
     - contextPath: CiscoFP.Rule.SourcePorts.Objects.Type
-      description: Object type.
+      description: The object type.
       type: String
     - contextPath: CiscoFP.Rule.SourceSecurityGroupTags.Objects.ID
-      description: Object ID.
+      description: The object ID.
       type: String
     - contextPath: CiscoFP.Rule.SourceSecurityGroupTags.Objects.Name
-      description: Object name.
+      description: The object name.
       type: String
     - contextPath: CiscoFP.Rule.SourceSecurityGroupTags.Objects.Type
-      description: Object type.
+      description: The object type.
       type: String
     - contextPath: CiscoFP.Rule.SourceZones.Objects.ID
-      description: Object ID.
+      description: The object ID.
       type: String
     - contextPath: CiscoFP.Rule.SourceZones.Objects.Name
-      description: Object name.
+      description: The object name.
       type: String
     - contextPath: CiscoFP.Rule.SourceZones.Objects.Type
-      description: Object type.
+      description: The object type.
       type: String
     - contextPath: CiscoFP.Rule.Urls.Addresses.URL
-      description: URL address.
+      description: The URL address.
       type: String
     - contextPath: CiscoFP.Rule.Urls.Objects.ID
-      description: URL object ID.
+      description: The URL object ID.
       type: String
     - contextPath: CiscoFP.Rule.Urls.Objects.Name
-      description: URL object name.
+      description: The URL object name.
       type: String
     - contextPath: CiscoFP.Rule.VlanTags.Numbers.EndTag
-      description: The vlan tag number end tag.
+      description: The VLAN tag number end tag.
       type: Number
     - contextPath: CiscoFP.Rule.VlanTags.Numbers.StartTag
-      description: The vlan tag number start tag.
+      description: The VLAN tag number start tag.
       type: Number
     - contextPath: CiscoFP.Rule.VlanTags.Objects.ID
-      description: Object ID.
+      description: The object ID.
       type: String
     - contextPath: CiscoFP.Rule.VlanTags.Objects.Name
-      description: Object name.
+      description: The object name.
       type: String
     - contextPath: CiscoFP.Rule.VlanTags.Objects.Type
-      description: Object type.
+      description: The object type.
       type: String
   - arguments:
     - auto: PREDEFINED
@@ -947,7 +2519,7 @@ script:
       required: true
     - auto: PREDEFINED
       default: true
-      description: Boolean indicating whether to enable the access control rule.
+      description: Whether to enable the access control rule.
       name: enabled
       predefined:
       - 'true'
@@ -956,14 +2528,14 @@ script:
         command.
       isArray: true
       name: source_zone_object_ids
-    - description: The policy ID in which to create the new rule.
+    - description: The policy ID for which to create the new rule.
       name: policy_id
       required: true
     - description: A list of destination zone object IDs. To get IDs, use the ciscofp-list-zones
         command.
       isArray: true
       name: destination_zone_object_ids
-    - description: A list of vlan tag object IDs. To get IDs, use the ciscofp-list-vlan-tags
+    - description: A list of VLAN tag object IDs. To get IDs, use the ciscofp-list-vlan-tags
         command.
       isArray: true
       name: vlan_tag_object_ids
@@ -971,7 +2543,7 @@ script:
         command.
       isArray: true
       name: source_network_object_ids
-    - description: A list of source IP addresses or CIDR ranges. To get the addresses
+    - description: A list of source IP addresses or CIDR ranges. To get the IP addresses
         or ranges, use the ciscofp-get-network-object or ciscofp-get-host-object command,
         respectively.
       isArray: true
@@ -984,20 +2556,20 @@ script:
     - description: A list of destination addresses.
       isArray: true
       name: destination_network_addresses
-    - description: A list of port object IDs. To get IDs,  use the ciscofp-get-network-object
+    - description: A list of port object IDs. To get the IDs,  use the ciscofp-get-network-object
         or ciscofp-get-host-object commands.
       name: source_port_object_ids
-    - description: A list of port object IDs. To get IDs, use the ciscofp-list-ports
+    - description: A list of port object IDs. To get the IDs, use the ciscofp-list-ports
         command.
       name: destination_port_object_ids
-    - description: A list of security group tag object IDs. To get IDs, use the ciscofp-list-security-group-tags
+    - description: A list of security group tag object IDs. To get the IDs, use the ciscofp-list-security-group-tags
         command.
       name: source_security_group_tag_object_ids
-    - description: A list of application object IDs. To get IDs, use the ciscofp-list-applications
+    - description: A list of application object IDs. To get the IDs, use the ciscofp-list-applications
         command.
       isArray: true
       name: application_object_ids
-    - description: A list of URL object IDs. To get IDs, use the ciscofp-list-url-categories
+    - description: A list of URL object IDs. To get the IDs, use the ciscofp-list-url-categories
         command.
       isArray: true
       name: url_object_ids
@@ -1011,13 +2583,13 @@ script:
       description: The action that determines how the system handles matching traffic.
       type: String
     - contextPath: CiscoFP.Rule.Applications.ID
-      description: The application object ID.
+      description: The application ID.
       type: String
     - contextPath: CiscoFP.Rule.Applications.Name
-      description: The application object name.
+      description: The application name.
       type: String
     - contextPath: CiscoFP.Rule.Category
-      description: The category of rule.
+      description: The rule category.
       type: String
     - contextPath: CiscoFP.Rule.DestinationNetworks.Addresses.Type
       description: The address type.
@@ -1062,7 +2634,7 @@ script:
       description: The zone type.
       type: String
     - contextPath: CiscoFP.Rule.Enabled
-      description: Boolean indicating whether to enable the rule.
+      description: Whether to enable the rule.
       type: Number
     - contextPath: CiscoFP.Rule.ID
       description: The rule ID.
@@ -1071,13 +2643,13 @@ script:
       description: The rule name.
       type: String
     - contextPath: CiscoFP.Rule.RuleIndex
-      description: The index of the rule.
+      description: The rule index.
       type: Number
     - contextPath: CiscoFP.Rule.Section
-      description: The section of the rule.
+      description: The rule section.
       type: String
     - contextPath: CiscoFP.Rule.SendEventsToFMC
-      description: Boolean indicating whether the device will send events to Cisco
+      description: Whether the device will send events to Cisco.
         Firepower.
       type: Number
     - contextPath: CiscoFP.Rule.SourceNetworks.Addresses.Type
@@ -1141,10 +2713,10 @@ script:
       description: The URL object name.
       type: String
     - contextPath: CiscoFP.Rule.VlanTags.Numbers.EndTag
-      description: The vlan tag number end tag.
+      description: The VLAN tag number end tag.
       type: Number
     - contextPath: CiscoFP.Rule.VlanTags.Numbers.StartTag
-      description: The vlan tag number start tag.
+      description: The VLAN tag number start tag.
       type: Number
     - contextPath: CiscoFP.Rule.VlanTags.Objects.ID
       description: The object ID.
@@ -1159,8 +2731,8 @@ script:
     - auto: PREDEFINED
       description: |-
         The method by which to update the rule. Can be "merge" or "override".
-        If merge, will add the changes requested to the existing rule.
-        If override, will override the fields with the inputs provided and will delete any fields that were not provided.
+        If merged, the requested changes will be added to the existing rule.
+        If override, the fields will be overridden with the inputs provided and fields that were not provided will be deleted.
       name: update_strategy
       predefined:
       - merge
@@ -1183,7 +2755,7 @@ script:
       name: rule_name
     - auto: PREDEFINED
       default: true
-      description: Boolean indicating whether to enable the rule. The default is "true".
+      description: Whether to enable the rule. The default is "TRUE".
       name: enabled
       predefined:
       - 'true'
@@ -1197,7 +2769,7 @@ script:
     - description: A list of destination zones object IDs.
       isArray: true
       name: destination_zone_object_ids
-    - description: A list of vlan tag object IDs.
+    - description: A list of VLAN tag object IDs.
       isArray: true
       name: vlan_tag_object_ids
     - description: A list of source network object IDs.
@@ -1212,9 +2784,9 @@ script:
     - description: A list of addresses.
       isArray: true
       name: destination_network_addresses
-    - description: A list of port object IDs.
+    - description: A list of source port object IDs.
       name: source_port_object_ids
-    - description: A list of port object IDs.
+    - description: A list of destination port object IDs.
       name: destination_port_object_ids
     - description: A list of security group tag object IDs.
       name: source_security_group_tag_object_ids
@@ -1243,7 +2815,7 @@ script:
       description: The application object name.
       type: String
     - contextPath: CiscoFP.Rule.Category
-      description: The category of the rule.
+      description: The rule category.
       type: String
     - contextPath: CiscoFP.Rule.DestinationNetworks.Addresses.Type
       description: The address type.
@@ -1288,7 +2860,7 @@ script:
       description: The destination zone object types.
       type: String
     - contextPath: CiscoFP.Rule.Enabled
-      description: Boolean indicating whether the rule is enabled.
+      description: Whether the rule is enabled.
       type: Number
     - contextPath: CiscoFP.Rule.ID
       description: The rule ID.
@@ -1297,13 +2869,13 @@ script:
       description: The rule name.
       type: String
     - contextPath: CiscoFP.Rule.RuleIndex
-      description: The index of the rule.
+      description: The rule index.
       type: Number
     - contextPath: CiscoFP.Rule.Section
-      description: The section of the rule.
+      description: The rule section.
       type: String
     - contextPath: CiscoFP.Rule.SendEventsToFMC
-      description: Boolean indicating whether the device will send events to Cisco
+      description: Whether the device will send events to Cisco.
         Firepower.
       type: Number
     - contextPath: CiscoFP.Rule.SourceNetworks.Addresses.Type
@@ -1367,10 +2939,10 @@ script:
       description: The URL object name.
       type: String
     - contextPath: CiscoFP.Rule.VlanTags.Numbers.EndTag
-      description: The vlan tag number end tag.
+      description: The VLAN tag number end tag.
       type: Number
     - contextPath: CiscoFP.Rule.VlanTags.Numbers.StartTag
-      description: The vlan tag number start tag.
+      description: The VLAN tag number start tag.
       type: Number
     - contextPath: CiscoFP.Rule.VlanTags.Objects.ID
       description: The object ID.
@@ -1401,7 +2973,7 @@ script:
       description: The application object name.
       type: String
     - contextPath: CiscoFP.Rule.Category
-      description: The category of the rule.
+      description: The rule category.
       type: String
     - contextPath: CiscoFP.Rule.DestinationNetworks.Addresses.Type
       description: The address type.
@@ -1446,7 +3018,7 @@ script:
       description: The zone types.
       type: String
     - contextPath: CiscoFP.Rule.Enabled
-      description: Boolean indicating whether the rule is enabled.
+      description: Whether the rule is enabled.
       type: Number
     - contextPath: CiscoFP.Rule.ID
       description: The rule ID.
@@ -1455,13 +3027,13 @@ script:
       description: The rule name.
       type: String
     - contextPath: CiscoFP.Rule.RuleIndex
-      description: The index of the rule.
+      description: The rule index.
       type: Number
     - contextPath: CiscoFP.Rule.Section
-      description: The section of the rule.
+      description: The rule section.
       type: String
     - contextPath: CiscoFP.Rule.SendEventsToFMC
-      description: Boolean indicating whether the device will send events to Cisco
+      description: Whether the device will send events to Cisco.
         Firepower.
       type: Number
     - contextPath: CiscoFP.Rule.SourceNetworks.Addresses.Type
@@ -1525,10 +3097,10 @@ script:
       description: The URL object name.
       type: String
     - contextPath: CiscoFP.Rule.VlanTags.Numbers.EndTag
-      description: The vlan tag number end tag.
+      description: The VLAN tag number end tag.
       type: Number
     - contextPath: CiscoFP.Rule.VlanTags.Numbers.StartTag
-      description: The vlan tag number start tag.
+      description: The VLAN tag number start tag.
       type: Number
     - contextPath: CiscoFP.Rule.VlanTags.Objects.ID
       description: The object ID.
@@ -1542,20 +3114,23 @@ script:
   - arguments:
     - description: |-
         The maximum number of items to return.
-        The default is 50
+        The default is 50.
       name: limit
     - description: |-
-        Index of first item to return.
-        The default is 0
+        Index of the first item to return.
+        The default is 0.
       name: offset
-    description: Retrieves a list of all policy assignments to target devices.
+    - description: The policy assignment ID.
+      name: policy_assignment_id
+      required: false
+    description: Retrieves the policy assignment associated with the specified ID. If no ID is specified, retrieves a list of all policy assignments to target devices.
     name: ciscofp-list-policy-assignments
     outputs:
     - contextPath: CiscoFP.PolicyAssignments.ID
-      description: The policy assignments ID.
+      description: The policy assignment ID.
       type: String
     - contextPath: CiscoFP.PolicyAssignments.Name
-      description: The policy assignments name.
+      description: The policy assignment name.
       type: String
     - contextPath: CiscoFP.PolicyAssignments.PolicyDescription
       description: The policy description.
@@ -1567,13 +3142,13 @@ script:
       description: The policy name.
       type: String
     - contextPath: CiscoFP.PolicyAssignments.Targets.ID
-      description: The targets ID.
+      description: The target ID.
       type: String
     - contextPath: CiscoFP.PolicyAssignments.Targets.Name
-      description: The targets name.
+      description: The target name.
       type: String
     - contextPath: CiscoFP.PolicyAssignments.Targets.Type
-      description: The targets type.
+      description: The target type.
       type: String
   - arguments:
     - description: The policy ID.
@@ -1589,10 +3164,10 @@ script:
     name: ciscofp-create-policy-assignments
     outputs:
     - contextPath: CiscoFP.PolicyAssignments.ID
-      description: The policy assignments ID.
+      description: The policy assignment ID.
       type: String
     - contextPath: CiscoFP.PolicyAssignments.Name
-      description: The policy assignments name.
+      description: The policy assignment name.
       type: String
     - contextPath: CiscoFP.PolicyAssignments.PolicyDescription
       description: The policy description.
@@ -1604,13 +3179,13 @@ script:
       description: The policy name.
       type: String
     - contextPath: CiscoFP.PolicyAssignments.Targets.ID
-      description: The targets ID.
+      description: The target ID.
       type: String
     - contextPath: CiscoFP.PolicyAssignments.Targets.Name
-      description: The targets name.
+      description: The target name.
       type: String
     - contextPath: CiscoFP.PolicyAssignments.Targets.Type
-      description: The targets type.
+      description: The target type.
       type: String
   - arguments:
     - description: The policy ID.
@@ -1619,14 +3194,24 @@ script:
       name: device_ids
     - description: A list of device group IDs.
       name: device_group_ids
+    - name: update_strategy
+      description: Update method to use in the command. Can be "MERGE" or "OVERRIDE".
+        If merged, the requested changes will be added to the existing rule.
+        If override, the fields will be overridden with the inputs provided and fields that were not provided will be deleted.
+      required: false
+      defaultValue: OVERRIDE
+      auto: PREDEFINED
+      predefined:
+      - MERGE
+      - OVERRIDE
     description: Updates the specified policy assignments to target devices.
     name: ciscofp-update-policy-assignments
     outputs:
     - contextPath: CiscoFP.PolicyAssignments.ID
-      description: The policy assignments ID.
+      description: The policy assignment IDs.
       type: String
     - contextPath: CiscoFP.PolicyAssignments.Name
-      description: The policy assignments name.
+      description: The policy assignment names.
       type: String
     - contextPath: CiscoFP.PolicyAssignments.PolicyDescription
       description: The policy description.
@@ -1638,13 +3223,13 @@ script:
       description: The policy name.
       type: String
     - contextPath: CiscoFP.PolicyAssignments.Targets.ID
-      description: The targets ID.
+      description: The target IDs.
       type: String
     - contextPath: CiscoFP.PolicyAssignments.Targets.Name
-      description: The targets name.
+      description: The target names.
       type: String
     - contextPath: CiscoFP.PolicyAssignments.Targets.Type
-      description: The targets type.
+      description: The target types.
       type: String
   - arguments:
     - description: |-
@@ -1652,7 +3237,7 @@ script:
         The default is 50.
       name: limit
     - description: |-
-        Index of first item to return.
+        Index of the first item to return.
         The default is 0.
       name: offset
     - description: The container UUID.
@@ -1662,40 +3247,40 @@ script:
     name: ciscofp-get-deployable-devices
     outputs:
     - contextPath: CiscoFP.DeployableDevices.CanBeDeployed
-      description: Can be deployed.
+      description: Devices that can be deployed.
       type: String
     - contextPath: CiscoFP.DeployableDevices.UpToDate
-      description: Up to date.
+      description: Devices that are up to date.
       type: String
     - contextPath: CiscoFP.DeployableDevices.DeviceID
-      description: Device ID.
+      description: The device ID.
       type: String
     - contextPath: CiscoFP.DeployableDevices.DeviceName
-      description: Device name.
+      description: The device name.
       type: String
     - contextPath: CiscoFP.DeployableDevices.DeviceType
-      description: Device type.
+      description: The device type.
       type: String
     - contextPath: CiscoFP.DeployableDevices.Version
-      description: Device version.
+      description: The device version.
       type: String
     - contextPath: CiscoFP.PendingDeployment.ID
-      description: Device ID.
+      description: The device ID.
       type: String
     - contextPath: CiscoFP.PendingDeployment.Name
-      description: Device name.
+      description: The device name.
       type: String
     - contextPath: CiscoFP.PendingDeployment.Type
-      description: Device type.
+      description: The device type.
       type: String
     - contextPath: CiscoFP.PendingDeployment.Status
-      description: Device status.
+      description: The device status.
       type: String
     - contextPath: CiscoFP.PendingDeployment.StartTime
-      description: Start time of the deployment.
+      description: The start time of the deployment.
       type: String
     - contextPath: CiscoFP.PendingDeployment.EndTime
-      description: End time of the deployment.
+      description: The end time of the deployment.
       type: String
   - arguments:
     - description: |-
@@ -1703,10 +3288,10 @@ script:
         The default is 50.
       name: limit
     - description: |-
-        Index of first item to return.
+        Index of the first item to return.
         The default is 0.
       name: offset
-    description: Retrieves list of all device records.
+    description: Retrieves a list of all device records.
     name: ciscofp-get-device-records
     outputs:
     - contextPath: CiscoFP.DeviceRecords.DeviceGroupID
@@ -1726,16 +3311,14 @@ script:
       type: String
   - arguments:
     - auto: PREDEFINED
-      description: Boolean indicating whether to force deployment. Can be "true" or
-        "false".
+      description: Whether to force deployment. Can be "TRUE" or "FALSE".
       name: force_deploy
       predefined:
       - 'true'
       - 'false'
       required: true
     - auto: PREDEFINED
-      description: Boolean indicating whether to ignore warning. Can be "true" or
-        "false".
+      description: Whether to ignore warning. Can be "TRUE" or "FALSE".
       name: ignore_warning
       predefined:
       - 'true'
@@ -1762,7 +3345,7 @@ script:
       description: Whether to ignore warning.
       type: String
     - contextPath: CiscoFP.Deploy.Version
-      description: The version of the policy.
+      description: The policy version.
       type: String
     - contextPath: CiscoFP.Deploy.DeviceList
       description: The list of devices.
@@ -1776,23 +3359,23 @@ script:
     name: ciscofp-get-task-status
     outputs:
     - contextPath: CiscoFP.TaskStatus.Status
-      description: task status
+      description: The task status.
       type: String
   - arguments:
-    - description: ID of the group. If not supplied, retrieves a list of all url objects.
+    - description: The group ID. If not supplied, retrieves a list of all URL objects.
       name: id
-    description: Retrieves the groups of url objects and addresses associated with
-      the specified ID. If not supplied, retrieves a list of all url objects.
+    description: Retrieves the groups of URL objects and addresses associated with
+      the specified ID. If not supplied, retrieves a list of all URL objects.
     name: ciscofp-get-url-groups-object
     outputs:
     - contextPath: CiscoFP.URLGroups.ID
       description: The group ID.
       type: string
     - contextPath: CiscoFP.URLGroups.Name
-      description: The group Name.
+      description: The group name.
       type: string
     - contextPath: CiscoFP.URLGroups.Overridable
-      description: Boolean indicating whether objects can be overridden.
+      description: Whether objects can be overridden.
       type: string
     - contextPath: CiscoFP.URLGroups.Description
       description: The group description.
@@ -1813,30 +3396,40 @@ script:
     - description: The ID of the group to update.
       name: id
       required: true
-    - description: A comma-separated list of object IDs to add the url.
+    - description: A comma-separated list of object IDs to add the URL.
       name: url_objects_id_list
-    - description: A comma-separated list of url to add the group.
+    - description: A comma-separated list of URLs to add the group.
       name: url_list
     - description: The new description for the object.
       name: description
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: Boolean indicating whether object values can be overridden.
+      description: Whether object values can be overridden.
       name: overridable
       predefined:
       - 'true'
       - 'false'
     - description: The group name.
       name: name
-      required: true
-    description: Updates the ID of a group of url objects.
+      required: false
+    - name: update_strategy
+      description: Update method to use in the command. Can be "MERGE" or "OVERRIDE".
+        If merged, the requested changes will be added to the existing rule.
+        If override, the fields will be overridden with the inputs provided and fields that were not provided will be deleted.
+      required: false
+      defaultValue: OVERRIDE
+      auto: PREDEFINED
+      predefined:
+      - MERGE
+      - OVERRIDE
+    description: Updates the ID of a group of URL objects.
     name: ciscofp-update-url-groups-objects
     outputs:
     - contextPath: CiscoFP.URLGroups.Addresses.Type
-      description: The addresses type in the group object.
+      description: The address types in the group object.
       type: string
     - contextPath: CiscoFP.URLGroups.Addresses.Url
-      description: The addresses url in the group object.
+      description: The address URLs in the group object.
       type: string
     - contextPath: CiscoFP.URLGroups.Description
       description: The group description.
@@ -1851,9 +3444,9 @@ script:
       description: The group object information.
       type: unknown
     - contextPath: CiscoFP.URLGroups.Overridable
-      description: Boolean indicating whether objects can be overridden.
+      description: Whether objects can be overridden.
       type: string
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.10.48392
   runonce: false
   script: ''
   subtype: python3

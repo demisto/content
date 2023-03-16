@@ -1,9 +1,10 @@
+import urllib3
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 DEFAULT_LIST_FIELD = ['name', 'uid', 'type', 'ipv4-address', 'ipv6-address', 'domain-name', 'domain-uid', 'groups',
                       'read-only', 'creator', 'last-modifier']

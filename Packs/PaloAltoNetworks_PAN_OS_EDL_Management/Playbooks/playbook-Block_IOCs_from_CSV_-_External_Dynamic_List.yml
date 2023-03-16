@@ -426,6 +426,8 @@ inputs:
       * before
       * after
 outputs: []
+marketplaces:
+- xsoar
 tests:
 - No Test
 

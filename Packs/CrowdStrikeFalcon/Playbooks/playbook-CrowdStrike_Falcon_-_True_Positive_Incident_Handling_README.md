@@ -42,9 +42,9 @@ CrowdStrikeFalcon
 | PathsForFilesToRemove | Provide the path for the file to remove. |  | Optional |
 | OperatingSystemToRemoveFrom | Values can be Windows, Linux, Mac. |  | Optional |
 | ManuallyChooseIOCForHunting | This input will provide you with the ability to select IOCs to be hunted using the Threat Hunting - generic playbook.<br/>If false, it will hunt for all IOCs detected in the incident.<br/>Note: You can also insert "No Threat Hunting" to skip the Threat Hunting stage. | True | Optional |
-| IP | IP value to hunt on. | IP.None | Optional |
-| MD5 | MD5 file value to hunt upon. | File.MD5.None | Optional |
-| URL_or_Domain | URL or Domain to hunt upon. | Domain.Name.None | Optional |
+| IP | IP value to hunt on. | IP | Optional |
+| MD5 | MD5 file value to hunt upon. | File.MD5 | Optional |
+| URL_or_Domain | URL or Domain to hunt upon. | Domain.Name | Optional |
 | FileSha1 | File SHA1 value to hunt upon. | File.SHA1 | Optional |
 
 ## Playbook Outputs

@@ -1,0 +1,35 @@
+{
+    "data": [
+        {
+            "test_data_event_id": "74eae206-f2f6-4af2-8e79-aadf7a9cec3f",
+            "vendor": "symantec",
+            "product": "bluecoatproxysg",
+            "dataset": "symantec_bluecoatproxysg_raw",
+            "event_data": {
+                "_raw_log": "2022-11-28 07:12:56 467 8.8.8.8 407 TCP_DENIED 383 362 CONNECT tcp remote.msn.com 443 /DigiCertAssuredIDCA-1.crt ?assdf=sadffsdf anonymous%20logon Security server-123.local.com text/plain;%20charset=utf-8 http://google.com \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36 Edg/92.0.902.67\" DENIED \"Allowed_URLS;BW_mgmt_1;PT_Allowed_URLs;Windows Phone 8.1;Technology/Internet\" X-Violations-Found 1.1.1.1"
+            },
+            "expected_values": {
+                "xdm.network.http.referrer": "http://google.com",
+                "xdm.observer.name": "server-123.local.com",
+                "xdm.source.ipv4": "8.8.8.8",
+                "xdm.alert.original_alert_id": "X-Violations-Found",
+                "xdm.network.http.url_category": "Allowed_URLS;BW_mgmt_1;PT_Allowed_URLs;Windows Phone 8.1;Technology/Internet",
+                "xdm.source.sent_bytes": 362.0,
+                "xdm.source.user_agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36 Edg/92.0.902.67",
+                "xdm.source.host.hostname": "remote.msn.com",
+                "xdm.event.outcome": "FAILED",
+                "xdm.source.user.groups": ["Security"],
+                "xdm.event.outcome_reason": "TCP_DENIED",
+                "xdm.source.host.ipv4_addresses": ["1.1.1.1"],
+                "xdm.network.http.response_code": "407",
+                "xdm.network.ip_protocol": "tcp",
+                "xdm.network.http.method": "CONNECT",
+                "xdm.source.user.username": "anonymous%20logon",
+                "xdm.source.port": 443.0,
+                "xdm.network.http.content_type": "text/plain;%20charset=utf-8",
+                "xdm.event.duration": 467.0,
+                "xdm.target.sent_bytes": 383.0
+            }
+        }
+    ]
+}

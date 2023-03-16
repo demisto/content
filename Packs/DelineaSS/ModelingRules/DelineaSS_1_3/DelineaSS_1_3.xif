@@ -1,0 +1,15 @@
+[MODEL: dataset="thycotic_software_secret_server_raw"]
+alter
+xdm.target.file.directory=cs3,
+xdm.event.description=msg,
+xdm.source.ipv4=src,
+xdm.target.user.identifier=duid,
+xdm.source.user.identifier=suid,
+xdm.target.user.username=coalesce(duser,cs2),
+xdm.target.resource.name=fname,
+xdm.source.user.username=coalesce(suser,cs4),
+xdm.target.resource.id=fileId,
+xdm.event.type=cefName,
+xdm.target.file.file_type=fileType,
+xdm.alert.severity=cefSeverity,
+xdm.observer.version=cefDeviceVersion;

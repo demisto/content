@@ -1,0 +1,16 @@
+{
+    "results": {
+        "q_type": 0,
+        "id": "2",
+        "content-routing-policy-name": "bnvb",
+        "content-routing-policy-name_val": "1302",
+        "profile-inherit": "enable",
+        "profile-inherit_val": "1",
+        "web-protection-profile": "",
+        "web-protection-profile_val": "0",
+        "is-default": "no",
+        "is-default_val": "0",
+        "status": "enable",
+        "status_val": "1"
+    }
+}

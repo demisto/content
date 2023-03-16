@@ -2,6 +2,8 @@ from dataclasses import dataclass
 from tempfile import NamedTemporaryFile
 from typing import Callable
 
+import urllib3
+
 import syslogmp
 from gevent.server import StreamServer
 from syslog_rfc5424_parser import SyslogMessage, ParseError
@@ -10,7 +12,7 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 from CommonServerUserPython import *  # noqa
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+urllib3.disable_warnings()  # pylint: disable=no-member
 
 ''' CONSTANTS '''
 MAX_SAMPLES = 10
@@ -327,8 +329,10 @@ def main() -> None:
     params = demisto.params()
     command = demisto.command()
     message_regex: Optional[str] = params.get('message_regex')
-    certificate: Optional[str] = params.get('certificate')
-    private_key: Optional[str] = params.get('private_key')
+    certificate = (replace_spaces_in_credential(params.get('creds_certificate', {}).get('identifier'))
+                   or params.get('certificate'))
+    private_key = (replace_spaces_in_credential(params.get('creds_certificate', {}).get('password', ''))
+                   or params.get('private_key'))
     port: Union[Optional[str], int] = params.get('longRunningPort')
     try:
         port = int(params.get('longRunningPort'))

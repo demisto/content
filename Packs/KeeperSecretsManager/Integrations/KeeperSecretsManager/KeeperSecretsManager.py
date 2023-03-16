@@ -8,7 +8,7 @@ import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
-import requests
+import urllib3
 import traceback
 from typing import Dict, List, Any, Tuple, Optional
 from keeper_secrets_manager_core import SecretsManager
@@ -16,7 +16,7 @@ from keeper_secrets_manager_core.storage import InMemoryKeyValueStorage
 
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+urllib3.disable_warnings()  # pylint: disable=no-member
 
 
 ''' CONSTANTS '''

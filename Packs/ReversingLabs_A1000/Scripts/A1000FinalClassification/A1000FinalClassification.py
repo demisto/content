@@ -6,15 +6,14 @@ import traceback
 
 RELIABILITY = 'C - Fairly reliable'
 
-
-def classification_to_score(classification):
-    score_dict = {
-        "UNKNOWN": 0,
-        "KNOWN": 1,
-        "SUSPICIOUS": 2,
-        "MALICIOUS": 3
-    }
-    return score_dict.get(classification, 0)
+SCORE_DICT = {
+    "UNKNOWN": 0,
+    "UNCLASSIFIED": 0,
+    "KNOWN": 1,
+    "GOODWARE": 1,
+    "SUSPICIOUS": 2,
+    "MALICIOUS": 3
+}
 
 
 def overall_classification_command(args: Dict[str, Any]) -> CommandResults:
@@ -26,22 +25,27 @@ def overall_classification_command(args: Dict[str, Any]) -> CommandResults:
     if not a1000_full_report:
         raise ValueError('A1000 full report not specified')
 
-    cloud_classification = a1000_classification_report.get('threat_status', 'nema cloud').upper()
+    cloud_classification = a1000_classification_report.get('classification')
+    if not cloud_classification:
+        return_error("There is no classification field in the classification report.")
+
+    cloud_classification = cloud_classification.upper()
+
     a1000_results = a1000_full_report.get('results')
     a1000_result = a1000_results[0] if a1000_results else {}
-    a1000_classification = a1000_result.get('threat_status', 'nema a1000').upper()
+    a1000_classification = a1000_result.get('classification')
+    if not a1000_classification:
+        return_error("There is no threat_status field in the A1000 report")
+
+    a1000_classification = a1000_classification.upper()
 
     if a1000_classification_report.get('sha1') != a1000_result.get('sha1'):
         return CommandResults(readable_output="Hash mismatch!")
 
-    if a1000_classification == "UNKNOWN":
+    if a1000_classification in ("UNKNOWN", "UNCLASSIFIED"):
         overall_classification = cloud_classification
     else:
-        classification_compare_score = {"MALICIOUS": 3,
-                                        "SUSPICIOUS": 2,
-                                        "KNOWN": 1}
-
-        if classification_compare_score[cloud_classification] > classification_compare_score[a1000_classification]:
+        if SCORE_DICT.get(cloud_classification, 0) > SCORE_DICT.get(a1000_classification, 0):
             overall_classification = cloud_classification
         else:
             overall_classification = a1000_classification
@@ -53,7 +57,8 @@ def overall_classification_command(args: Dict[str, Any]) -> CommandResults:
         markdown += "**NOTE:** The file is not yet classified because this is the first time TiCloud has seen the" \
                     " file OR the file is still being analyzed. Please check the classification result later."
 
-    d_bot_score = classification_to_score(overall_classification)
+    d_bot_score = SCORE_DICT.get(overall_classification, 0)
+
     dbot_score = Common.DBotScore(
         indicator=a1000_classification_report.get('sha1'),
         indicator_type=DBotScoreType.FILE,
@@ -83,7 +88,7 @@ def main():
         results = overall_classification_command(demisto.args())
         return_results(results)
     except Exception as ex:
-        demisto.error(traceback.format_exc())  # print the traceback
+        demisto.error(traceback.format_exc())
         return_error(f'Failed to execute A1000FinalClassification. Error: {str(ex)}')
 
 

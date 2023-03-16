@@ -1,0 +1,3259 @@
+{
+  "Type": 1,
+  "ContentsFormat": "json",
+  "Contents": [
+    {
+      "value": "caronashield.eu",
+      "type": "Domain",
+      "rawJSON": {
+        "id": "indicator--025f71f0-6d3f-4764-bd3f-d694d92855dc",
+        "pattern": "[domain-name:value = 'caronashield.eu']",
+        "confidence": 85,
+        "lang": "en",
+        "type": "indicator",
+        "created": "2020-05-14T00:14:07.138Z",
+        "modified": "2020-05-14T00:14:07.138Z",
+        "name": "suspicious_domain: caronashield.eu",
+        "description": "TS ID: 55475482471; iType: suspicious_domain; Date First: 2020-04-06T21:55:15.500Z; State: active; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:73,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+        "valid_from": "2020-05-07T14:33:02.717458Z",
+        "pattern_type": "stix",
+        "object_marking_refs": [
+          "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+        ],
+        "labels": [
+          "medium"
+        ],
+        "indicator_types": [
+          "anomalous-activity"
+        ],
+        "pattern_version": "2.1",
+        "spec_version": "2.1"
+      }
+    },
+    {
+      "value": "protectcovid19.fr",
+      "type": "Domain",
+      "rawJSON": {
+        "id": "indicator--06989db9-e7ae-4757-a4b4-069543418248",
+        "pattern": "[domain-name:value = 'protectcovid19.fr']",
+        "confidence": 85,
+        "lang": "en",
+        "type": "indicator",
+        "created": "2020-05-14T00:14:06.512Z",
+        "modified": "2020-05-14T00:14:06.512Z",
+        "name": "phish_domain: protectcovid19.fr",
+        "description": "TS ID: 55469158420; iType: phish_domain; Date First: 2020-04-04T07:03:44.535Z; State: active; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:93,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+        "valid_from": "2020-05-07T14:33:02.738255Z",
+        "pattern_type": "stix",
+        "object_marking_refs": [
+          "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+        ],
+        "labels": [
+          "medium"
+        ],
+        "indicator_types": [
+          "anomalous-activity"
+        ],
+        "pattern_version": "2.1",
+        "spec_version": "2.1"
+      }
+    },
+    {
+      "value": "covidwarrior.net",
+      "type": "Domain",
+      "rawJSON": {
+        "id": "indicator--0c1a3d9a-1d88-472d-abd3-3b49249775d9",
+        "pattern": "[domain-name:value = 'covidwarrior.net']",
+        "confidence": 85,
+        "lang": "en",
+        "type": "indicator",
+        "created": "2020-05-14T00:14:13.761Z",
+        "modified": "2020-05-14T00:14:13.761Z",
+        "name": "suspicious_domain: covidwarrior.net",
+        "description": "TS ID: 55469158428; iType: suspicious_domain; Date First: 2020-04-04T07:03:37.104Z; State: active; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:78,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+        "valid_from": "2020-05-07T14:33:02.729313Z",
+        "pattern_type": "stix",
+        "object_marking_refs": [
+          "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+        ],
+        "labels": [
+          "medium"
+        ],
+        "indicator_types": [
+          "anomalous-activity"
+        ],
+        "pattern_version": "2.1",
+        "spec_version": "2.1"
+      }
+    },
+    {
+      "value": "covid19disasterloans.org",
+      "type": "Domain",
+      "rawJSON": {
+        "id": "indicator--0ceb46f4-0b2c-41b1-97dc-ce3b50026acb",
+        "pattern": "[domain-name:value = 'covid19disasterloans.org']",
+        "confidence": 85,
+        "lang": "en",
+        "type": "indicator",
+        "created": "2020-05-14T00:14:09.380Z",
+        "modified": "2020-05-14T00:14:09.380Z",
+        "name": "phish_domain: covid19disasterloans.org",
+        "description": "TS ID: 55469158377; iType: phish_domain; Date First: 2020-04-04T07:05:18.835Z; State: active; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:99,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+        "valid_from": "2020-05-07T14:33:02.749446Z",
+        "pattern_type": "stix",
+        "object_marking_refs": [
+          "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+        ],
+        "labels": [
+          "medium"
+        ],
+        "indicator_types": [
+          "anomalous-activity"
+        ],
+        "pattern_version": "2.1",
+        "spec_version": "2.1"
+      }
+    },
+    {
+      "value": "2020covid19news.com",
+      "type": "Domain",
+      "rawJSON": {
+        "id": "indicator--0fe4ce46-26f0-4ac7-9383-d284685fdc73",
+        "pattern": "[domain-name:value = '2020covid19news.com']",
+        "confidence": 85,
+        "lang": "en",
+        "type": "indicator",
+        "created": "2020-05-14T00:14:03.125Z",
+        "modified": "2020-05-14T00:14:03.125Z",
+        "name": "phish_domain: 2020covid19news.com",
+        "description": "TS ID: 55469158380; iType: phish_domain; Date First: 2020-04-04T07:04:07.658Z; State: active; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:99,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+        "valid_from": "2020-05-07T14:33:02.742544Z",
+        "pattern_type": "stix",
+        "object_marking_refs": [
+          "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+        ],
+        "labels": [
+          "medium"
+        ],
+        "indicator_types": [
+          "anomalous-activity"
+        ],
+        "pattern_version": "2.1",
+        "spec_version": "2.1"
+      }
+    },
+    {
+      "value": "coronareliefsupport.com",
+      "type": "Domain",
+      "rawJSON": {
+        "id": "indicator--16632600-3284-40ac-8757-529cb47a18be",
+        "pattern": "[domain-name:value = 'coronareliefsupport.com']",
+        "confidence": 85,
+        "lang": "en",
+        "type": "indicator",
+        "created": "2020-05-14T00:14:08.250Z",
+        "modified": "2020-05-14T00:14:08.250Z",
+        "name": "phish_domain: coronareliefsupport.com",
+        "description": "TS ID: 55469158394; iType: phish_domain; Date First: 2020-04-04T07:05:18.800Z; State: active; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:99,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+        "valid_from": "2020-05-07T14:33:02.75085Z",
+        "pattern_type": "stix",
+        "object_marking_refs": [
+          "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+        ],
+        "labels": [
+          "medium"
+        ],
+        "indicator_types": [
+          "anomalous-activity"
+        ],
+        "pattern_version": "2.1",
+        "spec_version": "2.1"
+      }
+    },
+    {
+      "value": "coronashop.jp",
+      "type": "Domain",
+      "rawJSON": {
+        "id": "indicator--324b207a-53a8-4dda-8241-a3086e32c5ed",
+        "pattern": "[domain-name:value = 'coronashop.jp']",
+        "confidence": 85,
+        "lang": "en",
+        "type": "indicator",
+        "created": "2020-05-14T00:14:12.980Z",
+        "modified": "2020-05-14T00:14:12.980Z",
+        "name": "phish_domain: coronashop.jp",
+        "description": "TS ID: 55469158424; iType: phish_domain; Date First: 2020-04-04T07:05:18.774Z; State: active; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:92,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+        "valid_from": "2020-05-07T14:33:02.75228Z",
+        "pattern_type": "stix",
+        "object_marking_refs": [
+          "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+        ],
+        "labels": [
+          "medium"
+        ],
+        "indicator_types": [
+          "anomalous-activity"
+        ],
+        "pattern_version": "2.1",
+        "spec_version": "2.1"
+      }
+    },
+    {
+      "value": "quarantinetales.org",
+      "type": "Domain",
+      "rawJSON": {
+        "id": "indicator--338f0626-d357-4777-b67a-1447f7513cd9",
+        "pattern": "[domain-name:value = 'quarantinetales.org']",
+        "confidence": 85,
+        "lang": "en",
+        "type": "indicator",
+        "created": "2020-05-14T00:14:05.401Z",
+        "modified": "2020-05-14T00:14:05.401Z",
+        "name": "suspicious_domain: quarantinetales.org",
+        "description": "TS ID: 55475482483; iType: suspicious_domain; Date First: 2020-04-06T21:55:08.347Z; State: active; Org: GoDaddy.com, LLC; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:70,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+        "valid_from": "2020-05-07T14:33:02.714602Z",
+        "pattern_type": "stix",
+        "object_marking_refs": [
+          "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+        ],
+        "labels": [
+          "medium"
+        ],
+        "indicator_types": [
+          "anomalous-activity"
+        ],
+        "pattern_version": "2.1",
+        "spec_version": "2.1"
+      }
+    },
+    {
+      "value": "naturevscoronavirus.website",
+      "type": "Domain",
+      "rawJSON": {
+        "id": "indicator--3433fc07-3445-47e7-b8df-f59431603d65",
+        "pattern": "[domain-name:value = 'naturevscoronavirus.website']",
+        "confidence": 85,
+        "lang": "en",
+        "type": "indicator",
+        "created": "2020-05-14T00:14:14.914Z",
+        "modified": "2020-05-14T00:14:14.914Z",
+        "name": "suspicious_domain: naturevscoronavirus.website",
+        "description": "TS ID: 55475482464; iType: suspicious_domain; Date First: 2020-04-06T21:55:08.271Z; State: active; Org: Variti LLC; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:73,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+        "valid_from": "2020-05-07T14:33:02.713199Z",
+        "pattern_type": "stix",
+        "object_marking_refs": [
+          "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+        ],
+        "labels": [
+          "medium"
+        ],
+        "indicator_types": [
+          "anomalous-activity"
+        ],
+        "pattern_version": "2.1",
+        "spec_version": "2.1"
+      }
+    },
+    {
+      "value": "loveinquarantimes.net",
+      "type": "Domain",
+      "rawJSON": {
+        "id": "indicator--3e659eb2-4ebe-4060-bee2-3941e37f55a7",
+        "pattern": "[domain-name:value = 'loveinquarantimes.net']",
+        "confidence": 85,
+        "lang": "en",
+        "type": "indicator",
+        "created": "2020-05-14T00:14:11.737Z",
+        "modified": "2020-05-14T00:14:11.737Z",
+        "name": "suspicious_domain: loveinquarantimes.net",
+        "description": "TS ID: 55475482479; iType: suspicious_domain; Date First: 2020-04-06T21:55:09.592Z; State: active; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:72,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+        "valid_from": "2020-05-07T14:33:02.716017Z",
+        "pattern_type": "stix",
+        "object_marking_refs": [
+          "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+        ],
+        "labels": [
+          "medium"
+        ],
+        "indicator_types": [
+          "anomalous-activity"
+        ],
+        "pattern_version": "2.1",
+        "spec_version": "2.1"
+      }
+    },
+    {
+      "value": "coronashirtshop.com",
+      "type": "Domain",
+      "rawJSON": {
+        "id": "indicator--48e58722-639d-4040-bd47-1144f69becf8",
+        "pattern": "[domain-name:value = 'coronashirtshop.com']",
+        "confidence": 85,
+        "lang": "en",
+        "type": "indicator",
+        "created": "2020-05-14T00:14:00.998Z",
+        "modified": "2020-05-14T00:14:00.998Z",
+        "name": "phish_domain: coronashirtshop.com",
+        "description": "TS ID: 55469158418; iType: phish_domain; Date First: 2020-04-04T07:04:52.552Z; State: active; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:93,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+        "valid_from": "2020-05-07T14:33:02.743995Z",
+        "pattern_type": "stix",
+        "object_marking_refs": [
+          "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+        ],
+        "labels": [
+          "medium"
+        ],
+        "indicator_types": [
+          "anomalous-activity"
+        ],
+        "pattern_version": "2.1",
+        "spec_version": "2.1"
+      }
+    },
+    {
+      "value": "thecoronavirusrevolution.com",
+      "type": "Domain",
+      "rawJSON": {
+        "id": "indicator--497819a5-404f-47f3-90cb-100c20f28437",
+        "pattern": "[domain-name:value = 'thecoronavirusrevolution.com']",
+        "confidence": 85,
+        "lang": "en",
+        "type": "indicator",
+        "created": "2020-05-14T00:14:11.148Z",
+        "modified": "2020-05-14T00:14:11.148Z",
+        "name": "phish_domain: thecoronavirusrevolution.com",
+        "description": "TS ID: 55469158370; iType: phish_domain; Date First: 2020-04-04T07:03:47.848Z; State: active; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:99,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+        "valid_from": "2020-05-07T14:33:02.746518Z",
+        "pattern_type": "stix",
+        "object_marking_refs": [
+          "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+        ],
+        "labels": [
+          "medium"
+        ],
+        "indicator_types": [
+          "anomalous-activity"
+        ],
+        "pattern_version": "2.1",
+        "spec_version": "2.1"
+      }
+    },
+    {
+      "value": "onestopcorona.net",
+      "type": "Domain",
+      "rawJSON": {
+        "id": "indicator--53783c8d-27a3-4404-a8fc-842ce89c9cac",
+        "pattern": "[domain-name:value = 'onestopcorona.net']",
+        "confidence": 85,
+        "lang": "en",
+        "type": "indicator",
+        "created": "2020-05-14T00:14:07.709Z",
+        "modified": "2020-05-14T00:14:07.709Z",
+        "name": "suspicious_domain: onestopcorona.net",
+        "description": "TS ID: 55469158430; iType: suspicious_domain; Date First: 2020-04-04T07:01:12.378Z; State: active; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:77,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+        "valid_from": "2020-05-07T14:33:02.753747Z",
+        "pattern_type": "stix",
+        "object_marking_refs": [
+          "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+        ],
+        "labels": [
+          "medium"
+        ],
+        "indicator_types": [
+          "anomalous-activity"
+        ],
+        "pattern_version": "2.1",
+        "spec_version": "2.1"
+      }
+    },
+    {
+      "value": "quarantaiment.com",
+      "type": "Domain",
+      "rawJSON": {
+        "id": "indicator--5c3a198a-e4fd-4465-be66-b34c8dae28e2",
+        "pattern": "[domain-name:value = 'quarantaiment.com']",
+        "confidence": 85,
+        "lang": "en",
+        "type": "indicator",
+        "created": "2020-05-14T00:14:13.354Z",
+        "modified": "2020-05-14T00:14:13.354Z",
+        "name": "suspicious_domain: quarantaiment.com",
+        "description": "TS ID: 55475482472; iType: suspicious_domain; Date First: 2020-04-06T21:55:06.617Z; State: active; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:73,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+        "valid_from": "2020-05-07T14:33:02.711449Z",
+        "pattern_type": "stix",
+        "object_marking_refs": [
+          "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+        ],
+        "labels": [
+          "medium"
+        ],
+        "indicator_types": [
+          "anomalous-activity"
+        ],
+        "pattern_version": "2.1",
+        "spec_version": "2.1"
+      }
+    },
+    {
+      "value": "covidforecast.info",
+      "type": "Domain",
+      "rawJSON": {
+        "id": "indicator--6cd41353-6450-41a0-9a1c-8dd5e2416cdd",
+        "pattern": "[domain-name:value = 'covidforecast.info']",
+        "confidence": 50,
+        "lang": "en",
+        "type": "indicator",
+        "created": "2020-05-14T00:14:04.260Z",
+        "modified": "2020-05-14T00:14:04.260Z",
+        "name": "phish_domain: covidforecast.info",
+        "description": "TS ID: 55469158386; iType: phish_domain; Date First: 2020-04-04T07:05:14.672Z; State: active; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:99,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+        "valid_from": "2020-05-07T14:33:02.723401Z",
+        "pattern_type": "stix",
+        "object_marking_refs": [
+          "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+        ],
+        "labels": [
+          "medium"
+        ],
+        "indicator_types": [
+          "anomalous-activity"
+        ],
+        "pattern_version": "2.1",
+        "spec_version": "2.1"
+      }
+    },
+    {
+      "value": "thehelperscovid19.org",
+      "type": "Domain",
+      "rawJSON": {
+        "id": "indicator--78ab6b7e-55f0-4018-ab91-9858a957e598",
+        "pattern": "[domain-name:value = 'thehelperscovid19.org']",
+        "confidence": 85,
+        "lang": "en",
+        "type": "indicator",
+        "created": "2020-05-14T00:14:16.094Z",
+        "modified": "2020-05-14T00:14:16.094Z",
+        "name": "phish_domain: thehelperscovid19.org",
+        "description": "TS ID: 55469158376; iType: phish_domain; Date First: 2020-04-04T07:01:32.923Z; State: active; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:99,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+        "valid_from": "2020-05-07T14:33:02.74799Z",
+        "pattern_type": "stix",
+        "object_marking_refs": [
+          "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+        ],
+        "labels": [
+          "medium"
+        ],
+        "indicator_types": [
+          "anomalous-activity"
+        ],
+        "pattern_version": "2.1",
+        "spec_version": "2.1"
+      }
+    }
+  ],
+  "HumanReadable": "Found 100 results:\n|value|type|\n|---|---|\n| caronashield.eu | Domain |\n| protectcovid19.fr | Domain |\n| covidwarrior.net | Domain |\n| covid19disasterloans.org | Domain |\n| 2020covid19news.com | Domain |\n| coronareliefsupport.com | Domain |\n| coronashop.jp | Domain |\n| quarantinetales.org | Domain |\n| naturevscoronavirus.website | Domain |\n| loveinquarantimes.net | Domain |\n| coronashirtshop.com | Domain |\n| thecoronavirusrevolution.com | Domain |\n| onestopcorona.net | Domain |\n| quarantaiment.com | Domain |\n| covidforecast.info | Domain |\n| thehelperscovid19.org | Domain |\n| covidhomebuyers.org | Domain |\n| cabinacoronavirus.com | Domain |\n| thequarantinegeneration.com | Domain |\n| covidhaircare.com | Domain |\n| corona-schnell-test.de | Domain |\n| covidsurplusstore.com | Domain |\n| covidsupplyinitiative.org | Domain |\n| maskforcoronavirussale.com | Domain |\n| covid19-sanitizers.com | Domain |\n| coronawears.com | Domain |\n| covidwithmylife.com | Domain |\n| quarantineddoc.org | Domain |\n| lillycocid19testing.com | Domain |\n| trucovid19tests.com | Domain |\n| covid-sessions.com | Domain |\n| covid19learning.org | Domain |\n| 109.234.34.135 | IP |\n| 78.88.188.42 | IP |\n| 190.19.169.69 | IP |\n| pencecoronafailure.com | Domain |\n| podforcovid.com | Domain |\n| resistenceanticovidbrand.com | Domain |\n| coronawaarschuwing.eu | Domain |\n| copcovid.com | Domain |\n| helpstopcovid19.lv | Domain |\n| newcorona.com.au | Domain |\n| checkoncorona.com | Domain |\n| covid-compliance.co.za | Domain |\n| bonos-deapoyo-covid19.online | Domain |\n| coronahats.de | Domain |\n| covidcleanpro.ca | Domain |\n| covidsurgeryaustralia.online | Domain |\n| wuhancemaxingtian.site | Domain |\n| coronafightclub.nl | Domain |\n| coronalivestreamconcerts.com | Domain |\n| isitcovid19.online | Domain |\n| covidsafetydividers.com | Domain |\n| covid19-solutions.nl | Domain |\n| coronadocanyondentistree.com | Domain |\n| covid-19simulation.co | Domain |\n| covid-status.net | Domain |\n| coronabe.com | Domain |\n| detrasdelacorona.com | Domain |\n| covidvirusfacemask.com | Domain |\n| coronatests.info | Domain |\n| certificationanticovid.com | Domain |\n| covidworkstudy.com | Domain |\n| quarantineache.store | Domain |\n| hospitalidadanticovid.com | Domain |\n| coronacheckapp.nl | Domain |\n| cinikicovid19.co | Domain |\n| solucionesvscovid.com | Domain |\n| corona-poll.nl | Domain |\n| covid19globalalliance.org | Domain |\n| covid19safesigns.com | Domain |\n| anocorona.com | Domain |\n| infopostcovid.com | Domain |\n| mascarillanticovid.com | Domain |\n| donatetocovid.com | Domain |\n| covidprotection.solutions | Domain |\n| covidsafencr.com | Domain |\n| timeincorona.com | Domain |\n| swisstrackcovid.com | Domain |\n| coronastruth.com | Domain |\n| covident.id | Domain |\n| certianticovid.com | Domain |\n| coronavirushealth.com.au | Domain |\n| covidlax.com | Domain |\n| covid419.com | Domain |\n| 45.95.169.253 | IP |\n| 51.89.96.140 | IP |\n| 203.165.90.173 | IP |\n| 23.254.230.216 | IP |\n| 116.153.32.211 | IP |\n| 142.93.7.46 | IP |\n| 45.142.213.171 | IP |\n| 194.35.12.117 | IP |\n| 68.183.195.82 | IP |\n| 141.98.9.161 | IP |\n| 82.118.242.107 | IP |\n| 141.98.81.83 | IP |\n| 195.3.246.202 | IP |\n| 95.111.253.253 | IP |\n| 205.185.122.111 | IP |\n",
+  "EntryContext": {
+    "TAXII2.Indicators(val.value == obj.value)": [
+      {
+        "value": "caronashield.eu",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--025f71f0-6d3f-4764-bd3f-d694d92855dc",
+          "pattern": "[domain-name:value = 'caronashield.eu']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-05-14T00:14:07.138Z",
+          "modified": "2020-05-14T00:14:07.138Z",
+          "name": "suspicious_domain: caronashield.eu",
+          "description": "TS ID: 55475482471; iType: suspicious_domain; Date First: 2020-04-06T21:55:15.500Z; State: active; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:73,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-05-07T14:33:02.717458Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "protectcovid19.fr",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--06989db9-e7ae-4757-a4b4-069543418248",
+          "pattern": "[domain-name:value = 'protectcovid19.fr']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-05-14T00:14:06.512Z",
+          "modified": "2020-05-14T00:14:06.512Z",
+          "name": "phish_domain: protectcovid19.fr",
+          "description": "TS ID: 55469158420; iType: phish_domain; Date First: 2020-04-04T07:03:44.535Z; State: active; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:93,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-05-07T14:33:02.738255Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "covidwarrior.net",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--0c1a3d9a-1d88-472d-abd3-3b49249775d9",
+          "pattern": "[domain-name:value = 'covidwarrior.net']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-05-14T00:14:13.761Z",
+          "modified": "2020-05-14T00:14:13.761Z",
+          "name": "suspicious_domain: covidwarrior.net",
+          "description": "TS ID: 55469158428; iType: suspicious_domain; Date First: 2020-04-04T07:03:37.104Z; State: active; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:78,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-05-07T14:33:02.729313Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "covid19disasterloans.org",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--0ceb46f4-0b2c-41b1-97dc-ce3b50026acb",
+          "pattern": "[domain-name:value = 'covid19disasterloans.org']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-05-14T00:14:09.380Z",
+          "modified": "2020-05-14T00:14:09.380Z",
+          "name": "phish_domain: covid19disasterloans.org",
+          "description": "TS ID: 55469158377; iType: phish_domain; Date First: 2020-04-04T07:05:18.835Z; State: active; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:99,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-05-07T14:33:02.749446Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "2020covid19news.com",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--0fe4ce46-26f0-4ac7-9383-d284685fdc73",
+          "pattern": "[domain-name:value = '2020covid19news.com']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-05-14T00:14:03.125Z",
+          "modified": "2020-05-14T00:14:03.125Z",
+          "name": "phish_domain: 2020covid19news.com",
+          "description": "TS ID: 55469158380; iType: phish_domain; Date First: 2020-04-04T07:04:07.658Z; State: active; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:99,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-05-07T14:33:02.742544Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "coronareliefsupport.com",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--16632600-3284-40ac-8757-529cb47a18be",
+          "pattern": "[domain-name:value = 'coronareliefsupport.com']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-05-14T00:14:08.250Z",
+          "modified": "2020-05-14T00:14:08.250Z",
+          "name": "phish_domain: coronareliefsupport.com",
+          "description": "TS ID: 55469158394; iType: phish_domain; Date First: 2020-04-04T07:05:18.800Z; State: active; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:99,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-05-07T14:33:02.75085Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "coronashop.jp",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--324b207a-53a8-4dda-8241-a3086e32c5ed",
+          "pattern": "[domain-name:value = 'coronashop.jp']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-05-14T00:14:12.980Z",
+          "modified": "2020-05-14T00:14:12.980Z",
+          "name": "phish_domain: coronashop.jp",
+          "description": "TS ID: 55469158424; iType: phish_domain; Date First: 2020-04-04T07:05:18.774Z; State: active; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:92,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-05-07T14:33:02.75228Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "quarantinetales.org",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--338f0626-d357-4777-b67a-1447f7513cd9",
+          "pattern": "[domain-name:value = 'quarantinetales.org']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-05-14T00:14:05.401Z",
+          "modified": "2020-05-14T00:14:05.401Z",
+          "name": "suspicious_domain: quarantinetales.org",
+          "description": "TS ID: 55475482483; iType: suspicious_domain; Date First: 2020-04-06T21:55:08.347Z; State: active; Org: GoDaddy.com, LLC; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:70,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-05-07T14:33:02.714602Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "naturevscoronavirus.website",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--3433fc07-3445-47e7-b8df-f59431603d65",
+          "pattern": "[domain-name:value = 'naturevscoronavirus.website']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-05-14T00:14:14.914Z",
+          "modified": "2020-05-14T00:14:14.914Z",
+          "name": "suspicious_domain: naturevscoronavirus.website",
+          "description": "TS ID: 55475482464; iType: suspicious_domain; Date First: 2020-04-06T21:55:08.271Z; State: active; Org: Variti LLC; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:73,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-05-07T14:33:02.713199Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "loveinquarantimes.net",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--3e659eb2-4ebe-4060-bee2-3941e37f55a7",
+          "pattern": "[domain-name:value = 'loveinquarantimes.net']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-05-14T00:14:11.737Z",
+          "modified": "2020-05-14T00:14:11.737Z",
+          "name": "suspicious_domain: loveinquarantimes.net",
+          "description": "TS ID: 55475482479; iType: suspicious_domain; Date First: 2020-04-06T21:55:09.592Z; State: active; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:72,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-05-07T14:33:02.716017Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "coronashirtshop.com",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--48e58722-639d-4040-bd47-1144f69becf8",
+          "pattern": "[domain-name:value = 'coronashirtshop.com']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-05-14T00:14:00.998Z",
+          "modified": "2020-05-14T00:14:00.998Z",
+          "name": "phish_domain: coronashirtshop.com",
+          "description": "TS ID: 55469158418; iType: phish_domain; Date First: 2020-04-04T07:04:52.552Z; State: active; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:93,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-05-07T14:33:02.743995Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "thecoronavirusrevolution.com",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--497819a5-404f-47f3-90cb-100c20f28437",
+          "pattern": "[domain-name:value = 'thecoronavirusrevolution.com']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-05-14T00:14:11.148Z",
+          "modified": "2020-05-14T00:14:11.148Z",
+          "name": "phish_domain: thecoronavirusrevolution.com",
+          "description": "TS ID: 55469158370; iType: phish_domain; Date First: 2020-04-04T07:03:47.848Z; State: active; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:99,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-05-07T14:33:02.746518Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "onestopcorona.net",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--53783c8d-27a3-4404-a8fc-842ce89c9cac",
+          "pattern": "[domain-name:value = 'onestopcorona.net']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-05-14T00:14:07.709Z",
+          "modified": "2020-05-14T00:14:07.709Z",
+          "name": "suspicious_domain: onestopcorona.net",
+          "description": "TS ID: 55469158430; iType: suspicious_domain; Date First: 2020-04-04T07:01:12.378Z; State: active; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:77,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-05-07T14:33:02.753747Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "quarantaiment.com",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--5c3a198a-e4fd-4465-be66-b34c8dae28e2",
+          "pattern": "[domain-name:value = 'quarantaiment.com']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-05-14T00:14:13.354Z",
+          "modified": "2020-05-14T00:14:13.354Z",
+          "name": "suspicious_domain: quarantaiment.com",
+          "description": "TS ID: 55475482472; iType: suspicious_domain; Date First: 2020-04-06T21:55:06.617Z; State: active; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:73,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-05-07T14:33:02.711449Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "covidforecast.info",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--6cd41353-6450-41a0-9a1c-8dd5e2416cdd",
+          "pattern": "[domain-name:value = 'covidforecast.info']",
+          "confidence": 50,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-05-14T00:14:04.260Z",
+          "modified": "2020-05-14T00:14:04.260Z",
+          "name": "phish_domain: covidforecast.info",
+          "description": "TS ID: 55469158386; iType: phish_domain; Date First: 2020-04-04T07:05:14.672Z; State: active; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:99,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-05-07T14:33:02.723401Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "thehelperscovid19.org",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--78ab6b7e-55f0-4018-ab91-9858a957e598",
+          "pattern": "[domain-name:value = 'thehelperscovid19.org']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-05-14T00:14:16.094Z",
+          "modified": "2020-05-14T00:14:16.094Z",
+          "name": "phish_domain: thehelperscovid19.org",
+          "description": "TS ID: 55469158376; iType: phish_domain; Date First: 2020-04-04T07:01:32.923Z; State: active; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:99,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-05-07T14:33:02.74799Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "covidhomebuyers.org",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--796c776e-2b0c-421c-865e-6fa0d07e16c8",
+          "pattern": "[domain-name:value = 'covidhomebuyers.org']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-05-14T00:14:01.424Z",
+          "modified": "2020-05-14T00:14:01.424Z",
+          "name": "phish_domain: covidhomebuyers.org",
+          "description": "TS ID: 55469158415; iType: phish_domain; Date First: 2020-04-04T07:04:57.119Z; State: active; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:96,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-05-07T14:33:02.736827Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "cabinacoronavirus.com",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--7ecf945f-19d4-48bd-afeb-b04133bf1b4f",
+          "pattern": "[domain-name:value = 'cabinacoronavirus.com']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-05-14T00:14:03.534Z",
+          "modified": "2020-05-14T00:14:03.534Z",
+          "name": "phish_domain: cabinacoronavirus.com",
+          "description": "TS ID: 55469158399; iType: phish_domain; Date First: 2020-04-04T07:01:58.526Z; State: active; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:99,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-05-07T14:33:02.726187Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "thequarantinegeneration.com",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--80613b87-f2b9-4dcf-8502-27820871400c",
+          "pattern": "[domain-name:value = 'thequarantinegeneration.com']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-05-14T00:14:06.012Z",
+          "modified": "2020-05-14T00:14:06.012Z",
+          "name": "suspicious_domain: thequarantinegeneration.com",
+          "description": "TS ID: 55474479406; iType: suspicious_domain; Date First: 2020-04-06T12:55:19.060Z; State: active; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:77,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-05-07T14:33:02.741116Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "covidhaircare.com",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--8e1be1a8-9891-4fef-8b45-7017eec3f65d",
+          "pattern": "[domain-name:value = 'covidhaircare.com']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-05-14T00:14:09.987Z",
+          "modified": "2020-05-14T00:14:09.987Z",
+          "name": "phish_domain: covidhaircare.com",
+          "description": "TS ID: 55474479405; iType: phish_domain; Date First: 2020-04-06T12:55:05.617Z; State: active; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:96,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-05-07T14:33:02.73967Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "corona-schnell-test.de",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--9ffd4012-560d-40ff-8983-176ca4489a7c",
+          "pattern": "[domain-name:value = 'corona-schnell-test.de']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-05-14T00:14:02.325Z",
+          "modified": "2020-05-14T00:14:02.325Z",
+          "name": "suspicious_domain: corona-schnell-test.de",
+          "description": "TS ID: 55475482452; iType: suspicious_domain; Date First: 2020-04-06T21:55:16.249Z; State: active; Org: domainfactory GmbH; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:74,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-05-07T14:33:02.720552Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "covidsurplusstore.com",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--a2890647-b9b9-4586-a28d-8914593ffeb0",
+          "pattern": "[domain-name:value = 'covidsurplusstore.com']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-05-14T00:14:12.314Z",
+          "modified": "2020-05-14T00:14:12.314Z",
+          "name": "phish_domain: covidsurplusstore.com",
+          "description": "TS ID: 55474479403; iType: phish_domain; Date First: 2020-04-06T12:55:13.369Z; State: active; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:98,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-05-07T14:33:02.730833Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "covidsupplyinitiative.org",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--a949fb8f-a923-41c2-879b-27964671e5b6",
+          "pattern": "[domain-name:value = 'covidsupplyinitiative.org']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-05-14T00:14:15.423Z",
+          "modified": "2020-05-14T00:14:15.423Z",
+          "name": "phish_domain: covidsupplyinitiative.org",
+          "description": "TS ID: 55474479400; iType: phish_domain; Date First: 2020-04-06T12:55:09.413Z; State: active; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:99,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-05-07T14:33:02.755171Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "maskforcoronavirussale.com",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--ad7df3d4-beab-4d2e-abc8-c0b8a3cd0a4e",
+          "pattern": "[domain-name:value = 'maskforcoronavirussale.com']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-05-14T00:14:14.264Z",
+          "modified": "2020-05-14T00:14:14.264Z",
+          "name": "phish_domain: maskforcoronavirussale.com",
+          "description": "TS ID: 55469158369; iType: phish_domain; Date First: 2020-04-04T07:04:34.447Z; State: active; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:99,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-05-07T14:33:02.758338Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "covid19-sanitizers.com",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--afc03928-2f17-4abc-a469-bb3b0d796b95",
+          "pattern": "[domain-name:value = 'covid19-sanitizers.com']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-05-14T00:14:01.927Z",
+          "modified": "2020-05-14T00:14:01.927Z",
+          "name": "phish_domain: covid19-sanitizers.com",
+          "description": "TS ID: 55469158401; iType: phish_domain; Date First: 2020-04-04T07:03:44.563Z; State: active; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:99,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-05-07T14:33:02.735116Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "coronawears.com",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--b490df07-a99e-421e-b5f0-5cd6bb1a27ee",
+          "pattern": "[domain-name:value = 'coronawears.com']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-05-14T00:14:16.649Z",
+          "modified": "2020-05-14T00:14:16.649Z",
+          "name": "phish_domain: coronawears.com",
+          "description": "TS ID: 55474479404; iType: phish_domain; Date First: 2020-04-06T12:55:31.004Z; State: active; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:98,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-05-07T14:33:02.75688Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "covidwithmylife.com",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--b758715e-38a4-45e1-8afb-5af95fe913ee",
+          "pattern": "[domain-name:value = 'covidwithmylife.com']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-05-14T00:14:17.288Z",
+          "modified": "2020-05-14T00:14:17.288Z",
+          "name": "phish_domain: covidwithmylife.com",
+          "description": "TS ID: 55469158412; iType: phish_domain; Date First: 2020-04-04T07:01:44.019Z; State: active; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:97,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-05-07T14:33:02.727868Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "quarantineddoc.org",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--b90347a7-3a50-44b7-8642-f714b9ac1d67",
+          "pattern": "[domain-name:value = 'quarantineddoc.org']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-05-14T00:14:00.562Z",
+          "modified": "2020-05-14T00:14:00.562Z",
+          "name": "suspicious_domain: quarantineddoc.org",
+          "description": "TS ID: 55475482460; iType: suspicious_domain; Date First: 2020-04-06T21:55:17.312Z; State: active; Org: GoDaddy.com, LLC; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:74,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-05-07T14:33:02.721981Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "lillycocid19testing.com",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--be8480db-5ca6-40df-af20-ad057d13292c",
+          "pattern": "[domain-name:value = 'lillycocid19testing.com']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-05-14T00:14:02.759Z",
+          "modified": "2020-05-14T00:14:02.759Z",
+          "name": "suspicious_domain: lillycocid19testing.com",
+          "description": "TS ID: 55475482469; iType: suspicious_domain; Date First: 2020-04-06T21:55:15.848Z; State: active; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:73,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-05-07T14:33:02.719127Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "trucovid19tests.com",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--e8ecf511-6379-498f-87e0-e705d64f343a",
+          "pattern": "[domain-name:value = 'trucovid19tests.com']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-05-14T00:14:10.514Z",
+          "modified": "2020-05-14T00:14:10.514Z",
+          "name": "phish_domain: trucovid19tests.com",
+          "description": "TS ID: 55469158390; iType: phish_domain; Date First: 2020-04-04T07:03:44.599Z; State: active; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:99,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-05-07T14:33:02.733698Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "covid-sessions.com",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--f6909f4e-03e2-4d2f-b4e7-44902911bc5e",
+          "pattern": "[domain-name:value = 'covid-sessions.com']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-05-14T00:14:04.854Z",
+          "modified": "2020-05-14T00:14:04.854Z",
+          "name": "phish_domain: covid-sessions.com",
+          "description": "TS ID: 55469158387; iType: phish_domain; Date First: 2020-04-04T07:03:43.779Z; State: active; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:99,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-05-07T14:33:02.724785Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "covid19learning.org",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--f7d91746-0fde-4ac2-b49b-d81d3606b330",
+          "pattern": "[domain-name:value = 'covid19learning.org']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-05-14T00:14:08.923Z",
+          "modified": "2020-05-14T00:14:08.923Z",
+          "name": "phish_domain: covid19learning.org",
+          "description": "TS ID: 55469158389; iType: phish_domain; Date First: 2020-04-04T07:03:04.669Z; State: active; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:99,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-05-07T14:33:02.732269Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "109.234.34.135",
+        "type": "IP",
+        "rawJSON": {
+          "id": "indicator--31b58258-2818-4de5-a071-e5e1c00d64b2",
+          "pattern": "[ipv4-addr:value = '109.234.34.135']",
+          "confidence": 15,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-06-10T01:06:33.051Z",
+          "modified": "2020-06-10T01:06:33.051Z",
+          "name": "mal_ip: 109.234.34.135",
+          "description": "TS ID: 55690171109; iType: mal_ip; Date First: 2020-06-04T04:16:44.804Z; State: active; Org: McHost.Ru; Source: Emerging Threats C&C Server; MoreDetail: imported by user 668",
+          "valid_from": "2020-06-10T01:00:31.668361Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "very-high"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "78.88.188.42",
+        "type": "IP",
+        "rawJSON": {
+          "id": "indicator--434b29b5-4b4a-405b-abb8-aa13053b13a4",
+          "pattern": "[ipv4-addr:value = '78.88.188.42']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-06-10T01:06:33.534Z",
+          "modified": "2020-06-10T01:06:33.534Z",
+          "name": "mal_ip: 78.88.188.42",
+          "description": "TS ID: 55690171166; iType: mal_ip; Date First: 2020-06-04T04:17:57.166Z; State: active; Org: Vectra Broadband; Source: Emerging Threats C&C Server; MoreDetail: imported by user 668",
+          "valid_from": "2020-06-10T01:00:31.672318Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "very-high"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "190.19.169.69",
+        "type": "IP",
+        "rawJSON": {
+          "id": "indicator--c5ff0c28-c086-446e-becc-2dba5f136722",
+          "pattern": "[ipv4-addr:value = '190.19.169.69']",
+          "confidence": 50,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-06-10T01:06:33.885Z",
+          "modified": "2020-06-10T01:06:33.885Z",
+          "name": "mal_ip: 190.19.169.69",
+          "description": "TS ID: 55693777040; iType: mal_ip; Date First: 2020-06-05T05:35:20.203Z; State: active; Org: Cablevision Argentina; Source: Emerging Threats C&C Server; MoreDetail: imported by user 668",
+          "valid_from": "2020-06-10T01:00:31.673724Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "very-high"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "pencecoronafailure.com",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--043e760f-b3c0-47cd-8c0f-6189bb72d62d",
+          "pattern": "[domain-name:value = 'pencecoronafailure.com']",
+          "confidence": 50,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-06-10T01:14:35.698Z",
+          "modified": "2020-06-10T01:14:35.698Z",
+          "name": "phish_domain: pencecoronafailure.com",
+          "description": "TS ID: 55688717574; iType: phish_domain; Date First: 2020-06-03T19:38:06.038Z; State: active; Org: GoDaddy.com, LLC; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:-92,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-06-10T01:00:07.306008Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "podforcovid.com",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--099e93d8-eead-47ed-aefa-425195a32f90",
+          "pattern": "[domain-name:value = 'podforcovid.com']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-06-10T01:14:15.310Z",
+          "modified": "2020-06-10T01:14:15.310Z",
+          "name": "phish_domain: podforcovid.com",
+          "description": "TS ID: 55688717514; iType: phish_domain; Date First: 2020-06-03T22:30:02.240Z; State: active; Org: PDR; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:-94,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-06-10T01:00:07.313108Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "resistenceanticovidbrand.com",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--0b1594d6-54e0-4069-9309-1e494310a9ea",
+          "pattern": "[domain-name:value = 'resistenceanticovidbrand.com']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-06-10T01:14:08.967Z",
+          "modified": "2020-06-10T01:14:08.967Z",
+          "name": "phish_domain: resistenceanticovidbrand.com",
+          "description": "TS ID: 55688717026; iType: phish_domain; Date First: 2020-06-03T19:37:56.362Z; State: active; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:-98,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-06-10T01:00:07.304582Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "coronawaarschuwing.eu",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--0b77e55d-bc32-49bd-a4d1-9da36b930efc",
+          "pattern": "[domain-name:value = 'coronawaarschuwing.eu']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-06-10T01:14:40.798Z",
+          "modified": "2020-06-10T01:14:40.798Z",
+          "name": "suspicious_domain: coronawaarschuwing.eu",
+          "description": "TS ID: 55688717835; iType: suspicious_domain; Date First: 2020-06-03T19:37:48.352Z; State: active; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:-73,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-06-10T01:00:07.295256Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "copcovid.com",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--14fc934a-c14c-4e0a-b747-e239af46db80",
+          "pattern": "[domain-name:value = 'copcovid.com']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-06-10T01:14:34.822Z",
+          "modified": "2020-06-10T01:14:34.822Z",
+          "name": "suspicious_domain: copcovid.com",
+          "description": "TS ID: 55688717726; iType: suspicious_domain; Date First: 2020-06-03T22:30:02.217Z; State: active; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:-83,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-06-10T01:00:07.311734Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "helpstopcovid19.lv",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--19ce53bc-0605-472e-a206-fada96e362c1",
+          "pattern": "[domain-name:value = 'helpstopcovid19.lv']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-06-10T01:14:27.262Z",
+          "modified": "2020-06-10T01:14:27.262Z",
+          "name": "phish_domain: helpstopcovid19.lv",
+          "description": "TS ID: 55688717384; iType: phish_domain; Date First: 2020-06-03T19:36:39.309Z; State: active; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:-97,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-06-10T01:00:07.269931Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "newcorona.com.au",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--1dae2cf3-2c85-43ee-90c9-768b930dae6e",
+          "pattern": "[domain-name:value = 'newcorona.com.au']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-06-10T01:14:12.430Z",
+          "modified": "2020-06-10T01:14:12.430Z",
+          "name": "suspicious_domain: newcorona.com.au",
+          "description": "TS ID: 55688717805; iType: suspicious_domain; Date First: 2020-06-03T22:30:16.170Z; State: active; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:-77,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-06-10T01:00:07.328601Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "checkoncorona.com",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--20e6ef4d-e7ca-4f0e-9491-1b416ca6aa09",
+          "pattern": "[domain-name:value = 'checkoncorona.com']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-06-10T01:14:05.393Z",
+          "modified": "2020-06-10T01:14:05.393Z",
+          "name": "suspicious_domain: checkoncorona.com",
+          "description": "TS ID: 55688717705; iType: suspicious_domain; Date First: 2020-06-03T22:30:09.741Z; State: active; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:-85,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-06-10T01:00:07.321539Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "covid-compliance.co.za",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--2553165b-51c8-464c-b674-016e5ee9472d",
+          "pattern": "[domain-name:value = 'covid-compliance.co.za']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-06-10T01:14:32.892Z",
+          "modified": "2020-06-10T01:14:32.892Z",
+          "name": "suspicious_domain: covid-compliance.co.za",
+          "description": "TS ID: 55688717820; iType: suspicious_domain; Date First: 2020-06-03T22:30:16.274Z; State: active; Org: HETZNER (Pty) Ltd; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:-76,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-06-10T01:00:07.329967Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "bonos-deapoyo-covid19.online",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--2c8ef427-d128-40e3-98dd-85269fd1bb17",
+          "pattern": "[domain-name:value = 'bonos-deapoyo-covid19.online']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-06-10T01:14:14.355Z",
+          "modified": "2020-06-10T01:14:14.355Z",
+          "name": "phish_domain: bonos-deapoyo-covid19.online",
+          "description": "TS ID: 55692869350; iType: phish_domain; Date First: 2020-06-04T20:11:58.209Z; State: active; Org: GoDaddy.com, LLC; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:-99,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-06-10T01:00:07.335733Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "coronahats.de",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--2cdb6d3b-1f8b-4868-9d9d-ca8d639023c0",
+          "pattern": "[domain-name:value = 'coronahats.de']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-06-10T01:14:17.938Z",
+          "modified": "2020-06-10T01:14:17.938Z",
+          "name": "phish_domain: coronahats.de",
+          "description": "TS ID: 55688717442; iType: phish_domain; Date First: 2020-06-03T19:37:48.394Z; State: active; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:-95,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-06-10T01:00:07.299209Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "covidcleanpro.ca",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--2e6a3c40-95b6-403c-9166-528994b80dab",
+          "pattern": "[domain-name:value = 'covidcleanpro.ca']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-06-10T01:14:21.854Z",
+          "modified": "2020-06-10T01:14:21.854Z",
+          "name": "phish_domain: covidcleanpro.ca",
+          "description": "TS ID: 55688717588; iType: phish_domain; Date First: 2020-06-03T19:36:53.890Z; State: active; Org: GoDaddy.com, LLC; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:-91,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-06-10T01:00:07.27431Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "covidsurgeryaustralia.online",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--3549f990-3ece-4346-9696-18417ed7a5a8",
+          "pattern": "[domain-name:value = 'covidsurgeryaustralia.online']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-06-10T01:14:03.033Z",
+          "modified": "2020-06-10T01:14:03.033Z",
+          "name": "phish_domain: covidsurgeryaustralia.online",
+          "description": "TS ID: 55692869341; iType: phish_domain; Date First: 2020-06-04T20:11:46.142Z; State: active; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:-99,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-06-10T01:00:07.334366Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "wuhancemaxingtian.site",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--4c6fb6da-1b1f-40fe-8a0c-70fc022a86f5",
+          "pattern": "[domain-name:value = 'wuhancemaxingtian.site']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-06-10T01:14:01.609Z",
+          "modified": "2020-06-10T01:14:01.609Z",
+          "name": "phish_domain: wuhancemaxingtian.site",
+          "description": "TS ID: 55688717008; iType: phish_domain; Date First: 2020-06-03T19:37:36.459Z; State: active; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:-99,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-06-10T01:00:07.286783Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "coronafightclub.nl",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--580dc740-e32a-4f70-94f9-693238d7e812",
+          "pattern": "[domain-name:value = 'coronafightclub.nl']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-06-10T01:14:00.128Z",
+          "modified": "2020-06-10T01:14:00.128Z",
+          "name": "phish_domain: coronafightclub.nl",
+          "description": "TS ID: 55688717584; iType: phish_domain; Date First: 2020-06-03T19:37:36.415Z; State: active; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:-91,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-06-10T01:00:07.284069Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "coronalivestreamconcerts.com",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--5bfc9f9c-e968-461e-9412-4240378dc56c",
+          "pattern": "[domain-name:value = 'coronalivestreamconcerts.com']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-06-10T01:14:39.020Z",
+          "modified": "2020-06-10T01:14:39.020Z",
+          "name": "suspicious_domain: coronalivestreamconcerts.com",
+          "description": "TS ID: 55688717616; iType: suspicious_domain; Date First: 2020-06-03T19:37:23.344Z; State: active; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:-89,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-06-10T01:00:07.281372Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "isitcovid19.online",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--5c9c8a56-fada-4bb0-9978-18226da0909d",
+          "pattern": "[domain-name:value = 'isitcovid19.online']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-06-10T01:14:42.617Z",
+          "modified": "2020-06-10T01:14:42.617Z",
+          "name": "phish_domain: isitcovid19.online",
+          "description": "TS ID: 55688717004; iType: phish_domain; Date First: 2020-06-03T19:37:36.480Z; State: active; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:-99,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-06-10T01:00:07.28843Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "covidsafetydividers.com",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--621bc73f-309c-4863-bf74-679ca8f9f4bf",
+          "pattern": "[domain-name:value = 'covidsafetydividers.com']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-06-10T01:14:41.759Z",
+          "modified": "2020-06-10T01:14:41.759Z",
+          "name": "suspicious_domain: covidsafetydividers.com",
+          "description": "TS ID: 55688717637; iType: suspicious_domain; Date First: 2020-06-03T19:37:48.373Z; State: active; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:-88,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-06-10T01:00:07.297828Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "covid19-solutions.nl",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--6727496f-cce3-4dce-ad7e-a4e6f4fbda4c",
+          "pattern": "[domain-name:value = 'covid19-solutions.nl']",
+          "confidence": 50,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-06-10T01:14:29.146Z",
+          "modified": "2020-06-10T01:14:29.146Z",
+          "name": "phish_domain: covid19-solutions.nl",
+          "description": "TS ID: 55688717174; iType: phish_domain; Date First: 2020-06-03T19:38:06.088Z; State: active; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:-99,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-06-10T01:00:07.309003Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "coronadocanyondentistree.com",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--69901e22-4c7e-46ff-a46f-8c9e192c0a60",
+          "pattern": "[domain-name:value = 'coronadocanyondentistree.com']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-06-10T01:14:10.592Z",
+          "modified": "2020-06-10T01:14:10.592Z",
+          "name": "phish_domain: coronadocanyondentistree.com",
+          "description": "TS ID: 55688717413; iType: phish_domain; Date First: 2020-06-03T19:37:10.973Z; State: active; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:-97,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-06-10T01:00:07.280002Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "covid-19simulation.co",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--6a0433e6-6011-4ca5-b691-b029e1b286b2",
+          "pattern": "[domain-name:value = 'covid-19simulation.co']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-06-10T01:14:07.733Z",
+          "modified": "2020-06-10T01:14:07.733Z",
+          "name": "phish_domain: covid-19simulation.co",
+          "description": "TS ID: 55681286310; iType: phish_domain; Date First: 2020-06-01T19:25:21.936Z; State: active; Org: Amateur Radio Digital Communications; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:-99,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-06-10T01:00:07.266505Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "covid-status.net",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--6c8f646a-c590-4b0f-8280-49d8fc9767cb",
+          "pattern": "[domain-name:value = 'covid-status.net']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-06-10T01:14:22.782Z",
+          "modified": "2020-06-10T01:14:22.782Z",
+          "name": "phish_domain: covid-status.net",
+          "description": "TS ID: 55688717335; iType: phish_domain; Date First: 2020-06-03T19:37:48.414Z; State: active; Org: Glenayre Electronics; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:-98,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-06-10T01:00:07.300554Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "coronabe.com",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--6d78d7d5-24ae-4757-83ed-7bcd6f3b9794",
+          "pattern": "[domain-name:value = 'coronabe.com']",
+          "confidence": 50,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-06-10T01:14:26.446Z",
+          "modified": "2020-06-10T01:14:26.446Z",
+          "name": "suspicious_domain: coronabe.com",
+          "description": "TS ID: 55688717644; iType: suspicious_domain; Date First: 2020-06-03T19:37:10.953Z; State: active; Org: NatCoWeb Corp.; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:-88,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-06-10T01:00:07.278403Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "detrasdelacorona.com",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--6e980e6e-97ad-4865-a982-6f0e2deb63a7",
+          "pattern": "[domain-name:value = 'detrasdelacorona.com']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-06-10T01:14:36.634Z",
+          "modified": "2020-06-10T01:14:36.634Z",
+          "name": "phish_domain: detrasdelacorona.com",
+          "description": "TS ID: 55688717606; iType: phish_domain; Date First: 2020-06-03T22:30:09.055Z; State: active; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:-90,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-06-10T01:00:07.320197Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "covidvirusfacemask.com",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--7200ab7c-5830-43d8-9d8a-df6582e481f7",
+          "pattern": "[domain-name:value = 'covidvirusfacemask.com']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-06-10T01:14:38.232Z",
+          "modified": "2020-06-10T01:14:38.232Z",
+          "name": "phish_domain: covidvirusfacemask.com",
+          "description": "TS ID: 55688717151; iType: phish_domain; Date First: 2020-06-03T19:37:40.558Z; State: active; Org: GoDaddy.com, LLC; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:-99,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-06-10T01:00:07.293883Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "coronatests.info",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--76635f5e-ffde-4a71-bbed-d8f40a439ecb",
+          "pattern": "[domain-name:value = 'coronatests.info']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-06-10T01:14:30.124Z",
+          "modified": "2020-06-10T01:14:30.124Z",
+          "name": "suspicious_domain: coronatests.info",
+          "description": "TS ID: 55688717620; iType: suspicious_domain; Date First: 2020-06-03T19:37:49.102Z; State: active; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:-88,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-06-10T01:00:07.303257Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "certificationanticovid.com",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--7c2f1008-2b1b-4095-8d4d-0b5494970484",
+          "pattern": "[domain-name:value = 'certificationanticovid.com']",
+          "confidence": 50,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-06-10T01:14:30.990Z",
+          "modified": "2020-06-10T01:14:30.990Z",
+          "name": "phish_domain: certificationanticovid.com",
+          "description": "TS ID: 55688717314; iType: phish_domain; Date First: 2020-06-03T22:30:05.871Z; State: active; Org: Ligne Web Services SARL; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:-98,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-06-10T01:00:07.31744Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "covidworkstudy.com",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--7d8fcdcf-980a-4feb-9b00-0310f6e326a6",
+          "pattern": "[domain-name:value = 'covidworkstudy.com']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-06-10T01:14:18.853Z",
+          "modified": "2020-06-10T01:14:18.853Z",
+          "name": "phish_domain: covidworkstudy.com",
+          "description": "TS ID: 55688717527; iType: phish_domain; Date First: 2020-06-03T19:36:39.287Z; State: active; Org: The Endurance International Group; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:-93,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-06-10T01:00:07.268209Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "quarantineache.store",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--83b4e092-2d86-4329-a894-1956b8faa058",
+          "pattern": "[domain-name:value = 'quarantineache.store']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-06-10T01:14:02.365Z",
+          "modified": "2020-06-10T01:14:02.365Z",
+          "name": "phish_domain: quarantineache.store",
+          "description": "TS ID: 55695978121; iType: phish_domain; Date First: 2020-06-05T21:14:46.524Z; State: active; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:-96,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-06-10T01:00:07.337107Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "hospitalidadanticovid.com",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--916a7e47-36c3-4832-b487-19694e00fbcb",
+          "pattern": "[domain-name:value = 'hospitalidadanticovid.com']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-06-10T01:14:37.503Z",
+          "modified": "2020-06-10T01:14:37.503Z",
+          "name": "suspicious_domain: hospitalidadanticovid.com",
+          "description": "TS ID: 55688717717; iType: suspicious_domain; Date First: 2020-06-03T15:44:59.915Z; State: active; Org: 1&1 Internet AG; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:-84,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-06-10T01:00:07.324521Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "coronacheckapp.nl",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--9f4a281b-e681-4542-9eca-5be2e68720bd",
+          "pattern": "[domain-name:value = 'coronacheckapp.nl']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-06-10T01:14:24.711Z",
+          "modified": "2020-06-10T01:14:24.711Z",
+          "name": "phish_domain: coronacheckapp.nl",
+          "description": "TS ID: 55688717545; iType: phish_domain; Date First: 2020-06-03T19:36:53.917Z; State: active; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:-93,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-06-10T01:00:07.275665Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "cinikicovid19.co",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--aae236c2-02a0-483d-b338-e79273fb11b9",
+          "pattern": "[domain-name:value = 'cinikicovid19.co']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-06-10T01:14:19.903Z",
+          "modified": "2020-06-10T01:14:19.903Z",
+          "name": "phish_domain: cinikicovid19.co",
+          "description": "TS ID: 55688717028; iType: phish_domain; Date First: 2020-06-03T19:37:10.635Z; State: active; Org: Amateur Radio Digital Communications; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:-94,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-06-10T01:00:07.277012Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "solucionesvscovid.com",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--b1b9b526-b47c-4c16-9ebf-a0e37d04b017",
+          "pattern": "[domain-name:value = 'solucionesvscovid.com']",
+          "confidence": 50,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-06-10T01:14:08.427Z",
+          "modified": "2020-06-10T01:14:08.427Z",
+          "name": "phish_domain: solucionesvscovid.com",
+          "description": "TS ID: 55688717482; iType: phish_domain; Date First: 2020-06-03T22:30:17.673Z; State: active; Org: GoDaddy.com, LLC; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:-95,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-06-10T01:00:07.331343Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "corona-poll.nl",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--b42ac4c1-066b-4d91-9240-caea937f94e8",
+          "pattern": "[domain-name:value = 'corona-poll.nl']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-06-10T01:14:06.164Z",
+          "modified": "2020-06-10T01:14:06.164Z",
+          "name": "suspicious_domain: corona-poll.nl",
+          "description": "TS ID: 55688717712; iType: suspicious_domain; Date First: 2020-06-03T19:36:53.845Z; State: active; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:-85,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-06-10T01:00:07.271589Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "covid19globalalliance.org",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--b8a8adb0-f224-436d-887a-59bcb57bab70",
+          "pattern": "[domain-name:value = 'covid19globalalliance.org']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-06-10T01:14:17.109Z",
+          "modified": "2020-06-10T01:14:17.109Z",
+          "name": "phish_domain: covid19globalalliance.org",
+          "description": "TS ID: 55688717317; iType: phish_domain; Date First: 2020-06-03T19:37:36.435Z; State: active; Org: Automattic; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:-98,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-06-10T01:00:07.285443Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "covid19safesigns.com",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--c14867e6-7494-48f8-bb35-9b434ed3903e",
+          "pattern": "[domain-name:value = 'covid19safesigns.com']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-06-10T01:14:25.535Z",
+          "modified": "2020-06-10T01:14:25.535Z",
+          "name": "phish_domain: covid19safesigns.com",
+          "description": "TS ID: 55688717427; iType: phish_domain; Date First: 2020-06-03T19:37:40.520Z; State: active; Org: GoDaddy.com, LLC; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:-96,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-06-10T01:00:07.29116Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "anocorona.com",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--c235e309-c77b-4b20-9e9e-152e17ef48ae",
+          "pattern": "[domain-name:value = 'anocorona.com']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-06-10T01:14:16.282Z",
+          "modified": "2020-06-10T01:14:16.282Z",
+          "name": "suspicious_domain: anocorona.com",
+          "description": "TS ID: 55688717657; iType: suspicious_domain; Date First: 2020-06-03T15:44:58.416Z; State: active; Org: Tibanne Co.,Ltd.; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:-87,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-06-10T01:00:07.327256Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "infopostcovid.com",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--c23fd1d2-511d-4eb9-9f2c-e68a1621b44e",
+          "pattern": "[domain-name:value = 'infopostcovid.com']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-06-10T01:14:28.097Z",
+          "modified": "2020-06-10T01:14:28.097Z",
+          "name": "phish_domain: infopostcovid.com",
+          "description": "TS ID: 55688717509; iType: phish_domain; Date First: 2020-06-03T22:30:08.872Z; State: active; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:-94,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-06-10T01:00:07.318779Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "mascarillanticovid.com",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--c2edd234-6b9d-496d-9de8-be7ea46fb792",
+          "pattern": "[domain-name:value = 'mascarillanticovid.com']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-06-10T01:14:06.965Z",
+          "modified": "2020-06-10T01:14:06.965Z",
+          "name": "phish_domain: mascarillanticovid.com",
+          "description": "TS ID: 55688717577; iType: phish_domain; Date First: 2020-06-03T22:30:05.847Z; State: active; Org: GoDaddy.com, LLC; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:-92,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-06-10T01:00:07.316077Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "donatetocovid.com",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--c4c70efe-0fac-4f07-abc0-30508bc8baa4",
+          "pattern": "[domain-name:value = 'donatetocovid.com']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-06-10T01:14:40.012Z",
+          "modified": "2020-06-10T01:14:40.012Z",
+          "name": "suspicious_domain: donatetocovid.com",
+          "description": "TS ID: 55688717677; iType: suspicious_domain; Date First: 2020-06-03T22:30:14.237Z; State: active; Org: GoDaddy.com, LLC; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:-86,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-06-10T01:00:07.325906Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "covidprotection.solutions",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--cbcfaabe-4117-4305-993a-53ede017a747",
+          "pattern": "[domain-name:value = 'covidprotection.solutions']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-06-10T01:14:04.650Z",
+          "modified": "2020-06-10T01:14:04.650Z",
+          "name": "phish_domain: covidprotection.solutions",
+          "description": "TS ID: 55688717205; iType: phish_domain; Date First: 2020-06-03T19:37:48.435Z; State: active; Org: GoDaddy.com, LLC; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:-99,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-06-10T01:00:07.301914Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "covidsafencr.com",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--cf697656-48c9-4e3d-8177-550a62680549",
+          "pattern": "[domain-name:value = 'covidsafencr.com']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-06-10T01:14:13.409Z",
+          "modified": "2020-06-10T01:14:13.409Z",
+          "name": "phish_domain: covidsafencr.com",
+          "description": "TS ID: 55688717422; iType: phish_domain; Date First: 2020-06-03T19:37:40.539Z; State: active; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:-97,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-06-10T01:00:07.292513Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "timeincorona.com",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--d8b2584d-5af3-4870-a52d-01723bbfa431",
+          "pattern": "[domain-name:value = 'timeincorona.com']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-06-10T01:14:00.850Z",
+          "modified": "2020-06-10T01:14:00.850Z",
+          "name": "suspicious_domain: timeincorona.com",
+          "description": "TS ID: 55688717720; iType: suspicious_domain; Date First: 2020-06-03T22:30:04.763Z; State: active; Org: GoDaddy.com, LLC; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:-84,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-06-10T01:00:07.314454Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "swisstrackcovid.com",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--d8c5251d-753f-41e6-b7a1-fddc7062f5de",
+          "pattern": "[domain-name:value = 'swisstrackcovid.com']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-06-10T01:14:20.936Z",
+          "modified": "2020-06-10T01:14:20.936Z",
+          "name": "suspicious_domain: swisstrackcovid.com",
+          "description": "TS ID: 55688717809; iType: suspicious_domain; Date First: 2020-06-03T22:30:10.384Z; State: active; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:-77,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-06-10T01:00:07.322893Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "coronastruth.com",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--eb5d2bbb-5952-4066-86d3-94552148977a",
+          "pattern": "[domain-name:value = 'coronastruth.com']",
+          "confidence": 50,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-06-10T01:14:03.814Z",
+          "modified": "2020-06-10T01:14:03.814Z",
+          "name": "phish_domain: coronastruth.com",
+          "description": "TS ID: 55688717603; iType: phish_domain; Date First: 2020-06-03T19:36:53.868Z; State: active; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:-90,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-06-10T01:00:07.272941Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "covident.id",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--ee02e841-7c2e-4301-904c-55dac9155bbd",
+          "pattern": "[domain-name:value = 'covident.id']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-06-10T01:14:23.770Z",
+          "modified": "2020-06-10T01:14:23.770Z",
+          "name": "phish_domain: covident.id",
+          "description": "TS ID: 55688717416; iType: phish_domain; Date First: 2020-06-03T19:38:06.065Z; State: active; Org: Namecheap; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:-97,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-06-10T01:00:07.307657Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "certianticovid.com",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--ee7b2aef-dbce-4cfc-9546-2c77d733b8ab",
+          "pattern": "[domain-name:value = 'certianticovid.com']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-06-10T01:14:11.498Z",
+          "modified": "2020-06-10T01:14:11.498Z",
+          "name": "phish_domain: certianticovid.com",
+          "description": "TS ID: 55688717429; iType: phish_domain; Date First: 2020-06-03T22:30:00.867Z; State: active; Org: Ligne Web Services SARL; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:-96,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-06-10T01:00:07.310386Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "coronavirushealth.com.au",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--f56ed60c-88d1-4e5f-97ff-af9694502fda",
+          "pattern": "[domain-name:value = 'coronavirushealth.com.au']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-06-10T01:14:09.769Z",
+          "modified": "2020-06-10T01:14:09.769Z",
+          "name": "phish_domain: coronavirushealth.com.au",
+          "description": "TS ID: 55688717251; iType: phish_domain; Date First: 2020-06-03T19:37:23.367Z; State: active; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:-99,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-06-10T01:00:07.282723Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "covidlax.com",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--f94d88b2-72a8-4fc0-ba23-f9b03524f40f",
+          "pattern": "[domain-name:value = 'covidlax.com']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-06-10T01:14:31.934Z",
+          "modified": "2020-06-10T01:14:31.934Z",
+          "name": "suspicious_domain: covidlax.com",
+          "description": "TS ID: 55688717724; iType: suspicious_domain; Date First: 2020-06-03T19:37:40.500Z; State: active; Org: GoDaddy.com, LLC; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:-83,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-06-10T01:00:07.289803Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "covid419.com",
+        "type": "Domain",
+        "rawJSON": {
+          "id": "indicator--faadf230-4188-45a9-a021-c726f50e966b",
+          "pattern": "[domain-name:value = 'covid419.com']",
+          "confidence": 50,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-06-10T01:14:33.888Z",
+          "modified": "2020-06-10T01:14:33.888Z",
+          "name": "phish_domain: covid419.com",
+          "description": "TS ID: 55692869358; iType: phish_domain; Date First: 2020-06-04T20:11:32.989Z; State: active; Org: Amazon.com; Source: DT COVID-19; Detail: COVID-19,Coronavirus,Domain-Risk-Score:-95,Domainsquatting,Reference:https://www.domaintools.com/resources/blog/free-covid-19-threat-list-domain-risk-assessments-for-coronavirus-threatsSource:-DomainToolsTyposquatting,Source:DomainTools,Typosquatting; MoreDetail: imported by user 668",
+          "valid_from": "2020-06-10T01:00:07.332975Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "medium"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "45.95.169.253",
+        "type": "IP",
+        "rawJSON": {
+          "id": "indicator--0207c825-592b-4c87-8d24-b3613acc5179",
+          "pattern": "[ipv4-addr:value = '45.95.169.253']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-06-10T01:14:37.723Z",
+          "modified": "2020-06-10T01:14:37.723Z",
+          "name": "bot_ip: 45.95.169.253",
+          "description": "TS ID: 55697908054; iType: bot_ip; Date First: 2020-06-06T09:31:41.152Z; State: active; Source: Emerging Threats - Compromised; MoreDetail: imported by user 668",
+          "valid_from": "2020-06-10T01:00:33.811204Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "low"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "51.89.96.140",
+        "type": "IP",
+        "rawJSON": {
+          "id": "indicator--0651a8f6-91aa-40e0-a28e-15130922d444",
+          "pattern": "[ipv4-addr:value = '51.89.96.140']",
+          "confidence": 50,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-06-10T01:14:15.014Z",
+          "modified": "2020-06-10T01:14:15.014Z",
+          "name": "bot_ip: 51.89.96.140",
+          "description": "TS ID: 55694549865; iType: bot_ip; Date First: 2020-06-05T08:42:19.136Z; State: active; Org: OVH SAS; Source: Emerging Threats - Compromised; MoreDetail: imported by user 668",
+          "valid_from": "2020-06-10T01:00:33.77703Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "low"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "203.165.90.173",
+        "type": "IP",
+        "rawJSON": {
+          "id": "indicator--0db39bb2-e106-45af-a05d-733814ce8ed0",
+          "pattern": "[ipv4-addr:value = '203.165.90.173']",
+          "confidence": 50,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-06-10T01:14:38.569Z",
+          "modified": "2020-06-10T01:14:38.569Z",
+          "name": "bot_ip: 203.165.90.173",
+          "description": "TS ID: 55697908019; iType: bot_ip; Date First: 2020-06-06T09:32:25.515Z; State: active; Org: @Home Network Japan; Source: Emerging Threats - Compromised; MoreDetail: imported by user 668",
+          "valid_from": "2020-06-10T01:00:33.832975Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "low"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "23.254.230.216",
+        "type": "IP",
+        "rawJSON": {
+          "id": "indicator--0e7141bb-7877-4300-b55f-a500aed851e8",
+          "pattern": "[ipv4-addr:value = '23.254.230.216']",
+          "confidence": 50,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-06-10T01:14:28.235Z",
+          "modified": "2020-06-10T01:14:28.235Z",
+          "name": "bot_ip: 23.254.230.216",
+          "description": "TS ID: 55691320116; iType: bot_ip; Date First: 2020-06-04T10:32:41.205Z; State: active; Org: Hostwinds LLC.; Source: Emerging Threats - Compromised; MoreDetail: imported by user 668",
+          "valid_from": "2020-06-10T01:00:33.74908Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "low"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "116.153.32.211",
+        "type": "IP",
+        "rawJSON": {
+          "id": "indicator--1093440c-c9ba-41ea-b9d1-f656d83eb3ae",
+          "pattern": "[ipv4-addr:value = '116.153.32.211']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-06-10T01:15:05.420Z",
+          "modified": "2020-06-10T01:15:05.420Z",
+          "name": "bot_ip: 116.153.32.211",
+          "description": "TS ID: 55682983135; iType: bot_ip; Date First: 2020-06-02T07:26:14.023Z; State: active; Org: China Unicom; Source: Emerging Threats - Compromised; MoreDetail: imported by user 668",
+          "valid_from": "2020-06-10T01:00:33.728798Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "low"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "142.93.7.46",
+        "type": "IP",
+        "rawJSON": {
+          "id": "indicator--1ac98fe9-054e-4912-916c-de54b276589d",
+          "pattern": "[ipv4-addr:value = '142.93.7.46']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-06-10T01:14:34.014Z",
+          "modified": "2020-06-10T01:14:34.014Z",
+          "name": "bot_ip: 142.93.7.46",
+          "description": "TS ID: 55686993869; iType: bot_ip; Date First: 2020-06-03T07:30:09.562Z; State: active; Org: Buyers Group of Mississauga; Source: Emerging Threats - Compromised; MoreDetail: imported by user 668",
+          "valid_from": "2020-06-10T01:00:33.74173Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "low"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "45.142.213.171",
+        "type": "IP",
+        "rawJSON": {
+          "id": "indicator--1b5c5581-9d78-40d1-9234-ab7d33e5d2c3",
+          "pattern": "[ipv4-addr:value = '45.142.213.171']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-06-10T01:14:57.193Z",
+          "modified": "2020-06-10T01:14:57.193Z",
+          "name": "bot_ip: 45.142.213.171",
+          "description": "TS ID: 55694549857; iType: bot_ip; Date First: 2020-06-05T08:44:22.742Z; State: active; Source: Emerging Threats - Compromised; MoreDetail: imported by user 668",
+          "valid_from": "2020-06-10T01:00:33.790039Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "low"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "194.35.12.117",
+        "type": "IP",
+        "rawJSON": {
+          "id": "indicator--1bbc17c7-ee2d-4cd4-b4f5-79d81f274dab",
+          "pattern": "[ipv4-addr:value = '194.35.12.117']",
+          "confidence": 50,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-06-10T01:14:59.934Z",
+          "modified": "2020-06-10T01:14:59.934Z",
+          "name": "bot_ip: 194.35.12.117",
+          "description": "TS ID: 55697907985; iType: bot_ip; Date First: 2020-06-06T09:32:25.540Z; State: active; Org: TT1 Datacenter UG (haftungsbeschraenkt); Source: Emerging Threats - Compromised; MoreDetail: imported by user 668",
+          "valid_from": "2020-06-10T01:00:33.834664Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "low"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "68.183.195.82",
+        "type": "IP",
+        "rawJSON": {
+          "id": "indicator--2b6c89b0-0282-4f69-9eb3-679ae6fd3d62",
+          "pattern": "[ipv4-addr:value = '68.183.195.82']",
+          "confidence": 50,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-06-10T01:14:45.055Z",
+          "modified": "2020-06-10T01:14:45.055Z",
+          "name": "bot_ip: 68.183.195.82",
+          "description": "TS ID: 55682992590; iType: bot_ip; Date First: 2020-06-02T07:26:38.232Z; State: active; Org: DSL Extreme; Source: Emerging Threats - Compromised; MoreDetail: imported by user 668",
+          "valid_from": "2020-06-10T01:00:33.730185Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "low"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "141.98.9.161",
+        "type": "IP",
+        "rawJSON": {
+          "id": "indicator--2c9a924a-f1fd-4b93-a97a-1a871644c993",
+          "pattern": "[ipv4-addr:value = '141.98.9.161']",
+          "confidence": 50,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-06-10T01:14:31.431Z",
+          "modified": "2020-06-10T01:14:31.431Z",
+          "name": "bot_ip: 141.98.9.161",
+          "description": "TS ID: 55691320109; iType: bot_ip; Date First: 2020-06-04T10:32:35.864Z; State: active; Source: Emerging Threats - Compromised; MoreDetail: imported by user 668",
+          "valid_from": "2020-06-10T01:00:33.744888Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "low"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "82.118.242.107",
+        "type": "IP",
+        "rawJSON": {
+          "id": "indicator--32ce5d2e-360a-49a5-8bf5-7109b7303257",
+          "pattern": "[ipv4-addr:value = '82.118.242.107']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-06-10T01:14:23.030Z",
+          "modified": "2020-06-10T01:14:23.030Z",
+          "name": "bot_ip: 82.118.242.107",
+          "description": "TS ID: 55694549872; iType: bot_ip; Date First: 2020-06-05T08:45:32.649Z; State: active; Org: Lir.bg EOOD; Source: Emerging Threats - Compromised; MoreDetail: imported by user 668",
+          "valid_from": "2020-06-10T01:00:33.803069Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "low"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "141.98.81.83",
+        "type": "IP",
+        "rawJSON": {
+          "id": "indicator--3770ae39-b7d8-495b-932b-41d78f4ff9a5",
+          "pattern": "[ipv4-addr:value = '141.98.81.83']",
+          "confidence": 50,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-06-10T01:15:08.343Z",
+          "modified": "2020-06-10T01:15:08.343Z",
+          "name": "bot_ip: 141.98.81.83",
+          "description": "TS ID: 55691320108; iType: bot_ip; Date First: 2020-06-04T10:33:01.490Z; State: active; Source: Emerging Threats - Compromised; MoreDetail: imported by user 668",
+          "valid_from": "2020-06-10T01:00:33.757997Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "low"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "195.3.246.202",
+        "type": "IP",
+        "rawJSON": {
+          "id": "indicator--3863bc33-d44a-4bfb-af18-5616f92702b8",
+          "pattern": "[ipv4-addr:value = '195.3.246.202']",
+          "confidence": 85,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-06-10T01:15:02.974Z",
+          "modified": "2020-06-10T01:15:02.974Z",
+          "name": "bot_ip: 195.3.246.202",
+          "description": "TS ID: 55694549843; iType: bot_ip; Date First: 2020-06-05T08:45:32.682Z; State: active; Org: CrimeaCom South LLC; Source: Emerging Threats - Compromised; MoreDetail: imported by user 668",
+          "valid_from": "2020-06-10T01:00:33.804508Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "low"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "95.111.253.253",
+        "type": "IP",
+        "rawJSON": {
+          "id": "indicator--3ab57759-c9be-4fe3-a241-f54a6f685ae2",
+          "pattern": "[ipv4-addr:value = '95.111.253.253']",
+          "confidence": 50,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-06-10T01:14:48.871Z",
+          "modified": "2020-06-10T01:14:48.871Z",
+          "name": "bot_ip: 95.111.253.253",
+          "description": "TS ID: 55694549877; iType: bot_ip; Date First: 2020-06-05T08:42:17.877Z; State: active; Org: Intertelecom Ltd(PDSN UNC); Source: Emerging Threats - Compromised; MoreDetail: imported by user 668",
+          "valid_from": "2020-06-10T01:00:33.774243Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "low"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      },
+      {
+        "value": "205.185.122.111",
+        "type": "IP",
+        "rawJSON": {
+          "id": "indicator--3c1979f6-2c76-4d12-ae4d-599af59f1e9f",
+          "pattern": "[ipv4-addr:value = '205.185.122.111']",
+          "confidence": 15,
+          "lang": "en",
+          "type": "indicator",
+          "created": "2020-06-10T01:14:40.991Z",
+          "modified": "2020-06-10T01:14:40.991Z",
+          "name": "bot_ip: 205.185.122.111",
+          "description": "TS ID: 55691320115; iType: bot_ip; Date First: 2020-06-04T10:33:05.119Z; State: active; Org: FranTech Solutions; Source: Emerging Threats - Compromised; MoreDetail: imported by user 668",
+          "valid_from": "2020-06-10T01:00:33.759485Z",
+          "pattern_type": "stix",
+          "object_marking_refs": [
+            "marking-definition--34098fce-860f-48ae-8e50-ebd3cc5e41da"
+          ],
+          "labels": [
+            "low"
+          ],
+          "indicator_types": [
+            "anomalous-activity"
+          ],
+          "pattern_version": "2.1",
+          "spec_version": "2.1"
+        }
+      }
+    ]
+  }
+}

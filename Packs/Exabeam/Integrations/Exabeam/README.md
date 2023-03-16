@@ -2,13 +2,15 @@ The Exabeam Security Management Platform provides end-to-end detection, User Eve
 This integration was integrated and tested with version 53.5 of Exabeam.
 
 ### Authentication Methods
-
-In addition to the User Credentials authentication method, **Exabeam Cloud** users can authenticate using a **Cluster Authentication Token**. To authenticate with a Cluster Authentication Token, insert `__token` in the "Username" parameter, and the token itself in the "Password" parameter.
-
+There are 2 authentication methods:
+ - **API Token** - API token should be entered in the “API Token” parameter. In order to use the “Fetch Incident” functionality in this integration, the username must be provided also in the “Username” parameter.
+ - **Basic Authentication** - Providing username and password in the corresponding parameters in the configuration. This method also allows fetching incidents.
+ - ***Deprecated***:
+ API Key entered in the “password” parameter and `__token` in the username parameter. This method won’t allow fetching incidents.
 
 ### Generate a Cluster Authentication Token
 
-1. Navigate to Settings > Admin Operations > Cluster Authentication Token.
+1. Navigate to **Settings** > **Admin Operations** > **Cluster Authentication Token**.
 
 2. At the Cluster Authentication Token menu, click the blue `+` button.
    
@@ -27,7 +29,16 @@ For additional information, refer to [Exabeam Administration Guide](https://docs
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Server URL (e.g https://100.24.16.156:8484) |  | True |
-    | Username | In order to authenticate with a Cluster Authentication Token, insert \`__token\` in the "Username" textbox, and the token itself in the "Password" textbox. | True |
+    | Username |  | False |
+    | Password |  | False |
+    | API Token | Cluster Authentication Token | False |
+    | Exabeam Incident Type | Incident type to filter in Exabeam. Possible values are: generic, abnormalAuth, accountManipulation, accountTampering, ueba, bruteForce, compromisedCredentials, cryptomining, dataAccessAbuse, dataExfiltration, dlp, departedEmployee, dataDestruction, evasion, lateralMovement, alertTriage, malware, phishing, privilegeAbuse, physicalSecurity, privilegeEscalation, privilegedActivity, ransomware, workforceProtection. | False |
+    | Priority | Incident priority to filter in Exabeam. Possible values are: low, medium, high, critical. | False |
+    | Status | Incident status to filter in Exabeam. Possible values are: closed, closedFalsePositive, inprogress, new, pending, resolved. | False |
+    | Fetch incidents |  | False |
+    | Max incidents per fetch |  | False |
+    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
+    | Incident type |  | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
 
@@ -516,7 +527,7 @@ Gets next events for a given asset.
 | --- | --- | --- |
 | asset_id | ID of the asset. | Required | 
 | event_time | The event time, e.g. "2 years ago" or "2019-02-27". | Required | 
-| number_of_events | Preffered number of events. Default is 50. | Optional | 
+| number_of_events | Preferred number of events. Default is 50. | Optional | 
 | anomaly_only | Whether to return only anomaly events. Possible values are: true, false. Default is false. | Optional | 
 | event_types | A comma-separated list of event types. | Optional | 
 | event_types_operator | Whether or not to include the specified event types. Possible values are: include, exclude. Default is exclude. | Optional | 
@@ -870,7 +881,7 @@ Gets the assets of a specified watchlist according to a keyword.
 | --- | --- | --- |
 | keyword | A keyword to search. | Required | 
 | watchlist_id | The watchlist ID. | Required | 
-| limit | Maximum nmber of results to retrieve. Default is 30. | Optional | 
+| limit | Maximum number of results to retrieve. Default is 30. | Optional | 
 | is_exclusive | Whether or not the item is exclusive on watchlist. Possible values are: true, false. Default is false. | Optional | 
 | search_by_ip | Whether or not to search the item by its IP. Possible values are: true, false. Default is false. | Optional | 
 
@@ -1319,3 +1330,46 @@ Returns sequence event types for the given asset sequence ID and time range.
 
 #### Command Example
 ```!exabeam-get-sequence-eventtypes asset_sequence_id=asset_sequence_id search_str="search_str"```
+
+
+### exabeam-list-incident
+***
+Returns incidents from Exabeam.
+
+#### Base Command
+
+`exabeam-list-incident`
+#### Input
+
+| **Argument Name** | **Description**                                                            | **Required** |
+|-------------------|----------------------------------------------------------------------------| --- |
+| incident_id       | The incident ID.                                                           | Optional | 
+| query             | Query string which is a combination of incident type, priority and status. | Optional | 
+| incident_type     | Incident type to filter in Exabeam.                        | Optional | 
+| priority          | Incident priority to filter in Exabeam.                  | Optional |
+| status            | Incident status to filter in Exabeam.                    | Optional |
+| limit             | Maximum number of rules to retrieve. Default is 50.                        | Optional | 
+| page_size         | Number of total results in each page. Default is 25.                                         | Optional | 
+| page_number       | Specific page to query.                                  | Optional |
+| username       | When the instance is configure by an API key, it must be used with the username argument.                                  | Optional |
+
+
+#### Context Output
+
+| **Path**                              | **Type** | **Description**                  |
+|---------------------------------------| --- |----------------------------------|
+| Exabeam.incidents.incidentId          | String | The ID of the incident.          | 
+| Exabeam.incidents.name                | String | The name of the incident.        | 
+| Exabeam.incidents.fields.startedDate  | Date | The starting date of the incident.     | 
+| Exabeam.incidents.fields.closedDate   | Date | The ending date of the incident.   | 
+| Exabeam.incidents.fields.createdAt    | Date | The creation date of the incident.  | 
+| Exabeam.incidents.fields.owner        | String | The incident owner.       | 
+| Exabeam.incidents.fields.status       | String | The incident status.      | 
+| Exabeam.incidents.fields.incidentType | String | The incident type.        | 
+| Exabeam.incidents.fields.source       | String | The incident source.      | 
+| Exabeam.incidents.fields.priority     | String | The incident priority.   | 
+| Exabeam.incidents.fields.queue        | String | The incident queue.       | 
+| Exabeam.incidents.fields.description  | String | The incident description. | 
+
+#### Command Example
+```!exabeam-list-incident priority=high```

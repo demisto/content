@@ -1,0 +1,301 @@
+id: Search all mailboxes - Gmail with polling
+version: -1
+name: Search all mailboxes - Gmail with polling
+description: This playbook searches Gmail records for all Google users, designed for large companies with over 2500 Google users.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 543bfdb9-dd11-4956-84d7-613584e8737a
+    type: start
+    task:
+      id: 543bfdb9-dd11-4956-84d7-613584e8737a
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: dd127952-ee61-4659-82b8-345b555d57e9
+    type: title
+    task:
+      id: dd127952-ee61-4659-82b8-345b555d57e9
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 49e6a7e7-5b80-4be3-8a6e-9da4856d252c
+    type: regular
+    task:
+      id: 49e6a7e7-5b80-4be3-8a6e-9da4856d252c
+      version: -1
+      name: DeleteContext
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+      keysToKeep:
+        simple: Gmail,SearchingAccounts
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: b377f60a-0aa1-41aa-8692-8a019a6dd430
+    type: playbook
+    task:
+      id: b377f60a-0aa1-41aa-8692-8a019a6dd430
+      version: -1
+      name: Search in mailboxes Gmail (Loop) with polling
+      description: This playbook should only run as a sub-playbook for the Search-all-mailboxes - Gmail playbook, it should not run alone.
+      playbookName: Search in mailboxes Gmail (Loop) with polling
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      after:
+        complex:
+          root: inputs.after
+      before:
+        complex:
+          root: inputs.before
+      fields:
+        complex:
+          root: inputs.fields
+      filename:
+        complex:
+          root: inputs.filename
+      from:
+        complex:
+          root: inputs.from
+      has-attachments:
+        complex:
+          root: inputs.has-attachments
+      in:
+        complex:
+          root: inputs.in
+      include-spam-trash:
+        complex:
+          root: inputs.include-spam-trash
+      labels-ids:
+        complex:
+          root: inputs.labels-ids
+      page-token:
+        complex:
+          root: NewPageToken
+      query:
+        complex:
+          root: inputs.query
+      search_from:
+        complex:
+          root: SearchFromAccountIndex
+      search_to:
+        complex:
+          root: SearchToAccountIndex
+      subject:
+        complex:
+          root: inputs.subject
+      to:
+        complex:
+          root: inputs.to
+    separatecontext: false
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      builtincondition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Stop
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+      exitCondition: ""
+      wait: 5
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 560,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: after
+  value: {}
+  required: false
+  description: Search for messages sent after a specific date. For example, 2018/05/06
+  playbookInputQuery:
+- key: before
+  value: {}
+  required: false
+  description: Search for messages sent before a specific date. For example, 2018/05/09
+  playbookInputQuery:
+- key: fields
+  value: {}
+  required: false
+  description: Enables partial responses to be retrieved in a comma-separated list. For more information, see https://developers.google.com/gdata/docs/2.0/basics#PartialResponse.
+  playbookInputQuery:
+- key: filename
+  value: {}
+  required: false
+  description: Attachments with a certain name or file type. For example, "pdf" or "report.pdf"
+  playbookInputQuery:
+- key: from
+  value: {}
+  required: false
+  description: Specifies the sender. For example, "john"
+  playbookInputQuery:
+- key: to
+  value: {}
+  required: false
+  description: Specifies the receiver. For example, "john"
+  playbookInputQuery:
+- key: has-attachments
+  value: {}
+  required: false
+  description: Whether to search for messages sent with attachments.
+  playbookInputQuery:
+- key: in
+  value: {}
+  required: false
+  description: Messages in any folder, including Spam and Trash. For example, shopping
+  playbookInputQuery:
+- key: include-spam-trash
+  value: {}
+  required: false
+  description: 'Includes messages from SPAM and TRASH in the results. (Default: false)'
+  playbookInputQuery:
+- key: labels-ids
+  value: {}
+  required: false
+  description: Returns messages with labels that match all of the specified label IDs in a comma-separated list.
+  playbookInputQuery:
+- key: subject
+  value: {}
+  required: false
+  description: Words in the subject line. For example, "alert"
+  playbookInputQuery:
+- key: query
+  value: {}
+  required: false
+  description: 'Returns messages matching the specified query. Supports the same query format as the Gmail search box. For example, "from:someuser@example.com rfc822msgid: is:unread". For more syntax information,see "https://support.google.com/mail/answer/7190?hl=en"'
+  playbookInputQuery:
+outputs:
+- contextPath: Gmail.Mailboxes
+  description: The Gmail mailbox.
+- contextPath: Gmail.ID
+  description: The inner ID of the Gmail message.
+- contextPath: Gmail.ThreadId
+  description: The thread ID.
+- contextPath: Gmail.Format
+  description: The MIME type of the email.
+- contextPath: Gmail.Labels
+  description: The labels of a specific email.
+- contextPath: Gmail.To
+  description: The email address of the receiver.
+- contextPath: Gmail.From
+  description: The email address of the sender.
+- contextPath: Gmail.Cc
+  description: The additional recipient email address (CC).
+- contextPath: Gmail.Bcc
+  description: The additional recipient email address (BCC).
+- contextPath: Gmail.Subject
+  description: The subject of the specific email.
+- contextPath: Gmail.Body
+  description: The content of the email.
+- contextPath: Gmail.Attachments
+  description: The attachments of the email. IDs are separated by commas.
+- contextPath: Gmail.Headers
+  description: All headers of a specific mail (list).
+tests:
+- No tests
+fromversion: 6.5.0

@@ -2,7 +2,7 @@
     "name": "Cortex Attack Surface Management",
     "description": "Content for working with Attack Surface Management (ASM).",
     "support": "xsoar",
-    "currentVersion": "1.2.5",
+    "currentVersion": "1.5.8",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -19,29 +19,41 @@
         "Palo Alto Networks"
     ],
     "dependencies": {
-        "Nmap": {
+        "AWS-Enrichment-Remediation": {
             "mandatory": false,
-            "display_name": "Nmap"
+            "display_name": "AWS Enrichment and Remediation"
+        },
+        "Azure-Enrichment-Remediation": {
+            "mandatory": false,
+            "display_name": "Azure Enrichment and Remediation"
         },
         "CommonScripts": {
             "mandatory": true,
             "display_name": "Common Scripts"
         },
-        "AWS-Enrichment-Remediation": {
+        "GCP-Enrichment-Remediation": {
             "mandatory": false,
-            "display_name": "AWS Enrichment and Remediaton"
+            "display_name": "GCP Enrichment and Remediation"
         },
-        "Tenable_io": {
+        "Nmap": {
             "mandatory": false,
-            "display_name": "Tenable.io"
+            "display_name": "Nmap"
         },
-        "CoreAlertFields": {
-            "mandatory": true,
-            "display_name": "Core Alert Fields"
+        "Rapid7_Nexpose": {
+            "mandatory": false,
+            "display_name": "Rapid7 Nexpose"
+        },
+        "SplunkPy": {
+            "mandatory": false,
+            "display_name": "Splunk"
         },
         "ServiceNow": {
             "mandatory": false,
             "display_name": "ServiceNow"
+        },
+        "Tenable_io": {
+            "mandatory": false,
+            "display_name": "Tenable.io"
         }
     },
     "marketplaces": [
@@ -52,10 +64,14 @@
         "ASM"
     ],
     "displayedImages": [
-        "CoreAlertFields",
-        "ServiceNow",
-        "Nmap",
+        "AWS-Enrichment-Remediation",
+        "Azure-Enrichment-Remediation",
         "CommonScripts",
-        "AWS-Enrichment-Remediation"
+        "GCP-Enrichment-Remediation",
+        "Nmap",
+        "Rapid7_Nexpose",
+        "SplunkPy",
+        "ServiceNow",
+        "Tenable_io"
     ]
 }

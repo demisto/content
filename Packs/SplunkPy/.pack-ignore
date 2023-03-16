@@ -1,5 +1,5 @@
 [file:SplunkPy.yml]
-ignore=IN126,IN135,IN145
+ignore=IN126,IN135
 
 [file:README.md]
 ignore=RM106
@@ -29,6 +29,8 @@ ignore=IM111
 [known_words]
 Splunk
 SplunkPy
+HEC
+splunk-search
 
 [file:classifier-SplunkPy.json]
 ignore=BA101

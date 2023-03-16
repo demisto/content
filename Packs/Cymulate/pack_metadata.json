@@ -2,13 +2,13 @@
     "name": "Cymulate",
     "description": "You can now verify your security posture on-demand using the Cymulate integration, which allows you to launch simulations of cyberattacks, breach, and attacks against yourself",
     "support": "partner",
-    "currentVersion": "2.0.14",
+    "currentVersion": "2.0.17",
     "author": "Cymulate",
     "url": "",
     "email": "support@cymulate.com",
     "created": "2020-03-23T08:00:00Z",
     "categories": [
-        "Data Enrichment & Threat Intelligence"
+        "Deception & Breach Simulation"
     ],
     "tags": [],
     "useCases": [],

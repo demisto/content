@@ -1,43 +1,50 @@
-Simplifies the process of creating a new issue in Jira. Fields can be added in the record as script arguments and or in the code, and have a newly created issue easily.
+This script is used to simplify the process of creating a new Issue in Jira. 
+You can specify custom fields using the `customFields` argument.
+
 
 ## Script Data
 ---
 
 | **Name** | **Description** |
 | --- | --- |
-| Script Type | python |
+| Script Type | python3 |
 | Tags | jira, example |
-
+| Cortex XSOAR Version | 5.0.0 |
 
 ## Dependencies
 ---
 This script uses the following commands and scripts.
-* jira-delete-issue
 * jira-create-issue
+
+## Used In
+---
+This script is used in the following playbooks and scripts.
+* Indeni Demo
 
 ## Inputs
 ---
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| summary | The summary of the issue. (mandatory) |
-| projectKey | The issue that will be associated with the project key. |
-| issueTypeName | Select the issue type by name. For example, "Problem". |
-| issueTypeId | Select the issue type by its numeric ID. |
-| projectName | The project name to associate the issue with. |
-| description | The issue description. |
-| labels | The comma-separated list of labels.  |
-| priority | The priorty name. For example, "High" or "Medium". |
-| dueDate | The due date for the issue, in format: "2018-03-11" |
-| assignee | The assignee name. |
-| reporter | The reporter name. |
-| parentIssueKey | The parent issue key, if a sub-task was created. |
-| parentIssueId | The parent issue ID, if a sub-task was created. |
+| summary | Summary of the issue, a mandatory field |
+| projectKey | Project key to associate the issue |
+| issueTypeName | Choose issue type by name - e.g. Problem |
+| issueTypeId | Choose issue type by its numeric ID |
+| projectName | Project name to associate the issue |
+| description | Issue description |
+| labels | comma separated list of labels |
+| priority | priority name, e.g. High/Medium. |
+| dueDate | Due date for the issue, in format YYYY-MM-DD |
+| assignee | assignee name |
+| reporter | reporter name |
+| parentIssueKey | Parent issue key if you create a sub-task |
+| parentIssueId | Parent issue ID if you create a sub-task |
+| customFields | Comma-separated custom field keys and values to include in the created incident, e.g. \`customfield_10101=foo,customfield_10102=bar\` |
 
 ## Outputs
 ---
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| Ticket.Id | The ID of the ticket. | Unknown |
-| Ticket.Key | The key of the ticket. | Unknown |
+| Ticket.Id | Id of ticket | Unknown |
+| Ticket.Key | Key of ticket | Unknown |

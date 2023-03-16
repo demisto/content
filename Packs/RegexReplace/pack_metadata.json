@@ -1,8 +1,8 @@
 {
-    "name": "RegexReplace",
-    "description": "A transformer to do re.sub() which replaces a sub-string matched with a regex pattern. It supports group reference like \\1 in formatting.",
+    "name": "RegexReplace (Deprecated)",
+    "description": "Deprecated. Use Filters And Transformers instead.",
     "support": "community",
-    "currentVersion": "1.0.2",
+    "currentVersion": "1.0.3",
     "author": "Masahiko Inoue",
     "url": "",
     "email": "",

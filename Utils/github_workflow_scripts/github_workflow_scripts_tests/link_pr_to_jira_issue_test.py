@@ -113,4 +113,4 @@ def test_trigger_generic_webhook(requests_mock, is_merged, expected):
     assert 'raw_json' in res
     assert 'closeIssue' in res.get('raw_json')
     assert res.get('raw_json').get('JiraIssues') == expected
-    assert res.get('raw_json').get('closeIssue') == is_merged
+    assert res.get('raw_json').get('closeIssue') == str(is_merged).lower()

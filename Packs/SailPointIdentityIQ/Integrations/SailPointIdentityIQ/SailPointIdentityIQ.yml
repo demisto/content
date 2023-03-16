@@ -81,6 +81,10 @@ script:
       name: active
     - description: Numeric value of baseline risk score, users above this will be returned.
       name: risk
+    - description: Use custom filter to find user in IIQ. Filter should be like `userName co "ACTIVE_DIRECTORY_" and userName co "<USER-NAME>" and active eq true and userType eq "Service"`
+                   or `emails.value eq "example@example.com" and active eq true and userType eq "person"`.
+                   Note that if you use this argument to filter then the other argument filters will not be taken into account in the search filter.
+      name: filter
     description: Search identities by search/filter parameters (id, email, risk & active) using IdentityIQ SCIM API's.
     name: identityiq-search-identities
     outputs:
@@ -466,7 +470,7 @@ script:
     - contextPath: IdentityIQ.Alert.application
       description: List of applications that are related to this alert.
       type: String
-  dockerimage: demisto/python3:3.10.8.37233
+  dockerimage: demisto/python3:3.10.9.42476
   isfetch: true
   runonce: false
   script: ''

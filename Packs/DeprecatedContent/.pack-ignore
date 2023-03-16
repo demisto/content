@@ -810,3 +810,6 @@ ignore=PB104
 
 [file:playbook-Process_Email.yml]
 ignore=PB104
+
+[file:AzureSecurityCenter_image.png]
+ignore=IM111

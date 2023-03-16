@@ -10,15 +10,6 @@ To allow Cortex XSOAR access to the Microsoft Management Activity API you will b
 3. When prompted, accept the Microsoft authorization request for the required permissions.
 You will get an ID, Token, and Key, which you need to enter in the corresponding fields when configuring an integration instance.
 
-## Self-Deployed Configuration
-1. Enter the following URL
-(**Note**: CLIENT_ID and REDIRECT_URI should be replaced by your own client ID and redirect URI, accordingly):
-`https://login.windows.net/common/oauth2/authorize?response_type=code&resource=https://manage.office.com&client_id=CLIENT_ID&redirect_uri=REDIRECT_URI`
-1. When prompted, accept the Microsoft authorization request for the required permissions.
-2. The URL will change and will have the following structure:
-SOME_PREFIX?code=AUTH_CODE&session_state=SESSION_STATE
-Take the AUTH_CODE (without the “code=” prefix) and enter it to the instance configuration under the “Authentication” code section.
-Moreover, enter your client secret as the “Key” parameter and your client ID as the “ID” parameter. 
 
 ## Configure Microsoft Management Activity API (O365 Azure Events) on Cortex XSOAR
 
@@ -37,6 +28,8 @@ Moreover, enter your client secret as the “Key” parameter and your client ID
     | Use a self-deployed Azure application | Whether to use a selp-deployed application. | False |
     | Application redirect URI (for self-deployed mode) | The app registration redirect URI. | False |
     | The authentication code you got for the service | For instructions on how to receive it, see the Help tab. | False |
+    | Use Azure Managed Identities | Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab. | False |
+    | Azure Managed Identities Client ID | The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM. | False |
     | Trust any certificate (not secure) | Whether to trust any certificate. If set to True, is not secure. | False |
     | Use system proxy settings | Whether to use system proxy settings. | False |
     | First fetch time range | &lt;number&gt; &lt;time unit&gt;, for example 1 hour, 30 minutes. | False |
@@ -267,6 +260,33 @@ Returns all content of a specific content type.
 | 1111111-aaaa-bbbb | 2020-04-26T10:10:10 | MicrosoftTeams | TeamsSessionStarted |
 | 2222222-vvvv-gggg | 2020-04-26T09:09:09 | MicrosoftTeams | MemberAdded |
 
+
+### ms-management-activity-generate-login-url
+***
+Generate the login url used for Authorization code flow.
+
+#### Base Command
+
+`ms-management-activity-generate-login-url`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```ms-management-activity-generate-login-url```
+
+#### Human Readable Output
+
+>### Authorization instructions
+>1. Click on the [login URL]() to sign in and grant Cortex XSOAR permissions for your Azure Service Management.
+You will be automatically redirected to a link with the following structure:
+```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```
+>2. Copy the `AUTH_CODE` (without the `code=` prefix, and the `session_state` parameter)
+and paste it in your instance configuration under the **Authorization code** parameter.
 
 ## Additional Information
 Record types to fetch from should be set with numerical values from the [Microsoft documentation](https://docs.microsoft.com/en-us/office/office-365-management-api/office-365-management-activity-api-schema#auditlogrecordtype). For example, in order to fetch events of type **MailSubmission**, the value **29** should be set.

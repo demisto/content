@@ -5,11 +5,11 @@ from CommonServerPython import *
 from requests import Response
 from contextlib import closing
 import json
-import requests
 import dateparser
 from typing import Dict, List, Optional, Tuple, Iterable
+import urllib3
 
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'

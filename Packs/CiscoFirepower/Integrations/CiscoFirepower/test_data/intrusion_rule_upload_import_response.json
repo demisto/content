@@ -1,0 +1,43 @@
+{
+    "summary": {
+        "added": {
+            "count": 0,
+            "type": "ruleimportsummaryentry"
+        },
+        "updated": {
+            "count": 0,
+            "type": "ruleimportsummaryentry"
+        },
+        "deleted": {
+            "count": 0,
+            "type": "ruleimportsummaryentry"
+        },
+        "skipped": {
+            "count": 2,
+            "rules": [
+                "2000:1000002",
+                "2000:1000003"
+            ],
+            "type": "ruleimportsummaryentry"
+        },
+        "unassociated": {
+            "count": 0,
+            "type": "ruleimportsummaryentry"
+        },
+        "type": "ruleimportsummary"
+    },
+    "ruleGroups": [
+        {
+            "name": "TestGroupUpdate12",
+            "id": "ruleGroups[0]_id",
+            "type": "IntrusionRuleGroup"
+        }
+    ],
+    "validateOnly": false,
+    "files": [
+        {
+            "attrib": "payloadFile",
+            "path": "/var/tmp/test.txt_1668078557425"
+        }
+    ]
+}

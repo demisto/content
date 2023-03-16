@@ -2,6 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 import copy
+import urllib3
 from requests import Response
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
@@ -14,9 +15,11 @@ class Client:
     API Client
     """
 
-    def __init__(self, server_url, verify, proxy, account_sas_token, storage_account_name, api_version):
+    def __init__(self, server_url, verify, proxy, account_sas_token, storage_account_name,
+                 api_version, managed_identities_client_id: Optional[str] = None):
         self.ms_client = MicrosoftStorageClient(server_url, verify, proxy, account_sas_token, storage_account_name,
-                                                api_version)
+                                                api_version,
+                                                managed_identities_client_id)
 
     def create_table_request(self, table_name: str) -> dict:
         """
@@ -576,7 +579,7 @@ def test_module(client: Client) -> None:
         if 'ResourceNotFound' in str(exception):
             return return_results('Authorization Error: make sure API Credentials are correctly set')
 
-        if 'Error Type' in str(exception):
+        if 'Error Type' in str(exception) or not client.ms_client._storage_account_name:
             return return_results(
                 'Verify that the storage account name is correct and that you have access to the server from your host.')
 
@@ -596,18 +599,19 @@ def main() -> None:
 
     global account_sas_token
     global storage_account_name
-    account_sas_token = params['credentials']['password']
+    account_sas_token = params.get('credentials', {}).get('password')
     storage_account_name = params['credentials']['identifier']
     api_version = "2020-10-02"
     base_url = f'https://{storage_account_name}.table.core.windows.net/'
+    managed_identities_client_id = get_azure_managed_identities_client_id(params)
 
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
 
     try:
-        requests.packages.urllib3.disable_warnings()
+        urllib3.disable_warnings()
         client: Client = Client(base_url, verify_certificate, proxy, account_sas_token, storage_account_name,
-                                api_version)
+                                api_version, managed_identities_client_id)
 
         commands = {
             'azure-storage-table-create': create_table_command,

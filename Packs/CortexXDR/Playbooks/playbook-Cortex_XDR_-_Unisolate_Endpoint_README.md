@@ -7,14 +7,14 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-CortexXDR - IR
+* CortexXDRIR
 
 ### Scripts
-IsIntegrationAvailable
+* IsIntegrationAvailable
 
 ### Commands
-* xdr-get-endpoints
 * xdr-unisolate-endpoint
+* xdr-get-endpoints
 
 ## Playbook Inputs
 ---
@@ -29,4 +29,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Cortex XDR - Unisolate Endpoint](https://raw.githubusercontent.com/demisto/content/4966d5a5c9b80af03106f8da8dcd8512b3cb259e/Packs/CortexXDR/doc_files/Cortex_XDR_-_Unisolate_Endpoint.png)
+![Cortex XDR - Unisolate Endpoint](../doc_files/Cortex_XDR_-_Unisolate_Endpoint.png)

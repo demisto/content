@@ -1,0 +1,117 @@
+{
+    "id": "incident_clickedurls",
+    "version": -1,
+    "modified": "2023-01-03T19:58:47.453525782Z",
+    "name": "Clicked URLs",
+    "ownerOnly": false,
+    "description": "List of URLs which were clicked inside an email.",
+    "cliName": "clickedurls",
+    "type": "grid",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Phishing"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "columns": [
+        {
+            "key": "user",
+            "displayName": "User",
+            "type": "shortText",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "width": 255,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        },
+        {
+            "key": "url",
+            "displayName": "URL",
+            "type": "url",
+            "orgType": "shortText",
+            "required": true,
+            "script": "",
+            "width": 233,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        },
+        {
+            "key": "clicktimestamp",
+            "displayName": "Click Timestamp",
+            "type": "date",
+            "orgType": "date",
+            "required": false,
+            "script": "",
+            "width": 150,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        },
+        {
+            "key": "urlchain",
+            "displayName": "URL Chain",
+            "type": "longText",
+            "orgType": "longText",
+            "required": false,
+            "script": "",
+            "width": 223,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": [
+                "No value"
+            ]
+        },
+        {
+            "key": "actiontype",
+            "displayName": "Action Type",
+            "type": "shortText",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "width": 150,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        },
+        {
+            "key": "isclickedthrough",
+            "displayName": "Is Clicked Through",
+            "type": "shortText",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "width": 141,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        }
+    ],
+    "defaultRows": [
+        {}
+    ],
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.8.0"
+}

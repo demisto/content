@@ -433,7 +433,7 @@ tasks:
           root: ExtractedIndicators
           accessor: URL
       query:
-        simple: alertsource:${alert.sourceBrand} and alertname:${alert.name}
+        simple: sourceBrand:"${alert.sourceBrand}" and name:"${alert.name}"
       threshold:
         simple: "5"
     separatecontext: true

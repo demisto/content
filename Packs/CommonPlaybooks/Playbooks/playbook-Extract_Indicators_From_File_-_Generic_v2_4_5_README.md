@@ -45,7 +45,7 @@ This playbook does not use any integrations.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| File | The file to extract indicators from. | File.None | Optional |
+| File | The file to extract indicators from. | File | Optional |
 | Indicator Query | Indicators matching the indicator query will be used as playbook input. |  | Optional |
 | Decode | Possible values: "True" or "False". Default is "False".<br/>When this is set to "True", in case a macro was found within the file \(using oletools\), it will output all the obfuscated strings with their decoded content \(Hex, Base64, StrReverse, Dridex, VBA\). | False | Optional |
 

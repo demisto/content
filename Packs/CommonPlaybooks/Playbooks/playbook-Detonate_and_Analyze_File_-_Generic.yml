@@ -2,7 +2,7 @@ id: Detonate and Analyze File - Generic
 version: -1
 fromversion: 6.5.0
 name: Detonate and Analyze File - Generic
-description: 'This playbook uploads, detonates, and analyzes files for supported sandboxes. Currently supported sandboxes are Falcon X and Wildfire. '
+description: 'This playbook uploads, detonates, and analyzes files for supported sandboxes. Currently supported sandboxes are Falcon Intelligence Sandbox and Wildfire. '
 starttaskid: "0"
 tasks:
   "0":
@@ -42,9 +42,9 @@ tasks:
     task:
       id: 2d74acbf-eb10-4ede-8880-21e9afb7325a
       version: -1
-      name: 'FalconX Detonate and Analyze File'
+      name: 'Falcon Intelligence Sandbox Detonate and Analyze File'
       description: Env ID - return to transformer.
-      playbookName: FalconX Detonate and Analyze File
+      playbookName: CrowdStrike Falcon Intelligence Sandbox Detonate and Analyze File
       type: playbook
       iscommand: false
       brand: ""
@@ -163,8 +163,8 @@ tasks:
     task:
       id: 1e2efc1c-d878-46c7-835f-ea5c802dd878
       version: -1
-      name: Is FalconX enabled?
-      description: Returns 'yes' if the Falcon X integration is available.
+      name: Is CrowdStrike Falcon Intelligence Sandbox enabled?
+      description: Returns 'yes' if the CrowdStrike Falcon Intelligence Sandbox integration is available.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -827,10 +827,10 @@ outputs:
   description: The name of the uploaded file. 
   type: string
 - contextPath: csfalconx.resource.sandbox
-  description: The Falcon X findings.
+  description: The Falcon Intelligence Sandbox findings.
   type: string
 - contextPath: csfalconx.resource.intel
-  description: The Falcon X intelligence results.
+  description: The Falcon Intelligence Sandbox intelligence results.
   type: string
 - contextPath: WildFire.Report
   description: The Wildfire findings.

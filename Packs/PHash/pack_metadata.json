@@ -1,13 +1,15 @@
 {
-    "name": "PHash",
-    "description": "A wrapper for https://pypi.org/project/ImageHash/ to create a Perceptual hashing of images within the Context data",
+    "name": "PHash (Deprecated)",
+    "description": "Deprecated. please use Community Common Scripts instead.",
     "support": "community",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.1",
     "author": "Joerg Stephan",
     "url": "",
     "email": "",
     "created": "2021-12-09T11:41:07Z",
-    "categories": ["Utilities"],
+    "categories": [
+        "Utilities"
+    ],
     "tags": [],
     "useCases": [],
     "keywords": [],
@@ -17,5 +19,6 @@
     "marketplaces": [
         "xsoar",
         "marketplacev2"
-    ]
+    ],
+    "hidden": true
 }

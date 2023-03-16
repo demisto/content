@@ -177,7 +177,7 @@ class Client(BaseClient):
         return response
 
     def sessions_pcap_request(self,
-                              ids: str,
+                              ids: Optional[str],
                               expression: Optional[str],
                               start_time: Optional[str],
                               stop_time: Optional[str]):
@@ -793,7 +793,7 @@ def sessions_csv_get_command(client: Client,
 
 
 def sessions_pcap_get_command(client: Client,
-                              ids: str,
+                              ids: str = None,
                               expression: str = None,
                               start_time: str = None,
                               stop_time: str = None) -> Dict:

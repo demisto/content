@@ -29,6 +29,12 @@ configuration:
   name: max_fetch
   required: false
   type: 0
+- display: The maximum number of iterations to retrieve events
+  additionalinfo: In order to prevent timeouts, set this parameter to limit the number of iterations for retrieving events, Note - the default value is the recommended value to prevent timeouts. Increasing this value may cause timeouts.
+  defaultvalue: 100
+  name: max_iterations
+  required: false
+  type: 0
 description: Palo Alto Networks SaaS Security Event Collector integration for XSIAM.
 display: SaaS Security Event Collector
 name: SaaS Security Event Collector
@@ -141,7 +147,7 @@ script:
     - contextPath: SaasSecurity.Event.resource_value_new
       description: New resource value. (optional).
       type: String
-  dockerimage: demisto/python3:3.10.5.31928
+  dockerimage: demisto/python3:3.10.9.46032
   isfetchevents: true
   script: '-'
   subtype: python3
