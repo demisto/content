@@ -3,7 +3,7 @@ from http import HTTPStatus
 import demistomock as demisto  # noqa :F401
 import urllib3.util
 
-from AWSApiModule import *  # noqa : E402
+from AWSApiModule import *  # noqa :E402
 from CommonServerPython import *  # noqa :F401
 
 # Disable insecure warnings
@@ -44,25 +44,28 @@ def create_record(
         client = aws_client.aws_session(service=SERVICE, region=args.get('region'), role_arn=args.get('roleArn'),
                                         role_session_name=args.get('roleSessionName'),
                                         role_session_duration=args.get('roleSessionDuration'), )
-        kwargs = {
-            'HostedZoneId': args.get('hostedZoneId'),
-            'ChangeBatch': {
+
+        change_batch: Dict[Any, Any] = {
                 'Changes': [
                     {
                         'Action': 'CREATE',
                         'ResourceRecordSet': {
                             'Name': args.get('source'),
                             'Type': args.get('type'),
-                            'TTL': int(args.get('ttl')),
+                            'TTL': arg_to_number(args.get('ttl'), "TTL", True),
                             'ResourceRecords': [{'Value': args.get('target')}]
                         }
                     }
                 ]
             }
-        }
 
         if args.get('comment') is not None:
-            kwargs['ChangeBatch'].update({'Comment': args.get('comment')})
+            change_batch['Comment'] = args.get('comment')
+
+        kwargs = {
+            'HostedZoneId': args.get('hostedZoneId'),
+            'ChangeBatch': change_batch
+        }
 
         response = client.change_resource_record_sets(**kwargs)
         record = response['ChangeInfo']
@@ -95,7 +98,7 @@ def delete_record(
                         'ResourceRecordSet': {
                             'Name': args.get('source'),
                             'Type': args.get('type'),
-                            'TTL': int(args.get('ttl')),
+                            'TTL': arg_to_number(args.get('ttl'), "TTL", True),
                             'ResourceRecords': [{'Value': args.get('target')}]
                         }
                     }
@@ -125,25 +128,26 @@ def upsert_record(
         client = aws_client.aws_session(service=SERVICE, region=args.get('region'), role_arn=args.get('roleArn'),
                                         role_session_name=args.get('roleSessionName'),
                                         role_session_duration=args.get('roleSessionDuration'), )
-        kwargs = {
-            'HostedZoneId': args.get('hostedZoneId'),
-            'ChangeBatch': {
+        change_batch: Dict[Any, Any] = {
                 'Changes': [
                     {
                         'Action': 'UPSERT',
                         'ResourceRecordSet': {
                             'Name': args.get('source'),
                             'Type': args.get('type'),
-                            'TTL': int(args.get('ttl')),
+                            'TTL': arg_to_number(args.get('ttl'), "TTL", True),
                             'ResourceRecords': [{'Value': args.get('target')}]
                         }
                     }
                 ]
             }
-        }
 
         if args.get('comment') is not None:
-            kwargs['ChangeBatch'].update({'Comment': args.get('comment')})
+            change_batch['Comment'] = args.get('comment')
+        kwargs = {
+            'HostedZoneId': args.get('hostedZoneId'),
+            'ChangeBatch': change_batch
+        }
 
         response = client.change_resource_record_sets(**kwargs)
         record = response['ChangeInfo']
@@ -225,9 +229,13 @@ def waiter_resource_record_sets_changed(
                                         role_session_duration=args.get('roleSessionDuration'), )
         kwargs = {'Id': args.get('id')}
         if args.get('waiterDelay') is not None:
-            kwargs.update({'WaiterConfig': {'Delay': int(args.get('waiterDelay'))}})
+            kwargs.update({
+                'WaiterConfig': {'Delay': arg_to_number(args.get('waiterDelay'), 'waiterDelay', True)}
+            })
         if args.get('waiterMaxAttempts') is not None:
-            kwargs.update({'WaiterConfig': {'MaxAttempts': int(args.get('waiterMaxAttempts'))}})
+            kwargs.update({
+                'WaiterConfig': {'MaxAttempts': arg_to_number(args.get('waiterMaxAttempts'), 'waiterMaxAttempts', True)}
+            })
 
         waiter = client.get_waiter('resource_record_sets_changed')
         waiter.wait(**kwargs)
@@ -295,12 +303,9 @@ def main():  # pragma: no cover
         demisto.info(f'Command being called is {demisto.command()}')
         if command == 'test-module':
             client = aws_client.aws_session(service=SERVICE)
-            try:
-                response = client.list_hosted_zones()
-                if response['ResponseMetadata']['HTTPStatusCode'] == HTTPStatus.OK:
-                    return_results("ok")
-            except Exception as error:
-                return_error(f'Failed to test connection.\nError:\n{str(error)}')
+            response = client.list_hosted_zones()
+            if response['ResponseMetadata']['HTTPStatusCode'] == HTTPStatus.OK:
+                return_results("ok")
 
         elif command == 'aws-route53-create-record':
             return_results(create_record(args, aws_client))
