@@ -352,7 +352,7 @@ class Taxii2FeedClient:
         """
         Tries to initialize `collection_to_fetch` if possible
         """
-        if collection_to_fetch is None and isinstance(self.collection_to_fetch, str):
+        if not collection_to_fetch and isinstance(self.collection_to_fetch, str):
             # self.collection_to_fetch will be changed from str -> Union[v20.Collection, v21.Collection]
             collection_to_fetch = self.collection_to_fetch
         if not self.collections:
