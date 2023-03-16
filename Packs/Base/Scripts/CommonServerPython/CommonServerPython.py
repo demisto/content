@@ -10570,21 +10570,23 @@ def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, 
     if len(incidents) == 0:
         new_last_run = {
             'time': end_fetch_time,
-            'limit': fetch_limit,
         }
     elif len(incidents) < fetch_limit or look_back == 0:
         latest_incident_fetched_time = get_latest_incident_created_time(incidents, created_time_field, date_format,
                                                                         increase_last_run_time)
         new_last_run = {
             'time': latest_incident_fetched_time,
-            'limit': fetch_limit,
         }
     else:
         remove_incident_ids = False
         new_last_run = {
             'time': start_fetch_time,
-            'limit': last_run.get('limit', fetch_limit) + fetch_limit,
         }
+    
+    if look_back > 0:
+        new_last_run['limit'] = len(last_run.get('found_incident_ids', [])) + len(incidents) + fetch_limit
+    else:
+        new_last_run['limit'] = fetch_limit
 
     return new_last_run, remove_incident_ids
 
