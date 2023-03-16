@@ -30,7 +30,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 50
+          "y": -90
         }
       }
     note: false
@@ -65,7 +65,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 185
+          "y": 45
         }
       }
     note: false
@@ -102,7 +102,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 990
+          "y": 850
         }
       }
     note: false
@@ -552,7 +552,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 340
+          "y": 200
         }
       }
     note: false
@@ -587,7 +587,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 505
+          "y": 365
         }
       }
     note: false
@@ -629,7 +629,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 670
+          "y": 530
         }
       }
     note: false
@@ -680,7 +680,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 830
+          "y": 690
         }
       }
     note: false
@@ -1152,7 +1152,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "38"
+      - "42"
     scriptarguments:
       complete_task:
         simple: "true"
@@ -1173,7 +1173,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1170
+          "y": 1030
         }
       }
     note: false
@@ -1365,6 +1365,52 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 2c7ee888-9db0-4346-8e14-89b6ebe0a05b
+    type: regular
+    task:
+      id: 2c7ee888-9db0-4346-8e14-89b6ebe0a05b
+      version: -1
+      name: Wait and manually remediate - Block indicators task
+      description: Wait and complete tasks by given status. Used for test playbooks.
+      scriptName: WaitAndCompleteTask
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      complete_task:
+        simple: "true"
+      incident_id:
+        complex:
+          root: FoundID
+      interval_between_tries:
+        simple: "15"
+      max_timeout:
+        simple: "700"
+      task_name:
+        simple: Which indicators would you like to block?
+      task_states:
+        simple: Waiting
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -1373,10 +1419,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2945,
+        "height": 3085,
         "width": 4530,
         "x": -1120,
-        "y": 50
+        "y": -90
       }
     }
   }
