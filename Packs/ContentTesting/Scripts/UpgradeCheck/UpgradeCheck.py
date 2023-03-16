@@ -1,8 +1,7 @@
-# Final Test: 6.10
-from typing import Dict, List
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
+from typing import Dict, List
 
 INDENT = "##### "
 
@@ -184,7 +183,8 @@ def GetSubplaybooksUsed(playbooks):
     for p in playbooks:
         for key, t in p['tasks'].items():
             if t['type'] == 'playbook':
-                usedplaybooks.append({"parent": p['name'], "child": t['task']['name']})
+                if 'name' in p and 'name' in t['task']:
+                    usedplaybooks.append({"parent": p['name'], "child": t['task']['name']})
 
     return(usedplaybooks)
 
@@ -194,7 +194,8 @@ def GetAutomationsUsed(playbooks):
     for p in playbooks:
         if len(p['scriptIds']) != 0:
             for s in p['scriptIds']:
-                automations.append({"playbook": p['name'], "scripts": s})
+                if 'name' in p:
+                    automations.append({"playbook": p['name'], "scripts": s})
 
     return automations
 
@@ -247,7 +248,8 @@ def BuildItem(pack, key):
     items = pack['contentItems'][key]
     if items is not None:
         for i in items:
-            md += f"{i['name']}\n"
+            if 'name' in i:
+                md += f"{i['name']}\n"
     if md != f"{key}:\n":
         return(md)
     return("")
