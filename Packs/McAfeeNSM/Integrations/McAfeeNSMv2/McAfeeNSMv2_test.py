@@ -760,6 +760,7 @@ def test_list_domain_rule_objects_command(mocker, mcafeensmv2_client):
     response = util_load_json('test_data/commands_test_data.json').get('list_domain_rule_objects')
     expected_result = response.get('RuleObjDef')
     mocker.patch.object(mcafeensmv2_client, 'list_domain_rule_objects_request', return_value=response)
+    mocker.patch.object(demisto, 'params', return_value={'version': 'V9x'})
     result = list_domain_rule_objects_command(mcafeensmv2_client, args)
     expected_readable_output = '### List of Rule Objects\n' \
                                '|RuleId|Name|Description|VisibleToChild|RuleType|\n' \
@@ -1344,7 +1345,7 @@ def test_assign_interface_policy_command__with_missing_arguments(mocker, mcafeen
 
 
 @ pytest.mark.parametrize('input, output', [({"interface_id": None,
-                                             "return_value": [{"policyId": "mock"},{"policyId": "mock"}]},
+                                             "return_value": [{"policyId": "mock"}, {"policyId": "mock"}]},
                                             [{'policyId': 'mock'}, {'policyId': 'mock'}]),
                                             ({"interface_id": 777,
                                              "return_value": [{"policyId": "mock"}, {"policyId": "mock"}]},

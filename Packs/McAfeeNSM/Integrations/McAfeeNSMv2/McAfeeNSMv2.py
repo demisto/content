@@ -336,6 +336,8 @@ class Client(BaseClient):
             Args:
                 device_id: int - The relevant device id.
                 domain_id: int - The relevant domain id.
+                pre_firewall_policy: Optional[str] - The pre firewall policy.
+                post_firewall_policy: Optional[str] - The post firewall policy.
             Returns:
                 A success or failure code
         """
@@ -2204,7 +2206,7 @@ def list_device_policy_command(client: Client, args: Dict) -> CommandResults:
     all_results = argToBoolean(args.get('all_results', False))
 
     response = client.list_device_policy_request(domain_id=domain_id, device_id=device_id)
-    all_policies = response.get('policyAssignmentsList')
+    all_policies = response.get('policyAssignmentsList', [])
 
     capitalize_policies = capitalize_key_first_letter(all_policies) if all_results else \
         capitalize_key_first_letter(all_policies)[:limit]
@@ -2239,10 +2241,10 @@ def assign_interface_policy_command(client: Client, args: Dict) -> CommandResult
     firewall_port_policy = args.get('firewall_port_policy_name')
     ips_policy = args.get('ips_policy_name')
     if args.get('custom_policy_json'):
-        custom_policy_json = json.loads(args.get('custom_policy_json'))  # type: ignore
+        custom_policy_json = json.loads(args.get('custom_policy_json'))
 
     # Check if at least one policy was provided
-    if len(args) < 3:
+    if not firewall_policy and not firewall_port_policy and not ips_policy and not args.get('custom_policy_json'):
         raise DemistoException("Please provide at least one policy to assign.")
 
     response = client.assign_interface_policy_request(domain_id=domain_id,
