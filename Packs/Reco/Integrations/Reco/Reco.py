@@ -243,6 +243,75 @@ class RecoClient(BaseClient):
             demisto.error(f"Validate API key ReadTimeout error: {str(e)}")
             raise e
 
+    def get_assets_user_has_access(self, email_address: str, only_sensitive: bool) -> List[Dict[str, Any]]:
+        """Get assets user has access to. Returns a list of assets.
+        """
+        params = {"getTableRequest": {
+            "tableName": "files_view",
+            "pageSize": 1000,
+            "fieldFilters": {
+                "relationship": "FILTER_RELATIONSHIP_AND",
+                "fieldFilterGroups": {
+                    "fieldFilters": [
+                        {
+                            "relationship": "FILTER_RELATIONSHIP_OR",
+                            "filters": {
+                                "filters": [{
+                                    "field": "currently_permitted_users",
+                                    "regexCaseInsensitive": {
+                                        "value": email_address
+                                    }
+                                }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+        }
+        if only_sensitive:
+            params["getTableRequest"]["fieldFilters"]["fieldFilterGroups"]["fieldFilters"].append(
+                {
+                    "relationship": "FILTER_RELATIONSHIP_OR",
+                    "filters": {
+                        "filters": [{
+                            "field": "sensitivity_level",
+                            "stringEquals": {"value": "30"}
+                        },
+                            {
+                                "field": "sensitivity_level",
+                                "stringEquals": {
+                                    "value": "40"
+                                }
+                            }
+                        ]
+                    }
+                }
+            )
+        try:
+            response = self._http_request(
+                method="POST",
+                url_suffix="/asset-management",
+                timeout=RECO_API_TIMEOUT_IN_SECONDS*2,
+                data=json.dumps(params)
+            )
+            if response.get("getTableResponse") is None:
+                demisto.error(f"got bad response, {response}")
+                raise Exception(f"got bad response, {response}")
+            else:
+                demisto.info(
+                    f"Count of assets: {response.get('getTableResponse').get('totalNumberOfRecords')}"
+                )
+                assets = (
+                    response.get("getTableResponse", {}).get("data", {}).get("rows", [])
+                )
+                demisto.info(f"Got {len(assets)} result")
+                return assets
+        except Exception as e:
+            demisto.error(f"Validate API key ReadTimeout error: {str(e)}")
+            raise e
+
     def set_entry_label_relations(self, entry_id: str, label_name: str, label_status: str, entry_type: str) -> Any:
         """Set entry label relations.
         :param entry_id: The entry id to set (email_address, asset_id etc.)
@@ -412,6 +481,24 @@ def parse_incidents_objects(
     return incidents
 
 
+def get_assets_user_has_access(reco_client: RecoClient, email_address: str, only_sensitive: bool) -> CommandResults:
+    """Get assets from Reco. If only_sensitive is True, only sensitive assets will be returned.
+    """
+    assets = reco_client.get_assets_user_has_access(email_address, only_sensitive)
+    assets_list = []
+    for asset in assets:
+        asset_as_dict = parse_table_row_to_dict(asset.get("cells", {}))
+        assets_list.append(asset_as_dict)
+    return CommandResults(
+        readable_output=tableToMarkdown(
+            "Assets", assets_list, headers=["file_name", "owner", "file_url", "currently_permitted_users", "visibility", "location", "source"]),
+        outputs_prefix="Reco.Assets",
+        outputs_key_field="asset_value",
+        outputs=assets_list,
+        raw_response=assets
+    )
+
+
 def fetch_incidents(
         reco_client: RecoClient,
         last_run: Dict[str, Any],
@@ -532,6 +619,9 @@ def main() -> None:
         elif command == "reco-add-risky-user-label":
             email_address = demisto.args()["email_address"]
             result = add_risky_user_label(reco_client, email_address)
+            return_results(result)
+        elif command == "reco-get-assets-user-has-access-to":
+            result = get_assets_by_owner(reco_client, demisto.args()["asset_owner"], demisto.args()["only_sensitive"])
             return_results(result)
         else:
             raise NotImplementedError(f"{command} is not an existing reco command")

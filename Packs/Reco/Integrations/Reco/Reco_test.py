@@ -9,7 +9,7 @@ import pytest
 import datetime
 
 from Reco import RecoClient, fetch_incidents, map_reco_score_to_demisto_score, get_max_fetch, get_risky_users_from_reco, \
-    add_risky_user_label
+    add_risky_user_label, get_assets_user_has_access
 
 from test_data.structs import (
     TableData,
@@ -78,6 +78,79 @@ def get_random_table_response() -> GetIncidentTableResponse:
                         ]
                     )
                 ]
+            ),
+            total_number_of_results=1,
+            table_definition="",
+            dynamic_table_definition="",
+            token="",
+        ),
+    )
+
+
+def get_random_assets_user_has_access_to_response() -> GetIncidentTableResponse:
+    return GetIncidentTableResponse(
+        get_table_response=GetTableResponse(
+            data=TableData(
+                rows=[
+                    RowData(
+                        cells=[
+                            KeyValuePair(
+                                key="source",
+                                value=base64.b64encode(
+                                    "GDRIVE_ACCESS_LOG_AP".encode(ENCODING)).decode(ENCODING),
+                            ),
+                            KeyValuePair(
+                                key="file_type",
+                                value=base64.b64encode(
+                                    "document".encode(ENCODING)).decode(ENCODING),
+                            ),
+                            KeyValuePair(
+                                key="currently_permitted_users",
+                                value=base64.b64encode(
+                                    json.dumps(
+                                        ["a", "b", "c", "d", "e"]
+                                    ).encode(ENCODING)
+                                ).decode(ENCODING),
+                            ),
+                            KeyValuePair(
+                                key="labels",
+                                value=base64.b64encode(
+                                    json.dumps(
+                                        ["a", "b", "c", "d", "e"]
+                                    ).encode(ENCODING)
+                                ).decode(ENCODING),
+                            ),
+                            KeyValuePair(
+                                key="delete_state",
+                                value=base64.b64encode(
+                                    "active".encode(ENCODING)).decode(ENCODING),
+                            ),
+                            KeyValuePair(
+                                key="file_size",
+                                value=base64.b64encode(
+                                    "0".encode(ENCODING)).decode(ENCODING),
+                            ),
+                            KeyValuePair(
+                                key="file_name",
+                                value=base64.b64encode(
+                                    "User Activity Report".encode(ENCODING)).decode(ENCODING),
+                            ),
+                            KeyValuePair(
+                                key="visibility",
+                                value=base64.b64encode(
+                                    "shared_internally".encode(ENCODING)).decode(ENCODING),
+                            ),
+                            KeyValuePair(
+                                key="file_id",
+                                value=base64.b64encode(
+                                    "1".encode(ENCODING)).decode(ENCODING),
+                            ),
+                            KeyValuePair(
+                                key="file_owner",
+                                value=base64.b64encode(
+                                    "a".encode(ENCODING)).decode(ENCODING),
+                            )],
+                    )],
             ),
             total_number_of_results=1,
             table_definition="",
@@ -319,3 +392,22 @@ def test_add_risky_user_label(requests_mock, reco_client: RecoClient) -> None:
                       json={}, status_code=200)
     res = add_risky_user_label(reco_client=reco_client, email_address=f"{uuid.uuid1()}@gmail.com")
     assert 'labeled as risky' in res.readable_output
+
+
+def test_get_assets_user_has_access_to(requests_mock, reco_client: RecoClient) -> None:
+    raw_result = get_random_assets_user_has_access_to_response()
+    requests_mock.post(f"{DUMMY_RECO_API_DNS_NAME}/asset-management",
+                      json=raw_result, status_code=200)
+    actual_result = get_assets_user_has_access(reco_client=reco_client,
+                                               email_address=f"{uuid.uuid1()}@gmail.com",
+                                               only_sensitive=False)
+    assert len(actual_result.outputs) == len(raw_result.getTableResponse.data.rows)
+    assert actual_result.outputs[0].get("source") is not None
+
+
+def test_get_assets_user_bad_response(capfd, requests_mock, reco_client: RecoClient) -> None:
+    requests_mock.post(f"{DUMMY_RECO_API_DNS_NAME}/asset-management",
+                      json={}, status_code=200)
+    with capfd.disabled():
+        with pytest.raises(Exception):
+            get_assets_user_has_access(reco_client=reco_client)
