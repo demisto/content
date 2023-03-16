@@ -4,6 +4,8 @@ import demistomock as demisto
 from AWSApiModule import *
 
 import urllib3
+from datetime import datetime
+
 import boto3
 
 # Disable insecure warnings
