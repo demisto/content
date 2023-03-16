@@ -17,7 +17,7 @@ You need to configure the Security Management System (SMS) of Trend Micro Tippin
    - Delimiter - Select Space as the delimiter for the generated logs.
    - Include Timestamp in Header - Select Use original event timestamp.
    - Select the Include SMS Hostname in Header check box.
-6. Click OK.
+6. Click **OK**.
 
 More information can be found [here](https://docs.trendmicro.com/en-us/tippingpoint/security-management-system.aspx)
 
