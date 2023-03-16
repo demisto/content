@@ -2382,7 +2382,7 @@ script:
         command is used as part of a Mirroring feature, which is available from version
         6.1.
       name: get-modified-remote-data 
-  dockerimage: demisto/python3:3.10.10.48392
+  dockerimage: demisto/python3:3.10.10.49934
   isfetch: true
   ismappable: true
   isremotesyncin: true
@@ -2395,3 +2395,6 @@ tests:
 - SentinelOne V2.1 - Test
 - SentinelOne V2.0 - Test
 fromversion: 5.0.0
+defaultclassifier: SentinelOne Classifier
+defaultmapperin: SentinelOne Incoming Mapper
+defaultmapperout: SentinelOne - Outgoing Mapper
