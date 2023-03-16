@@ -2109,7 +2109,7 @@ def list_domain_device_command(client: Client, args: Dict) -> CommandResults:
     all_results = argToBoolean(args.get('all_results', False))
 
     response = client.list_domain_device_request(domain_id)
-    devices = response.get('DeviceResponseList')
+    devices: List = response.get('DeviceResponseList') or []
 
     capitalize_devices = capitalize_key_first_letter(devices) if all_results else capitalize_key_first_letter(devices)[:limit]
 
@@ -2240,8 +2240,8 @@ def assign_interface_policy_command(client: Client, args: Dict) -> CommandResult
     firewall_policy = args.get('firewall_policy_name')
     firewall_port_policy = args.get('firewall_port_policy_name')
     ips_policy = args.get('ips_policy_name')
-    if args.get('custom_policy_json'):
-        custom_policy_json = json.loads(args.get('custom_policy_json'))
+    custom_policy_json: str = args.get('custom_policy_json') or ""
+    custom_policy_json = json.loads(custom_policy_json)
 
     # Check if at least one policy was provided
     if not firewall_policy and not firewall_port_policy and not ips_policy and not args.get('custom_policy_json'):
@@ -2279,7 +2279,7 @@ def list_interface_policy_command(client: Client, args: Dict) -> CommandResults:
     all_results = argToBoolean(args.get('all_results', False))
 
     response = client.list_interface_policy_request(domain_id=domain_id, interface_id=interface_id)
-    all_policies = [response] if interface_id else response.get('policyAssignmentsList')
+    all_policies: list = [response] if interface_id else response.get('policyAssignmentsList') or []
 
     capitalize_policies = capitalize_key_first_letter(all_policies) if all_results else \
         capitalize_key_first_letter(all_policies)[:limit]
