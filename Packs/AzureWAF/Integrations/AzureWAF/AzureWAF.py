@@ -99,7 +99,8 @@ class AzureWAFClient:
             try:
                 res.append(self.http_request(
                     method='GET',
-                    full_url=f'{base_url}/resourceGroups/{resource_group_name}/{POLICY_PATH}/{policy_name}?api-version={API_VERSION}',
+                    full_url=f'{base_url}/resourceGroups/{resource_group_name}/{POLICY_PATH}/{policy_name}?api-version=\
+{API_VERSION}',
                 ))
             except Exception as e:
                 res.append({'properties': f'{resource_group_name} threw Exception: {str(e)}'})
@@ -119,7 +120,7 @@ class AzureWAFClient:
         return res
 
     def get_policy_list_by_subscription_id(self, subscription_ids) -> list:
-        res: list = []
+        res = []
         for subscription_id in subscription_ids:
             base_url = f'{BASE_URL}/subscriptions/{subscription_id}'
             try:
@@ -141,7 +142,8 @@ class AzureWAFClient:
                 res.append(
                     self.http_request(
                         method='PUT',
-                        full_url=f'{base_url}/resourceGroups/{resource_group_name}/{POLICY_PATH}/{policy_name}?api-version={API_VERSION}',
+                        full_url=f'{base_url}/resourceGroups/{resource_group_name}/{POLICY_PATH}/{policy_name}?api-version=\
+{API_VERSION}',
                         data=data
                     )
                 )
