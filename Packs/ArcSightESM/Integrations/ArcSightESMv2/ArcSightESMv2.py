@@ -370,15 +370,6 @@ def get_query_viewer_results_command():
         return_outputs(readable_output=human_readable, outputs=outputs, raw_response=contents)
 
 
-#         {
-#             Event-Event ID:<Event-Event ID1>
-#             ID:<ID1>
-#         },
-#         {
-#             Event-Event ID:<Event-Event ID2>
-#             ID:<ID2>
-#         }
-
 @logger
 def fetch():
     """
@@ -882,53 +873,6 @@ def get_all_query_viewers_command():
 
 
 AUTH_TOKEN = demisto.getIntegrationContext().get('auth_token') or login()
-# try:
-#     if demisto.command() == 'test-module':
-#         test()
-#         demisto.results('ok')
-#
-#     elif demisto.command() == 'as-fetch-incidents' or demisto.command() == 'fetch-incidents':
-#         fetch()
-#
-#     elif demisto.command() == 'as-get-matrix-data' or demisto.command() == 'as-get-query-viewer-results':
-#         get_query_viewer_results_command()  # done
-#
-#     elif demisto.command() == 'as-get-all-cases':
-#         get_all_cases_command()     # done
-#
-#     elif demisto.command() == 'as-get-case':
-#         get_case_command()  # done
-#
-#     elif demisto.command() == 'as-update-case':
-#         update_case_command()   # done
-#
-#     elif demisto.command() == 'as-case-delete':
-#         delete_case_command()
-#
-#     elif demisto.command() == 'as-get-security-events':
-#         get_security_events_command()
-#
-#     elif demisto.command() == 'as-get-entries':
-#         get_entries_command()   # done
-#
-#     elif demisto.command() == 'as-add-entries':
-#         entries_command(func='addEntries')
-#
-#     elif demisto.command() == 'as-delete-entries':
-#         entries_command(func='deleteEntries')   # done
-#
-#     elif demisto.command() == 'as-clear-entries':
-#         clear_entries_command()     # done
-#
-#     elif demisto.command() == 'as-get-case-event-ids':
-#         get_case_event_ids_command()    # done
-#
-#     elif demisto.command() == 'as-get-all-query-viewers':
-#         get_all_query_viewers_command()
-#
-#
-# except Exception as e:
-#     return_error('Unexpected error:' + str(e), error=traceback.format_exc())
 
 
 def main():
@@ -941,16 +885,16 @@ def main():
             fetch()
 
         elif demisto.command() == 'as-get-matrix-data' or demisto.command() == 'as-get-query-viewer-results':
-            get_query_viewer_results_command()  # done
+            get_query_viewer_results_command()
 
         elif demisto.command() == 'as-get-all-cases':
-            get_all_cases_command()  # done
+            get_all_cases_command()
 
         elif demisto.command() == 'as-get-case':
-            get_case_command()  # done
+            get_case_command()
 
         elif demisto.command() == 'as-update-case':
-            update_case_command()  # done
+            update_case_command()
 
         elif demisto.command() == 'as-case-delete':
             delete_case_command()
@@ -959,19 +903,19 @@ def main():
             get_security_events_command()
 
         elif demisto.command() == 'as-get-entries':
-            get_entries_command()  # done
+            get_entries_command()
 
         elif demisto.command() == 'as-add-entries':
             entries_command(func='addEntries')
 
         elif demisto.command() == 'as-delete-entries':
-            entries_command(func='deleteEntries')  # done
+            entries_command(func='deleteEntries')
 
         elif demisto.command() == 'as-clear-entries':
-            clear_entries_command()  # done
+            clear_entries_command()
 
         elif demisto.command() == 'as-get-case-event-ids':
-            get_case_event_ids_command()  # done
+            get_case_event_ids_command()
 
         elif demisto.command() == 'as-get-all-query-viewers':
             get_all_query_viewers_command()
