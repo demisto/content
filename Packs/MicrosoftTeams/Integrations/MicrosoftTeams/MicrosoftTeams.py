@@ -15,6 +15,7 @@ import requests
 from flask import Flask, Response, request
 from gevent.pywsgi import WSGIServer
 from jwt.algorithms import RSAAlgorithm
+from ssl import SSLContext, SSLError, PROTOCOL_TLSv1_2
 
 # Disable insecure warnings
 requests.packages.urllib3.disable_warnings()  # type: ignore
@@ -89,6 +90,22 @@ ONEONONE_CHAT_ID_SUFFIX = "@unq.gbl.spaces"
 MAX_ITEMS_PER_RESPONSE = 50
 
 EXTERNAL_FORM = "external/form"
+
+
+class Handler:
+    @staticmethod
+    def write(msg: str):
+        demisto.info(msg)
+
+
+class ErrorHandler:
+    @staticmethod
+    def write(msg: str):
+        demisto.error(f'wsgi error: {msg}')
+
+
+DEMISTO_LOGGER: Handler = Handler()
+ERROR_LOGGER: ErrorHandler = ErrorHandler()
 
 ''' HELPER FUNCTIONS '''
 
@@ -2500,21 +2517,27 @@ def long_running_loop():
                 certificate_path = certificate_file.name
                 certificate_file.write(bytes(certificate, 'utf-8'))
                 certificate_file.close()
-                ssl_args['certfile'] = certificate_path
 
                 private_key_file = NamedTemporaryFile(delete=False)
                 private_key_path = private_key_file.name
                 private_key_file.write(bytes(private_key, 'utf-8'))
                 private_key_file.close()
-                ssl_args['keyfile'] = private_key_path
+
+                context = SSLContext(PROTOCOL_TLSv1_2)
+                context.load_cert_chain(certificate_path, private_key_path)
+                ssl_args['ssl_context'] = context
 
                 demisto.info('Starting HTTPS Server')
             else:
                 demisto.info('Starting HTTP Server')
 
-            server = WSGIServer(('0.0.0.0', port), APP, **ssl_args)
+            server = WSGIServer(('0.0.0.0', port), APP, log=DEMISTO_LOGGER, error_log=ERROR_LOGGER, **ssl_args)
             demisto.updateModuleHealth('')
             server.serve_forever()
+        except SSLError as e:
+            ssl_err_message = f'Failed to validate certificate and/or private key: {str(e)}'
+            demisto.error(ssl_err_message)
+            raise ValueError(ssl_err_message)
         except Exception as e:
             error_message = str(e)
             demisto.error(f'An error occurred in long running loop: {error_message} - {format_exc()}')
