@@ -465,6 +465,16 @@ def test_alert_to_context(raw_alert, expected_result, set_args, mocker):
             {'fetched_ids': {123456789: ['P-12345']}, 'time': 1625938454758},
             {'fetched_ids': {1625938454758: ['P-678910']}, 'time': 1625938454758},
             1
+        ),
+        (
+            {'fetched_ids': {123456789: ['P-12345'], 111111111: ['P-678910']}, 'time': 1625938454758},
+            {'fetched_ids': {}, 'time': 1625938454758},
+            0
+        ),
+        (
+            {'fetched_ids': [{'P-12345': 123456789}, {'P-678910': 111111111}], 'time': 1625938454758},
+            {'fetched_ids': {}, 'time': 1625938454758},
+            0
         )
     ]
 )
@@ -480,6 +490,10 @@ def test_fetch_incidents_main_flow(mocker, start_last_run, end_last_run, expecte
                   last run more than 2 hours
         - Case F: last run with the fetched_ids in the new format (dict)
                   that only one of the incident is in the last run more than 2 hours
+        - Case G: last run with fetched_ids in the new format where there is more than single datetime
+                  which are more than 2 hours
+        - Case H: last run with fetched_ids in the old format where is more than single datetime
+                  which are more than 2 hours
     When
         - running fetch-incidents through main
 
@@ -490,6 +504,8 @@ def test_fetch_incidents_main_flow(mocker, start_last_run, end_last_run, expecte
         - Case D: no incidents were fetched and fetched_ids were saved with those incidents
         - Case E: no incidents were fetched and fetched_ids is empty
         - Case F: 1 incident were fetched, old incident was removed from fetched_ids and new incident was added
+        - Case G: no incidents were fetched and fetched_ids is empty
+        - Case H: no incidents were fetched and fetched_ids is empty
     """
     from RedLock import main
 

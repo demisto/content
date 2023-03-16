@@ -909,7 +909,7 @@ def fetch_incidents():
             demisto.debug(f"Fetched {alert_id} already. Skipping")
             continue
 
-        demisto.debug(f"{alert_id} has not been fetched. Processing.")
+        demisto.debug(f"Processing new fetched alert {alert_id}.")
         incidents.append({
             'name': alert.get('policy.name', 'No policy') + ' - ' + alert_id,
             'occurred': convert_unix_to_demisto(alert.get('alertTime')),
