@@ -10,10 +10,10 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
+* Enrichment for Verdict
 * Cloud IAM Enrichment - Generic
 * Handle False Positive Alerts
 * Cloud Response - Generic
-* Enrichment for Verdict
 
 ### Integrations
 

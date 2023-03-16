@@ -107,7 +107,7 @@ tasks:
     task:
       id: 08cf3974-ddc8-4694-8a1a-e737b3e69973
       version: -1
-      name: Manual decision making - true/false-positive alert
+      name: Manual verdict decision
       description: Based on the collected data investigation, is it a true positive event?
       type: condition
       iscommand: false
@@ -391,7 +391,7 @@ tasks:
     task:
       id: cfb35229-4702-4fa4-8b8b-f9d86778c329
       version: -1
-      name: Malicious?
+      name: Is it a Malicious or Tor IP?
       description: Is it a suspicious or Tor IP?
       type: condition
       iscommand: false
@@ -573,10 +573,6 @@ tasks:
         complex:
           root: alert
           accessor: domainname
-      FileSHA256:
-        complex:
-          root: alert
-          accessor: initiatorsha256
       IP:
         complex:
           root: alert
@@ -590,7 +586,7 @@ tasks:
           root: alert
           accessor: username
       query:
-        simple: sourceBrand:"${alert.sourceBrand}" and name:"${alert.name}"
+        simple: sourceBrand:"${alert.sourceBrand}" and name:"${alert.name}" and user:"${alert.username}"
       threshold:
         simple: "2"
     separatecontext: true
