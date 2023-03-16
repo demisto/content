@@ -32,28 +32,56 @@ class MsClient:
         self.server = server
         self.subscription_id = subscription_id
 
+    def get_event_list_test(self):
+        cmd_url = "/providers/Microsoft.Security/alerts"
+        params = {'api-version': API_VERSION}
+        return self.ms_client.http_request(method="GET", url_suffix=cmd_url, params=params)
+
     def get_event_list(self, last_run) -> tuple:
         """Listing alerts
         Args:
             last_run (str): last run
         Returns:
-            dict: contains response body with events
+            tuple: (events, last_run)
         """
-
         cmd_url = "/providers/Microsoft.Security/alerts"
         params = {'api-version': API_VERSION}
         events: list = []
         response = self.ms_client.http_request(method="GET", url_suffix=cmd_url, params=params)
-        events.extend(response.get("value", []))
-        if events:
-            last_run = events[0]
+        curr_events = response.get("value", [])
+
+        curr_filtered_events = filter_out_previosly_digested_events(curr_events, last_run)
+        if check_events_were_filtered_out(curr_events, curr_filtered_events):
+            if curr_filtered_events:
+                return curr_filtered_events, curr_filtered_events[0].get('properties', {}).get('startTimeUtc')
+            else:
+                return curr_filtered_events, last_run
+
+        events.extend(curr_filtered_events)
 
         while nextLink := response.get('nextLink', None):
             response = self.ms_client.http_request(method="GET", full_url=nextLink)
-            events.extend(response.get("value", []))
-            if events:
-                last_run = events[0]
+            curr_events = response.get("value", [])
+            filter_out_previosly_digested_events(curr_events, last_run)
+            if check_events_were_filtered_out(curr_events, curr_filtered_events):
+                events.extend(curr_filtered_events)
+                break
+            events.extend(curr_filtered_events)
+
+        if events:
+            last_run = curr_filtered_events, curr_filtered_events[0].get('properties', {}).get('startTimeUtc')
+
         return events, last_run
+
+
+def filter_out_previosly_digested_events(events: list, last_run: str) -> list:
+    if not last_run:
+        return events
+    return [event for event in events if event.get('properties', {}).get('startTimeUtc') > last_run]
+
+
+def check_events_were_filtered_out(events, filtered_events):
+    return len(events) > len(filtered_events)
 
 
 def test_module(client: MsClient, last_run: str):
@@ -61,7 +89,7 @@ def test_module(client: MsClient, last_run: str):
        Performs basic GET request to check if the API is reachable and authentication is successful.
        Returns ok if successful.
        """
-    evetns_res = client.get_event_list(last_run)
+    evetns_res = client.get_event_list_test()
     if 'value' in evetns_res:
         demisto.results('ok')
 
@@ -72,8 +100,8 @@ def get_events(client: MsClient, last_run: str, args: dict):
             client (MsClient): The microsoft client.
             last_run (str): The last run.
             args (dict) : The demisto args.
-        Returns:
-            The raw events and a CommandResults object.
+    Returns:
+        The raw events and a CommandResults object.
     """
     limit = arg_to_number(args.get('limit', 50))
     events_list, last_run = client.get_event_list(last_run)
@@ -127,14 +155,14 @@ def find_next_run(events_list: list, last_run: str) -> str:
         return last_run
     # New events fetched set the latest timeGeneratedUtc for next run.
     sort_events(events_list)
-    return events_list[0].get('properties').get('timeGeneratedUtc')
+    return events_list[0].get('properties').get('startTimeUtc')
 
 
 def sort_events(events: list) -> None:
     """
     Sorts the list inplace by the timeGeneratedUtc
     """
-    return events.sort(reverse=True, key=lambda event: event.get('properties').get('timeGeneratedUtc'))
+    return events.sort(reverse=True, key=lambda event: event.get('properties').get('startTimeUtc'))
 
 
 def fetch_events(client: MsClient, last_run: str) -> tuple:
@@ -148,7 +176,7 @@ def fetch_events(client: MsClient, last_run: str) -> tuple:
         next_run: A time for the next run.
         list: List of events that will be created in XSIAM.
     """
-    events = client.get_event_list(last_run)
+    events, last_run = client.get_event_list(last_run)
 
     demisto.info(f'Fetched {len(events)} events.')
 
@@ -156,31 +184,6 @@ def fetch_events(client: MsClient, last_run: str) -> tuple:
     next_run = find_next_run(events, last_run)
     demisto.info(f'Setting next run {next_run}.')
     return next_run, events
-
-
-def handle_last_run(first_fetch: str) -> str:
-    """
-    Args:
-        first_fetch (str) : The first_fetch_time argument
-    Returns:
-        last_run (str): This will be the first_fetch on the first run and then the previos last_run
-    """
-    # How much time before the first fetch to retrieve events
-    first_fetch_time = arg_to_datetime(
-        arg=first_fetch,
-        arg_name='First fetch time',
-        required=True
-    )
-    last_run = demisto.getLastRun().get('time')
-    if not last_run:
-        if isinstance(first_fetch_time, datetime):
-            # here we would convert the first fetch time to be compatible with the microsoft api
-            last_run = first_fetch_time.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
-        else:
-            raise DemistoException('First fetch time parameter is incompatible. Please check it.')
-
-    demisto.info(f'Last run is set to be {last_run}')
-    return last_run
 
 
 def add_time_key_to_events(events: list) -> list:
@@ -231,8 +234,7 @@ def main() -> None:
                           server=server, verify=use_ssl, self_deployed=False, subscription_id=subscription_id,
                           ok_codes=ok_codes, certificate_thumbprint=certificate_thumbprint, private_key=private_key)
 
-        first_fetch = params.get('first_fetch', '3 days')
-        last_run = handle_last_run(first_fetch)
+        last_run = demisto.getLastRun().get('time', '')
 
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
