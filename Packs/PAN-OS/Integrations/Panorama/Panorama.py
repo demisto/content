@@ -52,7 +52,7 @@ QUERY_DATE_FORMAT = '%Y/%m/%d %H:%M:%S'
 FETCH_DEFAULT_TIME = '1 day'
 MAX_INCIDENTS_TO_FETCH = 100
 FETCH_INCIDENTS_LOG_TYPES = ['Traffic', 'Threat', 'URL', 'Data', 'Correlation', 'System', 'Wildfire', 'Decryption']
-GET_LOG_JOB_ID_MAX_RETRIES = 15
+GET_LOG_JOB_ID_MAX_RETRIES = 10
 
 XPATH_SECURITY_RULES = ''
 DEVICE_GROUP = ''
@@ -13067,7 +13067,7 @@ def get_query_entries_by_id_request(job_id: str) -> Dict[str, Any]:
             return response
         else:
             demisto.debug(f'Attempt number: {try_num}. Job not completed, Retrying in 1 second...')
-            time.sleep(1)
+            time.sleep(1) # due to short job life, saving the unfinished job id's to the context to query in the next fetch cycle is not a valid solution.
     demisto.debug(f'Maximum attempt number: {try_num} has reached. Job ID {job_id} might be not completed which could result in missing incidents.')
     return {}
 
