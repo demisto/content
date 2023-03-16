@@ -867,7 +867,11 @@ def test_incident_name_is_initialized(mocker, requests_mock):
             },
             'incident_name': None,
             'file_tag_from_service_now': 'FromServiceNow',
-            'file_tag_to_service_now': 'ToServiceNow'
+            'file_tag_to_service_now': 'ToServiceNow',
+            'comment_tag': 'comments',
+            'comment_tag_from_servicenow': 'CommentFromServiceNow',
+            'work_notes_tag': 'work_notes',
+            'work_notes_tag_from_servicenow': 'WorkNoteFromServiceNow'
         }
     )
     mocker.patch.object(demisto, 'command', return_value='test-module')
@@ -1050,7 +1054,11 @@ def test_oauth_authentication(mocker, requests_mock):
             },
             'use_oauth': True,
             'file_tag_from_service_now': 'FromServiceNow',
-            'file_tag': 'ForServiceNow'
+            'file_tag': 'ForServiceNow',
+            'comment_tag': 'comments',
+            'comment_tag_from_servicenow': 'CommentFromServiceNow',
+            'work_notes_tag': 'work_notes',
+            'work_notes_tag_from_servicenow': 'WorkNoteFromServiceNow'
         }
     )
     ServiceNowClient.get_access_token = MagicMock()
@@ -1286,8 +1294,8 @@ def test_assigned_to_field_user_exists():
     assert res == 'oscar@example.com'
 
 
-CLOSING_RESPONSE = {'dbotIncidentClose': True, 'closeNotes': 'From ServiceNow: Test', 'closeReason': 'Resolved'}
-CLOSING_RESPONSE_CUSTOM = {'dbotIncidentClose': True, 'closeNotes': 'From ServiceNow: Test', 'closeReason': 'Test'}
+CLOSING_RESPONSE = {'dbotIncidentClose': True, 'closeNotes': 'Test', 'closeReason': 'Resolved'}
+CLOSING_RESPONSE_CUSTOM = {'dbotIncidentClose': True, 'closeNotes': 'Test', 'closeReason': 'Test'}
 
 closed_ticket_state = (RESPONSE_CLOSING_TICKET_MIRROR_CLOSED, {
                        'close_incident': 'closed'}, 'closed_at', CLOSING_RESPONSE)
