@@ -84,7 +84,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         'issue_type_name': ('update.issuetype', 'name'),
         'issue_type_id': ('update.issuetype', 'id'),
         'project_name': ('update.project', 'name'),  # TODO Can we update ??
-        # 'description': 'fields.description',
+        'description': ('update.description', ''),
         'labels': ('update.labels', ''),
         'priority': ('update.priority', 'name'),
         'due_date': ('update.duedate', ''),
@@ -609,19 +609,22 @@ class JiraCloudClient(JiraBaseClient):
 
     def get_access_token(self) -> str:
         # CONFLUENCE Explain the process of saving and retrieving the access token from the integration's context
-        """This function is in charge of returning the access token stored in the integration context
+        """This function is in charge of returning the access token stored in the integration's context. If the access token
+        has expired, we try to retrieve another access token using a refresh token that is configured in the integration's context
 
         Raises:
-            RevokedAccessTokenError: If the access token is not valid anymore
+            DemistoException: If no access token was configured.
+            DemistoException: If no refresh token was configured.
 
         Returns:
-            str: The access token
+            str: The access token to send with the requests.
         """
         integration_context = get_integration_context()
         token = integration_context.get('token', '')
         if not token:
             raise DemistoException(('No access token was configured, please complete the authorization process'
                                     ' as shown in the documentation'))
+        # The valid_until key stores the valid date in seconds to make it easier for comparison
         valid_until = integration_context.get('valid_until', 0)
         current_time = get_current_time_in_seconds()
         if current_time >= valid_until:
@@ -629,6 +632,7 @@ class JiraCloudClient(JiraBaseClient):
             if not refresh_token:
                 raise DemistoException(('No refresh token was configured, please complete the authorization process'
                                         ' as shown in the documentation'))
+            # We try to retrieve a new access token and store it in the integration's context using the method bellow
             self.oauth2_retrieve_access_token(refresh_token=refresh_token)
             integration_context = get_integration_context()
             token = integration_context.get('token', '')
@@ -670,6 +674,17 @@ class JiraCloudClient(JiraBaseClient):
         raise DemistoException('No URL was returned.')
 
     def oauth2_retrieve_access_token(self, code: str = '', refresh_token: str = '') -> None:
+        """This method is in charge of exchanging an authorization code or refresh token for an access token,
+        that is retrieved using a Jira endpoint
+
+        Args:
+            code (str, optional): _description_. Defaults to ''.
+            refresh_token (str, optional): _description_. Defaults to ''.
+
+        Raises:
+            DemistoException: If both an authorization code and refresh token were given, only one must be supplied.
+            DemistoException: If neither an authorization code nor a refresh token were given.
+        """
         if(code and refresh_token):
             # The code argument is used when the user authenticates using the authorization URL process
             # (which uses the callback URL), and the refresh_token is used when we want to authenticate the user using a
@@ -698,6 +713,7 @@ class JiraCloudClient(JiraBaseClient):
         new_authorization_context = {
             'token': res_access_token.get('access_token', ''),
             'scopes': res_access_token.get('scope', ''),
+            # res_access_token.get('expires_in') returns the lifetime of the access token in seconds.
             'valid_until': get_current_time_in_seconds() + res_access_token.get('expires_in', 0),
             'refresh_token': res_access_token.get('refresh_token', '')
         }
@@ -1028,6 +1044,10 @@ class JiraIssueFieldsParser():
     """This class is in charge of parsing the issue fields returned from a response. The data of the fields are mostly
     returned as nested dictionaries, and it is not intuitive to retrieve the data of specific fields, therefore, this class
     helps the parsing process and encapsulates it in one place.
+    The static methods that end with the word `context` are used to parse a specific field and return a dictionary, where
+    the key is in human readable form that represents the specific field, and the value is the parsed data of that specific field.
+    The issue_data: Dict[str, Any] is the full issue object that is returned from the API, which holds all the data about the
+    issue.
     """
 
     @staticmethod
@@ -1149,15 +1169,15 @@ class JiraIssueFieldsParser():
             issue_field_id (str): The field id of the issue to return its data.
 
         Returns:
-            Dict[str, Any]: The raw data of the field.
+            Dict[str, Any]: A dictionary where the key is the field id, and the value is a dictionary that holds the raw data
+            of the field, and the display name of the field.
         """
         issue_field_display_name = issue_fields_id_to_name_mapping.get(issue_field_id) or ''
         return {issue_field_id: ({'issueFieldDisplayName': issue_field_display_name} if issue_field_display_name else {})
                 | {'rawData': issue_data.get('fields', {}).get(issue_field_id, '') or {}}}
 
-    # The following dictionary holds the keys (in dotted string format, with respect how they appear in the issue
-    # response (# TODO add link)), and parser methods as values for every key, which is in charge or receiving the
-    # issue response from the API, and parsing the required field.
+    # The following dictionary holds keys that represent the fields' ids, and parser methods as values for every key,
+    # which is in charge or receiving the issue response from the API, and parsing the required field.
     ISSUE_FIELDS_ID_TO_CONTEXT: Dict[str, Callable] = {
         'id': get_id_context,
         'key': get_key_context,
@@ -1182,11 +1202,15 @@ class JiraIssueFieldsParser():
     @classmethod
     def get_issue_fields_to_context_from_id(cls, issue_data: Dict[str, Any], issue_fields_ids: List[str],
                                             issue_fields_id_to_name_mapping: Dict[str, str]) -> Dict[str, Any]:
-        """_summary_
+        """This method is in charge of receiving the issue object from the API, and parse the fields that are found
+        in the constant ISSUE_FIELDS_ID_TO_CONTEXT's keys to human readable outputs, and parse the corresponding fields
+        found in issue_fields_ids to show their raw data and display names, using the method get_raw_field_data_context.
 
         Args:
             issue_data (Dict[str, Any]): The issue response from the API, which holds the data about a specific issue.
             issue_fields_ids (List[str]): A list of ids of specific issue fields.
+            issue_fields_id_to_name_mapping (Dict[str, str]): This will hold a mapping between the issue fields' ids, to their
+            display names, so the display names can be displayed to the user.
 
         Returns:
             Dict[str, Any]: A dictionary that holds human readable mapping of the issues' fields.
@@ -1204,6 +1228,18 @@ class JiraIssueFieldsParser():
 
 # Utility functions
 def prepare_pagination_args(page: int | None = None, page_size: int | None = None, limit: int | None = None) -> Dict[str, int]:
+    """This function takes in the pagination arguments supported by XSOAR, and maps them to a corresponding pagination dictionary
+    that the API supports.
+
+    Args:
+        page (int | None, optional): The page number. Defaults to None.
+        page_size (int | None, optional): The page size. Defaults to None.
+        limit (int | None, optional): The maximum amount of results to return. Defaults to None.
+
+    Returns:
+        Dict[str, int]: A pagination dictionary supported by the API.
+    """
+    # If all three arguments were given, we will only take into consideration the page and page_size case.
     if page or page_size:
         page = page or DEFAULT_PAGE
         page_size = page_size or DEFAULT_PAGE_SIZE
@@ -1216,24 +1252,31 @@ def prepare_pagination_args(page: int | None = None, page_size: int | None = Non
         return {'start_at': DEFAULT_PAGE, 'max_results': limit}
 
 
-def str_to_number(arg: str, default_value: int) -> int:
-    return to_number if (to_number := arg_to_number(arg)) else default_value
-
-
 def create_query_params(jql_query: str, start_at: int | None = None,
                         max_results: int | None = None) -> Dict[str, Any]:
+    """Create the query parameters when issuing a query.
+
+    Args:
+        jql_query (str): The JQL query.
+        start_at (int | None, optional): The starting index of the returned issues. Defaults to None.
+        max_results (int | None, optional): The maximum number of issues to return per page. Defaults to None.
+
+    Returns:
+        Dict[str, Any]: The query parameters to be sent when issuing a query request to the API.
+    """
     start_at = start_at or 0
     max_results = max_results or 50
     demisto.debug(f'Querying with: {jql_query}\nstart_at: {start_at}\nmax_results: {max_results}\n')
     return {
         'jql': jql_query,  # The Jira Query Language string, used to search for issues in a project using SQL-like syntax.
-        'startAt': start_at,  # The index of the first item to return in a page of results (page offset).
-        'maxResults': max_results,  # The maximum number of items to return per page.
+        'startAt': start_at,
+        'maxResults': max_results,
     }
 
 
 def get_issue_fields_id_to_name_mapping(client: JiraBaseClient) -> Dict[str, str]:
     """ Returns a dictionary that holds a mapping between the ids of the issue fields to their human readable names.
+    NOTE: Might delete later.
     """
     issue_fields_res = client.get_issue_fields()
     return {
@@ -1252,6 +1295,16 @@ def get_current_time_in_seconds() -> float:
 
 
 def create_file_info_from_attachment(client: JiraBaseClient, attachment_id: str, file_name: str = '') -> Dict[str, Any]:
+    """Create an XSOAR file entry to return to the server.
+
+    Args:
+        client (JiraBaseClient): The Jira client, which will be used to fetch the content of the attachment.
+        attachment_id (str): The attachment id.
+        file_name (str, optional): The file name of the attachment. Defaults to ''.
+
+    Returns:
+        Dict[str, Any]: An XSOAR file entry.
+    """
     attachment_file_name = file_name
     if not attachment_file_name:
         res_attachment_metadata = client.get_attachment_metadata(attachment_id=attachment_id)
@@ -1264,7 +1317,12 @@ def create_fields_dict_from_dotted_string(issue_fields: Dict[str, Any], dotted_s
     # CONFLUENCE Add why we need this and give an example
     """Create a nested dictionary from keys separated by dots(.), and insert the value as part of the last key in the dotted string.
     For example, dotted_string=key1.key2.key3 with value=jira results in {key1: {key2: {key3: jira}}}
-
+    This function is used to create the dictionary that will be sent when creating a new Jira issue. Let us look at the following
+    scenario, we get that we want to enter a value of `Dummy summary` for the dotted field `field.summary`, which will result
+    in {field: {summary: Dummy summary}}, but since we might have already created issue fields, we pass the issue_fields argument
+    so we can update what we have already inserted, so when we come to add the new field that we want, the issue_fields will
+    maybe be {fields: {labels: [dummy_label]}}, therefore we pass it to the function so we can insert the new fields without
+    overriding the previous iterations.
     Args:
         dotted_string (str): A dotted string that holds the keys of the dictionary
         value (Any): The value to insert in the nested dictionary
@@ -1366,11 +1424,12 @@ def get_issue_fields_for_update(issue_args: Dict[str, str], issue_update_mapper:
         elif issue_arg == 'components':
             parsed_value = [{"name": component} for component in argToList(value)]
         elif issue_arg in ['description', 'environment']:
-            parsed_value = [{'set': text_to_adf(text=value)}]
+            parsed_value = text_to_adf(text=value)
         dotted_string, update_key = issue_update_mapper.get(issue_arg, ('', ''))
         issue_fields |= create_update_dict_from_dotted_string(
             issue_fields=issue_fields, dotted_string=dotted_string, update_key=update_key, value=parsed_value or value,
             action=action)
+    print(issue_fields)
     return issue_fields
 
 
@@ -1478,10 +1537,20 @@ def is_issue_id(issue_id_or_key: str) -> bool:
     return issue_id_or_key.isnumeric()
 
 
-def get_file_name_and_content(entry_id: str):
+def get_file_name_and_content(entry_id: str) -> tuple[str, bytes]:
+    """Returns the XSOAR file entry's name and content.
+
+    Args:
+        entry_id (str): The entry id inside XSOAR.
+
+    Returns:
+        Tuple[str, bytes]: A tuple, where the first value is the file name, and the second is the
+        content of the file in bytes.
+    """
     get_file_path_res = demisto.getFilePath(entry_id)
     file_path = get_file_path_res["path"]
     file_name = get_file_path_res["name"]
+    file_bytes: bytes = b''
     with open(file_path, 'rb') as f:
         file_bytes = f.read()
     return file_name, file_bytes
@@ -1708,17 +1777,8 @@ def edit_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandR
     elif transition:
         demisto.log(f'Updating the status using the transition: {transition}')
         apply_issue_transition(client=client, issue_id_or_key=issue_id_or_key, transition_name=transition)
-    # issue_args: Dict[str, Any] = args
-    # issue_args['labels'] = issue_args.get('labels', '').split(',')
-    # issue_args['components'] = [{"name": component} for component in argToList(issue_args.get('components'))]
     action = args.get('action', 'rewrite')
     update_fields = get_issue_fields_for_update(issue_args=args, issue_update_mapper=client.ISSUE_UPDATE_MAPPER, action=action)
-    # if (action == 'append' and (args.get('description', '') or args.get('environment', ''))):
-    # Description and Environment do not support the add operation
-    # raise DemistoException('Description and Environment do not support the add operation')
-    # update_fields.get('update', {})['description'] = [{'set': text_to_adf(text=args.get('description', ''))}]
-    # update_fields.get('update', {})['environment'] = [{'set': text_to_adf(text=args.get('environment', ''))}]
-
     client.edit_issue(issue_id_or_key=issue_id_or_key, json_data=update_fields)
     demisto.log(f'Issue {issue_id_or_key} was updated successfully')
     res = client.get_issue(issue_id_or_key=issue_id_or_key)
@@ -1732,17 +1792,6 @@ def edit_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandR
         raw_response=res
     )
 
-
-# def handle_edit_issue_arguments_parsing(issue_args: Dict[str, str], action: str) -> Dict[str, Any]:
-#     issue_args['labels'] = issue_args.get('labels', '').split(',')
-#     issue_args['components'] = [{"name": component} for component in argToList(issue_args.get('components'))]
-#     action = args.get('action', 'rewrite')
-#     update_fields = get_issue_fields_for_update(issue_args=args, issue_update_mapper=client.ISSUE_UPDATE_MAPPER, action=action)
-#     if (action == 'append' and (args.get('description', '') or args.get('environment', ''))):
-#         # Description and Environment do not support the add operation
-#         raise DemistoException('Description and Environment do not support the add operation')
-#     update_fields.get('update', {})['description'] = [{'set': text_to_adf(text=args.get('description', ''))}]
-#     update_fields.get('update', {})['environment'] = [{'set': text_to_adf(text=args.get('environment', ''))}]
 
 def delete_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandResults:
     issue_id_or_key = args.get('issue_id', args.get('issue_key', ''))
@@ -1790,15 +1839,6 @@ def create_comments_command_results(response_comments: List[Dict[str, Any]],
                                     issue_id_or_key: str, res: Dict[str, Any]) -> CommandResults:
     is_id = is_issue_id(issue_id_or_key=issue_id_or_key)
     comments = extract_comments_entries_from_raw_response(response_comments=response_comments)
-    # for comment in response_comments:
-    #     comment_body = BeautifulSoup(comment.get('renderedBody')).get_text(
-    #     ) if comment.get('renderedBody') else comment.get('body')
-    #     comments.append({
-    #         'Id': comment.get('id'),
-    #         'Comment': comment_body,
-    #         'User': demisto.get(comment, 'author.displayName'),
-    #         'Created': comment.get('created')
-    #     })
     outputs: Dict[str, Any] = {'Comment': comments}
     if(is_id):
         outputs |= {'Id': issue_id_or_key}
@@ -2646,15 +2686,6 @@ def create_incident_from_issue(client: JiraBaseClient, issue: Dict[str, Any], fe
         name = f"Jira issue: {issue.get('id')}"
 
     severity = get_jira_issue_severity(issue_field_priority=demisto.get(issue, 'fields.priority') or {})
-    # if demisto.get(issue, 'fields.priority') and demisto.get(issue, 'fields.priority.name'):
-    #     if demisto.get(issue, 'fields.priority.name') == 'Highest':
-    #         severity = 4
-    #     elif demisto.get(issue, 'fields.priority.name') == 'High':
-    #         severity = 3
-    #     elif demisto.get(issue, 'fields.priority.name') == 'Medium':
-    #         severity = 2
-    #     elif demisto.get(issue, 'fields.priority.name') == 'Low':
-    #         severity = 1
 
     file_names: list = []
     if fetch_attachments:
