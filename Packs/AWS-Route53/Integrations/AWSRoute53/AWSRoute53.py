@@ -17,7 +17,8 @@ DEFAULT_RETRIES = 5
 
 
 class DatetimeEncoder(json.JSONEncoder):
-    def default(self, obj):  # pylint: disable=E0202
+    # pylint: disable=method-hidden
+    def default(self, obj: Any) -> Any:
         if isinstance(obj, datetime):
             return obj.strftime('%Y-%m-%dT%H:%M:%S')
         elif isinstance(obj, date):
@@ -36,7 +37,7 @@ def create_entry(title: str, data: Union[Dict[str, Any], List[Any]],
 
 
 def create_record(
-        args: Dict[str, Any],
+        args: Dict[Any, Any],
         aws_client: AWSClient  # noqa
 ) -> CommandResults:
     try:
@@ -78,7 +79,7 @@ def create_record(
 
 
 def delete_record(
-        args: Dict[str, Any],
+        args: Dict[Any, Any],
         aws_client: AWSClient  # noqa
 ) -> CommandResults:
     try:
@@ -117,7 +118,7 @@ def delete_record(
 
 
 def upsert_record(
-        args: Dict[str, Any],
+        args: Dict[Any, Any],
         aws_client: AWSClient  # noqa
 ) -> CommandResults:
     try:
@@ -159,7 +160,7 @@ def upsert_record(
 
 
 def list_hosted_zones(
-        args: Dict[str, Any],
+        args: Dict[Any, Any],
         aws_client: AWSClient  # noqa
 ) -> CommandResults:
     try:
@@ -182,7 +183,7 @@ def list_hosted_zones(
 
 
 def list_resource_record_sets(
-        args: Dict[str, Any],
+        args: Dict[Any, Any],
         aws_client: AWSClient  # noqa
 ) -> CommandResults:
     try:
@@ -215,7 +216,7 @@ def list_resource_record_sets(
 
 
 def waiter_resource_record_sets_changed(
-        args: Dict[str, Any],
+        args: Dict[Any, Any],
         aws_client: AWSClient  # noqa
 ) -> CommandResults:
     try:
@@ -237,7 +238,7 @@ def waiter_resource_record_sets_changed(
 
 
 def test_dns_answer(
-        args: Dict[str, Any],
+        args: Dict[Any, Any],
         aws_client: AWSClient  # noqa
 ) -> CommandResults:
     try:
@@ -294,10 +295,12 @@ def main():  # pragma: no cover
         demisto.info(f'Command being called is {demisto.command()}')
         if command == 'test-module':
             client = aws_client.aws_session(service=SERVICE)
-
-            response = client.list_hosted_zones()
-            if response['ResponseMetadata']['HTTPStatusCode'] == HTTPStatus.OK:
-                demisto.results('ok')
+            try:
+                response = client.list_hosted_zones()
+                if response['ResponseMetadata']['HTTPStatusCode'] == HTTPStatus.OK:
+                    return_results("ok")
+            except Exception as error:
+                return_error(f'Failed to test connection.\nError:\n{str(error)}')
 
         elif command == 'aws-route53-create-record':
             return_results(create_record(args, aws_client))
