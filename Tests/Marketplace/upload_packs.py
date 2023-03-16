@@ -1304,7 +1304,7 @@ def main():
     shutil.copytree(index_folder_path, index_v2_local_path)
 
     logging.info('replacing the urls in index_V2')
-    
+
     replace_readme_urls(index_v2_local_path, storage_base_path=storage_base_path,
                         marketplace=marketplace, use_api=True)
 

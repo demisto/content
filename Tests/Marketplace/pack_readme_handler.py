@@ -71,8 +71,8 @@ def replace_readme_urls(index_local_path, storage_base_path,
             (original_url, new_gcs_path, image_name).
 
     """
-    readme_urls_data_list = []
-    readme_images = {}
+    readme_urls_data_list: list = []
+    readme_images: dict = {}
     for pack_name in os.listdir(index_local_path):
         pack_readme_path = os.path.join(index_local_path, pack_name, 'README.md')
         logging.info(f'{pack_readme_path=}')
