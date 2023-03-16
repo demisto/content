@@ -1,6 +1,16 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+import json
+
+def string_to_markdown(text):
+    text = json.loads(text)
+    md = ''
+    for key, values in text.items():
+        md += f"### {key}\n"
+        for value in values:
+            md += f"- {value}\n"
+    return md
 
 
 def read_file_with_encoding_detection(filePath, maxFileSize):
@@ -39,7 +49,7 @@ def extract_indicators_from_file(args):
         'Type': entryTypes['note'],
         'ContentsFormat': formats['text'],
         'Contents': indicators_hr,
-        'HumanReadable': indicators_hr
+        'HumanReadable': string_to_markdown(indicators_hr)
     }
 
 
