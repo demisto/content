@@ -12,6 +12,7 @@ import re
 urllib3.disable_warnings()
 
 VERSION = demisto.params().get('version', 'V9x')
+DEFAULT_LIMIT = 50
 STATE_TO_NUMBER = {"Disabled": 0, "Enabled": 1}
 DEPLOY_ARGUMENT_MAPPER = {"push_ssl_key": "SSLPercentageComplete",
                           "push_gam_updates": "GamUpdatePercentageComplete",
@@ -829,6 +830,21 @@ def capitalize_key_first_letter(input_lst: List[Dict], check_lst: List = None) -
     return capitalize_lst
 
 
+def flatten_and_capitalize(main_dict: Dict, inner_dict_key: str, check_lst: List = None) -> Dict:
+    """
+        Flatten a nested dictionary and capitalize the first letter of all keys.
+        Args:
+            nested_dict: Dict - A nested dictionary.
+            check_lst: List - A list of keys to check if they exist in the dictionary.
+        Returns:
+            Returns a flat dict with the first letter of all keys capitalized.
+    """
+    inner_dict = main_dict.pop(inner_dict_key) if inner_dict_key in main_dict else {}
+    capitalized_inner = capitalize_key_first_letter(input_lst=[inner_dict], check_lst=check_lst)[0]
+    main_dict |= capitalized_inner
+    return main_dict
+
+
 def check_args_create_rule(rule_type: str, address: List, from_address: str, to_address: str, number: int):
     """ Validate the arguments of the function
         Args:
@@ -993,7 +1009,7 @@ def list_domain_firewall_policy_command(client: Client, args: Dict) -> CommandRe
         A CommandResult object with the list of Firewall Policies defined in a particular domain.
     """
     domain_id = int(args.get('domain_id', 0))
-    limit = arg_to_number(args.get('limit', 50)) or 50
+    limit = arg_to_number(args.get('limit', DEFAULT_LIMIT)) or DEFAULT_LIMIT
     page = arg_to_number(args.get('page'))
     page_size = arg_to_number(args.get('page_size'))
     if (page and not page_size) or (not page and page_size):
@@ -1231,7 +1247,7 @@ def list_domain_rule_objects_command(client: Client, args: Dict) -> CommandResul
     """
     domain_id = arg_to_number(args.get('domain_id'), required=True) or 0
     rule_type = args.get('type', 'All')
-    limit = arg_to_number(args.get('limit', 50)) or 50
+    limit = arg_to_number(args.get('limit', DEFAULT_LIMIT)) or DEFAULT_LIMIT
     page = arg_to_number(args.get('page'))
     page_size = arg_to_number(args.get('page_size'))
 
@@ -1546,7 +1562,7 @@ def get_alerts_command(client: Client, args: Dict) -> CommandResults:
         Returns:
             A CommandResult object with a list of alerts.
     """
-    limit = arg_to_number(args.get('limit', 50)) or 50
+    limit = arg_to_number(args.get('limit', DEFAULT_LIMIT)) or DEFAULT_LIMIT
     page = arg_to_number(args.get('page'))
     page_size = arg_to_number(args.get('page_size'))
     time_period = args.get('time_period', 'LAST_7_DAYS')
@@ -1779,7 +1795,7 @@ def get_domains_command(client: Client, args: Dict) -> CommandResults:
             A CommandResult object with The domain details or domains list.
     """
     domain_id = arg_to_number(args.get('domain_id', None))
-    limit = arg_to_number(args.get('limit', 50)) or 50
+    limit = arg_to_number(args.get('limit', DEFAULT_LIMIT)) or DEFAULT_LIMIT
     page = arg_to_number(args.get('page'))
     page_size = arg_to_number(args.get('page_size'))
     if (page and not page_size) or (not page and page_size):
@@ -1828,7 +1844,7 @@ def get_sensors_command(client: Client, args: Dict) -> CommandResults:
             A CommandResult object with The relevant sensors.
     """
     domain_id = arg_to_number(args.get('domain_id'))
-    limit = arg_to_number(args.get('limit', 50)) or 50
+    limit = arg_to_number(args.get('limit', DEFAULT_LIMIT)) or DEFAULT_LIMIT
     page = arg_to_number(args.get('page'))
     page_size = arg_to_number(args.get('page_size'))
     if (page and not page_size) or (not page and page_size):
@@ -1901,7 +1917,7 @@ def get_ips_policies_command(client: Client, args: Dict) -> CommandResults:
             A CommandResult object with The relevant ips policies.
     """
     domain_id = arg_to_number(args.get('domain_id')) or 0
-    limit = arg_to_number(args.get('limit', 50)) or 50
+    limit = arg_to_number(args.get('limit', DEFAULT_LIMIT)) or DEFAULT_LIMIT
     page = arg_to_number(args.get('page'))
     page_size = arg_to_number(args.get('page_size'))
     if (page and not page_size) or (not page and page_size):
@@ -2049,7 +2065,7 @@ def list_pcap_file_command(client: Client, args: Dict) -> CommandResults:
             A CommandResult object with a list of captured PCAP files.
     """
     sensor_id = int(args.get('sensor_id', ''))
-    limit = arg_to_number(args.get('limit', 50)) or 50
+    limit = arg_to_number(args.get('limit', DEFAULT_LIMIT)) or DEFAULT_LIMIT
     page = arg_to_number(args.get('page'))
     page_size = arg_to_number(args.get('page_size'))
     if (page and not page_size) or (not page and page_size):
@@ -2105,7 +2121,7 @@ def list_domain_device_command(client: Client, args: Dict) -> CommandResults:
     domain_id = arg_to_number(args.get('domain_id'))
     if not domain_id and domain_id != 0:
         raise DemistoException('Please provide a domain_id.')
-    limit = arg_to_number(args.get('limit', 50))
+    limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
     all_results = argToBoolean(args.get('all_results', False))
 
     response = client.list_domain_device_request(domain_id)
@@ -2138,7 +2154,7 @@ def list_device_interface_command(client: Client, args: Dict) -> CommandResults:
     domain_id = arg_to_number(args.get('domain_id'))
     if not domain_id and domain_id != 0:
         raise DemistoException('Please provide a domain_id.')
-    limit = arg_to_number(args.get('limit', 50))
+    limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
     all_results = argToBoolean(args.get('all_results', False))
 
     response = client.list_device_interface_request(domain_id=domain_id, device_id=device_id)
@@ -2202,7 +2218,7 @@ def list_device_policy_command(client: Client, args: Dict) -> CommandResults:
     domain_id = arg_to_number(args.get('domain_id'))
     if not domain_id and domain_id != 0:
         raise DemistoException('Please provide a domain_id.')
-    limit = arg_to_number(args.get('limit', 50))
+    limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
     all_results = argToBoolean(args.get('all_results', False))
 
     response = client.list_device_policy_request(domain_id=domain_id, device_id=device_id)
@@ -2275,7 +2291,7 @@ def list_interface_policy_command(client: Client, args: Dict) -> CommandResults:
     if not domain_id and domain_id != 0:
         raise DemistoException('Please provide a domain_id.')
     interface_id = arg_to_number(args.get('interface_id'))
-    limit = arg_to_number(args.get('limit', 50))
+    limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
     all_results = argToBoolean(args.get('all_results', False))
 
     response = client.list_interface_policy_request(domain_id=domain_id, interface_id=interface_id)
@@ -2308,31 +2324,18 @@ def get_device_configuration_command(client: Client, args: Dict) -> CommandResul
         raise DemistoException('Please provide a device_id.')
 
     response = client.get_device_configuration_request(device_id=device_id)
+    capitalize_response = capitalize_key_first_letter([response])[0]
+    flatterned_response = flatten_and_capitalize(main_dict=capitalize_response,
+                                                 inner_dict_key='PendingChanges')
 
-    capitalize_response = capitalize_key_first_letter([response])
-    capitalize_response = capitalize_response[0]
-
-    # build a new dict with the keys and values of the nested dict
-    inner_dict: Any = capitalize_response.get('PendingChanges') or {}
-    add_on_dict = {"IsPolicyConfigurationChanged": inner_dict.get("isPolicyConfigurationChanged"),
-                   "IsConfigurationChanged": inner_dict.get("isConfigurationChanged"),
-                   "IsMalwareConfigurationChanged": inner_dict.get("isMalwareConfigurationChanged"),
-                   "IsSignatureSetConfigurationChanged": inner_dict.get("isSignatureSetConfigurationChanged"),
-                   "IsSSLConfigurationChanged": inner_dict.get("isSSLConfigurationChanged"),
-                   "IsBotnetConfigurationChanged": inner_dict.get("isBotnetConfigurationChanged"),
-                   "IsGloablPolicyConfigurationChanged": inner_dict.get("isGloablPolicyConfigurationChanged")
-                   }
-
-    capitalize_response |= add_on_dict
-    capitalize_response.pop('PendingChanges') if capitalize_response.get('PendingChanges') else None
     readable_output = tableToMarkdown(
-        name='Device Configuration', t=capitalize_response, removeNull=True
+        name='Device Configuration', t=flatterned_response, removeNull=True
     )
 
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='NSM.DeviceConfiguration',
-        outputs=capitalize_response,
+        outputs=flatterned_response,
         raw_response=response
     )
 
@@ -2437,7 +2440,7 @@ def main() -> None:  # pragma: no cover
             str_results = test_module(client, f'{user_name}:{password}')
             return_results(str_results)
         elif command == 'nsm-list-domain-firewall-policy':
-            results: CommandResults = list_domain_firewall_policy_command(client, args)
+            results = list_domain_firewall_policy_command(client, args)
         elif command == 'nsm-get-firewall-policy':
             results = get_firewall_policy_command(client, args)
         elif command == 'nsm-create-firewall-policy':

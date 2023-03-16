@@ -728,10 +728,7 @@ script:
       isArray: false
     - name: state
       required: false
-      description: >
-        Whether to enable or disable the rule object.
-
-        Note: This argument is only relevant to version 10x.
+      description: "Whether to enable or disable the rule object.\nNote: This argument is only relevant to version 10x."
       defaultvalue: Enabled
       auto: PREDEFINED
       predefined:
@@ -803,10 +800,7 @@ script:
       - 'false'
     - name: state
       required: false
-      description: >
-        Whether to enable or disable the rule object.
-
-        Note: This argument is only relevant to version 10x.
+      description: "Whether to enable or disable the rule object.\nNote: This argument is only relevant to version 10x."
       defaultvalue: Enabled
       auto: PREDEFINED
       predefined:
@@ -1968,10 +1962,10 @@ script:
       required: true
       description: The ID of the device. To get the device ID, use the !nsm-list-domain-device command.
     - name: pre_firewall_policy_name
-      description: The name of the policy to be evaluated first and added to the top of the policy order.
+      description: The name of the policy to add to the top of the rule order and evaluated first.
         To get the policies, use the !nsm-list-domain-firewall-policy command.
     - name: post_firewall_policy_name
-      description: The name of the policy to be evaluated last and added to the bottom of the policy order.
+      description: The name of the policy to add to the end of the rule order and evaluated last.
         To get the policies, use the !nsm-list-domain-firewall-policy command.
   - name: nsm-list-device-policy
     description: List all the policies assigned to a domain or a specific device.
@@ -2033,12 +2027,7 @@ script:
       required: true
   - name: nsm-deploy-device-configuration
     polling: true
-    description: > 
-      Deploy the pending changes. 
-      
-      Note: In order to avoid extra run time, it is recommended to deploy only the changes that are pending.
-
-      To get the pending changes, use the !nsm-get-device-configuration command.
+    description: "Deploy the pending changes.\n Note: In order to avoid extra run time, it is recommended to deploy only the changes that are pending.\nTo get the pending changes, use the !nsm-get-device-configuration command."
     arguments:
     - name: request_id
       description: This is for the polling to work. not for the user.
