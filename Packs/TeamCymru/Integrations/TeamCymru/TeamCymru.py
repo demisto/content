@@ -25,17 +25,17 @@ MAPPING = {'ip': 'IP', 'asn': 'ASN', 'owner': 'Organization', 'cc': 'Country', '
 class CymruClient(Client):
 
     def _connect(self):
-        demisto.log("start connecting")
+        demisto.debug("start connecting")
         self.socket = socks.socksocket()
-        demisto.log("before settimeout")
+        demisto.debug("before settimeout")
         self.socket.settimeout(30.0)
-        demisto.log("after settimeout before connect")
+        demisto.debug("after settimeout before connect")
         self.socket.connect((self.host, self.port))
-        demisto.log("after connect")
+        demisto.debug("after connect")
         self.socket.settimeout(60.0)
-        demisto.log("after settimeout before makefile")
+        demisto.debug("after settimeout before makefile")
         self.file = self.socket.makefile("rw")
-        demisto.log("after makefile")
+        demisto.debug("after makefile")
 
     def lookup(self, ip: str) -> Optional[Dict[str, Any]]:
         """Perform lookups by ip address and return ASN, Country Code, and Network Owner.
@@ -182,7 +182,7 @@ def test_module(client: CymruClient) -> str:
     try:
         result = client.lookup('8.8.8.8')
         if result and result.get('owner') == 'GOOGLE, US':
-            demisto.log('ok')
+            demisto.info('ok')
             message = 'ok'
     except DemistoException as e:
         if 'Forbidden' in str(e) or 'Authorization' in str(e):
@@ -261,11 +261,7 @@ def setup_proxy():
     if not proxy_url and not demisto.params().get('proxy'):
         return
     scheme, host = (def_scheme, proxy_url) if '://' not in proxy_url else proxy_url.split('://')
-    print(f"{scheme=}, {host=}")
-
     host, port = (host, None) if ':' not in host else host.split(':')
-    print(f"{host=}, {port=}")
-    # port = 2997
     if port:
         port = int(port)
     proxy_type = scheme_to_proxy_type.get(scheme)
