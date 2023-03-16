@@ -40,6 +40,13 @@ MAX_INCIDENTS_TO_FETCH = 200
 FETCH_DEFAULT_TIME = '3 days'
 FETCH_LOOK_BACK_TIME = 20
 
+MIRROR_DIRECTION_MAPPING = {
+    "None": None,
+    "Incoming": "In",
+    "Outgoing": "Out",
+    "Incoming And Outgoing": "Both",
+}
+
 PAGE_NUMBER_DEFAULT_VALUE = 1
 PAGE_SIZE_DEFAULT_VALUE = 50
 PAGE_SIZE_MAX_VALUE = 10000
@@ -1591,6 +1598,8 @@ def main() -> None:
     password = params['credentials']['password']
 
     return_v1_output = params.get('output_old_format', False)
+
+    mirror_direction = MIRROR_DIRECTION_MAPPING[params.get('mirror_direction')]
 
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')

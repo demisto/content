@@ -77,6 +77,32 @@ configuration:
   required: false
   type: 8
   section: Collect
+- additionalinfo: 'Choose the direction to mirror the incident: Incoming (from Prisma Cloud to Cortex XSOAR), Outgoing (from Cortex XSOAR to Prisma Cloud), or Incoming and Outgoing (from/to Cortex XSOAR and Prisma Cloud).'
+  defaultvalue: None
+  display: Incident Mirroring Direction
+  name: mirror_direction
+  options:
+  - None
+  - Incoming
+  - Outgoing
+  - Incoming And Outgoing
+  required: false
+  type: 15
+  section: Collect
+- additionalinfo: When selected, closing the Prisma Cloud alert is mirrored in Cortex XSOAR.
+  defaultvalue: 'false'
+  display: Close Mirrored XSOAR Incident
+  name: close_incident
+  required: false
+  type: 8
+  section: Collect
+- additionalinfo: When selected, closing the XSOAR incident is mirrored in Prisma Cloud.
+  defaultvalue: 'false'
+  display: Close Mirrored Prisma Cloud Alert
+  name: close_ticket
+  required: false
+  type: 8
+  section: Collect
 - name: output_old_format
   display: Output results of V1 commands to the context data in the old format
   defaultvalue: 'false'
@@ -90,6 +116,9 @@ script:
   subtype: python3
   dockerimage: demisto/python3:3.10.10.48392
   isfetch: true
+  ismappable: true
+  isremotesyncin: true
+  isremotesyncout: true
   commands:
   - arguments:
     - default: false
