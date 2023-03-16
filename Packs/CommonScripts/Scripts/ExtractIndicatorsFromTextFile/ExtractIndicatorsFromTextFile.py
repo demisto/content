@@ -22,8 +22,8 @@ def string_to_markdown(indicators: str) -> str:
         for key, values in indicators_dict.items():
             md += f"### {key}\n"
 
-        for value in values:
-            md += f"- {value}\n"
+            for value in values:
+                md += f"- {value}\n"
 
     except json.JSONDecodeError:
         demisto.error(f'JSON Decode failed on "{indicators}"')
