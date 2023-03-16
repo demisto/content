@@ -1,3 +1,5 @@
+import time
+
 import demistomock as demisto
 import requests_mock
 
@@ -122,3 +124,35 @@ def test_build_finished_job(mocker):
     from VMRay import build_finished_job
 
     assert build_finished_job('test', 'test') == {'JobID': 'test', 'SampleID': 'test', 'Status': 'Finished/NotExists'}
+
+
+def test_rate_limit(requests_mock, mocker):
+    mocker.patch.object(demisto, 'params', return_value={"api_key": "123456", "server": "https://cloud.vmray.com/"})
+    requests_mock.get(
+        "https://cloud.vmray.com/rest/submission/123",
+        [
+            {
+                "status_code": 429,
+                "json": {
+                    "error_msg": "Request was throttled. Expected available in 2 seconds.",
+                    "result": "error"
+                },
+                "headers": {
+                    "Retry-After": "2"
+                }
+            },
+            {
+                "status_code": 200,
+                "json": {
+                    "foo": "bar"
+                }
+            }
+        ]
+    )
+
+    from VMRay import http_request
+    start = time.perf_counter()
+    response = http_request("GET", "submission/123")
+
+    assert 2.0 < time.perf_counter() - start <= 7.0
+    assert response == {"foo": "bar"}
