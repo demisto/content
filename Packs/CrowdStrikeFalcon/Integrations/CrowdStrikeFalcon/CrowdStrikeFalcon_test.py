@@ -4496,7 +4496,7 @@ def test_search_ioa_exclusion_command_by_ids(requests_mock):
 def test_search_ioa_exclusion_command_by_name(requests_mock):
     from CrowdStrikeFalcon import search_ioa_exclusion_command
     requests_mock.get(
-        f'{SERVER_URL}/policy/queries/ioa-exclusions/v1?filter=name%3Atest',
+        f'{SERVER_URL}/policy/queries/ioa-exclusions/v1?filter=name%3A%27test%27',
         json={'resources': ['123456']}
     )
     requests_mock.get(
@@ -4514,7 +4514,7 @@ def test_search_ioa_exclusion_command_by_name(requests_mock):
 def test_search_ioa_exclusion_command_by_name_no_results(requests_mock):
     from CrowdStrikeFalcon import search_ioa_exclusion_command
     requests_mock.get(
-        f'{SERVER_URL}/policy/queries/ioa-exclusions/v1?filter=name%3Atest-mock',
+        f'{SERVER_URL}/policy/queries/ioa-exclusions/v1?filter=name%3A%27test-mock%27',
         json={}
     )
 
