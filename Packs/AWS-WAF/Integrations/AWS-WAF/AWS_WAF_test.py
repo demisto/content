@@ -2,10 +2,11 @@ import json
 import io
 from CommonServerPython import *
 import pytest
+from AWS_WAF import OPERATOR_TO_STATEMENT_OPERATOR
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with io.open(f'test_data/{path}.json', mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -33,12 +34,15 @@ def test_build_regex_pattern_object():
 
 
 IP_ARN_LIST = ['pi_arn', 'ip_arn']
-CONDITION_OPERATOR = 'And'
+AND_CONDITION_OPERATOR = 'And'
+OR_CONDITION_OPERATOR = 'Or'
 
 
 @pytest.mark.parametrize('args, expected_result',
-                         [({'ip_set_arn': IP_ARN_LIST[:1]}, 'IPSetReferenceStatement'),
-                          ({'ip_set_arn': IP_ARN_LIST, 'condition_operator': CONDITION_OPERATOR}, 'AndStatement')])
+                         [({'ip_set_arn': IP_ARN_LIST[:1]},
+                           'IPSetReferenceStatement'),
+                          ({'ip_set_arn': IP_ARN_LIST, 'condition_operator': AND_CONDITION_OPERATOR},
+                           OPERATOR_TO_STATEMENT_OPERATOR[AND_CONDITION_OPERATOR])])
 def test_build_ip_rule_object(args, expected_result):
     from AWS_WAF import build_ip_rule_object
     ip_rule = build_ip_rule_object(args=args)
@@ -54,5 +58,23 @@ def test_build_ip_statement(ip_set_arn, expected_type):
     assert type(statement) == expected_type
 
 
+@pytest.mark.parametrize('rule_file, statement_condition',
+                         [('rule_one_statement', OPERATOR_TO_STATEMENT_OPERATOR[AND_CONDITION_OPERATOR]),
+                          ('rule_two_statements', OPERATOR_TO_STATEMENT_OPERATOR[OR_CONDITION_OPERATOR])])
+def test_update_rule_with_statement(rule_file, statement_condition):
+    from AWS_WAF import update_rule_with_statement
+    rule = util_load_json(rule_file)
+    statement = {"IPSetReferenceStatement": {
+        "ARN": "ip_arn"
+    }}
+    update_rule_with_statement(rule=rule, statement=statement, condition_operator=AND_CONDITION_OPERATOR)
+    assert statement_condition in rule['Statement']
 
 
+def test_add_statement_to_rule(mocker):
+    from AWS_WAF import add_statement_to_rule
+    rules = util_load_json('rule_group').get('RuleGroup').get('Rules')
+    args = {'rule_name': 'test_1'}
+    res = mocker.patch('AWS_WAF.update_rule_with_statement')
+    add_statement_to_rule(args=args, statement={}, rules=rules)
+    assert res.call_count == 1

@@ -213,7 +213,6 @@ def update_rule_with_statement(rule: dict, statement: dict, condition_operator: 
 
     else:
         raise DemistoException('Rule contains only one statement. Please provide condition operator.')
-    # TODO support list of statements
     rule['Statement'][condition]['Statements'].append(statement)
 
 
