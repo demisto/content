@@ -99,7 +99,7 @@ class AzureWAFClient:
             try:
                 res.append(self.http_request(
                     method='GET',
-                    full_url=f'{base_url}/resourceGroups/{resource_group_name}/{POLICY_PATH}/{policy_name}',
+                    full_url=f'{base_url}/resourceGroups/{resource_group_name}/{POLICY_PATH}/{policy_name}?api-version={API_VERSION}',
                 ))
             except Exception as e:
                 res.append({'properties': f'{resource_group_name} threw Exception: {str(e)}'})
@@ -112,7 +112,7 @@ class AzureWAFClient:
             try:
                 res.append(self.http_request(
                     method='GET',
-                    full_url=f'{base_url}/resourceGroups/{resource_group_name}/{POLICY_PATH}'
+                    full_url=f'{base_url}/resourceGroups/{resource_group_name}/{POLICY_PATH}?api-version={API_VERSION}'
                 ))
             except Exception as e:
                 res.append({'properties': f'{resource_group_name} threw Exception: {str(e)}'})
@@ -126,7 +126,7 @@ class AzureWAFClient:
                 res.append(
                     self.http_request(
                         method='GET',
-                        full_url=f'{base_url}/{POLICY_PATH}'
+                        full_url=f'{base_url}/{POLICY_PATH}?api-version={API_VERSION}'
                     )
                 )
             except Exception as e:
@@ -141,7 +141,7 @@ class AzureWAFClient:
                 res.append(
                     self.http_request(
                         method='PUT',
-                        full_url=f'{base_url}/resourceGroups/{resource_group_name}/{POLICY_PATH}/{policy_name}',
+                        full_url=f'{base_url}/resourceGroups/{resource_group_name}/{POLICY_PATH}/{policy_name}?api-version={API_VERSION}',
                         data=data
                     )
                 )
