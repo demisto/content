@@ -778,32 +778,38 @@ def create_body_create_rule_for_v10(rule_type: str, address: List, number: int,
 def modify_v10_results_to_v9_format(results: List[Dict[Any, Any]]) -> List[Dict[Any, Any]]:
     """
     Modify the results of v10 to be in the same format as in v9.
+    Main difference is that in v10 the addresses are in a list of dictionaries with extra information.
+    This function removes the extra information and returns a list of addresses instead
 
-    Modifications In the nested dictionary:
-    - The key is the name of the object.
-    - The value is a list of strings instead of a list of dictionaries.
+    Args:
+        results: List[Dict[Any, Any]] - The results of the command of v10.
+    Returns:
+        A list of dictionaries in the same format as in v9.
     """
     key_list = ['IPv6AddressRange', 'HostIPv6', 'Network_IPV_6', 'Network_IPV_4',
                 'HostIPv4', 'IPv4AddressRange']
-    for record in results:
-        for key, value in record.items():
-            if key in key_list and value:
+    for policy in results:
+        for key, value in policy.items():
+            if key in key_list and value:   # find the key that its value is the dict contains the addresses
                 address_list: list = []
                 my_key = key
-                # iterate over the list of dictionaries and retrive the addresses
-                for inner_dict in value[next(iter(value))]:
+
+                # The value of the first (and only) key is a list containing dict with addresses
+                list_of_dicts_of_adresses = value[next(iter(value))]
+                for inner_dict in list_of_dicts_of_adresses:
                     temp_dict = {}
                     for key in inner_dict.keys():
+                        # choose the keys and values that are relevant ans saves them in a temp dict
                         if key == 'value':
                             address_list.append(inner_dict[key])
                         elif key in ['FromAddress', 'ToAddress']:
                             temp_dict[key] = inner_dict[key]
-                    if temp_dict:
-                        address_list.append(temp_dict)
+
+                        address_list.append(temp_dict) if temp_dict else None
 
                 if address_list:
                     # replace the list of dicts with a list of strings containing the addresses
-                    record[my_key][next(iter(value))] = address_list
+                    policy[my_key][next(iter(value))] = address_list
 
     return results
 
