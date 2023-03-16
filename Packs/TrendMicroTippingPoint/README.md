@@ -6,7 +6,7 @@ You need to configure the Security Management System (SMS) of Trend Micro Tippin
 ### Log in to the TippingPoint system and follow the below steps:
 1. On the **Admin Navigation** menu, select **Server Properties**.
 2. Select the **Syslog** tab.
-3. Under "Remote Syslog for Events" Click **New**.
+3. Under **Remote Syslog for Events**, click **New**.
 4. Select the **Enable** check box.
 5. Configure the following values:
    - Syslog Server - The IP address of the XSIAM Broker.
