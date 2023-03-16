@@ -1458,8 +1458,6 @@ script:
     description: Gets the statement template.
     execution: false
     name: aws-waf-statement-json-template-get
-
-
   isfetch: false
   runonce: false
   script: '-'

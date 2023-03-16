@@ -32,4 +32,27 @@ def test_build_regex_pattern_object():
     assert len(result) == 2
 
 
+IP_ARN_LIST = ['pi_arn', 'ip_arn']
+CONDITION_OPERATOR = 'And'
+
+
+@pytest.mark.parametrize('args, expected_result',
+                         [({'ip_set_arn': IP_ARN_LIST[:1]}, 'IPSetReferenceStatement'),
+                          ({'ip_set_arn': IP_ARN_LIST, 'condition_operator': CONDITION_OPERATOR}, 'AndStatement')])
+def test_build_ip_rule_object(args, expected_result):
+    from AWS_WAF import build_ip_rule_object
+    ip_rule = build_ip_rule_object(args=args)
+    assert expected_result in ip_rule['Statement']
+
+
+@pytest.mark.parametrize('ip_set_arn, expected_type',
+                         [(IP_ARN_LIST[:1], dict),
+                          (IP_ARN_LIST, list)])
+def test_build_ip_statement(ip_set_arn, expected_type):
+    from AWS_WAF import build_ip_statement
+    statement = build_ip_statement(ip_set_arn=ip_set_arn)
+    assert type(statement) == expected_type
+
+
+
 
