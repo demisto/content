@@ -51,15 +51,18 @@ class GoogleSecreteManagerModule:
                 try:
                     secret_value = self.get_secret(project_id, secret.name)
                     # We make sure that the keys we want in the dict are present
+                    print(f'secret_value:{secret_value}')
                     missing_attrs = [attr for attr in attr_validation if attr not in secret_value]
                     if missing_attrs:
                         missing_attrs_str = ','.join(missing_attrs)
-                        logging.error(
+                        print(
+                            # f'Error getting the secret: {secret.name}, it\'s missing the following required attributes: {missing_attrs_str}')  # noqa: E501
                             f'Error getting the secret: {secret.name}, it\'s missing the following required attributes: {missing_attrs_str}')  # noqa: E501
                         continue
                     secrets.append(secret_value)
                 except Exception as e:
-                    logging.error(f'Error getting the secret: {secret.name}, got the error: {e}')
+                    # logging.error(f'Error getting the secret: {secret.name}, got the error: {e}')
+                    print(f'Error getting the secret: {secret.name}, got the error: {e}')
             else:
                 secrets.append(secret)
 
