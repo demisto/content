@@ -710,6 +710,8 @@ def cleanup_records(signal:"Sumo Signal Object") -> "Object":
     '''
     Function to clean up all "bro" fields of the records under a Signal object
     '''
+    if signal is None or not 'allRecords' in signal :
+        return None
     for rec in signal['allRecords']:
         field_names = list(rec.keys())
         for field_name in field_names:

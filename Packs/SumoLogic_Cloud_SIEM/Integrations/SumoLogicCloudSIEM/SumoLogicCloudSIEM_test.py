@@ -482,7 +482,7 @@ def test_fetch_incidents(requests_mock):
 
     client.set_extra_params({'instance_endpoint': 'https://test.us2.sumologic.com'})
 
-    next_run, incidents = fetch_incidents(client, 20, {}, 1621296000, None, RECORD_SUMMARY_FIELDS_DEFAULT)
+    next_run, incidents = fetch_incidents(client=client, max_results=20, last_run={}, first_fetch_time=1621296000, fetch_query=None,pull_signals=False,record_summary_fields=RECORD_SUMMARY_FIELDS_DEFAULT,other_args=None)
 
     assert incidents[0].get('name') == 'Defense Evasion with Persistence - INSIGHT-231'
     assert incidents[0].get('occurred') == '2021-05-18T14:46:46.000Z'
