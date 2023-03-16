@@ -1,34 +1,17 @@
 {
 	"defaultIncidentType": "",
 	"definitionId": "",
-	"description": "Classifier for Sumo Logic Insight",
+	"description": "Classifier for Sumo Logic Insight and Signal",
 	"feed": false,
 	"fromVersion": "6.2.0",
-	"id": "Sumo Logic Insight Classifier",
+	"id": "Sumo Logic Cloud SIEM Classifier",
 	"keyTypeMap": {
-		"INSIGHT": "Sumo Logic Insight"
+		"INSIGHT": "Sumo Logic Insight",
+		"SIGNAL-": "Sumo Logic Signal"
 	},
-	"name": "Sumo Logic Insight Classifier",
+	"name": "Sumo Logic Cloud SIEM Classifier",
 	"transformer": {
 		"complex": {
-			"filters": [
-				[
-					{
-						"left": {
-							"isContext": true,
-							"value": {
-								"simple": "readableId"
-							}
-						},
-						"operator": "startWith",
-						"right": {
-							"value": {
-								"simple": "INSIGHT"
-							}
-						}
-					}
-				]
-			],
 			"root": "readableId",
 			"transformers": [
 				{

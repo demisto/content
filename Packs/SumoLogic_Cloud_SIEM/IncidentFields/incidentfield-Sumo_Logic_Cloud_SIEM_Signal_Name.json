@@ -1,21 +1,16 @@
 {
-    "associatedToAll": false,
-    "associatedTypes": [
-        "Sumo Logic Insight"
-    ],
-    "id": "incident_sumologiccloudsieminsighturl",
+    "associatedToAll": true,
     "caseInsensitive": true,
-    "cliName": "sumologiccloudsieminsighturl",
+    "cliName": "sumologiccloudsiemsignalname",
     "closeForm": false,
     "content": true,
-    "description": "Sumo URL for the Insight",
     "editForm": true,
-    "fromVersion": "6.2.0",
     "group": 0,
     "hidden": false,
+    "id": "incident_sumologiccloudsiemsignalname",
     "isReadOnly": false,
     "locked": false,
-    "name": "Sumo Logic Cloud SIEM Insight URL",
+    "name": "Sumo Logic Cloud SIEM Signal Name",
     "neverSetAsRequired": false,
     "openEnded": false,
     "ownerOnly": false,
@@ -23,9 +18,10 @@
     "sla": 0,
     "system": false,
     "threshold": 72,
-    "type": "url",
+    "type": "shortText",
     "unmapped": false,
     "unsearchable": true,
     "useAsKpi": false,
-    "version": -1
+    "version": -1,
+    "fromVersion": "6.8.0"
 }
