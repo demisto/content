@@ -3543,7 +3543,8 @@ INDICATOR_VALUE_AND_TYPE = [
     ('1[.]1[.]1[.]1', 'IP'),
     ('test[@]test.com', 'Email'),
     ('https[:]//www[.]test[.]com/abc', 'URL'),
-    ('test[.]com', 'Domain')
+    ('test[.]com', 'Domain'),
+    ('https://192.168.1.1:8080', 'URL'),
 ]
 
 
@@ -3729,7 +3730,6 @@ INVALID_URL_INDICATORS = [
     'google.com*',
     '1.1.1.1',
     'path/path',
-    '1.1.1.1:8080',
     '1.1.1.1:111112243245/path',
     '3.4.6.92:8080:/test',
     '1.1.1.1:4lll/',
