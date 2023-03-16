@@ -56,6 +56,8 @@ tasks:
       - "32"
       - "33"
       - "31"
+      '#default#':
+      - "24"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -543,5 +545,5 @@ outputs:
 tests:
 - Domain Enrichment - Generic v2 - Test
 marketplaces:
-  - xsoar
-  - marketplacev2
+- xsoar
+- marketplacev2
