@@ -108,7 +108,7 @@ tasks:
       id: 08cf3974-ddc8-4694-8a1a-e737b3e69973
       version: -1
       name: Manual verdict decision
-      description: Based on the collected data investigation, is it a true positive event?
+      description: Based on the collected data investigation, select the verdict of the alert.
       type: condition
       iscommand: false
       brand: ""
@@ -140,7 +140,7 @@ tasks:
     task:
       id: 043b96c8-7870-4754-823d-3a0658690cf2
       version: -1
-      name: False Positive - Done
+      name: False Positive
       type: title
       iscommand: false
       brand: ""
@@ -407,7 +407,7 @@ tasks:
       id: cfb35229-4702-4fa4-8b8b-f9d86778c329
       version: -1
       name: Is it malicious activity?
-      description: Is it a suspicious or Tor IP?
+      description: Checks whether the alert is malicious based on either one of the following:<br>Source IP address with a malicious DBot score.<br>A Tor IP address.
       type: condition
       iscommand: false
       brand: ""
@@ -433,6 +433,17 @@ tasks:
             value:
               complex:
                 root: DBotScore
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Indicator
+                      iscontext: true
+                    right:
+                      value:
+                        simple: alert.hostip
+                      iscontext: true
+                    ignorecase: true
                 accessor: Score
             iscontext: true
           right:
@@ -535,15 +546,7 @@ tasks:
       id: 6e5634a7-7393-4cfa-8bb4-b2beca7a782e
       version: -1
       name: Investigate collected data
-      description: |2-
-         To determine if this is a true positive event,  review the operations performed by the access key and the user in the recent time frame.
-        Search for the following items:
-        Investigate the operation performed by the access key and examine the executed operations, by who it was executed, on which resource, and the operation status.
-        Investigate operations performed by the user and examine the executed operations, by who it was executed, on which resource, and the operation status.
-        Look at any persistence, for example - a new user creation or key, etc.
-        Investigate operations performed by the user and examine the executed operations, by who it was executed, on which resource, and the operation status.
-        Look at any lateral movement operations. For example, an operation can be = AsumeRole.
-        As an extra validation step, it is recommended to query the user and/or the user’s manager regarding the investigated suspicious activity
+      description: ' To determine if this is a true positive event,  review the operations performed by the access key and the user in the recent time frame.<br>Search for the following items:<br>-Investigate the operation performed by the access key and examine the executed operations, by who it was executed, on which resource, and the operation status.<br>-Investigate operations performed by the user and examine the executed operations, by who it was executed, on which resource, and the operation status.<br>-Look at any persistence, for example - a new user creation or key, etc.<br>-Investigate operations performed by the user and examine the executed operations, by who it was executed, on which resource, and the operation status.<br>-Look at any lateral movement operations. For example, an operation can be = AsumeRole.<br>As an extra validation step, it is recommended to query the user and/or the user’s manager regarding the investigated suspicious activity'
       type: regular
       iscommand: false
       brand: ""
@@ -589,6 +592,10 @@ tasks:
         complex:
           root: alert
           accessor: domainname
+      FileSHA256:
+        complex:
+          root: alert
+          accessor: initiatorsha256
       IP:
         complex:
           root: alert
@@ -822,7 +829,7 @@ inputs:
   playbookInputQuery:
 - key: autoBlockIndicators
   value:
-    simple: "False"
+    simple: "True"
   required: false
   description: Whether to block the indicators automatically.
   playbookInputQuery:
