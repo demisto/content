@@ -83,6 +83,10 @@
         "externalId": {
           "type": "string",
           "is_array": false
+        },
+        "cefName": {
+          "type": "string",
+          "is_array": false
         }
     }
 }

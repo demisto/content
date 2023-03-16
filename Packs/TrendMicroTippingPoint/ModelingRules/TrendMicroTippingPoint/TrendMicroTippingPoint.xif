@@ -20,4 +20,5 @@ alter
         xdm.target.domain = dntdom,
         xdm.network.http.url = request,
         xdm.network.http.method = requestMethod,
-        xdm.event.id = externalId;
+        xdm.event.id = externalId,
+        xdm.alert.name = cefName;
