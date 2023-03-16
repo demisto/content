@@ -108,13 +108,21 @@ def sg_fix(sg_info: Dict, port: int, protocol: str) -> Dict:
                            'PrefixListIds': [], 'UserIdGroupPairs': [], 'FromPort': port, 'ToPort': port}]]
         for priv in priv_ips_list:
             recreate_list.append(str(priv).replace("'", "\""))
-        new_name = info['GroupName'] + "_active_response_" + str(randint(100, 999))
+        new_name = info['GroupName'] + "_xpanse_ar_" + str(randint(100, 999))
         description = "copied from rule " + info['GroupName'] + " by Xpanse Active Response module"
         new_sg = demisto.executeCommand("aws-ec2-create-security-group",
                                         {"groupName": new_name, "vpcId": info['VpcId'], "description": description})
+        if isError(new_sg):
+            raise ValueError('Error on creating new security group')
         new_id = new_sg[0]['Contents']['AWS.EC2.SecurityGroups']['GroupId']
     for item in recreate_list:
-        demisto.executeCommand("aws-ec2-authorize-security-group-ingress-rule", {"groupId": new_id, "IpPermissionsFull": item})
+        res = demisto.executeCommand("aws-ec2-authorize-security-group-ingress-rule",
+                                     {"groupId": new_id, "IpPermissionsFull": item})
+        if isError(res):
+            if "already exists" in res[0]['Contents']:
+                pass
+            else:
+                raise ValueError('Error on adding security group ingress rules to new security group')
     # Check if there was a rule for `all traffic` (added by default), but break if it is the only egress rule.
     match_all_trafic = False
     for egress in info['IpPermissionsEgress']:
@@ -123,13 +131,22 @@ def sg_fix(sg_info: Dict, port: int, protocol: str) -> Dict:
                 break
             match_all_trafic = True
         e_format = str([egress]).replace("'", "\"")
-        demisto.executeCommand("aws-ec2-authorize-security-group-egress-rule", {"groupId": new_id, "IpPermissionsFull": e_format})
+        res = demisto.executeCommand("aws-ec2-authorize-security-group-egress-rule",
+                                     {"groupId": new_id, "IpPermissionsFull": e_format})
+        # Don't error if the message is that the rule already exists.
+        if isError(res):
+            if "already exists" in res[0]['Contents']:
+                pass
+            else:
+                raise ValueError('Error on adding security group egress rules to new security group')
     # If `all traffic` rule before, remove the default one.
     if match_all_trafic is True:
         all_traffic_rule = """[{"IpProtocol": "-1", "IpRanges": [{"CidrIp": "0.0.0.0/0"}], "Ipv6Ranges": [],""" + \
                            """"PrefixListIds": [], "UserIdGroupPairs": []}]"""
-        demisto.executeCommand("aws-ec2-revoke-security-group-egress-rule",
-                               {"groupId": new_id, "IpPermissionsFull": all_traffic_rule})
+        res = demisto.executeCommand("aws-ec2-revoke-security-group-egress-rule",
+                                     {"groupId": new_id, "IpPermissionsFull": all_traffic_rule})
+        if isError(res):
+            raise ValueError('Error on removing egress `allow all` rule on new security group')
     return {'new-sg': new_id}
 
 
@@ -148,8 +165,10 @@ def replace_sgs(replace_list: List, int_sg_mapping: Dict):
         int_sg_mapping[entry['int']].remove(entry['old-sg'])
         int_sg_mapping[entry['int']].append(entry['new-sg'])
         formatted_list = ','.join(int_sg_mapping[entry['int']])
-        demisto.executeCommand("aws-ec2-modify-network-interface-attribute",
-                               {"networkInterfaceId": entry['int'], "groups": formatted_list})
+        res = demisto.executeCommand("aws-ec2-modify-network-interface-attribute",
+                                     {"networkInterfaceId": entry['int'], "groups": formatted_list})
+        if isError(res):
+            raise ValueError('Error on replacing security group(s) on network interface')
 
 
 def determine_excessive_access(int_sg_mapping: Dict, port: int, protocol: str) -> List:
@@ -168,7 +187,9 @@ def determine_excessive_access(int_sg_mapping: Dict, port: int, protocol: str) -
     for mapping in int_sg_mapping.keys():
         for sg in int_sg_mapping[mapping]:
             sg_info = demisto.executeCommand("aws-ec2-describe-security-groups", {"groupIds": sg})
-            if sg_info:
+            if isError(sg_info):
+                raise ValueError('Error on describing security group')
+            elif sg_info:
                 res = sg_fix(sg_info, port, protocol)
                 # Need interface, old sg and new sg.
                 if res.get('new-sg'):
@@ -239,6 +260,8 @@ def aws_recreate_sg_command(args: Dict[str, Any]) -> str:
     int_sg_mapping = instance_info(instance_id, public_ip)
     # Determine what SGs are overpermissive for particular port.
     replace_list = determine_excessive_access(int_sg_mapping, port, protocol)
+    if len(replace_list) == 0:
+        raise ValueError('No security groups were found to need to be replaced')
     replace_sgs(replace_list, int_sg_mapping)
     display_message = f"For interface {replace_list[0]['int']}: \r\n"
     for replace in replace_list:

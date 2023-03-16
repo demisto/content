@@ -1,19 +1,10 @@
-id: afe07a50-0ce6-42fd-8e10-f57c7e010ed4
-version: 6
+id: AWS - Security Group Remediation v2
+version: -1
 contentitemexportablefields:
-  contentitemfields:
-    packID: ""
-    packName: AWS Enrichment and Remediation
-    itemVersion: 1.1.0
-    fromServerVersion: 6.5.0
-    toServerVersion: ""
-    definitionid: ""
-    prevname: ""
-vcShouldKeepItemLegacyProdMachine: false
+  contentitemfields: {}
 name: AWS - Security Group Remediation v2
 description: |-
-  Replace current security groups with limited access security groups.
-  ADD MORE DESCRIPTION HERE
+  This playbook takes in some information about an EC2 instance (ID and public_ip) and with provided port and protocol, determines what security groups on the primary interface of an EC2 instance are over-permissive.  It uses an automation to determine what interface on an EC2 instance has an over-permissive security group on, determine which security groups have over-permissive rules and to replace them with a copy of the security group that has only the over-permissive portion removed.  Over-permissive is defined as sensitive ports (SSH, RDP, etc) being exposed to the internet via IPv4.
 starttaskid: "0"
 tasks:
   "0":
@@ -26,6 +17,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "31"
@@ -56,6 +48,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -80,9 +73,7 @@ tasks:
       id: e71350f2-0f75-41e1-841d-ee3c938fc23f
       version: -1
       name: Is AWS - EC2 enabled and are Input values defined?
-      description: Determines if the AWS - EC2 integration instance is configured
-        and Input values are defined in order to continue with remediating security
-        groups.
+      description: Determines if the AWS - EC2 integration instance is configured and Input values are defined in order to continue with remediating security groups.
       type: condition
       iscommand: false
       brand: ""
@@ -167,11 +158,7 @@ tasks:
       id: 66b0bfa5-11ed-42c6-87a9-a61a26444ec4
       version: -1
       name: Create Security Group automation
-      description: Automation to determine what interface on an EC2 instance has an
-        over-permissive security group on, determine which security groups have over-permissive
-        rules and to replace them with a copy of the security group that has only
-        the over-permissive portion removed.  Over-permissive is defined as sensitive
-        ports (SSH, RDP, etc) being exposed to the internet via IPv4.
+      description: Automation to determine what interface on an EC2 instance has an over-permissive security group on, determine which security groups have over-permissive rules and to replace them with a copy of the security group that has only the over-permissive portion removed.  Over-permissive is defined as sensitive ports (SSH, RDP, etc) being exposed to the internet via IPv4.
       scriptName: AWSRecreateSG
       type: regular
       iscommand: false
@@ -225,7 +212,7 @@ inputs:
   value: {}
   required: true
   description: ID of the AWS EC2 instance.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Port
   value:
     complex:
@@ -233,12 +220,12 @@ inputs:
       accessor: remoteport
   required: true
   description: TCP/UDP Port to be restricted.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Protocol
   value: {}
   required: true
   description: Protocol of the port to be restricted.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: PublicIP
   value:
     complex:
@@ -246,6 +233,8 @@ inputs:
       accessor: remoteip
   required: false
   description: Public IP address of the EC2 instance.
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
-sourceplaybookid: AWS - Security Group Remediation
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0

@@ -1,5 +1,6 @@
 SG_INFO = [
     {
+       "Type": 1,
        "Contents":{
           "AWS.EC2.SecurityGroups(val.GroupId === obj.GroupId)":[
              {
@@ -103,6 +104,7 @@ SG_INFO = [
 
 INSTANCE_INFO = [
    {
+      "Type": 1,
       "Contents":{
          "AWS.EC2.Instances(val.InstanceId === obj.InstanceId)":[
             {

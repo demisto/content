@@ -50,7 +50,7 @@ def test_sg_fix(mocker):
     """
     from AWSRecreateSG import sg_fix
     from test_data.sample import SG_INFO
-    new_sg = [{'Contents': {'AWS.EC2.SecurityGroups': {'GroupId': 'sg-00000000000000001'}}}]
+    new_sg = [{'Type': 1, 'Contents': {'AWS.EC2.SecurityGroups': {'GroupId': 'sg-00000000000000001'}}}]
     mocker.patch.object(demisto, "executeCommand", return_value=new_sg)
     args = {"sg_info": SG_INFO, "port": 22, "protocol": "tcp"}
     result = sg_fix(**args)
@@ -69,7 +69,7 @@ def test_determine_excessive_access(mocker):
     """
     from AWSRecreateSG import determine_excessive_access
     from test_data.sample import SG_INFO
-    new_sg = [{'Contents': {'AWS.EC2.SecurityGroups': {'GroupId': 'sg-00000000000000001'}}}]
+    new_sg = [{'Type': 1, 'Contents': {'AWS.EC2.SecurityGroups': {'GroupId': 'sg-00000000000000001'}}}]
 
     def executeCommand(name, args):
         if name == "aws-ec2-describe-security-groups":
@@ -95,7 +95,7 @@ def test_aws_recreate_sg_command(mocker):
     """
     from AWSRecreateSG import aws_recreate_sg_command
     from test_data.sample import SG_INFO, INSTANCE_INFO
-    new_sg = [{'Contents': {'AWS.EC2.SecurityGroups': {'GroupId': 'sg-00000000000000001'}}}]
+    new_sg = [{'Type': 1, 'Contents': {'AWS.EC2.SecurityGroups': {'GroupId': 'sg-00000000000000001'}}}]
 
     def executeCommand(name, args):
         if name == "aws-ec2-describe-security-groups":
