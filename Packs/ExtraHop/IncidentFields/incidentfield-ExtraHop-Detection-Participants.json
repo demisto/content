@@ -93,10 +93,33 @@
             "selectValues": null
         },
         {
-            "key": "external",
-            "displayName": "external",
+            "key": "macaddress",
+            "displayName": "MAC Address",
             "type": "shortText",
-            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "width": 150,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        },
+        {
+            "key": "dnsname",
+            "displayName": "DNS Name",
+            "type": "shortText",
+            "required": false,
+            "script": "",
+            "width": 111,
+            "isDefault": true,
+            "fieldCalcScript": "",
+            "isReadOnly": false,
+            "selectValues": null
+        },
+        {
+            "key": "external",
+            "displayName": "External",
+            "type": "boolean",
             "required": false,
             "script": "",
             "width": 150,
