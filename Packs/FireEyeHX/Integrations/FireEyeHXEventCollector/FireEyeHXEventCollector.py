@@ -107,7 +107,8 @@ def test_module(client: Client):
 def get_events_command(
     client: Client,
     max_fetch: str,
-    first_fetch: str
+    first_fetch: str,
+    should_push_events: bool
 ) -> Union[str, CommandResults]:
     """
     Fetches events from the fireeye and return them to the war-room.
@@ -119,6 +120,13 @@ def get_events_command(
     if not events:
         return 'No events were found.'
 
+    if should_push_events:
+        demisto.info(f'sending the following amount of events into XSIAM: {len(events)}')
+        send_events_to_xsiam(
+            events=events,
+            vendor=VENDOR,
+            product=PRODUCT
+        )
     return CommandResults(
         readable_output=tableToMarkdown(
             'FireEye HX events',
@@ -151,7 +159,7 @@ def fetch_events(
 
     fetched_events = response.get('data', {}).get('entries', [])
     demisto.info(f'fetched events length: ({len(fetched_events)})')
-    demisto.info(f'fetched the following events: {fetched_events}')
+
 
     return fetched_events
 
@@ -165,6 +173,7 @@ def main() -> None:  # pragma: no cover
     base_url = params.get('url', '').rstrip('/')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
+    should_push_events = argToBoolean(args.get("should_push_events"))
     resolution = params.get('resolution')
     max_fetch = args.get('limit') or params.get('max_fetch')
 
@@ -209,7 +218,8 @@ def main() -> None:  # pragma: no cover
         elif command == 'fireeye-hx-get-events':
             since = args.get("since") if args.get("since") else "3 days"
             first_fetch = arg_to_datetime(since).strftime(DATE_FORMAT)  # type: ignore[union-attr]
-            return_results(get_events_command(client, max_fetch=max_fetch, first_fetch=first_fetch))
+            return_results(get_events_command(client, max_fetch=max_fetch, first_fetch=first_fetch,
+                                              should_push_events=should_push_events))
         else:
             raise NotImplementedError(f'Command {command} is not implemented.')
     except Exception as e:
