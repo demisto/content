@@ -12,7 +12,6 @@ urllib3.disable_warnings()
 SERVICE = 'route53'
 DEFAULT_RETRIES = 5
 
-
 """HELPER FUNCTIONS"""
 
 
@@ -29,7 +28,6 @@ class DatetimeEncoder(json.JSONEncoder):
 
 def create_entry(title: str, data: Union[Dict[str, Any], List[Any]],
                  outputs: Any, outputs_prefix: str) -> CommandResults:
-
     return CommandResults(entry_type=EntryType.NOTE, content_format=EntryFormat.JSON,
                           readable_output=tableToMarkdown(title, data) if data else 'No result were found',
                           outputs=outputs,
@@ -46,18 +44,18 @@ def create_record(
                                         role_session_duration=args.get('roleSessionDuration'), )
 
         change_batch: Dict[Any, Any] = {
-                'Changes': [
-                    {
-                        'Action': 'CREATE',
-                        'ResourceRecordSet': {
-                            'Name': args.get('source'),
-                            'Type': args.get('type'),
-                            'TTL': arg_to_number(args.get('ttl'), "TTL", True),
-                            'ResourceRecords': [{'Value': args.get('target')}]
-                        }
+            'Changes': [
+                {
+                    'Action': 'CREATE',
+                    'ResourceRecordSet': {
+                        'Name': args.get('source'),
+                        'Type': args.get('type'),
+                        'TTL': arg_to_number(args.get('ttl'), "TTL", True),
+                        'ResourceRecords': [{'Value': args.get('target')}]
                     }
-                ]
-            }
+                }
+            ]
+        }
 
         if args.get('comment') is not None:
             change_batch['Comment'] = args.get('comment')
@@ -129,18 +127,18 @@ def upsert_record(
                                         role_session_name=args.get('roleSessionName'),
                                         role_session_duration=args.get('roleSessionDuration'), )
         change_batch: Dict[Any, Any] = {
-                'Changes': [
-                    {
-                        'Action': 'UPSERT',
-                        'ResourceRecordSet': {
-                            'Name': args.get('source'),
-                            'Type': args.get('type'),
-                            'TTL': arg_to_number(args.get('ttl'), "TTL", True),
-                            'ResourceRecords': [{'Value': args.get('target')}]
-                        }
+            'Changes': [
+                {
+                    'Action': 'UPSERT',
+                    'ResourceRecordSet': {
+                        'Name': args.get('source'),
+                        'Type': args.get('type'),
+                        'TTL': arg_to_number(args.get('ttl'), "TTL", True),
+                        'ResourceRecords': [{'Value': args.get('target')}]
                     }
-                ]
-            }
+                }
+            ]
+        }
 
         if args.get('comment') is not None:
             change_batch['Comment'] = args.get('comment')
@@ -294,7 +292,7 @@ def main():  # pragma: no cover
         validate_params(aws_default_region, aws_role_arn, aws_role_session_name, aws_access_key_id,  # noqa
                         aws_secret_access_key)
 
-        aws_client = AWSClient(aws_default_region, aws_role_arn, aws_role_session_name,   # noqa
+        aws_client = AWSClient(aws_default_region, aws_role_arn, aws_role_session_name,  # noqa
                                aws_role_session_duration, aws_role_policy, aws_access_key_id, aws_secret_access_key,
                                verify_certificate, timeout, retries)
 
