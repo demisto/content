@@ -89,7 +89,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 510,
+          "x": 550,
           "y": 1910
         }
       }
@@ -202,7 +202,7 @@ tasks:
     task:
       id: 9bc32470-1e47-447a-8a0b-f41a4049394c
       version: -1
-      name: Close the alert and finish the investigation?
+      name: Close the alert automatically after remediation?
       description: Close the alert and finish the investigation?
       type: condition
       iscommand: false
@@ -213,6 +213,18 @@ tasks:
       "yes":
       - "58"
     separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.ShouldCloseAutomatically
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -235,7 +247,7 @@ tasks:
     task:
       id: 2c77b9cd-84ff-48cc-86cd-a3cb3f439314
       version: -1
-      name: Close alert after remediation
+      name: Close the alert automatically
       description: commands.local.cmd.close.inv
       script: Builtin|||closeInvestigation
       type: regular
@@ -244,12 +256,15 @@ tasks:
     nexttasks:
       '#none#':
       - "19"
+    scriptarguments:
+      closeReason:
+        simple: Resolved - True positive
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 780,
+          "x": 770,
           "y": 1740
         }
       }
@@ -360,7 +375,7 @@ tasks:
     task:
       id: 62cfaa81-81fb-4166-8f73-e3e903c5e3c5
       version: -1
-      name: Continue the investigation
+      name: Close the alert manually
       description: Continue the investigation.
       type: regular
       iscommand: false
@@ -391,7 +406,7 @@ tasks:
     task:
       id: cfb35229-4702-4fa4-8b8b-f9d86778c329
       version: -1
-      name: Is it a Malicious or Tor IP?
+      name: Is it malicious activity?
       description: Is it a suspicious or Tor IP?
       type: condition
       iscommand: false
@@ -418,6 +433,7 @@ tasks:
             value:
               complex:
                 root: DBotScore
+                accessor: Score
             iscontext: true
           right:
             value:
@@ -586,7 +602,7 @@ tasks:
           root: alert
           accessor: username
       query:
-        simple: sourceBrand:"${alert.sourceBrand}" and name:"${alert.name}" and user:"${alert.username}"
+        simple: sourceBrand:"${alert.sourceBrand}" and name:"${alert.name}" and username:"${alert.username}" and hostip:"${alert.hostip}"
       threshold:
         simple: "2"
     separatecontext: true
@@ -881,4 +897,4 @@ outputs: []
 tests:
 - No tests (auto formatted)
 marketplaces: ["marketplacev2"]
-fromversion: 6.6.0
+fromversion: 6.8.0
