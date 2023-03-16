@@ -1321,7 +1321,7 @@ def main():
     readme_images_dict, readme_urls_data_list = replace_readme_urls(index_folder_path,
                                                                     storage_base_path=storage_base_path,
                                                                     marketplace=marketplace)
-    download_readme_images_from_url_data_list(readme_urls_data_list)
+    download_readme_images_from_url_data_list(readme_urls_data_list, storage_bucket=storage_bucket)
 
     # finished iteration over content packs
     upload_index_to_storage(index_folder_path=index_folder_path,

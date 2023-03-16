@@ -150,7 +150,7 @@ def collect_images_from_readme_and_replace_with_storage_path(pack_readme_path, g
     return urls_list
 
 
-def download_readme_images_from_url_data_list(readme_urls_data_list: list, gcs_storage_path, storage_bucket):
+def download_readme_images_from_url_data_list(readme_urls_data_list: list, storage_bucket):
     for readme_url_data in readme_urls_data_list:
         readme_original_url = readme_url_data.get('original_read_me_url')
         gcs_storage_path = str(readme_url_data.get('new_gcs_image_path'))
