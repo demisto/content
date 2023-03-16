@@ -33,7 +33,7 @@ And the following eradication actions:
 
 External resources:
 
-[Malware Protection Flow](https://docs.paloaltonetworks.com/traps/4-2/traps-endpoint-security-manager-admin/malware-protection/malware-protection-flow)
+[Malware Protection Flow](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/File-Analysis-and-Protection-Flow)
 
 ## Dependencies
 
