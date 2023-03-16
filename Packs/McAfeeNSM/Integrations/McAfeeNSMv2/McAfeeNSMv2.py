@@ -11,8 +11,12 @@ import re
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-VERSION = demisto.params().get('version', 'V9x')
+V10 = "V10x"
+V9 = "V9x"
+VERSION = demisto.params().get('version', V9)
 DEFAULT_LIMIT = 50
+HOST = 'HOST'
+ADDRESS_RANGE = 'ADDRESS_RANGE'
 STATE_TO_NUMBER = {"Disabled": 0, "Enabled": 1}
 DEPLOY_ARGUMENT_MAPPER = {"push_ssl_key": "SSLPercentageComplete",
                           "push_gam_updates": "GamUpdatePercentageComplete",
@@ -612,9 +616,9 @@ def reverse_rule_object_type_cases(rule_type: str) -> str:
         NETWORK_IPV_6 -> Network IP V.6
     """
     number = '4' if ('4' in rule_type) else '6'
-    if 'HOST' in rule_type:
+    if HOST in rule_type:
         return f'Endpoint IP V.{number}'
-    elif 'ADDRESS_RANGE' in rule_type:
+    elif ADDRESS_RANGE in rule_type:
         return f'Range IP V.{number}'
     else:
         return f'Network IP V.{number}'
@@ -723,11 +727,11 @@ def create_body_create_rule(rule_type: str, address: List, number: int,
         Returns:
             Returns the body for the request.
         """
-    if 'HOST' in rule_type:
+    if HOST in rule_type:
         return f'HostIPv{number}', {
             f'hostIPv{number}AddressList': address
         }
-    elif 'ADDRESS_RANGE' in rule_type:
+    elif ADDRESS_RANGE in rule_type:
         return f'IPv{number}AddressRange', {
             f'IPV{number}RangeList': from_to_list
         }
@@ -757,11 +761,11 @@ def create_body_create_rule_for_v10(rule_type: str, address: List, number: int,
     if from_to_list:
         from_to_list[0].update({"state": STATE_TO_NUMBER.get(state)})
 
-    if 'HOST' in rule_type:
+    if HOST in rule_type:
         return f'HostIPv{number}', {
             f'hostIPv{number}AddressList': list_to_send
         }
-    elif 'ADDRESS_RANGE' in rule_type:
+    elif ADDRESS_RANGE in rule_type:
         return f'IPv{number}AddressRange', {
             f'IPV{number}RangeList': from_to_list
         }
@@ -858,11 +862,11 @@ def check_args_create_rule(rule_type: str, address: List, from_address: str, to_
         raise Exception('Please enter a matching address.')
     if ('4' in rule_type and number == 6) or ('6' in rule_type and number == 4):
         raise Exception('The version of the IP in "rule_object_type" should match the addresses version.')
-    if ('HOST' in rule_type or 'NETWORK' in rule_type) and (not address or from_address or to_address):
+    if (HOST in rule_type or 'NETWORK' in rule_type) and (not address or from_address or to_address):
         raise Exception(f'If the "rule_object_type" is “Endpoint IP V.{number}” or “Network IP V.{number}” than only'
                         f' the argument “address_ip_v.{number}” must contain a value. The other address arguments '
                         f'should be empty.')
-    if 'ADDRESS_RANGE' in rule_type and (not to_address or not from_address or address):
+    if ADDRESS_RANGE in rule_type and (not to_address or not from_address or address):
         raise Exception(f'If the "rule_object_type" is “Range IP V.{number}” than only the arguments '
                         f'“from_address_ip_v.{number}” and “to_address_ip_v.{number}” must contain a value, the other'
                         f' address arguments should be empty.')
@@ -974,9 +978,9 @@ def get_addresses_from_response(response: Dict) -> List:
     """
     rule_type = response.get('ruleobjType', '')
     number = 4 if '4' in rule_type else 6
-    if 'HOST' in rule_type:
+    if HOST in rule_type:
         return response.get(f'HostIPv{number}', {}).get(f'hostIPv{number}AddressList', [])
-    elif 'ADDRESS_RANGE' in rule_type:
+    elif ADDRESS_RANGE in rule_type:
         return response.get(f'IPv{number}AddressRange', {}).get(f'IPV{number}RangeList', [Dict])
     else:  # 'NETWORK'
         return response.get(f'Network_IPV_{number}', {}).get(f'networkIPV{number}List', [])
@@ -1261,7 +1265,7 @@ def list_domain_rule_objects_command(client: Client, args: Dict) -> CommandResul
     response = client.list_domain_rule_objects_request(domain_id, rule_type)
     results = pagination(response.get('RuleObjDef', []), limit, page, page_size)
     # modify the results in v10 to match the v9 pattern
-    if VERSION == "V10x":
+    if VERSION == V10:
         results = modify_v10_results_to_v9_format(results)
 
     contents = []
@@ -1301,7 +1305,7 @@ def get_rule_object_command(client: Client, args: Dict) -> CommandResults:
     response = response.get('RuleObjDef', {})
     addresses = get_addresses_from_response(response)
     # modify the results in v10 to match the v9 pattern
-    if VERSION == "V10x":
+    if VERSION == V10:
         response = modify_v10_results_to_v9_format([response])[0]
     addresses = get_addresses_from_response(response)
     response['ruleobjType'] = reverse_rule_object_type_cases(response.get('ruleobjType'))
@@ -1373,7 +1377,7 @@ def create_rule_object_command(client: Client, args: Dict) -> CommandResults:
         'ToAddress': to_address
     }]
     # create the body according to the version of the NSM
-    if VERSION == "V10x":
+    if VERSION == V10:
         d_name, extra_body = create_body_create_rule_for_v10(rule_type=rule_type, address=address,
                                                              number=number, from_to_list=from_to_list,
                                                              state=state)
@@ -1527,7 +1531,7 @@ def update_rule_object_command(client: Client, args: Dict) -> CommandResults:
     number = 4 if (address_ip_v_4 or from_to_address_ip_v_4) else 6
     from_to_list = from_to_address_ip_v_4 if from_to_address_ip_v_4 else from_to_address_ip_v_6
     # create the body according to the version of the NSM
-    if VERSION == "V10x":
+    if VERSION == V10:
         d_name, extra_body = create_body_create_rule_for_v10(rule_type=rule_type, address=address,
                                                              number=number, from_to_list=from_to_list,
                                                              state=state)
