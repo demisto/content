@@ -1,14 +1,14 @@
 import ipaddress
 import urllib.parse
 from CommonServerPython import *
-from typing import Match
+from re import Match
 
 
 class URLError(Exception):
     pass
 
 
-class URLType(object):
+class URLType:
     """
     A class to represent an url and its parts
     """
@@ -29,7 +29,7 @@ class URLType(object):
             f'Path = {self.path}\nQuery = {self.query}\nFragment = {self.fragment}')
 
 
-class URLCheck(object):
+class URLCheck:
     """
     This class will build and validate a URL based on "URL Living Standard" (https://url.spec.whatwg.org)
     """
@@ -591,7 +591,7 @@ class URLCheck(object):
             self.modified_url = self.modified_url[beginning:end + 1]
 
 
-class URLFormatter(object):
+class URLFormatter:
 
     # URL Security Wrappers
     ATP_regex = re.compile('https://.*?\.safelinks\.protection\.outlook\.com/\?url=(.*?)&', re.I)
@@ -750,24 +750,19 @@ def main():
         try:
             formatted_url = URLFormatter(url).output
 
-        except URLError:
-            demisto.debug(traceback.format_exc())
-
         except Exception:
             demisto.debug(traceback.format_exc())
 
         finally:
             formatted_urls.append(formatted_url)
 
-    output = [{
+    demisto.results([{
         'Type': entryTypes['note'],
         'ContentsFormat': formats['json'],
         'Contents': [urls],
         'EntryContext': {'URL': urls},
-    } for urls in formatted_urls]
+    } for urls in formatted_urls])
 
-    for url in output:
-        demisto.results(url)
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
