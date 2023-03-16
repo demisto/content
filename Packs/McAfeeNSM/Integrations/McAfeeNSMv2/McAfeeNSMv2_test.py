@@ -1292,7 +1292,8 @@ def test_list_device_policy_command__with_missing_arguments(mocker, mcafeensmv2_
 
 @ pytest.mark.parametrize('input, output', [({"domain_id": 0}, [{'deviceId': 'mock'}, {'deviceId': 'mock'}]),
                                             ({"domain_id": 777, "limit": 1}, [{'deviceId': 'mock'}]),
-                                            ({"domain_id": 777, "limit": 1, "all_results": True}, [{'deviceId': 'mock'}, {'deviceId': 'mock'}])])
+                                            ({"domain_id": 777, "limit": 1, "all_results": True},
+                                             [{'deviceId': 'mock'}, {'deviceId': 'mock'}])])
 def test_list_domain_device_command_with_diffrent_arguments(mocker, mcafeensmv2_client, input, output):
     """
     Given:
