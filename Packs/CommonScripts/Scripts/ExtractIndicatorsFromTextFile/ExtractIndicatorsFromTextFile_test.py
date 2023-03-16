@@ -7,7 +7,7 @@ def execute_command(command, args):
     if command == 'getFilePath':
         return [{'Contents': {'path': './test_data/test_file.txt'}}]
     if command == "extractIndicators":
-        return [{'Contents': '1.1.1.1'}]
+        return [{'Contents': '{"IP": ["1.1.1.1"]}'}]
 
 
 def test_extract_indicators(mocker):
@@ -24,7 +24,7 @@ def test_extract_indicators(mocker):
     mocker.patch.object(demisto, 'executeCommand', side_effect=execute_command)
     args = {}
     results = extract_indicators_from_file(args)
-    assert {'Contents': '1.1.1.1', 'ContentsFormat': 'text', 'HumanReadable': '1.1.1.1', 'Type': 1} == results
+    assert {'Contents': '{"IP": ["1.1.1.1"]}', 'ContentsFormat': 'text', 'HumanReadable': '### IP\n- 1.1.1.1\n', 'Type': 1} == results
 
 
 def test_extract_indicators_no_file():
@@ -43,6 +43,11 @@ def test_extract_indicators_no_file():
         extract_indicators_from_file(args)
         if not e:
             assert False
+
+
+@pytest.mark.parametrize("input, output", [('{"IP": ["1.1.1.1"]}', '### IP\n- 1.1.1.1\n')])
+def test_string_to_markdown(input, output):
+    assert string_to_markdown(input) == output
 
 
 @pytest.mark.parametrize('filePath, res', [

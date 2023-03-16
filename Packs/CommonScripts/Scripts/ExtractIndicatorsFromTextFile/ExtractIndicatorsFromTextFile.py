@@ -3,13 +3,32 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 import json
 
-def string_to_markdown(text):
-    text = json.loads(text)
-    md = ''
-    for key, values in text.items():
-        md += f"### {key}\n"
+
+def string_to_markdown(indicators: str) -> str:
+    """
+    Converts the JSON to a human-readable markdown structure
+
+    Args:
+        indicators (str): JSON of the indicators extracted by the server as a string.
+
+    Returns:
+        str: Markdown list of the indicators extracted
+    """
+    try:
+        indicators_dict = json.loads(indicators)
+
+        md = ''
+
+        for key, values in indicators_dict.items():
+            md += f"### {key}\n"
+
         for value in values:
             md += f"- {value}\n"
+
+    except json.JSONDecodeError:
+        demisto.error(f'JSON Decode failed on "{indicators}"')
+        md = f'JSON Decode failed on "{indicators}"'
+
     return md
 
 
