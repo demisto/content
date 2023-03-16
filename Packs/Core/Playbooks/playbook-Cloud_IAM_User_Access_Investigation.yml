@@ -407,7 +407,7 @@ tasks:
       id: cfb35229-4702-4fa4-8b8b-f9d86778c329
       version: -1
       name: Is it malicious activity?
-      description: Checks whether the alert is malicious based on either one of the following:<br>Source IP address with a malicious DBot score.<br>A Tor IP address.
+      description: Checks whether the alert is malicious based on either one of the following:<br>- Source IP address with a malicious DBot score.<br>- A Tor IP address.
       type: condition
       iscommand: false
       brand: ""
