@@ -1,0 +1,37 @@
+category: Messaging
+commonfields:
+  id: OpenAi ChatGPT V3
+  version: -1
+configuration:
+- defaultvalue: https://api.openai.com/v1/chat
+  display: 'Server URL: (e.g. https://api.openai.com/v1/chat/completions)'
+  name: url
+  required: true
+  section: Connect
+  type: 0
+- display: ""
+  displaypassword: 'API Key:'
+  hiddenusername: true
+  name: apikey
+  required: true
+  section: Connect
+  type: 9
+description: This integration provides access to the OpenAI ChatGPT API, which generates human-like responses to text prompts.
+display: OpenAi ChatGPT V3
+name: OpenAi ChatGPT V3
+script:
+  commands:
+  - arguments:
+    - description: Add your question or text
+      name: prompt
+      required: true
+    description: Send Text Message as a prompt to ChatGPT
+    name: chatgpt-send-prompt
+  dockerimage: docker.io/demisto/python3:3.10.10.49934
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
