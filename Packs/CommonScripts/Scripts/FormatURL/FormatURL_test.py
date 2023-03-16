@@ -261,8 +261,8 @@ class TestFormatURL:
         - Ensure for every expected protocol given, it is replaced with the expected value.
         """
         url = URLCheck(non_formatted_url)
-        hex = non_formatted_url.find('%')
-        assert url.hex_check(hex)
+        hex_ = non_formatted_url.find('%')
+        assert url.hex_check(hex_)
 
     @pytest.mark.parametrize('url_, expected', FORMAT_URL_TEST_DATA)
     def test_format_url(self, url_: str, expected: str):
@@ -339,7 +339,7 @@ def test_formatter(mocker):
 
     main()
 
-    results = demisto.results.call_args[0]
+    results = demisto.results.call_args[0][0]
 
     assert results[0]['Contents'] == ['https://www.test.com']
 
@@ -350,6 +350,6 @@ def test_failed_formatter(mocker):
 
     main()
 
-    results = demisto.results.call_args[0]
+    results = demisto.results.call_args[0][0]
 
     assert results[0]['Contents'] == ['']
