@@ -77,7 +77,7 @@ def get_alerts(client: Client, max_fetch: int, last_fetch: str, next_page_token:
     response = client.get_alerts_request(max_fetch, last_fetch, next_page_token)
     next_page_token = response.get('next_page_token')
     alerts = response.get('data', [])
-    demisto.info(f'after get alerts {next_page_token=} , {len(alerts)=}\n {alerts=}')
+    demisto.info(f'in get alerts {next_page_token=} , {len(alerts)=}\n {alerts=}')
     return alerts, next_page_token
 
 
