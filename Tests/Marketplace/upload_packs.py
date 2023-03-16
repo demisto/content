@@ -26,7 +26,7 @@ from demisto_sdk.commands.content_graph.interface.neo4j.neo4j_graph import Neo4j
 from Tests.scripts.utils.log_util import install_logging
 from Tests.scripts.utils import logging_wrapper as logging
 import traceback
-from Tests.Marketplace.pack_readme_handler import upload_readme_images, replace_readme_urls
+from Tests.Marketplace.pack_readme_handler import replace_readme_urls, download_readme_images_from_url_data_list
 
 METADATA_FILE_REGEX_GET_VERSION = r'metadata\-([\d\.]+)\.json'
 
@@ -1302,16 +1302,11 @@ def main():
     index_v2_local_path = os.path.join(extract_destination_path, f"{GCPConfig.INDEX_V2_NAME}")
     index_v2_blob = storage_bucket.blob(index_v2_gcs_path)
     shutil.copytree(index_folder_path, index_v2_local_path)
-    readme_images_dict = {}
+
+    logging.info('replacing the urls in index_V2')
     
-        replace_readme_urls(index_v2_local_path, storage_base_path=storage_base_path,
-                            pack_readme_path=pack_readme_path, pack_name=pack_name,
-                            marketplace=marketplace, use_api=True)
-        if pack_readme_images_list := upload_readme_images(storage_bucket=storage_bucket, storage_base_path=storage_base_path,
-                                                           pack_readme_path=pack_readme_path, pack_name=pack_name,
-                                                           marketplace=marketplace, use_api=True):
-            logging.info(f'{pack_name=}, {pack_readme_images_list=}')
-            readme_images_dict[pack_name] = pack_readme_images_list
+    replace_readme_urls(index_v2_local_path, storage_base_path=storage_base_path,
+                        marketplace=marketplace, use_api=True)
 
     logging.info('uploading new index')
 
@@ -1322,6 +1317,11 @@ def main():
                     index_name=GCPConfig.INDEX_V2_NAME)
 
     logging.info('finished uploading new index')
+
+    readme_images_dict, readme_urls_data_list = replace_readme_urls(index_folder_path,
+                                                                    storage_base_path=storage_base_path,
+                                                                    marketplace=marketplace)
+    download_readme_images_from_url_data_list(readme_urls_data_list)
 
     # finished iteration over content packs
     upload_index_to_storage(index_folder_path=index_folder_path,

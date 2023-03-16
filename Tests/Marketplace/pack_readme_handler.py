@@ -59,7 +59,7 @@ def upload_readme_images(storage_bucket, storage_base_path, pack_readme_path, pa
         return None
 
 
-def replace_readme_urls(index_local_path, storage_base_path, pack_readme_path, pack_name,
+def replace_readme_urls(index_local_path, storage_base_path,
                         marketplace='xsoar', use_api=False) -> tuple:
     """
     This function goes over the index.zip folder. iterates over all the pack README.md files.
@@ -92,9 +92,9 @@ def replace_readme_urls(index_local_path, storage_base_path, pack_readme_path, p
         pack_readme_images_list = [image_info.get('image_name') for image_info in readme_images_storage_paths]
         readme_images[pack_name] = pack_readme_images_list
         logging.info(f'Added {pack_readme_images_list=} from pack {pack_name=} to the artifact dict')
-        readme_urls_data_list.append(readme_images_storage_paths)
+        readme_urls_data_list = readme_urls_data_list + readme_images_storage_paths
 
-    return readme_images, readme_images_storage_paths
+    return readme_images, readme_urls_data_list
 
 
 def collect_images_from_readme_and_replace_with_storage_path(pack_readme_path, gcs_pack_path, pack_name, marketplace='xsoar',
@@ -133,12 +133,12 @@ def collect_images_from_readme_and_replace_with_storage_path(pack_readme_path, g
             url_path = Path(path)
             image_name = url_path.name
 
+            new_replace_url = os.path.join(google_api_readme_images_url,
+                                           BucketUploadFlow.README_IMAGES, image_name)
+            logging.info(f'replacing with url {new_replace_url=}')
+            line = line.replace(url, str(new_replace_url))
+
             image_gcp_path = Path(gcs_pack_path, BucketUploadFlow.README_IMAGES, image_name)
-            url_to_replace_linking_to_dist = os.path.join(google_api_readme_images_url,
-                                                          BucketUploadFlow.README_IMAGES, image_name)
-
-            line = line.replace(url, str(url_to_replace_linking_to_dist))
-
             urls_list.append({
                 'original_read_me_url': url,
                 'new_gcs_image_path': image_gcp_path,
@@ -150,8 +150,20 @@ def collect_images_from_readme_and_replace_with_storage_path(pack_readme_path, g
     return urls_list
 
 
+def download_readme_images_from_url_data_list(readme_urls_data_list: list, gcs_storage_path, storage_bucket):
+    for readme_url_data in readme_urls_data_list:
+        readme_original_url = readme_url_data.get('original_read_me_url')
+        gcs_storage_path = str(readme_url_data.get('new_gcs_image_path'))
+        image_name = str(readme_url_data.get('image_name'))
+
+        download_readme_image_from_url_and_upload_to_gcs(readme_original_url,
+                                                         gcs_storage_path,
+                                                         image_name, storage_bucket)
+
+
 def download_readme_image_from_url_and_upload_to_gcs(readme_original_url: str, gcs_storage_path: str,
                                                      image_name: str, storage_bucket):
+    # sourcery skip: extract-method
     """
         Download the image from the endpoint url and save locally.
         Upload The image to gcs.
@@ -168,19 +180,17 @@ def download_readme_image_from_url_and_upload_to_gcs(readme_original_url: str, g
     # Open the url image, set stream to True, this will return the stream content.
     readme_original_url_parsed = urllib.parse.urlparse(readme_original_url)
     try:
+        logging.info(f'trying to download {readme_original_url_parsed.geturl()}')
         r = requests.get(readme_original_url_parsed.geturl(), stream=True)
 
         # Check if the image was retrieved successfully
         if r.status_code == 200:
-            # Set decode_content value to True, otherwise the downloaded image file's size will be zero.
             r.raw.decode_content = True
 
             with open(image_name, 'wb') as f:
                 shutil.copyfileobj(r.raw, f)
-
             # init the blob with the correct path to save the image on gcs
             readme_image = storage_bucket.blob(gcs_storage_path)
-
             # load the file from local memo to the gcs
             with open(image_name, "rb") as image_file:
                 readme_image.upload_from_file(image_file)
