@@ -17,16 +17,17 @@ import traceback
 
 ''' COMMAND FUNCTION '''
 
+
 def close_linked_signal_incidents_command(args: Dict[str, Any]) -> CommandResults:
     if not ('id' in args):
         cur_incident = demisto.incident()
-        print(f"Get current incident {cur_incident}")
+        # print(f"Get current incident {cur_incident}")
     else:
         incident_id = args['id']
-        search_raw = demisto.executeCommand("getIncidents", {'query':f'id:{incident_id}'})
-        if search_raw[0]['Contents']['total']==0:
-            result={'Message':f"Incident ID {incident_id} not found"}
-            cur_incident=None
+        search_raw = demisto.executeCommand("getIncidents", {'query': f'id:{incident_id}'})
+        if search_raw[0]['Contents']['total'] == 0:
+            result = {'Message': f"Incident ID {incident_id} not found"}
+            cur_incident = None
         else:
             cur_incident = search_raw[0]['Contents']['data'][0]
     if cur_incident is not None and cur_incident['rawType'] != 'Sumo Logic Insight':
@@ -34,13 +35,15 @@ def close_linked_signal_incidents_command(args: Dict[str, Any]) -> CommandResult
     elif cur_incident is not None:
         linked_incidents = cur_incident.get('linkedIncidents')
         if (linked_incidents):
-            print('Current Linked Signal Incidents:',linked_incidents)
+            # print('Current Linked Signal Incidents:', linked_incidents)
             for signal_incident_id in linked_incidents:
-                print('Closing the signal incident:', signal_incident_id)
-                call_result = demisto.executeCommand("closeInvestigation", {"id": signal_incident_id, "closeNotes": f"Close becaused Insight Incident {cur_incident.get('id')} is closed","closeReason":"Resolved"})
+                # print('Closing the signal incident:', signal_incident_id)
+                call_result = demisto.executeCommand("closeInvestigation", {"id": signal_incident_id, "closeNotes":
+                                                     f"Close becaused Insight Incident {cur_incident.get('id')} is closed",
+                                                                            "closeReason": "Resolved"})
                 result = {'message': call_result[0]['Contents']}
         else:
-            print('There are no linked Signal Incidents')
+            # print('There are no linked Signal Incidents')
             result = {'message': 'There are no linked incidents'}
 
     return CommandResults(
@@ -49,7 +52,9 @@ def close_linked_signal_incidents_command(args: Dict[str, Any]) -> CommandResult
         outputs=result,
     )
 
+
 ''' MAIN FUNCTION '''
+
 
 def main():
     try:
@@ -64,4 +69,3 @@ def main():
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
-

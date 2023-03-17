@@ -29,10 +29,10 @@ def link_incidents_command(args: Dict[str, Any]) -> CommandResults:
         cur_incident = demisto.incident()
     else:
         incident_id = demisto.args()['id']
-        search_raw = demisto.executeCommand("getIncidents", {'query':f'id:{incident_id}'})
-        if search_raw[0]['Contents']['total']==0:
-            result={'Message':f"Incident ID {incident_id} not found"}
-            cur_incident=None
+        search_raw = demisto.executeCommand("getIncidents", {'query': f'id:{incident_id}'})
+        if search_raw[0]['Contents']['total'] == 0:
+            result = {'Message': f"Incident ID {incident_id} not found"}
+            cur_incident = None
         else:
             cur_incident = search_raw[0]['Contents']['data'][0]
     if cur_incident is not None and cur_incident['rawType'] != 'Sumo Logic Insight':
@@ -47,7 +47,7 @@ def link_incidents_command(args: Dict[str, Any]) -> CommandResults:
             signals = safe_load_json(signals_str)
             for signal_obj in signals:
                 signal_sumoids.append(signal_obj.get('id'))
-        print('IDs of associated signals on Sumo Logic side:', signal_sumoids)
+        # print('IDs of associated signals on Sumo Logic side:', signal_sumoids)
         query = ' or '.join([f'alertid={id}' for id in signal_sumoids])
         search_results = demisto.executeCommand("SearchIncidentsV2", {'query': query})
         if ('Contents' in search_results[0]):
@@ -59,17 +59,12 @@ def link_incidents_command(args: Dict[str, Any]) -> CommandResults:
                         signal_id = signal.get('id')
                         if (signal_id is not None):
                             linked_signal_ids.append(signal_id)
-                else:
-                    print('Incorrect path')
             else:
-                print(search_results)
+                # print(search_results)
                 result = {'message': 'Cannot find any Signal Incident to link'}
-
-
-        #print('Current Incident ID:' + cur_incident.get('id'))
-
+        # print('Current Incident ID:' + cur_incident.get('id'))
         if (len(linked_signal_ids) > 0):
-            print('Found these signal incidents:', linked_signal_ids)
+            # print('Found these signal incidents:', linked_signal_ids)
             call_result = demisto.executeCommand("linkIncidents", {"incidentId": cur_incident.get(
                 'id'), "linkedIncidentIDs": ",".join(linked_signal_ids)})
             result = {'message': call_result[0]['Contents']}
