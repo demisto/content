@@ -1,23 +1,25 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-# Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
 
 
 class Client(BaseClient):
-    def __init__(self, api_key: str, base_url: str):
-        super().__init__(base_url=base_url)
+    """ Client class to interact with the OpenAI ChatGPT API v3
+    """
+
+    def __init__(self, api_key: str, base_url: str, proxy: bool, verify: bool):
+        super().__init__(base_url=base_url, proxy=proxy, verify=verify)
         self.api_key = api_key
         self.base_url = base_url
 
     def chatgpt(self, prompt: str):
         if self.api_key:
-            self._headers = {'Authorization': "Bearer " + self.api_key, "Content-Type": "application/json"}
+            self._headers = {'Authorization': f"Bearer {self.api_key}", "Content-Type": "application/json"}
             options = {"max_tokens": 1000, "model": "gpt-3.5-turbo", "messages": [{"role": "user", "content": prompt}]}
 
         return requests.post(self.base_url, headers=self._headers, json=options)
 
-###### Test Module ######
+
+''' COMMAND FUNCTIONS '''
 
 
 def test_module(client: Client) -> str:
@@ -26,9 +28,11 @@ def test_module(client: Client) -> str:
     Returning 'ok' indicates that connection to the service is successful.
     Raises exceptions if something goes wrong.
     """
+
     try:
         response = client.chatgpt('Hello!')
-        return 'ok'
+        if response:
+            return 'ok'
 
     except Exception as e:
         exception_text = str(e).lower()
@@ -37,10 +41,17 @@ def test_module(client: Client) -> str:
         else:
             raise e
 
-###### Send Prompt Command ######
-
 
 def chatgpt_send_prompt_command(client: Client, prompt: str) -> CommandResults:
+    """
+    Command to send prompts to OpenAI ChatGPT API
+    and receive a response converted into json then
+    returned to Output function to convert it to markdown table
+
+    :type client: ``Client``
+    :param prompt:  arguments
+    """
+
     if not prompt:
         raise DemistoException('the prompt argument cannot be empty.')
 
@@ -50,40 +61,61 @@ def chatgpt_send_prompt_command(client: Client, prompt: str) -> CommandResults:
 
     return chatgpt_output(chatgpt_response)
 
-###### Convert output to human reable output Markdown Table ######
-
 
 def chatgpt_output(response):
+    """
+    Convert response from ChatGPT to a human readable format in markdown table
+
+    :return: CommandResults return output of ChatGPT response
+    :rtype: ``CommandResults``
+    """
+
+    if response and isinstance(response, dict):
+        model = response.get('model')
+        createdTime = response.get('created')
+        id = response.get('id')
+        choices = response.get('choices')[0].get('message').get('content').strip("\n")
+        promptTokens = response.get('usage').get('prompt_tokens')
+        completionTokens = response.get('usage').get('completion_tokens')
+        totalTokens = response.get('usage').get('total_tokens')
+        context = [{'ID': id, 'Model': model, 'ChatGPT Response': choices, 'Created Time': createdTime,
+                    'Number of Prompt Tokens': promptTokens, 'Number of Completion Tokens': completionTokens, 'Number of Total Tokens': totalTokens}]
 
     markdown = tableToMarkdown(
         '### ChatGPT API Response ###',
-        response,
-        is_auto_json_transform=True,
-        headerTransform=underscoreToCamelCase, date_fields=['created'],
-        removeNull=True
+        context,
+        date_fields=['Created Time'],
     )
 
     results = CommandResults(
         readable_output=markdown,
-        outputs_prefix='HTTP.Response',
+        outputs_prefix='ChatGPTResponse',
         outputs_key_field='id',
-        outputs=response
+        outputs=context
     )
 
-    return_results(results)
+    return results
+
+
+''' MAIN FUNCTION '''
 
 
 def main() -> None:
+    """main function, runs command functions
+
+    """
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
 
     api_key = params.get('apikey', {}).get('password')
     base_url = params.get('url', '')
+    verify = params.get('insecure', False)
+    proxy = params.get('proxy', False)
 
     demisto.debug(f'Command being called is {command}')
     try:
-        client = Client(api_key=api_key, base_url=base_url)
+        client = Client(api_key=api_key, base_url=base_url, verify=verify, proxy=proxy)
 
         if command == 'test-module':
             # This is the call made when clicking the integration Test button.
@@ -102,6 +134,8 @@ def main() -> None:
                                 "Error:",
                                 str(e))))
 
+
+''' ENTRY POINT '''
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
