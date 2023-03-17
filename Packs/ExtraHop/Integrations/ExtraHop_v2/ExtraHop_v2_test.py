@@ -2364,7 +2364,7 @@ def test_fetch_detection_when_invalid_arguments_provided(
         f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.1.2.1943"}
     )
     with pytest.raises(ValueError) as err:
-        ExtraHop_v2.fetch_incidents(client, parameters, last_run)
+        ExtraHop_v2.fetch_incidents(client, parameters, last_run, False)
     assert str(err.value) == error_msg
 
 
@@ -2383,7 +2383,7 @@ def test_fetch_detections_failure_when_firmware_version_is_outdated(requests_moc
         f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.1.0.1943"}
     )
     with pytest.raises(DemistoException) as err:
-        ExtraHop_v2.fetch_incidents(client, {}, {})
+        ExtraHop_v2.fetch_incidents(client, {}, {}, False)
     assert (
         str(err.value)
         == "This integration works with ExtraHop firmware version greater than or equal to 9.1.2"
@@ -2422,7 +2422,7 @@ def test_fetch_detection_success_with_last_run(requests_mock):
         "offset": 0,
         "version_recheck_time": mock_time,
     }
-    actual_incidents, next_run = ExtraHop_v2.fetch_incidents(client, {}, last_run)
+    actual_incidents, next_run = ExtraHop_v2.fetch_incidents(client, {}, last_run, False)
 
     assert next_run == {
         "detection_start_time": 1673518450001,
@@ -2459,7 +2459,7 @@ def test_fetch_detections_success_when_detections_equal_to_max_fetch(requests_mo
     requests_mock.get(f"{BASE_URL}/api/v1/devices/1904", json=mock_device_data)
 
     client = init_mock_client(requests_mock, on_cloud=False)
-    actual_incidents, next_run = ExtraHop_v2.fetch_incidents(client, {}, {})
+    actual_incidents, next_run = ExtraHop_v2.fetch_incidents(client, {}, {}, False)
 
     assert next_run["offset"] == 1
     assert actual_incidents[0]["name"] == incidents[0]["name"]
@@ -2485,7 +2485,7 @@ def test_fetch_incident_empty_response(requests_mock):
     )
     requests_mock.post(f"{BASE_URL}/api/v1/detections/search", json=[], status_code=200)
     actual_incidents, next_run = ExtraHop_v2.fetch_incidents(
-        client, parameters, last_run
+        client, parameters, last_run, False
     )
 
     assert actual_incidents == []
