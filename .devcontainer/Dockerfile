@@ -25,8 +25,9 @@ RUN VERSION="latest" bash /features/src/docker-in-docker/install.sh
 RUN VERSION="lts" bash /features/src/node/install.sh
 RUN bash /features/src/sshd/install.sh
 RUN bash /features/src/github-cli/install.sh
-
+RUN bash /features/src/desktop-lite/install.sh
 # install poetry, configure certificate for git and tools for oh my zsh
+
 RUN python -m pip install --user pipx \
     && python -m pipx ensurepath \
     && pipx install poetry \

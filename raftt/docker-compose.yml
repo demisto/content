@@ -1,0 +1,9 @@
+version: '3.9'
+services:
+  integration:
+    image: alpine:3.17  # Doesn't matter, we override it in env.raftt
+    volumes:
+      - ../:/code/
+    environment:
+      PYTHONPATH: /code/Tests/demistomock/:/code/Packs/Base/Scripts/CommonServerPython:/code/Packs/Base/Scripts/CommonServerUserPython:/code/Packs/ApiModules/Scripts/DemistoClassApiModule/
+      MYPYPATH: /code/Tests/demistomock/:/code/Packs/Base/Scripts/CommonServerPython:/code/Packs/Base/Scripts/CommonServerUserPython:/code/Packs/ApiModules/Scripts/DemistoClassApiModule/
