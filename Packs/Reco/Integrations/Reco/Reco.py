@@ -332,17 +332,17 @@ class RecoClient(BaseClient):
         try:
             response = self._http_request(
                 method="PUT",
-                url_suffix="/entry-label-relations",
+                url_suffix=f"/entry-labels/{entry_id}",
                 timeout=RECO_API_TIMEOUT_IN_SECONDS,
-                data=json.dumps({"labelRelations": [{
-                    "labelName": label_name,
-                    "entryId": entry_id,
-                    "count": 1,
-                    "confidence": 1,
-                    "entryType": entry_type,
-                    "labelStatus": label_status,
-                    "attributes": {}
-                }]}),
+                data=json.dumps(
+                    {
+                        "entryId": entry_id,
+                        "entryType": entry_type,
+                        "entryLabelsNamesAndCount": {
+                            "name": label_name,
+                            "count": 1
+                        }
+                    })
             )
         except Exception as e:
             demisto.error(f"Set entry label relations error: {str(e)}")

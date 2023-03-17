@@ -388,9 +388,10 @@ def test_get_risky_users_bad_response(capfd, requests_mock, reco_client: RecoCli
 
 
 def test_add_risky_user_label(requests_mock, reco_client: RecoClient) -> None:
-    requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/entry-label-relations",
+    label_id = f"{uuid.uuid1()}@gmail.com"
+    requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/entry-labels/{label_id}",
                       json={}, status_code=200)
-    res = add_risky_user_label(reco_client=reco_client, email_address=f"{uuid.uuid1()}@gmail.com")
+    res = add_risky_user_label(reco_client=reco_client, email_address=label_id)
     assert 'labeled as risky' in res.readable_output
 
 
