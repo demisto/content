@@ -1402,13 +1402,15 @@ def append_participant_device_data(client: ExtraHopClient, detections: CommandRe
     return detections
 
 
-def fetch_extrahop_detections(client: ExtraHopClient, advanced_filter: Dict, last_run: Dict) -> Tuple[List, Dict]:
+def fetch_extrahop_detections(client: ExtraHopClient, advanced_filter: Dict, last_run: Dict, on_cloud: bool) -> \
+        Tuple[List, Dict]:
     """Fetch detections from ExtraHop according to the given filter.
 
     Args:
         client:ExtraHop client to be used.
         advanced_filter: The advanced_filter given by the user to filter out the required detections.
-        last_run: last run returned by function demisto.getLastRun
+        last_run: Last run returned by function demisto.getLastRun
+        on_cloud: Indicator for the instance hosted on cloud.
 
     Returns:
         List of incidents to be pushed into XSOAR.
@@ -1418,7 +1420,7 @@ def fetch_extrahop_detections(client: ExtraHopClient, advanced_filter: Dict, las
         incidents: List[Dict] = []
         detection_start_time = advanced_filter["mod_time"]
 
-        detections = detections_list_command(client, {}, advanced_filter=advanced_filter)
+        detections = detections_list_command(client, {}, on_cloud=on_cloud, advanced_filter=advanced_filter)
 
         if detections.outputs:
             detections = append_participant_device_data(client, detections)
@@ -1453,13 +1455,14 @@ def fetch_extrahop_detections(client: ExtraHopClient, advanced_filter: Dict, las
     return incidents, last_run
 
 
-def fetch_incidents(client: ExtraHopClient, params: Dict, last_run: Dict):
+def fetch_incidents(client: ExtraHopClient, params: Dict, last_run: Dict, on_cloud: bool):
     """Fetch the specified ExtraHop entity and push into XSOAR.
 
      Args:
         client: ExtraHop client to be used.
         params: Integration configuration parameters.
         last_run: The last_run dictionary having the state of previous cycle.
+        on_cloud: Indicator for the instance hosted on cloud.
     """
     demisto.info(f"Extrahop fetch_incidents invoked with advanced_filter: {params.get('advanced_filter', '')}, "
                  f"first_fetch: {params.get('first_fetch', '')} and last_run: {last_run}")
@@ -1488,7 +1491,7 @@ def fetch_incidents(client: ExtraHopClient, params: Dict, last_run: Dict):
     advanced_filter["offset"] = fetch_params["offset"]
     advanced_filter["sort"] = [{"direction": "asc", "field": "mod_time"}]
 
-    incidents, next_run = fetch_extrahop_detections(client, advanced_filter, last_run)
+    incidents, next_run = fetch_extrahop_detections(client, advanced_filter, last_run, on_cloud)
     demisto.info(f"Extrahop next_run is {next_run}")
     return incidents, next_run
 
@@ -2329,7 +2332,7 @@ def main():
             return_results(test_module(client))
         elif command == "fetch-incidents":
             last_run = demisto.getLastRun()
-            incidents, next_run = fetch_incidents(client, params, last_run)
+            incidents, next_run = fetch_incidents(client, params, last_run, on_cloud)
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
         elif command == "extrahop-watchlist-get":
