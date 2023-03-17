@@ -46,6 +46,7 @@ from Code42 import (
     Code42OrgNotFoundError,
     Code42UnsupportedHashError,
     Code42MissingSearchArgumentsError,
+    file_events_search_command,
 )
 from requests import Response, HTTPError
 import time
@@ -397,6 +398,9 @@ with open("test_data/alert_aggregate_response.json", "r") as f:
 
 with open("test_data/alert_details_response.json", "r") as f:
     MOCK_ALERT_DETAILS_RESPONSE = f.read()
+
+with open("test_data/v2_file_event_response.json", "r") as f:
+    MOCK_V2_FILE_EVENTS_RESPONSE = f.read()
 
 MOCK_CODE42_ALERT_CONTEXT = [
     {
@@ -1211,12 +1215,27 @@ def create_alerts_mock(c42_sdk_mock, mocker):
 
 
 def create_file_events_mock(c42_sdk_mock, mocker):
-    search_file_events_response = create_mock_code42_sdk_response(
+    search_file_events_v1_response = create_mock_code42_sdk_response(
         mocker, MOCK_SECURITY_EVENT_RESPONSE
     )
-    c42_sdk_mock.securitydata.search_file_events.return_value = (
-        search_file_events_response
+    search_file_events_v2_response = create_mock_code42_sdk_response(
+        mocker, MOCK_V2_FILE_EVENTS_RESPONSE
     )
+
+    def handle_query_version(query):
+        if isinstance(query, str):
+            query = json.loads(query)
+            if "." in query["srtKey"] or "@" in query["srtKey"]:
+                return search_file_events_v2_response
+            else:
+                return search_file_events_v1_response
+        else:
+            if query.version == "v2":
+                return search_file_events_v2_response
+            else:
+                return search_file_events_v1_response
+
+    c42_sdk_mock.securitydata.search_file_events.side_effect = handle_query_version
     return c42_sdk_mock
 
 
@@ -1427,14 +1446,20 @@ def test_client_lazily_inits_sdk(mocker, code42_sdk_mock):
 
 def test_client_gets_jwt_provider_if_no_sdk_provided(mocker):
     mock_sdk = mocker.patch("Code42.py42.sdk.SDKClient")
-    client = Code42Client(sdk=None, base_url=MOCK_URL, auth=MOCK_AUTH, verify=False, proxy=False)
+    client = Code42Client(
+        sdk=None, base_url=MOCK_URL, auth=MOCK_AUTH, verify=False, proxy=False
+    )
     client.sdk
     assert mock_sdk.from_jwt_provider.call_count == 1
 
 
-def test_client_raises_helpful_error_when_not_given_an_api_client_id(mocker, code42_sdk_mock):
+def test_client_raises_helpful_error_when_not_given_an_api_client_id(
+    mocker, code42_sdk_mock
+):
     mock_demisto = mocker.patch("Code42.demisto")
-    mock_demisto.params.return_value = {"credentials": {"identifier": "test@example.com"}}
+    mock_demisto.params.return_value = {
+        "credentials": {"identifier": "test@example.com"}
+    }
     with pytest.raises(Exception) as err:
         create_client()
 
@@ -1443,7 +1468,9 @@ def test_client_raises_helpful_error_when_not_given_an_api_client_id(mocker, cod
 
 def test_client_when_no_alert_found_returns(mocker, code42_sdk_mock):
     mock_response = mocker.MagicMock(spec=Response)
-    code42_sdk_mock.alerts.get_details.side_effect = Py42NotFoundError(HTTPError(response=mock_response))
+    code42_sdk_mock.alerts.get_details.side_effect = Py42NotFoundError(
+        HTTPError(response=mock_response)
+    )
     client = _create_client(code42_sdk_mock)
     with pytest.raises(Code42AlertNotFoundError):
         client.get_alert_details("mock-id")
@@ -1555,7 +1582,9 @@ def test_alert_get_command(code42_alerts_mock):
 
 def test_alert_get_command_when_no_alert_found(mocker, code42_sdk_mock):
     mock_response = mocker.MagicMock(spec=Response)
-    code42_sdk_mock.alerts.get_details.side_effect = Py42NotFoundError(HTTPError(response=mock_response))
+    code42_sdk_mock.alerts.get_details.side_effect = Py42NotFoundError(
+        HTTPError(response=mock_response)
+    )
     client = _create_client(code42_sdk_mock)
     cmd_res = alert_get_command(client, {"id": "rule-id-abc-123"})
     assert cmd_res.readable_output == "No results found"
@@ -2003,27 +2032,29 @@ def test_user_update_risk_profile_command(code42_user_risk_profile_mock):
             "username": "profile@example.com",
             "notes": "new note",
             "start_date": "2020-10-10",
-            "end_date": "2023-10-10"
-        }
+            "end_date": "2023-10-10",
+        },
     )
     assert cmd_res.raw_response == {
-        'EndDate': {'day': 10, 'month': 10, 'year': 2023},
-        'Notes': 'test update',
-        'StartDate': {'day': 10, 'month': 10, 'year': 2020},
-        'Success': True,
-        'Username': 'profile@example.com'
+        "EndDate": {"day": 10, "month": 10, "year": 2023},
+        "Notes": "test update",
+        "StartDate": {"day": 10, "month": 10, "year": 2020},
+        "Success": True,
+        "Username": "profile@example.com",
     }
-    assert cmd_res.outputs["EndDate"] == {'day': 10, 'month': 10, 'year': 2023}
+    assert cmd_res.outputs["EndDate"] == {"day": 10, "month": 10, "year": 2023}
     assert cmd_res.outputs_prefix == "Code42.UpdatedUserRiskProfiles"
     code42_user_risk_profile_mock.userriskprofile.update.assert_called_once_with(
         "123412341234123412",
         notes="new note",
         start_date="2020-10-10",
-        end_date="2023-10-10"
+        end_date="2023-10-10",
     )
 
 
-def test_security_data_search_command(code42_file_events_mock):
+def test_security_data_search_command(mocker, code42_file_events_mock):
+    mock_demisto = mocker.patch("Code42.demisto")
+    mock_demisto.params.return_value = {"v2_events": False}
     client = _create_client(code42_file_events_mock)
     cmd_res = securitydata_search_command(client, MOCK_SECURITY_DATA_SEARCH_QUERY)
     code42_res = cmd_res[0]
@@ -2063,8 +2094,11 @@ def test_security_data_search_command(code42_file_events_mock):
 
 
 def test_securitydata_search_command_when_not_given_any_queryable_args_raises_error(
+    mocker,
     code42_file_events_mock,
 ):
+    mock_demisto = mocker.patch("Code42.demisto")
+    mock_demisto.params.return_value = {"v2_events": False}
     client = _create_client(code42_file_events_mock)
     with pytest.raises(Code42MissingSearchArgumentsError):
         securitydata_search_command(client, {})
@@ -2217,10 +2251,8 @@ def test_remove_user_from_watchlist_command_with_UUID_calls_add_by_id_method(
     cmd_res = remove_user_from_watchlist_command(
         client, {"watchlist": watchlist_id, "username": "user_a@example.com"}
     )
-    assert (
-        code42_sdk_mock.watchlists.remove_included_users_by_watchlist_id.called_once_with(
-            user_id, watchlist_id
-        )
+    assert code42_sdk_mock.watchlists.remove_included_users_by_watchlist_id.called_once_with(
+        user_id, watchlist_id
     )
     assert cmd_res.raw_response == {
         "Watchlist": "b55978d5-2d50-494d-bec9-678867f3830c",
@@ -2266,6 +2298,7 @@ def test_fetch_incidents_handles_single_severity(code42_fetch_incidents_mock):
         fetch_limit=10,
         include_files=True,
         integration_context=None,
+        v2_events=False,
     )
     assert "HIGH" in str(code42_fetch_incidents_mock.alerts.search.call_args[0][0])
 
@@ -2280,6 +2313,7 @@ def test_fetch_incidents_handles_multi_severity(code42_fetch_incidents_mock):
         fetch_limit=10,
         include_files=True,
         integration_context=None,
+        v2_events=False,
     )
     call_args = str(code42_fetch_incidents_mock.alerts.search.call_args[0][0])
     assert Severity.HIGH in call_args
@@ -2296,6 +2330,7 @@ def test_fetch_when_include_files_includes_files(code42_fetch_incidents_mock):
         fetch_limit=10,
         include_files=True,
         integration_context=None,
+        v2_events=False,
     )
     for i in incidents:
         _json = json.loads(i["rawJSON"])
@@ -2312,6 +2347,7 @@ def test_fetch_when_not_include_files_excludes_files(code42_fetch_incidents_mock
         fetch_limit=10,
         include_files=False,
         integration_context=None,
+        v2_events=False,
     )
     for i in incidents:
         _json = json.loads(i["rawJSON"])
@@ -2328,6 +2364,7 @@ def test_fetch_incidents_first_run(code42_fetch_incidents_mock):
         fetch_limit=10,
         include_files=True,
         integration_context=None,
+        v2_events=False,
     )
     assert len(incidents) == 3
     assert next_run["last_fetch"]
@@ -2347,6 +2384,7 @@ def test_fetch_incidents_next_run(code42_fetch_incidents_mock):
         fetch_limit=10,
         include_files=True,
         integration_context=None,
+        v2_events=False,
     )
     assert len(incidents) == 3
     assert next_run["last_fetch"]
@@ -2366,6 +2404,7 @@ def test_fetch_incidents_fetch_limit(code42_fetch_incidents_mock):
         fetch_limit=2,
         include_files=True,
         integration_context=None,
+        v2_events=False,
     )
     assert len(incidents) == 2
     assert next_run["last_fetch"]
@@ -2379,6 +2418,7 @@ def test_fetch_incidents_fetch_limit(code42_fetch_incidents_mock):
         fetch_limit=2,
         include_files=True,
         integration_context={"remaining_incidents": remaining_incidents},
+        v2_events=False,
     )
     assert len(incidents) == 1
     assert next_run["last_fetch"]
@@ -2393,8 +2433,10 @@ def test_fetch_incidents_fetch_limit(code42_fetch_incidents_mock):
     ],
 )
 def test_security_data_search_command_searches_exposure_exists_when_all_is_specified(
-    code42_file_events_mock, query
+    mocker, code42_file_events_mock, query
 ):
+    mock_demisto = mocker.patch("Code42.demisto")
+    mock_demisto.params.return_value = {"v2_events": False}
     client = _create_client(code42_file_events_mock)
     cmd_res = securitydata_search_command(client, query)
     code42_res = cmd_res[0]
@@ -2428,8 +2470,11 @@ def test_security_data_search_command_searches_exposure_exists_when_all_is_speci
 
 
 def test_security_data_search_command_searches_exposure_exists_when_no_exposure_type_is_specified(
+    mocker,
     code42_file_events_mock,
 ):
+    mock_demisto = mocker.patch("Code42.demisto")
+    mock_demisto.params.return_value = {"v2_events": False}
     client = _create_client(code42_file_events_mock)
     cmd_res = securitydata_search_command(
         client, MOCK_SECURITY_DATA_SEARCH_QUERY_WITHOUT_EXPOSURE_TYPE
@@ -2461,3 +2506,85 @@ def test_security_data_search_command_searches_exposure_exists_when_no_exposure_
         assert _filter["value"] == expected_query_items[i][1]
 
     assert len(filter_groups) == 3
+
+
+def test_file_events_search_command_returns_error_when_v2_events_not_configured(
+    mocker, code42_file_events_mock
+):
+    mock_demisto = mocker.patch("Code42.demisto")
+    mock_demisto.params.return_value = {"v2_events": False}
+    client = _create_client(code42_file_events_mock)
+    with pytest.raises(SystemExit):
+        file_events_search_command(
+            client,
+            args={
+                "hash": "d41d8cd98f00b204e9800998ecf8427e",
+                "hostname": "DESKTOP-0001",
+                "username": "user3@example.com",
+                "results": 50,
+            },
+        )
+
+
+def test_file_events_search_command_returns_only_table_when_add_to_context_false(
+    mocker, code42_file_events_mock
+):
+    mock_demisto = mocker.patch("Code42.demisto")
+    mock_demisto.params.return_value = {"v2_events": True}
+    client = _create_client(code42_file_events_mock)
+    cmd_res = file_events_search_command(
+        client,
+        args={
+            "username": "user3@example.com",
+            "results": 50,
+            "add-to-context": "false",
+            "min_risk_score": "1",
+        },
+    )
+    assert cmd_res.outputs_prefix is None
+    assert cmd_res.outputs is None
+    assert cmd_res.readable_output
+
+
+def test_file_events_search_command_returns_outputs_when_add_to_context_true(
+    mocker, code42_file_events_mock
+):
+    mock_demisto = mocker.patch("Code42.demisto")
+    mock_demisto.params.return_value = {"v2_events": True}
+    client = _create_client(code42_file_events_mock)
+    cmd_res = file_events_search_command(
+        client,
+        args={
+            "username": "user3@example.com",
+            "results": 50,
+            "add-to-context": "true",
+            "min_risk_score": "3",
+        },
+    )
+    assert len(cmd_res.outputs) == 5
+    assert cmd_res.readable_output
+    assert cmd_res.outputs_prefix == "Code42.FileEvents"
+
+
+def test_file_events_search_command_builds_expected_query(
+    mocker, code42_file_events_mock
+):
+    mock_demisto = mocker.patch("Code42.demisto")
+    mock_demisto.params.return_value = {"v2_events": True}
+    client = _create_client(code42_file_events_mock)
+    cmd_res = file_events_search_command(
+        client,
+        args={
+            "username": "user3@example.com",
+            "hostname": "TEST_HOSTNAME",
+            "hash": "abcd12345",
+            "results": 50,
+            "add-to-context": "false",
+            "min_risk_score": "3",
+        },
+    )
+    query = str(code42_file_events_mock.securitydata.search_file_events.call_args[0][0])
+    assert '{"operator":"IS", "term":"source.name", "value":"TEST_HOSTNAME"}' in query
+    assert '{"operator":"IS", "term":"user.email", "value":"user3@example.com"}' in query
+    assert '{"operator":"GREATER_THAN", "term":"risk.score", "value":"2"}' in query
+    assert '"pgSize":50' in query
