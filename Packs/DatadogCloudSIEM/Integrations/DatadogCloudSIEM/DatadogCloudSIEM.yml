@@ -151,8 +151,22 @@ script:
     - contextPath: Datadog.Event.status
       description: The status of the event.
       type: String
-    - contextPath: "Datadog.Event.title\t"
+    - contextPath: "Datadog.Event.title"
       description: The event title.
+      type: String
+    - contextPath: Datadog.Event.alert_type
+      description: 'Allowed enum values: error, warning, info, success, user update,
+        recommendation, snapshot'
+      type: String
+    - contextPath: Datadog.Event.device_name
+      description: A device name.
+      type: String
+    - contextPath: Datadog.Event.source_type_name
+      description: The type of event being posted.
+      type: String
+    - contextPath: Datadog.Event.host
+      description: Host name to associate with the event. Any tags associated with
+        the host are also applied to this event.
       type: String
   - arguments:
     - default: false
@@ -284,6 +298,9 @@ script:
     - contextPath: Datadog.Event.title
       description: The Event title.
       type: String
+    - contextPath: Datadog.Event.source_type_name
+      description: The type of event being posted.
+      type: String
   - arguments:
     - default: false
       description: The page number. Default is 1.
@@ -306,8 +323,9 @@ script:
       required: false
       secret: false
     - default: false
-      description: "When specified, filters host list to those tags with the specified\
-        \ source. \nA complete list of source attribute values availble here. https://docs.datadoghq.com/integrations/faq/list-of-api-source-attribute-value/"
+      description: |-
+        Source to filter.
+        Ex : user, datadog.
       isArray: false
       name: source
       required: false
@@ -319,6 +337,9 @@ script:
     outputs:
     - contextPath: Datadog.Tag
       description: A list of tags to apply to the host.
+      type: String
+    - contextPath: Datadog.HostTag
+      description: The host name.
       type: Unknown
   - arguments:
     - default: false
@@ -354,8 +375,9 @@ script:
       required: true
       secret: false
     - default: false
-      description: "When specified, filters host list to those tags with the specified\
-        \ source. \nA complete list of source attribute values availble here. https://docs.datadoghq.com/integrations/faq/list-of-api-source-attribute-value/"
+      description: |-
+        Source to filter.
+        Ex : user, datadog.
       isArray: false
       name: source
       required: false
@@ -404,7 +426,7 @@ script:
         \  "
       isArray: false
       name: tags
-      required: true
+      required: false
       secret: false
     deprecated: false
     description: This endpoint allows you to replace all tags in an integration source
@@ -430,6 +452,182 @@ script:
       host.
     execution: false
     name: datadog-host-tag-delete
+  - arguments:
+    - default: false
+      description: "List of actively reporting metrics from a given time until now.\n\
+        Format :  yyyy-MM-dd’T’HH:mm:ssZ Or '-1days' "
+      isArray: false
+      name: from
+      required: true
+      secret: false
+    - default: false
+      description: Hostname for filtering the list of metrics.
+      isArray: false
+      name: host_name
+      required: false
+      secret: false
+    - default: false
+      description: Filter metrics that have been submitted with the given tags.
+      isArray: false
+      name: tag_filter
+      required: false
+      secret: false
+    - default: false
+      description: The page number. Default is 1.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      description: The number of requested results per page. Default is 50.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    - default: false
+      description: The maximum number of records to return from the collection. Limit
+        default value is 50. If the page_size argument is set by the user, then the
+        limit argument will be ignored.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    deprecated: false
+    description: Get the list of actively reporting metrics.
+    execution: false
+    name: datadog-active-metric-list
+    outputs:
+    - contextPath: Datadog.Metric.from
+      description: Time when the metrics were active, seconds since the Unix epoch.
+      type: String
+    - contextPath: Datadog.Metric
+      description: List of metric names.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: |-
+        Query string to search metrics from last 24 hours in Datadog.
+        A complete list of query string values available here. https://app.datadoghq.com/metric/summary
+      isArray: false
+      name: query
+      required: true
+      secret: false
+    deprecated: false
+    description: Search for metrics from the last 24 hours in Datadog.
+    execution: false
+    name: datadog-metric-search
+    outputs:
+    - contextPath: Datadog.Metric
+      description: List of metrics that match the search query.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: Name of the metric for which to get metadata.
+      isArray: false
+      name: metric_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Get metadata about a specific metric.
+    execution: false
+    name: datadog-metric-metadata-get
+    outputs:
+    - contextPath: Datadog.Metric.description
+      description: Metric description.
+      type: String
+    - contextPath: Datadog.Metric.integration
+      description: Name of the integration that sent the metric if applicable.
+      type: String
+    - contextPath: Datadog.Metric.per_unit
+      description: Per unit of the metric such as second in bytes per second.
+      type: String
+    - contextPath: Datadog.Metric.short_name
+      description: A more human-readable and abbreviated version of the metric name.
+      type: String
+    - contextPath: Datadog.Metric.statsd_interval
+      description: StatsD flush interval of the metric in seconds if applicable.
+      type: Number
+    - contextPath: Datadog.Metric.type
+      description: Metric type
+      type: String
+    - contextPath: Datadog.Metric.unit
+      description: Primary unit of the metric
+      type: String
+  - arguments:
+    - default: false
+      description: Name of the metric for which to edit metadata.
+      isArray: false
+      name: metric_name
+      required: true
+      secret: false
+    - default: false
+      description: Metric description.
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - default: false
+      description: "Per unit of the metric  \nA complete list of metric units values\
+        \ available here. https://docs.datadoghq.com/metrics/units/#unit-list"
+      isArray: false
+      name: per_unit
+      required: false
+      secret: false
+    - default: false
+      description: A more human-readable and abbreviated version of the metric name.
+      isArray: false
+      name: short_name
+      required: false
+      secret: false
+    - default: false
+      description: StatsD flush interval of the metric in seconds if applicable.
+      isArray: false
+      name: statsd_interval
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Metric type.
+      isArray: false
+      name: type
+      predefined:
+      - count
+      - rate
+      - gauge
+      - set
+      - histogram
+      - distribution
+      required: false
+      secret: false
+    - default: false
+      description: Primary unit of the metric
+      isArray: false
+      name: unit
+      required: false
+      secret: false
+    deprecated: false
+    description: Edit metadata of a specific metric.
+    execution: false
+    name: datadog-metric-metadata-update
+    outputs:
+    - contextPath: Datadog.Metric.description
+      description: Metric description.
+      type: String
+    - contextPath: Datadog.Metric.per_unit
+      description: Per unit of the metric such as second in bytes per second.
+      type: String
+    - contextPath: Datadog.Metric.short_name
+      description: A more human-readable and abbreviated version of the metric name.
+      type: String
+    - contextPath: Datadog.Metric.statsd_interval
+      description: StatsD flush interval of the metric in seconds if applicable.
+      type: Number
+    - contextPath: Datadog.Metric.type
+      description: Metric type
+      type: String
+    - contextPath: Datadog.Metric.unit
+      description: Primary unit of the metric
+      type: String
   dockerimage: demisto/datadog-api-client:1.0.0.48939
   feed: false
   isfetch: false

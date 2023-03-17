@@ -13,8 +13,11 @@ from datadog_api_client.v1.model.event_create_request import EventCreateRequest
 from datadog_api_client.v1.model.event_priority import EventPriority
 from datadog_api_client.v1.api.tags_api import TagsApi
 from datadog_api_client.v1.model.host_tags import HostTags
+from datadog_api_client.v1.api.metrics_api import MetricsApi
+from datadog_api_client.v1.model.metric_metadata import MetricMetadata
 from dateparser import parse
 from urllib3 import disable_warnings
+
 
 # Disable insecure warnings
 disable_warnings()
@@ -151,6 +154,41 @@ def pagination(limit: Optional[int], page: Optional[int], page_size: Optional[in
     return limit, offset
 
 
+def metric_command_results(results):
+    """
+    Helper function that returns CommandResults with list of metric data for lookup table.
+
+    Args:
+        results: List of metric data.
+
+    Returns:
+        CommandResults: The object containing the command results, including the readable output, outputs prefix,
+            outputs key field, and outputs data.
+    """
+    if results:
+        results = results.to_dict()
+        lookup_data = {
+            "Description": results.get("description"),
+            "Integration": results.get("integration"),
+            "Per Unit": results.get("per_unit"),
+            "Short Name": results.get("short_name"),
+            "StatusD Interval": results.get("statsd_interval"),
+            "Type": results.get("type"),
+            "Unit": results.get("unit"),
+        }
+        readable_output = lookup_to_markdown(
+            [lookup_data], table_header("Metric Metadata", None, None)
+        )
+    else:
+        readable_output = NO_RESULTS_FROM_API_MSG
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix=f"{INTEGRATION_CONTEXT_NAME}.Metric",
+        outputs_key_field="description",
+        outputs=results if results else [],
+    )
+
+
 """ COMMAND FUNCTIONS """
 
 
@@ -207,6 +245,7 @@ def create_event_command(
     if alert_type and alert_type not in EventAlertType.allowed_values:
         return DemistoException("Alert type not in allowed values.")
     date_happened = args.get("date_happened")
+
     if date_happened:
         date_happened_timestamp = parse(date_happened, settings={"TIMEZONE": "UTC"})
         if not is_within_time(
@@ -215,7 +254,9 @@ def create_event_command(
             return CommandResults(
                 readable_output="The time of the event cannot be older than 18 hours!\n"
             )
-    date_happened = parse(date_happened, settings={"TIMEZONE": "UTC"})
+    date_happened = (
+        parse(date_happened, settings={"TIMEZONE": "UTC"}) if date_happened else None
+    )
     event_body = {
         "title": args.get("title"),
         "text": args.get("text"),
@@ -357,10 +398,10 @@ def get_tags_command(
         )
         results = response.get("tags", {})
         if results:
-            tags_list = [{"Tag": k, "Host": v} for k, v in results.items()]
+            tags_list = [{"Tag": k, "HostTag": v} for k, v in results.items()]
             tags_list = get_paginated_results(tags_list, offset, limit)
-            tags = [obj.get("Tag") for obj in tags_list]
-            context_output = {"Tag": tags}
+            # tags = [obj.get("Tag") for obj in tags_list]
+            # context_output = {"Tag": tags}
             readable_output = lookup_to_markdown(
                 tags_list, table_header("Tags", page, page_size)
             )
@@ -370,7 +411,7 @@ def get_tags_command(
             readable_output=readable_output,
             outputs_prefix=INTEGRATION_CONTEXT_NAME,
             outputs_key_field="Tag",
-            outputs=context_output if results else [],
+            outputs=tags_list if results else [],
         )
 
 
@@ -527,6 +568,184 @@ def delete_host_tags_command(
     return CommandResults(readable_output=readable_output)
 
 
+def active_metrics_list_command(
+    configuration: Configuration, args: Dict[str, Any]
+) -> Union[CommandResults, DemistoException]:
+    """
+    Get a list of active metrics from the API and return them in a paginated format.
+
+    Args:
+        configuration (Configuration): The configuration object for Datadog.
+        args: A dictionary of arguments for the command, including:
+            - from: A string representing a UTC timestamp for the start time of the metric data.
+            - host_name: A string representing the hostname to filter metrics by.
+            - tag_filter: A string representing a filter expression for metric tags.
+            - page (int): The page number of the results to retrieve.
+            - page_size (int): The number of results per page.
+            - limit (int): The maximum number of results to return.
+
+    Returns:
+     CommandResults: The object containing the command results, including the readable output, outputs prefix,
+      outputs key field, and outputs data.
+
+    """
+
+    from_arg: Optional[str] = args.get("from_date")
+    if from_arg:
+        from_timestamp: Optional[datetime] = parse(
+            from_arg, settings={"TIMEZONE": "UTC"}
+        )
+
+    search_params = {
+        "_from": int(from_timestamp.timestamp()) if from_timestamp else None,
+        "host": args.get("host_name"),
+        "tag_filter": args.get("tag_filter"),
+    }
+    page = arg_to_number(args.get("page"), arg_name="page")
+    page_size = arg_to_number(args.get("page_size"), arg_name="page_size")
+    limit = arg_to_number(args.get("limit"), arg_name="limit")
+    limit, offset = pagination(limit, page, page_size)
+
+    with ApiClient(configuration) as api_client:
+        api_instance = MetricsApi(api_client)
+        response = api_instance.list_active_metrics(
+            **{key: value for key, value in search_params.items() if value is not None}
+        )
+        if response:
+            results = response.to_dict()
+            metrics_list = results.get("metrics")
+            paginated_results = get_paginated_results(metrics_list, offset, limit)
+            lookup_metric_list = {
+                "From": datetime.fromtimestamp(int(results.get("_from", 0))).strftime(
+                    "%Y-%m-%d %H:%M:%S"
+                ),
+                "Metrics": paginated_results,
+            }
+
+            context_output = {
+                "Metric.from": results.get("_from"),
+                "Metric": paginated_results,
+            }
+            readable_output = lookup_to_markdown(
+                [lookup_metric_list], table_header("Metrics", page, page_size)
+            )
+        else:
+            readable_output = NO_RESULTS_FROM_API_MSG
+        return CommandResults(
+            readable_output=readable_output,
+            outputs_prefix=INTEGRATION_CONTEXT_NAME,
+            outputs_key_field="Metric",
+            outputs=context_output if response else [],
+        )
+
+
+def metrics_search_command(
+    configuration: Configuration, args: Dict[str, Any]
+) -> Union[CommandResults, DemistoException]:
+    """
+    Search for metrics that match a given query and return them in a formatted table.
+
+    Args:
+        configuration (Configuration): The configuration object for Datadog.
+        args: A dictionary of arguments for the command, including:
+            - query: A string representing the query to search for.
+
+    Returns:
+        CommandResults: The object containing the command results, including the readable output, outputs prefix,
+         outputs key field, and outputs data.
+
+    """
+    query = args.get("query")
+    with ApiClient(configuration) as api_client:
+        api_instance = MetricsApi(api_client)
+        response = api_instance.list_metrics(
+            q=query,
+        )
+        if response and response.results:
+            results = response.to_dict()
+            context_output = {"Metric": results.get("results").get("metrics")}
+            readable_output = lookup_to_markdown(
+                [context_output], table_header("Metrics Search", None, None)
+            )
+        else:
+            readable_output = NO_RESULTS_FROM_API_MSG
+        return CommandResults(
+            readable_output=readable_output,
+            outputs_prefix=INTEGRATION_CONTEXT_NAME,
+            outputs_key_field="Metric",
+            outputs=context_output if response and response.results else [],
+        )
+
+
+def get_metric_metadata_command(
+    configuration: Configuration, args: Dict[str, Any]
+) -> Union[CommandResults, DemistoException]:
+    """
+    Get the metadata for a specific metric and return it in a formatted table.
+
+    Args:
+        configuration (Configuration): The configuration object for Datadog.
+        args: A dictionary of arguments for the command, including:
+            - metric_name: A string representing the name of the metric to retrieve metadata for.
+
+    Returns:
+        CommandResults: The object containing the command results, including the readable output, outputs prefix,
+         outputs key field, and outputs data.
+    """
+    metric_name = args.get("metric_name")
+    with ApiClient(configuration) as api_client:
+        api_instance = MetricsApi(api_client)
+        response = api_instance.get_metric_metadata(
+            metric_name=metric_name,
+        )
+        return metric_command_results(response)
+
+
+def update_metric_metadata_command(
+    configuration: Configuration, args: Dict[str, Any]
+) -> Union[CommandResults, DemistoException]:
+    """
+    Update the metadata of a metric with the specified parameters.
+
+    Args:
+        configuration (Configuration): The configuration object for Datadog.
+        args (Dict[str, Any]): A dictionary containing the arguments for the command.
+
+            - metric_name (str): The name of the metric to be updated.
+            - description (str, optional): The description of the metric.
+            - per_unit (str, optional): The per-unit value of the metric.
+            - short_name (str, optional): The short name of the metric.
+            - statsd_interval (int, optional): The interval in seconds for sending data to StatsD.
+            - type (str, optional): The type of the metric.
+            - unit (str, optional): The unit of the metric.
+
+     Returns:
+        CommandResults: The object containing the command results, including the readable output, outputs prefix,
+         outputs key field, and outputs data.
+    """
+    metric_name = args.get("metric_name")
+    params = {
+        "description": args.get("description"),
+        "per_unit": args.get("per_unit"),
+        "short_name": args.get("short_name"),
+        "statsd_interval": int(args.get("statsd_interval", 0))
+        if args.get("statsd_interval")
+        else None,
+        "type": args.get("type"),
+        "unit": args.get("unit"),
+    }
+
+    with ApiClient(configuration) as api_client:
+        api_instance = MetricsApi(api_client)
+        response = api_instance.update_metric_metadata(
+            metric_name=metric_name,
+            body=MetricMetadata(
+                **{key: value for key, value in params.items() if value is not None}
+            ),
+        )
+        return metric_command_results(response)
+
+
 """ MAIN FUNCTION """
 
 
@@ -550,6 +769,10 @@ def main() -> None:
             "datadog-host-tag-get": get_host_tags_command,
             "datadog-host-tag-update": update_host_tags_command,
             "datadog-host-tag-delete": delete_host_tags_command,
+            "datadog-active-metric-list": active_metrics_list_command,
+            "datadog-metric-search": metrics_search_command,
+            "datadog-metric-metadata-get": get_metric_metadata_command,
+            "datadog-metric-metadata-update": update_metric_metadata_command,
         }
         if command == "test-module":
             return_results(test_module(configuration))

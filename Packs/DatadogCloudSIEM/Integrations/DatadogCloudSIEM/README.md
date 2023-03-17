@@ -60,7 +60,11 @@ This endpoint allows you to post events to the stream.
 | Datadog.Event.tags | Unknown | A list of tags to apply to the event. | 
 | Datadog.Event.url | String | URL of the event. | 
 | Datadog.Event.status | String | The status of the event. | 
-| Datadog.Event.title	 | String | The event title. | 
+| Datadog.Event.title | String | The event title. | 
+| Datadog.Event.alert_type | String | Allowed enum values: error, warning, info, success, user update, recommendation, snapshot | 
+| Datadog.Event.device_name | String | A device name. | 
+| Datadog.Event.source_type_name | String | The type of event being posted. | 
+| Datadog.Event.host | String | Host name to associate with the event. Any tags associated with the host are also applied to this event. | 
 
 ### datadog-event-list
 
@@ -102,6 +106,7 @@ Get a list of Events / Get the details of a particular Event.
 | Datadog.Event.status | String | The status of the event. | 
 | Datadog.Event.host | String | Host name to associate with the event. Any tags associated with the host are also applied to this event. | 
 | Datadog.Event.title | String | The Event title. | 
+| Datadog.Event.source_type_name | String | The type of event being posted. | 
 
 ### datadog-tag-list
 
@@ -119,13 +124,14 @@ Return a mapping of tags to hosts for your whole infrastructure.
 | page | The page number. Default is 1. | Optional | 
 | page_size | The number of requested results per page. Default is 50. | Optional | 
 | limit | The maximum number of records to return from the collection. Limit default value is 50. If the page_size argument is set by the user then the limit argument will be ignored. | Optional | 
-| source | When specified, filters host list to those tags with the specified source. <br/>A complete list of source attribute values availble here. https://docs.datadoghq.com/integrations/faq/list-of-api-source-attribute-value/. | Optional | 
+| source | Source to filter.<br/>Ex : user, datadog. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Datadog.Tag | Unknown | A list of tags to apply to the host. | 
+| Datadog.Tag | String | A list of tags to apply to the host. | 
+| Datadog.HostTag | Unknown | The host name. | 
 
 ### datadog-host-tag-create
 
@@ -164,7 +170,7 @@ Return the list of tags that apply to a given host.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | host_name | The host name. | Required | 
-| source | When specified, filters host list to those tags with the specified source. <br/>A complete list of source attribute values availble here. https://docs.datadoghq.com/integrations/faq/list-of-api-source-attribute-value/. | Optional | 
+| source | Source to filter.<br/>Ex : user, datadog. | Optional | 
 | page | The page number. Default is 1. . | Optional | 
 | page_size | The number of requested results per page. <br/>Default is 50. . | Optional | 
 | limit | The maximum number of records to return from the collection. Limit default value is 50. If the page_size argument is set by the user, then the limit argument will be ignored. | Optional | 
@@ -190,7 +196,7 @@ This endpoint allows you to replace all tags in an integration source with those
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | host_name | The host name. | Required | 
-| tags | A list of tags to apply to the host  <br/>Previous tags will be replaced by new tags. <br/>Comma seperated values. Ex: "environment:production, region:East”  . | Required | 
+| tags | A list of tags to apply to the host  <br/>Previous tags will be replaced by new tags. <br/>Comma seperated values. Ex: "environment:production, region:East”  . | Optional | 
 
 #### Context Output
 
@@ -217,3 +223,109 @@ This endpoint allows you to remove all user-assigned tags for a single host.
 #### Context Output
 
 There is no context output for this command.
+### datadog-active-metric-list
+
+***
+Get the list of actively reporting metrics.
+
+#### Base Command
+
+`datadog-active-metric-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| from | List of actively reporting metrics from a given time until now.<br/>Format :  yyyy-MM-dd’T’HH:mm:ssZ Or '-1days' . | Required | 
+| host_name | Hostname for filtering the list of metrics. | Optional | 
+| tag_filter | Filter metrics that have been submitted with the given tags. | Optional | 
+| page | The page number. Default is 1. | Optional | 
+| page_size | The number of requested results per page. Default is 50. | Optional | 
+| limit | The maximum number of records to return from the collection. Limit default value is 50. If the page_size argument is set by the user, then the limit argument will be ignored. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Datadog.Metric.from | String | Time when the metrics were active, seconds since the Unix epoch. | 
+| Datadog.Metric | Unknown | List of metric names. | 
+
+### datadog-metric-search
+
+***
+Search for metrics from the last 24 hours in Datadog.
+
+#### Base Command
+
+`datadog-metric-search`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| query | Query string to search metrics from last 24 hours in Datadog.<br/>A complete list of query string values available here. https://app.datadoghq.com/metric/summary. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Datadog.Metric | Unknown | List of metrics that match the search query. | 
+
+### datadog-metric-metadata-get
+
+***
+Get metadata about a specific metric.
+
+#### Base Command
+
+`datadog-metric-metadata-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| metric_name | Name of the metric for which to get metadata. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Datadog.Metric.description | String | Metric description. | 
+| Datadog.Metric.integration | String | Name of the integration that sent the metric if applicable. | 
+| Datadog.Metric.per_unit | String | Per unit of the metric such as second in bytes per second. | 
+| Datadog.Metric.short_name | String | A more human-readable and abbreviated version of the metric name. | 
+| Datadog.Metric.statsd_interval | Number | StatsD flush interval of the metric in seconds if applicable. | 
+| Datadog.Metric.type | String | Metric type | 
+| Datadog.Metric.unit | String | Primary unit of the metric | 
+
+### datadog-metric-metadata-update
+
+***
+Edit metadata of a specific metric.
+
+#### Base Command
+
+`datadog-metric-metadata-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| metric_name | Name of the metric for which to edit metadata. | Required | 
+| description | Metric description. | Optional | 
+| per_unit | Per unit of the metric  <br/>A complete list of metric units values available here. https://docs.datadoghq.com/metrics/units/#unit-list. | Optional | 
+| short_name | A more human-readable and abbreviated version of the metric name. | Optional | 
+| statsd_interval | StatsD flush interval of the metric in seconds if applicable. | Optional | 
+| type | Metric type. Possible values are: count, rate, gauge, set, histogram, distribution. | Optional | 
+| unit | Primary unit of the metric. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Datadog.Metric.description | String | Metric description. | 
+| Datadog.Metric.per_unit | String | Per unit of the metric such as second in bytes per second. | 
+| Datadog.Metric.short_name | String | A more human-readable and abbreviated version of the metric name. | 
+| Datadog.Metric.statsd_interval | Number | StatsD flush interval of the metric in seconds if applicable. | 
+| Datadog.Metric.type | String | Metric type | 
+| Datadog.Metric.unit | String | Primary unit of the metric | 
