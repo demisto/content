@@ -1,11 +1,8 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-
-
 class Client(BaseClient):
     """ Client class to interact with the OpenAI ChatGPT API v3
     """
-
     def __init__(self, api_key: str, base_url: str, proxy: bool, verify: bool):
         super().__init__(base_url=base_url, proxy=proxy, verify=verify)
         self.api_key = api_key
@@ -18,9 +15,7 @@ class Client(BaseClient):
 
         return requests.post(self.base_url, headers=self._headers, json=options)
 
-
 ''' COMMAND FUNCTIONS '''
-
 
 def test_module(client: Client) -> str:
     """
@@ -41,7 +36,6 @@ def test_module(client: Client) -> str:
         else:
             raise e
 
-
 def chatgpt_send_prompt_command(client: Client, prompt: str) -> CommandResults:
     """
     Command to send prompts to OpenAI ChatGPT API
@@ -61,7 +55,6 @@ def chatgpt_send_prompt_command(client: Client, prompt: str) -> CommandResults:
 
     return chatgpt_output(chatgpt_response)
 
-
 def chatgpt_output(response):
     """
     Convert response from ChatGPT to a human readable format in markdown table
@@ -78,8 +71,7 @@ def chatgpt_output(response):
         promptTokens = response.get('usage').get('prompt_tokens')
         completionTokens = response.get('usage').get('completion_tokens')
         totalTokens = response.get('usage').get('total_tokens')
-        context = [{'ID': id, 'Model': model, 'ChatGPT Response': choices, 'Created Time': createdTime,
-                    'Number of Prompt Tokens': promptTokens, 'Number of Completion Tokens': completionTokens, 'Number of Total Tokens': totalTokens}]
+        context = [{'ID': id, 'Model': model, 'ChatGPT Response': choices, 'Created Time': createdTime, 'Number of Prompt Tokens': promptTokens,'Number of Completion Tokens': completionTokens,'Number of Total Tokens': totalTokens}]
 
     markdown = tableToMarkdown(
         '### ChatGPT API Response ###',
@@ -96,9 +88,7 @@ def chatgpt_output(response):
 
     return results
 
-
 ''' MAIN FUNCTION '''
-
 
 def main() -> None:
     """main function, runs command functions
@@ -133,7 +123,6 @@ def main() -> None:
         return_error("\n".join(("Failed to execute {command} command.",
                                 "Error:",
                                 str(e))))
-
 
 ''' ENTRY POINT '''
 
