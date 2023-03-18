@@ -1,7 +1,28 @@
 import demistomock as demisto  # noqa: F401
+import pytest
 
 
-def test_split_rule(mocker):
+@pytest.mark.parametrize(
+    "rule, first_rule_created",
+    [
+        ({"IpProtocol": "-1", "IpRanges": [{"CidrIp": "0.0.0.0/0"}], "Ipv6Ranges": [], "PrefixListIds": [],
+          "UserIdGroupPairs": []}, {'IpProtocol': 'tcp', 'IpRanges': [{'CidrIp': '0.0.0.0/0'}], 'Ipv6Ranges': [],
+                                    'PrefixListIds': [], 'UserIdGroupPairs': [], 'FromPort': 0, 'ToPort': 21}),
+        ({"IpProtocol": "tcp", "IpRanges": [{"CidrIp": "0.0.0.0/0"}], "Ipv6Ranges": [], "PrefixListIds": [],
+          "UserIdGroupPairs": [], 'FromPort': 0, 'ToPort': 23},
+         {'IpProtocol': 'tcp', 'IpRanges': [{'CidrIp': '0.0.0.0/0'}], 'Ipv6Ranges': [],
+          'PrefixListIds': [], 'UserIdGroupPairs': [], 'FromPort': 0, 'ToPort': 21}),
+        ({"IpProtocol": "tcp", "IpRanges": [{"CidrIp": "0.0.0.0/0"}], "Ipv6Ranges": [], "PrefixListIds": [],
+          "UserIdGroupPairs": [], 'FromPort': 1, 'ToPort': 22},
+         {'IpProtocol': 'tcp', 'IpRanges': [{'CidrIp': '0.0.0.0/0'}], 'Ipv6Ranges': [],
+          'PrefixListIds': [], 'UserIdGroupPairs': [], 'FromPort': 1, 'ToPort': 21}),
+        ({"IpProtocol": "tcp", "IpRanges": [{"CidrIp": "0.0.0.0/0"}], "Ipv6Ranges": [], "PrefixListIds": [],
+          "UserIdGroupPairs": [], 'FromPort': 22, 'ToPort': 100},
+         {'IpProtocol': 'tcp', 'IpRanges': [{'CidrIp': '0.0.0.0/0'}], 'Ipv6Ranges': [],
+          'PrefixListIds': [], 'UserIdGroupPairs': [], 'FromPort': 23, 'ToPort': 100}),
+    ]
+)
+def test_split_rule(rule, first_rule_created):
     """Tests split_rule helper function.
 
         Given:
@@ -12,12 +33,9 @@ def test_split_rule(mocker):
             - Checks the output of the helper function with the expected output.
     """
     from AWSRecreateSG import split_rule
-    rule = {"IpProtocol": "-1", "IpRanges": [{"CidrIp": "0.0.0.0/0"}], "Ipv6Ranges": [],
-            "PrefixListIds": [], "UserIdGroupPairs": []}
     args = {"rule": rule, "port": 22, "protocol": "tcp"}
     result = split_rule(**args)
-    assert result[0] == {'IpProtocol': 'tcp', 'IpRanges': [{'CidrIp': '0.0.0.0/0'}],
-                         'Ipv6Ranges': [], 'PrefixListIds': [], 'UserIdGroupPairs': [], 'FromPort': 0, 'ToPort': 21}
+    assert result[0] == first_rule_created
 
 
 def test_instance_info(mocker):
