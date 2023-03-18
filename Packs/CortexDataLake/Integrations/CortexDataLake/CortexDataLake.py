@@ -2,7 +2,6 @@
 from CommonServerPython import *
 import os
 import re
-import requests
 import json
 from pancloud import QueryService, Credentials, exceptions
 import base64
