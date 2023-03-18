@@ -778,8 +778,10 @@ def create_body_create_rule_for_v10(rule_type: str, address: List, number: int,
 def modify_v10_results_to_v9_format(results: List[Dict[Any, Any]]) -> List[Dict[Any, Any]]:
     """
     Modify the results of v10 to be in the same format as in v9.
-    Main difference is that in v10 the addresses are in a list of dictionaries with extra information.
-    This function removes the extra information and returns a list of addresses instead
+    The main difference is that in v10 the API returns the addresses in a list of dictionaries,
+    dictionary for each address with extra information, and in v9 all the addresses are in one list.
+
+    This function removes the extra information and returns a list of addresses instead as in v9.
 
     Args:
         results: List[Dict[Any, Any]] - The results of the command of v10.
@@ -850,7 +852,8 @@ def flatten_and_capitalize(main_dict: Dict, inner_dict_key: str, check_lst: List
             Returns a flat dict with the first letter of all keys capitalized.
     """
     inner_dict = main_dict.pop(inner_dict_key) if inner_dict_key in main_dict else {}
-    capitalized_inner = capitalize_key_first_letter(input_lst=[inner_dict], check_lst=check_lst)[0]
+    capitalized_inner = capitalize_key_first_letter(input_lst=[inner_dict], check_lst=check_lst)[
+        0] if capitalize_key_first_letter(input_lst=[inner_dict]) else {}
     main_dict |= capitalized_inner
     return main_dict
 
@@ -2267,7 +2270,7 @@ def assign_interface_policy_command(client: Client, args: Dict) -> CommandResult
     firewall_port_policy = args.get('firewall_port_policy_name')
     ips_policy = args.get('ips_policy_name')
     custom_policy_json: str = args.get('custom_policy_json') or ""
-    custom_policy_json = json.loads(custom_policy_json)
+    custom_policy_json = json.loads(custom_policy_json) if custom_policy_json else {}
 
     # Check if at least one policy was provided
     if not firewall_policy and not firewall_port_policy and not ips_policy and not args.get('custom_policy_json'):

@@ -760,7 +760,7 @@ def test_list_domain_rule_objects_command(mocker, mcafeensmv2_client):
     response = util_load_json('test_data/commands_test_data.json').get('list_domain_rule_objects')
     expected_result = response.get('RuleObjDef')
     mocker.patch.object(mcafeensmv2_client, 'list_domain_rule_objects_request', return_value=response)
-    mocker.patch.object(demisto, 'params', return_value={'version': 'V9x'})
+    mocker.patch.object(McAfeeNSMv2, 'VERSION', 'V9x')
     result = list_domain_rule_objects_command(mcafeensmv2_client, args)
     expected_readable_output = '### List of Rule Objects\n' \
                                '|RuleId|Name|Description|VisibleToChild|RuleType|\n' \
@@ -786,6 +786,7 @@ def test_get_rule_object_command(mocker, mcafeensmv2_client):
     response = util_load_json('test_data/commands_test_data.json').get('get_rule_object_test')
     expected_result = response.get('RuleObjDef')
     mocker.patch.object(mcafeensmv2_client, 'get_rule_object_request', return_value=response)
+    mocker.patch.object(McAfeeNSMv2, 'VERSION', 'V9x')
     result = get_rule_object_command(mcafeensmv2_client, args)
     expected_readable_output = '### Rule Objects 113\n' \
                                '|RuleId|Name|VisibleToChild|RuleType|Addresses|\n' \
@@ -826,6 +827,7 @@ def test_create_rule_object_command(mocker, mcafeensmv2_client):
             }
         }
     }
+    mocker.patch.object(McAfeeNSMv2, 'VERSION', 'V9x')
     create_rule_object_command(mcafeensmv2_client, args)
     http_request.assert_called_with(method='POST',
                                     url_suffix='/ruleobject',
@@ -894,6 +896,7 @@ def test_update_rule_object_command(mocker, mcafeensmv2_client):
             }
         }
     }
+    mocker.patch.object(McAfeeNSMv2, 'VERSION', 'V9x')
     mocker.patch.object(mcafeensmv2_client, 'get_rule_object_request', return_value=get_response)
     update_rule_object_command(mcafeensmv2_client, args1)
     http_request.assert_called_with(method='PUT',
@@ -1417,11 +1420,7 @@ def test_get_device_configuration_command(mocker, mcafeensmv2_client):
     mocker.patch.object(mcafeensmv2_client, 'get_device_configuration_request',
                         return_value={"deviceConfiguration": {"deviceConfigurationId": "mock"}})
     res = get_device_configuration_command(client=mcafeensmv2_client, args={"device_id": 0})
-    assert res.outputs == {'DeviceConfiguration': {'deviceConfigurationId': 'mock'}, 'IsPolicyConfigurationChanged': None,
-                           'IsConfigurationChanged': None, 'IsMalwareConfigurationChanged': None,
-                           'IsSignatureSetConfigurationChanged': None,
-                           'IsSSLConfigurationChanged': None, 'IsBotnetConfigurationChanged': None,
-                           'IsGloablPolicyConfigurationChanged': None}
+    assert res.outputs == {'DeviceConfiguration': {'deviceConfigurationId': 'mock'}}
 
 
 def test_get_device_configuration_command__without_device_id(mcafeensmv2_client):
