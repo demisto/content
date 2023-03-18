@@ -321,7 +321,7 @@ tasks:
       - "2"
       - "63"
       - "68"
-      - "80"
+      - "91"
     scriptarguments:
       all:
         simple: "yes"
@@ -2945,10 +2945,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "80":
     id: "80"
-    taskid: e490cdeb-571f-42a2-8ebb-7cb445c20c23
+    taskid: e2ba9c75-29ea-4438-879d-ac12e0b79cde
     type: regular
     task:
-      id: e490cdeb-571f-42a2-8ebb-7cb445c20c23
+      id: e2ba9c75-29ea-4438-879d-ac12e0b79cde
       version: -1
       name: Create ML exclusion
       description: Create an ML exclusion.
@@ -2971,8 +2971,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1852.5,
-          "y": 530
+          "x": 1902.5,
+          "y": 7865
         }
       }
     note: false
@@ -2984,10 +2984,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "81":
     id: "81"
-    taskid: 8ab18e1f-3b52-49cb-89ce-740c6596524a
+    taskid: c787fc57-a44a-4c2e-8519-01ab63ebcbc1
     type: regular
     task:
-      id: 8ab18e1f-3b52-49cb-89ce-740c6596524a
+      id: c787fc57-a44a-4c2e-8519-01ab63ebcbc1
       version: -1
       name: Update ML exclusion
       description: Updates an ML exclusions. At least one argument is required in
@@ -3011,8 +3011,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1852.5,
-          "y": 705
+          "x": 1902.5,
+          "y": 8040
         }
       }
     note: false
@@ -3024,10 +3024,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "82":
     id: "82"
-    taskid: 87c023a5-1a87-4587-80b0-fd7139a47fb7
+    taskid: d70dbb87-b98e-4196-8572-edfcfc900ad8
     type: regular
     task:
-      id: 87c023a5-1a87-4587-80b0-fd7139a47fb7
+      id: d70dbb87-b98e-4196-8572-edfcfc900ad8
       version: -1
       name: Search ML exclusion
       description: Get a list of ML Exclusions by specifying their IDs, value, or
@@ -3047,8 +3047,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1852.5,
-          "y": 880
+          "x": 1902.5,
+          "y": 8215
         }
       }
     note: false
@@ -3060,10 +3060,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "83":
     id: "83"
-    taskid: 98be4904-26c1-4677-8205-a429d8650637
+    taskid: 6f547c47-f772-4e35-8dfa-a7f23c65531c
     type: condition
     task:
-      id: 98be4904-26c1-4677-8205-a429d8650637
+      id: 6f547c47-f772-4e35-8dfa-a7f23c65531c
       version: -1
       name: Verify exclusion search results
       type: condition
@@ -3106,8 +3106,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1852.5,
-          "y": 1055
+          "x": 1902.5,
+          "y": 8390
         }
       }
     note: false
@@ -3119,10 +3119,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "84":
     id: "84"
-    taskid: f66a0d1f-89ec-4dd8-8dda-bae3bc5547ee
+    taskid: 4f20f908-a7c0-4988-859b-be2c504d9f49
     type: regular
     task:
-      id: f66a0d1f-89ec-4dd8-8dda-bae3bc5547ee
+      id: 4f20f908-a7c0-4988-859b-be2c504d9f49
       version: -1
       name: Delete ML exclusion
       description: Delete the ML exclusions by id.
@@ -3143,8 +3143,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1852.5,
-          "y": 1230
+          "x": 1902.5,
+          "y": 8565
         }
       }
     note: false
@@ -3156,10 +3156,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "85":
     id: "85"
-    taskid: bdcc0d1c-6ee5-4496-8835-5cf33b76f460
+    taskid: d8a414fd-d08e-49b0-831f-deb26adcde73
     type: regular
     task:
-      id: bdcc0d1c-6ee5-4496-8835-5cf33b76f460
+      id: d8a414fd-d08e-49b0-831f-deb26adcde73
       version: -1
       name: Create IOA exclusion
       description: Create an IOA exclusion.
@@ -3186,8 +3186,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1852.5,
-          "y": 1405
+          "x": 1902.5,
+          "y": 8740
         }
       }
     note: false
@@ -3199,10 +3199,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "86":
     id: "86"
-    taskid: 9fcc9da5-ecbf-4528-8d8e-3cf535fbb36f
+    taskid: 66e53994-290b-4288-843a-fdedb1f5d6b1
     type: regular
     task:
-      id: 9fcc9da5-ecbf-4528-8d8e-3cf535fbb36f
+      id: 66e53994-290b-4288-843a-fdedb1f5d6b1
       version: -1
       name: Update IOA exclusion
       description: Updates an IOA exclusion. At least one argument is required in
@@ -3226,8 +3226,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1852.5,
-          "y": 1580
+          "x": 1902.5,
+          "y": 8915
         }
       }
     note: false
@@ -3239,10 +3239,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "87":
     id: "87"
-    taskid: d9bdde76-83ae-4895-86b9-42d4ec90ddb0
+    taskid: faea7afc-9859-4605-8cab-8aace6d30b72
     type: regular
     task:
-      id: d9bdde76-83ae-4895-86b9-42d4ec90ddb0
+      id: faea7afc-9859-4605-8cab-8aace6d30b72
       version: -1
       name: Search IOA exclusion
       description: Get a list of IOA Exclusions by specifying their IDs or a filter
@@ -3254,15 +3254,15 @@ tasks:
       '#none#':
       - "88"
     scriptarguments:
-      value:
+      name:
         simple: demo-test
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1852.5,
-          "y": 1755
+          "x": 1902.5,
+          "y": 9090
         }
       }
     note: false
@@ -3274,10 +3274,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "88":
     id: "88"
-    taskid: 1b15250a-cbf6-4d02-8c75-b8e10154c84e
+    taskid: 1b959caa-58a6-48b8-8286-efaf5a413d4a
     type: condition
     task:
-      id: 1b15250a-cbf6-4d02-8c75-b8e10154c84e
+      id: 1b959caa-58a6-48b8-8286-efaf5a413d4a
       version: -1
       name: Verify exclusion search results
       type: condition
@@ -3320,8 +3320,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1852.5,
-          "y": 1930
+          "x": 1902.5,
+          "y": 9265
         }
       }
     note: false
@@ -3333,10 +3333,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "89":
     id: "89"
-    taskid: e48b1242-fb5b-4fcc-82e6-5d084da38e88
+    taskid: bd6f00ca-8427-4980-8a07-20c06ca3331d
     type: regular
     task:
-      id: e48b1242-fb5b-4fcc-82e6-5d084da38e88
+      id: bd6f00ca-8427-4980-8a07-20c06ca3331d
       version: -1
       name: Delete IOA exclusion
       description: Delete the IOA exclusions by id.
@@ -3357,8 +3357,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1852.5,
-          "y": 2105
+          "x": 1902.5,
+          "y": 9440
         }
       }
     note: false
@@ -3370,10 +3370,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "90":
     id: "90"
-    taskid: e6c98c48-4a06-4dba-8686-3461eece9908
+    taskid: 09da506c-63f5-449f-81d2-2aa8a7b56aa5
     type: regular
     task:
-      id: e6c98c48-4a06-4dba-8686-3461eece9908
+      id: 09da506c-63f5-449f-81d2-2aa8a7b56aa5
       version: -1
       name: List quarantined file
       description: Get quarantine file metadata by specified ids or a filter.
@@ -3383,7 +3383,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "42"
+      - "92"
     scriptarguments:
       limit:
         simple: "1"
@@ -3392,8 +3392,78 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1852.5,
-          "y": 2280
+          "x": 1902.5,
+          "y": 9615
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "91":
+    id: "91"
+    taskid: a78cca9f-bd8a-42da-8993-939703c798e6
+    type: title
+    task:
+      id: a78cca9f-bd8a-42da-8993-939703c798e6
+      version: -1
+      name: Exclusion commands
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "80"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1902.5,
+          "y": 7705
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "92":
+    id: "92"
+    taskid: 5ec54847-acd0-48cf-8097-3ea7bcb5ca9b
+    type: condition
+    task:
+      id: 5ec54847-acd0-48cf-8097-3ea7bcb5ca9b
+      version: -1
+      name: Verify outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "42"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: CrowdStrike.QuarantinedFile
+                accessor: id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1902.5,
+          "y": 9790
         }
       }
     note: false
