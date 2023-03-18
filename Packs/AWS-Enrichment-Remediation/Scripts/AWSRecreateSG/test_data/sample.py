@@ -26,6 +26,25 @@ SG_INFO = [
                       "UserIdGroupPairs":[
                          
                       ]
+                   },
+                   {
+                      "FromPort":22,
+                      "IpProtocol":"tcp",
+                      "IpRanges":[
+                         {
+                            "CidrIp":"0.0.0.0/0"
+                         }
+                      ],
+                      "Ipv6Ranges":[
+                         
+                      ],
+                      "PrefixListIds":[
+                         
+                      ],
+                      "ToPort":22,
+                      "UserIdGroupPairs":[
+                         
+                      ]
                    }
                 ],
                 "IpPermissionsEgress":[
