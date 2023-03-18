@@ -82,7 +82,7 @@ def action_original() -> CommandResults:
     resized_orig_image = image_resize_small(final_orig_image)
     resized_orig_image.save(stream_orig, format="jpeg")
     stream_orig.seek(0)
-    file_result = fileResult(f'final_{name}.png', stream_orig.read())
+    file_result = fileResult(filename=f'original_{name}', data=stream_orig.read())
     return CommandResults(
         outputs_prefix='PreProcessImage',
         outputs=file_result,
@@ -90,7 +90,7 @@ def action_original() -> CommandResults:
     )
 
 
-def get_file_details():
+def get_file_details() -> tuple[Any, str]:
     """
     Generate sharpened image.
     Args:
