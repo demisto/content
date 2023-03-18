@@ -8,21 +8,27 @@ This playbook is part of the 'Malware Investigation And Response' pack. For more
  Note: The playbook inputs enable manipulating the execution flow; read the input descriptions for details.
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+
 This playbook does not use any sub-playbooks.
 
 ### Integrations
+
 * CortexXDRIR
 
 ### Scripts
+
 This playbook does not use any scripts.
 
 ### Commands
+
 * xdr-get-alerts
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
@@ -51,9 +57,12 @@ This playbook does not use any scripts.
 | RunAll | Whether to run all the sub-tasks for Mitre Tactics. | True | Optional |
 
 ## Playbook Outputs
+
 ---
 There are no outputs for this playbook.
 
 ## Playbook Image
+
 ---
+
 ![Cortex XDR - Endpoint Investigation](../doc_files/Cortex_XDR_-_Endpoint_Investigation.png)
