@@ -129,7 +129,7 @@ def main():
     aws_role_arn = params.get('role_arn')
     aws_role_session_name = params.get('role_session_name')
     aws_default_region = params.get('default_region')
-    aws_role_session_duration = params.get('session_duration')
+    aws_role_session_duration = params.get('role_session_duration')
     aws_access_key_id = params.get('credentials', {}).get('identifier')
     aws_secret_access_key = params.get('credentials', {}).get('password')
     verify_certificate = not params.get('insecure', True)
@@ -167,11 +167,13 @@ def main():
 
         client = aws_client.aws_session(
             service='securityhub',
-            region=params.get('region'),
-            role_arn=params.get('roleArn'),
-            role_session_name=params.get('roleSessionName'),
-            role_session_duration=params.get('roleSessionDuration'),
+            region=aws_default_region,
+            role_arn=aws_role_arn,
+            role_session_name=aws_role_session_name,
+            role_session_duration=aws_role_session_duration,
         )
+
+        demisto.info(f'Executing \"{command}\" command...')
 
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.

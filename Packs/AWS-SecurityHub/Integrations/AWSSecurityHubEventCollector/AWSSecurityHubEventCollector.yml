@@ -50,7 +50,7 @@ configuration:
   section: Connect
   advanced: true
 - display: Role Session Duration
-  name: session_duration
+  name: role_session_duration
   required: false
   type: 0
   section: Connect
