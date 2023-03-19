@@ -7,6 +7,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ### Sub-playbooks
 
 * Calculate Severity - Generic v2
+* Entity Enrichment - Generic v3
 
 ### Integrations
 
@@ -38,4 +39,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Default](../doc_files/Default.png)
+![Default](../doc_files/Default_8_0.png)

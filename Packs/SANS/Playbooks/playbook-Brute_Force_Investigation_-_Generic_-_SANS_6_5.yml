@@ -2270,6 +2270,7 @@ tasks:
               right:
                 value:
                   simple: email
+                ignorecase: true
           - - operator: greaterThanOrEqual
               left:
                 value:
@@ -2293,6 +2294,7 @@ tasks:
               right:
                 value:
                   simple: file
+                ignorecase: true
           - - operator: greaterThanOrEqual
               left:
                 value:

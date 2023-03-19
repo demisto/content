@@ -1366,6 +1366,12 @@ tasks:
         simple: "No"
       CustomBlockRule:
         simple: "True"
+      IP:
+        complex:
+          root: PaloAltoNetworksXDR.Incident.alerts
+          accessor: action_remote_ip
+          transformers:
+            - operator: uniq
       InputEnrichment:
         simple: "False"
       RuleDirection:

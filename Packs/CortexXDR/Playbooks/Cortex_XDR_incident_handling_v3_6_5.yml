@@ -1743,7 +1743,7 @@ tasks:
                 value:
                   simple: File.Malicious
                 iscontext: true
-          accessor: MD5
+          accessor: SHA256
           transformers:
           - operator: uniq
       URL:
