@@ -858,7 +858,7 @@ inputs:
     Choose the remediation type for the user involved.
 
     AWS available types:
-    Delete - for the user deletion.
+    Delete - for deleting the user.
     Revoke - for revoking the user's credentials.
   playbookInputQuery:
 - key: Azure-userRemediationType
