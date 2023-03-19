@@ -469,12 +469,13 @@ def map_reco_score_to_demisto_score(
     demisto_high = 3
     demisto_critical = 4
 
-    # LHS is Orca score
+    # LHS is Reco score
     MAPPING = {
         40: demisto_critical,
         30: demisto_high,
         20: demisto_medium,
         10: demisto_informational,
+        0: demisto_informational,
     }
 
     return MAPPING[reco_score]
