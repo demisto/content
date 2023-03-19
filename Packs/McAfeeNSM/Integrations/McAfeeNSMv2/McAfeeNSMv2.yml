@@ -1,7 +1,4 @@
 category: Utilities
-sectionorder:
-- Connect
-- Collect
 commonfields:
   id: McAfeeNSMv2
   version: -1
@@ -20,12 +17,12 @@ configuration:
 - display: Product Version
   name: version
   required: false
+  type: 15
   defaultvalue: V9x
   options:
   - V9x
   - V10x
-  type: 15
-  section: Connect  
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -729,7 +726,7 @@ script:
     - name: state
       required: false
       description: "Whether to enable or disable the rule object.\nNote: This argument is only relevant to version 10x."
-      defaultvalue: Enabled
+      defaultvalue: "Enabled"
       auto: PREDEFINED
       predefined:
       - Disabled
@@ -801,7 +798,7 @@ script:
     - name: state
       required: false
       description: "Whether to enable or disable the rule object.\nNote: This argument is only relevant to version 10x."
-      defaultvalue: Enabled
+      defaultvalue: "Enabled"
       auto: PREDEFINED
       predefined:
       - Disabled
@@ -1927,13 +1924,12 @@ script:
       required: true
     - name: limit
       description: The maximum number of devices to return.
-      defaultvalue: 50
     - name: all_results
       description: Return all devices related to the given domain.
       auto: PREDEFINED
       predefined:
-        - yes
-        - no
+      - yes
+      - no
   - name: nsm-list-device-interface
     description: List the interfaces related to a given device.
     arguments:
@@ -1945,13 +1941,12 @@ script:
       description: The ID of the device. To get the device ID, use the !nsm-list-domain-device command.
     - name: limit
       description: The maximum number of interfaces to return.
-      defaultvalue: 50
     - name: all_results
       description: Return all interfaces related to the given device.
       auto: PREDEFINED
       predefined:
-        - yes
-        - no
+      - yes
+      - no
   - name: nsm-assign-device-policy
     description: Assign a policy to a specific device.
     arguments:
@@ -1962,11 +1957,9 @@ script:
       required: true
       description: The ID of the device. To get the device ID, use the !nsm-list-domain-device command.
     - name: pre_firewall_policy_name
-      description: The name of the policy to add to the top of the rule order and evaluated first.
-        To get the policies, use the !nsm-list-domain-firewall-policy command.
+      description: The name of the policy to add to the top of the rule order and evaluated first. To get the policies, use the !nsm-list-domain-firewall-policy command.
     - name: post_firewall_policy_name
-      description: The name of the policy to add to the end of the rule order and evaluated last.
-        To get the policies, use the !nsm-list-domain-firewall-policy command.
+      description: The name of the policy to add to the end of the rule order and evaluated last. To get the policies, use the !nsm-list-domain-firewall-policy command.
   - name: nsm-list-device-policy
     description: List all the policies assigned to a domain or a specific device.
     arguments:
@@ -1977,13 +1970,12 @@ script:
       description: The ID of the device. To get the device ID, use the !nsm-list-domain-device command.
     - name: limit
       description: The maximum number of policies to return.
-      defaultvalue: 50
     - name: all_results
       description: Return all policies assigned to a domain or a specific device.
       auto: PREDEFINED
       predefined:
-        - yes
-        - no
+      - yes
+      - no
   - name: nsm-assign-interface-policy
     description: Assign a policy to a specific interface.
     arguments:
@@ -2000,8 +1992,7 @@ script:
     - name: ips_policy_name
       description: The name of the IPS policy that will be connected to the interface. To get the policy name, use the !nsm-get-ips-policies command.
     - name: custom_policy_json
-      description: A Json with firewall policy types as keys and firewall policy names as values. (e.g `{"advancedMalwareInboundPolicy":"test"}`).
-        To see all the firewall policy options visit this page https://docs.trellix.com/bundle/network-security-platform-9.1.x-manager-api-reference-guide/page/GUID-5E5F9514-935F-4F16-B2F0-C48E465A4E7C.html.
+      description: A Json with firewall policy types as keys and firewall policy names as values. (e.g `{"advancedMalwareInboundPolicy":"test"}`). To see all the firewall policy options visit this page https://docs.trellix.com/bundle/network-security-platform-9.1.x-manager-api-reference-guide/page/GUID-5E5F9514-935F-4F16-B2F0-C48E465A4E7C.html.
   - name: nsm-list-interface-policy
     description: List all the policies assigned to all interfaces or a specific interface.
     arguments:
@@ -2012,13 +2003,12 @@ script:
       description: The ID of the interface. To get the interface ID, use the !nsm-list-device-interface command.
     - name: limit
       description: The maximum number of policies to return.
-      defaultvalue: 50
     - name: all_results
       description: Return all policies assigned to all interfaces or a specific interface.
       auto: PREDEFINED
       predefined:
-        - yes
-        - no
+      - yes
+      - no
   - name: nsm-get-device-configuration
     description: Provides configuration information of a given device.
     arguments:
@@ -2041,31 +2031,26 @@ script:
       predefined:
       - true
       - false
-      defaultvalue: false
     - name: push_gam_updates
       description: Deploy the Gateway Anti-Malware configuration pending changes.
       auto: PREDEFINED
       predefined:
       - true
       - false
-      defaultvalue: false
     - name: push_configuration_signature_set
       description: Deploy the Signature set configuration pending changes.
       auto: PREDEFINED
       predefined:
       - true
       - false
-      defaultvalue: false
     - name: push_botnet
       description: Deploy the Firewall policy description pending changes.
       auto: PREDEFINED
       predefined:
       - true
       - false
-      defaultvalue: false
     - name: interval_in_seconds
       description: The interval between status checks.
-      defaultvalue: 30
   isfetch: false
   runonce: false
   script: '-'
@@ -2075,3 +2060,6 @@ script:
 fromversion: 6.5.0
 tests:
 - Test_McAfeeNSMv2
+sectionorder:
+- Connect
+- Collect
