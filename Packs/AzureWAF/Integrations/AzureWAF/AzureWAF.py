@@ -456,7 +456,8 @@ def resourcegroups_to_md(subscription_ids: list[dict]) -> str:
                         resource_group_md[group_resource_key] = group_resource[group_resource_key]
                     elif group_resource_key == 'properties':
                         if demisto.get(group_resource, 'properties.provisioningState'):
-                            resource_group_md['properties.provisioningState'] = demisto.get(group_resource, 'properties.provisioningState')
+                            resource_group_md['properties.provisioningState'] = demisto.get(group_resource,
+                                                                                            'properties.provisioningState')
                 resource_groups_md.append([resource_group_md])
             subscription_to_resource_groups_dict[f'Subscription ID {subscription_id_key}'] = resource_groups_md
         top_md.append(subscription_to_resource_groups_dict)
