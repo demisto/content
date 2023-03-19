@@ -2130,7 +2130,7 @@ def list_domain_device_command(client: Client, args: Dict) -> CommandResults:
     Args:
         client(Client): client - A McAfeeNSM client.
         args(Dict): - The function arguments.
-    Returns: 
+    Returns:
         A CommandResult object with a list of domain devices.
     """
     domain_id = arg_to_number(args.get('domain_id'))
@@ -2161,7 +2161,7 @@ def list_device_interface_command(client: Client, args: Dict) -> CommandResults:
     Args:
         client(Client): client - A McAfeeNSM client.
         args(Dict): - The function arguments.
-    Returns: 
+    Returns:
         A CommandResult object with a list of device interfaces.
     """
     device_id = arg_to_number(args.get('device_id'))
@@ -2217,8 +2217,7 @@ def assign_device_policy_command(client: Client, args: Dict) -> CommandResults:
     readable_output = 'Policy assigned successfully.' if response.get('status') == 1 else 'Policy assignment failed.'
     return CommandResults(
         readable_output=readable_output,
-        raw_response=response
-    )
+        raw_response=response)
 
 
 def list_device_policy_command(client: Client, args: Dict) -> CommandResults:

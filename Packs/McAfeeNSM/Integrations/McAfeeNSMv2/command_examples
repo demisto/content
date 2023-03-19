@@ -24,4 +24,4 @@
 !nsm-assign-device-policy device_id=1003 domain_id=0 pre_firewall_policy_name=Test
 !nsm-assign-interface-policy domain_id=0 interface_id=102 ips_policy_name=testing
 !nsm-get-device-configuration device_id=1003
-!nsm-deploy-device-configuration device_id=1003 push_configuration_signature_set="true"
+!nsm-deploy-device-configuration device_id=1003 push_configuration_signature_set=true
