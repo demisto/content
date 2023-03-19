@@ -32,7 +32,7 @@ This phase will execute the following containment actions:
 
 [Mitre technique T1046 - Network Service Scanning](https://attack.mitre.org/techniques/T1046/)
 
-[Port Scan](https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-analytics-alert-reference/cortex-xdr-analytics-alert-reference/port-scan.html)
+[Port Scan](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Analytics-Alert-Reference/Port-Scan)
 
 ## How to use this playbook
 
