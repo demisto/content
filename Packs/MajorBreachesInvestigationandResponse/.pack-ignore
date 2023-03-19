@@ -17,7 +17,4 @@ ignore=BA101
 ignore=PA129
 
 [file:1_6_29.md]
-ignore=RN113
-
-[file:1_6_29.md]
-ignore=RN114
+ignore=RN113, RN114
