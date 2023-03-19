@@ -1,5 +1,5 @@
 id: 8a13470e-2470-4ade-8ade-990ecdce720b
-version: 19
+version: 21
 vcShouldKeepItemLegacyProdMachine: false
 name: Reco-Revoke-Assets
 starttaskid: "0"
@@ -22,8 +22,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 265,
-          "y": 65
+          "x": 260,
+          "y": 40
         }
       }
     note: false
@@ -416,16 +416,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 2bc1ed38-de32-4694-8d28-ac8951e0be9c
+    taskid: 07eccf15-66f7-4338-8b37-459efb3f8f23
     type: condition
     task:
-      id: 2bc1ed38-de32-4694-8d28-ac8951e0be9c
+      id: 07eccf15-66f7-4338-8b37-459efb3f8f23
       version: -1
       name: Permission Condition
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
+      '#default#':
+      - "21"
       Condition for org permission:
       - "18"
       "yes":
@@ -446,20 +448,11 @@ tasks:
               simple: anyoneWithLink
     - label: Condition for org permission
       condition:
-      - - operator: isEqualString
+      - - operator: containsGeneral
           left:
             value:
               complex:
                 root: GoogleDrive.FilePermission.FilePermission
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: GoogleDrive.FilePermission.FilePermission
-                      iscontext: true
-                    right:
-                      value:
-                        simple: domain
                 accessor: type
             iscontext: true
           right:
@@ -658,6 +651,33 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: a6b0847a-73e3-4dde-8c71-e8cf68714f4e
+    type: regular
+    task:
+      id: a6b0847a-73e3-4dde-8c71-e8cf68714f4e
+      version: -1
+      name: Do Nothing
+      type: regular
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1500,
+          "y": 630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -665,10 +685,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1870,
-        "width": 1920,
-        "x": -1060,
-        "y": 65
+        "height": 1895,
+        "width": 2360,
+        "x": -1500,
+        "y": 40
       }
     }
   }

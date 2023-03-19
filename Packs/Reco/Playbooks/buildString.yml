@@ -1,0 +1,323 @@
+id: 775899e3-472e-492a-88ff-e183b566c1f7
+version: 8
+vcShouldKeepItemLegacyProdMachine: false
+name: buildString
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 9f844653-9cd8-4a0e-84f1-0c906a3f0c48
+    type: start
+    task:
+      id: 9f844653-9cd8-4a0e-84f1-0c906a3f0c48
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 5e4f4886-cebe-4db3-8f71-c9ef1b9da511
+    type: condition
+    task:
+      id: 5e4f4886-cebe-4db3-8f71-c9ef1b9da511
+      version: -1
+      name: check if key final string exists
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "4"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: ${finalstring}
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 37c5fced-1bb5-4cd7-86e8-d25c4e4b4184
+    type: regular
+    task:
+      id: 37c5fced-1bb5-4cd7-86e8-d25c4e4b4184
+      version: -1
+      name: Prepare temporary string
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      key:
+        simple: tempstring
+      value:
+        simple: <${inputs.link}|${inputs.name}>\n
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -200,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 52107e0d-11e0-48e2-8125-368dd4e9f1bf
+    type: regular
+    task:
+      id: 52107e0d-11e0-48e2-8125-368dd4e9f1bf
+      version: -1
+      name: Append to final string
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      key:
+        simple: finalstring
+      value:
+        complex:
+          root: ${finalstring}
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ' '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ${tempstring}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 6e177f3f-0b9a-4979-8ca9-f13a999f52e7
+    type: regular
+    task:
+      id: 6e177f3f-0b9a-4979-8ca9-f13a999f52e7
+      version: -1
+      name: Key not exists
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      key:
+        simple: finalstring
+      value:
+        simple: <${inputs.link}|${inputs.name}>\n
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 390,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 36b975b0-2cda-4b8d-841c-21315d41e9e5
+    type: regular
+    task:
+      id: 36b975b0-2cda-4b8d-841c-21315d41e9e5
+      version: -1
+      name: Calculate String Size
+      description: Returns the length of  the string passed as argument
+      scriptName: StringLength
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      str:
+        simple: finalString
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 200,
+          "y": 610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 109da374-1c35-4fe2-8510-4c870457ca8c
+    type: condition
+    task:
+      id: 109da374-1c35-4fe2-8510-4c870457ca8c
+      version: -1
+      name: Check String Size
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: ${StringLength.Result}
+            iscontext: true
+          right:
+            value:
+              simple: "2000"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 360,
+          "y": 810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: af0683d5-4417-467b-8a18-5df243742c0c
+    type: regular
+    task:
+      id: af0683d5-4417-467b-8a18-5df243742c0c
+      version: -1
+      name: Don't append
+      type: regular
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 610,
+          "y": 1010
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1055,
+        "width": 1190,
+        "x": -200,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: name
+  value: {}
+  required: false
+  description: ""
+  playbookInputQuery: null
+- key: link
+  value: {}
+  required: false
+  description: ""
+  playbookInputQuery: null
+outputs: []
