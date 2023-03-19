@@ -80,19 +80,19 @@ def copy_index(index_folder_path: str, build_index_blob: Blob, build_index_gener
             index_name = f'{GCPConfig.INDEX_NAME}.zip'
             copy_from_build_to_prod(build_bucket=build_bucket, build_index_blob=build_index_blob,
                                     production_bucket=production_bucket, prod_index_storage_path=prod_index_storage_path,
-                                    name=index_name)
+                                    index_name=index_name)
             # copy index.json from build to prod
             index_json_name = f"{GCPConfig.INDEX_NAME}.json"
             build_index_json_blob = build_bucket.blob(os.path.join(build_bucket_base_path, index_json_name))
             copy_from_build_to_prod(build_bucket=build_bucket, build_index_blob=build_index_json_blob,
                                     production_bucket=production_bucket, prod_index_storage_path=prod_index_storage_path,
-                                    name=index_json_name)
+                                    index_name=index_json_name)
             # copy index_v2.zip from build to prod
             index_v2_name = f'{GCPConfig.INDEX_V2_NAME}.zip'
             build_index_v2_blob = build_bucket.blob(os.path.join(build_bucket_base_path, index_v2_name))
             copy_from_build_to_prod(build_bucket=build_bucket, build_index_blob=build_index_v2_blob,
                                     production_bucket=production_bucket, prod_index_storage_path=prod_index_storage_path,
-                                    name=index_v2_name)
+                                    index_name=index_v2_name)
         else:
             logging.error(f"Failed in uploading {GCPConfig.INDEX_NAME}, mismatch in index file generation")
             logging.error(f"Downloaded build index generation: {build_index_generation}")
