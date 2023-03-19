@@ -78,3 +78,22 @@ def test_add_statement_to_rule(mocker):
     res = mocker.patch('AWS_WAF.update_rule_with_statement')
     add_statement_to_rule(args=args, statement={}, rules=rules)
     assert res.call_count == 1
+
+
+@pytest.mark.parametrize('web_request_component, oversize_handling, expected_result',
+                         [('Cookies', 'CONTINUE',
+                           {'MatchPattern': {'All': {}}, 'MatchScope': 'ALL', 'OversizeHandling': 'CONTINUE'}),
+                          ('UriPath', None,
+                           {}),
+                          ('Body', 'CONTINUE', {'OversizeHandling': 'CONTINUE'})])
+def test_build_web_component_match_object(web_request_component, oversize_handling, expected_result):
+    from AWS_WAF import build_web_component_match_object
+    web_request_component_object = build_web_component_match_object(web_request_component, oversize_handling)
+    assert web_request_component_object == expected_result
+
+
+def test_delete_rule():
+    from AWS_WAF import delete_rule
+    original_rules = util_load_json('rule_group').get('RuleGroup').get('Rules')
+    deleted_rules = delete_rule(rule_name='test_1', rules=original_rules)
+    assert len(original_rules) == len(deleted_rules) + 1
