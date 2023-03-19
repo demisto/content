@@ -1,6 +1,6 @@
 {
     "name": "KMSAT",
-    "description": "KnowBe4 KMSAT Integration",
+    "description": "Deprecated. Use KMSAT instead",
     "support": "partner",
     "currentVersion": "1.0.0",
     "author": "KnowBe4",
