@@ -11,7 +11,7 @@ From the Forcepoint Security Manager, follow these instructions;
    b. At **Port**, enter the relevant Port number.
    c. From the **Transport protocol** section, enter the relevant protocol (**UDP**).
    d. From the **SIEM format** dropdown menu, enter the relevant format (**syslog/CEF**).
-   3.5. Confirm configuration by clicking on **Send Test Message**
+   e. Confirm configuration by clicking **Send Test Message**.
    * Click on **OK** once you are done.
 
 * Additional documentation Forcepoint Email Security Logs for SIEM is available [here](https://www.websense.com/content/support/library/email/v85/email_siem/siem_log_map.pdf)
