@@ -24,7 +24,10 @@ def test_extract_indicators(mocker):
     mocker.patch.object(demisto, 'executeCommand', side_effect=execute_command)
     args = {}
     results = extract_indicators_from_file(args)
-    assert {'Contents': '{"IP": ["1.1.1.1"]}', 'ContentsFormat': 'text', 'HumanReadable': '### IP\n- 1.1.1.1\n', 'Type': 1} == results
+    assert {'Contents': '{"IP": ["1.1.1.1"]}',
+            'ContentsFormat': 'text',
+            'HumanReadable': '### IP\n- 1.1.1.1\n',
+            'Type': 1} == results
 
 
 def test_extract_indicators_no_file():
