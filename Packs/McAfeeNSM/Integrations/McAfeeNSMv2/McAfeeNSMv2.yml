@@ -18,7 +18,7 @@ configuration:
   name: version
   required: false
   type: 15
-  defaultvalue: V9x
+  defaultValue: V9x
   options:
   - V9x
   - V10x
@@ -38,7 +38,6 @@ configuration:
 description: McAfee Network Security Manager gives you real-time visibility and control over all McAfee intrusion prevention systems deployed across your network.
 display: 'McAfee NSM v2'
 name: McAfeeNSMv2
-section: Connect
 script:
   commands:
   - name: nsm-list-domain-firewall-policy
@@ -726,7 +725,7 @@ script:
     - name: state
       required: false
       description: "Whether to enable or disable the rule object.\nNote: This argument is only relevant to version 10x."
-      defaultvalue: "Enabled"
+      defaultValue: Enabled
       auto: PREDEFINED
       predefined:
       - Disabled
@@ -798,7 +797,7 @@ script:
     - name: state
       required: false
       description: "Whether to enable or disable the rule object.\nNote: This argument is only relevant to version 10x."
-      defaultvalue: "Enabled"
+      defaultValue: Enabled
       auto: PREDEFINED
       predefined:
       - Disabled
