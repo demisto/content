@@ -82,6 +82,10 @@
             "mandatory": false,
             "display_name": "CVE-2022-41040 & CVE-2022-41082 - ProxyNotShell"
         },
+        "CVE-2023-23397 - Microsoft Outlook EoP": {
+            "mandatory": false,
+            "display_name": "CVE-2023-23397 - Microsoft Outlook EoP"
+        },
         "ServiceNow": {
             "mandatory": false,
             "display_name": "ServiceNow"
