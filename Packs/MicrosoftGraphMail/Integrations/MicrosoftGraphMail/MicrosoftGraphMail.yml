@@ -943,7 +943,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Low
-      description: 'The importance of the draft. Can be: "Low", "Normal", or "High".'
+      description: 'The importance of the draft. Can be: "Low", "Normal", or "High". The default is Normal'
       isArray: false
       name: importance
       predefined:
@@ -1106,7 +1106,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Low
-      description: 'The importance of the email. Can be: "Low", "Normal", or "High".'
+      description: 'The importance of the email. Can be: "Low", "Normal", or "High". The default is Normal'
       isArray: false
       name: importance
       predefined:
