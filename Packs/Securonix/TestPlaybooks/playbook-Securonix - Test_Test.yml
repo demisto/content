@@ -874,7 +874,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4745
+          "y": 4920
         }
       }
     note: false
@@ -983,8 +983,8 @@ tasks:
       iscommand: false
       brand: ''
     nexttasks:
-      yes:
-      - '66'
+      "yes":
+      - "70"
     separatecontext: false
     conditions:
     - label: yes
@@ -1152,7 +1152,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4045
+          "y": 4220
         }
       }
     note: false
@@ -1196,7 +1196,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4220
+          "y": 4395
         }
       }
     note: false
@@ -1230,7 +1230,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4395
+          "y": 4570
         }
       }
     note: false
@@ -1279,7 +1279,51 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 4570
+          "y": 4745
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "70":
+    id: "70"
+    taskid: 3bad8dd6-8c3b-415a-82d4-a06d42de5ed0
+    type: regular
+    task:
+      id: 3bad8dd6-8c3b-415a-82d4-a06d42de5ed0
+      version: -1
+      name: securonix-lookup-table-entries-delete
+      description: Deletes the entries from the lookup table.
+      script: '|||securonix-lookup-table-entries-delete'
+      type: regular
+      iscommand: true
+      brand: Securonix
+    nexttasks:
+      '#none#':
+      - "66"
+    scriptarguments:
+      lookup_unique_keys:
+        complex:
+          root: Securonix.LookupTableEntries
+          accessor: lookupuniquekey
+          transformers:
+          - operator: FirstArrayElement
+      name:
+        complex:
+          root: Securonix.LookupTableEntries
+          accessor: lookupname
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4045
         }
       }
     note: false
@@ -1294,7 +1338,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 4760,
+        "height": 4935,
         "width": 380,
         "x": 50,
         "y": 50
