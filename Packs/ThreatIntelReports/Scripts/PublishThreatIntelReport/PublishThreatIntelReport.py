@@ -7,7 +7,7 @@ from CommonServerPython import *  # noqa: F401
 def publish():
     now_utc = datetime.now(timezone.utc)
     object_id = demisto.getArg('object.id')
-    roles = execute_command('getRoles', {})
+    roles = execute_command('getReadOnlyRoles', {})
 
     execute_command(
         'setThreatIntelReport',
