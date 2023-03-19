@@ -53,6 +53,7 @@ XSOAR_TYPES_TO_STIX_SCO = {
     FeedIndicatorType.Registry: 'windows-registry-key',
     FeedIndicatorType.File: 'file',
     FeedIndicatorType.URL: 'url',
+    FeedIndicatorType.Software: 'software'
 }
 
 XSOAR_TYPES_TO_STIX_SDO = {
@@ -89,7 +90,8 @@ STIX2_TYPES_TO_XSOAR: dict[str, Union[str, tuple[str, ...]]] = {
     'windows-registry-key': FeedIndicatorType.Registry,
     'indicator': (FeedIndicatorType.IP, FeedIndicatorType.IPv6, FeedIndicatorType.DomainGlob,
                   FeedIndicatorType.Domain, FeedIndicatorType.Account, FeedIndicatorType.Email,
-                  FeedIndicatorType.URL, FeedIndicatorType.File, FeedIndicatorType.Registry)
+                  FeedIndicatorType.URL, FeedIndicatorType.File, FeedIndicatorType.Registry),
+    'software': FeedIndicatorType.Software
 }
 
 HASH_TYPE_TO_STIX_HASH_TYPE = {
@@ -789,7 +791,7 @@ def create_stix_object(xsoar_indicator: dict, xsoar_type: str, extensions_dict: 
     if is_sdo:
         stix_object['name'] = xsoar_indicator.get('value')
     else:
-        stix_object['value'] = xsoar_indicator.get('value')
+        stix_object = build_sco_object(stix_object, xsoar_indicator)
 
     xsoar_indicator_to_return = dict()
 
@@ -813,6 +815,54 @@ def create_stix_object(xsoar_indicator: dict, xsoar_type: str, extensions_dict: 
     if is_sdo:
         stix_object['description'] = xsoar_indicator.get('CustomFields', {}).get('description', "")
     return stix_object, extension_definition, extensions_dict
+
+
+def build_sco_object(stix_object: Dict[str, Any], xsoar_indicator) -> Dict[str, Any]:
+    """
+    Builds a correct JSON object for specific SCO types
+
+    Args:
+        stix_object (Dict[str, Any]): A JSON object of a STIX indicator
+        xsoar_indicator (_type_): A JSON object of an XSOAR indicator
+
+    Returns:
+        Dict[str, Any]: A JSON object of a STIX indicator
+    """
+
+    custom_fields = xsoar_indicator.get('CustomFields', {})
+
+    if stix_object['type'] == 'asn':
+        stix_object['number'] = xsoar_indicator.get('value', '')
+
+    elif stix_object['type'] == 'file':
+        value = xsoar_indicator.get('value')
+        stix_object['hashes'] = {HASH_TYPE_TO_STIX_HASH_TYPE[get_hash_type(value)]: value}
+        for hash_type in ('md5', 'sha1', 'sha256', 'sha512'):
+            try:
+                stix_object['hashes'][HASH_TYPE_TO_STIX_HASH_TYPE[hash_type]] = custom_fields[hash_type]
+
+            except KeyError:
+                pass
+
+    elif stix_object['type'] == 'windows-registry-key':
+        stix_object['key'] = xsoar_indicator.get('value')
+        stix_object['values'] = []
+
+        for keyvalue in custom_fields['keyvalue']:
+            if keyvalue:
+                stix_object['values'].append(keyvalue)
+                stix_object['values'][-1]['data_type'] = stix_object['values'][-1]['type']
+                del stix_object['values'][-1]['type']
+            else:
+                pass
+
+    elif stix_object['type'] in ('mutex', 'software'):
+        stix_object['name'] = xsoar_indicator.get('value')
+
+    else:
+        stix_object['value'] = xsoar_indicator.get('value')
+
+    return stix_object
 
 
 def create_extension_definition(object_type, extensions_dict, xsoar_type,

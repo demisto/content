@@ -511,6 +511,7 @@ class FeedIndicatorType(object):
     Malware = "Malware"
     Identity = "Identity"
     Location = "Location"
+    Software = "Software"
 
     @staticmethod
     def is_valid_type(_type):
@@ -3785,7 +3786,7 @@ class Common(object):
                 file_context['Hashes'].append({'type': 'SSDeep',
                                                'value': self.ssdeep})
 
-            if self.extension: 
+            if self.extension:
                 file_context['Extension'] = self.extension
 
             if self.file_type:
