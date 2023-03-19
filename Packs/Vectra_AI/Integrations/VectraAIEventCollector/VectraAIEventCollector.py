@@ -27,6 +27,7 @@ AUDIT_NEXT_RUN_KEY = "start"
 AUDIT_TIMESTAMP_KEY = "vectra_timestamp"
 
 XSIAM_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S.000Z"
+XSIAM_PARSING_RULES = ["_time"]
 
 
 """ CLIENT CLASS """
@@ -129,17 +130,15 @@ def add_parsing_rules(event: Dict[str, Any]) -> Any:
         - Event `Dict[str, Any]` with the added Parsing Rules or skip.
     """
 
-    parsing_rules_to_add = ["_time"]
-
     try:
         # Process detection
         if DETECTION_TIMESTAMP_KEY in event:
-            event[parsing_rules_to_add[0]] = datetime.strptime(
+            event[XSIAM_PARSING_RULES[0]] = datetime.strptime(
                 event.get(DETECTION_TIMESTAMP_KEY), DETECTION_TIMESTAMP_FORMAT  # type: ignore
             ).strftime(XSIAM_TIME_FORMAT)
         # Process Audit
         else:
-            event[parsing_rules_to_add[0]] = timestamp_to_datestring(
+            event[XSIAM_PARSING_RULES[0]] = timestamp_to_datestring(
                 float(event.get(AUDIT_TIMESTAMP_KEY)) * 1000  # type: ignore
             )
 
@@ -147,7 +146,7 @@ def add_parsing_rules(event: Dict[str, Any]) -> Any:
 
     except Exception as e:
         demisto.info(
-            f"""Failed adding parsing rules {parsing_rules_to_add} to event '{str(event)}': {str(e)}.
+            f"""Failed adding parsing rules {','.join(XSIAM_PARSING_RULES)} to event '{str(event)}': {str(e)}.
             Will be added in ingestion time"""
         )
         pass
