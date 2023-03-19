@@ -78,7 +78,7 @@ tags:
 - active directory
 - Utility
 type: python
-dockerimage: devdemisto/pyminizip:1.0.0.50194
+dockerimage: demisto/py3-tools:1.0.0.49929
 runas: DBotWeakRole
 runonce: false
 tests:

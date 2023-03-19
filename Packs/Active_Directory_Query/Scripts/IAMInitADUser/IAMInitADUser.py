@@ -126,20 +126,16 @@ def send_email(display_name, username, user_email, err, to_email, password, inc_
         if not email_subject:
             email_subject = f'[IAM] User {display_name} was successfully activated in Active Directory'
 
+        email_password = 'Available in the attached zip file' if zip_with_password else password
         if not email_body:
             email_body = 'Hello,\n\n' \
                          'The following account has been created in Active Directory:\n\n'
             if display_name:
-                email_body += 'Name: ' + display_name + '\n'
+                email_body += f'Name: {display_name} \n'
 
-            email_body += 'Username: ' + username + '\n' \
-                          'Email: ' + user_email + '\n' \
-                          'Password: ' + ('Available in the attached zip file' if zip_with_password else password) + '\n\n' \
-                          'Regards,\nIAM Team'
+            email_body += f'Username: {username}\nEmail: {user_email}\nPassword: {email_password}\n\nRegards,\nIAM Team'
         else:
-            email_body += '\nUsername: ' + username + '\n' \
-                          'Email: ' + user_email + '\n' \
-                          'Password: ' + ('Available in the attached zip file' if zip_with_password else password)
+            email_body += f'\nUsername: {username}\nEmail: {user_email}\nPassword: {email_password}'
 
         if zip_with_password:
             zip_file = create_zip_with_password(password, zip_with_password)
