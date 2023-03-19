@@ -1160,11 +1160,11 @@ def test_list_interface_policy_request__with_and_without_intereface_id(mocker, m
                                            ('Network_IPV_6', {'networkIPV6List': [{'value': 'Network IP V.6', 'state': 0}]}))])
 def test_create_body_create_rule_for_v10__with_different_arguments(input, output):
     """
-        Given:
-        - A rule type and other arguments.
-        When:
+    Given:
+        - A rule type and other relevant arguments.
+    When:
         - create_body_create_rule_for_v10 command is executed.
-        Then:
+    Then:
         - The body is created correctly according to the rule type.
     """
     from McAfeeNSMv2 import create_body_create_rule_for_v10
@@ -1178,7 +1178,7 @@ def test_create_body_create_rule_for_v10__with_different_arguments(input, output
 def test_modify_v10_results_to_v9_format():
     """
     Given:
-        - A list of results from v10 api, that contains a list of dictionaries in the HostIPv4 key.
+        - Results from a v10 api call, that contains a list of dictionaries under the HostIPv4 key.
     When:
         - modify_v10_results_to_v9_format command is executed.
     Then:
@@ -1201,7 +1201,7 @@ def test_capitalize_key_first_letter(input, output):
     """
     Given:
         - A dictionary contaning dictionaries.
-        - A list of keys to compare or not.
+        - A list of keys to compare to, or not.
     When:
         - capitalize_key_first_letter command is executed.
     Then:
@@ -1219,11 +1219,11 @@ def test_capitalize_key_first_letter(input, output):
 def test_list_device_interface_command__with_different_arguments(mocker, input, output, mcafeensmv2_client):
     """
     Given:
-    - A domain id, device id.
+        - A domain id, device id.
     When:
-    - nsm-list_device_interface_command command is executed, with and without limit, with and without all_results.
+        - nsm-list_device_interface_command command is executed, with and without limit, with and without all_results.
     Then:
-    - Confirm the output is as expected(number of results, and ID = 0 dose not raise an error).
+        - Confirm the output is as expected(number of results, and ID = 0 dose not raise an error).
     """
     from McAfeeNSMv2 import list_device_interface_command
     mocker.patch.object(mcafeensmv2_client, 'list_device_interface_request',
@@ -1239,11 +1239,11 @@ def test_list_device_interface_command__with_different_arguments(mocker, input, 
 def test_list_device_interface_command__with_missing_arguments(mocker, mcafeensmv2_client, input, output):
     """
     Given:
-    - A domain id or a device id.
+        - A domain id or a device id.
     When:
-        list_device_interface_command command is executed, with missing arguments.
+        - list_device_interface_command command is executed, with missing arguments.
     Then:
-    - Confirm the output is as expected(error message).
+        - Confirm the output is as expected(error message).
     """
     from McAfeeNSMv2 import list_device_interface_command
     mocker.patch.object(mcafeensmv2_client, 'list_device_interface_request',
@@ -1261,11 +1261,11 @@ def test_list_device_interface_command__with_missing_arguments(mocker, mcafeensm
 def test_list_device_policy_command__with_different_arguments(mocker, input, output, mcafeensmv2_client):
     """
     Given:
-    - A domain_id.
+        - A domain_id.
     When:
-    - nsm-list_device_policy_command command is executed with and without limit, with and without all_results.
+        - nsm-list_device_policy_command command is executed with and without limit, with and without all_results.
     Then:
-    - Confirm the output is as expected(number of results, and ID = 0 dose not raise an error).
+        - Confirm the output is as expected(number of results, and ID = 0 dose not raise an error).
     """
     from McAfeeNSMv2 import list_device_policy_command
     mocker.patch.object(mcafeensmv2_client, 'list_device_policy_request',
@@ -1278,11 +1278,11 @@ def test_list_device_policy_command__with_different_arguments(mocker, input, out
 def test_list_device_policy_command__with_missing_arguments(mocker, mcafeensmv2_client):
     """
     Given:
-    - No domain_id.
+        - No domain_id.
     When:
-    - list_device_policy_command command is executed, with missing arguments.
+        - list_device_policy_command command is executed, with missing arguments.
     Then:
-    - Confirm the output is as expected(error message).
+        - Confirm the output is as expected(error message).
     """
     from McAfeeNSMv2 import list_device_policy_command
     mocker.patch.object(mcafeensmv2_client, 'list_device_policy_request',
@@ -1300,11 +1300,11 @@ def test_list_device_policy_command__with_missing_arguments(mocker, mcafeensmv2_
 def test_list_domain_device_command_with_diffrent_arguments(mocker, mcafeensmv2_client, input, output):
     """
     Given:
-    - A domain id.
+        - A domain id.
     When:
-    - nsm-list_domain_device_command command is executed, with and without limit and with and without all_results.
+        - nsm-list_domain_device_command command is executed, with and without limit and with and without all_results.
     Then:
-    - Confirm the output is as expected(number of results, and ID = 0 dose not raise an error).
+        - Confirm the output is as expected(number of results, and ID = 0 dose not raise an error).
     """
     from McAfeeNSMv2 import list_domain_device_command
     mocker.patch.object(mcafeensmv2_client, 'list_domain_device_request',
@@ -1317,11 +1317,11 @@ def test_list_domain_device_command_with_diffrent_arguments(mocker, mcafeensmv2_
 def test_list_domain_device_command__without_domain_id(mcafeensmv2_client):
     """
     Given:
-    - No domain id.
+        - No domain id.
     When:
-    -   list_domain_device_command command is executed.
+        - list_domain_device_command command is executed.
     Then:
-    - Confirm the output is as expected(error message).
+        - Confirm the output is as expected(error message).
     """
     from McAfeeNSMv2 import list_domain_device_command
     with pytest.raises(DemistoException) as e:
@@ -1336,11 +1336,11 @@ def test_list_domain_device_command__without_domain_id(mcafeensmv2_client):
 def test_assign_interface_policy_command__with_missing_arguments(mocker, mcafeensmv2_client, input, output):
     """
     Given:
-    - A domain id and interface id with no policy.
+        - A domain id and interface id with no policy.
     When:
-    - nsm-assign_interface_policy_command command is executed.
+        - nsm-assign_interface_policy_command command is executed.
     Then:
-    - Confirm the output is as expected(error message).
+        - Confirm the output is as expected(error message).
     """
     from McAfeeNSMv2 import assign_interface_policy_command
     with pytest.raises(DemistoException) as e:
@@ -1356,11 +1356,11 @@ def test_assign_interface_policy_command__with_missing_arguments(mocker, mcafeen
                                             [{'policyId': 'mock'}, {'policyId': 'mock'}])])
 def test_list_interface_policy_command__with_multiple_different_arguments(mocker, mcafeensmv2_client, input, output):
     """
-        Given:
+    Given:
         - A domain id.
-        When:
+    When:
         - nsm-list_interface_policy_command command is executed with and without limit, with and without all_results.
-        Then:
+    Then:
         - Confirm the output is as expected(number of results, and ID = 0 dose not raise an error ).
     """
     from McAfeeNSMv2 import list_interface_policy_command
@@ -1376,11 +1376,11 @@ def test_list_interface_policy_command__with_multiple_different_arguments(mocker
 def test_list_interface_policy_command__without_domain_id(mcafeensmv2_client):
     """
     Given:
-    - No domain id.
+        - No domain id.
     When:
-    - list_interface_policy_command command is executed.
+        - list_interface_policy_command command is executed.
     Then:
-    - Confirm the output is as expected(error message).
+        - Confirm the output is as expected(error message).
     """
     from McAfeeNSMv2 import list_interface_policy_command
     with pytest.raises(DemistoException) as e:
@@ -1393,11 +1393,11 @@ def test_list_interface_policy_command__without_domain_id(mcafeensmv2_client):
 def test_assign_device_policy_command__with_missing_arguments(mocker, mcafeensmv2_client, input, output):
     """
     Given:
-    - A domain id or a device id.
+        - A domain id or a device id.
     When:
-    - assign_device_policy command command is executed, with missing arguments.
+        - assign_device_policy command command is executed, with missing arguments.
     Then:
-    - Confirm the output is as expected(error message).
+        - Confirm the output is as expected(error message).
     """
     from McAfeeNSMv2 import assign_device_policy_command
     mocker.patch.object(mcafeensmv2_client, 'assign_device_policy_request',
@@ -1410,11 +1410,11 @@ def test_assign_device_policy_command__with_missing_arguments(mocker, mcafeensmv
 def test_get_device_configuration_command(mocker, mcafeensmv2_client):
     """
     Given:
-    - A device id.
+        - A device id.
     When:
-    - nsm-get_device_configuration_command command is executed.
+        - nsm-get_device_configuration_command command is executed.
     Then:
-    - Confirm the output is as expected, and ID = 0 dose not raise an error.
+        - Confirm the output is as expected, and ID = 0 dose not raise an error.
     """
     from McAfeeNSMv2 import get_device_configuration_command
     mocker.patch.object(mcafeensmv2_client, 'get_device_configuration_request',
@@ -1426,11 +1426,11 @@ def test_get_device_configuration_command(mocker, mcafeensmv2_client):
 def test_get_device_configuration_command__without_device_id(mcafeensmv2_client):
     """
     Given:
-    - No device id.
+        - No device id.
     When:
-    - get_device_configuration_command command is executed.
+        - get_device_configuration_command command is executed.
     Then:
-    - Confirm the output is as expected(error message).
+        - Confirm the output is as expected(error message).
     """
     from McAfeeNSMv2 import get_device_configuration_command
     with pytest.raises(DemistoException) as e:
@@ -1443,11 +1443,11 @@ def test_get_device_configuration_command__without_device_id(mcafeensmv2_client)
 def test_deploy_device_configuration_command__missing_arguments(mocker, mcafeensmv2_client, input, output):
     """
     Given:
-    - No device id or no arguments to deploy.
+        - No device id or no arguments to deploy.
     When:
-    - deploy_device_configuration_command command is executed.
+        - deploy_device_configuration_command command is executed.
     Then:
-    - Confirm the output is as expected(error message).
+        - Confirm the output is as expected(error message).
     """
     from McAfeeNSMv2 import deploy_device_configuration_command
     mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported', return_value=None)
@@ -1464,12 +1464,12 @@ def test_deploy_device_configuration_command(mocker, mcafeensmv2_client, input, 
     """
 
     Given:
-    - A device id, a arguments to deploy, a request id, and a success or pending status message.
+        - A device id, a arguments to deploy, a request id, and a success or pending status message.
     When:
-    - deploy_device_configuration_command command is executed.
+        - deploy_device_configuration_command command is executed.
     Then:
-    # - Confirm the readable output is as expected. (The first 12 characters, because the the use of \n in the output, it is
-    #  not easy to compare the whole output.)
+        - Confirm the readable output is as expected. (only the first 12 characters are being compared
+        because of the use of \n in the output, it is not easy to compare the whole output.)
     """
     from McAfeeNSMv2 import deploy_device_configuration_command
     mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported', return_value=None)
