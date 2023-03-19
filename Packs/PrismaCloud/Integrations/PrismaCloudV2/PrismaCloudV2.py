@@ -1551,6 +1551,47 @@ def fetch_incidents(client: Client, last_run: Dict[str, Any], params: Dict[str, 
     return incidents, ids_to_insert, updated_last_run_time
 
 
+def get_modified_remote_data_command(client: Client,
+                                     args: Dict[str, str],
+                                     params: Dict[str, Any]) -> GetModifiedRemoteDataResponse:
+    """
+    Gets the modified remote incidents IDs.
+
+    Args:
+        client: demisto client.
+        args:
+            last_update: the last time we retrieved modified incidents.
+        params: demisto params.
+
+    Returns:
+        GetModifiedRemoteDataResponse object, which contains a list of the retrieved incidents IDs.
+    """
+    remote_args = GetModifiedRemoteDataArgs(args)
+    last_update = remote_args.last_update
+    parsed_date = dateparser.parse(last_update, settings={'TIMEZONE': 'UTC'})  # convert to utc format
+    if not parsed_date:
+        raise DemistoException(f'could not parse {last_update}')
+    last_update_timestamp = parsed_date.strftime(DATE_FORMAT)
+    demisto.debug(f'Remote arguments last_update in UTC is {last_update_timestamp}')
+
+    # TODO: do we have a limit for the mirroring? if yes - need to add it to alert_search_request()
+    detailed = 'false' # took false from the thread example - not sure
+    sort_by = ['alertTime:asc']
+    time_filter = handle_time_filter(base_case=ALERT_SEARCH_BASE_TIME_FILTER,
+                                     time_from=last_update_timestamp, # not sure about the time format I need to send here, and if I need to use handle_time_filter at all.
+                                     time_to='now')
+    filters = argToList(params.get('filters'))
+    filters.append('timeRange.type=ALERT_STATUS_UPDATED')
+    # TODO: verify with Adi the above args
+
+    # TODO: what next_token is used for?
+    response = client.alert_search_request(time_range=time_filter, filters=filters, detailed=detailed, sort_by=sort_by)
+    response_items = response.get('items', [])
+    modified_records_ids = [str(item.get('id')) for item in response_items]
+
+    return GetModifiedRemoteDataResponse(modified_records_ids)
+
+
 def test_module(client: Client, params: Dict[str, Any]) -> str:
     if params.get('isFetch'):
         max_fetch = arg_to_number(params.get('max_fetch'), arg_name='Maximum number of incidents to fetch')
@@ -1663,6 +1704,8 @@ def main() -> None:
                 'fetched_ids': fetched_ids,
                 'time': last_run_time
             })
+        elif command == 'get-modified-remote-data':
+            return_results(get_modified_remote_data_command(client, args, params))
         else:
             raise NotImplementedError(f'{command} command is not implemented.')
 

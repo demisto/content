@@ -2544,6 +2544,19 @@ script:
     description: Search networks on the Prisma Cloud platform using RQL language.
     execution: false
     name: redlock-search-network
+  - arguments:
+      - default: false
+        description: Date string representing the local time. The incident is only returned if it was modified after the last update time.
+        isArray: false
+        name: lastUpdate
+        required: false
+        secret: false
+    deprecated: false
+    description: Get the list of incidents that were modified since the last update time.
+      This method is used for debugging purposes. The get-modified-remote-data command
+      is used as part of the Mirroring feature that was introduced in Cortex XSOAR version 6.1.
+    execution: false
+    name: get-modified-remote-data
 tests:
 - Prisma Cloud V2 Test
 defaultmapperin: RedLock-mapper
