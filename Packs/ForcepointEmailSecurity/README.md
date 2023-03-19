@@ -5,7 +5,7 @@ You need to configure Forcepoint Email Security to forward Syslog messages in CE
 
 From the Forcepoint Security Manager, follow these instructions;
 1. Navigate to the page **Settings** > **General** > **SIEM Integration**.
-2. Mark the check box **Enable SIEM integration for all email appliances**
+2. Select the checkbox **Enable SIEM integration for all email appliances**.
 3. Configure the following SIEM settings;
    3.1. At **IP address or hostname**, enter the relevant IP address or hostname.
    3.2. At **Port**, enter the relevant Port number.
