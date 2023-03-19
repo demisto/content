@@ -1464,7 +1464,7 @@ def test_deploy_device_configuration_command(mocker, mcafeensmv2_client, input, 
     """
 
     Given:
-    - A device id, and arguments to deploy.
+    - A device id, a arguments to deploy, a request id, and a success or pending status message.
     When:
     - deploy_device_configuration_command command is executed.
     Then:
