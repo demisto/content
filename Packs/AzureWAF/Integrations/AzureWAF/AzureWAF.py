@@ -92,9 +92,9 @@ class AzureWAFClient:
                                            timeout=20,
                                            return_empty_response=return_empty_response)
 
-    def get_policy_by_name(self, policy_name: str, subscription_id: str, resource_group_name_list: list) -> list:
+    def get_policy_by_name(self, policy_name: str, subscription_id: str, resource_group_name_list: list) -> list[dict]:
         base_url = f'{BASE_URL}/subscriptions/{subscription_id}'
-        res: list[dict] = []
+        res = []
         for resource_group_name in resource_group_name_list:
             try:
                 res.append(self.http_request(
@@ -106,9 +106,9 @@ class AzureWAFClient:
                 res.append({'properties': f'{resource_group_name} threw Exception: {str(e)}'})
         return res
 
-    def get_policy_list_by_resource_group_name(self, subscription_id: str, resource_group_name_list: list) -> list:
+    def get_policy_list_by_resource_group_name(self, subscription_id: str, resource_group_name_list: list) -> list[dict]:
         base_url = f'{BASE_URL}/subscriptions/{subscription_id}'
-        res: list[dict] = []
+        res = []
         for resource_group_name in resource_group_name_list:
             try:
                 res.append(self.http_request(
@@ -120,7 +120,7 @@ class AzureWAFClient:
                 res.append({'properties': f'{resource_group_name} threw Exception: {str(e)}'})
         return res
 
-    def get_policy_list_by_subscription_id(self, subscription_ids) -> list:
+    def get_policy_list_by_subscription_id(self, subscription_ids) -> list[dict]:
         res = []
         for subscription_id in subscription_ids:
             base_url = f'{BASE_URL}/subscriptions/{subscription_id}'
@@ -136,9 +136,9 @@ class AzureWAFClient:
                 res.append({'properties': f'Listing {subscription_id} threw Exception: {str(e)}'})
         return res
 
-    def update_policy_upsert(self, policy_name: str, resource_group_names: list, subscription_id: str, data: dict) -> list:
+    def update_policy_upsert(self, policy_name: str, resource_group_names: list, subscription_id: str, data: dict) -> list[dict]:
         base_url = f'{BASE_URL}/subscriptions/{subscription_id}'
-        res: list[dict] = []
+        res = []
         for resource_group_name in resource_group_names:
             try:
                 res.append(
@@ -153,7 +153,7 @@ class AzureWAFClient:
                 res.append({'properties': f'{resource_group_name} threw Exception: {str(e)}'})
         return res
 
-    def delete_policy(self, policy_name: str, resource_group_name: str):
+    def delete_policy(self, policy_name: str, resource_group_name: str) -> requests.Response:
         return self.http_request(
             method='DELETE',
             return_empty_response=True,
@@ -189,7 +189,7 @@ class AzureWAFClient:
 ''' COMMAND FUNCTIONS '''
 
 
-def test_connection(client: AzureWAFClient, params: dict):
+def test_connection(client: AzureWAFClient, params: dict) -> CommandResults:
     client.ms_client.get_access_token()  # If fails, MicrosoftApiModule returns an error
     return CommandResults(readable_output='✅ Success!')
 

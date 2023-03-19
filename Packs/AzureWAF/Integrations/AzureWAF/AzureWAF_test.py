@@ -9,24 +9,27 @@ GET_COMMAND_DATA = [
         {'policy_name': 'pol1', 'verbose': 'false', 'limit': '10'},  # args, case: default resource_group
         {"method": "GET",
          "full_url":
-             f"https://management.azure.com/subscriptions/test/resourceGroups/test/providers/Microsoft.Network/\
-ApplicationGatewayWebApplicationFirewallPolicies/pol1?api-version={API_VERSION}"
+            "https://management.azure.com/subscriptions/test/resourceGroups/test/providers/Microsoft.Network/\
+ApplicationGatewayWebApplicationFirewallPolicies/pol1",
+         "params": {"api-version": API_VERSION}
          }  # expected
     ),
     (
         {'verbose': 'false', 'limit': '10'},  # args, case: list of policies in default resource_group
         {"method": "GET",
          "full_url":
-             f"https://management.azure.com/subscriptions/test/resourceGroups/test/providers/Microsoft.Network/\
-ApplicationGatewayWebApplicationFirewallPolicies?api-version={API_VERSION}"
+            "https://management.azure.com/subscriptions/test/resourceGroups/test/providers/Microsoft.Network/\
+ApplicationGatewayWebApplicationFirewallPolicies",
+         "params": {"api-version": API_VERSION}
          }  # expected
     ),
     (
         {'verbose': 'true', 'limit': '10'},  # args, case: list of policies in default resource_group with full data
         {"method": "GET",
          "full_url":
-             f"https://management.azure.com/subscriptions/test/resourceGroups/test/providers/Microsoft.Network/\
-ApplicationGatewayWebApplicationFirewallPolicies?api-version={API_VERSION}"
+             "https://management.azure.com/subscriptions/test/resourceGroups/test/providers/Microsoft.Network/\
+ApplicationGatewayWebApplicationFirewallPolicies",
+         "params": {"api-version": API_VERSION}
          }  # expected
     ),
     (
@@ -34,8 +37,9 @@ ApplicationGatewayWebApplicationFirewallPolicies?api-version={API_VERSION}"
         # args, case: list of policies in custom resource_group
         {"method": "GET",
          "full_url":
-             f"https://management.azure.com/subscriptions/test/resourceGroups/res1/providers/Microsoft.Network/\
-ApplicationGatewayWebApplicationFirewallPolicies?api-version={API_VERSION}"
+             "https://management.azure.com/subscriptions/test/resourceGroups/res1/providers/Microsoft.Network/\
+ApplicationGatewayWebApplicationFirewallPolicies",
+         "params": {"api-version": API_VERSION}
          }  # expected
     ),
 ]
@@ -91,7 +95,8 @@ def test_get_array_policy_with_exception(mocker):
     expected_results = {
         "method": "GET",
         "full_url": f"https://management.azure.com/subscriptions/sub1/resourceGroups/res2/providers/Microsoft.Network/\
-ApplicationGatewayWebApplicationFirewallPolicies/pol1?api-version={API_VERSION}",
+ApplicationGatewayWebApplicationFirewallPolicies/pol1",
+        "params": {"api-version": API_VERSION}
     }
     client = waf.AzureWAFClient(
         app_id='',
@@ -108,6 +113,7 @@ ApplicationGatewayWebApplicationFirewallPolicies/pol1?api-version={API_VERSION}"
     assert commandResult.outputs == expected_outputs
     assert m.call_args[1].get('full_url') == expected_results.get("full_url")
     assert m.call_args[1].get('method') == expected_results.get("method")
+    assert m.call_args[1].get('params') == expected_results.get("params")
 
 
 UPSERT_COMMAND_DATA = [
@@ -117,8 +123,9 @@ UPSERT_COMMAND_DATA = [
          },  # args, case: custom resource_group update rule
         {"method": "PUT",
          "full_url":
-             f"https://management.azure.com/subscriptions/test/resourceGroups/res1/providers/Microsoft.Network/\
-ApplicationGatewayWebApplicationFirewallPolicies/pol1?api-version={API_VERSION}",
+            "https://management.azure.com/subscriptions/test/resourceGroups/res1/providers/Microsoft.Network/\
+ApplicationGatewayWebApplicationFirewallPolicies/pol1",
+         "params": {"api-version": API_VERSION},
          "body": {'location': 'east', 'properties': {'managedRules': {'test': 'test'}}}
          }  # expected
     ),
@@ -128,8 +135,9 @@ ApplicationGatewayWebApplicationFirewallPolicies/pol1?api-version={API_VERSION}"
          },  # args, case: custom resource_group update rule with key hierarchy
         {"method": "PUT",
          "full_url":
-             f"https://management.azure.com/subscriptions/test/resourceGroups/res1/providers/Microsoft.Network/\
-ApplicationGatewayWebApplicationFirewallPolicies/pol1?api-version={API_VERSION}",
+             "https://management.azure.com/subscriptions/test/resourceGroups/res1/providers/Microsoft.Network/\
+ApplicationGatewayWebApplicationFirewallPolicies/pol1",
+             "params": {"api-version": API_VERSION},
          "body": {'location': 'east', 'properties': {'customRules': {'test': 'test'},
                                                      'managedRules': {'test': 'test'}}}
          }  # expected
@@ -166,6 +174,7 @@ def test_policy_upsert_request_body_happy(mocker, demisto_args, expected_results
     assert m.call_args[1].get('method') == expected_results.get("method")
     assert m.call_args[1].get('full_url') == expected_results.get("full_url")
     assert m.call_args[1].get('data') == expected_results.get("body")
+    assert m.call_args[1].get('params') == expected_results.get("params")
 
 
 def test_policy_array_group_names_upsert_request(mocker):
@@ -192,7 +201,8 @@ def test_policy_array_group_names_upsert_request(mocker):
     expected_results = {
         "method": "PUT",
         "full_url": f"https://management.azure.com/subscriptions/test/resourceGroups/res2/providers/Microsoft.Network/\
-ApplicationGatewayWebApplicationFirewallPolicies/pol1?api-version={API_VERSION}",
+ApplicationGatewayWebApplicationFirewallPolicies/pol1",
+        "params": {"api-version": API_VERSION},
         "body": {
             'location': 'east',
             'properties': {
@@ -219,6 +229,7 @@ ApplicationGatewayWebApplicationFirewallPolicies/pol1?api-version={API_VERSION}"
     assert m.call_args[1].get('method') == expected_results.get("method")
     assert m.call_args[1].get('full_url') == expected_results.get("full_url")
     assert m.call_args[1].get('data') == expected_results.get("body")
+    assert m.call_args[1].get('params') == expected_results.get("params")
 
 
 UPSERT_COMMAND_DATA_BAD_CASES = [
@@ -383,7 +394,8 @@ def test_subscriptions_list_command(mocker):
     )
     expected_results = {
         'method': 'GET',
-        'full_url': 'https://management.azure.com/subscriptions?api-version=2020-05-01',
+        'full_url': 'https://management.azure.com/subscriptions',
+        'params': {'api-version': API_VERSION}
     }
     m = mocker.patch.object(client, 'http_request', return_value={
         "value": [
@@ -423,6 +435,7 @@ def test_subscriptions_list_command(mocker):
 | Access to Azure Active Directory | Enabled | 057b1785-fd7b-4ca3-ad1b-709e4b1668be | ebac1a16-81bf-449b-8d43-5732c3c1d999 |\n'''
     assert m.call_args[1].get('method') == expected_results.get("method")
     assert m.call_args[1].get('full_url') == expected_results.get("full_url")
+    assert m.call_args[1].get('params') == expected_results.get("params")
 
 
 def test_resource_group_list_command(mocker):
@@ -436,7 +449,11 @@ def test_resource_group_list_command(mocker):
     )
     expected_results = {
         'method': 'GET',
-        'full_url': 'https://management.azure.com/subscriptions/pol1/resourcegroups?$top=10&api-version=2020-05-01',
+        'full_url': 'https://management.azure.com/subscriptions/pol1/resourcegroups',
+        "params": {
+            "api-version": API_VERSION,
+            "$top": 10
+        }
     }
     demisto_args = {
         'subscription_id': 'pol1',
