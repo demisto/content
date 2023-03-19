@@ -934,6 +934,7 @@ script:
       - name: ip_set_arn
         description: A comma separated list of the ip set ARN. You can get those values by running the aws-waf-ip-set-list command.
         isArray: true
+        required: true
       - name: condition_operator
         description: The rule condition operator. If more than one value to the ip_set_arn argument is provided, a value must be provided.
         auto: PREDEFINED
@@ -1000,6 +1001,7 @@ script:
       - name: country_codes
         description: A comma separated list of two-character country codes.
         isArray: true
+        required: true
     deprecated: false
     description: Create a country rule.
     execution: false
@@ -1431,8 +1433,6 @@ script:
     description: Adds a generic statement to an existing rule.
     execution: false
     name: aws-waf-statement-json-add
-
-
   - arguments:
       - name: statement_type
         description: The statement type.

@@ -103,12 +103,12 @@ def build_ip_rule_object(args: dict) -> dict:
     Returns:
         Ip rule statement object
     """
-    ip_rule: dict = {'Statement': {}}
+    ip_rule = {'Statement': {}}
     ip_set_arn = argToList(args.get('ip_set_arn')) or []
     condition_operator = args.get('condition_operator', '')
     if len(ip_set_arn) > 1 and not condition_operator:
-        raise DemistoException('Please provide a value to the condition_operator argument '
-                               'when ip_set_arn has more than one value.')
+        raise DemistoException('The condition_operator argument must be specified when '
+                               'ip_set_arn contains more than one value.')
 
     if len(ip_set_arn) == 1:
         ip_rule['Statement'] = build_ip_statement(ip_set_arn)
@@ -157,10 +157,9 @@ def build_country_rule_object(args: dict) -> dict:
         Country rule statement object
     """
     country_codes = argToList(args.get('country_codes'))
-    country_rule: dict = {
+    return {
         'Statement': build_country_statement(country_codes)
     }
-    return country_rule
 
 
 def build_string_match_statement(args: dict) -> dict:
@@ -232,7 +231,7 @@ def build_web_component_match_object(web_request_component: str, oversize_handli
     if web_request_component in {'Headers', 'Cookies', 'Body'}:
         if not oversize_handling:
             raise DemistoException(
-                'oversize_handling must be provided when using Headers, Cookies, Body web_request_component')
+                'oversize_handling must be provided when using Headers, Cookies, Body in web_request_component')
         if web_request_component != 'Body':
             web_request_component_object = {'MatchPattern': {
                 'All': {}
@@ -252,8 +251,8 @@ def build_byte_match_statement(web_request_component: str,
     Creates a byte match statement
     Args:
         web_request_component: The web request component to inspect
-        oversize_handling: Which oversize handling to perform on web request contents
-        that are larger than AWS WAF can inspect
+        oversize_handling: The oversize handling to be applied to web request contents
+        that are bigger than what can be inspected by AWS WAF
         text_transformation: The text transformation to perform on the component
         string_to_match: The string to match to
         match_type: Which match type should be performed
@@ -282,8 +281,8 @@ def build_regex_match_statement(web_request_component: str,
     Creates a byte match statement
     Args:
         web_request_component: The web request component to inspect
-        oversize_handling: Which oversize handling to perform on web request contents
-        that are larger than AWS WAF can inspect
+        oversize_handling: The oversize handling to be applied to web request contents
+        that are bigger than what can be inspected by AWS WAF
         text_transformation: The text transformation to perform on the component
         regex_set_arn: The regex set to match to
 
@@ -312,10 +311,9 @@ def build_string_match_rule_object(args: dict) -> dict:
     Returns:
         String match rule statement object
     """
-    string_match_statement: dict = {
+    return {
         'Statement': build_string_match_statement(args)
     }
-    return string_match_statement
 
 
 def build_new_rule_object(args: dict, rule_group_visibility_config: dict,
@@ -333,8 +331,8 @@ def build_new_rule_object(args: dict, rule_group_visibility_config: dict,
     name = args.get('rule_name', '')
     rule_visibility_config = build_visibility_config_object(
         metric_name=name,
-        cloud_watch_metrics_enabled=rule_group_visibility_config.get('CloudWatchMetricsEnabled'),  # type: ignore
-        sampled_requests_enabled=rule_group_visibility_config.get('SampledRequestsEnabled'))  # type: ignore
+        cloud_watch_metrics_enabled=rule_group_visibility_config.get('CloudWatchMetricsEnabled', True),
+        sampled_requests_enabled=rule_group_visibility_config.get('SampledRequestsEnabled', True))
 
     rule = {
         'Name': name,
@@ -383,7 +381,15 @@ def append_new_rule(rules: list, rule: dict) -> list:
     return updated_rules
 
 
-def build_kwargs(args: dict) -> dict:
+def get_required_args_for_get_rule_group(args: dict) -> dict:
+    """
+    Build the required arguments for a request of get_rule_group
+    Args:
+        args: The command arguments
+
+    Returns:
+       The required arguments for a request of get_rule_group
+    """
     return {
         'Name': args.get('group_name', ''),
         'Scope': SCOPE_MAP[args.get('scope') or DEFAULT_SCOPE],
@@ -809,7 +815,7 @@ def create_rule_group_command(client: boto3.client, args) -> CommandResults:
 
 def create_ip_rule_command(client: boto3.client, args) -> CommandResults:
     """ Command to create an ip rule"""
-    kwargs = build_kwargs(args)
+    kwargs = get_required_args_for_get_rule_group(args)
 
     rules, rule_group_visibility_config, lock_token = get_required_response_fields_from_rule_group(client, kwargs)
 
@@ -830,7 +836,7 @@ def create_ip_rule_command(client: boto3.client, args) -> CommandResults:
 
 def create_country_rule_command(client: boto3.client, args) -> CommandResults:
     """ Command to create a country rule"""
-    kwargs = build_kwargs(args)
+    kwargs = get_required_args_for_get_rule_group(args)
 
     rules, rule_group_visibility_config, lock_token = get_required_response_fields_from_rule_group(client, kwargs)
 
@@ -851,7 +857,7 @@ def create_country_rule_command(client: boto3.client, args) -> CommandResults:
 
 def create_string_match_rule_command(client: boto3.client, args) -> CommandResults:
     """ Command to create a string match rule"""
-    kwargs = build_kwargs(args)
+    kwargs = get_required_args_for_get_rule_group(args)
 
     rules, rule_group_visibility_config, lock_token = get_required_response_fields_from_rule_group(client, kwargs)
 
@@ -872,7 +878,7 @@ def create_string_match_rule_command(client: boto3.client, args) -> CommandResul
 
 def delete_rule_command(client: boto3.client, args) -> CommandResults:
     """ Command to delete a specific rule"""
-    kwargs = build_kwargs(args)
+    kwargs = get_required_args_for_get_rule_group(args)
 
     rules, rule_group_visibility_config, lock_token = get_required_response_fields_from_rule_group(client, kwargs)
     rule_name = args.get('rule_name', '')
@@ -892,7 +898,7 @@ def delete_rule_command(client: boto3.client, args) -> CommandResults:
 
 def add_ip_statement_command(client: boto3.client, args) -> CommandResults:
     """ Command to add an ip statement to a rule"""
-    kwargs = build_kwargs(args)
+    kwargs = get_required_args_for_get_rule_group(args)
     rules, rule_group_visibility_config, lock_token = get_required_response_fields_from_rule_group(client, kwargs)
     ip_set_arn = argToList(args.get('ip_set_arn')) or []
     statement = build_ip_statement(ip_set_arn)
@@ -912,7 +918,7 @@ def add_ip_statement_command(client: boto3.client, args) -> CommandResults:
 
 def add_country_statement_command(client: boto3.client, args) -> CommandResults:
     """ Command to add a country statement to a rule"""
-    kwargs = build_kwargs(args)
+    kwargs = get_required_args_for_get_rule_group(args)
 
     rules, rule_group_visibility_config, lock_token = get_required_response_fields_from_rule_group(client, kwargs)
     country_codes = argToList(args.get('country_codes')) or []
@@ -934,7 +940,7 @@ def add_country_statement_command(client: boto3.client, args) -> CommandResults:
 
 def add_string_match_statement_command(client: boto3.client, args) -> CommandResults:
     """ Command to add a string mstch statement to a rule"""
-    kwargs = build_kwargs(args)
+    kwargs = get_required_args_for_get_rule_group(args)
 
     rules, rule_group_visibility_config, lock_token = get_required_response_fields_from_rule_group(client, kwargs)
 
@@ -956,7 +962,7 @@ def add_string_match_statement_command(client: boto3.client, args) -> CommandRes
 
 def add_json_statement_command(client: boto3.client, args) -> CommandResults:
     """ Command to add a json object represents a statement to a rule"""
-    kwargs = build_kwargs(args)
+    kwargs = get_required_args_for_get_rule_group(args)
 
     rules, rule_group_visibility_config, lock_token = get_required_response_fields_from_rule_group(client, kwargs)
 
@@ -975,7 +981,7 @@ def add_json_statement_command(client: boto3.client, args) -> CommandResults:
                           raw_response=response)
 
 
-def template_json_command(args):
+def template_json_command(args: dict) -> CommandResults:
     """ Command to get a json template represents a statement"""
     statement_type = args.get('statement_type', '')
     web_request_component = args.get('web_request_component', '')
