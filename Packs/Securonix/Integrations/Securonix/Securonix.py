@@ -1337,17 +1337,21 @@ class Client(BaseClient):
     def list_lookup_table_entries_request(self, name: str, query: Optional[str] = None,
                                           attribute: Optional[str] = 'key',
                                           max_records: Optional[int] = 15, offset: Optional[int] = 0,
-                                          page_num: Optional[int] = 1) -> List:
+                                          page_num: Optional[int] = 1,
+                                          sort: Optional[str] = None,
+                                          order: Optional[str] = 'asc') -> List:
         """List the entries of the lookup table.
 
         Args:
             name (str): Name of the lookup table.
             query (Optional[str], optional): Query to filter the entries of the lookup table. Defaults to None.
-            attribute (Optional[str], optional): Column name to sort the response. Defaults to 'key'.
+            attribute (Optional[str], optional): Column name on which to filter the data. Defaults to 'key'.
             max_records (Optional[int], optional): Number of records to retrieve. Defaults to 15.
             offset (Optional[int], optional): Specify from which record the data should be returned. Defaults to 0.
             page_num (Optional[int], optional): Specify a value to retrieve the records from a specified page.
                 Defaults to 1.
+            sort (Optional[str]): Name of the column on which to sort the data.
+            order (Optional[str]): The order in which to sort the data.
 
         Returns:
             List: List of lookup table entries.
@@ -1363,7 +1367,9 @@ class Client(BaseClient):
             'attribute': attribute,
             'max': max_records,
             'offset': offset,
-            'pagenum': page_num
+            'pagenum': page_num,
+            'sort': sort,
+            'order': order
         }
         remove_nulls_from_dictionary(body)
         payload = json.dumps(body)
@@ -1397,6 +1403,24 @@ class Client(BaseClient):
         data.update({"lookupFieldList": field_list})
         remove_nulls_from_dictionary(data)
         response = self.http_request('POST', '/lookupTable/createLookupTable',
+                                     headers={'token': self._token}, json=data, response_type='text')
+        return response
+
+    def delete_lookup_table_entries(self, name: str, lookup_unique_keys: List[str]) -> str:
+        """Delete entries from the lookup table.
+
+        Args:
+            name (str): Name of the lookup table.
+            lookup_unique_keys (List[str]): List of keys to delete from the lookup table.
+
+        Returns:
+            str: Response from API.
+        """
+        data: Dict[str, Any] = {
+            'lookupTableName': name,
+            'keyList': lookup_unique_keys
+        }
+        response = self.http_request('DELETE', '/lookupTable/deleteLookupKeys',
                                      headers={'token': self._token}, json=data, response_type='text')
         return response
 
@@ -1583,7 +1607,7 @@ def list_activity_data(client: Client, args) -> Tuple[str, Dict, Dict]:
     return human_readable, entry_context, activity_data
 
 
-def list_violation_data(client: Client, args) -> CommandResults:
+def list_violation_data(client: Client, args) -> List[CommandResults]:
     """List violation data.
 
     Args:
@@ -1608,17 +1632,28 @@ def list_violation_data(client: Client, args) -> CommandResults:
         headers = ['EventID', 'Eventtime', 'Message', 'Policyname', 'Accountname']
         human_readable = tableToMarkdown(name="Activity data:", t=violation_readable, headers=headers, removeNull=True)
 
-        human_readable += f"#### Next page query id: {violation_data.get('queryId')}"
-        return CommandResults(
+        data = {
+            "totalDocuments": violation_data.get('totalDocuments'),
+            "message": violation_data.get('message'),
+            "queryId": violation_data.get('queryId')
+        }
+
+        return [CommandResults(
             outputs_prefix='Securonix.ViolationData',
             readable_output=human_readable,
             outputs=remove_empty_elements(violation_outputs),
             raw_response=violation_data,
             outputs_key_field=["Policyname", "Violator", "Resourcegroupid", "Tenantname", "Resourcename", "EmployeeID",
                                "Accountname", "Ipaddress"]
-        )
+        ), CommandResults(
+            outputs_prefix="Securonix.Violation",
+            outputs=remove_empty_elements(data),
+            readable_output=f"#### Next page query id: {data.get('queryId')}"
+        )]
     else:
-        return CommandResults(readable_output="There are no violation events.", outputs={}, raw_response=violation_data)
+        return [
+            CommandResults(readable_output="There are no violation events.", outputs={}, raw_response=violation_data)
+        ]
 
 
 def run_polling_command(client, args: dict, command_name: str, search_function: Callable):
@@ -1637,7 +1672,7 @@ def run_polling_command(client, args: dict, command_name: str, search_function: 
     command_results = []
     result = search_function(client, args)
     command_results.append(result)
-    outputs = result.raw_response.get('events')
+    outputs = result[0].raw_response.get('events')
     delay_type = client.get_securonix_retry_delay_type()
     retry_count: int = client.get_securonix_retry_count()
     retry_delay: int = client.get_securonix_retry_delay()
@@ -2321,7 +2356,7 @@ def delete_lookup_table_config_and_data(client: Client, args: Dict[str, Any]) ->
     response = client.delete_lookup_table_config_and_data_request(name=name)
 
     if 'successfully' not in response.lower():
-        raise Exception('Failed to delete lookup table and its data.\nResponse from Securonix is: {str(response)}')
+        raise Exception(f'Failed to delete lookup table and its data.\nResponse from Securonix is: {str(response)}')
 
     human_readable = f'The table {name} has been deleted successfully on Securonix.'
 
@@ -2398,6 +2433,32 @@ def list_lookup_tables(client: Client, args: Dict[str, Any]) -> Tuple[str, Dict,
     return human_readable, entry_context, lookup_tables
 
 
+def validate_expiry_time_of_lookup_table_entries(table_entries: Union[Dict, List[Dict]]) -> None:
+    """Check whether the expiration time of the lookup table entries is valid.
+
+    Args:
+        table_entries (Union[Dict, List[Dict]]): Lookup table entries to add to the lookup table.
+    """
+    def is_expiration_time_in_valid_format(expiration_time: str) -> None:
+        try:
+            datetime.strptime(expiration_time, '%m/%d/%Y')
+        except ValueError as exception:
+            raise ValueError("The value of expiryDate field is not in MM/DD/YYYY format.") from exception
+
+    if isinstance(table_entries, dict):
+        expiration_time = table_entries.get('expiryDate')
+
+        if expiration_time:
+            is_expiration_time_in_valid_format(expiration_time)
+
+    if isinstance(table_entries, list):
+        for entry in table_entries:
+            expiration_time = entry.get('expiryDate')
+
+            if expiration_time:
+                is_expiration_time_in_valid_format(expiration_time)
+
+
 def add_entry_to_lookup_table(client: Client, args: Dict[str, Any]) -> Tuple:
     """Add entries to the lookup table.
 
@@ -2435,6 +2496,11 @@ def add_entry_to_lookup_table(client: Client, args: Dict[str, Any]) -> Tuple:
             json_entries = json.loads(json_data)
         except json.JSONDecodeError as exception:
             raise Exception(f'Could not able to parse the provided JSON data. Error: {str(exception)}') from exception
+
+    validate_expiry_time_of_lookup_table_entries(table_entries=json_entries)
+
+    if isinstance(json_entries, dict):
+        json_entries = [json_entries]
 
     response = client.add_entry_to_lookup_table_request(name=table_name, entries=json_entries, tenant_name=tanant_name)
 
@@ -2513,14 +2579,20 @@ def list_lookup_table_entries(client: Client, args: Dict[str, Any]) -> Tuple:
     max_records = arg_to_number(args.get('max', '15').strip() or '15')
     offset = arg_to_number(args.get('offset', '0').strip() or '0')
     page_num = arg_to_number(args.get('page_num', '1').strip() or '1')
+    sort = args.get('sort', '').strip()
+    order = args.get('order', 'asc').strip().lower() or 'asc'
 
     # Validate required parameters.
     if not name:
         raise ValueError('Lookup table name is a required argument.')
 
+    # Validate order argument.
+    if order and order not in ['asc', 'desc']:
+        raise ValueError('Order argument must be "asc" or "desc".')
+
     response = client.list_lookup_table_entries_request(name=name, query=query, attribute=attribute,
                                                         max_records=max_records, offset=offset,
-                                                        page_num=page_num)
+                                                        page_num=page_num, sort=sort, order=order)
 
     entry_context_list: List[Dict] = prepare_entry_contex_lookup_table_entries_list(response)
     human_readable = prepare_human_readable_for_lookup_table_entries_list(entry_context_list)
@@ -2558,6 +2630,31 @@ def create_lookup_table(client: Client, args) -> Tuple[str, Dict, Dict]:
     return human_readable, {}, response
 
 
+def delete_lookup_table_entries(client: Client, args: Dict[str, Any]):
+    """Delete entries from the lookup table.
+
+    Args:
+        client: Client object with request.
+        args: Usually demisto.args()
+
+    Returns:
+        Outputs.
+    """
+    name = args.get('name', '').strip()
+    lookup_unique_keys = argToList(args.get('lookup_unique_keys', '').strip())
+
+    if not name:
+        raise ValueError('Lookup table name is a required parameter.')
+
+    if not lookup_unique_keys:
+        raise ValueError('At least one lookup table key is required to execute the command.')
+
+    response = client.delete_lookup_table_entries(name=name, lookup_unique_keys=lookup_unique_keys)
+    human_readable = f'Successfully deleted following entries from {name}: {", ".join(lookup_unique_keys)}.'
+
+    return human_readable, {}, response
+
+
 def fetch_securonix_incident(client: Client, fetch_time: Optional[str], incident_status: str, default_severity: str,
                              max_fetch: str, last_run: Dict, close_incident: bool) -> list:
     """Uses to fetch incidents into Demisto
@@ -2576,10 +2673,10 @@ def fetch_securonix_incident(client: Client, fetch_time: Optional[str], incident
         incidents, new last_run
     """
     timestamp_format = '%Y-%m-%dT%H:%M:%S.%fZ'
-    if not last_run:    # if first time running
+    if not last_run:  # if first time running
         new_last_run = {
             'from': int(
-                arg_to_datetime(fetch_time, arg_name='First fetch time range').timestamp() * 1000   # type: ignore
+                arg_to_datetime(fetch_time, arg_name='First fetch time range').timestamp() * 1000  # type: ignore
             ),
             'to': int(datetime.now(tz=timezone.utc).timestamp() * 1000),
             'offset': 0,
@@ -2615,7 +2712,7 @@ def fetch_securonix_incident(client: Client, fetch_time: Optional[str], incident
     )
 
     if securonix_incidents:
-        already_fetched: List[str] = new_last_run.get('already_fetched', [])    # type: ignore
+        already_fetched: List[str] = new_last_run.get('already_fetched', [])  # type: ignore
         incident_items = securonix_incidents.get('incidentItems', [])
 
         for incident in incident_items:
@@ -2643,7 +2740,7 @@ def fetch_securonix_incident(client: Client, fetch_time: Optional[str], incident
 
         # If incidents returned from API, then only update the offset value.
         if incident_items:
-            new_offset = offset + len(incident_items)   # type: ignore
+            new_offset = offset + len(incident_items)  # type: ignore
             new_from = from_epoch
             new_to = to_epoch
             demisto.debug(f'Updating the offset to {new_offset}.')
@@ -2656,10 +2753,10 @@ def fetch_securonix_incident(client: Client, fetch_time: Optional[str], incident
             demisto.debug(f'Resetting the offset to 0. New From is {new_from}. New To is {new_to}.')
 
         new_last_run.update({
-            'from': new_from,   # type: ignore
-            'to': new_to,   # type: ignore
+            'from': new_from,  # type: ignore
+            'to': new_to,  # type: ignore
             'offset': new_offset,
-            'already_fetched': already_fetched   # type: ignore
+            'already_fetched': already_fetched  # type: ignore
         })
 
     demisto.setLastRun({
@@ -3138,7 +3235,8 @@ def main():
             'securonix-lookup-tables-list': list_lookup_tables,  # type: ignore[dict-item]
             'securonix-lookup-table-entry-add': add_entry_to_lookup_table,  # type: ignore[dict-item]
             'securonix-lookup-table-entries-list': list_lookup_table_entries,  # type: ignore[dict-item]
-            'securonix-lookup-table-create': create_lookup_table
+            'securonix-lookup-table-create': create_lookup_table,
+            'securonix-lookup-table-entries-delete': delete_lookup_table_entries
         }
         if command == 'fetch-incidents':
             validate_mirroring_parameters(params=params)
