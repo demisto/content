@@ -464,7 +464,7 @@ def test_resource_group_list_command(mocker):
     m = mocker.patch.object(client, 'http_request', return_value={
         "value": [
             {
-                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/cloud-shell-storage-eastus",
+                "id": "/subscriptions/pol1/resourceGroups/cloud-shell-storage-eastus",
                 "name": "cloud-shell-storage-eastus",
                 "type": "Microsoft.Resources/resourceGroups",
                 "location": "eastus",
@@ -473,7 +473,7 @@ def test_resource_group_list_command(mocker):
                 }
             },
             {
-                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/demisto",
+                "id": "/subscriptions/pol1/resourceGroups/demisto",
                 "name": "demisto",
                 "type": "Microsoft.Resources/resourceGroups",
                 "location": "centralus",
@@ -482,7 +482,7 @@ def test_resource_group_list_command(mocker):
                 }
             },
             {
-                "id": "/subscriptions/0f907ea4-bc8b-4c11-9d7e-805c2fd144fb/resourceGroups/compute-integration",
+                "id": "/subscriptions/pol1/resourceGroups/compute-integration",
                 "name": "compute-integration",
                 "type": "Microsoft.Resources/resourceGroups",
                 "location": "eastus",

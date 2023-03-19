@@ -1,4 +1,6 @@
 category: Network Security
+sectionorder:
+- Connect
 commonfields:
   id: AzureWAF
   version: -1
@@ -9,16 +11,21 @@ configuration:
   name: app_id
   required: false
   type: 0
+  section: Connect
 - display: Default Subscription ID
   hidden: false
   name: subscription_id
   required: true
   type: 0
+  additionalinfo: Default subscription ID value can be overridden using subscription_id argument to commands.
+  section: Connect
 - display: Default Resource Group Name
   hidden: false
   name: resource_group_name
   required: true
   type: 0
+  additionalinfo: Default resource group name can be overridden using resource_group_name argument in commands.
+  section: Connect
 - additionalinfo: Type of authentication - can be Authorization Code Flow (recommended), Device Code Flow, or Azure Managed Identities.
   display: Authentication Type
   name: auth_type
@@ -29,20 +36,24 @@ configuration:
   - Device Code
   - Azure Managed Identities
   type: 15
+  section: Connect
 - display: Tenant ID (for authorization code mode)
   name: tenant_id
   required: false
   type: 0
+  section: Connect
 - display: Client Secret (for authorization code mode)
   displaypassword: Client Secret (for authorization code mode)
   hiddenusername: true
   name: credentials
   required: false
   type: 9
+  section: Connect
 - display: Application redirect URI (for authorization code mode)
   name: redirect_uri
   required: false
   type: 0
+  section: Connect
 - display: Authorization code
   displaypassword: Authorization code
   additionalinfo: for user-auth mode - received from the authorization step. see Detailed
@@ -51,12 +62,14 @@ configuration:
   name: auth_code
   required: false
   type: 9
+  section: Connect
 - additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
   displaypassword: Azure Managed Identities Client ID
   name: managed_identities_client_id
   required: false
   hiddenusername: true
   type: 9
+  section: Connect
 - defaultvalue: https://login.microsoftonline.com
   display: Azure AD endpoint
   hidden: false
@@ -69,14 +82,20 @@ configuration:
   required: false
   type: 15
   additionalinfo: Azure AD endpoint associated with a national cloud.
+  section: Connect
+  advanced: true
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
+  advanced: true
 description: |-
   The Azure WAF (Web Application Firewall) integration provides centralized protection of your web applications from common exploits and vulnerabilities.
   It enables you to control policies that are configured in the Azure Firewall management platform, and allows you to add, delete, or update policies,
@@ -574,7 +593,7 @@ script:
     name: azure-waf-resource-group-list
     arguments: 
     - default: false
-      description: The subscription ID. If not provided, the integration default subscription ID will be used.
+      description: Comma-separated value list of subscription IDs. If not provided, the integration default subscription ID will be used.
       isArray: true
       name: subscription_id
       required: false
