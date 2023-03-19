@@ -1,5 +1,5 @@
 Agentless, Workload-Deep, Context-Aware Security and Compliance for AWS, Azure, and GCP.
-This integration was integrated and tested with version 0.1.0 of Orca Event Collector
+This integration was integrated and tested with version xx of Orca Event Collector
 
 ## Configure Orca Event Collector on Cortex XSOAR
 
@@ -7,14 +7,14 @@ This integration was integrated and tested with version 0.1.0 of Orca Event Coll
 2. Search for Orca Event Collector.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | API Token | The API Key to use for connection | True |
-    | Server URL (for example: https://app.eu.orcasecurity.io/api) |  | True |
-    | First fetch time |  | False |
-    | The maximum number of events per fetch | The number of events to fetch. Maximum value is 1000 | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
+    | **Parameter** | **Description**                                                                                                           | **Required** |
+    |---------------------------------------------------------------------------------------------------------------------------| --- | --- |
+    | API Token | The API Key to use for connection                                                                                         | True |
+    | Server URL (for example: https://app.eu.orcasecurity.io/api) | For more information about the different regions and ips in the (link)[https://docs.orcasecurity.io/docs/regions-and-ips] | True |
+    | First fetch time (<number> <time unit>, e.g., 12 hours, 7 days) |                                                                                                                           | False |
+    | The maximum number of events per fetch | The number of events to fetch. Maximum value is 1000                                                                      | False |
+    | Trust any certificate (not secure) |                                                                                                                           | False |
+    | Use system proxy settings |                                                                                                                           | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 

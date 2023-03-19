@@ -40,7 +40,7 @@ class Client(BaseClient):
         }
         if next_page_token:
             params['next_page_token'] = next_page_token
-        demisto.info(f'in get_alerts request {params=}')
+        demisto.info(f'In get_alerts request {params=}')
         return self._http_request(method='GET', url_suffix='/query/alerts', params=params)
 
 
@@ -57,7 +57,6 @@ def test_module(client: Client, last_fetch: str) -> str:
     """
     try:
         client.get_alerts_request(1, last_fetch, None)
-        demisto.info('In test-module, ok')
         return 'ok'
     except DemistoException as e:
         raise Exception(e.message)
@@ -77,7 +76,7 @@ def get_alerts(client: Client, max_fetch: int, last_fetch: str, next_page_token:
     response = client.get_alerts_request(max_fetch, last_fetch, next_page_token)
     next_page_token = response.get('next_page_token')
     alerts = response.get('data', [])
-    demisto.info(f'in get alerts {next_page_token=} , {len(alerts)=}\n {alerts=}')
+    demisto.debug(f'Get Alerts Response {next_page_token=} , {len(alerts)=}\n {alerts=}')
     return alerts, next_page_token
 
 
@@ -85,14 +84,10 @@ def get_alerts(client: Client, max_fetch: int, last_fetch: str, next_page_token:
 
 
 def main() -> None:
-    """main function, parses params and runs command functions
 
-    :return:
-    :rtype:
-    """
     command = demisto.command()
     api_token = demisto.params().get('credentials', {}).get('password')
-    server_url = demisto.params().get('server_url', 'https://app.eu.orcasecurity.io/api')
+    server_url = demisto.params().get('server_url')
     first_fetch = demisto.params().get('first_fetch') or '3 days'
     max_fetch = arg_to_number(demisto.params().get('max_fetch')) or 1000
     verify_certificate = not demisto.params().get('insecure', False)
@@ -105,7 +100,7 @@ def main() -> None:
         required=True
     )
     first_fetch_time = first_fetch_time.strftime(DATE_FORMAT) if first_fetch_time else ''
-    demisto.info(f'{first_fetch_time=}')
+    demisto.debug(f'{first_fetch_time=}')
     demisto.info(f'Orca Security. Command being called is {command}')
     try:
 
@@ -121,18 +116,17 @@ def main() -> None:
 
         last_run = demisto.getLastRun()
         if not last_run:
-            demisto.info(f'first run {last_run=}')
+            demisto.debug(f'first run {last_run=}')
             last_fetch = first_fetch_time
         else:
             last_fetch = last_run.get('lastRun')
-            demisto.info(f'not the first run {last_fetch}')
+            demisto.debug(f"Isn't the first run {last_fetch}")
         next_page_token = last_run.get('next_page_token')
 
         if command == 'test-module':
             return_results(test_module(client, last_fetch))
         elif command in ('fetch-events', 'orca-security-get-events'):
             alerts, next_page_token = get_alerts(client, max_fetch, last_fetch, next_page_token)
-            demisto.info(f'after get alerts {len(alerts)=} , {next_page_token=}')
 
             if command == 'fetch-events':
                 should_push_events = True
@@ -141,7 +135,7 @@ def main() -> None:
                     'lastRun': alerts[-1].get('state', {}).get('last_updated')[:-6] if alerts else last_fetch
                 }
                 demisto.setLastRun(current_last_run)
-                demisto.info(f'{current_last_run=}')
+                demisto.debug(f'{current_last_run=}')
 
             else:  # command == 'orca-security-get-events'
                 should_push_events = argToBoolean(demisto.args().get('should_push_events', False))
