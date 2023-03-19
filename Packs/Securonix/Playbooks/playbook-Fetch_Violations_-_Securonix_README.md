@@ -1,4 +1,4 @@
-Fetch violations related to threat.
+Gets a list of violation data.
 
 ## Dependencies
 This playbook uses the following sub-playbooks, integrations, and scripts.
@@ -10,10 +10,9 @@ This playbook does not use any sub-playbooks.
 This playbook does not use any integrations.
 
 ### Scripts
-* GetTime
+This playbook does not use any scripts.
 
 ### Commands
-* setIncident
 * securonix-list-violation-data
 
 ## Playbook Inputs
@@ -31,4 +30,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Fetch Threat Violations - Securonix](../doc_files/Fetch_Threat_Violations_-_Securonix.png)
+![Fetch Violations - Securonix](../doc_files/Fetch_Violations_-_Securonix.png)
