@@ -1,4 +1,7 @@
 category: Data Enrichment & Threat Intelligence
+sectionorder:
+- Connect
+- Collect
 commonfields:
   id: TAXII Server
   version: -1
@@ -9,28 +12,30 @@ configuration:
   required: false
   type: 8
   hidden: true
-- additionalinfo: Will run the TAXII server on this port from within Demisto. Requires
-    a unique port for each long-running integration instance. Do not use the same
-    port for multiple instances.
+  section: Connect
+- additionalinfo: Will run the TAXII server on this port from within Demisto. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances.
   display: Listen Port
   name: longRunningPort
   required: true
   type: 0
+  section: Connect
 - display: Certificate (Required for HTTPS)
   name: certificate
   required: false
   type: 12
+  section: Connect
 - display: Private Key (Required for HTTPS)
   name: key
   required: false
   type: 14
+  section: Connect
 - display: Username
   hidden: false
   name: credentials
   required: false
   type: 9
-- additionalinfo: JSON string of indicator query collections - dictionary of the collection
-    name as the key and the query as the value.
+  section: Connect
+- additionalinfo: JSON string of indicator query collections - dictionary of the collection name as the key and the query as the value.
   defaultvalue: |-
     {
        "AWS": "type:CIDR and sourceBrands:\"AWS Feed\""
@@ -40,15 +45,15 @@ configuration:
   name: collections
   required: true
   type: 12
+  section: Collect
 - display: TAXII Service URL Address
-  additionalinfo: The URL address to set in the TAXII service response. If not set,
-    the integration will try to auto-detect the URL.
+  additionalinfo: The URL address to set in the TAXII service response. If not set, the integration will try to auto-detect the URL.
   hidden: false
   name: service_address
   required: false
   type: 0
-description: This integration provides TAXII Services for system indicators (Outbound
-  feed).
+  section: Connect
+description: This integration provides TAXII Services for system indicators (Outbound feed).
 display: TAXII Server
 name: TAXII Server
 script:
