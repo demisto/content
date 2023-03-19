@@ -173,7 +173,7 @@ def main() -> None:  # pragma: no cover
     base_url = params.get('url', '').rstrip('/')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
-    should_push_events = argToBoolean(args.get("should_push_events"))
+    should_push_events = argToBoolean(args.get("should_push_events", False))
     resolution = params.get('resolution')
     max_fetch = args.get('limit') or params.get('max_fetch')
 
