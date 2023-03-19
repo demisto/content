@@ -375,7 +375,7 @@ class Client(BaseClient):
                 firewall_policy: str - The firewall policy.
                 firewall_port_policy: str - The firewall port policy.
                 ips_policy: str - The IPS policy.
-                custom_policy_json: Dict - A dict of custom policys.
+                custom_policy_json: Dict - A dict of custom policies.
             Returns:
                 A success or failure code.
 
@@ -779,9 +779,9 @@ def modify_v10_results_to_v9_format(results: List[Dict[Any, Any]]) -> List[Dict[
     """
     Modify the results of v10 to be in the same format as in v9.
     The main difference is that in v10 the API returns the addresses in a list of dictionaries,
-    dictionary for each address with extra information, and in v9 all the addresses are in one list.
+    A dictionary for each address with extra information, and in v9 all the addresses are in one list.
 
-    This function removes the extra information and returns a list of addresses instead as in v9.
+    This function takes a v10 result and returns a v9 result.
 
     Args:
         results: List[Dict[Any, Any]] - The results of the command of v10.
@@ -818,7 +818,8 @@ def modify_v10_results_to_v9_format(results: List[Dict[Any, Any]]) -> List[Dict[
 
 def capitalize_key_first_letter(input_lst: List[Dict], check_lst: List = None) -> List[Dict]:
     """
-        Capitalize the first letter of all keys in all dictionaries, while keeping the rest of the key as is.
+        Capitalize the first letter of all keys in all dictionaries,
+        while keeping the rest of the key as is,(can't use 'capitalize()').
         Args:
             input_lst: List - A list of dictionaries.
             check_lst: List - A list of keys to check if they exist in the dictionary.
@@ -2129,7 +2130,8 @@ def list_domain_device_command(client: Client, args: Dict) -> CommandResults:
     Args:
         client(Client): client - A McAfeeNSM client.
         args(Dict): - The function arguments.
-    Returns: A CommandResult object with a list of domain devices.
+    Returns: 
+        A CommandResult object with a list of domain devices.
     """
     domain_id = arg_to_number(args.get('domain_id'))
     if not domain_id and domain_id != 0:
@@ -2159,7 +2161,8 @@ def list_device_interface_command(client: Client, args: Dict) -> CommandResults:
     Args:
         client(Client): client - A McAfeeNSM client.
         args(Dict): - The function arguments.
-    Returns: A CommandResult object with a list of device interfaces.
+    Returns: 
+        A CommandResult object with a list of device interfaces.
     """
     device_id = arg_to_number(args.get('device_id'))
     if not device_id and device_id != 0:
@@ -2195,7 +2198,8 @@ def assign_device_policy_command(client: Client, args: Dict) -> CommandResults:
     Args:
         client(Client): client - A McAfeeNSM client.
         args(Dict): - The function arguments.
-    Returns: A CommandResult object with a success or failure message.
+    Returns: 
+        A CommandResult object with a success or failure message.
     """
     device_id = arg_to_number(args.get('device_id'))
     if not device_id and device_id != 0:
@@ -2225,7 +2229,7 @@ def list_device_policy_command(client: Client, args: Dict) -> CommandResults:
         args(Dict): - The function arguments.
 
     Returns:
-        CommandResults: A CommandResult object with a list of device policies.
+         A CommandResult object with a list of device policies.
     """
     device_id = arg_to_number(args.get('device_id'))
     domain_id = arg_to_number(args.get('domain_id'))
@@ -2258,7 +2262,8 @@ def assign_interface_policy_command(client: Client, args: Dict) -> CommandResult
     Args:
         client(Client): - A McAfeeNSM client.
         args(Dict): - The function arguments.
-    Returns: A CommandResult object with a success or failure message.
+    Returns:
+        A CommandResult object with a success or failure message.
     """
     domain_id = arg_to_number(args.get('domain_id'))
     if not domain_id and domain_id != 0:
