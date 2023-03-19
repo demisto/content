@@ -99,8 +99,8 @@ class AzureWAFClient:
             try:
                 res.append(self.http_request(
                     method='GET',
-                    full_url=f'{base_url}/resourceGroups/{resource_group_name}/{POLICY_PATH}/{policy_name}?api-version=\
-{API_VERSION}',
+                    full_url=f'{base_url}/resourceGroups/{resource_group_name}/{POLICY_PATH}/{policy_name}',
+                    params={'api-version': API_VERSION}
                 ))
             except Exception as e:
                 res.append({'properties': f'{resource_group_name} threw Exception: {str(e)}'})
@@ -113,7 +113,8 @@ class AzureWAFClient:
             try:
                 res.append(self.http_request(
                     method='GET',
-                    full_url=f'{base_url}/resourceGroups/{resource_group_name}/{POLICY_PATH}?api-version={API_VERSION}'
+                    full_url=f'{base_url}/resourceGroups/{resource_group_name}/{POLICY_PATH}',
+                    params={'api-version': API_VERSION}
                 ))
             except Exception as e:
                 res.append({'properties': f'{resource_group_name} threw Exception: {str(e)}'})
@@ -127,7 +128,8 @@ class AzureWAFClient:
                 res.append(
                     self.http_request(
                         method='GET',
-                        full_url=f'{base_url}/{POLICY_PATH}?api-version={API_VERSION}'
+                        full_url=f'{base_url}/{POLICY_PATH}',
+                        params={'api-version': API_VERSION}
                     )
                 )
             except Exception as e:
@@ -142,9 +144,9 @@ class AzureWAFClient:
                 res.append(
                     self.http_request(
                         method='PUT',
-                        full_url=f'{base_url}/resourceGroups/{resource_group_name}/{POLICY_PATH}/{policy_name}?api-version=\
-{API_VERSION}',
-                        data=data
+                        full_url=f'{base_url}/resourceGroups/{resource_group_name}/{POLICY_PATH}/{policy_name}',
+                        data=data,
+                        params={'api-version': API_VERSION}
                     )
                 )
             except Exception as e:
@@ -163,18 +165,24 @@ class AzureWAFClient:
         return self.http_request(
             method='GET',
             return_empty_response=True,
-            full_url=f'{BASE_URL}/subscriptions?api-version={API_VERSION}'
+            full_url=f'{BASE_URL}/subscriptions',
+            params={'api-version': API_VERSION}
         )
 
-    def resource_group_list(self, subscription_id, tag, limit) -> dict:
+    def resource_group_list(self, subscription_id: str, tag: str, limit: int) -> dict:
         base_url = f'{BASE_URL}/subscriptions/{subscription_id}'
-        full_url = f'{base_url}/resourcegroups?$top={limit}'
-        if tag:
-            full_url += f'{full_url}&$filter={tag}'
+        full_url = f'{base_url}/resourcegroups'
+        params = {
+            '$top': limit,
+            'api-version': API_VERSION
+        }
+        if (tag):
+            params['$filter'] = tag
         return self.http_request(
             method='GET',
             return_empty_response=True,
-            full_url=f'{full_url}&api-version={API_VERSION}'
+            full_url=full_url,
+            params=params
         )
 
 
@@ -257,7 +265,7 @@ def policies_get_list_by_subscription_command(client: AzureWAFClient, **args) ->
 
 def policy_upsert_command(client: AzureWAFClient, **args) -> CommandResults:
     """
-    Gets a policy name, resource group (or taking instance's default), location,
+    Gets a policy name, resource groups (or taking instance's default), location,
     subscription id (or taking instance's default) and rules.
     Updates the policy if exists, otherwise creates a new policy.
     """
