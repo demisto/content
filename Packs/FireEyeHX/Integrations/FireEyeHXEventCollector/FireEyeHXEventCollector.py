@@ -2,7 +2,6 @@ import demistomock as demisto
 import urllib3
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
-from typing import Dict, Tuple
 
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
@@ -114,19 +113,12 @@ def get_events_command(
     Fetches events from the fireeye and return them to the war-room.
     """
 
-    events = fetch_events(
-        client=client, max_fetch=max_fetch, first_fetch=first_fetch)
+    events = fetch_events(client=client, max_fetch=max_fetch, first_fetch=first_fetch,
+                          should_push_events=should_push_events)
 
     if not events:
         return 'No events were found.'
 
-    if should_push_events:
-        demisto.info(f'sending the following amount of events into XSIAM: {len(events)}')
-        send_events_to_xsiam(
-            events=events,
-            vendor=VENDOR,
-            product=PRODUCT
-        )
     return CommandResults(
         readable_output=tableToMarkdown(
             'FireEye HX events',
@@ -141,8 +133,9 @@ def get_events_command(
 
 
 def fetch_events(
-    client: Client, max_fetch: str, first_fetch: str, resolution: str = None, min_id: str = None
-) -> List[Dict]:
+    client: Client, max_fetch: str, first_fetch: str, resolution: str = None, min_id: str = None,
+        should_push_events=True
+) -> list:
     """
     Fetches events from fireye.
     """
@@ -160,6 +153,22 @@ def fetch_events(
     fetched_events = response.get('data', {}).get('entries', [])
     demisto.info(f'fetched events length: ({len(fetched_events)})')
 
+    if not should_push_events:
+        return fetched_events
+
+    if fetched_events:
+        last_alert: dict = fetched_events[-1]
+        demisto.setLastRun({'last_alert_id': str(last_alert.get('_id')),
+                            'last_alert_time': last_alert.get('event_at')})
+    try:
+        demisto.info(f'sending the following amount of events into XSIAM: {len(fetched_events)}')
+        send_events_to_xsiam(
+            events=fetched_events,
+            vendor=VENDOR,
+            product=PRODUCT
+        )
+    except Exception as e:
+        demisto.info(f'got error when trying to send events to XSIAM: [{e}]')
 
     return fetched_events
 
@@ -182,7 +191,7 @@ def main() -> None:  # pragma: no cover
     if last_run.get('last_alert_time'):
         last_fetch = last_run.get('last_alert_time')
     else:
-        first_fetch = params.get("first_fetch") if params.get("first_fetch") else "3 days"
+        first_fetch = params.get("first_fetch") or "3 days"
         last_fetch = arg_to_datetime(first_fetch).strftime(DATE_FORMAT)  # type: ignore[union-attr]
 
     command = demisto.command()
@@ -198,25 +207,10 @@ def main() -> None:  # pragma: no cover
         if command == 'test-module':
             return_results(test_module(client))
         elif command == 'fetch-events':
-            events = fetch_events(
-                client=client, max_fetch=max_fetch, first_fetch=last_fetch, resolution=resolution,
-                min_id=last_run.get('last_alert_id'))
-
-            if events:
-                last_alert: dict = events[-1]
-                demisto.setLastRun({'last_alert_id': str(last_alert.get('_id')),
-                                    'last_alert_time': last_alert.get('event_at')})
-            try:
-                demisto.info(f'sending the following amount of events into XSIAM: {len(events)}')
-                send_events_to_xsiam(
-                    events=events,
-                    vendor=VENDOR,
-                    product=PRODUCT
-                )
-            except Exception as e:
-                demisto.info(f'got error when trying to send events to XSIAM: [{e}]')
+            fetch_events(client=client, max_fetch=max_fetch, first_fetch=last_fetch, resolution=resolution,
+                         min_id=last_run.get('last_alert_id'))
         elif command == 'fireeye-hx-get-events':
-            since = args.get("since") if args.get("since") else "3 days"
+            since = args.get("since") or "3 days"
             first_fetch = arg_to_datetime(since).strftime(DATE_FORMAT)  # type: ignore[union-attr]
             return_results(get_events_command(client, max_fetch=max_fetch, first_fetch=first_fetch,
                                               should_push_events=should_push_events))
