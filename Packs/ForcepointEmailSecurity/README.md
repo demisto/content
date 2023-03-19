@@ -10,7 +10,7 @@ From the Forcepoint Security Manager, follow these instructions;
    3.1. At **IP address or hostname**, enter the relevant IP address or hostname.
    3.2. At **Port**, enter the relevant Port number.
    3.3. From the **Transport protocol** section, enter the relevant protocol (**UDP**).
-   3.4. From the **SIEM format** pull-down menu, enter the relevant format (**syslog/CEF**).
+   d. From the **SIEM format** dropdown menu, enter the relevant format (**syslog/CEF**).
    3.5. Confirm configuration by clicking on **Send Test Message**
    * Click on **OK** once you are done.
 
