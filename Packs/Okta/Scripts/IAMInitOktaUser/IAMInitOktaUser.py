@@ -24,6 +24,7 @@ def main():
     min_symbols = args.get("min_symbols", 0)
     max_symbols = args.get("max_symbols", 10)
     password = None
+    on_time_password = argToBoolean(args.get('on_time_password', False))
 
     try:
         # Generate a random password
@@ -55,7 +56,8 @@ def main():
             # Set args for setting the new passsword
             okta_set_pwd_args = {
                 'username': username,
-                'password': password
+                'password': password,
+                'on_time_password': on_time_password
             }
 
             # Set args for activating the user

@@ -165,6 +165,13 @@ script:
       default: false
       isArray: false
       secret: false
+    - auto: PREDEFINED
+      description: Whether to create a one-time password or not.
+      name: on_time_password
+      defaultValue: 'false'
+      predefined:
+      - 'true'
+      - 'false'
     description: Sets passwords without validating existing user credentials.
     execution: true
     name: okta-set-password
