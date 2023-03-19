@@ -797,9 +797,8 @@ def set_password_command(client, args):
         readable_output = f"The temporary password for {args.get('username')} is: {raw_response.get('tempPassword')}"
     else:
         raw_response = client.set_password(user_id, password)
-        readable_output = f"{args.get('username')} password was last changed on {raw_response.get('passwordChanged')}"
- 
-        
+        readable_output = f"{args.get('username')} password was last changed on {raw_response.get('passwordChanged')}" 
+
     return (
         readable_output,
         {},
