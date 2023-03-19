@@ -1,7 +1,6 @@
 from unittest.mock import Mock
 import demistomock as demisto
 
-import json
 
 MOCK_URL = "http://123-fake-api.com"
 MOCK_API_URL = MOCK_URL + "/api"
