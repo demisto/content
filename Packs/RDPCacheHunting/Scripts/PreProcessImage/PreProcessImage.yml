@@ -8,9 +8,15 @@ args:
   - original
   required: true
 - default: false
-  description: Dimensions for resize to.
+  description: The desired width for resizing the image to.
   isArray: false
-  name: image_resize
+  name: image_resize_width
+  required: false
+  secret: false
+- default: false
+  description: The desired height for resizing the image to.
+  isArray: false
+  name: image_resize_height
   required: false
   secret: false
 - default: false
