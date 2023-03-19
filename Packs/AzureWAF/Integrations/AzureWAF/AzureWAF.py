@@ -200,7 +200,8 @@ def complete_auth(client: AzureWAFClient):
 
 def policies_get_command(client: AzureWAFClient, **args) -> CommandResults:
     """
-    Gets resource group name (or taking instance's default one) and policy name(optional).
+    Gets resource group name (or taking instance's default one), 
+    subscription id (or taking instance's default one) and policy name(optional).
     If a policy name provided, Retrieve the policy by name and resource group.
     Otherwise, retrieves all policies within the resource group.
     """
@@ -240,7 +241,9 @@ def policies_get_list_by_subscription_command(client: AzureWAFClient, **args) ->
     subscription_ids = argToList(args.get('subscription_id', client.subscription_id))
 
     try:
-        policies.extend(client.get_policy_list_by_subscription_id(subscription_ids))
+        results = client.get_policy_list_by_subscription_id(subscription_ids)
+        for res in results:
+            policies.extend(res.get('value', []))
 
         # only showing number of policies until reaching the limit provided.
         policies_num = len(policies)
@@ -254,7 +257,8 @@ def policies_get_list_by_subscription_command(client: AzureWAFClient, **args) ->
 
 def policy_upsert_command(client: AzureWAFClient, **args) -> CommandResults:
     """
-    Gets a policy name, resource group (or taking instance's default), location and rules.
+    Gets a policy name, resource group (or taking instance's default), location,
+    subscription id (or taking instance's default) and rules.
     Updates the policy if exists, otherwise creates a new policy.
     """
 
@@ -300,7 +304,8 @@ def policy_upsert_command(client: AzureWAFClient, **args) -> CommandResults:
 
 def policy_delete_command(client: AzureWAFClient, **args):
     """
-    Gets a policy name and resource group (or taking instance's default)
+    Gets a policy name, resource group (or taking instance's default)
+    and subscription id (or taking instance's default)
     and delete the policy from the resource group.
     """
     policy_name = str(args.get('policy_name', ''))
