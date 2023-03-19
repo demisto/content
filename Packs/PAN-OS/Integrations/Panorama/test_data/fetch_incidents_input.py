@@ -142,3 +142,11 @@ case_valid_input = (
           'type': 'X_log_type'}]})
 
 get_parsed_incident_entries_args = [case_no_incidents, case_valid_input]
+
+# test_get_query_entries_by_id_request
+valid_response = {'response': {'result': {'job': {'status': 'FIN'}}}}
+invalid_response = {'response': {'result': {'job': {'status': 'RUN'}}}}
+case_job_finished = (valid_response, 'Job ID 000, response status: FIN', valid_response)
+case_job_not_finished = (invalid_response, 'try_num=1. Job not completed, Retrying in 1 second...', {})
+
+get_query_entries_by_id_request_args = [case_job_finished, case_job_not_finished]
