@@ -23,8 +23,13 @@ args:
   description: The Okta username of the user.
 - name: displayname
   description: The display name of the employee.
-- name: on_time_password
+- auto: PREDEFINED
+  name: one_time_password
   description: Whether to create a one-time password or not.
+  defaultValue: 'false'
+  predefined:
+    - 'true'
+    - 'false'
 - name: to_email
   required: true
   description: The email address that the password will be sent to.

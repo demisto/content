@@ -259,7 +259,7 @@ Sets passwords without validating existing user credentials.
 | --- | --- | --- |
 | username | Okta username for which to set the password. | Required | 
 | password | The new password to set for the user. | Required | 
-| on_time_password | The display name of the employee. | Optional | 
+| one_time_password | The display name of the employee. | Optional | 
 
 
 #### Context Output

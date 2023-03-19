@@ -167,7 +167,7 @@ script:
       secret: false
     - auto: PREDEFINED
       description: Whether to create a one-time password or not.
-      name: on_time_password
+      name: one_time_password
       defaultValue: 'false'
       predefined:
       - 'true'
