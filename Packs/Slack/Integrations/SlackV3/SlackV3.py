@@ -114,6 +114,10 @@ def test_module():
     if not DEDICATED_CHANNEL and len(CUSTOM_PERMITTED_NOTIFICATION_TYPES) > 0:
         return_error(
             "When 'Types of Notifications to Send' is populated, a dedicated channel is required.")
+    if not BOT_TOKEN.startswith("xoxb"):
+        return_error("Invalid Bot Token.")
+    if not APP_TOKEN.startswith("xapp"):
+        return_error("Invalid App Token.")
     elif not DEDICATED_CHANNEL and len(CUSTOM_PERMITTED_NOTIFICATION_TYPES) == 0:
         CLIENT.auth_test()  # type: ignore
     else:
