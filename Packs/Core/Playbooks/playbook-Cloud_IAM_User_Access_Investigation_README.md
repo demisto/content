@@ -21,7 +21,7 @@ CortexCoreIR
 
 ### Scripts
 
-* LoadJSON
+LoadJSON
 
 ### Commands
 
