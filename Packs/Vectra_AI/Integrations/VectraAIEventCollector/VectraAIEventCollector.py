@@ -133,9 +133,13 @@ def add_parsing_rules(event: Dict[str, Any]) -> Any:
     try:
         # Process detection
         if DETECTION_TIMESTAMP_KEY in event:
-            event[XSIAM_PARSING_RULES[0]] = datetime.strptime(
-                event.get(DETECTION_TIMESTAMP_KEY), DETECTION_TIMESTAMP_FORMAT  # type: ignore
-            ).strftime(XSIAM_TIME_FORMAT)
+            event[XSIAM_PARSING_RULES[0]] = timestamp_to_datestring(
+                datetime.strptime(
+                    event.get(DETECTION_TIMESTAMP_KEY), DETECTION_TIMESTAMP_FORMAT  # type: ignore
+                ).timestamp()
+                * 1000
+            )
+
         # Process Audit
         else:
             event[XSIAM_PARSING_RULES[0]] = timestamp_to_datestring(
@@ -324,7 +328,7 @@ def fetch_events_cmd(client) -> None:
 
     parsed_events: List[Dict[str, Any]] = []
 
-    demisto.info("Adding parsing rules to events...")
+    demisto.info(f"Attempting to add parsing rules [{','.join(XSIAM_PARSING_RULES)}] to event...")
     for event in detections + audits:
         parsed_events.append(add_parsing_rules(event))
     demisto.info("Finished adding parsing rules.")
@@ -496,7 +500,9 @@ def main() -> None:  # pragma: no cover
 
                     parsed_events: List[Dict[str, Any]] = []
 
-                    demisto.info("Adding parsing rules to events...")
+                    demisto.info(
+                        f"Attempting to add parsing rules {','.join(XSIAM_PARSING_RULES)} to event..."
+                    )
                     for event in detections_cmd_res.outputs + audits_cmd_res.outputs:  # type: ignore
                         parsed_events.append(add_parsing_rules(event))
                     demisto.info("Finished adding parsing rules.")
