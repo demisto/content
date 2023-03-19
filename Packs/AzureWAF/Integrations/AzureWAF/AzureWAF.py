@@ -237,7 +237,7 @@ def policies_get_list_by_subscription_command(client: AzureWAFClient, **args) ->
     policies: list[dict] = []
     verbose = args.get("verbose", "false") == "true"
     limit = int(str(args.get("limit", '10')))
-    subscription_ids = argToList(args.get('subscription_id', ''))
+    subscription_ids = argToList(args.get('subscription_id', client.subscription_id))
 
     try:
         policies.extend(client.get_policy_list_by_subscription_id(subscription_ids))
