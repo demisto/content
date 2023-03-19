@@ -236,7 +236,7 @@ def policies_get_list_by_subscription_command(client: AzureWAFClient, **args) ->
     """
     policies: list[dict] = []
     verbose = args.get("verbose", "false") == "true"
-    limit = int(str(args.get("limit", '20')))
+    limit = int(str(args.get("limit", '10')))
     subscription_ids = argToList(args.get('subscription_id', ''))
 
     try:
@@ -367,7 +367,7 @@ def policies_to_markdown(policies: list[dict], verbose: bool = False, limit: int
         """
         short_md = ''
         try:
-            policy_data.pop('properties')
+            policy_data.pop('properties', {})
             policy_for_md = {}
             for key in policy_data:
                 policy_for_md[key] = policy_data[key]
@@ -382,7 +382,7 @@ def policies_to_markdown(policies: list[dict], verbose: bool = False, limit: int
 
     md = ""
     if not policies:
-        return "No policies was found."
+        return "No policies were found."
 
     policies_num = len(policies)
     policies = policies[:min(limit, policies_num)]
