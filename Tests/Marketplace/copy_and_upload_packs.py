@@ -76,25 +76,23 @@ def copy_index(index_folder_path: str, build_index_blob: Blob, build_index_gener
         prod_index_json_blob.cache_control = "no-cache,max-age=0"
 
         if build_current_index_generation == build_index_generation:
-            copied_index = build_bucket.copy_blob(
-                blob=build_index_blob, destination_bucket=production_bucket, new_name=prod_index_storage_path
-            )
-            if copied_index.exists():
-                logging.success(f"Finished uploading {GCPConfig.INDEX_NAME}.zip to storage.")
-            else:
-                logging.error("Failed copying index.zip from build index - blob does not exist.")
-                sys.exit(1)
-            copied_index_json_blob = build_bucket.blob(
-                os.path.join(build_bucket_base_path, f"{GCPConfig.INDEX_NAME}.json")
-            )
-            copied_index_json = build_bucket.copy_blob(
-                blob=copied_index_json_blob, destination_bucket=production_bucket, new_name=prod_index_json_storage_path
-            )
-            if copied_index_json.exists():
-                logging.success(f"Finished uploading {GCPConfig.INDEX_NAME}.json to storage.")
-            else:
-                logging.error("Failed copying index.json from build index - blob does not exist.")
-                sys.exit(1)
+            # copy index.zip from build to prod
+            index_name = f'{GCPConfig.INDEX_NAME}.zip'
+            copy_from_build_to_prod(build_bucket=build_bucket, build_index_blob=build_index_blob,
+                                    production_bucket=production_bucket, prod_index_storage_path=prod_index_storage_path,
+                                    name=index_name)
+            # copy index.json from build to prod
+            index_json_name = f"{GCPConfig.INDEX_NAME}.json"
+            build_index_json_blob = build_bucket.blob(os.path.join(build_bucket_base_path, index_json_name))
+            copy_from_build_to_prod(build_bucket=build_bucket, build_index_blob=build_index_json_blob,
+                                    production_bucket=production_bucket, prod_index_storage_path=prod_index_storage_path,
+                                    name=index_json_name)
+            # copy index_v2.zip from build to prod
+            index_v2_name = f'{GCPConfig.INDEX_V2_NAME}.zip'
+            build_index_v2_blob = build_bucket.blob(os.path.join(build_bucket_base_path, index_v2_name))
+            copy_from_build_to_prod(build_bucket=build_bucket, build_index_blob=build_index_v2_blob,
+                                    production_bucket=production_bucket, prod_index_storage_path=prod_index_storage_path,
+                                    name=index_v2_name)
         else:
             logging.error(f"Failed in uploading {GCPConfig.INDEX_NAME}, mismatch in index file generation")
             logging.error(f"Downloaded build index generation: {build_index_generation}")
@@ -105,6 +103,17 @@ def copy_index(index_folder_path: str, build_index_blob: Blob, build_index_gener
         sys.exit(1)
     finally:
         shutil.rmtree(index_folder_path)
+
+
+def copy_from_build_to_prod(build_bucket, build_index_blob, production_bucket, prod_index_storage_path, index_name):
+    copied_index = build_bucket.copy_blob(
+        blob=build_index_blob, destination_bucket=production_bucket, new_name=prod_index_storage_path
+    )
+    if copied_index.exists():
+        logging.success(f"Finished uploading {index_name} to storage.")
+    else:
+        logging.error("Failed copying index.zip from build index - blob does not exist.")
+        sys.exit(1)
 
 
 def upload_core_packs_config(production_bucket: Bucket, build_number: str, extract_destination_path: str,
