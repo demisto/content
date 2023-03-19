@@ -7,7 +7,7 @@ From the Forcepoint Security Manager, follow these instructions;
 1. Navigate to the page **Settings** > **General** > **SIEM Integration**.
 2. Select the checkbox **Enable SIEM integration for all email appliances**.
 3. Configure the following SIEM settings;
-   3.1. At **IP address or hostname**, enter the relevant IP address or hostname.
+   a. At **IP address or hostname**, enter the relevant IP address or hostname.
    3.2. At **Port**, enter the relevant Port number.
    3.3. From the **Transport protocol** section, enter the relevant protocol (**UDP**).
    d. From the **SIEM format** dropdown menu, enter the relevant format (**syslog/CEF**).
