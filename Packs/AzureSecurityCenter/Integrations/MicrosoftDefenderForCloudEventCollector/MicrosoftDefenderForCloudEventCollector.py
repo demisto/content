@@ -37,7 +37,7 @@ class MsClient:
         params = {'api-version': API_VERSION}
         return self.ms_client.http_request(method="GET", url_suffix=cmd_url, params=params)
 
-    def get_event_list(self, last_run) -> tuple:
+    def get_event_list(self, last_run) -> list:
         """Listing alerts
         Args:
             last_run (str): last run
@@ -52,26 +52,20 @@ class MsClient:
 
         curr_filtered_events = filter_out_previosly_digested_events(curr_events, last_run)
         if check_events_were_filtered_out(curr_events, curr_filtered_events):
-            if curr_filtered_events:
-                return curr_filtered_events, curr_filtered_events[0].get('properties', {}).get('startTimeUtc')
-            else:
-                return curr_filtered_events, last_run
+            return curr_filtered_events
 
         events.extend(curr_filtered_events)
 
         while nextLink := response.get('nextLink', None):
             response = self.ms_client.http_request(method="GET", full_url=nextLink)
             curr_events = response.get("value", [])
-            filter_out_previosly_digested_events(curr_events, last_run)
+            curr_filtered_events = filter_out_previosly_digested_events(curr_events, last_run)
             if check_events_were_filtered_out(curr_events, curr_filtered_events):
                 events.extend(curr_filtered_events)
                 break
             events.extend(curr_filtered_events)
 
-        if events:
-            last_run = curr_filtered_events, curr_filtered_events[0].get('properties', {}).get('startTimeUtc')
-
-        return events, last_run
+        return events
 
 
 def filter_out_previosly_digested_events(events: list, last_run: str) -> list:
