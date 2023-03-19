@@ -898,7 +898,7 @@ inputs:
   value:
     simple: "False"
   required: false
-  description: Whether to close alerts automatically as a false positive (True/False).
+  description: Whether to close alerts automatically as a false positive. (True/False).
   playbookInputQuery:
 outputs: []
 tests:
