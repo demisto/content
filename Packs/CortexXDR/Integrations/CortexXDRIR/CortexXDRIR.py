@@ -637,9 +637,16 @@ def get_incident_extra_data_command(client, args):
     account_context_output = assign_params(**{
         'Username': incident.get('users', '')
     })
-    endpoint_context_output = assign_params(**{
-        'Hostname': incident.get('hosts', '')
-    })
+    endpoint_context_output = []
+    if hosts := incident.get('hosts'):
+        for host in hosts:
+            host_name, agent_id = host.split(':')
+            endpoint_context_output.append(
+                {
+                    'Hostname': host_name,
+                    'ID': agent_id
+                }
+            )
 
     context_output = {f'{INTEGRATION_CONTEXT_BRAND}.Incident(val.incident_id==obj.incident_id)': incident}
     if account_context_output:

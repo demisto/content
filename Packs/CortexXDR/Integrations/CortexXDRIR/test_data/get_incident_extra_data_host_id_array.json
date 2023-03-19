@@ -21,7 +21,8 @@
             "manual_severity": null,
             "manual_description": null,
             "xdr_url": "https://demisto.hello.com/incident-view/1",
-            "starred": false
+            "starred": false,
+            "hosts": ["AAAAAA:1234"]
         },
         "alerts": {
             "total_count": 1,
