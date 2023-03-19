@@ -94,7 +94,7 @@ def test_get_array_policy_with_exception(mocker):
     }
     expected_results = {
         "method": "GET",
-        "full_url": f"https://management.azure.com/subscriptions/sub1/resourceGroups/res2/providers/Microsoft.Network/\
+        "full_url": "https://management.azure.com/subscriptions/sub1/resourceGroups/res2/providers/Microsoft.Network/\
 ApplicationGatewayWebApplicationFirewallPolicies/pol1",
         "params": {"api-version": API_VERSION}
     }
@@ -200,7 +200,7 @@ def test_policy_array_group_names_upsert_request(mocker):
     }
     expected_results = {
         "method": "PUT",
-        "full_url": f"https://management.azure.com/subscriptions/test/resourceGroups/res2/providers/Microsoft.Network/\
+        "full_url": "https://management.azure.com/subscriptions/test/resourceGroups/res2/providers/Microsoft.Network/\
 ApplicationGatewayWebApplicationFirewallPolicies/pol1",
         "params": {"api-version": API_VERSION},
         "body": {

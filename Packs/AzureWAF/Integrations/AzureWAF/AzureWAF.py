@@ -208,7 +208,7 @@ def complete_auth(client: AzureWAFClient):
 
 def policies_get_command(client: AzureWAFClient, **args) -> CommandResults:
     """
-    Gets resource group name (or taking instance's default one), 
+    Gets resource group name (or taking instance's default one),
     subscription id (or taking instance's default one) and policy name(optional).
     If a policy name provided, Retrieve the policy by name and resource group.
     Otherwise, retrieves all policies within the resource group.
