@@ -25,6 +25,7 @@ def test_fetch_events(mocker):
     client = Client(BASE_URL, 'username', 'password', False, False)
     get_events_request_mock = mocker.patch.object(client, 'get_events_request', return_value=EVENTS_RES)
     send_events_mocker = mocker.patch('FireEyeHXEventCollector.send_events_to_xsiam')
+    demisto_set_last_run_mock = mocker.patch('demistomock.setLastRun')
 
     to_date = (datetime.now() + timedelta(days=1)).strftime(DATE_FORMAT)
     filter_query = '{"operator": "between", "arg": ["2023-02-01T11:21:12.135Z",' \
@@ -39,8 +40,8 @@ def test_fetch_events(mocker):
     assert send_events_mocker.call_args.kwargs['events'] == events
     assert send_events_mocker.call_args.kwargs['vendor'] == 'FireEye'
     assert send_events_mocker.call_args.kwargs['product'] == 'HX'
-    assert demisto.getLastRun()['last_alert_id'] == '3994'
-    assert demisto.getLastRun()['last_alert_time'] == '2023-02-01T11:21:12.135Z'
+    assert demisto_set_last_run_mock.call_args[0][0]['last_alert_id'] == '4001'
+    assert demisto_set_last_run_mock.call_args[0][0]['last_alert_time'] == '2023-03-14T21:27:51.199Z'
 
 
 def test_http_request_token_already_created(mocker):
