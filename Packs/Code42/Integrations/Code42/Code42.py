@@ -972,8 +972,8 @@ def highriskemployee_remove_risk_tags_command(client, args):
 
 @logger
 def securitydata_search_command(client, args):
-    v2_events = demisto.params().get("v2_events")
-    if v2_events:
+    file_events_version = demisto.incident()["CustomFields"].get("code42fileeventsversion", "1")
+    if file_events_version == "2":
         return_error("Integration has been configured for V2 file events, use '!code42-file-events-search' instead.")
     code42_security_data_context = []
     _json = args.get("json")
