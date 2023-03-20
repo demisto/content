@@ -13,6 +13,7 @@ urllib3.disable_warnings()
 
 VENDOR = 'AWS'
 PRODUCT = 'Security Hub'
+DEFAULT_MAX_RESULTS = 1000  # Default maximum number of results to fetch
 
 
 def get_events(client: boto3.client, start_time: datetime | None = None,
@@ -24,11 +25,10 @@ def get_events(client: boto3.client, start_time: datetime | None = None,
         client (boto3.client): Boto3 client to use.
         start_time (datetime | None, optional): Start time to fetch events from. Required if end_time is set.
         end_time (datetime | None, optional): Time to fetch events until. Defaults to current time.
-        limit (int): Maximum number of events to fetch. Can only be values between 0-100. Defaults to 0 (no limit).
+        limit (int): Maximum number of events to fetch. Defaults to 0 (no limit).
 
     Returns:
         tuple[list, CommandResults]: A tuple containing the events and the CommandResults object.
-
     """
     kwargs = {}
     _filters = {}
@@ -44,25 +44,30 @@ def get_events(client: boto3.client, start_time: datetime | None = None,
                 end_time.strftime('%Y-%m-%dT%H:%M:%SZ') if end_time else datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ')
         }]
 
-    if limit:
-        kwargs['MaxResults'] = limit
-
     if _filters:
         # We send kwargs because passing Filters=None to get_findings() tries to use a None value for filters,
         # which raises an error.
         kwargs = {'Filters': _filters}
 
-    demisto.debug(f'Fetching events with kwargs:\n{kwargs}.')
-    response = client.get_findings(**kwargs)
-    events = response['Findings']
+    events = []
 
-    # When using MaxResults, the API still returns a NextToken if there are more results.
-    while 'NextToken' in response and (limit == 0 or len(events) < limit):
-        kwargs['NextToken'] = response['NextToken']
+    while True:
+        # The API only allows a maximum of 100 results per request.
+        if limit - len(events) < 100:
+            kwargs['MaxResults'] = limit
 
-        demisto.debug(f'Fetching additional events with kwargs:\n{kwargs}.')
+        else:
+            kwargs['MaxResults'] = 100
+
+        demisto.debug(f'Fetching events with kwargs:\n{kwargs}.')
         response = client.get_findings(**kwargs)
         events.extend(response['Findings'])
+
+        if 'NextToken' in response and (limit == 0 or len(events) < limit):
+            kwargs['NextToken'] = response['NextToken']
+
+        else:
+            break
 
     return events
 
@@ -98,19 +103,19 @@ def fetch_events(client: boto3.client, last_run: dict[str, int],
     return next_run, events
 
 
-def get_events_command(client: boto3.client, should_push_events: bool = False) -> CommandResults:
+def get_events_command(client: boto3.client, should_push_events: bool = False, limit: int = 0) -> CommandResults:
     """
     Fetch events from AWS Security Hub.
 
     Args:
         client (boto3.client): Boto3 client to use.
         should_push_events (bool, optional): Whether to push events to XSIAM. Defaults to False.
-
+        limit (int, optional): Maximum number of events to fetch. Defaults to 0 (no limit).
 
     Returns:
         CommandResults: CommandResults object containing the events.
     """
-    events = get_events(client)
+    events = get_events(client=client, limit=limit)
 
     if should_push_events:
         send_events_to_xsiam(
@@ -138,6 +143,8 @@ def main():
     verify_certificate = not params.get('insecure', True)
     timeout = params.get('timeout')
     retries = params.get('retries', 5)
+
+    limit: int = arg_to_number(params.get('max_fetch', DEFAULT_MAX_RESULTS))
 
     # How much time before the first fetch to retrieve events
     first_fetch_time: datetime.datetime = arg_to_datetime(
@@ -184,8 +191,8 @@ def main():
             return_results('ok')
 
         elif command == 'aws-securityhub-get-events':
-            should_push_events = argToBoolean(args.get('should_push_events'))
-            return_results(get_events_command(client=client, should_push_events=should_push_events))
+            should_push_events = argToBoolean(args.get('should_push_events', False))
+            return_results(get_events_command(client=client, should_push_events=should_push_events, limit=limit))
 
         elif command == 'fetch-events':
             next_run, events = fetch_events(

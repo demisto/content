@@ -55,6 +55,14 @@ configuration:
   type: 0
   section: Connect
   advanced: true
+- display: Max events per fetch
+  additionalinfo: The maximum number of events to retrieve for each event type (up to 10000 events). For more information about event types, see the help section.
+  defaultvalue: '1000'
+  name: max_fetch
+  required: false
+  type: 0
+  section: Collect
+  advanced: true
 - display: Timeout
   name: timeout
   additionalinfo: The time in seconds till a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If a connect timeout is not specified, a default of 10 second will be used.
