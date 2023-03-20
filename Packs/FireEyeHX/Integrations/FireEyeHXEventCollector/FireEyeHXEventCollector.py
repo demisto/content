@@ -153,6 +153,8 @@ def fetch_events(
     fetched_events = response.get('data', {}).get('entries', [])
     demisto.info(f'fetched events length: ({len(fetched_events)})')
 
+    populate_modeling_rule_fields(fetched_events)
+
     if not should_push_events:
         return fetched_events
 
@@ -171,6 +173,15 @@ def fetch_events(
         demisto.info(f'got error when trying to send events to XSIAM: [{e}]')
 
     return fetched_events
+
+
+def populate_modeling_rule_fields(events: list):
+    for event in events:
+        try:
+            event['_time'] = timestamp_to_datestring(arg_to_datetime(event.get('event_at')).timestamp() * 1000)
+        except TypeError:
+            # modeling rule will default on ingestion time if _time is missing
+            pass
 
 
 def main() -> None:  # pragma: no cover
