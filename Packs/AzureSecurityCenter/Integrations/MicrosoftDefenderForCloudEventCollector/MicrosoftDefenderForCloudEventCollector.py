@@ -2,7 +2,6 @@ import demistomock as demisto
 from CommonServerPython import *
 import urllib3
 from MicrosoftApiModule import *  # noqa: E402
-from datetime import datetime
 # Disable insecure warnings
 urllib3.disable_warnings()
 
@@ -68,10 +67,12 @@ class MsClient:
         return events
 
 
-def filter_out_previosly_digested_events(events: list, last_run: str) -> list:
+def filter_out_previosly_digested_events(events: list, last_run: dict) -> list:
     if not last_run:
         return events
-    return [event for event in events if event.get('properties', {}).get('startTimeUtc') > last_run]
+    events = [event for event in events if event.get('properties', {}).get(
+        'startTimeUtc') >= last_run.get('last_run') and event not in last_run.get('dup_digested_time_id', [])]
+    return events
 
 
 def check_events_were_filtered_out(events, filtered_events):
@@ -100,7 +101,7 @@ def get_events(client: MsClient, last_run: str, limit: int):
     events_list = client.get_event_list(last_run)
 
     if limit:
-        events_list = events_list[:limit]
+        events_list = events_list[-limit:]
 
     outputs = []
     for alert in events_list:
@@ -117,7 +118,7 @@ def get_events(client: MsClient, last_run: str, limit: int):
             )
 
     md = tableToMarkdown(
-        f"Microsft Defender For Cloud - List Alerts {limit} latests events",
+        "Microsft Defender For Cloud - List Alerts",
         outputs,
         [
             "DisplayName",
@@ -134,7 +135,7 @@ def get_events(client: MsClient, last_run: str, limit: int):
     return events_list, cr
 
 
-def find_next_run(events_list: list, last_run: str) -> str:
+def find_next_run(events_list: list, last_run: dict) -> dict:
     """
     Args:
         events (list): The list of events from the API call
@@ -147,15 +148,10 @@ def find_next_run(events_list: list, last_run: str) -> str:
         if events_list
         else last_run
     )
+    id_same_next_run_list = [event.get('id') for event in events_list if event.get(
+        'startTimeUtc') == next_run]
     demisto.info(f'Setting next run {next_run}.')
-    return next_run
-
-
-def sort_events(events: list) -> None:
-    """
-    Sorts the list inplace by the timeGeneratedUtc
-    """
-    return events.sort(reverse=True, key=lambda event: event.get('properties').get('startTimeUtc'))
+    return {'last_run': next_run, 'dup_digested_time_id': id_same_next_run_list}
 
 
 def fetch_events(client: MsClient, last_run: str) -> list:
@@ -223,7 +219,7 @@ def main() -> None:
                           server=server, verify=use_ssl, self_deployed=False, subscription_id=subscription_id,
                           ok_codes=ok_codes, certificate_thumbprint=certificate_thumbprint, private_key=private_key)
 
-        last_run = demisto.getLastRun().get('time', '')
+        last_run = demisto.getLastRun().get('last_run', '')
 
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
@@ -233,7 +229,7 @@ def main() -> None:
 
             if command == 'ms-defender-for-cloud-get-events':
                 limit = arg_to_number(args.get("limit", DEFAULT_LIMIT))
-                should_push_events = argToBoolean(args.pop('should_push_events'))
+                should_push_events = argToBoolean(args.pop('should_push_events', False))
                 events, results = get_events(client, last_run, limit=limit)  # type: ignore
                 return_results(results)
 
@@ -248,7 +244,7 @@ def main() -> None:
 
             if should_push_events:
                 # saves next_run for the time fetch-events is invoked
-                demisto.setLastRun({'time': find_next_run(events, last_run)})
+                demisto.setLastRun({'last_run': find_next_run(events, last_run)})
                 send_events_to_xsiam(
                     events,
                     vendor=VENDOR,
