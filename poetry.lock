@@ -571,7 +571,7 @@ pytest-freezegun = "^0.4.2"
 python-dotenv = "^0.20.0"
 requests = "^2.27.1"
 "ruamel.yaml" = "^0.17.21"
-slackclient = "^2.9.3"
+slack-sdk = "^3.17.0"
 tabulate = ">=0.8.9,<0.10.0"
 typed-ast = "^1.5.2"
 typer = {version = ">=0.6.1,<0.8.0", extras = ["all"]}
@@ -611,7 +611,7 @@ build = ["gsutil (==5.17)"]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
 reference = "ds-allowed-paths"
-resolved_reference = "2dc4f36f471eeae5db468959c7db5917e39eb204"
+resolved_reference = "c0dd8fefa426e3706b7401cfeff33d7104451b1f"
 
 [[package]]
 name = "deprecated"
