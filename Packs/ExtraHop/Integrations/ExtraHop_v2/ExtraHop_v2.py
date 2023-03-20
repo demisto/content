@@ -1426,7 +1426,8 @@ def fetch_extrahop_detections(client: ExtraHopClient, advanced_filter: Dict, las
             detections = append_participant_device_data(client, detections)
 
             for detection in detections.outputs:  # type: ignore
-                if detection.get("id") not in already_fetched:
+                detection_id = detection.get("id")
+                if detection_id not in already_fetched:
                     detection.update(get_mirroring())
                     incident = {
                         'name': str(detection["type"]),
@@ -1435,7 +1436,10 @@ def fetch_extrahop_detections(client: ExtraHopClient, advanced_filter: Dict, las
                         'rawJSON': json.dumps(detection)
                     }
                     incidents.append(incident)
-                    already_fetched.append(detection.get("id"))
+                    already_fetched.append(detection_id)
+
+                else:
+                    demisto.info(f"Extrahop already fetched detection with id: {detection_id}")
 
         if len(incidents) < advanced_filter["limit"]:
             offset = 0

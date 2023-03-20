@@ -257,7 +257,9 @@ tasks:
       id: 96034d09-a0ec-47e4-8e18-4a384745112f
       version: -1
       name: Does the detection have a playbook?
-      description: Check if the incoming detection has a specific playbook to run.
+      description: |-
+        Check if the incoming detection has a specific playbook to run.
+        The incident name here refers to the detection's type.
       type: condition
       iscommand: false
       brand: ""
@@ -277,7 +279,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: CVE-2019-0708
+              simple: CVE_2019_0708
     view: |-
       {
         "position": {
