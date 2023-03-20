@@ -1,7 +1,8 @@
 VMware Carbon Black EDR (formerly known as Carbon Black Response)
-This integration was integrated and tested with product version 6.2 of VMware Carbon Black EDR and based on API version 6.3+.
+This integration was integrated and tested with version xx of VMware Carbon Black EDR v2
 
 Some changes have been made that might affect your existing content. 
+If you are upgrading from a previous version of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-vmware-carbon-black-edr-v2).
 
 ## Configure VMware Carbon Black EDR v2 on Cortex XSOAR
 
@@ -24,17 +25,21 @@ Some changes have been made that might affect your existing content.
     | Use system proxy settings |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### cb-edr-processes-search
+
 ***
 Process search
-
 
 #### Base Command
 
 `cb-edr-processes-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -52,7 +57,6 @@ Process search
 | facet_field | facet field name to return. Multiple facet.field parameters can be specified in a query. Possible values are: process_md5, hostname, group, path_full, parent_name, process_name, host_type, hour_of_day, day_of_week, start, username_full. | Optional | 
 | limit | Return this many rows, 10 by default. | Optional | 
 | start | Start at this row, 0 by default. | Optional | 
-
 
 #### Context Output
 
@@ -75,7 +79,7 @@ Process search
 | CarbonBlackEDR.ProcessSearch.Results.hostname | String | The hostname of the computer for this process. | 
 | CarbonBlackEDR.ProcessSearch.Results.last_update | Date | The time of the most recently received event for this process in remote computer GMT time. | 
 | CarbonBlackEDR.ProcessSearch.Results.start | Date | The start time of the process in remote computer GMT time. | 
-| CarbonBlackEDR.ProcessSearch.Results.comms_ip | String | IP address that the Cb server received the events on. If the endpoint is behind a NAT,
+| CarbonBlackEDR.ProcessSearch.Results.comms_ip | Number | IP address that the Cb server received the events on. If the endpoint is behind a NAT,
 for example, this will be the external IP of the network the endpoint lives on. | 
 | CarbonBlackEDR.ProcessSearch.Results.regmod_count | Number | The count of registry modifications in this process. | 
 | CarbonBlackEDR.ProcessSearch.Results.interface_ip | Number | The IP address of the network interface\(s\) on the endpoint that generated the message. | 
@@ -99,127 +103,15 @@ for example, this will be the external IP of the network the endpoint lives on. 
 | CarbonBlackEDR.ProcessSearch.Results.childproc_count | Number | The count of child processes launched by this process. | 
 | CarbonBlackEDR.ProcessSearch.Results.unique_id | String | An internal CB process id combining of the process id and segment id. | 
 
-
-#### Command Example
-```!cb-edr-processes-search process_name=chrome.exe limit=2```
-
-#### Context Example
-```json
-{
-    "CarbonBlackEDR": {
-        "ProcessSearch": {
-            "Results": [
-                {
-                    "childproc_count": 0,
-                    "cmdline": "(unknown)",
-                    "comms_ip": 314169177,
-                    "crossproc_count": 0,
-                    "emet_config": "",
-                    "emet_count": 0,
-                    "filemod_count": 10,
-                    "filtering_known_dlls": false,
-                    "group": "default group",
-                    "host_type": "server",
-                    "hostname": "ec2amaz-l4c2okc",
-                    "id": "00000018-0000-164c-01d5-9ed472b33472",
-                    "interface_ip": -1407250960,
-                    "last_server_update": "2021-05-26T13:00:03.651Z",
-                    "last_update": "2021-05-26T12:51:30.227Z",
-                    "modload_count": 0,
-                    "netconn_count": 0,
-                    "os_type": "windows",
-                    "parent_id": "00000018-ffff-ffff-0000-000000000000",
-                    "parent_md5": "000000000000000000000000000000",
-                    "parent_name": "(unknown)",
-                    "parent_pid": -1,
-                    "parent_unique_id": "00000018-ffff-ffff-0000-000000000000-000000000001",
-                    "path": "c:\\program files (x86)\\google\\chrome\\application\\chrome.exe",
-                    "process_md5": "8698e468bc379e30383a72ce63da7972",
-                    "process_name": "chrome.exe",
-                    "process_pid": 5708,
-                    "processblock_count": 0,
-                    "regmod_count": 0,
-                    "segment_id": 1622034003651,
-                    "sensor_id": 24,
-                    "start": "2019-11-19T12:25:37.19Z",
-                    "terminated": false,
-                    "unique_id": "00000018-0000-164c-01d5-9ed472b33472-0179a8c2b6c3",
-                    "username": "EC2AMAZ-L4C2OKC\\Administrator",
-                    "watchlists": [
-                        {
-                            "segments_hit": [
-                                1622033757062
-                            ],
-                            "value": "2021-05-26T13:00:03.333Z",
-                            "wid": "1870"
-                        }
-                    ]
-                },
-                {
-                    "childproc_count": 0,
-                    "cmdline": "(unknown)",
-                    "comms_ip": 314169177,
-                    "crossproc_count": 0,
-                    "emet_config": "",
-                    "emet_count": 0,
-                    "filemod_count": 10,
-                    "filtering_known_dlls": false,
-                    "group": "default group",
-                    "host_type": "server",
-                    "hostname": "ec2amaz-l4c2okc",
-                    "id": "00000018-0000-164c-01d5-9ed472b33472",
-                    "interface_ip": -1407250960,
-                    "last_server_update": "2021-05-26T13:25:57.176Z",
-                    "last_update": "2021-05-26T13:21:30.216Z",
-                    "modload_count": 0,
-                    "netconn_count": 0,
-                    "os_type": "windows",
-                    "parent_id": "00000018-ffff-ffff-0000-000000000000",
-                    "parent_md5": "000000000000000000000000000000",
-                    "parent_name": "(unknown)",
-                    "parent_pid": -1,
-                    "parent_unique_id": "00000018-ffff-ffff-0000-000000000000-000000000001",
-                    "path": "c:\\program files (x86)\\google\\chrome\\application\\chrome.exe",
-                    "process_md5": "8698e468bc379e30383a72ce63da7972",
-                    "process_name": "chrome.exe",
-                    "process_pid": 5708,
-                    "processblock_count": 0,
-                    "regmod_count": 0,
-                    "segment_id": 1622035557173,
-                    "sensor_id": 24,
-                    "start": "2019-11-19T12:25:37.19Z",
-                    "terminated": false,
-                    "unique_id": "00000018-0000-164c-01d5-9ed472b33472-0179a8da6b35",
-                    "username": "EC2AMAZ-L4C2OKC\\Administrator"
-                }
-            ],
-            "Terms": [
-                "process_name:chrome.exe"
-            ],
-            "total_results": 3379
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->#### Carbon Black EDR - Process Search Results### 
->Showing 0 - 2 out of 3379 results.
->|Process Path|Process ID|Segment ID|Process md5|Process Name|Hostname|Process PID|Username|Last Update|Is Terminated|
->|---|---|---|---|---|---|---|---|---|---|
->| c:\program files (x86)\google\chrome\application\chrome.exe | 00000018-0000-164c-01d5-9ed472b33472 | 1622034003651 | 8698e468bc379e30383a72ce63da7972 | chrome.exe | ec2amaz-l4c2okc | 5708 | EC2AMAZ-L4C2OKC\Administrator | 2021-05-26T12:51:30.227Z | false |
->| c:\program files (x86)\google\chrome\application\chrome.exe | 00000018-0000-164c-01d5-9ed472b33472 | 1622035557173 | 8698e468bc379e30383a72ce63da7972 | chrome.exe | ec2amaz-l4c2okc | 5708 | EC2AMAZ-L4C2OKC\Administrator | 2021-05-26T13:21:30.216Z | false |
-
-
 ### cb-edr-process-get
+
 ***
 Gets basic process information for segment  of process.
-
 
 #### Base Command
 
 `cb-edr-process-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -227,7 +119,6 @@ Gets basic process information for segment  of process.
 | process_id | The internal CB process id; this is the id field in search results. | Required | 
 | segment_id | The process segment id, the segment_id field in search results. | Required | 
 | get_related | Whether to get sibling data for process. Possible values are: true, false. Default is false. | Optional | 
-
 
 #### Context Output
 
@@ -252,7 +143,7 @@ Gets basic process information for segment  of process.
 | CarbonBlackEDR.Process.process.hostname | String | The hostname of the computer for this process. | 
 | CarbonBlackEDR.Process.process.filemod_count | Number | The count of file modifications in this process. | 
 | CarbonBlackEDR.Process.process.start | Date | The start time of the process in remote computer GMT time. | 
-| CarbonBlackEDR.Process.process.comms_ip | String | IP address that the Cb server received the events on. If the endpoint is behind a NAT,
+| CarbonBlackEDR.Process.process.comms_ip | Number | IP address that the Cb server received the events on. If the endpoint is behind a NAT,
 for example, this will be the external IP of the network the endpoint lives on. | 
 | CarbonBlackEDR.Process.process.regmod_count | Number | The count of registry modifications in this process. | 
 | CarbonBlackEDR.Process.process.interface_ip | Number | The IP address of the network interface\(s\) on the endpoint that generated the message. | 
@@ -316,181 +207,21 @@ for example, this will be the external IP of the network the endpoint lives on. 
 | CarbonBlackEDR.Process.children.child_proc_type | String | The type of the host associated with the process. | 
 | CarbonBlackEDR.Process.children.unique_id | String | An internal CB process id combining of the child process id and segment id | 
 
-
-#### Command Example
-```!cb-edr-process-get get_related=true process_id="00000018-0000-164c-01d5-9ed472b33472" segment_id=1622034003651```
-
-#### Context Example
-```json
-{
-    "CarbonBlackEDR": {
-        "Process": {
-            "children": [
-                {
-                    "child_proc_type": "exec",
-                    "cmdline": "",
-                    "group": "default group",
-                    "host_type": "server",
-                    "hostname": "ec2amaz-l4c2okc",
-                    "id": "00000018-0000-040c-01d5-c6881466ccfd",
-                    "last_update": "2021-05-21T05:02:07.44Z",
-                    "os_type": "windows",
-                    "parent_id": "00000018-0000-164c-01d5-9ed472b33472",
-                    "parent_pid": 5708,
-                    "parent_unique_id": "00000018-0000-164c-01d5-9ed472b33472-000000000001",
-                    "path": "c:\\program files (x86)\\google\\chrome\\application\\chrome.exe",
-                    "process_md5": "8698e468bc379e30383a72ce63da7972",
-                    "process_name": "chrome.exe",
-                    "process_pid": 1036,
-                    "segment_id": 1621573543800,
-                    "sensor_id": 24,
-                    "start": "2020-01-09T00:59:43.743Z",
-                    "terminated": false,
-                    "uid": "S-1-5-21-2523591321-1041074104-504789541-500",
-                    "unique_id": "00000018-0000-040c-01d5-c6881466ccfd-01798d50a778",
-                    "username": "EC2AMAZ-L4C2OKC\\Administrator"
-                },
-                {
-                    "child_proc_type": "exec",
-                    "cmdline": "",
-                    "group": "default group",
-                    "host_type": "server",
-                    "hostname": "ec2amaz-l4c2okc",
-                    "id": "00000018-0000-083c-01d5-9ed472f57ab4",
-                    "last_update": "2021-05-21T05:02:07.222Z",
-                    "os_type": "windows",
-                    "parent_id": "00000018-0000-164c-01d5-9ed472b33472",
-                    "parent_pid": 5708,
-                    "parent_unique_id": "00000018-0000-164c-01d5-9ed472b33472-000000000001",
-                    "path": "c:\\program files (x86)\\google\\chrome\\application\\chrome.exe",
-                    "process_md5": "8698e468bc379e30383a72ce63da7972",
-                    "process_name": "chrome.exe",
-                    "process_pid": 2108,
-                    "segment_id": 1621573543800,
-                    "sensor_id": 24,
-                    "start": "2019-11-19T12:25:37.624Z",
-                    "terminated": false,
-                    "uid": "S-1-5-21-2523591321-1041074104-504789541-500",
-                    "unique_id": "00000018-0000-083c-01d5-9ed472f57ab4-01798d50a778",
-                    "username": "EC2AMAZ-L4C2OKC\\Administrator"
-                }
-            ],
-            "parent": {},
-            "process": {
-                "childproc_count": 0,
-                "cmdline": "",
-                "comms_ip": 314169177,
-                "crossproc_count": 0,
-                "emet_count": 0,
-                "filemod_count": 10,
-                "filtering_known_dlls": false,
-                "group": "default group",
-                "host_type": "server",
-                "hostname": "ec2amaz-l4c2okc",
-                "id": "00000018-0000-164c-01d5-9ed472b33472",
-                "interface_ip": -1407250960,
-                "last_server_update": "2021-05-26T13:00:03.651Z",
-                "last_update": "2021-05-26T12:51:30.227Z",
-                "max_last_server_update": "2021-05-26T13:00:03.651Z",
-                "max_last_update": "2021-05-26T12:51:30.227Z",
-                "min_last_server_update": "2021-05-26T13:00:03.651Z",
-                "min_last_update": "2021-05-26T12:51:30.227Z",
-                "modload_count": 0,
-                "netconn_count": 0,
-                "os_type": "windows",
-                "parent_id": "00000018-ffff-ffff-0000-000000000000",
-                "parent_pid": -1,
-                "parent_unique_id": "00000018-ffff-ffff-0000-000000000000-000000000001",
-                "path": "c:\\program files (x86)\\google\\chrome\\application\\chrome.exe",
-                "process_md5": "8698e468bc379e30383a72ce63da7972",
-                "process_name": "chrome.exe",
-                "process_pid": 5708,
-                "processblock_count": 0,
-                "ref_segment_id": [
-                    1622033757062
-                ],
-                "regmod_count": 0,
-                "segment_id": 1622034003651,
-                "sensor_id": 24,
-                "start": "2019-11-19T12:25:37.19Z",
-                "terminated": false,
-                "unique_id": "00000018-0000-164c-01d5-9ed472b33472-0179a8c2b6c3",
-                "username": "EC2AMAZ-L4C2OKC\\Administrator"
-            },
-            "siblings": [
-                {
-                    "child_proc_type": "exec",
-                    "cmdline": "",
-                    "group": "default group",
-                    "host_type": "server",
-                    "hostname": "ec2amaz-l4c2okc",
-                    "id": "00000018-0000-019c-01d7-61cc9c8a9b67",
-                    "last_update": "2021-06-15T13:06:08.907Z",
-                    "os_type": "windows",
-                    "parent_id": "00000018-ffff-ffff-0000-000000000000",
-                    "parent_pid": -1,
-                    "parent_unique_id": "00000018-ffff-ffff-0000-000000000000-000000000001",
-                    "process_pid": 412,
-                    "segment_id": 1623762407950,
-                    "sensor_id": 24,
-                    "start": "2021-06-15T09:55:45.827Z",
-                    "terminated": false,
-                    "unique_id": "00000018-0000-019c-01d7-61cc9c8a9b67-017a0fc8120e",
-                    "username": ""
-                },
-                {
-                    "child_proc_type": "exec",
-                    "cmdline": "",
-                    "group": "default group",
-                    "host_type": "server",
-                    "hostname": "ec2amaz-l4c2okc",
-                    "id": "00000018-0000-0228-01d5-9ed00a25b248",
-                    "last_update": "2021-05-21T05:02:03.425Z",
-                    "os_type": "windows",
-                    "parent_id": "00000018-ffff-ffff-0000-000000000000",
-                    "parent_pid": -1,
-                    "parent_unique_id": "00000018-ffff-ffff-0000-000000000000-000000000001",
-                    "path": "c:\\windows\\system32\\winlogon.exe",
-                    "process_md5": "e2908e2ded4c0dd15e81eef9087329d2",
-                    "process_name": "winlogon.exe",
-                    "process_pid": 552,
-                    "segment_id": 1621573543800,
-                    "sensor_id": 24,
-                    "start": "2019-11-19T11:54:03.792Z",
-                    "terminated": false,
-                    "uid": "S-1-5-18",
-                    "unique_id": "00000018-0000-0228-01d5-9ed00a25b248-01798d50a778",
-                    "username": "SYSTEM"
-                }
-            ]
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Carbon Black EDR - Process
->|Hostname|Is Terminated|Last Update|Process ID|Process Name|Process PID|Process Path|Process md5|Segment ID|Username|
->|---|---|---|---|---|---|---|---|---|---|
->| ec2amaz-l4c2okc | false | 2021-05-26T12:51:30.227Z | 00000018-0000-164c-01d5-9ed472b33472 | chrome.exe | 5708 | c:\program files (x86)\google\chrome\application\chrome.exe | 8698e468bc379e30383a72ce63da7972 | 1622034003651 | EC2AMAZ-L4C2OKC\Administrator |
-
-
 ### cb-edr-process-segments-get
+
 ***
 Gets segment data for a given process.
-
 
 #### Base Command
 
 `cb-edr-process-segments-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | process_id | The internal CB process id; this is the id field in search results. | Required | 
 | limit | The maximum amount of segments to be returned. Default is 50. | Optional | 
-
 
 #### Context Output
 
@@ -503,61 +234,15 @@ Gets segment data for a given process.
 | CarbonBlackEDR.ProcessSegments.unique_id | String | The full process ID \+ segment number associated with this event segment. | 
 | CarbonBlackEDR.ProcessSegments.last_update | Date | The last event \(represented in sensor date/time\) stored in this segment. | 
 
-
-#### Command Example
-```!cb-edr-process-segments-get process_id="00000018-0000-164c-01d5-9ed472b33472" limit=2```
-
-#### Context Example
-```json
-{
-    "CarbonBlackEDR": {
-        "ProcessSegments": [
-            {
-                "event_counts": {
-                    "filemod": 10
-                },
-                "last_server_update": "2021-05-20T12:55:42.042Z",
-                "last_update": "2021-05-20T12:51:27.7Z",
-                "unique_id": "00000018-0000-164c-01d5-9ed472b33472-017989d890d7"
-            },
-            {
-                "event_counts": {},
-                "last_server_update": "2021-05-20T13:00:03.484Z",
-                "last_update": "2021-05-20T12:51:27.7Z",
-                "unique_id": "00000018-0000-164c-01d5-9ed472b33472-017989dc8e17"
-            }
-        ]
-    }
-}
-```
-
-#### Human Readable Output
-
->[
->  {
->    "event_counts": {
->      "filemod": 10
->    },
->    "last_server_update": "2021-05-20T12:55:42.042Z",
->    "last_update": "2021-05-20T12:51:27.7Z",
->    "unique_id": "00000018-0000-164c-01d5-9ed472b33472-017989d890d7"
->  },
->  {
->    "event_counts": {},
->    "last_server_update": "2021-05-20T13:00:03.484Z",
->    "last_update": "2021-05-20T12:51:27.7Z",
->    "unique_id": "00000018-0000-164c-01d5-9ed472b33472-017989dc8e17"
->  }
->]
-
 ### cb-edr-sensor-installer-download
+
 ***
 Download a zip archive including a sensor installer for Windows, Mac OS X or Linux.
-
 
 #### Base Command
 
 `cb-edr-sensor-installer-download`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -565,26 +250,18 @@ Download a zip archive including a sensor installer for Windows, Mac OS X or Lin
 | os_type | Download a zip archive including a sensor installer for Windows, Mac OS X or Linux.<br/><br/>For Windows- A ZIP archive which includes a signed Windows EXE or MSI sensor installer and settings file<br/>For Mac OS X- A ZIP archive which includes a signed OSX PKG sensor installer and settings file<br/>For Linux- A compressed tarball (tar.gz) archive which includes a Linux sensor installer and settings file. Possible values are: windows_exe, windows_msi, osx, linux. | Required | 
 | group_id | An ID of a group related to sensors. | Required | 
 
-
 #### Context Output
 
 There is no context output for this command.
-
-#### Command Example
-``` ```
-
-#### Human Readable Output
-
-
-
 ### cb-edr-process-events-list
+
 ***
 Gets the events for the process with CB process id (process_id) and segment id (segment_id).
-
 
 #### Base Command
 
 `cb-edr-process-events-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -593,7 +270,6 @@ Gets the events for the process with CB process id (process_id) and segment id (
 | segment_id | The process segment id. This is the segment_id field in search results.<br/>If this is set to 0, the API will merge all segments in results. | Required | 
 | start | Return events starting with this offset.<br/>If not provided, offset will be 0 (returns events starting from the beginning). | Optional | 
 | count | How many events to fetch. | Optional | 
-
 
 #### Context Output
 
@@ -663,175 +339,51 @@ RemoteThread if remote thread creation; ProcessOpen if process handle open with 
 | CarbonBlackEDR.Events.childproc_count | Number | The count of child processes launched by this process. | 
 | CarbonBlackEDR.Events.unique_id | String | The unique_id of the Event. | 
 
-
-#### Command Example
-```!cb-edr-process-events-list process_id="00000018-0000-164c-01d5-9ed472b33472" segment_id=1622034003651 count=2```
-
-#### Context Example
-```json
-{
-    "CarbonBlackEDR": {
-        "Events": {
-            "binaries": {
-                "8698E468BC379E30383A72CE63DA7972": {
-                    "digsig_publisher": "Google LLC",
-                    "digsig_result": "Signed"
-                }
-            },
-            "childproc_count": 0,
-            "cmdline": "",
-            "comms_ip": 314169177,
-            "crossproc_count": 0,
-            "emet_count": 0,
-            "filemod_count": 10,
-            "filtering_known_dlls": false,
-            "group": "default group",
-            "host_type": "server",
-            "hostname": "ec2amaz-l4c2okc",
-            "id": "00000018-0000-164c-01d5-9ed472b33472",
-            "interface_ip": -1407250960,
-            "last_server_update": "2021-05-26T13:00:03.651Z",
-            "last_update": "2021-05-26T12:51:30.227Z",
-            "max_last_server_update": "2021-05-26T13:00:03.651Z",
-            "max_last_update": "2021-05-26T12:51:30.227Z",
-            "min_last_server_update": "2021-05-26T13:00:03.651Z",
-            "min_last_update": "2021-05-26T12:51:30.227Z",
-            "modload_count": 0,
-            "netconn_count": 0,
-            "os_type": "windows",
-            "parent_id": "00000018-ffff-ffff-0000-000000000000",
-            "parent_pid": -1,
-            "parent_unique_id": "00000018-ffff-ffff-0000-000000000000-000000000001",
-            "path": "c:\\program files (x86)\\google\\chrome\\application\\chrome.exe",
-            "process_md5": "8698e468bc379e30383a72ce63da7972",
-            "process_name": "chrome.exe",
-            "process_pid": 5708,
-            "processblock_count": 0,
-            "ref_segment_id": [
-                1622033757062
-            ],
-            "regmod_count": 0,
-            "segment_id": 1622034003651,
-            "sensor_id": 24,
-            "start": "2019-11-19T12:25:37.19Z",
-            "terminated": false,
-            "unique_id": "00000018-0000-164c-01d5-9ed472b33472-0179a8c2b6c3",
-            "username": "EC2AMAZ-L4C2OKC\\Administrator"
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->{
->  "binaries": {
->    "8698E468BC379E30383A72CE63DA7972": {
->      "digsig_publisher": "Google LLC",
->      "digsig_result": "Signed"
->    }
->  },
->  "childproc_count": 0,
->  "cmdline": "",
->  "comms_ip": 314169177,
->  "crossproc_count": 0,
->  "emet_count": 0,
->  "filemod_count": 10,
->  "filtering_known_dlls": false,
->  "group": "default group",
->  "host_type": "server",
->  "hostname": "ec2amaz-l4c2okc",
->  "id": "00000018-0000-164c-01d5-9ed472b33472",
->  "interface_ip": -1407250960,
->  "last_server_update": "2021-05-26T13:00:03.651Z",
->  "last_update": "2021-05-26T12:51:30.227Z",
->  "max_last_server_update": "2021-05-26T13:00:03.651Z",
->  "max_last_update": "2021-05-26T12:51:30.227Z",
->  "min_last_server_update": "2021-05-26T13:00:03.651Z",
->  "min_last_update": "2021-05-26T12:51:30.227Z",
->  "modload_count": 0,
->  "netconn_count": 0,
->  "os_type": "windows",
->  "parent_id": "00000018-ffff-ffff-0000-000000000000",
->  "parent_pid": -1,
->  "parent_unique_id": "00000018-ffff-ffff-0000-000000000000-000000000001",
->  "path": "c:\\program files (x86)\\google\\chrome\\application\\chrome.exe",
->  "process_md5": "8698e468bc379e30383a72ce63da7972",
->  "process_name": "chrome.exe",
->  "process_pid": 5708,
->  "processblock_count": 0,
->  "ref_segment_id": [
->    1622033757062
->  ],
->  "regmod_count": 0,
->  "segment_id": 1622034003651,
->  "sensor_id": 24,
->  "start": "2019-11-19T12:25:37.19Z",
->  "terminated": false,
->  "unique_id": "00000018-0000-164c-01d5-9ed472b33472-0179a8c2b6c3",
->  "username": "EC2AMAZ-L4C2OKC\\Administrator"
->}
-
 ### cb-edr-unquarantine-device
+
 ***
 Unquarantine the endpoint
-
 
 #### Base Command
 
 `cb-edr-unquarantine-device`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | sensor_id | The sensor ID to quarantine. | Required | 
 
-
 #### Context Output
 
 There is no context output for this command.
-
-#### Command Example
-```!cb-edr-unquarantine-device sensor_id=15```
-
-#### Human Readable Output
-
->Sensor was un-isolated successfully.
-
 ### cb-edr-quarantine-device
+
 ***
 Isolate the endpoint from the network
-
 
 #### Base Command
 
 `cb-edr-quarantine-device`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | sensor_id | The sensor ID to quarantine. | Required | 
 
-
 #### Context Output
 
 There is no context output for this command.
-
-#### Command Example
-```!cb-edr-quarantine-device sensor_id=15```
-
-#### Human Readable Output
-
->Sensor was isolated successfully.
-
 ### cb-edr-sensors-list
+
 ***
 List the CarbonBlack sensors
-
 
 #### Base Command
 
 `cb-edr-sensors-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -842,7 +394,6 @@ List the CarbonBlack sensors
 | inactive_filter_days |  only returns sensors that have been inactive for less than the specified number of days. | Optional | 
 | hostname | Returns the sensor registration(s) with matching hostname. | Optional | 
 | limit | The maximum amount of sensors to be returned. | Optional | 
-
 
 #### Context Output
 
@@ -861,7 +412,10 @@ List the CarbonBlack sensors
 | CarbonBlackEDR.Sensor.build_id | Number | The sensor version installed on this endpoint. From the /api/builds/ endpoint. | 
 | CarbonBlackEDR.Sensor.uptime | String | Endpoint uptime in seconds. | 
 | CarbonBlackEDR.Sensor.is_isolating | Boolean | Boolean representing sensor-reported isolation status. | 
-| CarbonBlackEDR.Sensor.event_log_flush_time | Date | If event_log_flush_time is set, the server will instruct the sensor to immediately send all data before this date, ignoring all other throttling mechansims. To force a host current, set this value to a value far in the future. When the sensor has finished sending its queued data, this value will be null. | 
+| CarbonBlackEDR.Sensor.event_log_flush_time | Date | If event_log_flush_time is set, the server will instruct the sensor to immediately
+send all data before this date, ignoring all other throttling mechansims.
+To force a host current, set this value to a value far in the future.
+When the sensor has finished sending it’s queued data, this value will be null. | 
 | CarbonBlackEDR.Sensor.computer_dns_name | String | The DNS name of the endpoint on which the sensor is installed. | 
 | CarbonBlackEDR.Sensor.emet_report_setting | String | The report setting of EMET associated with sensor. | 
 | CarbonBlackEDR.Sensor.id | Number | The sensor id of this sensor. | 
@@ -899,170 +453,33 @@ List the CarbonBlack sensors
 | CarbonBlackEDR.Sensor.display | Boolean | Deprecated. | 
 | CarbonBlackEDR.Sensor.uninstall | Boolean | when set, indicates sensor will be directed to uninstall on next checkin. | 
 
-
-#### Command Example
-```!cb-edr-sensors-list limit=2```
-
-#### Context Example
-```json
-{
-    "CarbonBlackEDR": {
-        "Sensor": [
-            {
-                "boot_id": "5",
-                "build_id": 2,
-                "build_version_string": "006.001.002.71109",
-                "clock_delta": "0",
-                "computer_dns_name": "WIN-SOSSKVTTQAB",
-                "computer_name": "WIN-SOSSKVTTQAB",
-                "computer_sid": "S-1-5-21-3953612773-3739516437-1294407085",
-                "cookie": 465121924,
-                "display": true,
-                "emet_dump_flags": "",
-                "emet_exploit_action": " (Locally configured)",
-                "emet_is_gpo": false,
-                "emet_process_count": 0,
-                "emet_report_setting": " (Locally configured)",
-                "emet_telemetry_path": "",
-                "emet_version": "",
-                "event_log_flush_time": null,
-                "group_id": 1,
-                "id": 15,
-                "is_isolating": false,
-                "last_checkin_time": "2021-06-20 13:46:07.891689+00:00",
-                "last_update": "2021-06-20 13:46:12.614699+00:00",
-                "license_expiration": "1990-01-01 00:00:00+00:00",
-                "network_adapters": "x.x.x.x,06d3d4a5ba28|",
-                "network_isolation_enabled": false,
-                "next_checkin_time": "2021-06-20 13:46:38.890886+00:00",
-                "node_id": 0,
-                "notes": null,
-                "num_eventlog_bytes": "0",
-                "num_storefiles_bytes": "0",
-                "os_environment_display_string": "Windows Server 2012 R2 Server Standard, 64-bit",
-                "os_environment_id": 1,
-                "os_type": 1,
-                "parity_host_id": "0",
-                "physical_memory_size": "1073332224",
-                "power_state": 0,
-                "registration_time": "2018-08-26 13:00:02.811470+00:00",
-                "restart_queued": false,
-                "sensor_health_message": "Svc Component Failure",
-                "sensor_health_status": 20,
-                "sensor_uptime": "50049182",
-                "shard_id": 0,
-                "status": "Online",
-                "supports_2nd_gen_modloads": false,
-                "supports_cblr": true,
-                "supports_isolation": true,
-                "systemvolume_free_size": "7761645568",
-                "systemvolume_total_size": "31843151872",
-                "uninstall": false,
-                "uninstalled": null,
-                "uptime": "83808602"
-            },
-            {
-                "boot_id": "1",
-                "build_id": 2,
-                "build_version_string": "006.001.002.71109",
-                "clock_delta": "0",
-                "computer_dns_name": "EC2AMAZ-L4C2OKC",
-                "computer_name": "EC2AMAZ-L4C2OKC",
-                "computer_sid": "S-1-5-21-2523591321-1041074104-504789541",
-                "cookie": 1176535804,
-                "display": true,
-                "emet_dump_flags": "",
-                "emet_exploit_action": " (Locally configured)",
-                "emet_is_gpo": false,
-                "emet_process_count": 0,
-                "emet_report_setting": " (GPO configured)",
-                "emet_telemetry_path": "",
-                "emet_version": "",
-                "event_log_flush_time": null,
-                "group_id": 1,
-                "id": 24,
-                "is_isolating": false,
-                "last_checkin_time": "2021-06-20 13:45:57.690995+00:00",
-                "last_update": "2021-06-20 13:46:02.824545+00:00",
-                "license_expiration": "1990-01-01 00:00:00+00:00",
-                "network_adapters": "x.x.x.x,0a02fe5a854e|",
-                "network_isolation_enabled": false,
-                "next_checkin_time": "2021-06-20 13:46:26.689805+00:00",
-                "node_id": 0,
-                "notes": null,
-                "num_eventlog_bytes": "0",
-                "num_storefiles_bytes": "0",
-                "os_environment_display_string": "Windows 10 Server Server Datacenter, 64-bit",
-                "os_environment_id": 5,
-                "os_type": 1,
-                "parity_host_id": "0",
-                "physical_memory_size": "4231622656",
-                "power_state": 0,
-                "registration_time": "2019-11-19 12:27:21.530043+00:00",
-                "restart_queued": false,
-                "sensor_health_message": "Elevated memory usage",
-                "sensor_health_status": 85,
-                "sensor_uptime": "42419698",
-                "shard_id": 0,
-                "status": "Online",
-                "supports_2nd_gen_modloads": false,
-                "supports_cblr": true,
-                "supports_isolation": true,
-                "systemvolume_free_size": "71386714112",
-                "systemvolume_total_size": "107372081152",
-                "uninstall": false,
-                "uninstalled": null,
-                "uptime": "50030889"
-            }
-        ]
-    }
-}
-```
-
-#### Human Readable Output
-
->### Carbon Black EDR - Sensors
->|Sensor Id|Computer Name|Status|Power State|Group ID|OS Version|Health Score|Is Isolating|Node Id|Sensor Version|IP Address/MAC Info|
->|---|---|---|---|---|---|---|---|---|---|---|
->| 15 | WIN-SOSSKVTTQAB | Online | 0 | 1 | 1 | 20 | false | 0 | 006.001.002.71109 | 06d3d4a5ba28 |
->| 24 | EC2AMAZ-L4C2OKC | Online | 0 | 1 | 1 | 85 | false | 0 | 006.001.002.71109 | 0a02fe5a854e |
->
->Showing 2 out of 24 results.
-
 ### cb-edr-watchlist-delete
+
 ***
 Delete a Watchlist that is specified using ID.
-
 
 #### Base Command
 
 `cb-edr-watchlist-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | Delete a watchlist in Carbon black Response. | Required | 
 
-
 #### Context Output
 
 There is no context output for this command.
-
-#### Command Example
-```!cb-edr-watchlist-delete id=2412```
-
-#### Human Readable Output
-
->success
-
 ### cb-edr-watchlist-update
+
 ***
 Updates a Watchlist that is specified using ID.
-
 
 #### Base Command
 
 `cb-edr-watchlist-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1072,54 +489,38 @@ Updates a Watchlist that is specified using ID.
 | description | A description of the update. | Optional | 
 | enabled | Whether the watchlist is enabled or not. | Optional | 
 
-
 #### Context Output
 
 There is no context output for this command.
-
-#### Command Example
-```!cb-edr-watchlist-update id=2406 description="example description" search_query=chrome.exe```
-
-#### Human Readable Output
-
->success
-
 ### cb-edr-watchlist-update-action
+
 ***
 Updates a Watchlist action that is specified using ID.
-
 
 #### Base Command
 
 `cb-edr-watchlist-update-action`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | The watchlist ID. | Required | 
-| action_type | Action type specified for the watchlist. Options are syslog, email and alert. | Required | 
-| enabled | Whether the watchlist is enabled or not. | Required | 
-
+| action_type | Action type specified for the watchlist. Options for action_type are syslog, email and alert. Possible values are: syslog, email, alert. | Required | 
+| enabled | Whether the watchlist is enabled or not. Possible values are: True, False. | Required | 
 
 #### Context Output
 
 There is no context output for this command.
-
-#### Command Example
-```!cb-edr-watchlist-update id=2406 action_type=alert enabled=True```
-
-#### Human Readable Output
-
->success
-
 ### cb-edr-watchlist-create
+
 ***
 Creates a new Watchlist within EDR,
-
 
 #### Base Command
 
 `cb-edr-watchlist-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1129,47 +530,27 @@ Creates a new Watchlist within EDR,
 | description | A description of the update. | Optional | 
 | index_type | the type of watchlist. Valid values are ‘modules’ and ‘events’ for binary and process watchlists, respectively. Deafult is 'events'. | Optional | 
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | CarbonBlackEDR.Watchlist.id | Number | An ID for the new watchlist | 
 
-
-#### Command Example
-```!cb-edr-watchlist-create name=example_name search_query=chrome.exe```
-
-#### Context Example
-```json
-{
-    "CarbonBlackEDR": {
-        "Watchlist": {
-            "id": 2414
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->Successfully created new watchlist with id 2414
-
 ### cb-edr-watchlists-list
+
 ***
 Retrieve watchlist in Carbon black Response.
-
 
 #### Base Command
 
 `cb-edr-watchlists-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | id | The watchlist ID. | Optional | 
 | limit | The maximum amount of watchlists to be returned. | Optional | 
-
 
 #### Context Output
 
@@ -1191,70 +572,15 @@ Valid values are ‘modules’ and ‘events’ for binary and process watchlist
 | CarbonBlackEDR.Watchlist.last_hit | Date | A timestamp of the last time this watchlist triggered a match. | 
 | CarbonBlackEDR.Watchlist.name | String | The name of this watchlist. | 
 
-
-#### Command Example
-```!cb-edr-watchlists-list limit=2```
-
-#### Context Example
-```json
-{
-    "CarbonBlackEDR": {
-        "Watchlist": [
-            {
-                "date_added": "2019-03-27 13:15:10.858750+00:00",
-                "description": "updating description for playbook test.",
-                "enabled": true,
-                "group_id": -1,
-                "id": "1870",
-                "index_type": "events",
-                "last_hit": "2021-06-03 11:20:04.064133+00:00",
-                "last_hit_count": 1,
-                "name": "chrome",
-                "readonly": false,
-                "search_query": "chrome.exe",
-                "search_timestamp": "2021-06-03 11:20:03.732105",
-                "total_hits": "9071",
-                "total_tags": "5360"
-            },
-            {
-                "date_added": "2019-06-13 15:09:59.469919+00:00",
-                "description": "updating description for playbook test.",
-                "enabled": true,
-                "group_id": -1,
-                "id": "2163",
-                "index_type": "events",
-                "last_hit": "2021-04-04 11:40:05.832123+00:00",
-                "last_hit_count": 50,
-                "name": "Example-ipaddr:x.x.x.x",
-                "readonly": false,
-                "search_query": "chrome.exe",
-                "search_timestamp": "2021-06-03 11:20:03.732105",
-                "total_hits": "198",
-                "total_tags": "198"
-            }
-        ]
-    }
-}
-```
-
-#### Human Readable Output
-
->Carbon Black EDR - Watchlists### 
->Showing 2 out of 33 results.
->|Description|Group ID|ID|Name|Query|Total Hits|
->|---|---|---|---|---|---|
->| updating description for playbook test. | -1 | 1870 | chrome | chrome.exe | 9071 |
->| updating description for playbook test. | -1 | 2163 | David-ipaddr:x.x.x.x | chrome.exe | 198 |
-
-
 ### cb-edr-binary-ban
+
 ***
 Prevent execution of a specified md5 hash
-
 
 #### Base Command
 
 `cb-edr-binary-ban`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1265,32 +591,23 @@ Prevent execution of a specified md5 hash
 | ban_count | Total number of blocks on the banned list. | Optional | 
 | last_ban_host | Last hostname to block this hash. | Optional | 
 
-
 #### Context Output
 
 There is no context output for this command.
-
-#### Command Example
-```!cb-edr-binary-ban md5=0ea59cf80ef9703b3d92ca6b25426458 text=example```
-
-#### Human Readable Output
-
->Ban for md5 0ea59cf80ef9703b3d92ca6b25426458 already exists
-
 ### cb-edr-binary-bans-list
+
 ***
 Returns a list of banned hashes
-
 
 #### Base Command
 
 `cb-edr-binary-bans-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | limit | The maximum hashs of result to retrieve. | Required | 
-
 
 #### Context Output
 
@@ -1312,80 +629,16 @@ Returns a list of banned hashes
 | CarbonBlackEDR.BinaryBan.timestamp | String | The date and time the record was banned. | 
 | CarbonBlackEDR.BinaryBan.last_block_hostname | String | The last hostname to block this hash. | 
 
-
-#### Command Example
-```!cb-edr-binary-bans-list limit=2```
-
-#### Context Example
-```json
-{
-    "CarbonBlackEDR": {
-        "BinaryBan": [
-            {
-                "audit": [
-                    {
-                        "enabled": true,
-                        "text": "test",
-                        "timestamp": "2021-06-10 06:25:58.431602+00:00",
-                        "user_id": 1,
-                        "username": "admin"
-                    }
-                ],
-                "block_count": 0,
-                "enabled": true,
-                "last_block_hostname": null,
-                "last_block_sensor_id": null,
-                "last_block_time": null,
-                "md5hash": "0ea59cf80ef9703b3d92ca6b25426456",
-                "text": "test",
-                "timestamp": "2021-06-10 06:25:58.431602+00:00",
-                "user_id": 1,
-                "username": "admin"
-            },
-            {
-                "audit": [
-                    {
-                        "enabled": true,
-                        "text": "testing",
-                        "timestamp": "2021-05-25 11:41:56.151008+00:00",
-                        "user_id": 1,
-                        "username": "admin"
-                    }
-                ],
-                "block_count": 0,
-                "enabled": true,
-                "last_block_hostname": null,
-                "last_block_sensor_id": null,
-                "last_block_time": null,
-                "md5hash": "0ea59cf80ef9703b3d92ca6b25426458",
-                "text": "testing",
-                "timestamp": "2021-05-25 11:41:56.151008+00:00",
-                "user_id": 1,
-                "username": "admin"
-            }
-        ]
-    }
-}
-```
-
-#### Human Readable Output
-
->### Carbon Black EDR -Banned Hashes
->|Text|Timestamp|User ID|Username|md5|
->|---|---|---|---|---|
->| test | 2021-06-10 06:25:58.431602+00:00 | 1 | admin | 0ea59cf80ef9703b3d92ca6b25426456 |
->| testing | 2021-05-25 11:41:56.151008+00:00 | 1 | admin | 0ea59cf80ef9703b3d92ca6b25426458 |
-
-
 ### cb-edr-alert-update
+
 ***
 Alerts update and resolution.
 Updating Alerts requires an API key with Global Administrator privileges.
 
-
 #### Base Command
 
 `cb-edr-alert-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1395,26 +648,18 @@ Updating Alerts requires an API key with Global Administrator privileges.
 | set_ignored | Setting is_ignored to True for an Alert carries through to the threat report that generated the Alert. Any further hits on IOCs contained within that report will no longer trigger an Alert. Possible values are: true, false. | Optional | 
 | query | Advanced query string. Accepts the same data as the search box on the Process Search page. For more information on the query syntax see https://developer.carbonblack.com/resources/query_overview.pdf. If not provided, at least one other search field must be provided. | Optional | 
 
-
 #### Context Output
 
 There is no context output for this command.
-
-#### Command Example
-```!cb-edr-alert-update alert_ids=9f67733c-0632-4c55-bae0-985d9440c207 status=Unresolved```
-
-#### Human Readable Output
-
->Alert was updated successfully.
-
 ### cb-edr-alert-search
+
 ***
 Retrieve alerts from Carbon Black Response.
-
 
 #### Base Command
 
 `cb-edr-alert-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1428,7 +673,6 @@ Retrieve alerts from Carbon Black Response.
 | sort | Sort rows by this field and order. server_added_timestamp desc by default. | Optional | 
 | facet | Return facet results. 'false' by default, set to 'true' for facets. | Optional | 
 | limit | Maximum number of alerts to show, 10 by default. | Optional | 
-
 
 #### Context Output
 
@@ -1472,140 +716,25 @@ for example, this will be the external IP of the network the endpoint lives on. 
 | CarbonBlackEDR.Alert.Results.total_hosts | Number | The number of total host. | 
 | CarbonBlackEDR.Alert.Results.feed_id | Number | The id of the source feed. | 
 | CarbonBlackEDR.Alert.Results.ioc_value | String | The value of the resource. | 
-| CarbonBlackEDR.Alert.Results.os_type | String | The operating system type of the computer for this process; one of windows, linux, osx. | 
+| CarbonBlackEDR.Alert.Results.os_type | String | The operating system type of the computer for this process; one of Windows, Linux, OSX. | 
 | CarbonBlackEDR.Alert.Results.childproc_count | Number | The count of processes launched by this process. | 
 | CarbonBlackEDR.Alert.Results.unique_id | String | The unique_id of the alert. | 
 | CarbonBlackEDR.Alert.Results.feed_rating | Number | The rating of the Source feed. | 
 
-
-#### Command Example
-```!cb-edr-alert-search status=Unresolved limit=2```
-
-#### Context Example
-```json
-{
-    "CarbonBlackEDR": {
-        "Alert": {
-            "Results": [
-                {
-                    "_version_": 1594835491213017000,
-                    "alert_severity": 60.75,
-                    "alert_type": "watchlist.hit.ingress.process",
-                    "childproc_count": 0,
-                    "comms_ip": "x.x.x.x",
-                    "created_time": "2018-03-13T15:07:26.805Z",
-                    "crossproc_count": 0,
-                    "description": "Carbon Black Process Blocking",
-                    "feed_id": 3,
-                    "feed_name": "cbbanning",
-                    "feed_rating": 3,
-                    "filemod_count": 0,
-                    "group": "default group",
-                    "hostname": "win-sosskvttqab",
-                    "interface_ip": "x.x.x.x",
-                    "ioc_attr": "{\"hit_field_processblock\": true, \"hit_field_result\": \"NotTerminatedWhitelistedPath\", \"hit_field_md5\": \"e3a2ad05e24105b35e986cf9cb38ec47\", \"hit_field_path\": \"c:\\\\windows\\\\system32\\\\svchost.exe\"}",
-                    "ioc_confidence": 0.5,
-                    "ioc_type": "class",
-                    "ioc_value": "com.carbonblack.cbfs.ingress_search.detectors.SensorProtectionBlock$ProcessBlocking",
-                    "link": "https://www.carbonblack.com/cbfeeds/processbanningevents_feed.xhtml",
-                    "md5": "e3a2ad05e24105b35e986cf9cb38ec47",
-                    "modload_count": 0,
-                    "netconn_count": 1,
-                    "os_type": "windows",
-                    "process_id": "00000001-0000-0670-01d3-8a07a3ec10cf",
-                    "process_name": "svchost.exe",
-                    "process_path": "c:\\windows\\system32\\svchost.exe",
-                    "process_unique_id": "00000001-0000-0670-01d3-8a07a3ec10cf-01621fe6de82",
-                    "regmod_count": 0,
-                    "report_ignored": true,
-                    "report_score": 90,
-                    "segment_id": 1520953646722,
-                    "sensor_criticality": 3,
-                    "sensor_id": 1,
-                    "status": "Unresolved",
-                    "total_hosts": "2",
-                    "unique_id": "5d652495-cca6-4bca-9007-579a5ee984a2",
-                    "username": "NETWORK SERVICE",
-                    "watchlist_id": "process_blocking",
-                    "watchlist_name": "process_blocking"
-                },
-                {
-                    "_version_": 1594835491214065700,
-                    "alert_severity": 60.75,
-                    "alert_type": "watchlist.hit.ingress.process",
-                    "childproc_count": 0,
-                    "comms_ip": "x.x.x.x",
-                    "created_time": "2018-03-13T15:07:26.814Z",
-                    "crossproc_count": 0,
-                    "description": "Carbon Black Process Blocking",
-                    "feed_id": 3,
-                    "feed_name": "cbbanning",
-                    "feed_rating": 3,
-                    "filemod_count": 0,
-                    "group": "default group",
-                    "hostname": "win-sosskvttqab",
-                    "interface_ip": "x.x.x.x",
-                    "ioc_attr": "{\"hit_field_processblock\": true, \"hit_field_result\": \"NotTerminatedWhitelistedPath\", \"hit_field_md5\": \"e3a2ad05e24105b35e986cf9cb38ec47\", \"hit_field_path\": \"c:\\\\windows\\\\system32\\\\svchost.exe\"}",
-                    "ioc_confidence": 0.5,
-                    "ioc_type": "class",
-                    "ioc_value": "com.carbonblack.cbfs.ingress_search.detectors.SensorProtectionBlock$ProcessBlocking",
-                    "link": "https://www.carbonblack.com/cbfeeds/processbanningevents_feed.xhtml",
-                    "md5": "e3a2ad05e24105b35e986cf9cb38ec47",
-                    "modload_count": 0,
-                    "netconn_count": 0,
-                    "os_type": "windows",
-                    "process_id": "00000001-0000-0308-01d3-8a07a1d86867",
-                    "process_name": "svchost.exe",
-                    "process_path": "c:\\windows\\system32\\svchost.exe",
-                    "process_unique_id": "00000001-0000-0308-01d3-8a07a1d86867-01621fe6de82",
-                    "regmod_count": 0,
-                    "report_ignored": true,
-                    "report_score": 90,
-                    "segment_id": 1520953646722,
-                    "sensor_criticality": 3,
-                    "sensor_id": 1,
-                    "status": "Unresolved",
-                    "total_hosts": "2",
-                    "unique_id": "aa86855f-e53e-4c78-859a-4a8c87072389",
-                    "username": "NETWORK SERVICE",
-                    "watchlist_id": "process_blocking",
-                    "watchlist_name": "process_blocking"
-                }
-                
-            ],
-            "Terms": [
-                "status:Unresolved"
-            ],
-            "total_results": 9669
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->Carbon Black EDR - Alert Search Results### 
->Showing 0 - 2 out of 9669 results.
->|Alert ID|Created Time|File Name|File Path|Hostname|Segment ID|Severity|Source md5|Status|
->|---|---|---|---|---|---|---|---|---|
->| 5d652495-cca6-4bca-9007-579a5ee984a2 | 2018-03-13T15:07:26.805Z | svchost.exe | c:\windows\system32\svchost.exe | win-sosskvttqab | 1520953646722 | 60.75 | e3a2ad05e24105b35e986cf9cb38ec47 | Unresolved |
->| aa86855f-e53e-4c78-859a-4a8c87072389 | 2018-03-13T15:07:26.814Z | svchost.exe | c:\windows\system32\svchost.exe | win-sosskvttqab | 1520953646722 | 60.75 | e3a2ad05e24105b35e986cf9cb38ec47 | Unresolved |
-
-
 ### cb-edr-binary-summary
+
 ***
 Returns the metadata for the binary with the provided md5
-
 
 #### Base Command
 
 `cb-edr-binary-summary`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | md5 | The md5 of the binary. | Required | 
-
 
 #### Context Output
 
@@ -1655,67 +784,38 @@ https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.fileversioninfo?r
 | CarbonBlackEDR.BinaryMetadata.original_filename | String | If present, Original filename from FileVersionInformation. For more information check
 https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.fileversioninfo?redirectedfrom=MSDN&amp;view=net-5.0 | 
 | CarbonBlackEDR.BinaryMetadata.cb_version | Number | The version of Carbon Black. | 
-| CarbonBlackEDR.BinaryMetadata.os_type | String | The operating system type of the computer for this process; one of windows, linux, osx. | 
+| CarbonBlackEDR.BinaryMetadata.os_type | String | The operating system type of the computer for this process; one of Windows, Linux, OSX. | 
 | CarbonBlackEDR.BinaryMetadata.file_desc | String | If present, File description from FileVersionInformation. For more information check
 https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.fileversioninfo?redirectedfrom=MSDN&amp;view=net-5.0 | 
 | CarbonBlackEDR.BinaryMetadata.last_seen | Date | The last seen time of the file. | 
 
-
-#### Command Example
-```!cb-edr-binary-summary md5=9532bd6c36a788d329668ac0d30ce822```
-
-#### Human Readable Output
-
->File 9532bd6c36a788d329668ac0d30ce822 could not be found
-
 ### cb-edr-binary-download
+
 ***
 Download the binary with this md5 hash.
-
 
 #### Base Command
 
 `cb-edr-binary-download`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | md5 | The md5 hash of the binary. | Required | 
 
-
 #### Context Output
 
 There is no context output for this command.
-
-#### Command Example
-```!cb-edr-binary-download md5=e3a2ad05e24105b35e986cf9cb38ec47```
-
-#### Context Example
-```json
-{
-    "InfoFile": {
-        "EntryID": "941@7ef46214-11bc-457d-84bc-19826ac7661c",
-        "Extension": "zip",
-        "Info": "application/zip",
-        "Name": "binary_e3a2ad05e24105b35e986cf9cb38ec47.zip",
-        "Size": 19452,
-        "Type": "Zip archive data, at least v2.0 to extract"
-    }
-}
-```
-
-#### Human Readable Output
-
-
-
 ### cb-edr-binary-search
+
 ***
 Binary search
-
 
 #### Base Command
 
 `cb-edr-binary-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1734,7 +834,6 @@ Binary search
 | facet_field | facet field name to return. Multiple facet.field parameters can be specified in a query. | Optional | 
 | limit | Return this many rows, 10 by default. | Optional | 
 | start | Start at this row, 0 by default. | Optional | 
-
 
 #### Context Output
 
@@ -1792,134 +891,15 @@ https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.fileversioninfo?r
 | CarbonBlackEDR.BinarySearch.Results.server_added_timestamp | Date | The first time this binary was received on the server in the server GMT time. | 
 | CarbonBlackEDR.BinarySearch.Results.private_build | String | If present, Private build from FileVersionInformation. For more information check https://docs.microsoft.com/en-us/dotnet/api/system.diagnostics.fileversioninfo?redirectedfrom=MSDN&amp;view=net-5.0 | 
 
-
-#### Command Example
-```!cb-edr-binary-search company_name=Microsoft limit=2```
-
-#### Context Example
-```json
-{
-    "CarbonBlackEDR": {
-        "BinarySearch": {
-            "Results": [
-                {
-                    "cb_version": 620,
-                    "company_name": "Microsoft Corporation",
-                    "copied_mod_len": 33792,
-                    "digsig_publisher": "Microsoft Corporation",
-                    "digsig_result": "Signed",
-                    "digsig_result_code": "0",
-                    "digsig_sign_time": "2007-02-18T08:57:00Z",
-                    "endpoint": [
-                        "amazon-39d8d1e7|4"
-                    ],
-                    "event_partition_id": [
-                        99358576345088
-                    ],
-                    "facet_id": 326727,
-                    "file_desc": "Microsoft Traffic Control 1.0 DLL",
-                    "file_version": "5.2.3790.3959 (srv03_sp2_rtm.070216-1710)",
-                    "group": [
-                        "default group"
-                    ],
-                    "host_count": 1,
-                    "internal_name": "traffic.dll",
-                    "is_64bit": false,
-                    "is_executable_image": false,
-                    "last_seen": "2018-01-17T08:00:05.631Z",
-                    "legal_copyright": "\u00a9 Microsoft Corporation. All rights reserved.",
-                    "md5": "83263B667637FD878685D6A8401742CB",
-                    "observed_filename": [
-                        "c:\\windows\\system32\\traffic.dll"
-                    ],
-                    "orig_mod_len": 33792,
-                    "original_filename": "traffic.dll",
-                    "os_type": "Windows",
-                    "product_name": "Microsoft\u00ae Windows\u00ae Operating System",
-                    "product_version": "5.2.3790.3959",
-                    "server_added_timestamp": "2018-01-17T00:58:55.134Z",
-                    "signed": "Signed",
-                    "timestamp": "2018-01-17T00:58:55.134Z",
-                    "watchlists": [
-                        {
-                            "value": "2018-01-17T08:00:04.753Z",
-                            "wid": "5"
-                        }
-                    ]
-                },
-                {
-                    "cb_version": 620,
-                    "company_name": "Microsoft Corporation",
-                    "copied_mod_len": 99328,
-                    "digsig_publisher": "Microsoft Corporation",
-                    "digsig_result": "Signed",
-                    "digsig_result_code": "0",
-                    "digsig_sign_time": "2007-02-18T08:57:00Z",
-                    "endpoint": [
-                        "amazon-39d8d1e7|4"
-                    ],
-                    "event_partition_id": [
-                        99358576345088
-                    ],
-                    "facet_id": 738306,
-                    "file_desc": "Microsoft Smart Card API",
-                    "file_version": "5.2.3790.3959 (srv03_sp2_rtm.070216-1710)",
-                    "group": [
-                        "default group"
-                    ],
-                    "host_count": 1,
-                    "internal_name": "winscard.dll",
-                    "is_64bit": false,
-                    "is_executable_image": false,
-                    "last_seen": "2018-01-17T08:00:05.664Z",
-                    "legal_copyright": "\u00a9 Microsoft Corporation. All rights reserved.",
-                    "md5": "ED870A44064799B7DCEA3F9B674D0077",
-                    "observed_filename": [
-                        "c:\\windows\\system32\\winscard.dll"
-                    ],
-                    "orig_mod_len": 99328,
-                    "original_filename": "winscard.dll",
-                    "os_type": "Windows",
-                    "product_name": "Microsoft\u00ae Windows\u00ae Operating System",
-                    "product_version": "5.2.3790.3959",
-                    "server_added_timestamp": "2018-01-17T00:43:41.895Z",
-                    "signed": "Signed",
-                    "timestamp": "2018-01-17T00:43:41.895Z",
-                    "watchlists": [
-                        {
-                            "value": "2018-01-17T08:00:04.753Z",
-                            "wid": "5"
-                        }
-                    ]
-                }
-            ],
-            "Terms": [
-                "company_name:Microsoft"
-            ],
-            "total_results": 9585
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->Carbon Black EDR - Binary Search Results### 
->Showing 0 - 2 out of 9585 results.
->|md5|Group|OS Type|Host Count|Last Seen|Is Executable Image|Timestamp|
->|---|---|---|---|---|---|---|
->| 83263B667637FD878685D6A8401742CB | default group | Windows | 1 | 2018-01-17T08:00:05.631Z | false | 2018-01-17T00:58:55.134Z |
->| ED870A44064799B7DCEA3F9B674D0077 | default group | Windows | 1 | 2018-01-17T08:00:05.664Z | false | 2018-01-17T00:43:41.895Z |
-
-
 ### endpoint
-***
-List the CarbonBlack sensors
 
+***
+Display information about the given sensor
 
 #### Base Command
 
 `endpoint`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1927,7 +907,7 @@ List the CarbonBlack sensors
 | id | The sensor ID. | Optional | 
 | ip | Query sensors with specified IP address. | Optional | 
 | hostname | Query sensors with matching hostname. | Optional | 
-
+| endpoint | . | Required | 
 
 #### Context Output
 
@@ -1955,31 +935,39 @@ List the CarbonBlack sensors
 | Endpoint.Processors | Int | The number of processors. | 
 | Endpoint.Processor | String | The model of the processor. | 
 
+## Breaking changes from the previous version of this integration - VMware Carbon Black EDR v2
+%%FILL HERE%%
+The following sections list the changes in this version.
 
-#### Command Example
-```!endpoint id=15 ip=x.x.x.x hostname=WIN-SOSSKVTTQAB using="VMware Carbon Black EDR_instance_1"```
+### Commands
+#### The following commands were removed in this version:
+* *commandName* - this command was replaced by XXX.
+* *commandName* - this command was replaced by XXX.
 
-#### Context Example
-```json
-{
-    "Endpoint": {
-        "Hostname": "WIN-SOSSKVTTQAB",
-        "ID": "15",
-        "IPAddress": "x.x.x.x",
-        "IsIsolated": "No",
-        "MACAddress": "06d3d4a5ba28",
-        "Memory": "1073332224",
-        "OSVersion": "Windows Server 2012 R2 Server Standard, 64-bit",
-        "Status": "Online",
-        "Vendor": "Carbon Black Response"
-    }
-}
-```
+### Arguments
+#### The following arguments were removed in this version:
 
-#### Human Readable Output
+In the *commandName* command:
+* *argumentName* - this argument was replaced by XXX.
+* *argumentName* - this argument was replaced by XXX.
 
->### Carbon Black EDR -  Endpoint: 15
->|Hostname|ID|IPAddress|IsIsolated|MACAddress|Memory|OSVersion|Status|Vendor|
->|---|---|---|---|---|---|---|---|---|
->| WIN-SOSSKVTTQAB | 15 | x.x.x.x | No ~~~~~~~~| 06d3d4a5ba28 | 1073332224 | Windows Server 2012 R2 Server Standard, 64-bit | Online | Carbon Black Response |
+#### The behavior of the following arguments was changed:
 
+In the *commandName* command:
+* *argumentName* - is now required.
+* *argumentName* - supports now comma separated values.
+
+### Outputs
+#### The following outputs were removed in this version:
+
+In the *commandName* command:
+* *outputPath* - this output was replaced by XXX.
+* *outputPath* - this output was replaced by XXX.
+
+In the *commandName* command:
+* *outputPath* - this output was replaced by XXX.
+* *outputPath* - this output was replaced by XXX.
+
+## Additional Considerations for this version
+
+* Insert any API changes, any behavioral changes, limitations, or restrictions that would be new to this version.
