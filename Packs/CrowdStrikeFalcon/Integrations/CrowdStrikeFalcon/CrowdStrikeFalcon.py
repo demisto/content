@@ -4266,7 +4266,7 @@ def create_ml_exclusion_command(args):
         value=args.get('value'),
         excluded_from=argToList(args.get('excluded_from')),
         comment=args.get('comment'),
-        groups=argToList(args.get('groups'))
+        groups=argToList(args.get('groups', 'all'))
     )
 
     exclusion = create_exclusion('ml', create_args).get('resources')
@@ -4309,7 +4309,7 @@ def delete_ml_exclusion_command(args):
     delete_exclusion('ml', ids)
 
     return CommandResults(
-        readable_output=f'The machine learning exclusions with IDs {ids} was successfully deleted.'
+        readable_output=f'The machine learning exclusions with IDs {"".join(ids)} was successfully deleted.'
     )
 
 
@@ -4351,7 +4351,7 @@ def create_ioa_exclusion_command(args):
         ifn_regex=args.get('ifn_regex'),
         comment=args.get('comment'),
         description=args.get('description'),
-        groups=argToList(args.get('groups')),
+        groups=argToList(args.get('groups', 'all')),
         detection_json=args.get('detection_json')
     )
 
@@ -4401,7 +4401,7 @@ def delete_ioa_exclusion_command(args):
     delete_exclusion('ioa', ids)
 
     return CommandResults(
-        readable_output=f'The IOA exclusions with IDs {ids} was successfully deleted.'
+        readable_output=f'The IOA exclusions with IDs {"".join(ids)} was successfully deleted.'
     )
 
 

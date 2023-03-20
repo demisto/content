@@ -2932,20 +2932,16 @@ script:
     - description: Value to match for the exclusion.
       name: value
       required: true
-    - auto: PREDEFINED
-      description: Exclusion excluded from.
+    - description: "A comma-separated list from where to exclude the exclusion possible values are: blocking, extraction."
       name: excluded_from
       required: true
       isArray: true
-      predefined:
-      - blocking
-      - extraction
     - description: Comment describing why the exclusions were created.
       name: comment
       required: false
-    - description: A comma-separated list of group ID(s) impacted by the exclusion OR all if empty. Default is all.
+    - description: A comma-separated list of group ID(s) impacted by the exclusion OR all if empty.
       name: groups
-      required: true
+      required: false
       isArray: true
     description: Create an ML exclusion.
     name: cs-falcon-create-ml-exclusion
@@ -3017,11 +3013,11 @@ script:
     - description: Comment describing why the exclusions were created.
       name: comment
       required: false
-    - description: Group ID(s) explicitly excluded from the exclusion.
+    - description: "A comma-separated list from where to exclude the exclusion possible values are: blocking, extraction."
       name: excluded_from
       required: false
       isArray: true
-    - description: Group ID(s) impacted by the exclusion.
+    - description: A comma-separated list of group ID(s) impacted by the exclusion
       name: groups
       required: false
       isArray: true
@@ -3086,8 +3082,7 @@ script:
       description: The date when the exclusion rule was created.
       type: String
   - arguments:
-      - description: Delete the ML exclusions by id
-        defaultValue: The ID of the exclusion to update.
+      - description: A comma-separated list of exclusion IDs to delete.
         name: ids
         required: true
         isArray: true
@@ -3100,14 +3095,14 @@ script:
     - description: The value by which the exclusions should be filtered.
       name: value
       required: false
-    - description: The IDs of the exclusions to retrieve. The IDs overwrite the filter and value.
+    - description: A comma-separated list of exclusion IDs to retrieve. The IDs overwrite the filter and value.
       name: ids
       required: false
       isArray: true
-    - description: The maximum number of records to return. [1-500]
+    - description: The maximum number of records to return. [1-500]. Works only if IDs argument is not supplied.
       name: limit
       required: false
-    - description: The offset to start retrieving records from.
+    - description: The offset to start retrieving records from. Works only if IDs argument is not supplied.
       name: offset
       required: false
     - auto: PREDEFINED
@@ -3200,7 +3195,7 @@ script:
     - description: Command line regular expression.
       name: cl_regex
       required: true
-    - description: Indicator file name regular expression.
+    - description: Image file name regular expression.
       name: ifn_regex
       required: true
     - description: Comment describing why the exclusions were created.
@@ -3212,7 +3207,7 @@ script:
     - description: JSON formatted detection template.
       name: detection_json
       required: false
-    - description: Group ID(s) impacted by the exclusion.
+    - description: A comma-separated list of group ID(s) impacted by the exclusion OR all if empty.
       name: groups
       required: true
       isArray: true
@@ -3301,7 +3296,7 @@ script:
     - description: Command line regular expression.
       name: cl_regex
       required: false
-    - description: Indicator file name regular expression.
+    - description: Image file name regular expression.
       name: ifn_regex
       required: false
     - description: Comment describing why the exclusions was created.
@@ -3313,7 +3308,7 @@ script:
     - description: JSON formatted detection template.
       name: detection_json
       required: false
-    - description: Group ID(s) impacted by the exclusion.
+    - description: A comma-separated list of group ID(s) impacted by the exclusion
       name: groups
       required: false
       isArray: true
@@ -3387,7 +3382,7 @@ script:
       description: The date when the exclusion rule was created.
       type: String
   - arguments:
-      - description: IDs of the exclusions to be deleted.
+      - description: A comma-separated list of exclusion IDs to delete.
         name: ids
         required: true
         isArray: true
@@ -3400,14 +3395,14 @@ script:
     - description: The name by which the exclusions should be filtered.
       name: name
       required: false
-    - description: The IDs of the exclusions to retrieve. The IDs overwrite the filter and value.
+    - description: A comma-separated list of exclusion IDs to retrieve. The IDs overwrite the filter and name.
       name: ids
       required: false
       isArray: true
-    - description: The limit of how many exclusions to retrieve. Default is 50.
+    - description: The limit of how many exclusions to retrieve. Default is 50. Works only if IDs argument is not supplied.
       name: limit
       required: false
-    - description: The offset of how many exclusions to skip. Default is 0.
+    - description: The offset of how many exclusions to skip. Default is 0. Works only if IDs argument is not supplied.
       name: offset
       required: false
     description: Get a list of IOA exclusions by specifying their IDs or a filter
@@ -3480,7 +3475,7 @@ script:
       description: The date when the exclusion rule was created.
       type: String
   - arguments:
-    - description: The IDs of the quarantined files to retrieve.
+    - description: A comma-separated list of quarantined files IDs to retrieve.
       name: ids
       required: false
       isArray: true
@@ -3555,7 +3550,7 @@ script:
       description: The date the quarantined file was created.
       type: Date
   - arguments:
-    - description: The IDs of the quarantined files to update.
+    - description: A comma-separated list of quarantined files IDs to update.
       name: ids
       required: false
       isArray: true
