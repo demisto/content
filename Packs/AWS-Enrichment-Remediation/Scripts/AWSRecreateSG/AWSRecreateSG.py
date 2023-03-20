@@ -53,13 +53,13 @@ def split_rule(rule: Dict, port: int, protocol: str) -> List[Dict]:
     return(res_list)
 
 
-def sg_fix(sg_info: Dict, port: int, protocol: str) -> Dict:
+def sg_fix(sg_info: List, port: int, protocol: str) -> Dict:
     """
     For a SG determine what needs to be recreated.
     Calls split_rule() if there are rules with ranges of ports to be split up
 
     Args:
-        sg_info (Dict): Dictionary of information pulled from "aws-ec2-describe-security-groups" command
+        sg_info (List): List of information pulled from "aws-ec2-describe-security-groups" command
         port (int): TCP/UDP Port to be restricted
         protocol (str): Protocol of the port to be restricted
 
@@ -231,10 +231,7 @@ def instance_info(instance_id: str, public_ip: str) -> Dict:
         raise ValueError('failed to pull information on EC2 instance')
 
 
-''' COMMAND FUNCTION '''
-
-
-def aws_recreate_sg_command(args: Dict[str, Any]) -> str:
+def aws_recreate_sg(args: Dict[str, Any]) -> str:
     """
     Main command that determines what interface on an EC2 instance has an over-permissive security group on,
     determine which security groups have over-permissive rules and to replace them with a copy of the security group

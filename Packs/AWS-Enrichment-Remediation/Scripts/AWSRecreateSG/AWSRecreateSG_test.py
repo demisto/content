@@ -101,17 +101,17 @@ def test_determine_excessive_access(mocker):
     assert result == [{'int': 'eni-00000000000000000', 'old-sg': 'sg-00000000000000000', 'new-sg': 'sg-00000000000000001'}]
 
 
-def test_aws_recreate_sg_command(mocker):
-    """Tests aws_recreate_sg_command  function.
+def test_aws_recreate_sg(mocker):
+    """Tests aws_recreate_sg  function.
 
         Given:
             - Mocked arguments
         When:
-            - Sending args to aws_recreate_sg_command  function.
+            - Sending args to aws_recreate_sg  function.
         Then:
             - Checks the output of the function with the expected output.
     """
-    from AWSRecreateSG import aws_recreate_sg_command
+    from AWSRecreateSG import aws_recreate_sg
     from test_data.sample import SG_INFO, INSTANCE_INFO
     new_sg = [{'Type': 1, 'Contents': {'AWS.EC2.SecurityGroups': {'GroupId': 'sg-00000000000000001'}}}]
 
@@ -125,6 +125,6 @@ def test_aws_recreate_sg_command(mocker):
 
     mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
     args = {"instance_id": "fake-instance-id", "public_ip": "1.1.1.1", "port": "22", "protocol": "tcp"}
-    result = aws_recreate_sg_command(args)
+    result = aws_recreate_sg(args)
     correct_output = "For interface eni-00000000000000000: \r\nreplaced SG sg-00000000000000000 with sg-00000000000000001 \r\n"
     assert result == correct_output
