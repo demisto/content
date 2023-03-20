@@ -5,7 +5,8 @@ from Tests.scripts.utils import logging_wrapper as logging
 
 
 NIGHTLY_JOBS = [
-    'run-unittests-and-lint',
+    'run-unittests-and-lint: [native:dev,from-yml]',
+    'run-unittests-and-lint: [native:ga,native:maintenance]',
     'run-validations',
     'trigger-private-build',
     'mpv2-prepare-testing-bucket',
@@ -39,7 +40,8 @@ UPLOAD_JOBS = [
     'upload-packs-to-xpanse-marketplace',
 ]
 PUSH_JOBS = [
-    'run-unittests-and-lint',
+    'run-unittests-and-lint: [native:dev,from-yml]',
+    'run-unittests-and-lint: [native:ga,native:maintenance]',
     'trigger-private-build',
     'validate-content-conf',
     'mpv2-prepare-testing-bucket',
