@@ -256,14 +256,13 @@ def test_get_incident_extra_data(requests_mock):
                 'SHA256': '8d5aec85593c85ecdc8d5ac601e163a1cc26d877f88c03e9e0e94c9dd4a38fca'
             }
         ],
-        'Process(val.Name && val.Name == obj.Name)':
-            [
-                {
-                    'Name': 'wildfire-test-pe-file.exe',
-                    'CommandLine': '"C:\\Users\\Administrator\\Downloads\\wildfire-test-pe-file.exe"',
-                    'Hostname': 'AAAAAA'
-                }
-            ],
+        'Process(val.Name && val.Name == obj.Name)': [
+            {
+                'Name': 'wildfire-test-pe-file.exe',
+                'CommandLine': '"C:\\Users\\Administrator\\Downloads\\wildfire-test-pe-file.exe"',
+                'Hostname': 'AAAAAA'
+            }
+        ],
         'Endpoint(val.Hostname==obj.Hostname)': [{'Hostname': 'AAAAAA', 'ID': '1234'}]
     }
     assert expected_output == outputs
