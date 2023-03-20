@@ -804,7 +804,7 @@ def incident():
 
     demisto.incident` gets the data from the script on the beginning of the execution,
     hence if updating the incident context during script execution,
-    it won't be reflected when using demisto.incident again, resulting in the old context data.
+    it won't be reflected when calling demisto.incident, which will return stale context data.
 
     Returns:
       dict: dict representing an incident object
