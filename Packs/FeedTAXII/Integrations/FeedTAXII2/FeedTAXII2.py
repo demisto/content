@@ -76,7 +76,7 @@ def fetch_indicators_command(
         else None
     )
 
-    if client.collection_to_fetch is None:
+    if not client.collection_to_fetch:
         # fetch all collections
         if client.collections is None:
             raise DemistoException(ERR_NO_COLL)
@@ -141,7 +141,7 @@ def get_indicators_command(
         added_after, _ = parse_date_range(added_after, date_format=TAXII_TIME_FORMAT)
     raw = argToBoolean(raw)
 
-    if client.collection_to_fetch is None:
+    if not client.collection_to_fetch:
         # fetch all collections
         if client.collections is None:
             raise DemistoException(ERR_NO_COLL)

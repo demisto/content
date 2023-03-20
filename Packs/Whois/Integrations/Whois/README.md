@@ -878,3 +878,5 @@ Provides data enrichment for ips.
 >|---|---|---|---|---|---|
 >| 15169 | 8.8.8.0/24 | 1992-12-01 |  | LVLT-GOGL-8-8-8 | 8.8.8.8 |
 
+## Troubleshooting
+- The error message *Bad Gateway* (502) might occur when using a firewall/proxy. To fix the issue, make sure the whois TLD provider exists in your allowlist.
