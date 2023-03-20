@@ -1,11 +1,6 @@
-import os
-
-from demisto_sdk.commands.common.git_util import GitUtil
-print(os.getcwd())
-exit(1)
 from pathlib import Path
-CONTENT_PATH = Path(GitUtil().git_path())
 from ruamel.yaml import YAML
+CONTENT_PATH = Path(__file__).parents[3]
 yaml = YAML()
 
 
