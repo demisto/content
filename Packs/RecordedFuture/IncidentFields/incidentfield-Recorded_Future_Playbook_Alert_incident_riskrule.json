@@ -1,10 +1,10 @@
 {
-    "id": "incident_recordedfuturealertentities",
+    "id": "incident_recordedfutureriskrule",
     "version": -1,
-    "modified": "2022-07-18T14:11:12.590942262Z",
-    "name": "Recorded Future Alert Entities",
+    "modified": "2023-02-10T18:43:28.051067154Z",
+    "name": "Recorded Future Risk Rule",
     "ownerOnly": false,
-    "cliName": "recordedfuturealertentities",
+    "cliName": "recordedfutureriskrule",
     "type": "grid",
     "closeForm": false,
     "editForm": true,
@@ -19,10 +19,7 @@
     "hidden": false,
     "openEnded": false,
     "associatedTypes": [
-        "Recorded Future Alert",
-        "Recorded Future Leaked Credential Monitoring",
-        "Recorded Future Potential Typosquat",
-        "Recorded Future New Critical or Pre NVD Vulnerabilities"
+        "Recorded Future Vulnerability"
     ],
     "associatedToAll": false,
     "unmapped": false,
@@ -30,8 +27,8 @@
     "caseInsensitive": true,
     "columns": [
         {
-            "key": "id",
-            "displayName": "ID",
+            "key": "rule",
+            "displayName": "Rule",
             "type": "shortText",
             "required": false,
             "script": "",
@@ -42,24 +39,12 @@
             "selectValues": null
         },
         {
-            "key": "name",
-            "displayName": "Name",
+            "key": "description",
+            "displayName": "Description",
             "type": "shortText",
             "required": false,
             "script": "",
             "width": 150,
-            "isDefault": true,
-            "fieldCalcScript": "",
-            "isReadOnly": false,
-            "selectValues": null
-        },
-        {
-            "key": "type",
-            "displayName": "Type",
-            "type": "shortText",
-            "required": false,
-            "script": "",
-            "width": 225,
             "isDefault": true,
             "fieldCalcScript": "",
             "isReadOnly": false,
@@ -67,11 +52,9 @@
         }
     ],
     "defaultRows": [
-        {},
-        {},
         {}
     ],
     "sla": 0,
     "threshold": 72,
-    "fromVersion": "6.5.0"
+    "fromVersion": "6.0.0"
 }
