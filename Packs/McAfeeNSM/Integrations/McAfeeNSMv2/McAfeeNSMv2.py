@@ -2451,11 +2451,11 @@ def main() -> None:  # pragma: no cover
             session_str = get_session(client, f'{user_name}:{password}')
             headers['NSM-SDK-API'] = session_str
             client = Client(url=url, auth=auth, headers=headers, proxy=proxy, verify=verify_certificate)
-
+        results: Union[CommandResults, list[CommandResults], str]
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
-            str_results = test_module(client, f'{user_name}:{password}')
-            return_results(str_results)
+            results = test_module(client, f'{user_name}:{password}')
+            # return_results(str_results)
         elif command == 'nsm-list-domain-firewall-policy':
             results = list_domain_firewall_policy_command(client, args)
         elif command == 'nsm-get-firewall-policy':
@@ -2481,8 +2481,7 @@ def main() -> None:  # pragma: no cover
         elif command == 'nsm-get-alert-details':
             results = get_alert_details_command(client, args)
         elif command == 'nsm-get-attacks':
-            list_results = get_attacks_command(client, args)
-            return_results(list_results)
+            results = get_attacks_command(client, args)
         elif command == 'nsm-get-domains':
             results = get_domains_command(client, args)
         elif command == 'nsm-get-sensors':
@@ -2496,8 +2495,7 @@ def main() -> None:  # pragma: no cover
         elif command == 'nsm-list-pcap-file':
             results = list_pcap_file_command(client, args)
         elif command == 'nsm-export-pcap-file':
-            list_results = export_pcap_file_command(client, args)
-            return_results(list_results)
+            results = export_pcap_file_command(client, args)
         elif command == 'nsm-list-device-interface':
             results = list_device_interface_command(client, args)
         elif command == 'nsm-list-domain-device':
