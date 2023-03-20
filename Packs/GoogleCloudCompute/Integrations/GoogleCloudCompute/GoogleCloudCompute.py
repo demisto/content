@@ -4393,13 +4393,21 @@ def aggregated_list_instances_ip(args: Dict[str, Any]) -> CommandResults:
     """
     ip = args.get('ip')
     default_search_scope = demisto.params().get('default_search_scope')
-    if not default_search_scope:
-        raise ValueError("This command required default_search_scope integration parameter to be set")
-    request_asset = get_asset().v1().searchAllResources(
-        scope=default_search_scope,
-        assetTypes='compute.googleapis.com/Address',
-        query=f"additionalAttributes.address={ip}"
-        )
+    # 'default_search_scope' param was set use it for scope, else use the project in the service account.
+    # 'compute.googleapis.com/Instance' asset-type needed to find static and ephemeral public IPs.
+    if default_search_scope:
+        request_asset = get_asset().v1().searchAllResources(
+            scope=default_search_scope,
+            assetTypes='compute.googleapis.com/Instance',
+            query=f"additionalAttributes.externalIPs={ip}"
+            )
+   
+   else:
+        request_asset = get_asset().v1().searchAllResources(
+            scope=f"projects/{SERVICE_ACT_PROJECT_ID}",
+            assetTypes='compute.googleapis.com/Instance',
+            query=f"additionalAttributes.externalIPs={ip}"
+            )
     response_asset = request_asset.execute()
     if response_asset:
         raw = response_asset.get('results')[0].get('parentFullResourceName')
