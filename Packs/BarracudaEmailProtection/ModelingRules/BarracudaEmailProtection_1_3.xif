@@ -1,0 +1,5 @@
+[MODEL:dataset="barracuda_email_protection_raw"]
+alter 
+    payload = arrayindex(regextract(_raw_log, "\[\d\]: (\{.*?$)"), 0) |
+alter
+    xdm.event.description = payload;
