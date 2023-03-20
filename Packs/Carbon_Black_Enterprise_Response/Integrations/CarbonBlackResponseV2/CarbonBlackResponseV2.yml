@@ -1999,7 +1999,7 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: List the CarbonBlack sensors
+    description: Display information about the given sensor
     execution: false
     name: endpoint
     outputs:
