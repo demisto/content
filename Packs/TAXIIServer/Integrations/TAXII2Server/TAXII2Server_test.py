@@ -589,5 +589,5 @@ def test_convert_sco_to_indicator_sdo_with_type_file(mocker):
 
     output = convert_sco_to_indicator_sdo(ioc, xsoar_indicator)
     assert 'file:hashes.' in output.get('pattern', '')
-    assert 'MD5' in output.get('pattern', '')
+    assert 'SHA-1' in output.get('pattern', '')
     assert 'pattern_type' in output.keys()
