@@ -46,7 +46,7 @@ configuration:
   options:
   - id
   - created date
-  - updated date
+  # - updated date
   type: 15
 - additionalinfo: This parameter is dismissed while not choosing "id" in "Issue Field to Fetch from".
   display: Issue index to start fetching incidents from
@@ -752,7 +752,7 @@ script:
   - arguments:
     - default: false
       description: "A CSV list of fields to return (Using the name or ID of the fields) to context data. Supplying `all` will
-        return all the issue fields (which will include nested values)"
+        return all the issue fields (which will include nested values), except for the comments, which can be retrieved using the !jira-get-comments command."
       isArray: false
       name:  fields
       required: false

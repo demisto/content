@@ -1474,36 +1474,56 @@ def text_to_adf(text: str) -> Dict[str, Any]:
 
 def get_specific_fields_ids(issue_data: Dict[str, Any], specific_fields: List[str],
                             issue_fields_id_to_name_mapping: Dict[str, str]) -> List[str]:
-    # TODO Explain really well what we did here!
-    # TODO Add that if we receive a comment key or id, to return a warning stating that this can be retrieved
-    # with jira-get-comments
-    # We offer the opportunity to insert the field name or ID in order to retrieve the data
+    """This function is in charge of returning the ids of the issue fields that are specified in the
+    specific_fields argument, which can hold the display name OR the id of the issue field. This will
+    help map the issue fields (whether their display names or ids) that the user enters, to their respective id, so it
+    can be further processed if needed.
+
+    Args:
+        issue_data (Dict[str, Any]): The issue object returned from the API.
+        specific_fields (List[str]): The specific fields for which to return their respective ids. (They can either be the
+        display name or id of the issue field)
+        issue_fields_id_to_name_mapping (Dict[str, str]): A dictionary that holds mapping between ids and display names of the
+        issue fields.
+
+    Returns:
+        List[str]: A list of the issue fields' ids, corresponding to the issue fields specified in specific_fields.
+    """
     if 'all' in specific_fields:
+        # By design, if the user enters `all`, then we return the ids of all the issue fields.
         all_issue_fields_ids: List[str] = list(issue_data.get('fields', {}).keys())
         if 'comment' in all_issue_fields_ids:
+            # Since the `comment` field needs further parsing, it is advised that the user calls the command
+            # !jira-get-comments if they want the content of the comments.
             all_issue_fields_ids.remove('comment')
         return ['id', 'key', 'self', *all_issue_fields_ids]
+    # To support display names in upper and lower case from the user
     issue_fields_name_to_id_mapping = {issue_name.lower(): issue_id for issue_id,
                                        issue_name in issue_fields_id_to_name_mapping.items()}
     issue_fields_ids: List[str] = []
     wrong_issue_fields_ids: List[str] = []
     for specific_field in specific_fields:
         if specific_field in issue_fields_id_to_name_mapping:
+            # This means an id was given
             issue_fields_ids.append(specific_field)
         elif issue_id := issue_fields_name_to_id_mapping.get(specific_field.lower(), ''):
+            # This means a display name was given, and we mapped it to its respective id
             issue_fields_ids.append(issue_id)
         else:
+            # This means the given issue field given was not found
             wrong_issue_fields_ids.append(specific_field)
     warning_message = ''
     if 'comment' in issue_fields_ids:
-        warning_message = 'In order to retrieve the comments of the issue, please run the command `!jira-get-comments`'
+        # If the user entered the issue field `comment`, we will return a warning stating which command yields the comments
+        warning_message = 'In order to retrieve the comments of the issue, please run the command `!jira-get-comments`\n'
+        # We loop over the ids and remove all occurrences of the field id `comment`, since the user can by accident enter
+        # id `comment` multiple times
         for issue_field_id in issue_fields_ids:
             if issue_field_id == 'comment':
                 issue_fields_ids.remove(issue_field_id)
     if wrong_issue_fields_ids:
         issue_key = issue_data.get('key', '') or ''
-        warning_message = '\n'.join([f'The field/s [{",".join(wrong_issue_fields_ids)}] was/were not found for issue {issue_key}',
-                                     warning_message])
+        warning_message += f'The field/s [{",".join(wrong_issue_fields_ids)}] was/were not found for issue {issue_key}\n'
     if warning_message:
         return_warning(warning_message)
     return issue_fields_ids
@@ -1511,7 +1531,22 @@ def get_specific_fields_ids(issue_data: Dict[str, Any], specific_fields: List[st
 
 def create_issue_md_and_outputs_dict(issue_data: Dict[str, Any],
                                      specific_issue_fields: List[str] | None = None,
-                                     issue_fields_id_to_name_mapping: Dict[str, str] | None = None) -> tuple[Dict[str, Any], Dict[str, Any]]:
+                                     issue_fields_id_to_name_mapping: Dict[str, str] | None = None
+                                     ) -> tuple[Dict[str, Any], Dict[str, Any]]:
+    """Creates the markdown and outputs dictionaries (context outputs) of the issue object that is returned from the API,
+    to return to the user.
+
+    Args:
+        issue_data (Dict[str, Any]): The issue object that holds data about the Jira issue that is returned from the API.
+        specific_issue_fields (List[str] | None, optional): Specific issue fields to parse their data, in addition to the default
+        fields configured in this function. Defaults to None.
+        issue_fields_id_to_name_mapping (Dict[str, str] | None, optional): The dictionary that holds the mapping between
+        the fields' ids to their display names. Defaults to None.
+
+    Returns:
+        tuple[Dict[str, Any], Dict[str, Any]]: A tuple where the first entry is the markdown dictionary, and the second is the
+        context outputs dictionary.
+    """
     md_and_outputs_shared_issue_keys = ['id', 'key', 'summary', 'status', 'priority', 'project', 'duedate',
                                         'created', 'labels', 'assignee', 'creator']
     issue_fields_id_to_name_mapping = issue_fields_id_to_name_mapping or {}
@@ -1556,9 +1591,19 @@ def get_file_name_and_content(entry_id: str) -> tuple[str, bytes]:
     return file_name, file_bytes
 
 
-def apply_issue_status(client: JiraBaseClient, issue_id_or_key: str, status_name: str) -> Any:
-    """
-    In charge of receiving a status of an issue and try to apply it, if it can't, it will throw an error.
+def apply_issue_status(client: JiraBaseClient, issue_id_or_key: str, status_name: str) -> requests.Response:
+    """This function is in charge of receiving a status of an issue and try to apply it, if it can't, it will throw an error.
+
+    Args:
+        client (JiraBaseClient): The Jira client.
+        issue_id_or_key (str): The issue id or key.
+        status_name (str): The name of the status to transition to.
+
+    Raises:
+        DemistoException: If the given status name was not found or not valid.
+
+    Returns:
+        Any: _description_
     """
     res_transitions = client.get_transitions(issue_id_or_key=issue_id_or_key)
     all_transitions = res_transitions.get('transitions', [])
@@ -1572,9 +1617,19 @@ def apply_issue_status(client: JiraBaseClient, issue_id_or_key: str, status_name
     raise DemistoException(f'Status "{status_name}" not found. \nValid statuses are: {statuses_name} \n')
 
 
-def apply_issue_transition(client: JiraBaseClient, issue_id_or_key: str, transition_name: str) -> Any:
-    """
-    In charge of receiving a transition to perform on an issue and try to apply it, if it can't, it will throw an error.
+def apply_issue_transition(client: JiraBaseClient, issue_id_or_key: str, transition_name: str) -> requests.Response:
+    """In charge of receiving a transition to perform on an issue and try to apply it, if it can't, it will throw an error.
+
+    Args:
+        client (JiraBaseClient): The Jira client.
+        issue_id_or_key (str): The issue id or key.
+        transition_name (str): The name of the transition to apply.
+
+    Raises:
+        DemistoException: If the given transition was not found or not valid.
+
+    Returns:
+        Any: _description_
     """
     res_transitions = client.get_transitions(issue_id_or_key=issue_id_or_key)
     all_transitions = res_transitions.get('transitions', [])
@@ -1590,7 +1645,18 @@ def apply_issue_transition(client: JiraBaseClient, issue_id_or_key: str, transit
 
 # Issues Commands
 def add_link_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandResults:
-    # TODO Need to ask TPM what to do with this command
+    """This command is in charge of adding a link (web url) to a Jira issue.
+
+    Args:
+        client (JiraBaseClient): The Jira client.
+        args (Dict[str, str]): The arguments supplied by the user.
+
+    Raises:
+        DemistoException: If neither an issue id nor a key was supplied.
+
+    Returns:
+        CommandResults: CommandResults to return to XSOAR.
+    """
     issue_id_or_key = args.get('issue_id', args.get('issue_key', ''))
     if not issue_id_or_key:
         raise DemistoException(ID_OR_KEY_MISSING_ERROR)
@@ -1629,14 +1695,14 @@ def add_link_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandRes
 
 
 def issue_query_command(client: JiraBaseClient, args: Dict[str, str]) -> List[CommandResults] | CommandResults:
-    """_summary_
+    """This command is in charge of issuing a query on issues.
 
     Args:
-        client (JiraBaseClient): _description_
-        args (Dict[str, str]): _description_
+        client (JiraBaseClient): The Jira client.
+        args (Dict[str, str]): The arguments supplied by the user.
 
     Returns:
-        List[CommandResults] | CommandResults: _description_
+        List[CommandResults] | CommandResults: CommandResults to return to XSOAR.
     """
     jql_query = args.get('query', '')
     start_at = arg_to_number(args.get('start_at', ''))
@@ -1667,14 +1733,17 @@ def issue_query_command(client: JiraBaseClient, args: Dict[str, str]) -> List[Co
 
 
 def get_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> List[CommandResults]:
-    """_summary_
+    """This command is in charge of returning the data of a specific issue.
 
     Args:
-        client (JiraBaseClient): _description_
-        args (Dict[str, str]): _description_
+        client (JiraBaseClient): The Jira client.
+        args (Dict[str, str]): The arguments supplied by the user.
+
+    Raises:
+        DemistoException: If neither an issue id nor a key was supplied.
 
     Returns:
-        List[CommandResults]: _description_
+        List[CommandResults]: CommandResults to return to XSOAR.
     """
     issue_id_or_key = args.get('issue_id', args.get('issue_key', ''))
     if not issue_id_or_key:
@@ -1721,7 +1790,7 @@ def download_issue_attachments_to_war_room(client: JiraBaseClient, issue: Dict[s
 
 def get_expanded_issues(client: JiraBaseClient, issue: Dict[str, Any],
                         expand_links: bool = False) -> List[Dict[str, Any]]:
-    """Returns a list of subtasks and linked issues corresponding to the given issue in issue_response.
+    """Returns a list of subtasks and linked issues corresponding to the given issue.
 
     Args:
         client (JiraBaseClient): The Jira client
@@ -1729,7 +1798,7 @@ def get_expanded_issues(client: JiraBaseClient, issue: Dict[str, Any],
         expand_links (bool, optional): Whether to retrieve the subtasks and linked issues. Defaults to False.
 
     Returns:
-        List[Dict[str, Any]]:  A list of subtasks and linked issues corresponding to the given issue in issue_response.
+        List[Dict[str, Any]]:  A list of subtasks and linked issues corresponding to the given issue.
     """
     responses: List[Dict[str, Any]] = []
     if expand_links:
@@ -1749,6 +1818,15 @@ def get_expanded_issues(client: JiraBaseClient, issue: Dict[str, Any],
 
 
 def create_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandResults:
+    """This command is in charge of creating a new issue.
+
+    Args:
+        client (JiraBaseClient): The Jira client.
+        args (Dict[str, str]): The arguments supplied by the user.
+
+    Returns:
+        CommandResults: CommandResults to return to XSOAR.
+    """
     issue_fields = get_issue_fields_for_create(issue_args=args, issue_fields_mapper=client.ISSUE_FIELDS_MAPPER)
     res = client.create_issue(json_data=issue_fields)
     outputs = {'Id': res.get('id', ''), 'Key': res.get('key', '')}
@@ -1764,6 +1842,19 @@ def create_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> Comman
 
 
 def edit_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandResults:
+    """This command is in charge of editing an existing issue.
+
+    Args:
+        client (JiraBaseClient): The Jira client.
+        args (Dict[str, str]): The arguments supplied by the user.
+
+    Raises:
+        DemistoException: If both the status and transition are provided.
+        DemistoException: If neither an issue id nor a key was supplied.
+
+    Returns:
+        CommandResults: CommandResults to return to XSOAR.
+    """
     issue_id_or_key = args.get('issue_id', args.get('issue_key', ''))
     if not issue_id_or_key:
         raise DemistoException(ID_OR_KEY_MISSING_ERROR)
@@ -1794,6 +1885,18 @@ def edit_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandR
 
 
 def delete_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandResults:
+    """This command is in charge of deleting an issue.
+
+    Args:
+        client (JiraBaseClient): The Jira client.
+        args (Dict[str, str]): The arguments supplied by the user.
+
+    Raises:
+        DemistoException: If neither an issue id nor a key was supplied.
+
+    Returns:
+        CommandResults: CommandResults to return to XSOAR.
+    """
     issue_id_or_key = args.get('issue_id', args.get('issue_key', ''))
     if not issue_id_or_key:
         raise DemistoException(ID_OR_KEY_MISSING_ERROR)
@@ -1802,6 +1905,18 @@ def delete_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> Comman
 
 
 def delete_comment_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandResults:
+    """This command is in charge of deleting a comment from an issue.
+
+    Args:
+        client (JiraBaseClient): The Jira client.
+        args (Dict[str, str]): The arguments supplied by the user.
+
+    Raises:
+        DemistoException: If neither an issue id nor a key was supplied.
+
+    Returns:
+        CommandResults: CommandResults to return to XSOAR.
+    """
     issue_id_or_key = args.get('issue_id', args.get('issue_key', ''))
     if not issue_id_or_key:
         raise DemistoException(ID_OR_KEY_MISSING_ERROR)
@@ -1811,14 +1926,17 @@ def delete_comment_command(client: JiraBaseClient, args: Dict[str, str]) -> Comm
 
 
 def get_comments_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandResults:
-    """_summary_
+    """This command is in charge of getting the comments of an issue
 
     Args:
-        client (JiraBaseClient): _description_
-        args (Dict[str, str]): _description_
+        client (JiraBaseClient): The Jira client.
+        args (Dict[str, str]): The arguments supplied by the user.
+
+    Raises:
+        DemistoException: If neither an issue id nor a key was supplied.
 
     Returns:
-        CommandResults: _description_
+        CommandResults: CommandResults to return to XSOAR.
     """
     issue_id_or_key = args.get('issue_id', args.get('issue_key', ''))
     if not issue_id_or_key:
@@ -1837,6 +1955,16 @@ def get_comments_command(client: JiraBaseClient, args: Dict[str, str]) -> Comman
 
 def create_comments_command_results(response_comments: List[Dict[str, Any]],
                                     issue_id_or_key: str, res: Dict[str, Any]) -> CommandResults:
+    """Creates the CommandResults of the get_comments_command.
+
+    Args:
+        response_comments (List[Dict[str, Any]]): The comments object returned from the API (not empty!).
+        issue_id_or_key (str): The issue id or key that holds the comments.
+        res (Dict[str, Any]): The raw response when calling the API to retrieve the comments.
+
+    Returns:
+        CommandResults: CommandResults to return to XSOAR.
+    """
     is_id = is_issue_id(issue_id_or_key=issue_id_or_key)
     comments = extract_comments_entries_from_raw_response(response_comments=response_comments)
     outputs: Dict[str, Any] = {'Comment': comments}
@@ -1856,6 +1984,14 @@ def create_comments_command_results(response_comments: List[Dict[str, Any]],
 
 
 def extract_comments_entries_from_raw_response(response_comments: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """Extract the comment entries from the raw response of the comments.
+
+    Args:
+        response_comments (List[Dict[str, Any]]): The comments object returned from the API.
+
+    Returns:
+        List[Dict[str, Any]]: The comment entries that will be used to return to the user.
+    """
     comments: List[Dict[str, Any]] = []
     for comment in response_comments:
         comment_body = BeautifulSoup(comment.get('renderedBody')).get_text(
@@ -1870,6 +2006,18 @@ def extract_comments_entries_from_raw_response(response_comments: List[Dict[str,
 
 
 def edit_comment_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandResults:
+    """This command is in charge of editing a comment inside an issue.
+
+    Args:
+        client (JiraBaseClient): The Jira client.
+        args (Dict[str, str]): The arguments supplied by the user.
+
+    Raises:
+        DemistoException: If neither an issue id nor a key was supplied.
+
+    Returns:
+        CommandResults:  CommandResults to return to XSOAR.
+    """
     issue_id_or_key = args.get('issue_id', args.get('issue_key', ''))
     if not issue_id_or_key:
         raise DemistoException(ID_OR_KEY_MISSING_ERROR)
@@ -1884,36 +2032,32 @@ def edit_comment_command(client: JiraBaseClient, args: Dict[str, str]) -> Comman
             "type": "role",
             "value": visibility
         }
-    res = client.edit_comment(issue_id_or_key=issue_id_or_key, comment_id=comment_id, json_data=payload)
-    comment_body = BeautifulSoup(res.get('renderedBody')).get_text(
-    ) if res.get('renderedBody') else res.get('body')
-    comment_data = {
-        'Id': res.get('id'),
-        'Comment': comment_body,
-        'User': demisto.get(res, 'author.displayName'),
-        'Created': res.get('created')
-    }
-    is_id = is_issue_id(issue_id_or_key=issue_id_or_key)
-    outputs: Dict[str, Any] = {'Comments': comment_data}
-    if(is_id):
-        outputs |= {'Id': issue_id_or_key}
+    # The edit_comment actually returns the edited comment (the API returns the newly edited comment), but
+    # since I don't know if we have a way to append a CommanResults to a List of CommanResults in the context data,
+    # I just call get_comments, which will also get the newly edited comment, and return them.
+    client.edit_comment(issue_id_or_key=issue_id_or_key, comment_id=comment_id, json_data=payload)
+    res = client.get_comments(issue_id_or_key=issue_id_or_key)
+    if response_comments := res.get('comments', []):
+        return create_comments_command_results(
+            response_comments=response_comments, issue_id_or_key=issue_id_or_key, res=res
+        )
     else:
-        extracted_issue_id = extract_issue_id_from_comment_url(comment_url=res.get('self', ''))
-        outputs |= {'Id': extracted_issue_id, 'Key': issue_id_or_key}
-    human_readable = tableToMarkdown("Comments", comment_data)
-
-    # {'Ticket((val.Id && val.Id == obj.Id) || (val.Key && val.Key == obj.Key))': outputs},
-    # TODO How to update the comment Id that is found in Ticket.Comments.Id == comment_id??
-    return CommandResults(
-        outputs_prefix='Ticket',
-        outputs=outputs,
-        outputs_key_field='Comments.Id',
-        readable_output=human_readable,
-        raw_response=res
-    )
+        return CommandResults(readable_output='No comments were found in the ticket')
 
 
 def add_comment_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandResults:
+    """This command is in charge of adding a comment to an existing issue.
+
+    Args:
+        client (JiraBaseClient): The Jira client.
+        args (Dict[str, str]): The arguments supplied by the user.
+
+    Raises:
+        DemistoException: If neither an issue id nor a key was supplied.
+
+    Returns:
+        CommandResults: CommandResults to return to XSOAR.
+    """
     issue_id_or_key = args.get('issue_id', args.get('issue_key', ''))
     if not issue_id_or_key:
         raise DemistoException(ID_OR_KEY_MISSING_ERROR)
@@ -1939,6 +2083,18 @@ def add_comment_command(client: JiraBaseClient, args: Dict[str, str]) -> Command
 
 
 def get_transitions_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandResults:
+    """This command is in charge of returning all possible transitions for a given ticket.
+
+    Args:
+        client (JiraBaseClient): The Jira client.
+        args (Dict[str, str]): The arguments supplied by the user.
+
+    Raises:
+        DemistoException: If neither an issue id nor a key was supplied.
+
+    Returns:
+        CommandResults: CommandResults to return to XSOAR.
+    """
     issue_id_or_key = args.get('issue_id', args.get('issue_key', ''))
     if not issue_id_or_key:
         raise DemistoException(ID_OR_KEY_MISSING_ERROR)
@@ -1962,22 +2118,43 @@ def get_transitions_command(client: JiraBaseClient, args: Dict[str, str]) -> Com
 
 
 def get_id_offset_command(client: JiraBaseClient, args: Dict[str, Any]) -> CommandResults:
+    """This command is in charge of returning the id of the first issue created.
+
+    Args:
+        client (JiraBaseClient): The Jira client.
+        args (Dict[str, Any]): The arguments supplied by the user.
+
+    Returns:
+        CommandResults: CommandResults to return to XSOAR.
+    """
     jql_query = 'ORDER BY created ASC'
     query_params = create_query_params(jql_query=jql_query)
     res = client.run_query(query_params=query_params)
-    first_issue_id = res.get('issues', [])[0].get('id', '')
+    if not (issues := res.get('issues', [])):
+        return CommandResults(readable_output='No ID offset was found', raw_response=res)
+    first_issue_id = issues[0].get('id', '')
     return (
         CommandResults(
             outputs_prefix='Ticket',
             readable_output=f'ID Offset: {first_issue_id}',
             outputs={'IdOffSet': first_issue_id},
         )
-        if first_issue_id
-        else CommandResults(readable_output='No ID offset was found', raw_response=res)
     )
 
 
-def upload_file_command(client: JiraBaseClient, args: Dict[str, str]):
+def upload_file_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandResults:
+    """This command is in charge of uploading a file to a given issue.
+
+    Args:
+        client (JiraBaseClient): The Jira client.
+        args (Dict[str, str]): The arguments supplied by the user.
+
+    Raises:
+        DemistoException: If neither an issue id nor a key was supplied.
+
+    Returns:
+        CommandResults: CommandResults to return to XSOAR.
+    """
     entry_id = args.get('entry_id', '')
     issue_id_or_key = args.get('issue_id', args.get('issue_key', ''))
     if not issue_id_or_key:
@@ -2005,7 +2182,11 @@ def upload_file_command(client: JiraBaseClient, args: Dict[str, str]):
 
 
 def issue_get_attachment_command(client: JiraBaseClient, args: Dict[str, str]) -> List[Dict[str, Any]]:
-    """Get attachments content
+    """This command is in charge of getting an attachment's content that is found in an issue.
+
+    Args:
+        client (JiraBaseClient): The Jira client.
+        args (Dict[str, str]): The arguments supplied by the user.
 
     Returns:
         Dict[str, Any]: A dictionary the represents a file entry to be returned to the user
@@ -2021,6 +2202,18 @@ def issue_get_attachment_command(client: JiraBaseClient, args: Dict[str, str]) -
 
 
 def get_specific_fields_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandResults:
+    """This command is in charge of adding specific issue fields to context (which can return nested values)
+
+    Args:
+        client (JiraBaseClient): The Jira client.
+        args (Dict[str, str]): The arguments supplied by the user.
+
+    Raises:
+        DemistoException: If neither an issue id nor a key was supplied.
+
+    Returns:
+        CommandResults: CommandResults to return to XSOAR.
+    """
     issue_id_or_key = args.get('issue_id', args.get('issue_key', ''))
     if not issue_id_or_key:
         raise DemistoException(ID_OR_KEY_MISSING_ERROR)
@@ -2435,11 +2628,8 @@ def board_epic_list_command(client: JiraBaseClient, args: Dict[str, Any]) -> Com
         )
     return CommandResults(readable_output=f'No epics were found on board {board_id} with the respective arguments.')
 
-# Fetch
 
-# Polling
-
-
+# Authentication
 def ouath_start_command(client: JiraBaseClient, args: Dict[str, Any] = None) -> CommandResults:
     url = client.oauth_start()
     return CommandResults(readable_output=('In order to retrieve the authorization code, please authorize'
@@ -2470,33 +2660,38 @@ def test_module(client: JiraBaseClient) -> str:
 
 # Fetch Incidents
 def fetch_incidents(client: JiraBaseClient, issue_field_to_fetch_from: str, fetch_query: str, id_offset: int,
-                    fetch_attachments: bool, fetch_comments: bool, max_fetch_incidents: int, fetch_interval: int,
+                    fetch_attachments: bool, fetch_comments: bool, max_fetch_incidents: int,
                     first_fetch_interval: str, incoming_mirror: bool, outgoing_mirror: bool,
                     comment_tag: str, attachment_tag: str) -> List[Dict[str, Any]]:
-    """issue_field_to_fetch_from options:
-        - created date
-        - updated date
-        - status category change date
-        - id
+    """This function is the entry point of fetching incidents.
 
     Args:
-        issue_field_to_fetch_from (str): _description_
-        fetch_query (str): _description_
-        id_offset (str): _description_
-        fetch_attachments (str): _description_
-        fetch_comments (str): _description_
+        client (JiraBaseClient): The Jira client.
+        issue_field_to_fetch_from (str): The issue field to fetch from, id or created time.
+        fetch_query (str): The fetch query configured.
+        id_offset (int): The id from which to start the fetching from if we are fetching using id.
+        fetch_attachments (bool): Whether to fetch the attachments or not.
+        fetch_comments (bool): Whether to fetch the comments or not.
+        max_fetch_incidents (int): The maximum number of incidents to fetch per fetch.
+        first_fetch_interval (str): The first fetch interval to fetch from if the fetch timestamp is empty,
+        and we are fetching using created time.
+        incoming_mirror (bool): Whether incoming mirroring is configured or not.
+        outgoing_mirror (bool): Whether outgoing mirroring is configured or not.
+        comment_tag (str): The comment tag.
+        attachment_tag (str): The attachment tag.
+
+    Returns:
+        List[Dict[str, Any]]: A list of incidents.
     """
     last_run = demisto.getLastRun()
     demisto.debug(f'last_run: {last_run}' if last_run else 'last_run is empty')
-    # This set will hold all the issues ids that were fetched in the last fetch, to eliminate fetching duplicate incidents.
-    # TODO Mention that if we use set(), then an EOF error in XSOAR will return
-    # Since when we get the list from the last run, all the values in the list are strings, and we may need them
+    # This list will hold all the ids of the issues that were fetched in the last fetch, to eliminate fetching duplicate
+    # incidents. Since when we get the list from the last run, and all the values in the list are strings, and we may need them
     # to be integers (if we want to use the issues' ids in the query, they must be passed on as integers and not strings),
-    # so we convert the list to hold integer values
+    # we convert the list to hold integer values
     last_fetch_issue_ids: List[int] = convert_list_of_str_to_int(last_run.get('issue_ids', []))
     last_fetch_id = last_run.get('id', id_offset)
     new_fetch_created_time = last_fetch_created_time = last_run.get('created_date', '')
-    new_fetch_updated_time = last_fetch_updated_time = last_run.get('updated_date', '')
     incidents: List[Dict[str, Any]] = []
     demisto.debug('Creating the fetch query')
     fetch_incidents_query = create_fetch_incidents_query(
@@ -2504,10 +2699,9 @@ def fetch_incidents(client: JiraBaseClient, issue_field_to_fetch_from: str, fetc
         fetch_query=fetch_query,
         last_fetch_id=last_fetch_id,
         last_fetch_created_time=last_fetch_created_time,
-        last_fetch_updated_time=last_fetch_updated_time,
         first_fetch_interval=convert_string_date_to_specific_format(
             string_date=first_fetch_interval),
-        last_fetch_issue_ids=last_fetch_issue_ids)
+        issue_ids_to_exclude=last_fetch_issue_ids)
     demisto.debug(f'The fetch query: {fetch_incidents_query}' if fetch_incidents_query else 'No fetch query created')
     query_params = create_query_params(jql_query=fetch_incidents_query, max_results=max_fetch_incidents)
     new_issue_ids: List[int] = []
@@ -2519,8 +2713,6 @@ def fetch_incidents(client: JiraBaseClient, issue_field_to_fetch_from: str, fetc
             last_fetch_id = issue_id
             new_fetch_created_time = convert_string_date_to_specific_format(
                 string_date=demisto.get(issue, 'fields.created') or '')
-            new_fetch_updated_time = convert_string_date_to_specific_format(
-                string_date=demisto.get(issue, 'fields.updated') or '')
             demisto.debug(f'Creating an incident for Jira issue with ID: {issue_id}')
             remove_empty_custom_fields(issue=issue, issue_fields_id_to_name_mapping=query_res.get('names', {}))
             incidents.append(create_incident_from_issue(
@@ -2528,23 +2720,31 @@ def fetch_incidents(client: JiraBaseClient, issue_field_to_fetch_from: str, fetc
                 incoming_mirror=incoming_mirror, outgoing_mirror=outgoing_mirror,
                 comment_tag=comment_tag,
                 attachment_tag=attachment_tag))
+    # If we did no progress in terms of time (the created time stayed the same as the last fetch), we should keep the
+    # ids of the last fetch until progress is made, so we exclude them in the next fetch.
     if (
-        (issue_field_to_fetch_from == 'created date'
-         and new_fetch_created_time == last_fetch_created_time)
-        or (issue_field_to_fetch_from == 'updated date'
-            and new_fetch_updated_time == last_fetch_updated_time)
+        issue_field_to_fetch_from == 'created date'
+        and new_fetch_created_time == last_fetch_created_time
     ):
         new_issue_ids.extend(last_fetch_issue_ids)
     demisto.setLastRun({
         'issue_ids': new_issue_ids or last_fetch_issue_ids,
         'id': last_fetch_id,
         'created_date': new_fetch_created_time or last_fetch_created_time,
-        'updated_date': new_fetch_updated_time or last_fetch_updated_time,
     })
     return incidents
 
 
 def remove_empty_custom_fields(issue: Dict[str, Any], issue_fields_id_to_name_mapping: Dict[str, str]):
+    """This function will remove empty custom fields returned by the API, and if the custom field is not empty,
+    then parse it to also show the display name of the custom field, since the ids of the custom fields are not
+    intuitive.
+
+    Args:
+        issue (Dict[str, Any]): The issue object returned from the API.
+        issue_fields_id_to_name_mapping (Dict[str, str]): A mapping between the ids and the display names of the
+        issue fields.
+    """
     issue_fields = issue.get('fields', {})
     #  It is important to iterate over list(issue_fields) and not issue_fields or issue_fields.items(),
     # because we are deleting entries while iterating over the dictionary, if we do not, we will get the error,
@@ -2560,6 +2760,17 @@ def remove_empty_custom_fields(issue: Dict[str, Any], issue_fields_id_to_name_ma
 
 
 def convert_list_of_str_to_int(list_to_convert: List[str] | List[int]) -> List[int]:
+    """This function converts a list of strings to a list of integers.
+
+    Args:
+        list_to_convert (List[str] | List[int]): A list of strings in numeric form.
+
+    Raises:
+        DemistoException: If the list has a string that is not in numeric form.
+
+    Returns:
+        List[int]: A list of integers
+    """
     converted_list: List[int] = []
     for item in list_to_convert:
         try:
@@ -2572,37 +2783,33 @@ def convert_list_of_str_to_int(list_to_convert: List[str] | List[int]) -> List[i
 
 
 def create_fetch_incidents_query(issue_field_to_fetch_from: str, fetch_query: str,
-                                 last_fetch_id: int, last_fetch_created_time: str, last_fetch_updated_time: str,
-                                 first_fetch_interval: str, last_fetch_issue_ids: List[int]) -> str:
-    """_summary_
+                                 last_fetch_id: int, last_fetch_created_time: str,
+                                 first_fetch_interval: str, issue_ids_to_exclude: List[int]) -> str:
+    """This is in charge of returning the query to use to fetch the appropriate incidents.
     NOTE: It is important to add 'ORDER BY {the issue field to fetch from} ASC' in order to retrieve the data in ascending order,
     so we could keep save the latest fetch incident (according to issue_field_to_fetch_from) and fetch only new incidents,
     in other words, incidents that are newer with respect to issue_field_to_fetch_from.
     Args:
-        issue_field_to_fetch_from (str): _description_
-        fetch_interval (int): _description_
-        fetch_query (str): _description_
-        last_fetch_id (str): _description_
-        last_fetch_created_time (str): _description_
-        last_fetch_updated_time (str): _description_
-        last_fetch_status_category_change_date (str): _description_
-        first_fetch_interval (str): _description_
+        issue_field_to_fetch_from (str): The issue field to fetch from, id or created time.
+        fetch_query (str): The fetch query configured.
+        last_fetch_id (str): The id of the last fetched issue.
+        last_fetch_created_time (str): The created time of the last fetch issue.
+        first_fetch_interval (str): The first fetch interval to fetch from if the fetch timestamp is empty,
+        and we are fetching using created time.
+        issue_ids_to_exclude (List[int]): The ids of the issues that we want to exclude.
 
     Raises:
-        DemistoException: _description_
+        DemistoException: If we were not able to create a fetch query.
 
     Returns:
-        str: _description_
+        str: The query to use to fetch the appropriate incidents.
     """
-    exclude_issue_ids_query = f"AND ID NOT IN ({', '.join(map(str, last_fetch_issue_ids))})" if last_fetch_issue_ids else ''
+    exclude_issue_ids_query = f"AND ID NOT IN ({', '.join(map(str, issue_ids_to_exclude))})" if issue_ids_to_exclude else ''
     if issue_field_to_fetch_from == 'id':
         return f'{fetch_query} AND id >= {last_fetch_id} {exclude_issue_ids_query} ORDER BY id ASC'
     if issue_field_to_fetch_from == 'created date':
         return (f'{fetch_query} AND created >= "{last_fetch_created_time or first_fetch_interval}" {exclude_issue_ids_query}'
                 ' ORDER BY created ASC')
-    elif issue_field_to_fetch_from == 'updated date':
-        return (f'{fetch_query} AND updated >= "{last_fetch_updated_time or first_fetch_interval}" {exclude_issue_ids_query}'
-                ' ORDER BY updated ASC')
     raise DemistoException('Could not create the proper fetch query')
 
 
@@ -2615,7 +2822,7 @@ def get_mirror_type(incoming_mirror: bool, outgoing_mirror: bool) -> str | None:
         should_mirror_out (bool): If we should implement mirroring out
 
     Returns:
-        _type_: The mirror type (Both, In, Out), or None if we should not mirror an incident.
+        str | None: The mirror type (Both, In, Out), or None if we should not mirror an incident.
     """
     mirror_type = None
     if incoming_mirror and outgoing_mirror:
@@ -2634,7 +2841,7 @@ def get_comments_entries_for_fetched_incident(client: JiraBaseClient, issue_id_o
         issue_id_or_key (str): The issue id or key
 
     Returns:
-        List[Dict[str, Any]]: _description_
+        List[Dict[str, Any]]: The comment entries for a fetched incident.
     """
     try:
         get_comments_response = client.get_comments(issue_id_or_key=issue_id_or_key)
@@ -2647,6 +2854,15 @@ def get_comments_entries_for_fetched_incident(client: JiraBaseClient, issue_id_o
 
 
 def get_attachments_entries_for_fetched_incident(client: JiraBaseClient, attachment_ids: List[str]) -> List[Dict[str, Any]]:
+    """Return the attachment entries for a fetched incident
+
+    Args:
+        client (JiraBaseClient): The Jira client.
+        attachment_ids (List[str]): The ids of the attachments.
+
+    Returns:
+        List[Dict[str, Any]]: The attachment entries for a fetched incident.
+    """
     attachments_entries: List[Dict[str, Any]] = [
         create_file_info_from_attachment(
             client=client, attachment_id=attachment_id
@@ -2659,6 +2875,21 @@ def get_attachments_entries_for_fetched_incident(client: JiraBaseClient, attachm
 def create_incident_from_issue(client: JiraBaseClient, issue: Dict[str, Any], fetch_attachments: bool, fetch_comments: bool,
                                incoming_mirror: bool, outgoing_mirror: bool,
                                comment_tag: str, attachment_tag: str) -> Dict[str, Any]:
+    """Create an incident from a Jira Issue.
+
+    Args:
+        client (JiraBaseClient): The Jira client.
+        issue (Dict[str, Any]): The issue object to create the incident from.
+        fetch_attachments (bool): Whether to fetch the attachments or not.
+        fetch_comments (bool): Whether to fetch the comments or not.
+        incoming_mirror (bool): Whether incoming mirroring is configured or not.
+        outgoing_mirror (bool): Whether outgoing mirroring is configured or not.
+        comment_tag (str): The comment tag.
+        attachment_tag (str): The attachment tag.
+
+    Returns:
+        Dict[str, Any]: A dictionary that is represents an incident.
+    """
     issue_description: str = JiraIssueFieldsParser.get_description_context(issue_data=issue).get('Description') or ''
     issue_id = str(issue.get('id'))
     labels = [
@@ -2681,9 +2912,8 @@ def create_incident_from_issue(client: JiraBaseClient, issue: Dict[str, Any], fe
     issue['extractedSubtasks'] = JiraIssueFieldsParser.get_subtasks_context(issue_data=issue).get('Subtasks') or []
     issue['extractedCreator'] = JiraIssueFieldsParser.get_creator_context(issue_data=issue).get('Creator') or ''
     issue['extractedComponents'] = JiraIssueFieldsParser.get_components_context(issue_data=issue).get('Components') or []
-    name = demisto.get(issue, 'fields.summary')
-    if name:
-        name = f"Jira issue: {issue.get('id')}"
+
+    incident_name = f"Jira issue: {issue.get('id')}"
 
     severity = get_jira_issue_severity(issue_field_priority=demisto.get(issue, 'fields.priority') or {})
 
@@ -2719,7 +2949,7 @@ def create_incident_from_issue(client: JiraBaseClient, issue: Dict[str, Any], fe
     ]
     issue['mirror_instance'] = demisto.integrationInstance()
     return {
-        "name": name,
+        "name": incident_name,
         "labels": labels,
         "details": issue_description,
         "severity": severity,
@@ -2729,6 +2959,14 @@ def create_incident_from_issue(client: JiraBaseClient, issue: Dict[str, Any], fe
 
 
 def get_jira_issue_severity(issue_field_priority: Dict[str, Any]) -> int:
+    """Returns the severity of the incident according to the priority of the issue.
+
+    Args:
+        issue_field_priority (Dict[str, Any]): The priority field of the issue.
+
+    Returns:
+        int: A severity integer, where 4 is the highest, and 0 the lowest.
+    """
     severity = 0
     if issue_priority_name := issue_field_priority.get('name', ''):
         if issue_priority_name == 'Highest':
@@ -2862,7 +3100,6 @@ def main() -> None:
                 fetch_attachments=fetch_attachments,
                 fetch_comments=fetch_comments,
                 max_fetch_incidents=arg_to_number(max_fetch) or DEFAULT_FETCH_LIMIT,
-                fetch_interval=arg_to_number(fetch_interval) or DEFAULT_FETCH_INTERVAL,
                 first_fetch_interval=first_fetch_interval,
                 incoming_mirror=argToBoolean(incoming_mirror),
                 outgoing_mirror=argToBoolean(outgoing_mirror),
