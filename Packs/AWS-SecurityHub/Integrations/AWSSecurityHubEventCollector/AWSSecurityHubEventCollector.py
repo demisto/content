@@ -31,23 +31,23 @@ def get_events(client: boto3.client, start_time: datetime | None = None,
         tuple[list, CommandResults]: A tuple containing the events and the CommandResults object.
     """
     kwargs = {}
-    _filters = {}
+    filters = {}
 
     if end_time and not start_time:
         raise ValueError('start_time must be set if end_time is used.')
 
     if start_time:
-        _filters['UpdatedAt'] = [{
+        filters['UpdatedAt'] = [{
             'Start':
                 start_time.strftime('%Y-%m-%dT%H:%M:%SZ'),
             'End':
                 end_time.strftime('%Y-%m-%dT%H:%M:%SZ') if end_time else datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ')
         }]
 
-    if _filters:
+    if filters:
         # We send kwargs because passing Filters=None to get_findings() tries to use a None value for filters,
         # which raises an error.
-        kwargs = {'Filters': _filters}
+        kwargs = {'Filters': filters}
 
     events = []
 
@@ -203,12 +203,7 @@ def main():
 
             # Saves next_run for the time fetch-events is invoked
             demisto.setLastRun(next_run)
-
-            send_events_to_xsiam(
-                events,
-                vendor=VENDOR,
-                product=PRODUCT
-            )
+            send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
 
     # Log exceptions and return errors
     except Exception as e:
