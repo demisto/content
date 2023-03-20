@@ -21,7 +21,8 @@ ERROR_FORMAT = 'Error in API call to VMRay [{}] - {}'
 RELIABILITY = demisto.params().get('integrationReliability', DBotScoreReliability.C) or DBotScoreReliability.C
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # type: ignore[attr-defined]  # pylint: disable=no-member
+# Disable insecure warnings
+urllib3.disable_warnings()
 
 # Remove proxy
 PROXIES = handle_proxy()
