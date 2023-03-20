@@ -3278,5 +3278,7 @@ inputs:
     The header that holds the original Authentication-Results header value. This can be used when an intermediate server changes the original email and holds the original header value in a different header. Note - Use this only if you trust the server creating this header.
   playbookInputQuery:
 outputs: []
+tests:
+- No tests (auto formatted)
 fromversion: 6.1.0
 toversion: 6.4.9
