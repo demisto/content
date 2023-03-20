@@ -1051,7 +1051,7 @@ def main() -> None:  # pragma: no cover
 
         if command == 'test-module':
             # This is the call made when pressing the integration test button.
-            result = connection_test(client)
+            return_results(connection_test(client))
 
         elif command == 'aws-waf-ip-set-create':
             result = create_ip_set_command(client, args)
