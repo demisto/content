@@ -349,7 +349,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: AzureWAF.ResourceGroup.id
+              simple: AzureWAF.ResourceGroup
             iscontext: true
     continueonerrortype: ""
     view: |-
