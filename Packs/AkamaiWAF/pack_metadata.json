@@ -1,0 +1,21 @@
+{
+    "name": "Akamai WAF",
+    "description": "Modified one function and added serven commands.\n1. Corrected the description for function \"list_papi_property_bygroup\"\n2. Improved the function \"list_papi_property_bygroup_ec\" to return more context values\n3. Improved the command \"get_appsec_config_latest_version_command\" to return an error if the security configuration with the name provided is not found\n4. Added new command \"list_papi_property_bygroup_command\"\n    - Lists properties available for the current contract and group.\n5. Added new command \"get_papi_property_byname_command\"\n    - Get papi property info without default rule. To get default rule, please use \"get-papi-property-rule\" command.\n6. Added new command \"get_papi_property_byid_command\"\n    - get papi property info by id without default rule. To get default rule, please use \"get-papi-property-rule\" command.\n7. Added new command \"new_papi_proerty_version_command\"\n    - Create a new property version based on any previous version. All data from the createFromVersion populates the new version, including its rules and hostnames.\n8. Added new command \"list_papi_proerty_activations_command\"\n    - This lists all activations for all versions of a property, on both production and staging networks.\n9. Added new command \"list_appsec_configuration_activation_history_command\"\n    - Lists the activation history for a configuration. The history is an array in descending order of submitDate. The most recent submitted activation lists first. Products: All.\n10. Added new command \"list_papi_property_by_hostname_command\"\n    - Lists active property hostnames for all properties available in an account.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "David Shen",
+    "url": "",
+    "email": "",
+    "created": "2023-03-20T20:31:27Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "davistonehub"
+    ]
+}
