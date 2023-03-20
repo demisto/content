@@ -3,13 +3,13 @@ import json
 from datetime import datetime, timedelta
 import demistomock as demisto
 from CommonServerPython import BaseClient
-from FireEyeHXEventCollector import populate_modeling_rule_fields, fetch_events,\
-     get_events_command, Client, DATE_FORMAT
+from FireEyeHXEventCollector import populate_modeling_rule_fields, fetch_events, get_events_command, Client, DATE_FORMAT
 
 
 def util_load_json(path):
     with io.open(path, mode='r', encoding='utf-8') as f:
         return json.loads(f.read())
+
 
 BASE_URL = 'https://example.com'
 EVENTS_RES = util_load_json('test_data/events_res.json')
@@ -24,7 +24,7 @@ def test_populate_modeling_rule_fields():
 def test_fetch_events(mocker):
     client = Client(BASE_URL, 'username', 'password', False, False)
     get_events_request_mock = mocker.patch.object(client, 'get_events_request', return_value=EVENTS_RES)
-    send_events_mocker =mocker.patch('FireEyeHXEventCollector.send_events_to_xsiam')
+    send_events_mocker = mocker.patch('FireEyeHXEventCollector.send_events_to_xsiam')
 
     to_date = (datetime.now() + timedelta(days=1)).strftime(DATE_FORMAT)
     filter_query = '{"operator": "between", "arg": ["2023-02-01T11:21:12.135Z",' \

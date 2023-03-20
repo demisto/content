@@ -178,7 +178,9 @@ def fetch_events(
 def populate_modeling_rule_fields(events: list):
     for event in events:
         try:
-            event['_time'] = timestamp_to_datestring(arg_to_datetime(event.get('event_at')).timestamp() * 1000)
+            event_date = arg_to_datetime(event.get('event_at'))
+            if event_date:
+                event['_time'] = timestamp_to_datestring(event_date.timestamp() * 1000)
         except TypeError:
             # modeling rule will default on ingestion time if _time is missing
             pass
