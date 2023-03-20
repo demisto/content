@@ -18,7 +18,7 @@ configuration:
   name: version
   required: false
   type: 15
-  defaultValue: V9x
+  defaultvalue: V9x
   options:
   - V9x
   - V10x
@@ -2055,7 +2055,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.9.42476
+  dockerimage: demisto/python3:3.10.10.49934
 fromversion: 6.5.0
 tests:
 - Test_McAfeeNSMv2
