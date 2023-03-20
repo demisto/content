@@ -2198,7 +2198,7 @@ def assign_device_policy_command(client: Client, args: Dict) -> CommandResults:
     Args:
         client(Client): client - A McAfeeNSM client.
         args(Dict): - The function arguments.
-    Returns: 
+    Returns:
         A CommandResult object with a success or failure message.
     """
     device_id = arg_to_number(args.get('device_id'))
