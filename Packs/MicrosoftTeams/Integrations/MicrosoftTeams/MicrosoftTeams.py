@@ -1305,7 +1305,7 @@ def is_bot_in_chat(chat_id: str) -> bool:
     url_suffix = f"v1.0/chats/{chat_id}/installedApps"
     res = http_request('GET', urljoin(GRAPH_BASE_URL, url_suffix),
                        params={"$expand": "teamsApp,teamsAppDefinition",
-                               "$filter": "teamsApp/externalId eq '{BOT_ID}'"})
+                               "$filter": f"teamsApp/externalId eq '{BOT_ID}'"})
     return bool(res.get('value'))   # type: ignore
 
 
