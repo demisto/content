@@ -13,6 +13,8 @@ LABEL_STATUS_ACTIVE = "LABEL_STATUS_ACTIVE"
 
 RISKY_USER = "Risky User"
 
+LEAVING_ORG_USER = "Leaving Org User"
+
 ENTRY_TYPE_EVENT = "ENTRY_TYPE_EVENT"
 
 LABEL_STATUS_RESOLVED = "LABEL_STATUS_RESOLVED"
@@ -340,15 +342,17 @@ class RecoClient(BaseClient):
         try:
             response = self._http_request(
                 method="PUT",
-                url_suffix=f"/entry-labels/{entry_id}",
+                url_suffix="/entry-label-relations",
                 timeout=RECO_API_TIMEOUT_IN_SECONDS,
-                data=json.dumps(
-                    {
-                        "entryId": entry_id,
-                        "entryType": entry_type,
-                        "entryLabelsNamesAndCount": {"name": label_name, "count": 1},
-                    }
-                ),
+                data=json.dumps({"labelRelations": [{
+                    "labelName": label_name,
+                    "entryId": entry_id,
+                    "count": 1,
+                    "confidence": 1,
+                    "entryType": entry_type,
+                    "labelStatus": label_status,
+                    "attributes": {}
+                }]}),
             )
         except Exception as e:
             demisto.error(f"Set entry label relations error: {str(e)}")
@@ -440,6 +444,17 @@ def add_risky_user_label(reco_client: RecoClient, email_address: str) -> Command
     )
 
 
+def add_leaving_org_user(reco_client: RecoClient, email_address: str) -> CommandResults:
+    """Tag user as leaving org."""
+    raw_response = reco_client.set_entry_label_relations(
+        email_address, LEAVING_ORG_USER, LABEL_STATUS_ACTIVE, ENTRY_TYPE_USER
+    )
+    return CommandResults(
+        raw_response=raw_response,
+        readable_output=f"User {email_address} labeled as leaving org user",
+    )
+
+
 def enrich_incident(
     reco_client: RecoClient, single_incident: Dict[str, Any]
 ) -> Dict[str, Any]:
@@ -509,7 +524,7 @@ def get_assets_user_has_access(
             assets_list,
             headers=[
                 "file_name",
-                "owner",
+                "file_owner",
                 "file_url",
                 "currently_permitted_users",
                 "visibility",
@@ -651,11 +666,16 @@ def main() -> None:
             email_address = demisto.args()["email_address"]
             result = add_risky_user_label(reco_client, email_address)
             return_results(result)
+        elif command == "reco-add-leaving-org-user-label":
+            email_address = demisto.args()["email_address"]
+            result = add_leaving_org_user(reco_client, email_address)
+            return_results(result)
         elif command == "reco-get-assets-user-has-access-to":
+            only_sensitive = demisto.args().get("only_sensitive", False)
             result = get_assets_user_has_access(
                 reco_client,
-                demisto.args()["asset_owner"],
-                demisto.args()["only_sensitive"],
+                demisto.args()["email_address"],
+                only_sensitive,
             )
             return_results(result)
         else:

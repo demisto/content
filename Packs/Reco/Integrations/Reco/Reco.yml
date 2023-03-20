@@ -149,6 +149,17 @@ script:
     outputs:
     - contextPath: Reco.Assets
       description: Assets user has access to
+  - arguments:
+      - default: false
+        description: Email address of the user to tag as levaing org user
+        isArray: false
+        name: email_address
+        required: true
+        secret: false
+    deprecated: false
+    description: Tag a user as leaving org user in Reco
+    execution: false
+    name: reco-add-leaving-org-user-label
 tests:
 - No tests
 fromversion: 6.5.0
