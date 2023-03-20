@@ -30,7 +30,7 @@ AWS - Security Group Remediation playbook replaces current security groups assoc
 ![AWS - Security Group Remediation](https://raw.githubusercontent.com/demisto/content/master/Packs/AWS-Enrichment-Remediation/doc_files/AWS_-_Security_Group_Remediation.png)
 
 #### AWS - Security Group Remediation v2
-The AWS - Security Group Remediation playbook more selectively determines which security groups are over-permissive, copies them and removes only the over-permissive portions.
+The AWS - Security Group Remediation v2 playbook more selectively determines which security groups are over-permissive, copies them and removes only the over-permissive portions.
 
 ![AWS - Security Group Remediation v2](https://raw.githubusercontent.com/demisto/content/575733d345d562597711727c4f8f4b603ef49096/Packs/AWS-Enrichment-Remediation/doc_files/AWS_-_Security_Group_Remediation_v2.png)
 
