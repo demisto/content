@@ -1,4 +1,4 @@
-import cv2
+from cv2 import cv2
 import numpy as np
 from PIL import Image
 import io
@@ -10,7 +10,6 @@ from CommonServerPython import *  # noqa: F401
 def sharpened(image: np.ndarray):
     kernel = np.array([[-1, -1, -1], [-1, 8, -1], [-1, -1, 0]], np.float32)
     kernel = 1 / 3 * kernel
-    
     sharp = cv2.filter2D(image, -1, kernel)
     return sharp
 
