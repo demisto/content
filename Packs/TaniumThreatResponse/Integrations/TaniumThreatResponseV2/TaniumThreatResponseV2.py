@@ -1054,7 +1054,7 @@ def alert_update_state(client, data_args) -> Tuple[str, dict, Union[list, dict]]
         :rtype: ``tuple``
 
     """
-    alert_ids = [int(alert) for alert in argToList(data_args.get('alert_ids'))]
+    alert_ids = argToList(data_args.get('alert_ids'))
     state = data_args.get('state')
 
     body = {
