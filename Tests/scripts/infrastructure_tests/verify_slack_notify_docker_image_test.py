@@ -15,4 +15,4 @@ def test_verify_same_docker_image_slack_notify_gitlab_ci():
     gitlab_ci_yml = yaml.load(gitlab_ci_path)
     slack_notify_yml = yaml.load(slack_notify_path)
 
-    assert gitlab_ci_yml.get('default', {}).get('image', '') == slack_notify_yml.get('default', {}).get('image', '')
+    assert gitlab_ci_yml['default']['image'] == slack_notify_yml['default']['image']
