@@ -1332,7 +1332,7 @@ tasks:
     isoversize: false
     isautoswitchedtoquietmode: false
   "42":
-    id: "42"
+    id: '42'
     taskid: 2c7ee888-9db0-4346-8e14-89b6ebe0a05b
     type: regular
     task:
