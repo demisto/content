@@ -78,19 +78,17 @@ def chatgpt_output(response):
         model = response.get('model')
         createdTime = response.get('created')
         id = response.get('id')
-        choices = response.get('choices')[0]
-        choicesMSG = choices.get('message')
-        choicesContent = choicesMSG.get('content').strip("\n")
+        choices = response.get('choices')
         responseUsage = response.get('usage')
         promptTokens = responseUsage.get('prompt_tokens')
         completionTokens = responseUsage.get('completion_tokens')
         totalTokens = responseUsage.get('total_tokens')
         context = [{'ID': id, 'Model': model,
-                    'ChatGPT Response': choicesContent, 'Created Time': createdTime,
+                    'ChatGPT Response': choice.get('message').get('content').strip('\n'), 'Created Time': createdTime,
                     'Number of Prompt Tokens': promptTokens,
                     'Number of Completion Tokens': completionTokens,
                     'Number of Total Tokens': totalTokens
-                    }]
+                    } for choice in choices]
 
     markdown = tableToMarkdown(
         '### ChatGPT API Response ###',
