@@ -130,9 +130,11 @@ def main() -> None:
 
             if command == 'fetch-events':
                 should_push_events = True
+                last_updated = arg_to_datetime(arg=alerts[-1].get('state', {}).get('last_updated')) if alerts else None
                 current_last_run = {
                     'next_page_token': next_page_token,
-                    'lastRun': alerts[-1].get('state', {}).get('last_updated')[:-6] if alerts else last_fetch
+                    'lastRun': last_updated.strftime(DATE_FORMAT) if last_updated else None
+                    if alerts else last_fetch
                 }
                 demisto.setLastRun(current_last_run)
                 demisto.debug(f'{current_last_run=}')
