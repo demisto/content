@@ -1,0 +1,128 @@
+{
+    "forcepoint_email_security_raw": {
+      "trueSrc": {
+        "type": "string",
+        "is_array": false
+      },
+      "src": {
+        "type": "string",
+        "is_array": false
+      },
+      "dst": {
+        "type": "string",
+        "is_array": false
+      },
+      "dvc": {
+        "type": "string",
+        "is_array": false
+      },
+      "fnameAndfileHash": {
+        "type": "string",
+        "is_array": false
+      },
+      "spriv": {
+        "type": "string",
+        "is_array": false
+      },
+      "cefName": {
+        "type": "string",
+        "is_array": false
+      },
+      "cefDeviceEventClassId": {
+        "type": "string",
+        "is_array": false
+      },
+      "hybridSpamScore": {
+        "type": "string",
+        "is_array": false
+      },
+      "localSpamScore": {
+        "type": "string",
+        "is_array": false
+      },
+      "cefSeverity": {
+        "type": "string",
+        "is_array": false
+      },
+      "cefDeviceVersion": {
+        "type": "string",
+        "is_array": false
+      },
+      "dvchost": {
+        "type": "string",
+        "is_array": false
+      },
+      "messageId": {
+        "type": "string",
+        "is_array": false
+      },
+      "suser": {
+        "type": "string",
+        "is_array": false
+      },
+      "duser": {
+        "type": "string",
+        "is_array": true
+      },
+      "from": {
+        "type": "string",
+        "is_array": true
+      },
+      "to": {
+        "type": "string",
+        "is_array": true
+      },
+      "cc": {
+        "type": "string",
+        "is_array": true
+      },
+      "in": {
+        "type": "string",
+        "is_array": true
+      },
+      "act": {
+        "type": "string",
+        "is_array": true
+      },
+      "url": {
+        "type": "string",
+        "is_array": true
+      },
+      "cat": {
+        "type": "string",
+        "is_array": true
+      },
+      "cs1": {
+        "type": "string",
+        "is_array": true
+      },
+      "exceptionReason": {
+        "type": "string",
+        "is_array": true
+      },
+      "msg": {
+        "type": "string",
+        "is_array": true
+      },
+      "x_mailer": {
+        "type": "string",
+        "is_array": true
+      },
+      "externalId": {
+        "type": "string",
+        "is_array": true
+      },
+      "reason": {
+        "type": "string",
+        "is_array": true
+      },
+      "page": {
+        "type": "string",
+        "is_array": true
+      },
+      "element": {
+        "type": "string",
+        "is_array": true
+      }
+    }
+  }
