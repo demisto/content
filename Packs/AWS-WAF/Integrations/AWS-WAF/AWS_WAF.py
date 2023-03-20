@@ -430,7 +430,7 @@ def connection_test(client: boto3.client) -> str:
     return 'ok'
 
 
-def create_ip_set_command(client: boto3.client, args) -> CommandResults:
+def create_ip_set_command(client: boto3.client, args: dict) -> CommandResults:
     """ Command to create an IP set"""
     tag_keys = argToList(args.get('tag_key')) or []
     tag_values = argToList(args.get('tag_value')) or []
@@ -458,7 +458,7 @@ def create_ip_set_command(client: boto3.client, args) -> CommandResults:
                           outputs_key_field='Id')
 
 
-def get_ip_set_command(client: boto3.client, args) -> CommandResults:
+def get_ip_set_command(client: boto3.client, args: dict) -> CommandResults:
     """ Command to get a specific IP set"""
     kwargs = {
         'Name': args.get('name', ''),
@@ -479,7 +479,7 @@ def get_ip_set_command(client: boto3.client, args) -> CommandResults:
                           outputs_key_field='Id')
 
 
-def update_ip_set_command(client: boto3.client, args) -> CommandResults:
+def update_ip_set_command(client: boto3.client, args: dict) -> CommandResults:
     """ Command to update a specific IP set"""
     kwargs = {
         'Name': args.get('name', ''),
@@ -510,7 +510,7 @@ def update_ip_set_command(client: boto3.client, args) -> CommandResults:
                           raw_response=response)
 
 
-def list_ip_set_command(client: boto3.client, args) -> CommandResults:
+def list_ip_set_command(client: boto3.client, args: dict) -> CommandResults:
     """ Command to get a list of all IP sets"""
     kwargs = {
         'Scope': SCOPE_MAP[args.get('scope') or DEFAULT_SCOPE],
@@ -535,7 +535,7 @@ def list_ip_set_command(client: boto3.client, args) -> CommandResults:
                           outputs_key_field='Id')
 
 
-def delete_ip_set_command(client: boto3.client, args) -> CommandResults:
+def delete_ip_set_command(client: boto3.client, args: dict) -> CommandResults:
     """ Command to delete a specific IP set"""
     kwargs = {
         'Name': args.get('name', ''),
@@ -555,7 +555,7 @@ def delete_ip_set_command(client: boto3.client, args) -> CommandResults:
                           raw_response=response)
 
 
-def create_regex_set_command(client: boto3.client, args) -> CommandResults:
+def create_regex_set_command(client: boto3.client, args: dict) -> CommandResults:
     """ Command to create a regex set"""
     tag_keys = argToList(args.get('tag_key')) or []
     tag_values = argToList(args.get('tag_value')) or []
@@ -583,7 +583,7 @@ def create_regex_set_command(client: boto3.client, args) -> CommandResults:
                           outputs_key_field='Id')
 
 
-def get_regex_set_command(client: boto3.client, args) -> CommandResults:
+def get_regex_set_command(client: boto3.client, args: dict) -> CommandResults:
     """ Command to get a specific regex set"""
     kwargs = {
         'Name': args.get('name', ''),
@@ -604,7 +604,7 @@ def get_regex_set_command(client: boto3.client, args) -> CommandResults:
                           outputs_key_field='Id')
 
 
-def update_regex_set_command(client: boto3.client, args) -> CommandResults:
+def update_regex_set_command(client: boto3.client, args: dict) -> CommandResults:
     """ Command to update a specific regex set"""
     kwargs = {
         'Name': args.get('name', ''),
@@ -635,7 +635,7 @@ def update_regex_set_command(client: boto3.client, args) -> CommandResults:
                           raw_response=response)
 
 
-def list_regex_set_command(client: boto3.client, args) -> CommandResults:
+def list_regex_set_command(client: boto3.client, args: dict) -> CommandResults:
     """ Command to get a list of all regex sets"""
     kwargs = {
         'Scope': SCOPE_MAP[args.get('scope') or DEFAULT_SCOPE],
@@ -660,7 +660,7 @@ def list_regex_set_command(client: boto3.client, args) -> CommandResults:
                           outputs_key_field='Id')
 
 
-def delete_regex_set_command(client: boto3.client, args) -> CommandResults:
+def delete_regex_set_command(client: boto3.client, args: dict) -> CommandResults:
     """ Command to delete a specific regex set"""
     kwargs = {
         'Name': args.get('name', ''),
@@ -680,7 +680,7 @@ def delete_regex_set_command(client: boto3.client, args) -> CommandResults:
                           raw_response=response)
 
 
-def list_rule_group_command(client: boto3.client, args) -> CommandResults:
+def list_rule_group_command(client: boto3.client, args: dict) -> CommandResults:
     """ Command to get a list of all rule groups"""
     kwargs = {
         'Scope': SCOPE_MAP[args.get('scope') or DEFAULT_SCOPE],
@@ -705,7 +705,7 @@ def list_rule_group_command(client: boto3.client, args) -> CommandResults:
                           outputs_key_field='Id')
 
 
-def get_rule_group_command(client: boto3.client, args) -> CommandResults:
+def get_rule_group_command(client: boto3.client, args: dict) -> CommandResults:
     """ Command to get a specific rule group"""
     kwargs = {
         'Name': args.get('name', ''),
@@ -744,7 +744,7 @@ def get_rule_group_command(client: boto3.client, args) -> CommandResults:
                           outputs_key_field='Id')
 
 
-def delete_rule_group_command(client: boto3.client, args) -> CommandResults:
+def delete_rule_group_command(client: boto3.client, args: dict) -> CommandResults:
     """ Command to delete a specific rule group"""
     kwargs = {
         'Name': args.get('name', ''),
@@ -778,7 +778,7 @@ def update_rule_group_rules(client: boto3.client,
     return client.update_rule_group(**kwargs)
 
 
-def create_rule_group_command(client: boto3.client, args) -> CommandResults:
+def create_rule_group_command(client: boto3.client, args: dict) -> CommandResults:
     """ Command to create a rule group"""
     tag_keys = argToList(args.get('tag_key')) or []
     tag_values = argToList(args.get('tag_value')) or []
@@ -813,7 +813,7 @@ def create_rule_group_command(client: boto3.client, args) -> CommandResults:
                           outputs_key_field='Id')
 
 
-def create_ip_rule_command(client: boto3.client, args) -> CommandResults:
+def create_ip_rule_command(client: boto3.client, args: dict) -> CommandResults:
     """ Command to create an ip rule"""
     kwargs = get_required_args_for_get_rule_group(args)
 
@@ -834,7 +834,7 @@ def create_ip_rule_command(client: boto3.client, args) -> CommandResults:
                           raw_response=response)
 
 
-def create_country_rule_command(client: boto3.client, args) -> CommandResults:
+def create_country_rule_command(client: boto3.client, args: dict) -> CommandResults:
     """ Command to create a country rule"""
     kwargs = get_required_args_for_get_rule_group(args)
 
@@ -855,7 +855,7 @@ def create_country_rule_command(client: boto3.client, args) -> CommandResults:
                           raw_response=response)
 
 
-def create_string_match_rule_command(client: boto3.client, args) -> CommandResults:
+def create_string_match_rule_command(client: boto3.client, args: dict) -> CommandResults:
     """ Command to create a string match rule"""
     kwargs = get_required_args_for_get_rule_group(args)
 
@@ -876,7 +876,7 @@ def create_string_match_rule_command(client: boto3.client, args) -> CommandResul
                           raw_response=response)
 
 
-def delete_rule_command(client: boto3.client, args) -> CommandResults:
+def delete_rule_command(client: boto3.client, args: dict) -> CommandResults:
     """ Command to delete a specific rule"""
     kwargs = get_required_args_for_get_rule_group(args)
 
@@ -896,7 +896,7 @@ def delete_rule_command(client: boto3.client, args) -> CommandResults:
                           raw_response=response)
 
 
-def add_ip_statement_command(client: boto3.client, args) -> CommandResults:
+def add_ip_statement_command(client: boto3.client, args: dict) -> CommandResults:
     """ Command to add an ip statement to a rule"""
     kwargs = get_required_args_for_get_rule_group(args)
     rules, rule_group_visibility_config, lock_token = get_required_response_fields_from_rule_group(client, kwargs)
@@ -916,7 +916,7 @@ def add_ip_statement_command(client: boto3.client, args) -> CommandResults:
                           raw_response=response)
 
 
-def add_country_statement_command(client: boto3.client, args) -> CommandResults:
+def add_country_statement_command(client: boto3.client, args: dict) -> CommandResults:
     """ Command to add a country statement to a rule"""
     kwargs = get_required_args_for_get_rule_group(args)
 
@@ -938,8 +938,8 @@ def add_country_statement_command(client: boto3.client, args) -> CommandResults:
                           raw_response=response)
 
 
-def add_string_match_statement_command(client: boto3.client, args) -> CommandResults:
-    """ Command to add a string mstch statement to a rule"""
+def add_string_match_statement_command(client: boto3.client, args: dict) -> CommandResults:
+    """ Command to add a string match statement to a rule"""
     kwargs = get_required_args_for_get_rule_group(args)
 
     rules, rule_group_visibility_config, lock_token = get_required_response_fields_from_rule_group(client, kwargs)
@@ -960,7 +960,7 @@ def add_string_match_statement_command(client: boto3.client, args) -> CommandRes
                           raw_response=response)
 
 
-def add_json_statement_command(client: boto3.client, args) -> CommandResults:
+def add_json_statement_command(client: boto3.client, args: dict) -> CommandResults:
     """ Command to add a json object represents a statement to a rule"""
     kwargs = get_required_args_for_get_rule_group(args)
 
