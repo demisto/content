@@ -2531,6 +2531,7 @@ def test_file_events_search_command_returns_only_table_when_add_to_context_false
 ):
     mock_demisto = mocker.patch("Code42.demisto")
     mock_demisto.params.return_value = {"v2_events": True}
+    mock_demisto.incident.return_value = {"CustomFields": {"code42fileeventsversion": "2"}}
     client = _create_client(code42_file_events_mock)
     cmd_res = file_events_search_command(
         client,
@@ -2551,6 +2552,7 @@ def test_file_events_search_command_returns_outputs_when_add_to_context_true(
 ):
     mock_demisto = mocker.patch("Code42.demisto")
     mock_demisto.params.return_value = {"v2_events": True}
+    mock_demisto.incident.return_value = {"CustomFields": {"code42fileeventsversion": "2"}}
     client = _create_client(code42_file_events_mock)
     cmd_res = file_events_search_command(
         client,
@@ -2571,8 +2573,9 @@ def test_file_events_search_command_builds_expected_query(
 ):
     mock_demisto = mocker.patch("Code42.demisto")
     mock_demisto.params.return_value = {"v2_events": True}
+    mock_demisto.incident.return_value = {"CustomFields": {"code42fileeventsversion": "2"}}
     client = _create_client(code42_file_events_mock)
-    cmd_res = file_events_search_command(
+    file_events_search_command(
         client,
         args={
             "username": "user3@example.com",

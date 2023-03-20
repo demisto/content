@@ -616,7 +616,7 @@ def build_v2_query_payload(args):
     _hash = args.get("hash")
     hostname = args.get("hostname")
     username = args.get("username")
-    min_risk_score = arg_to_number(args.get("min_risk_score"), arg_name="min_risk_score")
+    min_risk_score = arg_to_number(args.get("min_risk_score"), arg_name="min_risk_score") or 1
 
     if not _hash and not hostname and not username:
         raise Code42MissingSearchArgumentsError()
