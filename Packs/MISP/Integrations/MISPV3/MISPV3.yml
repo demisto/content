@@ -1675,8 +1675,8 @@ script:
       required: false
       secret: false
     - name: disable_output
-      description: if true, the attribute information will not be displayed in the
-        response, reducing the runtime
+      description: If true, the attribute information will not be displayed in the
+        response, reducing the runtime.
       required: false
       isArray: false
       defaultValue: "false"
