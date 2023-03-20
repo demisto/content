@@ -43,7 +43,7 @@ subtype: python3
 system: false
 timeout: 480ns
 type: python
-dockerimage: devdemisto/processing-image-file:1.0.0.49771
+dockerimage: demisto/processing-image-file:1.0.0.50241
 tests:
 - No tests (auto formatted)
 fromversion: 6.0.0
