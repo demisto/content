@@ -1,4 +1,6 @@
 import json
+import re
+
 import pytest
 from py42.sdk.queries.fileevents.filters import FileCategory
 from py42.sdk import SDKClient
@@ -46,7 +48,7 @@ from Code42 import (
     Code42OrgNotFoundError,
     Code42UnsupportedHashError,
     Code42MissingSearchArgumentsError,
-    file_events_search_command,
+    file_events_search_command, file_events_to_table_command,
 )
 from requests import Response, HTTPError
 import time
@@ -2580,7 +2582,7 @@ def test_file_events_search_command_builds_expected_query(
         args={
             "username": "user3@example.com",
             "hostname": "TEST_HOSTNAME",
-            "hash": "abcd12345",
+            "hash": "9cea266b4e07974df1982ae3b9de92ce",
             "results": 50,
             "add-to-context": "false",
             "min_risk_score": "3",
@@ -2591,3 +2593,130 @@ def test_file_events_search_command_builds_expected_query(
     assert '{"operator":"IS", "term":"user.email", "value":"user3@example.com"}' in query
     assert '{"operator":"GREATER_THAN", "term":"risk.score", "value":"2"}' in query
     assert '"pgSize":50' in query
+
+@pytest.mark.parametrize("hash", [("md5", "9cea266b4e07974df1982ae3b9de92ce"), ("sha256", "34d0c9fc9c907ec374cf7e8ca1ff8a172e36eccee687f0a9b69dd169debb81e1")])
+def test_file_events_search_command_builds_expected_hash_query(mocker, code42_file_events_mock, hash):
+    hash_type, hash_value = hash
+    mock_demisto = mocker.patch("Code42.demisto")
+    mock_demisto.params.return_value = {"v2_events": True}
+    mock_demisto.incident.return_value = {"CustomFields": {"code42fileeventsversion": "2"}}
+    client = _create_client(code42_file_events_mock)
+    file_events_search_command(
+        client,
+        args={
+            "username": "user3@example.com",
+            "hostname": "TEST_HOSTNAME",
+            "hash": hash_value,
+            "results": 50,
+            "add-to-context": "false",
+            "min_risk_score": "3",
+        },
+    )
+    query = str(code42_file_events_mock.securitydata.search_file_events.call_args[0][0])
+    assert f'{{"operator":"IS", "term":"file.hash.{hash_type}", "value":"{hash_value}"}}' in query
+
+
+def test_file_events_search_json_query_builds_expected_query(mocker, code42_file_events_mock):
+    mock_demisto = mocker.patch("Code42.demisto")
+    mock_demisto.params.return_value = {"v2_events": True}
+    mock_demisto.incident.return_value = {"CustomFields": {"code42fileeventsversion": "2"}}
+    client = _create_client(code42_file_events_mock)
+    query_json = '{"groupClause":"AND", "groups":[{"filterClause":"OR", "filters":[{"operator":"IS", "term":"file.category", "value":"Archive"},{"operator":"IS", "term":"file.category", "value":"Pdf"}]}], "srtDir":"asc", "srtKey":"event.id", "pgNum":1, "pgSize":100}'
+    file_events_search_command(
+        client,
+        args={
+            "json": query_json,
+            "results": 50,
+            "add-to-context": "false",
+            "min_risk_score": "3",
+        },
+    )
+    called_query = code42_file_events_mock.securitydata.search_file_events.call_args[0][0]
+    assert dict(called_query._filter_group_list[0]) == json.loads(query_json)["groups"][0]
+    assert called_query.page_size == 50
+
+
+def test_file_events_search_with_add_to_context_adds_events_without_duplication(mocker, code42_file_events_mock):
+    mock_demisto = mocker.patch("Code42.demisto")
+    v2_events = json.loads(MOCK_V2_FILE_EVENTS_RESPONSE)["fileEvents"]
+    context_events = v2_events[:3]
+    mock_demisto.incident.return_value = {
+        "CustomFields": {
+            "code42fileeventsversion": "2",
+            "code42fileevents": []
+        }
+    }
+    mock_demisto.context.return_value = {"Code42": {"FileEvents": context_events}}
+    client = _create_client(code42_file_events_mock)
+    cmd_res = file_events_search_command(
+        client,
+        args={
+            "username": "test@example.com",
+            "results": 50,
+            "add-to-context": "true",
+            "min_risk_score": "3",
+        },
+    )
+    assert cmd_res.outputs == v2_events
+
+
+def test_file_events_search_raises_when_no_args_passed(mocker, code42_file_events_mock):
+    mock_demisto = mocker.patch("Code42.demisto")
+    mock_demisto.incident.return_value = {"CustomFields": {"code42fileeventsversion": "2"}}
+    client = _create_client(code42_file_events_mock)
+    with pytest.raises(Code42MissingSearchArgumentsError):
+        file_events_search_command(client, args={
+            "min_risk_score": "1",
+            "add-to-context": "false",
+        })
+
+
+def test_file_events_search_raises_when_invalid_json_query(mocker, code42_file_events_mock):
+    mock_demisto = mocker.patch("Code42.demisto")
+    mock_demisto.incident.return_value = {"CustomFields": {"code42fileeventsversion": "2"}}
+    client = _create_client(code42_file_events_mock)
+    with pytest.raises(SystemExit):
+        file_events_search_command(client, args={
+            "json": '{"invalid": "query"}',
+            "min_risk_score": "1",
+            "add-to-context": "false",
+        })
+
+
+def test_file_events_table_command_handles_v1_events(mocker):
+    mock_demisto = mocker.patch("Code42.demisto")
+    v1_events = [
+        {key.lower(): val for key, val in event.items()}
+        for event in
+        json.loads(MOCK_SECURITY_EVENT_RESPONSE)["fileEvents"]
+    ]
+    incident_events = v1_events[:-1]
+    search_events = v1_events[1:]
+    duplicate_events = v1_events[1:-1]
+    mock_demisto.incident.return_value = {
+        "CustomFields": {
+            "code42fileeventsversion": "1",
+            "code42fileevents": incident_events,
+        },
+        "Code42": {"SecurityData": search_events}
+    }
+    client = _create_client(code42_sdk_mock)
+    cmd_res = file_events_to_table_command(client, args={"include": "all"})
+    assert cmd_res.outputs is None
+    for event in duplicate_events:
+        event_id_matches = re.findall(event["eventid"], cmd_res.readable_output)
+        assert len(event_id_matches) == 1
+
+
+def test_file_events_table_command_handles_v2_events(mocker):
+    mock_demisto = mocker.patch("Code42.demisto")
+    v2_events = json.loads(MOCK_V2_FILE_EVENTS_RESPONSE)["fileEvents"]
+    mock_demisto.incident.return_value = {
+        "CustomFields": {
+            "code42fileeventsversion": "2",
+            "code42fileevents": v2_events
+        }
+    }
+    client = _create_client(code42_sdk_mock)
+    cmd_res = file_events_to_table_command(client, args={"include": "all"})
+    assert cmd_res.outputs is None

@@ -1029,7 +1029,10 @@ def file_events_search_command(client, args):
     page_size = arg_to_number(args.get("results"), arg_name="results")
     # If JSON payload is passed as an argument, ignore all other args and search by JSON payload
     if json_query is not None:
-        query = FileEventQueryV2.from_dict(json.loads(json_query))
+        try:
+            query = FileEventQueryV2.from_dict(json.loads(json_query))
+        except KeyError as err:
+            return_error(f"Error parsing json query: {err}")
     else:
         query = build_v2_query_payload(args)
     try:
