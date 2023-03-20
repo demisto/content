@@ -72,8 +72,8 @@ tasks:
     task:
       id: e71350f2-0f75-41e1-841d-ee3c938fc23f
       version: -1
-      name: Is AWS - EC2 enabled and are Input values defined?
-      description: Determines if the AWS - EC2 integration instance is configured and Input values are defined in order to continue with remediating security groups.
+      name: Is AWS - EC2 enabled and are input values defined?
+      description: Determines if the AWS - EC2 integration instance is configured and input values are defined in order to continue with remediating security groups.
       type: condition
       iscommand: false
       brand: ""
@@ -219,7 +219,7 @@ inputs:
       root: alert
       accessor: remoteport
   required: true
-  description: TCP/UDP Port to be restricted.
+  description: TCP/UDP port to be restricted.
   playbookInputQuery:
 - key: Protocol
   value: {}

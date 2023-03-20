@@ -2,7 +2,7 @@ args:
 - description: EC2 Instance ID.
   name: instance_id
   required: true
-- description: TCP/UDP Port to be restricted.
+- description: TCP/UDP port to be restricted.
   name: port
   required: true
 - description: Protocol of the port to be restricted.

@@ -27,7 +27,7 @@ This playbook does not use any commands.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | InstanceID | ID of the AWS EC2 instance. |  | Required |
-| Port | TCP/UDP Port to be restricted. | alert.remoteport | Required |
+| Port | TCP/UDP port to be restricted. | alert.remoteport | Required |
 | Protocol | Protocol of the port to be restricted. |  | Required |
 | PublicIP | Public IP address of the EC2 instance. | alert.remoteip | Optional |
 
