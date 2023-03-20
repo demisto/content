@@ -1,5 +1,4 @@
 An XSIAM event collector for AWS Security Hub.
-This integration was integrated and tested with version xx of AWS Security Hub Event Collector
 
 ## Configure AWS Security Hub Event Collector on Cortex XSOAR
 

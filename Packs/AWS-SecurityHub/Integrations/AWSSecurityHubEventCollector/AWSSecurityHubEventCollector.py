@@ -13,7 +13,8 @@ urllib3.disable_warnings()
 
 VENDOR = 'AWS'
 PRODUCT = 'Security Hub'
-DEFAULT_MAX_RESULTS = 1000  # Default maximum number of results to fetch
+DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
+DEFAULT_MAX_RESULTS = 10  # Default maximum number of results to fetch
 
 
 def get_events(client: boto3.client, start_time: datetime | None = None,
@@ -30,7 +31,7 @@ def get_events(client: boto3.client, start_time: datetime | None = None,
     Returns:
         tuple[list, CommandResults]: A tuple containing the events and the CommandResults object.
     """
-    kwargs = {}
+    kwargs = {'SortCriteria': [{'Field': 'UpdatedAt', 'SortOrder': 'asc'}]}
     filters = {}
 
     if end_time and not start_time:
@@ -39,29 +40,29 @@ def get_events(client: boto3.client, start_time: datetime | None = None,
     if start_time:
         filters['UpdatedAt'] = [{
             'Start':
-                start_time.strftime('%Y-%m-%dT%H:%M:%SZ'),
+                start_time.strftime(DATETIME_FORMAT),
             'End':
-                end_time.strftime('%Y-%m-%dT%H:%M:%SZ') if end_time else datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ')
+                end_time.strftime(DATETIME_FORMAT) if end_time else datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ')
         }]
 
     if filters:
         # We send kwargs because passing Filters=None to get_findings() tries to use a None value for filters,
         # which raises an error.
-        kwargs = {'Filters': filters}
+        kwargs['Filters'] = filters
 
     events = []
 
     while True:
         # The API only allows a maximum of 100 results per request.
-        if limit - len(events) < 100:
-            kwargs['MaxResults'] = limit
+        if limit and limit - len(events) < 100:
+            kwargs['MaxResults'] = limit - len(events)
 
         else:
             kwargs['MaxResults'] = 100
 
         demisto.debug(f'Fetching events with kwargs:\n{kwargs}.')
         response = client.get_findings(**kwargs)
-        events.extend(response['Findings'])
+        events.extend(response.get('Findings', []))
 
         if 'NextToken' in response and (limit == 0 or len(events) < limit):
             kwargs['NextToken'] = response['NextToken']
@@ -72,7 +73,7 @@ def get_events(client: boto3.client, start_time: datetime | None = None,
     return events
 
 
-def fetch_events(client: boto3.client, last_run: dict[str, int],
+def fetch_events(client: boto3.client, last_run: dict[str, str],
                  first_fetch_time: datetime | None, ) -> (dict[str, int], list):
     """
     Fetch events from AWS Security Hub.
@@ -80,21 +81,21 @@ def fetch_events(client: boto3.client, last_run: dict[str, int],
     Args:
         client (boto3.client): Boto3 client to use.
         last_run (dict): A dict with a key containing the latest event created time we got from last fetch.
-        first_fetch_time (int | None, optional): If last_run is None (first time we are fetching),
-            it contains the timestamp in milliseconds on when to start fetching events.
+        first_fetch_time (datetime | None, optional): If last_run is None (first time we are fetching),
+            it contains datetime of when to start fetching events.
 
     Returns:
         dict: Next run dictionary containing the timestamp that will be used in ``last_run`` on the next fetch.
         list: List of events that will be generated in XSIAM.
     """
-    if demisto.getLastRun():
-        start_time = datetime.fromtimestamp(last_run.get('lastRun', None))
+    if last_run.get('lastRun'):
+        start_time = datetime.strptime(last_run['lastRun'], DATETIME_FORMAT)
 
     else:
         start_time = first_fetch_time
 
-    events = get_events(client, start_time)
-    last_finding_update_time = events[0].get('UpdatedAt') if events else None
+    events = get_events(client=client, start_time=start_time, limit=DEFAULT_MAX_RESULTS)
+    last_finding_update_time = events[-1].get('UpdatedAt') if events else None
     demisto.info(f'Fetched {len(events)} findings.\nUpdate time of last finding: {last_finding_update_time}.')
 
     # Save the next_run as a dict with the last_fetch key to be stored
@@ -192,6 +193,7 @@ def main():
 
         elif command == 'aws-securityhub-get-events':
             should_push_events = argToBoolean(args.get('should_push_events', False))
+            limit = arg_to_number(args.get('limit', limit))
             return_results(get_events_command(client=client, should_push_events=should_push_events, limit=limit))
 
         elif command == 'fetch-events':
