@@ -12,7 +12,7 @@ VENDOR = 'micrsoft'
 PRODUCT = 'defender_for_cloud'
 API_VERSION = '2022-01-01'
 APP_NAME = "ms-azure-sc"
-
+DEFAULT_LIMIT = 50
 ''' CLIENT CLASS '''
 
 
@@ -88,7 +88,7 @@ def test_module(client: MsClient, last_run: str):
         demisto.results('ok')
 
 
-def get_events(client: MsClient, last_run: str, args: dict):
+def get_events(client: MsClient, last_run: str, limit: int):
     """
      Args:
             client (MsClient): The microsoft client.
@@ -97,9 +97,7 @@ def get_events(client: MsClient, last_run: str, args: dict):
     Returns:
         The raw events and a CommandResults object.
     """
-    limit = arg_to_number(args.get('limit', 50))
-    events_list, last_run = client.get_event_list(last_run)
-    sort_events(events_list)
+    events_list = client.get_event_list(last_run)
 
     if limit:
         events_list = events_list[:limit]
@@ -144,12 +142,13 @@ def find_next_run(events_list: list, last_run: str) -> str:
     Returns:
         The next run for the next fetch-event command.
     """
-    if not events_list:
-        # No new events fetched we will keep the previos last_run.
-        return last_run
-    # New events fetched set the latest timeGeneratedUtc for next run.
-    sort_events(events_list)
-    return events_list[0].get('properties').get('startTimeUtc')
+    next_run = (
+        events_list[0].get('properties').get('startTimeUtc')
+        if events_list
+        else last_run
+    )
+    demisto.info(f'Setting next run {next_run}.')
+    return next_run
 
 
 def sort_events(events: list) -> None:
@@ -159,7 +158,7 @@ def sort_events(events: list) -> None:
     return events.sort(reverse=True, key=lambda event: event.get('properties').get('startTimeUtc'))
 
 
-def fetch_events(client: MsClient, last_run: str) -> tuple:
+def fetch_events(client: MsClient, last_run: str) -> list:
     """
     Args:
         client (MsClient): The microsoft client.
@@ -170,14 +169,10 @@ def fetch_events(client: MsClient, last_run: str) -> tuple:
         next_run: A time for the next run.
         list: List of events that will be created in XSIAM.
     """
-    events, last_run = client.get_event_list(last_run)
-
+    events = client.get_event_list(last_run)
     demisto.info(f'Fetched {len(events)} events.')
-
     # Save the next_run as a dict with the last_fetch key to be stored
-    next_run = find_next_run(events, last_run)
-    demisto.info(f'Setting next run {next_run}.')
-    return next_run, events
+    return events
 
 
 def add_time_key_to_events(events: list) -> list:
@@ -237,22 +232,23 @@ def main() -> None:
         elif command in ('ms-defender-for-cloud-get-events', 'fetch-events'):
 
             if command == 'ms-defender-for-cloud-get-events':
+                limit = arg_to_number(args.get("limit", DEFAULT_LIMIT))
                 should_push_events = argToBoolean(args.pop('should_push_events'))
-                events, results = get_events(client, last_run, args)
+                events, results = get_events(client, last_run, limit=limit)  # type: ignore
                 return_results(results)
 
             else:  # command == 'fetch-events':
                 should_push_events = True
-                next_run, events = fetch_events(
+                events = fetch_events(
                     client=client,
                     last_run=last_run
                 )
-                # saves next_run for the time fetch-events is invoked
-                demisto.setLastRun({'time': next_run})
 
             events = add_time_key_to_events(events)
 
             if should_push_events:
+                # saves next_run for the time fetch-events is invoked
+                demisto.setLastRun({'time': find_next_run(events, last_run)})
                 send_events_to_xsiam(
                     events,
                     vendor=VENDOR,
