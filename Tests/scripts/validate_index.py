@@ -137,7 +137,9 @@ def get_index_json_data(service_account: str, production_bucket_name: str, extra
     logging.info('Downloading and extracting index.zip from the cloud')
 
     storage_client = init_storage_client(service_account)
+    logging.info('Finished init of storage path')
     production_bucket = storage_client.bucket(production_bucket_name)
+    logging.info('finisihed init of production bucket.')
     index_folder_path, _, _ = download_and_extract_index(production_bucket, extract_path, storage_base_path)
 
     logging.info("Retrieving the index file")
@@ -151,31 +153,34 @@ def main():
     install_logging("Validate index.log", logger=logging)
     options = options_handler()
     exit_code = 0
-    index_data, index_file_path = get_index_json_data(
-        service_account=options.service_account, production_bucket_name=options.production_bucket_name,
-        extract_path=options.extract_path, storage_base_path=options.storage_base_path
-    )
+    try:
+        index_data, index_file_path = get_index_json_data(
+            service_account=options.service_account, production_bucket_name=options.production_bucket_name,
+            extract_path=options.extract_path, storage_base_path=options.storage_base_path
+        )
 
-    # Validate index.json file
-    index_is_valid = check_index_data(index_data)
-    log_message_if_statement(statement=index_is_valid,
-                             error_message=f"The packs in the {index_file_path} file were found invalid.",
-                             success_message=f"{index_file_path} file was found valid")
+        # Validate index.json file
+        index_is_valid = check_index_data(index_data)
+        log_message_if_statement(statement=index_is_valid,
+                                error_message=f"The packs in the {index_file_path} file were found invalid.",
+                                success_message=f"{index_file_path} file was found valid")
 
-    # Validate commit hash in master history
-    commit_hash_is_valid = log_message_if_statement(statement=("commit" in index_data),
-                                                    error_message="No commit field was found in the index.json")
-    if commit_hash_is_valid:
-        commit_hash_is_valid = check_commit_in_branch_history(index_data.get("commit", ""), options.circle_branch)
+        # Validate commit hash in master history
+        commit_hash_is_valid = log_message_if_statement(statement=("commit" in index_data),
+                                                        error_message="No commit field was found in the index.json")
+        if commit_hash_is_valid:
+            commit_hash_is_valid = check_commit_in_branch_history(index_data.get("commit", ""), options.circle_branch)
 
-    if not all([index_is_valid, commit_hash_is_valid]):
-        logging.critical("Index content is invalid. Aborting.")
-        exit_code = 1
+        if not all([index_is_valid, commit_hash_is_valid]):
+            logging.critical("Index content is invalid. Aborting.")
+            exit_code = 1
 
-    # Deleting GCS PATH before exit
-    if exit_code == 1 and os.path.exists(options.service_account):
-        os.remove(options.service_account)
-    sys.exit(exit_code)
+        # Deleting GCS PATH before exit
+        if exit_code == 1 and os.path.exists(options.service_account):
+            os.remove(options.service_account)
+        sys.exit(exit_code)
+    except Exception as e:
+        logging.error(f'Problem with reading the index folder with message: {e}')
 
 
 if __name__ == '__main__':
