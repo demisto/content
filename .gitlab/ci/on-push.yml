@@ -62,7 +62,7 @@ stop-running-pipelines:
     - section_end "Stop running piplines on current branch"
 
 
-# runs in circle for the on-push flow (because we need to run it there for contributors anyways)
+# runs in gitlab for the on-push flow (except for contributors)
 run-unittests-and-lint:
   extends:
     - .run-unittests-and-lint
@@ -70,14 +70,17 @@ run-unittests-and-lint:
     - if: '$BUCKET_UPLOAD == "true"'
       when: never
     - if: '$DEMISTO_SDK_NIGHTLY != "true"'
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
 
 
-# runs in circle for the on-push flow (because we need to run it there for contributors anyways)
+# runs in gitlab for the on-push flow (except for contributors)
 run-validations:
   extends:
     - .run-validations
   rules:
     - if: '$NIGHTLY'
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+
 
 # runs in gitlab for the on-push flow, on every new commit pushed to the branch.
 validate-content-conf:
