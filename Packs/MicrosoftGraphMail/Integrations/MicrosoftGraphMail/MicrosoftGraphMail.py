@@ -953,7 +953,7 @@ class MsGraphClient:
             'name': parsed_email.get('Subject'),
             'details': body,
             'labels': MsGraphClient._parse_email_as_labels(parsed_email),
-            'occurred': parsed_email.get('ModifiedTime'),
+            'occurred': parsed_email.get('ReceivedTime'),
             'attachment': parsed_email.get('Attachments', []),
             'rawJSON': json.dumps(parsed_email),
             'ID': parsed_email.get('ID')  # only used for look-back to identify the email in a unique way
@@ -1806,7 +1806,7 @@ def prepare_args(command, args):
             'body': email_body,
             'body_type': args.get('bodyType', 'html'),
             'flag': args.get('flag', 'notFlagged'),
-            'importance': args.get('importance', 'Low'),
+            'importance': args.get('importance', 'Normal'),
             'internet_message_headers': argToList(args.get('headers')),
             'attach_ids': argToList(args.get('attachIDs')),
             'attach_names': argToList(args.get('attachNames')),

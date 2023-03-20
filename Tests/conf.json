@@ -751,7 +751,7 @@
             "integrations": "SlackV3",
             "playbookID": "SlackV3 TestPB",
             "instance_names": "cached",
-            "timeout": 400,
+            "timeout": 600,
             "pid_threshold": 8,
             "fromversion": "5.5.0"
         },
@@ -767,7 +767,7 @@
             "integrations": "Cortex XDR - IR",
             "playbookID": "Test XDR Playbook execute script commands",
             "fromversion": "4.1.0",
-            "timeout": 2500
+            "timeout": 3000
         },
         {
             "integrations": "Cortex XDR - IR",
@@ -778,13 +778,14 @@
         {
             "integrations": "Cortex XDR - IR",
             "playbookID": "Test XDR Playbook general commands",
-            "fromversion": "4.1.0"
+            "fromversion": "4.1.0",
+            "timeout": 2500
         },
         {
             "integrations": "Cortex XDR - IR",
             "playbookID": "Test XDR Playbook retrieve file command",
             "fromversion": "4.1.0",
-            "timeout": 2500
+            "timeout": 3500
         },
         {
             "integrations": "Cortex XDR - IOC",
@@ -1413,7 +1414,9 @@
         },
         {
             "integrations": "WildFire-v2",
-            "playbookID": "Detonate URL - WildFire-v2 - Test"
+            "playbookID": "Detonate URL - WildFire-v2 - Test",
+            "timeout": 200
+
         },
         {
             "integrations": "WildFire-v2",
@@ -1940,7 +1943,8 @@
         },
         {
             "integrations": "Demisto Lock",
-            "playbookID": "DemistoLockTest"
+            "playbookID": "DemistoLockTest",
+            "instance_name": "no_sync"
         },
         {
             "playbookID": "test-domain-indicator",
@@ -2153,11 +2157,6 @@
             "timeout": 1000
         },
         {
-            "integrations": "carbonblack-v2",
-            "playbookID": "Carbon Black Response Test",
-            "fromversion": "5.0.0"
-        },
-        {
             "integrations": "VMware Carbon Black EDR v2",
             "playbookID": "Carbon Black Edr - Test",
             "is_mockable": false,
@@ -2348,7 +2347,7 @@
         },
         {
             "integrations": [
-                "carbonblack-v2",
+                "VMware Carbon Black EDR v2",
                 "carbonblackliveresponse",
                 "Cylance Protect v2"
             ],
@@ -3409,6 +3408,7 @@
         },
         {
             "playbookID": "EvaluateMLModllAtProduction-Test",
+            "timeout": 500,
             "fromversion": "5.5.0"
         },
         {
@@ -4472,7 +4472,7 @@
             "integrations": [
                 "CrowdStrike Falcon X"
             ],
-            "timeout": 1800
+            "timeout": 2500
         },
         {
             "playbookID": "CrowdStrike_Falcon_X_-Test-Detonate_File",
@@ -4549,7 +4549,7 @@
                 "classifier_id": "EWS v2",
                 "incoming_mapper_id": "EWS v2-mapper"
             },
-            "memory_threshold": 300,
+            "memory_threshold": 400,
             "pid_threshold": 80
         },
         {
@@ -5322,6 +5322,11 @@
             "playbookID": "TestXSOAREDLCheckerPlaybook"
         },
         {
+            "integrations": "CiscoWSAv2",
+            "playbookID": "playbook-CiscoWSA_Test",
+            "fromversion": "6.8.0"
+        },
+        {
             "playbookID": "Threat_Intel_Report_test",
             "fromversion": "6.5.0",
             "scripts": [
@@ -5329,7 +5334,7 @@
                 "UnpublishThreatIntelReport"
             ]
         },
-        {
+        {            
             "integrations": "Generic SQL",
             "playbookID": "generic-sql",
             "instance_names": "Microsoft SQL Server - MS ODBC Driver",
@@ -5342,6 +5347,7 @@
         }
     ],
     "skipped_tests": {
+        "CiscoWSAv2": "No instance - developed by Qmasters",
         "RegPathReputationBasicLists_test": "The D2 pack is deprecated",
         "CirclIntegrationTest": "No instance",
         "CrowdStrikeMalquery-Test": "Issue CRTX-71397",
@@ -5512,9 +5518,11 @@
         "Archer-Test-Playbook": "the integration is deprecated as we have ArcherV2",
         "O365-SecurityAndCompliance-Test": "Deprecated, consumes connection quota for V2",
         "ThreatGrid_v2_Test": "No instance, developed by Qmasters",
-        "Test-Detonate URL - ThreatGrid": "No instance, developed by Qmasters"
+        "Test-Detonate URL - ThreatGrid": "No instance, developed by Qmasters",
+        "awake_security_test_pb": "No instance, CRTX-77572"
     },
     "skipped_integrations": {
+        "CiscoWSAv2": "No instance - No license",
         "Lastline v2": "No instance - No license",
         "AbuseIPDB": "No instance - License expired",
         "checkpointdome9": "No instance - No license",

@@ -23,7 +23,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 150
+          "y": -80
         }
       }
     note: false
@@ -51,7 +51,7 @@ tasks:
       {
         "position": {
           "x": 100,
-          "y": 5600
+          "y": 5900
         }
       }
     note: false
@@ -82,7 +82,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 290
+          "y": 60
         }
       }
     note: false
@@ -114,7 +114,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 710
+          "y": 590
         }
       }
     note: false
@@ -145,7 +145,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 980
+          "y": 890
         }
       }
     note: false
@@ -188,16 +188,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 97a8b99b-265b-493a-8a3c-5f22b17f5fc2
+    taskid: d68ae85e-28a9-4892-8f4c-c6349355a8f5
     type: title
     task:
-      id: 97a8b99b-265b-493a-8a3c-5f22b17f5fc2
+      id: d68ae85e-28a9-4892-8f4c-c6349355a8f5
       version: -1
       name: Validation Stage
       type: title
       iscommand: false
       brand: ""
-      description: ''
+      description: 'Send an email'
     nexttasks:
       '#none#':
       - "86"
@@ -207,7 +207,7 @@ tasks:
       {
         "position": {
           "x": 90,
-          "y": 3920
+          "y": 4175
         }
       }
     note: false
@@ -269,7 +269,7 @@ tasks:
       {
         "position": {
           "x": 90,
-          "y": 4505
+          "y": 4835
         }
       }
     note: false
@@ -315,7 +315,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 540
+          "y": 370
         }
       }
     note: false
@@ -345,7 +345,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1700,
+          "x": -1740,
           "y": 2340
         }
       }
@@ -382,8 +382,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -780,
-          "y": 5110
+          "x": -910,
+          "y": 5410
         }
       }
     note: false
@@ -441,7 +441,7 @@ tasks:
       {
         "position": {
           "x": 90,
-          "y": 4160
+          "y": 4470
         }
       }
     note: false
@@ -471,8 +471,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 500,
-          "y": 4330
+          "x": 330,
+          "y": 4650
         }
       }
     note: false
@@ -1009,7 +1009,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 360,
+          "x": 440,
           "y": 3240
         }
       }
@@ -1350,8 +1350,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -390,
-          "y": 3425
+          "x": -480,
+          "y": 3245
         }
       }
     note: false
@@ -1378,7 +1378,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "11"
+      - "116"
     scriptarguments:
       gridfield:
         simple: asmremediation
@@ -1405,8 +1405,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -390,
-          "y": 3740
+          "x": -480,
+          "y": 3425
         }
       }
     note: false
@@ -1459,7 +1459,7 @@ tasks:
       {
         "position": {
           "x": 90,
-          "y": 3750
+          "y": 3860
         }
       }
     note: false
@@ -1615,7 +1615,7 @@ tasks:
       {
         "position": {
           "x": 870,
-          "y": 3750
+          "y": 3860
         }
       }
     note: false
@@ -1685,7 +1685,7 @@ tasks:
       {
         "position": {
           "x": 90,
-          "y": 4780
+          "y": 5110
         }
       }
     note: false
@@ -1737,7 +1737,7 @@ tasks:
       {
         "position": {
           "x": 90,
-          "y": 4030
+          "y": 4310
         }
       }
     note: false
@@ -1767,7 +1767,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -120,
+          "x": -50,
           "y": 3240
         }
       }
@@ -1993,7 +1993,7 @@ tasks:
       {
         "position": {
           "x": 90,
-          "y": 4630
+          "y": 4960
         }
       }
     note: false
@@ -2148,7 +2148,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 830
+          "y": 730
         }
       }
     note: false
@@ -2219,7 +2219,7 @@ tasks:
       {
         "position": {
           "x": -1250,
-          "y": 2525
+          "y": 2505
         }
       }
     note: false
@@ -2231,17 +2231,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "100":
     id: "100"
-    taskid: 775fedc2-21d6-426e-8509-9973ac13dac9
+    taskid: b1d3eab1-f16c-4c27-8363-d0fb6e63d8c4
     type: playbook
     task:
-      id: 775fedc2-21d6-426e-8509-9973ac13dac9
+      id: b1d3eab1-f16c-4c27-8363-d0fb6e63d8c4
       version: -1
       name: Cortex ASM - Detect Service
       playbookName: Cortex ASM - Detect Service
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
+      description: 'Playbook that looks at what ASM sub-type the alert is and directs it to different pre/post mitigation scans (such as NMAP).'
     nexttasks:
       '#none#':
       - "16"
@@ -2271,7 +2271,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 400
+          "y": 210
         }
       }
     note: false
@@ -2313,7 +2313,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1100
+          "y": 1040
         }
       }
     note: false
@@ -2494,7 +2494,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1250
+          "y": 1220
         }
       }
     note: false
@@ -2546,7 +2546,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 3750
+          "y": 3860
         }
       }
     note: false
@@ -2793,7 +2793,7 @@ tasks:
       {
         "position": {
           "x": 90,
-          "y": 4940
+          "y": 5270
         }
       }
     note: false
@@ -2823,14 +2823,14 @@ tasks:
       closeNotes:
         simple: Alert status set to 'Resolved' by Active Response Module
       closeReason:
-        simple: STATUS_160_RESOLVED
+        simple: Resolved
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": -80,
-          "y": 5300
+          "y": 5660
         }
       }
     note: false
@@ -2867,7 +2867,7 @@ tasks:
       {
         "position": {
           "x": 310,
-          "y": 5300
+          "y": 5660
         }
       }
     note: false
@@ -2906,14 +2906,14 @@ tasks:
                   simple: 'Alert status set to ''Resolved'' by Active Response Module - Remediation Path Rule: '
               suffix: {}
       closeReason:
-        simple: STATUS_160_RESOLVED
+        simple: Resolved
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": -310,
-          "y": 5110
+          "y": 5460
         }
       }
     note: false
@@ -2959,7 +2959,125 @@ tasks:
       {
         "position": {
           "x": 540,
-          "y": 5110
+          "y": 5460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "116":
+    id: "116"
+    taskid: 98112215-f43b-4f78-875b-58f8da657f94
+    type: condition
+    task:
+      id: 98112215-f43b-4f78-875b-58f8da657f94
+      version: -1
+      name: Are there service owners with emails?
+      description: Verifies if we have emails for service owners.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "117"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: alert.asmserviceowner
+                accessor: Email
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: alert.asmserviceowner.Email
+                      iscontext: true
+                    right:
+                      value:
+                        simple: '@'
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -480,
+          "y": 3600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "117":
+    id: "117"
+    taskid: 46a8e681-4479-415f-8e31-df37d4aada6c
+    type: regular
+    task:
+      id: 46a8e681-4479-415f-8e31-df37d4aada6c
+      version: -1
+      name: Send remediation notification email to service owners
+      description: Send an email to service owners about the status of automated remediation action taken.
+      script: '|||send-mail'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      htmlBody:
+        simple: |-
+          <!DOCTYPE html>
+          <html lang="en">
+          <body>
+              <p>
+                  Infosec identified a security risk on an external service potentially owned by your
+                  team:<br><b>${alert.name}</b>
+              </p>
+              <p>
+                  <b>Alert Details:</b> ${alert.details}<br>
+                  <b>Action Taken:</b> ${alert.asmremediation.[0].Action}<br>
+                  <b>Action Outcome:</b> ${alert.asmremediation.[0].Outcome}<br>
+              </p>
+          </body>
+          </html>
+      subject:
+        simple: A new security risk was addressed on an external service owned by your team
+      to:
+        complex:
+          root: alert.asmserviceowner
+          accessor: Email
+          filters:
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: alert.asmserviceowner.Email
+                iscontext: true
+              right:
+                value:
+                  simple: '@'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -660,
+          "y": 3790
         }
       }
     note: false
@@ -2973,6 +3091,9 @@ view: |-
   {
     "linkLabelsPosition": {
       "102_12_Automated Remediation": 0.79,
+      "110_111_Close Now": 0.88,
+      "110_112_ Automated-Remediation": 0.88,
+      "16_6_yes": 0.6,
       "48_10_ServiceNow ticket": 0.82,
       "48_12_Automated remediation": 0.87,
       "48_60_Notification email": 0.88,
@@ -2980,10 +3101,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 5515,
-        "width": 3450,
-        "x": -1700,
-        "y": 150
+        "height": 6045,
+        "width": 3490,
+        "x": -1740,
+        "y": -80
       }
     }
   }

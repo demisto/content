@@ -2,13 +2,13 @@
     "name": "Zoom",
     "description": "Use the Zoom integration manage your Zoom users and meetings",
     "support": "xsoar",
-    "currentVersion": "1.2.5",
+    "currentVersion": "1.2.6",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "created": "2020-04-14T00:00:00Z",
     "categories": [
-        "Messaging"
+        "Messaging and Conferencing"
     ],
     "tags": [],
     "useCases": [],
