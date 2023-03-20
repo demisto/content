@@ -51,7 +51,7 @@ CreateIndicatorRelationship
 CommonServerPython
 CommonServer
 mergeVersionedIntegrationContext
-SearchIndicatorRelationships 
+SearchIndicatorRelationships
 CommandResults
 YMLMetadataCollector
 siam
@@ -63,3 +63,5 @@ Mutex
 SSLAdapter
 SSL
 appendContext
+refang
+IndicatorsSearcher
