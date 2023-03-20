@@ -433,6 +433,26 @@ def subscriptions_to_md(subscriptions: list[dict]) -> str:
     return tableToMarkdown('Subscriptions: ', list_md)
 
 
+def format_resource_group_dict(resource_group: Dict) -> Dict:
+    """
+    Formats a resource group dictionary by extracting its relevant fields.
+
+    Args:
+        resource_group (dict): A resource group dictionary.
+
+    Returns:
+        dict: A dictionary containing the resource group's name, location, tags, and provisioning state (if available).
+    """
+    formatted_dict = {
+        'name': resource_group.get('name'),
+        'location': resource_group.get('location'),
+        'tags': resource_group.get('tags', {}),
+    }
+    if provisioning_state := demisto.get(resource_group, 'properties.provisioningState'):
+        formatted_dict['provisioningState'] = provisioning_state
+    return formatted_dict
+
+
 def resourcegroups_to_md(subscription_ids: list[dict]) -> str:
     """
     Formats a list of resource group dictionaries as a Markdown table.
@@ -450,14 +470,7 @@ def resourcegroups_to_md(subscription_ids: list[dict]) -> str:
         for subscription_id_key in subscription_id.keys():
             resource_groups_md = []
             for group_resource in subscription_id.get(subscription_id_key, {}):
-                resource_group_md = {}
-                for group_resource_key in group_resource.keys():
-                    if group_resource_key in ('name', 'location', 'tags'):
-                        resource_group_md[group_resource_key] = group_resource[group_resource_key]
-                    elif group_resource_key == 'properties':
-                        if demisto.get(group_resource, 'properties.provisioningState'):
-                            resource_group_md['properties.provisioningState'] = demisto.get(group_resource,
-                                                                                            'properties.provisioningState')
+                resource_group_md = format_resource_group_dict(group_resource)
                 resource_groups_md.append([resource_group_md])
             subscription_to_resource_groups_dict[f'Subscription ID {subscription_id_key}'] = resource_groups_md
         top_md.append(subscription_to_resource_groups_dict)
@@ -473,7 +486,7 @@ def subscriptions_list_command(client: AzureWAFClient):
                           raw_response=subscriptions)
 
 
-def resource_group_list_command(client: AzureWAFClient, **args):
+def resource_group_list_command(client: AzureWAFClient, **args) -> CommandResults:
     resource_groups: list[dict] = []
     subscription_ids = argToList(args.get('subscription_id', client.subscription_id))
     tag = args.get('tag', '')

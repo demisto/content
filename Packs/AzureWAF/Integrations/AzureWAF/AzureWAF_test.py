@@ -1,6 +1,7 @@
 import pytest
 import AzureWAF as waf
 import demistomock as demisto
+from CommonServerPython import CommandResults
 
 API_VERSION = '2020-05-01'
 
@@ -492,6 +493,11 @@ def test_resource_group_list_command(mocker):
             }
         ]
     })
-    waf.resource_group_list_command(client, **demisto_args)
+    expected_commandResult = CommandResults(readable_output="### Resource Groups: \n|Subscription ID pol1|\n|---|\n| [{'name': \
+'cloud-shell-storage-eastus', 'location': 'eastus', 'properties.provisioningState': 'Succeeded'}],<br>[{'name': 'demisto', \
+'location': 'centralus', 'properties.provisioningState': 'Succeeded'}],<br>[{'name': 'compute-integration', 'location': 'eastus',\
+ 'properties.provisioningState': 'Succeeded'}] |\n")
+    commandResult = waf.resource_group_list_command(client, **demisto_args)
     assert m.call_args[1].get('method') == expected_results.get("method")
     assert m.call_args[1].get('full_url') == expected_results.get("full_url")
+    commandResult.readable_output == expected_commandResult.readable_output
