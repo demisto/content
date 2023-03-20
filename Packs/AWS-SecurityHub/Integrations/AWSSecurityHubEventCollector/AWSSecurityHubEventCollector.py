@@ -41,7 +41,7 @@ def get_events(client: boto3.client, start_time: datetime | None = None,
             'Start':
                 start_time.strftime('%Y-%m-%dT%H:%M:%SZ'),
             'End':
-                end_time.strftime('%Y-%m-%dT%H:%M:%SZ') or datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ')
+                end_time.strftime('%Y-%m-%dT%H:%M:%SZ') if end_time else datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ')
         }]
 
     if limit:
@@ -52,12 +52,15 @@ def get_events(client: boto3.client, start_time: datetime | None = None,
         # which raises an error.
         kwargs = {'Filters': _filters}
 
+    demisto.debug(f'Fetching events with kwargs:\n{kwargs}.')
     response = client.get_findings(**kwargs)
     events = response['Findings']
 
-    while 'NextToken' in response:
+    # When using MaxResults, the API still returns a NextToken if there are more results.
+    while 'NextToken' in response and (limit == 0 or len(events) < limit):
         kwargs['NextToken'] = response['NextToken']
 
+        demisto.debug(f'Fetching additional events with kwargs:\n{kwargs}.')
         response = client.get_findings(**kwargs)
         events.extend(response['Findings'])
 
@@ -91,7 +94,7 @@ def fetch_events(client: boto3.client, last_run: dict[str, int],
 
     # Save the next_run as a dict with the last_fetch key to be stored
     next_run = {'lastRun': last_finding_update_time}
-    demisto.info(f'Setting next run {next_run}.')
+    demisto.info(f'Setting next run to: {next_run}.')
     return next_run, events
 
 
