@@ -991,7 +991,7 @@ def extract_entitlement(entitlement: str, text: str) -> Tuple[str, str, str, str
 class SlackLogger(IntegrationLogger):
     def __init__(self):
         super().__init__()
-        self.level = logging.DEBUG
+        self.level = logging.INFO
 
     def info(self, message):
         text = self.encode(message)
@@ -1009,6 +1009,12 @@ class SlackLogger(IntegrationLogger):
         text = self.encode(message)
         self.messages.append(text)
 
+    def set_logging_level(self, debug: bool = True):
+        if debug:
+            self.level = logging.DEBUG
+        else:
+            self.level = logging.INFO
+
 
 SlackLog = SlackLogger()
 
@@ -1018,6 +1024,7 @@ async def slack_loop():
         exception_await_seconds = 1
         while True:
             SlackLog.set_buffering(state=True)
+            SlackLog.set_logging_level(debug=EXTENSIVE_LOGGING)
             client = SocketModeClient(
                 app_token=APP_TOKEN,
                 web_client=ASYNC_CLIENT,
@@ -2546,7 +2553,7 @@ def long_running_main():
     Starts the long running thread.
     """
     try:
-        asyncio.run(start_listening(), debug=True)
+        asyncio.run(start_listening(), debug=EXTENSIVE_LOGGING)
     except Exception as e:
         demisto.error(f"The Loop has failed to run {str(e)}")
     finally:
