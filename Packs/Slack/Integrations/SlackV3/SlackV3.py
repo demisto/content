@@ -1238,9 +1238,9 @@ def is_bot_message(data: dict) -> bool:
     event: dict = data.get('event', {})
     if subtype == 'bot_message' or message_bot_id or event.get('bot_id', None):
         return True
-    elif data.get('event', {}).get('subtype') == 'bot_message':
+    elif event.get('subtype') == 'bot_message':
         return True
-    elif data.get('event', {}).get('bot_id', '') == BOT_ID:
+    elif not data.get('user', {}).get('id') and not data.get('envelope_id'):
         return True
     else:
         return False
