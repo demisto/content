@@ -1,6 +1,6 @@
 id: Cortex XDR - Cloud Cryptomining
 version: -1
-name: Cortex XDR - Cloud Cryptojacking
+name: Cortex XDR - XCloud Cryptojacking
 description: "Investigates a Cortex XDR incident containing a Cloud Cryptojacking related alert. \nThe playbook supports AWS, Azure, and GCP and executes the following:\n\n- Cloud enrichment:\n   - Collects info about the involved resources\n   - Collects info about the involved identities\n   - Collects info about the involved IPs\n- Verdict decision tree\n- Verdict handling:\n   - Handle False Positives\n   - Handle True Positives\n      - Cloud Response - Generic sub-playbook.\n- Notifies the SOC if a malicious verdict was found"
 starttaskid: "0"
 tasks:
@@ -496,8 +496,8 @@ tasks:
     task:
       id: 7b42c9f5-0154-4859-8581-eb2e74e97026
       version: -1
-      name: Cortex XDR - Cryptojacking - Set Verdict
-      playbookName: Cortex XDR - Cryptojacking - Set Verdict
+      name: Cortex XDR - XCloud Cryptojacking - Set Verdict
+      playbookName: Cortex XDR - XCloud Cryptojacking - Set Verdict
       type: playbook
       iscommand: false
       brand: ""
@@ -951,6 +951,7 @@ tasks:
               else:
                 value:
                   simple: alertJson._all_events.actor_effective_username
+                iscontext: true
               equals: {}
               lhs:
                 value:
@@ -965,6 +966,7 @@ tasks:
               then:
                 value:
                   simple: alertJson._all_events.identity_name
+                iscontext: true
     separatecontext: true
     continueonerrortype: ""
     loop:
