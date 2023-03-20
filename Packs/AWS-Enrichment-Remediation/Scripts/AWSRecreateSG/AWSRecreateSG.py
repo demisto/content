@@ -271,7 +271,7 @@ def aws_recreate_sg(args: Dict[str, Any]) -> str:
 
 def main():
     try:
-        return_results(aws_recreate_sg_command(demisto.args()))
+        return_results(aws_recreate_sg(demisto.args()))
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(f'Failed to execute AWSRecreateSG. Error: {str(ex)}')
