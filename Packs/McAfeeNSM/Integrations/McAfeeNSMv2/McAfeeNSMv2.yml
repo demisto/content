@@ -2028,26 +2028,26 @@ script:
       description: Deploy the SSL configuration pending changes.
       auto: PREDEFINED
       predefined:
-      - true
-      - false
+      - "true"
+      - "false"
     - name: push_gam_updates
       description: Deploy the Gateway Anti-Malware configuration pending changes.
       auto: PREDEFINED
       predefined:
-      - true
-      - false
+      - "true"
+      - "false"
     - name: push_configuration_signature_set
       description: Deploy the Signature set configuration pending changes.
       auto: PREDEFINED
       predefined:
-      - true
-      - false
+      - "true"
+      - "false"
     - name: push_botnet
       description: Deploy the Firewall policy description pending changes.
       auto: PREDEFINED
       predefined:
-      - true
-      - false
+      - "true"
+      - "false"
     - name: interval_in_seconds
       description: The interval between status checks.
   isfetch: false

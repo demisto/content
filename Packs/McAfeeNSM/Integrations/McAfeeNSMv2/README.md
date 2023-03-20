@@ -2398,3 +2398,40 @@ There is no context output for this command.
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| Virtual_NSP_01 | false | false | true | false | false | false | false | false | false | false | true | 2023-03-19 15:18:27.590 UTC |
 
+### nsm-deploy-device-configuration
+
+***
+Deploy the pending changes.
+ Note: In order to avoid extra run time, it is recommended to deploy only the changes that are pending.
+To get the pending changes, use the !nsm-get-device-configuration command.
+
+#### Base Command
+
+`nsm-deploy-device-configuration`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| request_id | This is for the polling to work. not for the user. | Optional | 
+| device_id | The ID of the device. To get the device ID, use the !nsm-get-sensors command. | Required | 
+| push_ssl_key | Deploy the SSL configuration pending changes. Possible values are: true, false. | Optional | 
+| push_gam_updates | Deploy the Gateway Anti-Malware configuration pending changes. Possible values are: true, false. | Optional | 
+| push_configuration_signature_set | Deploy the Signature set configuration pending changes. Possible values are: true, false. | Optional | 
+| push_botnet | Deploy the Firewall policy description pending changes. Possible values are: true, false. | Optional | 
+| interval_in_seconds | The interval between status checks. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!nsm-deploy-device-configuration device_id=1003 push_configuration_signature_set="true" interval_in_seconds=10```
+#### Human Readable Output
+
+>
+>The current percentage of deployment for 'push_configuration_signature_set' is: 0%
+>                
+>And the current message is: NA
+>
+>
+>Checking again in 10 seconds...
