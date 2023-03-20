@@ -63,6 +63,7 @@ def copy_index(index_folder_path: str, build_index_blob: Blob, build_index_gener
         storage_base_path (str): the path to upload the index to.
         build_bucket_base_path (str): the path in the build bucket of the index.
     """
+    logging.info('Starting the copy index function')
     try:
         build_index_blob.reload()
         build_current_index_generation = build_index_blob.generation
