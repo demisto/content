@@ -1,5 +1,5 @@
 VMware Carbon Black EDR (formerly known as Carbon Black Response)
-This integration was integrated and tested with version xx of VMware Carbon Black EDR v2
+This integration was integrated and tested with product version 6.2 of VMware Carbon Black EDR and based on API version 6.3+.
 
 Some changes have been made that might affect your existing content. 
 If you are upgrading from a previous version of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-vmware-carbon-black-edr-v2).
@@ -10,7 +10,7 @@ If you are upgrading from a previous version of this integration, see [Breaking 
 2. Search for VMware Carbon Black EDR v2.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
+
     | --- | --- | --- |
     | Server URL |  | True |
     | API Token |  | False |
@@ -103,6 +103,115 @@ for example, this will be the external IP of the network the endpoint lives on. 
 | CarbonBlackEDR.ProcessSearch.Results.childproc_count | Number | The count of child processes launched by this process. | 
 | CarbonBlackEDR.ProcessSearch.Results.unique_id | String | An internal CB process id combining of the process id and segment id. | 
 
+#### Command Example
+```!cb-edr-processes-search process_name=chrome.exe limit=2```
+#### Context Example
+```json
+{
+    "CarbonBlackEDR": {
+        "ProcessSearch": {
+            "Results": [
+                {
+                    "childproc_count": 0,
+                    "cmdline": "(unknown)",
+                    "comms_ip": 314169177,
+                    "crossproc_count": 0,
+                    "emet_config": "",
+                    "emet_count": 0,
+                    "filemod_count": 10,
+                    "filtering_known_dlls": false,
+                    "group": "default group",
+                    "host_type": "server",
+                    "hostname": "ec2amaz-l4c2okc",
+                    "id": "00000018-0000-164c-01d5-9ed472b33472",
+                    "interface_ip": -1407250960,
+                    "last_server_update": "2021-05-26T13:00:03.651Z",
+                    "last_update": "2021-05-26T12:51:30.227Z",
+                    "modload_count": 0,
+                    "netconn_count": 0,
+                    "os_type": "windows",
+                    "parent_id": "00000018-ffff-ffff-0000-000000000000",
+                    "parent_md5": "000000000000000000000000000000",
+                    "parent_name": "(unknown)",
+                    "parent_pid": -1,
+                    "parent_unique_id": "00000018-ffff-ffff-0000-000000000000-000000000001",
+                    "path": "c:\\program files (x86)\\google\\chrome\\application\\chrome.exe",
+                    "process_md5": "8698e468bc379e30383a72ce63da7972",
+                    "process_name": "chrome.exe",
+                    "process_pid": 5708,
+                    "processblock_count": 0,
+                    "regmod_count": 0,
+                    "segment_id": 1622034003651,
+                    "sensor_id": 24,
+                    "start": "2019-11-19T12:25:37.19Z",
+                    "terminated": false,
+                    "unique_id": "00000018-0000-164c-01d5-9ed472b33472-0179a8c2b6c3",
+                    "username": "EC2AMAZ-L4C2OKC\\Administrator",
+                    "watchlists": [
+                        {
+                            "segments_hit": [
+                                1622033757062
+                            ],
+                            "value": "2021-05-26T13:00:03.333Z",
+                            "wid": "1870"
+                        }
+                    ]
+                },
+                {
+                    "childproc_count": 0,
+                    "cmdline": "(unknown)",
+                    "comms_ip": 314169177,
+                    "crossproc_count": 0,
+                    "emet_config": "",
+                    "emet_count": 0,
+                    "filemod_count": 10,
+                    "filtering_known_dlls": false,
+                    "group": "default group",
+                    "host_type": "server",
+                    "hostname": "ec2amaz-l4c2okc",
+                    "id": "00000018-0000-164c-01d5-9ed472b33472",
+                    "interface_ip": -1407250960,
+                    "last_server_update": "2021-05-26T13:25:57.176Z",
+                    "last_update": "2021-05-26T13:21:30.216Z",
+                    "modload_count": 0,
+                    "netconn_count": 0,
+                    "os_type": "windows",
+                    "parent_id": "00000018-ffff-ffff-0000-000000000000",
+                    "parent_md5": "000000000000000000000000000000",
+                    "parent_name": "(unknown)",
+                    "parent_pid": -1,
+                    "parent_unique_id": "00000018-ffff-ffff-0000-000000000000-000000000001",
+                    "path": "c:\\program files (x86)\\google\\chrome\\application\\chrome.exe",
+                    "process_md5": "8698e468bc379e30383a72ce63da7972",
+                    "process_name": "chrome.exe",
+                    "process_pid": 5708,
+                    "processblock_count": 0,
+                    "regmod_count": 0,
+                    "segment_id": 1622035557173,
+                    "sensor_id": 24,
+                    "start": "2019-11-19T12:25:37.19Z",
+                    "terminated": false,
+                    "unique_id": "00000018-0000-164c-01d5-9ed472b33472-0179a8da6b35",
+                    "username": "EC2AMAZ-L4C2OKC\\Administrator"
+                }
+            ],
+            "Terms": [
+                "process_name:chrome.exe"
+            ],
+            "total_results": 3379
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>#### Carbon Black EDR - Process Search Results### 
+>Showing 0 - 2 out of 3379 results.
+>|Process Path|Process ID|Segment ID|Process md5|Process Name|Hostname|Process PID|Username|Last Update|Is Terminated|
+>|---|---|---|---|---|---|---|---|---|---|
+>| c:\program files (x86)\google\chrome\application\chrome.exe | 00000018-0000-164c-01d5-9ed472b33472 | 1622034003651 | 8698e468bc379e30383a72ce63da7972 | chrome.exe | ec2amaz-l4c2okc | 5708 | EC2AMAZ-L4C2OKC\Administrator | 2021-05-26T12:51:30.227Z | false |
+>| c:\program files (x86)\google\chrome\application\chrome.exe | 00000018-0000-164c-01d5-9ed472b33472 | 1622035557173 | 8698e468bc379e30383a72ce63da7972 | chrome.exe | ec2amaz-l4c2okc | 5708 | EC2AMAZ-L4C2OKC\Administrator | 2021-05-26T13:21:30.216Z | false |
 ### cb-edr-process-get
 
 ***
