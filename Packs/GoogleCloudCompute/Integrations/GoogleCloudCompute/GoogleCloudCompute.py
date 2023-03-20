@@ -4400,14 +4400,14 @@ def aggregated_list_instances_ip(args: Dict[str, Any]) -> CommandResults:
             scope=default_search_scope,
             assetTypes='compute.googleapis.com/Instance',
             query=f"additionalAttributes.externalIPs={ip}"
-            )
-   
-   else:
+        )
+
+    else:
         request_asset = get_asset().v1().searchAllResources(
             scope=f"projects/{SERVICE_ACT_PROJECT_ID}",
             assetTypes='compute.googleapis.com/Instance',
             query=f"additionalAttributes.externalIPs={ip}"
-            )
+        )
     response_asset = request_asset.execute()
     if response_asset:
         raw = response_asset.get('results')[0].get('parentFullResourceName')
