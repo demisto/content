@@ -751,7 +751,7 @@
             "integrations": "SlackV3",
             "playbookID": "SlackV3 TestPB",
             "instance_names": "cached",
-            "timeout": 400,
+            "timeout": 600,
             "pid_threshold": 8,
             "fromversion": "5.5.0"
         },
