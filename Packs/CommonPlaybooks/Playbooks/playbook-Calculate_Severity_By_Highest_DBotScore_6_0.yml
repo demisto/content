@@ -1,29 +1,31 @@
 id: Calculate Severity By Highest DBotScore
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: Calculate Severity By Highest DBotScore
-description: Calculates the incident severity level according to the highest indicator DBotScore.
+description: Calculates the incident severity level according to the highest DBotScore.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 49a60c33-a26d-44aa-8b09-942df8be53f6
+    taskid: 79cbff50-3ae4-48f1-8f6d-785a4c8163de
     type: start
     task:
-      id: 49a60c33-a26d-44aa-8b09-942df8be53f6
+      id: 79cbff50-3ae4-48f1-8f6d-785a4c8163de
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "23"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 592.5,
-          "y": 40
+          "x": 240,
+          "y": -40
         }
       }
     note: false
@@ -33,20 +35,19 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "10":
     id: "10"
-    taskid: bee6ab2f-923a-487a-833c-ea02275f7f00
+    taskid: 9d087581-2976-4b96-887a-27a3a8edd630
     type: title
     task:
-      id: bee6ab2f-923a-487a-833c-ea02275f7f00
+      id: 9d087581-2976-4b96-887a-27a3a8edd630
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -61,15 +62,14 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "22":
     id: "22"
-    taskid: b089609b-82a2-4e14-8fbc-4c09435ee2c3
+    taskid: c33bfc3b-3bfd-4b09-8fef-d7c299ddbcab
     type: regular
     task:
-      id: b089609b-82a2-4e14-8fbc-4c09435ee2c3
+      id: c33bfc3b-3bfd-4b09-8fef-d7c299ddbcab
       version: -1
-      name: Get DBotScore
+      name: Set DBotScore from inputs
       description: |
         Sets the DBotScore into context.
       scriptName: Set
@@ -78,7 +78,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "31"
+      - "32"
     scriptarguments:
       key:
         simple: DBotScore
@@ -87,11 +87,12 @@ tasks:
           root: inputs.DBotScore
     reputationcalc: 1
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 592.5,
-          "y": 375
+          "y": 270
         }
       }
     note: false
@@ -101,15 +102,14 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "23":
     id: "23"
-    taskid: 403ab682-dde6-4112-8771-a784bf4b38e7
+    taskid: 0cc4278a-6b22-4ea9-834f-3ed21c346499
     type: condition
     task:
-      id: 403ab682-dde6-4112-8771-a784bf4b38e7
+      id: 0cc4278a-6b22-4ea9-834f-3ed21c346499
       version: -1
-      name: Is there a DBotScore?
+      name: Is there a DBotScore in inputs?
       description: Checks if there is a "DBotScore" in the playbook inputs.
       type: condition
       iscommand: false
@@ -128,11 +128,12 @@ tasks:
             value:
               simple: inputs.DBotScore
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 592.5,
-          "y": 185
+          "x": 240,
+          "y": 90
         }
       }
     note: false
@@ -142,28 +143,27 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "24":
     id: "24"
-    taskid: 186bf2fd-838b-4512-8395-e3ba0e8e9d91
+    taskid: d6b7eccb-3284-460d-8b20-197ea1c62f8a
     type: title
     task:
-      id: 186bf2fd-838b-4512-8395-e3ba0e8e9d91
+      id: d6b7eccb-3284-460d-8b20-197ea1c62f8a
       version: -1
       name: No DBotScore
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "30"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -200,
-          "y": 405
+          "x": -210,
+          "y": 270
         }
       }
     note: false
@@ -173,13 +173,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "25":
     id: "25"
-    taskid: b43b1da2-5d99-4bbe-80fa-db7fb2e7053d
+    taskid: 7082757c-758b-4cda-803e-526f85f26a68
     type: condition
     task:
-      id: b43b1da2-5d99-4bbe-80fa-db7fb2e7053d
+      id: 7082757c-758b-4cda-803e-526f85f26a68
       version: -1
       name: Evaluate severity based on DBotScore of indicators
       description: |-
@@ -208,12 +207,12 @@ tasks:
           left:
             value:
               complex:
-                root: DBotScore
+                root: DBotScoreCache
                 filters:
-                - - operator: isEqualNumber
+                - - operator: isEqualString
                     left:
                       value:
-                        simple: DBotScore.Score
+                        simple: DBotScoreCache.Score
                       iscontext: true
                     right:
                       value:
@@ -226,17 +225,16 @@ tasks:
           left:
             value:
               complex:
-                root: DBotScore
+                root: DBotScoreCache.Score
                 filters:
-                - - operator: isEqualNumber
+                - - operator: isEqualString
                     left:
                       value:
-                        simple: DBotScore.Score
+                        simple: DBotScoreCache.Score
                       iscontext: true
                     right:
                       value:
                         simple: "2"
-                accessor: Score
             iscontext: true
     - label: Low
       condition:
@@ -244,23 +242,23 @@ tasks:
           left:
             value:
               complex:
-                root: DBotScore
+                root: DBotScoreCache.Score
                 filters:
-                - - operator: isEqualNumber
+                - - operator: isEqualString
                     left:
                       value:
-                        simple: DBotScore.Score
+                        simple: DBotScoreCache.Score
                       iscontext: true
                     right:
                       value:
                         simple: "1"
-                accessor: Score
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 592.5,
-          "y": 710
+          "y": 780
         }
       }
     note: false
@@ -270,16 +268,16 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "27":
     id: "27"
-    taskid: 7e82ec79-4f98-4c76-8474-5811c14c2f6d
+    taskid: 86bc9089-08a5-44e2-8a0f-03dd11411f9b
     type: regular
     task:
-      id: 7e82ec79-4f98-4c76-8474-5811c14c2f6d
+      id: 86bc9089-08a5-44e2-8a0f-03dd11411f9b
       version: -1
       name: Set severity to high
-      description: Sets the severity of the incident to "High". This severity level means that malicious indicators were identified.
+      description: Sets the severity of the incident to "High". This severity level
+        means that malicious indicators were identified.
       scriptName: Set
       type: regular
       iscommand: false
@@ -294,6 +292,7 @@ tasks:
         simple: High
     reputationcalc: 1
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -308,16 +307,16 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "28":
     id: "28"
-    taskid: 3b1d51ee-8fe5-4781-8d60-92d3722a1001
+    taskid: 288ac730-e8e3-4782-805f-e54721977877
     type: regular
     task:
-      id: 3b1d51ee-8fe5-4781-8d60-92d3722a1001
+      id: 288ac730-e8e3-4782-805f-e54721977877
       version: -1
       name: Set severity to medium
-      description: Sets the severity of the incident to "Medium". This severity level means that only suspicious indicators were identified (no malicious indicators).
+      description: Sets the severity of the incident to "Medium". This severity level
+        means that only suspicious indicators were identified (no malicious indicators).
       scriptName: Set
       type: regular
       iscommand: false
@@ -332,6 +331,7 @@ tasks:
         simple: Medium
     reputationcalc: 1
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -346,16 +346,16 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "29":
     id: "29"
-    taskid: 9b3c3f3f-7a05-44c4-888e-ac9eeae87981
+    taskid: 3132e114-0841-4c3f-800f-fab492944f7a
     type: regular
     task:
-      id: 9b3c3f3f-7a05-44c4-888e-ac9eeae87981
+      id: 3132e114-0841-4c3f-800f-fab492944f7a
       version: -1
       name: Set severity to low
-      description: Sets the severity of the incident to "Low". This severity level means no suspicious or malicious indicators were identified.
+      description: Sets the severity of the incident to "Low". This severity level
+        means no suspicious or malicious indicators were identified.
       scriptName: Set
       type: regular
       iscommand: false
@@ -370,6 +370,7 @@ tasks:
         simple: Low
     reputationcalc: 1
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -384,16 +385,17 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "30":
     id: "30"
-    taskid: d5a15500-3efc-49c3-824f-5c5bfa3476ff
+    taskid: ca3d7b7e-95d9-48b6-87e1-c625b8f53c43
     type: regular
     task:
-      id: d5a15500-3efc-49c3-824f-5c5bfa3476ff
+      id: ca3d7b7e-95d9-48b6-87e1-c625b8f53c43
       version: -1
       name: Set severity to unknown
-      description: Sets the severity of the incident to "Unknown". This severity level means that either unknown indicators were identified, or no indicators were identified.
+      description: Sets the severity of the incident to "Unknown". This severity level
+        means that either unknown indicators were identified, or no indicators were
+        identified.
       scriptName: Set
       type: regular
       iscommand: false
@@ -408,6 +410,7 @@ tasks:
         simple: Unknown
     reputationcalc: 1
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -422,36 +425,32 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "31":
     id: "31"
-    taskid: 43c6373e-c6d1-45a3-8b4a-9ec89d38410f
-    type: playbook
+    taskid: b894e09e-1a9a-4c62-80df-f1b53961c7c9
+    type: regular
     task:
-      id: 43c6373e-c6d1-45a3-8b4a-9ec89d38410f
+      id: b894e09e-1a9a-4c62-80df-f1b53961c7c9
       version: -1
-      name: Indicator Registration Polling - Generic
-      type: playbook
+      name: Get DBotScore from XSOAR
+      description: Get the overall score for the indicator as calculated by DBot.
+      scriptName: GetIndicatorDBotScoreFromCache
+      type: regular
       iscommand: false
       brand: ""
-      playbookName: Indicator Registration Polling - Generic
-      description: ''
     nexttasks:
       '#none#':
       - "25"
     scriptarguments:
-      frequency:
-        simple: "1"
-      indicators:
-        simple: ${inputs.DBotScore.Indicator}
-      timeout:
-        simple: "10"
-    separatecontext: true
+      value:
+        simple: ${DBotScore.Indicator}
+    separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 592.5,
-          "y": 545
+          "y": 600
         }
       }
     note: false
@@ -461,28 +460,62 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 0036cf03-36a0-4182-8466-db7daabf4766
+    type: playbook
+    task:
+      id: 0036cf03-36a0-4182-8466-db7daabf4766
+      version: -1
+      name: Indicator Registration Polling - Generic
+      playbookName: Indicator Registration Polling - Generic
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      frequency:
+        simple: "1"
+      indicators:
+        simple: ${inputs.DBotScore.Indicator}
+      timeout:
+        simple: "10"
+    separatecontext: true
     continueonerrortype: ""
     loop:
       iscommand: false
       exitCondition: ""
       wait: 1
       max: 100
-system: true
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
-      "23_22_yes": 0.69,
-      "23_24_#default#": 0.53,
       "25_27_High": 0.82,
       "25_28_Medium": 0.76,
       "25_30_#default#": 0.87
     },
     "paper": {
       "dimensions": {
-        "height": 1260,
+        "height": 1340,
         "width": 1580,
         "x": -210,
-        "y": 40
+        "y": -40
       }
     }
   }
@@ -493,19 +526,12 @@ inputs:
       root: DBotScore
   required: false
   description: 'Array of all indicators associated with the incident. '
-  playbookInputQuery:
+  playbookInputQuery: null
 outputs:
 - contextPath: Severities.DBotScoreSeverity
-  description: The severity level of the incident identified and set in the Calculate Severity By Highest DBotScore playbook.
+  description: The severity level of the incident identified and set in the Calculate
+    Severity By Highest DBotScore playbook.
   type: string
 tests:
-- Calculate Severity - Generic v2 - Test
-- Wait Until Datetime - Test
-- URL Enrichment - Generic v2 - Test
-- File Enrichment - Generic v2 - Test
-- Domain Enrichment - Generic v2 - Test
-- Account Enrichment - Generic v2.1 - Test
-- Detonate URL - Generic Test
-- Email Address Enrichment - Generic v2.1 - Test
-- Endpoint Enrichment - Generic v2.1 - Test
+- Calculate Severity - Standard - Test
 fromversion: 6.0.0
