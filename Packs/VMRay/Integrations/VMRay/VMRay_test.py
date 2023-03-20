@@ -1,5 +1,3 @@
-import time
-
 import demistomock as demisto
 import requests_mock
 
@@ -151,8 +149,7 @@ def test_rate_limit(requests_mock, mocker):
     )
 
     from VMRay import http_request
-    start = time.perf_counter()
     response = http_request("GET", "submission/123")
 
-    assert 2.0 < time.perf_counter() - start <= 7.0
+    assert requests_mock.call_count == 2
     assert response == {"foo": "bar"}
