@@ -165,7 +165,6 @@ def format_file_events(events: List[dict]):
 
 def deduplicate_v2_file_events(events: List[dict]):
     """Takes a list of v2 file events and returns a new list removing any duplicate events."""
-    LOG(f"EVENTS: {events}")
     unique = []
     id_set = set()
     for event in events:
@@ -178,7 +177,6 @@ def deduplicate_v2_file_events(events: List[dict]):
 
 def deduplicate_v1_file_events(events: List[dict]):
     """Takes a list of v1 file events and returns a new list removing any duplicate events."""
-    LOG(f"EVENTS: {events}")
     unique = []
     id_set = set()
     for event in events:
@@ -186,8 +184,6 @@ def deduplicate_v1_file_events(events: List[dict]):
         if _id not in id_set:
             id_set.add(_id)
             unique.append(event)
-    LOG(f"UNIQUE: {unique}")
-    LOG.print_log()
     return unique
 
 
