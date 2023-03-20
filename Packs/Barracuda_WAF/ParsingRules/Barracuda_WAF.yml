@@ -1,0 +1,6 @@
+name: Barracuda_WAF Parsing Rules
+id: Barracuda_WAF_Parsing_Rules
+fromversion: 8.2.0
+tags: []
+rules: ''
+samples: ''

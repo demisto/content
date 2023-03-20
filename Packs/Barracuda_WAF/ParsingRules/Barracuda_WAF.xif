@@ -1,0 +1,14 @@
+[INGEST:vendor="Barracuda", product="ngfw", target_dataset="barracuda_ngfw_raw", no_hit=keep]
+| alter
+    tmp_time1_get_epoch = arraystring(regextract(_raw_log, "^.*(\d{10})\s.*BYF"), ""),
+    tmp_time2_gen_year = arraystring(regextract(to_string(_insert_time) , "^.{0,4}"),""), // 2023
+    tmp_time2_get_datetime_log = replace(arraystring(regextract(_raw_log , ">(\S+\s+\S+\s+\S+)"), ""), "  ", " ") // Mar 13 07:11:42
+| alter
+    tmp_time1_convert = to_timestamp(to_integer(tmp_time1_get_epoch), "SECONDS"),
+    tmp_time2_unite_format = tmp_time2_gen_year + " " + tmp_time2_get_datetime_log
+| alter
+    tmp_time1 = tmp_time1_convert,
+    tmp_time2 = parse_timestamp("%Y %b %e %H:%M:%S", tmp_time2_unite_format)
+| alter
+    _time = coalesce(tmp_time1, tmp_time2)
+| fields -tmp_time1_get_epoch, tmp_time2_gen_year, tmp_time2_get_datetime_log, tmp_time2_unite_format, tmp_time1_convert, tmp_time2_unite_format, tmp_time1, tmp_time2
