@@ -162,8 +162,8 @@ def main():
         # Validate index.json file
         index_is_valid = check_index_data(index_data)
         log_message_if_statement(statement=index_is_valid,
-                                error_message=f"The packs in the {index_file_path} file were found invalid.",
-                                success_message=f"{index_file_path} file was found valid")
+                                 error_message=f"The packs in the {index_file_path} file were found invalid.",
+                                 success_message=f"{index_file_path} file was found valid")
 
         # Validate commit hash in master history
         commit_hash_is_valid = log_message_if_statement(statement=("commit" in index_data),
