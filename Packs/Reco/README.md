@@ -9,5 +9,13 @@ The integration pack allows:
 • Fetching Reco data risk alerts
 
 
+#### Integrations
+- Supported commands to query Reco platform:
+- ***update-reco-incident-timeline*** - Update Reco incident timeline
+- ***resolve-visibility-event*** - Resolve Reco visibility event
+- ***reco-get-risky-users*** - Get risky users
+- ***reco-add-risky-user-label*** - Add risky user
+- ***reco-get-assets-user-has-access-to*** - Get assets user has access to (optional to get only sensitive assets)
 
-For more information on Abnormal Security, please visit www.reco.ai
+
+For more information on Reco, please visit www.reco.ai

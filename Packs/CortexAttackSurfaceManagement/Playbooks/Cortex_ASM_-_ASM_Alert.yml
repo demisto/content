@@ -2823,7 +2823,7 @@ tasks:
       closeNotes:
         simple: Alert status set to 'Resolved' by Active Response Module
       closeReason:
-        simple: STATUS_160_RESOLVED
+        simple: Resolved
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2906,7 +2906,7 @@ tasks:
                   simple: 'Alert status set to ''Resolved'' by Active Response Module - Remediation Path Rule: '
               suffix: {}
       closeReason:
-        simple: STATUS_160_RESOLVED
+        simple: Resolved
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2996,6 +2996,15 @@ tasks:
               complex:
                 root: alert.asmserviceowner
                 accessor: Email
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: alert.asmserviceowner.Email
+                      iscontext: true
+                    right:
+                      value:
+                        simple: '@'
             iscontext: true
           right:
             value: {}
@@ -3048,9 +3057,20 @@ tasks:
           </body>
           </html>
       subject:
-        simple: A new security risk was addressed on an external service owned by your team'
+        simple: A new security risk was addressed on an external service owned by your team
       to:
-        simple: ${alert.asmserviceowner.Email}
+        complex:
+          root: alert.asmserviceowner
+          accessor: Email
+          filters:
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: alert.asmserviceowner.Email
+                iscontext: true
+              right:
+                value:
+                  simple: '@'
     separatecontext: false
     continueonerrortype: ""
     view: |-
