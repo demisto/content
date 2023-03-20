@@ -46,9 +46,9 @@ class Client(BaseClient):
         headers = {'X-FeApi-Token': token}
         try:
             res = super()._http_request(*args, headers=headers, **kwargs)  # type: ignore[misc]
-        except Exception as e:
+        except DemistoException as e:
             # in case the token expired - create the token again and make the request.
-            if e.res.status_code == 401:  # type: ignore[attr-defined]
+            if e.res is not None and e.res.status_code == 401:  # type: ignore[attr-defined]
                 token = self.get_access_token()
                 headers = {'X-FeApi-Token': token}
                 res = super()._http_request(*args, headers=headers, **kwargs)  # type: ignore[misc]
