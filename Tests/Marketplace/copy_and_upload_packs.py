@@ -110,7 +110,7 @@ def copy_from_build_to_prod(build_bucket, build_index_blob, production_bucket, p
         blob=build_index_blob, destination_bucket=production_bucket, new_name=prod_index_storage_path
     )
     if copied_index.exists():
-        logging.success(f"Finished uploading {index_name} to storage.")
+        logging.success(f"Finished uploading {index_name=} to storage.")
     else:
         logging.error("Failed copying index.zip from build index - blob does not exist.")
         sys.exit(1)
