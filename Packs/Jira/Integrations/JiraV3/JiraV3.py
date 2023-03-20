@@ -20,6 +20,7 @@ OAUTH2_AUTH_NOT_APPLICABLE_ERROR = ('This command is not applicable to run with 
                                     ' do not use OAuth2 for authorization.')
 ID_OR_KEY_MISSING_ERROR = 'Please provide either the issue ID or key.'
 EPIC_ID_OR_KEY_MISSING_ERROR = 'Please provide either the epic ID or key.'
+JIRA_RESOLVE_REASON = 'Issue was marked as "Done"'
 # Scopes
 SCOPES = [
     'write:jira-work',
@@ -53,10 +54,12 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
     class, where we want to define the definition of methods without implementing them, and the child classes will need to
     implement these methods.
     """
-    # CONFLUENCE Add a simple description about the class hierarchy and why it was needed
 
-    # CONFLUENCE Add the purpose of the two mappers
-    ISSUE_FIELDS_MAPPER = {
+    # This will hold a mapping between the issue fields arguments that is supplied by the user, and the path
+    # of them in the issue fields object when creating a new issue, in dotted string format. For example, when
+    # creating a new issue, we send to the API an issue fields object that holds data about the new issue, and if we want to add
+    # the project_key, then we supply it as: {fields: {project: {key: THE_PROJECT_KEY}}}
+    ISSUE_FIELDS_CREATE_MAPPER = {
         'summary': 'fields.summary',
         'project_key': 'fields.project.key',
         'project_id': 'fields.project.id',
@@ -78,12 +81,23 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         'components': 'fields.components'
     }
 
-    ISSUE_UPDATE_MAPPER: Dict[str, tuple[str, str]] = {
+    # This will hold a mapping between the issue fields arguments that is supplied by the user, and the path
+    # of them in the issue fields object when updating a new issue, in dotted string format, and the key to hold
+    # the new value. For example, when updating a new issue, we send to the API an issue fields object that holds data
+    # about the updated issue, and if we want to update the assignee_id, then we supply it as:
+    # {update:
+    #   {assignee:
+    #       [{set: {accountId: THE_PROJECT_KEY}}]
+    #   }
+    # }
+    # If the key to hold the new value is empty, for example, for summary, then we supply it as:
+    # {update:
+    #   {summary:
+    #       [{set: NEW_SUMMARY}]
+    #   }
+    # }
+    ISSUE_FIELDS_UPDATE_MAPPER: Dict[str, tuple[str, str]] = {
         'summary': ('update.summary', ''),
-        'project_key': ('update.project', 'key'),  # TODO Can we update ??
-        'issue_type_name': ('update.issuetype', 'name'),
-        'issue_type_id': ('update.issuetype', 'id'),
-        'project_name': ('update.project', 'name'),  # TODO Can we update ??
         'description': ('update.description', ''),
         'labels': ('update.labels', ''),
         'priority': ('update.priority', 'name'),
@@ -198,7 +212,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
     @abstractmethod
     def get_issues_from_board(self, board_id: str, jql_query: str | None = None,
                               start_at: int | None = None, max_results: int | None = None) -> Dict[str, Any]:
-        """This method is in charge of returning all issues from a specific board.
+        """This method is in charge of returning issues from a specific board.
 
         Args:
             board_id (str): The board id
@@ -1314,7 +1328,6 @@ def create_file_info_from_attachment(client: JiraBaseClient, attachment_id: str,
 
 
 def create_fields_dict_from_dotted_string(issue_fields: Dict[str, Any], dotted_string: str, value: Any) -> Dict[str, Any]:
-    # CONFLUENCE Add why we need this and give an example
     """Create a nested dictionary from keys separated by dots(.), and insert the value as part of the last key in the dotted string.
     For example, dotted_string=key1.key2.key3 with value=jira results in {key1: {key2: {key3: jira}}}
     This function is used to create the dictionary that will be sent when creating a new Jira issue. Let us look at the following
@@ -1342,6 +1355,20 @@ def create_fields_dict_from_dotted_string(issue_fields: Dict[str, Any], dotted_s
 
 
 def get_issue_fields_for_create(issue_args: Dict[str, str], issue_fields_mapper: Dict[str, str]) -> Dict[str, Any]:
+    """This will create the issue fields object that will be sent to the API in order to create a new Jira issue.
+
+    Args:
+        issue_args (Dict[str, str]): The issue arguments supplied by the user
+        issue_fields_mapper (Dict[str, str]): A mapper that will map between the issue fields arguments that is supplied by
+        the user, and the path of them in the issue fields object when creating a new issue, in dotted string format,
+        for reference, look at the ISSUE_FIELDS_CREATE_MAPPER constant in JiraBaseClient
+
+    Raises:
+        DemistoException: If the issue_json that is supplied is not in valid json format.
+
+    Returns:
+        Dict[str, Any]: The issue fields object to send to the API, to create a new Jira issue.
+    """
     issue_fields: Dict[str, Any] = defaultdict(dict)
     if 'issue_json' in issue_args:
         try:
@@ -1367,12 +1394,17 @@ def get_issue_fields_for_create(issue_args: Dict[str, str], issue_fields_mapper:
 def create_update_dict_from_dotted_string(issue_fields: Dict[str, Any], dotted_string: str, update_key: str,
                                           value: Any,
                                           action: str = 'rewrite') -> Dict[str, Any]:
-    # TODO Update documentation
-    """Create a nested dictionary from keys separated by dot(.)
+    """We should sit and go over this function since I feel it is quite complex and if we can find a way to reduce it.
 
     Args:
-        dotted_string (str): A dotted string that holds the keys of the dictionary
-        value (Any): The value to insert in the nested dictionary
+        issue_fields (Dict[str, Any]): _description_
+        dotted_string (str): _description_
+        update_key (str): _description_
+        value (Any): _description_
+        action (str, optional): _description_. Defaults to 'rewrite'.
+
+    Returns:
+        Dict[str, Any]: _description_
     """
     if not dotted_string:
         return {}
@@ -1409,6 +1441,21 @@ def create_update_dict_from_dotted_string(issue_fields: Dict[str, Any], dotted_s
 
 def get_issue_fields_for_update(issue_args: Dict[str, str], issue_update_mapper: Dict[str, tuple[str, str]],
                                 action: str) -> Dict[str, Any]:
+    """This will create the issue fields object that will be sent to the API in order to update a Jira issue.
+
+    Args:
+        issue_args (Dict[str, str]): The issue arguments supplied by the user
+        issue_fields_mapper (Dict[str, str]): A mapper that will map between the issue fields arguments that is supplied by
+        the user, and the path of them in the issue fields object when updating a new issue, in dotted string format, and the
+        key to hold the new value, for reference, look at the ISSUE_FIELDS_UPDATE_MAPPER constant in JiraBaseClient.
+        action (str): Whether the update should append or rewrite the values.
+
+    Raises:
+        DemistoException: If the issue_json that is supplied is not in valid json format.
+
+    Returns:
+        Dict[str, Any]: The issue fields object to send to the API, to update a Jira issue.
+    """
     issue_fields: Dict[str, Any] = defaultdict(dict)
     if 'issue_json' in issue_args:
         try:
@@ -1827,7 +1874,7 @@ def create_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> Comman
     Returns:
         CommandResults: CommandResults to return to XSOAR.
     """
-    issue_fields = get_issue_fields_for_create(issue_args=args, issue_fields_mapper=client.ISSUE_FIELDS_MAPPER)
+    issue_fields = get_issue_fields_for_create(issue_args=args, issue_fields_mapper=client.ISSUE_FIELDS_CREATE_MAPPER)
     res = client.create_issue(json_data=issue_fields)
     outputs = {'Id': res.get('id', ''), 'Key': res.get('key', '')}
     markdown_dict = outputs | {'Ticket Link': res.get('self', ''),
@@ -1869,7 +1916,8 @@ def edit_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandR
         demisto.log(f'Updating the status using the transition: {transition}')
         apply_issue_transition(client=client, issue_id_or_key=issue_id_or_key, transition_name=transition)
     action = args.get('action', 'rewrite')
-    update_fields = get_issue_fields_for_update(issue_args=args, issue_update_mapper=client.ISSUE_UPDATE_MAPPER, action=action)
+    update_fields = get_issue_fields_for_update(
+        issue_args=args, issue_update_mapper=client.ISSUE_FIELDS_UPDATE_MAPPER, action=action)
     client.edit_issue(issue_id_or_key=issue_id_or_key, json_data=update_fields)
     demisto.log(f'Issue {issue_id_or_key} was updated successfully')
     res = client.get_issue(issue_id_or_key=issue_id_or_key)
@@ -2232,12 +2280,23 @@ def get_specific_fields_command(client: JiraBaseClient, args: Dict[str, str]) ->
 
 
 def list_fields_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandResults:
+    """This command is in charge of returning the issue fields found in the Jira system.
+
+    Args:
+        client (JiraBaseClient): The Jira client.
+        args (Dict[str, str]): The arguments supplied by the user.
+
+    Returns:
+        CommandResults: CommandResults to return to XSOAR.
+    """
     res = client.get_issue_fields()
     pagination_args = prepare_pagination_args(page=arg_to_number(arg=args.get('page', None)),
                                               page_size=arg_to_number(arg=args.get('page_size', None)),
                                               limit=arg_to_number(arg=args.get('limit', None)))
     start_at = pagination_args.get('start_at', 0)
     max_results = pagination_args.get('max_results', 50)
+    # Since the API does not support pagination, and the issue fields returned can carry hundreds of entries,
+    # we decided to do the pagination manually.
     fields_entry = res[start_at: start_at + max_results]
     markdown_dict: List[Dict[str, Any]] = [
         {
@@ -2260,6 +2319,15 @@ def list_fields_command(client: JiraBaseClient, args: Dict[str, str]) -> Command
 
 # User Commands
 def get_id_by_attribute_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandResults:
+    """This command is in charge of returning the id of a specific user based on attribute.
+
+    Args:
+        client (JiraBaseClient): The Jira client.
+        args (Dict[str, str]): The arguments supplied by the user.
+
+    Returns:
+        CommandResults: CommandResults to return to XSOAR.
+    """
     attribute = args.get('attribute', '')
     max_results = arg_to_number(args.get('max_results', None))
     if not max_results:
@@ -2315,6 +2383,15 @@ def get_id_by_attribute_command(client: JiraBaseClient, args: Dict[str, str]) ->
 
 
 def sprint_issues_list_command(client: JiraBaseClient, args: Dict[str, Any]) -> CommandResults:
+    """This command is in charge of returning the issues found in a specific sprint.
+
+    Args:
+        client (JiraBaseClient): The Jira client.
+        args (Dict[str, Any]): The arguments supplied by the user.
+
+    Returns:
+        CommandResults: CommandResults to return to XSOAR.
+    """
     board_id = args.get('board_id', '')
     sprint_id = args.get('sprint_id', '')
     jql_query = args.get('jql_query', '')
@@ -2331,32 +2408,60 @@ def sprint_issues_list_command(client: JiraBaseClient, args: Dict[str, Any]) -> 
             **pagination_args
         )
     if issues := res.get('issues', []):
-        if not board_id:
-            sprint = issues[0].get('fields', {}).get('sprint', {}) or {}
-            board_id = sprint.get(
-                'originBoardId', '') or ''
-        markdown_list = []
-        issues_list = []
-        for issue in issues:
-            markdown_dict, outputs = create_issue_md_and_outputs_dict(issue_data=issue)
-            markdown_list.append(markdown_dict)
-            issues_list.append(outputs)
-        context_data_outputs: Dict[str, Any] = {'Ticket': issues_list or []}
-        board_id = str(board_id)
-        context_data_outputs |= {'boardId': board_id} if board_id else {}
-        context_data_outputs |= {'sprintId': sprint_id}
-        return CommandResults(
-            outputs_prefix='Jira.SprintIssues',
-            outputs_key_field=['boardId', 'sprintId'] if board_id else [
-                'sprintId'],  # TODO Check if it is okay to use sprintID alone
-            outputs=context_data_outputs or None,
-            readable_output=tableToMarkdown(name=f'Sprint Issues in board {board_id}', t=markdown_list),
-            raw_response=res
+        return create_sprint_issues_command_results(
+            board_id, issues, sprint_id, res
         )
     return CommandResults(readable_output='No issues were found with the respective arguments.')
 
 
+def create_sprint_issues_command_results(board_id: str, issues: List[Dict[str, Any]], sprint_id: str,
+                                         res: Dict[str, Any]) -> CommandResults:
+    """Create the CommandResults of the sprint_issues_list_command.
+
+    Args:
+        board_id (str): The board id, if given by the user
+        issues (List[Dict[str, Any]]): The issues in the sprint (not empty!).
+        sprint_id (str): The id of the sprint that holds the issues.
+        res (Dict[str, Any]): The raw response when calling the API to retrieve the issues.
+
+    Returns:
+        CommandResults: CommandResults to return to XSOAR.
+    """
+    if not board_id:
+        # If board_id was not given by the user, we try to extract it from the issues.
+        sprint = issues[0].get('fields', {}).get('sprint', {}) or {}
+        board_id = sprint.get(
+            'originBoardId', '') or ''
+    markdown_list = []
+    issues_list = []
+    for issue in issues:
+        markdown_dict, outputs = create_issue_md_and_outputs_dict(issue_data=issue)
+        markdown_list.append(markdown_dict)
+        issues_list.append(outputs)
+    context_data_outputs: Dict[str, Any] = {'Ticket': issues_list or []}
+    board_id = str(board_id)
+    context_data_outputs |= {'boardId': board_id} if board_id else {}
+    context_data_outputs |= {'sprintId': sprint_id}
+    return CommandResults(
+        outputs_prefix='Jira.SprintIssues',
+        outputs_key_field=['boardId', 'sprintId'] if board_id else [
+            'sprintId'],  # TODO Check if it is okay to use sprintID alone
+        outputs=context_data_outputs or None,
+        readable_output=tableToMarkdown(name=f'Sprint Issues in board {board_id}', t=markdown_list),
+        raw_response=res
+    )
+
+
 def issues_to_sprint_command(client: JiraBaseClient, args: Dict[str, Any]) -> CommandResults:
+    """This command is in charge of moving issues to a sprint.
+
+    Args:
+        client (JiraBaseClient): The Jira client.
+        args (Dict[str, Any]): The arguments supplied by the user.
+
+    Returns:
+        CommandResults: CommandResults to return to XSOAR.
+    """
     issues = argToList(args.get('issues', ''))
     sprint_id = args.get('sprint_id', '')
     rank_before_issue = args.get('rank_before_issue', '')
@@ -2371,6 +2476,18 @@ def issues_to_sprint_command(client: JiraBaseClient, args: Dict[str, Any]) -> Co
 
 
 def epic_issues_list_command(client: JiraBaseClient, args: Dict[str, Any]) -> CommandResults:
+    """This command is in charge of returning the issues that belong to a specific epic issue.
+
+    Args:
+        client (JiraBaseClient): The Jira client.
+        args (Dict[str, Any]): The arguments supplied by the user.
+
+    Raises:
+        DemistoException: If neither an epic id not a key was supplied.
+
+    Returns:
+        CommandResults: CommandResults to return to XSOAR.
+    """
     epic_id_or_key = args.get('epic_id', args.get('epic_key', ''))
     if not epic_id_or_key:
         raise DemistoException(EPIC_ID_OR_KEY_MISSING_ERROR)
@@ -2388,7 +2505,17 @@ def epic_issues_list_command(client: JiraBaseClient, args: Dict[str, Any]) -> Co
 
 
 def create_epic_issues_command_results(issues: List[Dict[str, Any]],
-                                       epic_id_or_key: str, res: Dict[str, Any]):
+                                       epic_id_or_key: str, res: Dict[str, Any]) -> CommandResults:
+    """Creates the CommandResults of the epic_issues_list_command.
+
+    Args:
+        issues (List[Dict[str, Any]]): The issues that belong to the epic (not empty!).
+        epic_id_or_key (str): The epic id or key.
+        res (Dict[str, Any]): The raw response when calling the API to retrieve the epic's issues.
+
+    Returns:
+       CommandResults: CommandResults to return to XSOAR.
+    """
     markdown_list = []
     issues_list = []
     for issue in issues:
@@ -2413,6 +2540,15 @@ def create_epic_issues_command_results(issues: List[Dict[str, Any]],
 
 
 def get_issue_link_types_command(client: JiraBaseClient, args: Dict[str, Any]) -> CommandResults:
+    """This command is in charge of returning the issue links between issues (Blocked by, Duplicates,...)
+
+    Args:
+        client (JiraBaseClient): The Jira client.
+        args (Dict[str, Any]):  The arguments supplied by the user.
+
+    Returns:
+        CommandResults: CommandResults to return to XSOAR.
+    """
     res = client.get_issue_link_types()
     issue_link_types = res.get('issueLinkTypes', [])
     md_dict = [
@@ -2433,6 +2569,15 @@ def get_issue_link_types_command(client: JiraBaseClient, args: Dict[str, Any]) -
 
 
 def link_issue_to_issue_command(client: JiraBaseClient, args: Dict[str, Any]) -> CommandResults:
+    """This command is in charge of adding an issue link between two issues.
+
+    Args:
+        client (JiraBaseClient): The Jira client.
+        args (Dict[str, Any]): The arguments supplied by the user.
+
+    Returns:
+        CommandResults: CommandResults to return to XSOAR.
+    """
     outward_issue = args.get('outward_issue', '')
     inward_issue = args.get('inward_issue', '')
     link_type = args.get('link_type', '')
@@ -2449,6 +2594,19 @@ def link_issue_to_issue_command(client: JiraBaseClient, args: Dict[str, Any]) ->
 
 # Board Commands
 def issues_to_backlog_command(client: JiraBaseClient, args: Dict[str, Any]) -> CommandResults:
+    """This command is in charge of moving issues, that are part of a sprint or not, back to backlog of their board.
+
+    Args:
+        client (JiraBaseClient): The Jira client.
+        args (Dict[str, Any]): The arguments supplied by the user.
+
+    Raises:
+        DemistoException: If the user supplied the rank_after_issue, or rank_before_issue, without the board id.
+        DemistoException: If the board id was supplied, but the Jira instance is not a Cloud instance.
+
+    Returns:
+        CommandResults: CommandResults to return to XSOAR.
+    """
     issues = argToList(args.get('issues', ''))
     board_id = args.get('board_id', '')
     rank_before_issue = args.get('rank_before_issue', '')
@@ -2476,6 +2634,18 @@ def issues_to_backlog_command(client: JiraBaseClient, args: Dict[str, Any]) -> C
 
 
 def issues_to_board_command(client: JiraBaseClient, args: Dict[str, Any]) -> CommandResults:
+    """This command is in charge of moving issues from backlog to board.
+
+    Args:
+        client (JiraBaseClient): The Jira client.
+        args (Dict[str, Any]): The arguments supplied by the user.
+
+    Raises:
+        DemistoException: If the configured Jira instance is an OnPrem instance.
+
+    Returns:
+        CommandResults: CommandResults to return to XSOAR.
+    """
     if isinstance(client, JiraCloudClient):
         # This command is only supported by a Jira Cloud instance
         issues = argToList(args.get('issues', ''))
@@ -2493,6 +2663,15 @@ def issues_to_board_command(client: JiraBaseClient, args: Dict[str, Any]) -> Com
 
 
 def board_list_command(client: JiraBaseClient, args: Dict[str, Any]) -> CommandResults:
+    """This command is in charge of retrieving the boards, or board, found in the Jira instance.
+
+    Args:
+        client (JiraBaseClient): The Jira client.
+        args (Dict[str, Any]): The arguments supplied by the user.
+
+    Returns:
+        CommandResults: CommandResults to return to XSOAR.
+    """
     board_id = args.get('board_id', '')
     board_type = args.get('type', '')
     project_key_id = args.get('project_key_id', '')
@@ -2532,6 +2711,15 @@ def board_list_command(client: JiraBaseClient, args: Dict[str, Any]) -> CommandR
 
 
 def board_backlog_list_command(client: JiraBaseClient, args: Dict[str, Any]) -> CommandResults:
+    """This command is in charge of retrieving issues from the backlog of a specific board.
+
+    Args:
+        client (JiraBaseClient): The Jira client.
+        args (Dict[str, Any]): The arguments supplied by the user.
+
+    Returns:
+        CommandResults: CommandResults to return to XSOAR.
+    """
     board_id = args.get('board_id', '')
     jql_query = args.get('jql_query', '')
     pagination_args = prepare_pagination_args(page=arg_to_number(arg=args.get('page', None)),
@@ -2554,6 +2742,15 @@ def board_backlog_list_command(client: JiraBaseClient, args: Dict[str, Any]) -> 
 
 
 def board_issues_list_command(client: JiraBaseClient, args: Dict[str, Any]) -> CommandResults:
+    """This method is in charge of returning issues from a specific board.
+
+    Args:
+        client (JiraBaseClient): The Jira client.
+        args (Dict[str, Any]): The arguments supplied by the user.
+
+    Returns:
+        CommandResults: CommandResults to return to XSOAR.
+    """
     board_id = args.get('board_id', '')
     jql_query = args.get('jql_query', '')
     pagination_args = prepare_pagination_args(page=arg_to_number(arg=args.get('page', None)),
@@ -2576,6 +2773,15 @@ def board_issues_list_command(client: JiraBaseClient, args: Dict[str, Any]) -> C
 
 
 def board_sprint_list_command(client: JiraBaseClient, args: Dict[str, Any]) -> CommandResults:
+    """This command is in charge of returning the sprints of a specific board, if the board supports sprints.
+
+    Args:
+        client (JiraBaseClient): The Jira client.
+        args (Dict[str, Any]): The arguments supplied by the user.
+
+    Returns:
+        CommandResults: CommandResults to return to XSOAR.
+    """
     board_id = args.get('board_id', '')
     pagination_args = prepare_pagination_args(page=arg_to_number(arg=args.get('page', None)),
                                               page_size=arg_to_number(arg=args.get('page_size', None)),
@@ -2602,6 +2808,15 @@ def board_sprint_list_command(client: JiraBaseClient, args: Dict[str, Any]) -> C
 
 
 def board_epic_list_command(client: JiraBaseClient, args: Dict[str, Any]) -> CommandResults:
+    """This command is in charge of returning issues with issue type `epic`, of a specific board.
+
+    Args:
+        client (JiraBaseClient): The Jira client.
+        args (Dict[str, Any]): The arguments supplied by the user.
+
+    Returns:
+        CommandResults: CommandResults to return to XSOAR.
+    """
     board_id = args.get('board_id', '')
     pagination_args = prepare_pagination_args(page=arg_to_number(arg=args.get('page', None)),
                                               page_size=arg_to_number(arg=args.get('page_size', None)),
@@ -2630,7 +2845,16 @@ def board_epic_list_command(client: JiraBaseClient, args: Dict[str, Any]) -> Com
 
 
 # Authentication
-def ouath_start_command(client: JiraBaseClient, args: Dict[str, Any] = None) -> CommandResults:
+def ouath_start_command(client: JiraBaseClient, args: Dict[str, Any]) -> CommandResults:
+    """This command is used to start the authentication process of the instance.
+
+    Args:
+        client (JiraBaseClient): The Jira client.
+        args (Dict[str, Any], optional): The arguments supplied by the user.
+
+    Returns:
+        CommandResults: CommandResults to return to XSOAR.
+    """
     url = client.oauth_start()
     return CommandResults(readable_output=('In order to retrieve the authorization code, please authorize'
                                            f' yourself using the following link:\n{create_clickable_url(url)}\n'
@@ -2639,17 +2863,39 @@ def ouath_start_command(client: JiraBaseClient, args: Dict[str, Any] = None) -> 
 
 
 def oauth_complete_command(client: JiraBaseClient, args: Dict[str, Any]) -> CommandResults:
+    """This command is used to complete the authentication process of the instance.
+
+    Args:
+        client (JiraBaseClient): The Jira client.
+        args (Dict[str, Any]): The arguments supplied by the user.
+
+    Returns:
+        CommandResults: CommandResults to return to XSOAR.
+    """
     code = args.get('code', '')
     client.oauth_complete(code=code)
     return CommandResults(readable_output=('Authentication process has completed successfully.'))
 
 
 def test_authorization(client: JiraBaseClient, args: Dict[str, Any]) -> CommandResults:
+    """This command is used to test the connectivity of the Jira instance configured.
+
+    Args:
+        client (JiraBaseClient): The Jira client.
+        args (Dict[str, Any]): The arguments supplied by the user.
+
+    Returns:
+        CommandResults: CommandResults to return to XSOAR.
+    """
     client.test_instance_connection()
     return CommandResults(readable_output=('Successful connection.'))
 
 
-def test_module(client: JiraBaseClient) -> str:
+def test_module() -> str:
+    """This method will return an error since in order for the user to test the connectivity of the instance,
+    they have to run a separate command, therefore, pressing the `test` button on the configuration screen will
+    show them the steps in order to test the instance.
+    """
     # Test functions here
     raise DemistoException(('In order to authorize the instance, first run the command `!jira-oauth-start`,'
                             ' and complete the process in the URL that is returned, after that, you will be redirected'
@@ -3001,6 +3247,140 @@ def convert_string_date_to_specific_format(string_date: str, date_format: str = 
     raise DemistoException(f'Could not parse the following date: {string_date}.')
 
 
+# Mirroring
+# Still in development
+def get_remote_data_command(client: JiraBaseClient, args: Dict[str, Any]) -> GetRemoteDataResponse:
+    """ Mirror-in data to incident from Jira into XSOAR 'jira issue' incident.
+
+    Notes:
+        1. Documentation on mirroring - https://xsoar.pan.dev/docs/integrations/mirroring_integration
+
+    Args:
+        args:
+            id: Remote incident id.
+            lastUpdate: Server last sync time with remote server.
+
+    Returns:
+        GetRemoteDataResponse: Structured incident response.
+    """
+    incident_update = {}
+    parsed_entries = []
+    parsed_args = GetRemoteDataArgs(args)
+    try:
+        # Get raw response on issue ID
+        issue_raw_response = client.get_issue(issue_id_or_key=parsed_args.remote_incident_id)
+        # _, _, issue_raw_response = get_issue(issue_id=parsed_args.remote_incident_id)
+        demisto.info('get remote data')
+        # Timestamp - Issue last modified in jira server side
+        jira_modified_date: datetime = \
+            parse(dict_safe_get(issue_raw_response, ['fields', 'updated'], "", str))  # type: ignore
+        # Timestamp - Issue last sync in demisto server side
+        incident_modified_date: datetime = parse(parsed_args.last_update)  # type: ignore
+        # Update incident only if issue modified in Jira server-side after the last sync
+        demisto.info(f"jira_modified_date{jira_modified_date}")
+        demisto.info(f"incident_modified_date{incident_modified_date}")
+        if jira_modified_date > incident_modified_date:
+            demisto.info('updating remote data')
+            incident_update = issue_raw_response
+
+            demisto.info(f"\nUpdate incident:\n\tIncident name: Jira issue {issue_raw_response.get('id')}\n\t"
+                         f"Reason: Issue modified in remote.\n\tIncident Last update time: {incident_modified_date}"
+                         f"\n\tRemote last updated time: {jira_modified_date}\n")
+            demisto.info(f"\n raw incident: {issue_raw_response}\n")
+
+            closed_issue = handle_incoming_closing_incident(incident_update)
+            if closed_issue:
+                demisto.info(
+                    f'Close incident with ID: {parsed_args.remote_incident_id} this issue was marked as "Done"')
+                incident_update['in_mirror_error'] = ''
+                return GetRemoteDataResponse(incident_update, [closed_issue])
+
+            entries = get_incident_entries(issue_raw_response, incident_modified_date)
+
+            for comment in entries['comments']:
+                parsed_entries.append({
+                    'Type': EntryType.NOTE,
+                    'Contents': comment.get('body', ''),
+                    'ContentsFormat': EntryFormat.TEXT,
+                    # 'Tags': ['comment'],  # the list of tags to add to the entry
+                    'Note': True
+                })
+            for attachment in entries['attachments']:
+                parsed_entries.append(attachment)
+        if parsed_entries:
+            demisto.info(f'Update the next entries: {parsed_entries}')
+
+        incident_update['in_mirror_error'] = ''
+        return GetRemoteDataResponse(incident_update, parsed_entries)
+
+    except Exception as e:
+        demisto.info(f"Error in Jira incoming mirror for incident {parsed_args.remote_incident_id} \n"
+                     f"Error message: {str(e)}")
+
+        if "Rate limit exceeded" in str(e):
+            return_error("API rate limit")
+
+        if incident_update:
+            incident_update['in_mirror_error'] = str(e)
+        else:
+            incident_update = {
+                'id': parsed_args.remote_incident_id,
+                'in_mirror_error': str(e)
+            }
+        return GetRemoteDataResponse(
+            mirrored_object=incident_update,
+            entries=[]
+        )
+
+
+def get_incident_entries(issue, incident_modified_date, only_new=True, should_get_comments=True,
+                         should_get_attachments=True):
+    """
+    This function get comments and attachments from Jira Ticket, if specified, for a Jira incident.
+    :param issue: the incident to get its entries
+    :param incident_modified_date: when the incident was last modified
+    :param only_new: if 'True' it gets only entries that were added after the incident was last modified
+    :param should_get_comments: if 'True', the returned entries will contain comments
+    :param should_get_attachments: if 'True' the returned entries will contain attachments
+    :return: the incident's comments and attachments
+    """
+    entries: dict = {'comments': [], 'attachments': []}
+    if should_get_comments:
+        _, _, comments_content = get_comments_command(issue['id'])
+        if comments_content:
+            raw_comments_content = comments_content
+            commands = get_comments(raw_comments_content.get('comments', []), incident_modified_date, only_new)
+            entries['comments'] = commands
+    if should_get_attachments:
+        attachments = demisto.get(issue, 'fields.attachment')
+        if attachments:
+            file_results = get_attachments(attachments, incident_modified_date, only_new)
+            if file_results:
+                entries['attachments'] = file_results
+    return entries
+
+
+def handle_incoming_closing_incident(incident_data):
+    """
+    This function creates an object for issues with status 'Done' in order to close its incident when getting remote
+     data
+    :param incident_data: the data of an incident
+    :return: the object using to close the incident in Demito
+    """
+    closing_entry: dict = {}
+    if incident_data.get('fields').get('status').get('name') == 'Done':
+        demisto.debug(f"Closing Jira issue {incident_data.get('id')}")
+        closing_entry = {
+            'Type': EntryType.NOTE,
+            'Contents': {
+                'dbotIncidentClose': True,
+                'closeReason': JIRA_RESOLVE_REASON,
+            },
+            'ContentsFormat': EntryFormat.JSON
+        }
+    return closing_entry
+
+
 def main() -> None:
     params: Dict[str, Any] = demisto.params()
     args: Dict[str, Any] = demisto.args()
@@ -3088,7 +3468,7 @@ def main() -> None:
         #     raise DemistoException('Cloud ID and Server URL cannot be configured at the same time')
 
         if command == 'test-module':
-            return_results(test_module(client))
+            return_results(test_module())
         elif command in commands:
             return_results(commands[command](client, args))
         elif command == 'fetch-incidents':
