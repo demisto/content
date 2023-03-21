@@ -4,7 +4,7 @@ contentitemexportablefields:
   contentitemfields: {}
 name: Block Indicators - Generic v3
 description: |+
-  This playbook blocks malicious Indicators using all integrations that are enabled, using the following sub-playbooks:
+  This playbook blocks malicious indicators using all integrations that are enabled, using the following sub-playbooks:
 
   - Block URL - Generic v2
   - Block Account - Generic v2
@@ -969,9 +969,7 @@ tasks:
           - operator: uniq
           - operator: SetIfEmpty
             args:
-              applyIfEmpty:
-                value:
-                  simple: "False"
+              applyIfEmpty: {}
               defaultValue:
                 value:
                   simple: No indicators to block
@@ -1130,8 +1128,8 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 1530,
-        "width": 2530,
-        "x": 50,
+        "width": 2580,
+        "x": 0,
         "y": -630
       }
     }
