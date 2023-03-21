@@ -1,22 +1,25 @@
-id: Test_McAfeeNSMv2
+id: Test_McAfeeNSMv2_v9
 version: -1
-name: Test_McAfeeNSMv2
-fromversion: 6.5.0
+vcShouldKeepItemLegacyProdMachine: false
+name: Test_McAfeeNSMv2_using_v9
+description: |-
+  A test playbook for McAfee NSM v2.
+  This test can only be run on a V9 instance.
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: df542f17-7fcb-4af0-8860-e69b349ababa
+    taskid: 8a5bb41d-7fe1-4684-8df2-074c57364fc6
     type: start
     task:
-      id: df542f17-7fcb-4af0-8860-e69b349ababa
+      id: 8a5bb41d-7fe1-4684-8df2-074c57364fc6
       version: -1
       name: ""
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
-      - "1"
+      "#none#":
+        - "1"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -35,10 +38,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 7a66de92-dfa3-4725-8278-64121ae1b0b4
+    taskid: 5cf822d3-67f3-4919-8347-52a8a51978d2
     type: regular
     task:
-      id: 7a66de92-dfa3-4725-8278-64121ae1b0b4
+      id: 5cf822d3-67f3-4919-8347-52a8a51978d2
       version: -1
       name: Delete Context
       description: |-
@@ -52,8 +55,8 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
-      - "2"
+      "#none#":
+        - "2"
     scriptarguments:
       all:
         simple: "yes"
@@ -75,20 +78,20 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: fef51255-f418-41e1-8777-7aed118a8804
+    taskid: c3fa2fa2-515f-457b-8022-211cb092dcce
     type: regular
     task:
-      id: fef51255-f418-41e1-8777-7aed118a8804
+      id: c3fa2fa2-515f-457b-8022-211cb092dcce
       version: -1
       name: Get alerts
       description: Get alerts
-      script: '|||nsm-get-alerts'
+      script: "|||nsm-get-alerts"
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
-      '#none#':
-      - "35"
+      "#none#":
+        - "35"
     scriptarguments:
       domain_id:
         simple: "0"
@@ -116,20 +119,20 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 340d70bc-e62e-4999-8309-6053c94fcd88
+    taskid: f114d1df-fa4b-403a-88d3-daed4835778b
     type: regular
     task:
-      id: 340d70bc-e62e-4999-8309-6053c94fcd88
+      id: f114d1df-fa4b-403a-88d3-daed4835778b
       version: -1
       name: Get attacks
       description: Get all available attack definitions in NSM
-      script: '|||nsm-get-attacks'
+      script: "|||nsm-get-attacks"
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
-      '#none#':
-      - "4"
+      "#none#":
+        - "4"
     scriptarguments:
       attack_id:
         simple: "0x00000100"
@@ -151,10 +154,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: ca0ab725-9f49-46c1-8011-fb0a3bd1bd6c
+    taskid: 30bd9031-13ea-4741-8646-c1696fc2b441
     type: condition
     task:
-      id: ca0ab725-9f49-46c1-8011-fb0a3bd1bd6c
+      id: 30bd9031-13ea-4741-8646-c1696fc2b441
       version: -1
       name: Verify get attacks
       type: condition
@@ -162,16 +165,16 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "5"
+        - "5"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: NSM.Attacks.ID
-            iscontext: true
+      - label: "yes"
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: NSM.Attacks.ID
+                iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -189,20 +192,20 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 5e50ac7b-222e-4960-8ad4-2767cbfdd195
+    taskid: c2fc1468-8639-43d0-8659-0ba10e58f003
     type: regular
     task:
-      id: 5e50ac7b-222e-4960-8ad4-2767cbfdd195
+      id: c2fc1468-8639-43d0-8659-0ba10e58f003
       version: -1
       name: Get domains
       description: Get all domains
-      script: '|||nsm-get-domains'
+      script: "|||nsm-get-domains"
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
-      '#none#':
-      - "6"
+      "#none#":
+        - "6"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -221,10 +224,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 937b5e8f-6fcf-4db2-8df0-8ceaadd1555b
+    taskid: a3da21bc-3be0-470a-8662-dde8e8d714e6
     type: condition
     task:
-      id: 937b5e8f-6fcf-4db2-8df0-8ceaadd1555b
+      id: a3da21bc-3be0-470a-8662-dde8e8d714e6
       version: -1
       name: Verify get domains
       type: condition
@@ -232,16 +235,16 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "7"
+        - "7"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: NSM.Domains.ID
-            iscontext: true
+      - label: "yes"
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: NSM.Domains.ID
+                iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -259,20 +262,20 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: c93c23c9-b018-4511-87bb-58bd1a36e791
+    taskid: 8944e940-7074-462f-85f8-154941d778d9
     type: regular
     task:
-      id: c93c23c9-b018-4511-87bb-58bd1a36e791
+      id: 8944e940-7074-462f-85f8-154941d778d9
       version: -1
       name: Get sensors
       description: get a sensor list of a given domain
-      script: '|||nsm-get-sensors'
+      script: "|||nsm-get-sensors"
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
-      '#none#':
-      - "8"
+      "#none#":
+        - "8"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -291,10 +294,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 02fef876-7755-45be-877b-65771ec9b85e
+    taskid: 79ba40d7-0122-46ab-86c7-3be130d50814
     type: condition
     task:
-      id: 02fef876-7755-45be-877b-65771ec9b85e
+      id: 79ba40d7-0122-46ab-86c7-3be130d50814
       version: -1
       name: Verify get sensors
       type: condition
@@ -302,16 +305,16 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "9"
+        - "9"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: NSM.Sensors.ID
-            iscontext: true
+      - label: "yes"
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: NSM.Sensors.ID
+                iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -329,20 +332,20 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: f5322909-00f8-4598-885f-33aa815f4acd
+    taskid: 111a28a1-7a17-4ff2-8b8f-90b666d0115e
     type: regular
     task:
-      id: f5322909-00f8-4598-885f-33aa815f4acd
+      id: 111a28a1-7a17-4ff2-8b8f-90b666d0115e
       version: -1
       name: Get ips policies
       description: Get IPS Policies in a domain
-      script: '|||nsm-get-ips-policies'
+      script: "|||nsm-get-ips-policies"
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
-      '#none#':
-      - "10"
+      "#none#":
+        - "10"
     scriptarguments:
       domain_id:
         simple: "0"
@@ -364,10 +367,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: ec83b30b-6a6a-48c0-87f2-d29a007ab0e0
+    taskid: ce381df0-6e4a-42b2-8ea6-d318f60befd0
     type: condition
     task:
-      id: ec83b30b-6a6a-48c0-87f2-d29a007ab0e0
+      id: ce381df0-6e4a-42b2-8ea6-d318f60befd0
       version: -1
       name: Verify get ips policies
       type: condition
@@ -375,100 +378,16 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
-      - "36"
+        - "36"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: NSM.IPSPolicies.ID
-            iscontext: true
+      - label: "yes"
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: NSM.IPSPolicies.ID
+                iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -486,20 +405,20 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 9c93074b-f31d-4e33-81b5-12c4092db3df
+    taskid: 783ec235-8cb4-4385-848e-5a751a8bec38
     type: regular
     task:
-      id: 9c93074b-f31d-4e33-81b5-12c4092db3df
+      id: 783ec235-8cb4-4385-848e-5a751a8bec38
       version: -1
       name: Get ips policy details
       description: Get the policy details for the specific IPS policy
-      script: '|||nsm-get-ips-policy-details'
+      script: "|||nsm-get-ips-policy-details"
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
-      '#none#':
-      - "12"
+      "#none#":
+        - "12"
     scriptarguments:
       policy_id:
         simple: ${ips_policy_id}
@@ -521,10 +440,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: c3dd5c16-8491-4294-8385-4c47fab6b429
+    taskid: 5729424e-1fb0-46b4-80be-41ef6d6bd542
     type: condition
     task:
-      id: c3dd5c16-8491-4294-8385-4c47fab6b429
+      id: 5729424e-1fb0-46b4-80be-41ef6d6bd542
       version: -1
       name: Verify get ips policy details
       type: condition
@@ -532,19 +451,19 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "13"
+        - "13"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: NSM.IPSPolicies.ID
-            iscontext: true
-          right:
-            value:
-              simple: ${ips_policy_id}
+      - label: "yes"
+        condition:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: NSM.IPSPolicies.ID
+                iscontext: true
+              right:
+                value:
+                  simple: ${ips_policy_id}
     continueonerrortype: ""
     view: |-
       {
@@ -562,20 +481,20 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: f098f848-88f9-4848-83a6-3dc65e5856db
+    taskid: 6df530c5-5ce6-467d-88d0-c488bdd7efea
     type: regular
     task:
-      id: f098f848-88f9-4848-83a6-3dc65e5856db
+      id: 6df530c5-5ce6-467d-88d0-c488bdd7efea
       version: -1
       name: Update alerts
       description: Update state or assignee of alerts
-      script: '|||nsm-update-alerts'
+      script: "|||nsm-update-alerts"
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
-      '#none#':
-      - "50"
+      "#none#":
+        - "50"
     scriptarguments:
       end_time:
         simple: 12/12/2022 00:00
@@ -605,10 +524,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 356eecea-e440-4085-87c7-90a274e13ee3
+    taskid: cc8569e4-dec9-4fb4-84f5-5ed361778e07
     type: title
     task:
-      id: 356eecea-e440-4085-87c7-90a274e13ee3
+      id: cc8569e4-dec9-4fb4-84f5-5ed361778e07
       version: -1
       name: Finish
       type: title
@@ -620,7 +539,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 10170
+          "y": 8595
         }
       }
     note: false
@@ -632,20 +551,20 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 1d27a140-664b-4da2-8191-f19a1a04638b
+    taskid: 845eac59-31f5-468c-8433-3cc4c1b5192e
     type: regular
     task:
-      id: 1d27a140-664b-4da2-8191-f19a1a04638b
+      id: 845eac59-31f5-468c-8433-3cc4c1b5192e
       version: -1
       name: List domain firewall policy
       description: Gets the list of Firewall Policies defined in a particular domain.
-      script: '|||nsm-list-domain-firewall-policy'
+      script: "|||nsm-list-domain-firewall-policy"
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
-      '#none#':
-      - "16"
+      "#none#":
+        - "16"
     scriptarguments:
       domain_id:
         simple: "0"
@@ -667,10 +586,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 8eb9cfd9-52e4-44e8-8399-1b3643ac000a
+    taskid: 8f3f8461-f41d-49fc-8368-1c63ba73ddf8
     type: condition
     task:
-      id: 8eb9cfd9-52e4-44e8-8399-1b3643ac000a
+      id: 8f3f8461-f41d-49fc-8368-1c63ba73ddf8
       version: -1
       name: Verify list domain firewall policy
       type: condition
@@ -678,16 +597,16 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "38"
+        - "38"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: NSM.Policy.policyId
-            iscontext: true
+      - label: "yes"
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: NSM.Policy.policyId
+                iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -705,20 +624,20 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: bcfdfa46-8f24-4902-8130-e588f15a7cc7
+    taskid: 52633d77-368b-469b-8bf2-efe423f63057
     type: regular
     task:
-      id: bcfdfa46-8f24-4902-8130-e588f15a7cc7
+      id: 52633d77-368b-469b-8bf2-efe423f63057
       version: -1
       name: Get firewall policy
       description: Gets the Firewall Policy details.
-      script: '|||nsm-get-firewall-policy'
+      script: "|||nsm-get-firewall-policy"
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
-      '#none#':
-      - "18"
+      "#none#":
+        - "18"
     scriptarguments:
       policy_id:
         simple: ${firewall_policy_id}
@@ -740,10 +659,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: f76a442e-f203-4139-8c6e-b5ebfc2cbc05
+    taskid: 655f56c7-f06b-4974-80d8-c0b69be9ac66
     type: condition
     task:
-      id: f76a442e-f203-4139-8c6e-b5ebfc2cbc05
+      id: 655f56c7-f06b-4974-80d8-c0b69be9ac66
       version: -1
       name: Verify get firewall policy
       type: condition
@@ -751,19 +670,19 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "51"
+        - "51"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: NSM.Policy.FirewallPolicyId
-            iscontext: true
-          right:
-            value:
-              simple: ${firewall_policy_id}
+      - label: "yes"
+        condition:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: NSM.Policy.FirewallPolicyId
+                iscontext: true
+              right:
+                value:
+                  simple: ${firewall_policy_id}
     continueonerrortype: ""
     view: |-
       {
@@ -781,22 +700,23 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 7afb20b9-675c-4e45-8731-174516eb0131
+    taskid: 7772eff7-92fe-4455-8d32-c80738c152e9
     type: regular
     task:
-      id: 7afb20b9-675c-4e45-8731-174516eb0131
+      id: 7772eff7-92fe-4455-8d32-c80738c152e9
       version: -1
       name: Create firewall policy
-      description: Adds a new Firewall Policy and Access Rules. You have to provide
+      description:
+        Adds a new Firewall Policy and Access Rules. You have to provide
         at lease one of the source/destination object. If you provide one of the source/destination
         fields, you must provide the other one as well.
-      script: '|||nsm-create-firewall-policy'
+      script: "|||nsm-create-firewall-policy"
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
-      '#none#':
-      - "29"
+      "#none#":
+        - "29"
     scriptarguments:
       description:
         simple: test
@@ -819,19 +739,19 @@ tasks:
           root: NSM.Rule
           accessor: ruleobjId
           transformers:
-          - operator: FirstArrayElement
+            - operator: FirstArrayElement
       source_rule_object_type:
         complex:
           root: NSM.Rule
           accessor: ruleobjType
           transformers:
-          - operator: FirstArrayElement
+            - operator: FirstArrayElement
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 50,
           "y": 4570
         }
       }
@@ -844,26 +764,27 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 7bd6d514-49ee-4aec-86ad-162067987c38
+    taskid: de715926-3cb3-4c41-8415-cdd70decfebe
     type: regular
     task:
-      id: 7bd6d514-49ee-4aec-86ad-162067987c38
+      id: de715926-3cb3-4c41-8415-cdd70decfebe
       version: -1
       name: Update Firewall policy
-      description: Updates the Firewall Policy details. If the argument is_overwrite=true
+      description:
+        Updates the Firewall Policy details. If the argument is_overwrite=true
         than the new values of the provided addresses will replace the existing values
         else the addresses will be added to them. If you want to delete a rule than
         enter is_overwrite=true and the relevant rule_object_id=-1. If is_overwrite=true
         and there is no value in one of the rules (source or destination) their value
         will be as before. If is_overwrite=true than at least one of the rules (source
         or destination) must be provided.
-      script: '|||nsm-update-firewall-policy'
+      script: "|||nsm-update-firewall-policy"
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
-      '#none#':
-      - "22"
+      "#none#":
+        - "22"
     scriptarguments:
       description:
         simple: hello updatingg
@@ -872,13 +793,13 @@ tasks:
           root: NSM.Rule
           accessor: ruleobjId
           transformers:
-          - operator: FirstArrayElement
+            - operator: FirstArrayElement
       destination_rule_object_type:
         complex:
           root: NSM.Rule
           accessor: ruleobjType
           transformers:
-          - operator: FirstArrayElement
+            - operator: FirstArrayElement
       is_overwrite:
         simple: "true"
       policy_id:
@@ -888,7 +809,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 50,
           "y": 4920
         }
       }
@@ -901,20 +822,20 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 7f981108-3fc8-4af9-8d40-1a5142112d48
+    taskid: 0b5d7161-e793-497d-8394-ecb5bc8ad92f
     type: regular
     task:
-      id: 7f981108-3fc8-4af9-8d40-1a5142112d48
+      id: 0b5d7161-e793-497d-8394-ecb5bc8ad92f
       version: -1
       name: Get updated Firewall policy
       description: Gets the Firewall Policy details.
-      script: '|||nsm-get-firewall-policy'
+      script: "|||nsm-get-firewall-policy"
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
-      '#none#':
-      - "23"
+      "#none#":
+        - "23"
     scriptarguments:
       include_rule_objects:
         simple: "true"
@@ -925,7 +846,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 50,
           "y": 5095
         }
       }
@@ -938,10 +859,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: a4cecbe0-80d7-4be4-876d-51f8affb8fe6
+    taskid: 58c65c69-8a27-4ed8-8128-e2b3d7269f0c
     type: condition
     task:
-      id: a4cecbe0-80d7-4be4-876d-51f8affb8fe6
+      id: 58c65c69-8a27-4ed8-8128-e2b3d7269f0c
       version: -1
       name: Verify updated firewall policy
       type: condition
@@ -949,36 +870,36 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "24"
+        - "24"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: NSM.Policy.Description
-            iscontext: true
-          right:
-            value:
-              simple: hello updatingg
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: NSM.Policy.MemberDetails.MemberRuleList.DestinationAddressObjectList
-                accessor: RuleObjectId
-                transformers:
-                - operator: FirstArrayElement
-            iscontext: true
-          right:
-            value:
-              simple: ${rule_object_id}
+      - label: "yes"
+        condition:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: NSM.Policy.Description
+                iscontext: true
+              right:
+                value:
+                  simple: hello updatingg
+          - - operator: isEqualString
+              left:
+                value:
+                  complex:
+                    root: NSM.Policy.MemberDetails.MemberRuleList.DestinationAddressObjectList
+                    accessor: RuleObjectId
+                    transformers:
+                      - operator: FirstArrayElement
+                iscontext: true
+              right:
+                value:
+                  simple: ${rule_object_id}
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 50,
           "y": 5270
         }
       }
@@ -991,20 +912,20 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 8dee5772-6b77-49c3-823b-e3ad32cf14b0
+    taskid: cf9cac6d-8030-4e45-8d3e-e81c852b34e5
     type: regular
     task:
-      id: 8dee5772-6b77-49c3-823b-e3ad32cf14b0
+      id: cf9cac6d-8030-4e45-8d3e-e81c852b34e5
       version: -1
       name: Delete firewall policy
       description: Deletes the specified Firewall Policy.
-      script: '|||nsm-delete-firewall-policy'
+      script: "|||nsm-delete-firewall-policy"
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
-      '#none#':
-      - "40"
+      "#none#":
+        - "40"
     scriptarguments:
       policy_id:
         simple: ${NSM.Policy.FirewallPolicyId}
@@ -1013,7 +934,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 50,
           "y": 5445
         }
       }
@@ -1026,10 +947,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: b978b425-c44d-427e-8f76-318c28b27386
+    taskid: 24c571b5-58c2-4bef-8b60-36dcbc7f19fc
     type: condition
     task:
-      id: b978b425-c44d-427e-8f76-318c28b27386
+      id: 24c571b5-58c2-4bef-8b60-36dcbc7f19fc
       version: -1
       name: Verify list domain rule object
       type: condition
@@ -1037,16 +958,16 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "39"
+        - "39"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: NSM.Rule.ruleobjId
-            iscontext: true
+      - label: "yes"
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: NSM.Rule.ruleobjId
+                iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -1064,20 +985,20 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 47a3789c-547a-4ceb-80fd-9d622f546dfb
+    taskid: 7de301f6-28d5-48c0-8528-981fa9dc63eb
     type: regular
     task:
-      id: 47a3789c-547a-4ceb-80fd-9d622f546dfb
+      id: 7de301f6-28d5-48c0-8528-981fa9dc63eb
       version: -1
-      name: 'Create rule object '
+      name: "Create rule object "
       description: Adds a new Rule Object.
-      script: '|||nsm-create-rule-object'
+      script: "|||nsm-create-rule-object"
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
-      '#none#':
-      - "28"
+      "#none#":
+        - "28"
     scriptarguments:
       domain:
         simple: "0"
@@ -1094,7 +1015,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 50,
           "y": 5970
         }
       }
@@ -1107,10 +1028,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: b7fa42cf-bb21-4906-82b9-fb01ae6b2a0a
+    taskid: eedfb027-997c-49e0-8180-007615d9c59e
     type: condition
     task:
-      id: b7fa42cf-bb21-4906-82b9-fb01ae6b2a0a
+      id: eedfb027-997c-49e0-8180-007615d9c59e
       version: -1
       name: Verify create rule object
       type: condition
@@ -1118,23 +1039,23 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "30"
+        - "30"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: NSM.Rule.ruleobjId
-            iscontext: true
-          right:
-            value: {}
+      - label: "yes"
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: NSM.Rule.ruleobjId
+                iscontext: true
+              right:
+                value: {}
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 50,
           "y": 6145
         }
       }
@@ -1147,10 +1068,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: 77d5cc46-858f-42a1-8baf-3a80eedc13e3
+    taskid: 70c0d2f4-c6eb-4886-8d2e-680d586c1806
     type: condition
     task:
-      id: 77d5cc46-858f-42a1-8baf-3a80eedc13e3
+      id: 70c0d2f4-c6eb-4886-8d2e-680d586c1806
       version: -1
       name: Verify create firewall policy
       type: condition
@@ -1158,23 +1079,23 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "20"
+        - "20"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: NSM.Policy.FirewallPolicyId
-            iscontext: true
-          right:
-            value: {}
+      - label: "yes"
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: NSM.Policy.FirewallPolicyId
+                iscontext: true
+              right:
+                value: {}
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 50,
           "y": 4745
         }
       }
@@ -1187,20 +1108,20 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: cbd89c6e-1ed1-434d-8ccd-f435489b60c2
+    taskid: 07686ae5-ca10-46c3-8811-09f07b9ea373
     type: regular
     task:
-      id: cbd89c6e-1ed1-434d-8ccd-f435489b60c2
+      id: 07686ae5-ca10-46c3-8811-09f07b9ea373
       version: -1
-      name: 'Delete rule object '
+      name: "Delete rule object "
       description: Deletes a Rule Object.
-      script: '|||nsm-delete-rule-object'
+      script: "|||nsm-delete-rule-object"
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
-      '#none#':
-      - "31"
+      "#none#":
+        - "31"
     scriptarguments:
       rule_id:
         simple: ${NSM.Rule.ruleobjId}
@@ -1209,7 +1130,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 50,
           "y": 6320
         }
       }
@@ -1222,20 +1143,20 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 8128469e-8462-4294-8025-5438f5cdeacc
+    taskid: 986ea481-fb7f-4093-89e7-185dbf6b4b57
     type: regular
     task:
-      id: 8128469e-8462-4294-8025-5438f5cdeacc
+      id: 986ea481-fb7f-4093-89e7-185dbf6b4b57
       version: -1
       name: Update Rule object
       description: Updates a Rule Object.
-      script: '|||nsm-update-rule-object'
+      script: "|||nsm-update-rule-object"
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
-      '#none#':
-      - "32"
+      "#none#":
+        - "32"
     scriptarguments:
       description:
         simple: updated
@@ -1261,10 +1182,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: bbe75ecd-c201-454e-88a1-aceed914cc4b
+    taskid: 88e3c4cf-e921-448d-8569-5cd52fefcd9b
     type: regular
     task:
-      id: bbe75ecd-c201-454e-88a1-aceed914cc4b
+      id: 88e3c4cf-e921-448d-8569-5cd52fefcd9b
       version: -1
       name: Delete context Rule
       description: |-
@@ -1278,8 +1199,8 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
-      - "33"
+      "#none#":
+        - "33"
     scriptarguments:
       key:
         simple: NSM.Rule
@@ -1301,20 +1222,20 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: bc2e4389-5a0e-4272-8bd2-d2546475d25a
+    taskid: d522b4b8-da99-47ce-8e08-5ffbbd7e15a5
     type: regular
     task:
-      id: bc2e4389-5a0e-4272-8bd2-d2546475d25a
+      id: d522b4b8-da99-47ce-8e08-5ffbbd7e15a5
       version: -1
       name: Get updated rule object
       description: Gets the details of a Rule Object.
-      script: '|||nsm-get-rule-object'
+      script: "|||nsm-get-rule-object"
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
-      '#none#':
-      - "34"
+      "#none#":
+        - "34"
     scriptarguments:
       rule_id:
         simple: ${rule_object_id}
@@ -1336,10 +1257,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: 56887898-132f-4b53-8b91-457dc8a7287f
+    taskid: e971c22e-8b02-4eea-8526-a659f1f3d52a
     type: condition
     task:
-      id: 56887898-132f-4b53-8b91-457dc8a7287f
+      id: e971c22e-8b02-4eea-8526-a659f1f3d52a
       version: -1
       name: Verify update rule object
       type: condition
@@ -1347,30 +1268,27 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "54"
-      - "54"
-      - "54"
-      - "54"
+        - "54"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: NSM.Rule.ruleobjId
-            iscontext: true
-          right:
-            value:
-              simple: ${rule_object_id}
-      - - operator: isEqualString
-          left:
-            value:
-              simple: NSM.Rule.description
-            iscontext: true
-          right:
-            value:
-              simple: updated
+      - label: "yes"
+        condition:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: NSM.Rule.ruleobjId
+                iscontext: true
+              right:
+                value:
+                  simple: ${rule_object_id}
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: NSM.Rule.description
+                iscontext: true
+              right:
+                value:
+                  simple: updated
     continueonerrortype: ""
     view: |-
       {
@@ -1388,10 +1306,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: b5b44147-a4b0-4a81-8872-f5ec01d16e6c
+    taskid: a2a70b27-f37f-4a26-83cb-98aaafa07714
     type: condition
     task:
-      id: b5b44147-a4b0-4a81-8872-f5ec01d16e6c
+      id: a2a70b27-f37f-4a26-83cb-98aaafa07714
       version: -1
       name: Verify get alerts
       type: condition
@@ -1399,16 +1317,16 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "3"
+        - "3"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: NSM.Alerts.ID
-            iscontext: true
+      - label: "yes"
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: NSM.Alerts.ID
+                iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -1426,10 +1344,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: d6b595e4-49ec-4ad7-80d5-6839ee233488
+    taskid: d08abb1f-30d6-43de-893c-ecf956128c53
     type: regular
     task:
-      id: d6b595e4-49ec-4ad7-80d5-6839ee233488
+      id: d08abb1f-30d6-43de-893c-ecf956128c53
       version: -1
       name: Set ips policy id
       description: Set a value in context under the key you entered.
@@ -1438,8 +1356,8 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
-      - "11"
+      "#none#":
+        - "11"
     scriptarguments:
       key:
         simple: ips_policy_id
@@ -1448,7 +1366,7 @@ tasks:
           root: NSM.IPSPolicies
           accessor: ID
           transformers:
-          - operator: FirstArrayElement
+            - operator: FirstArrayElement
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1467,10 +1385,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: 06cf3a94-a2eb-4e55-89eb-d4a64cc34bbb
+    taskid: b0afa531-46b7-47f5-8b07-ecdd325137e4
     type: regular
     task:
-      id: 06cf3a94-a2eb-4e55-89eb-d4a64cc34bbb
+      id: b0afa531-46b7-47f5-8b07-ecdd325137e4
       version: -1
       name: Set firewall policy id
       description: Set a value in context under the key you entered.
@@ -1479,8 +1397,8 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
-      - "17"
+      "#none#":
+        - "17"
     scriptarguments:
       key:
         simple: firewall_policy_id
@@ -1489,7 +1407,7 @@ tasks:
           root: NSM.Policy
           accessor: policyId
           transformers:
-          - operator: FirstArrayElement
+            - operator: FirstArrayElement
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1508,10 +1426,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: 97608bf6-4162-4bbb-8864-c3e4c5196c00
+    taskid: 8e57c901-2e4f-4edf-8c07-9e6c2e255f7d
     type: regular
     task:
-      id: 97608bf6-4162-4bbb-8864-c3e4c5196c00
+      id: 8e57c901-2e4f-4edf-8c07-9e6c2e255f7d
       version: -1
       name: Set rule object id
       description: Set a value in context under the key you entered.
@@ -1520,8 +1438,8 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
-      - "15"
+      "#none#":
+        - "15"
     scriptarguments:
       key:
         simple: rule_object_id
@@ -1530,7 +1448,7 @@ tasks:
           root: NSM.Rule
           accessor: ruleobjId
           transformers:
-          - operator: FirstArrayElement
+            - operator: FirstArrayElement
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1549,32 +1467,32 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: 21a145b5-a4c6-4a5e-8bc5-fec2bdd26169
+    taskid: ec60cbf7-2424-4703-8b6e-b54f4ace3b73
     type: condition
     task:
-      id: 21a145b5-a4c6-4a5e-8bc5-fec2bdd26169
+      id: ec60cbf7-2424-4703-8b6e-b54f4ace3b73
       version: -1
       name: does rule object name exist
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#default#':
-      - "49"
+      "#default#":
+        - "49"
       "yes":
-      - "42"
+        - "42"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: NSM.Rule.name
-            iscontext: true
-          right:
-            value:
-              simple: hello rule hello
+      - label: "yes"
+        condition:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: NSM.Rule.name
+                iscontext: true
+              right:
+                value:
+                  simple: hello rule hello
     continueonerrortype: ""
     view: |-
       {
@@ -1592,40 +1510,40 @@ tasks:
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: 0421cee7-76c9-4a28-88e9-fa53bcfdcb6c
+    taskid: fa6a56f1-1ab6-441f-8adb-3f86adb81dd5
     type: regular
     task:
-      id: 0421cee7-76c9-4a28-88e9-fa53bcfdcb6c
+      id: fa6a56f1-1ab6-441f-8adb-3f86adb81dd5
       version: -1
       name: Delete firewall policy
       description: Deletes the specified Firewall Policy.
-      script: '|||nsm-delete-firewall-policy'
+      script: "|||nsm-delete-firewall-policy"
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
-      '#none#':
-      - "40"
+      "#none#":
+        - "40"
     scriptarguments:
       policy_id:
         complex:
           root: NSM.Policy
           filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: NSM.Policy.policyName
-                iscontext: true
-              right:
-                value:
-                  simple: demisto-policy
+            - - operator: isEqualString
+                left:
+                  value:
+                    simple: NSM.Policy.policyName
+                  iscontext: true
+                right:
+                  value:
+                    simple: demisto-policy
           accessor: policyId
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 5445
         }
       }
@@ -1638,33 +1556,33 @@ tasks:
     isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: d40ce75d-5e1b-45df-855d-c50307ed5e3b
+    taskid: 400d5036-3af6-46df-833a-ed84121a6914
     type: regular
     task:
-      id: d40ce75d-5e1b-45df-855d-c50307ed5e3b
+      id: 400d5036-3af6-46df-833a-ed84121a6914
       version: -1
       name: Delete rule object
       description: Deletes a Rule Object.
-      script: '|||nsm-delete-rule-object'
+      script: "|||nsm-delete-rule-object"
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
-      '#none#':
-      - "53"
+      "#none#":
+        - "53"
     scriptarguments:
       rule_id:
         complex:
           root: NSM.Rule
           filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: NSM.Rule.name
-                iscontext: true
-              right:
-                value:
-                  simple: hello rule hello
+            - - operator: isEqualString
+                left:
+                  value:
+                    simple: NSM.Rule.name
+                  iscontext: true
+                right:
+                  value:
+                    simple: hello rule hello
           accessor: ruleobjId
     separatecontext: false
     continueonerror: true
@@ -1672,7 +1590,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 5795
         }
       }
@@ -1685,20 +1603,20 @@ tasks:
     isautoswitchedtoquietmode: false
   "46":
     id: "46"
-    taskid: a400b767-b66a-4ad1-8fde-1e0388e3c2a0
+    taskid: 1ace4d60-7316-4ecd-8430-aad31000910a
     type: regular
     task:
-      id: a400b767-b66a-4ad1-8fde-1e0388e3c2a0
+      id: 1ace4d60-7316-4ecd-8430-aad31000910a
       version: -1
       name: List domain rule object
       description: Updates the Firewall Policy details.
-      script: '|||nsm-list-domain-rule-object'
+      script: "|||nsm-list-domain-rule-object"
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
-      '#none#':
-      - "47"
+      "#none#":
+        - "47"
     scriptarguments:
       domain_id:
         simple: "0"
@@ -1707,7 +1625,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 6145
         }
       }
@@ -1720,10 +1638,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "47":
     id: "47"
-    taskid: f9dddc90-3766-4461-89aa-0255b4bb2b0d
+    taskid: 07891a38-6bd4-4e51-873b-5ae6eb503e08
     type: regular
     task:
-      id: f9dddc90-3766-4461-89aa-0255b4bb2b0d
+      id: 07891a38-6bd4-4e51-873b-5ae6eb503e08
       version: -1
       name: Set rule object id
       description: Set a value in context under the key you entered.
@@ -1732,8 +1650,8 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
-      - "31"
+      "#none#":
+        - "31"
     scriptarguments:
       key:
         simple: rule_object_id
@@ -1742,13 +1660,13 @@ tasks:
           root: NSM.Rule
           accessor: ruleobjId
           transformers:
-          - operator: FirstArrayElement
+            - operator: FirstArrayElement
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 6320
         }
       }
@@ -1761,10 +1679,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "48":
     id: "48"
-    taskid: a5b10f39-dd86-4205-8904-714e39598dad
+    taskid: 256e3cb3-4a6f-4d59-8128-865124f27fc3
     type: regular
     task:
-      id: a5b10f39-dd86-4205-8904-714e39598dad
+      id: 256e3cb3-4a6f-4d59-8128-865124f27fc3
       version: -1
       name: Delete Context Policy
       description: |-
@@ -1778,8 +1696,8 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
-      - "19"
+      "#none#":
+        - "19"
     scriptarguments:
       key:
         simple: NSM.Policy
@@ -1788,7 +1706,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 50,
           "y": 4395
         }
       }
@@ -1801,10 +1719,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "49":
     id: "49"
-    taskid: f4049694-1849-47f9-8fdc-1d24320d26cb
+    taskid: 7df8476e-fd02-4f5f-8152-4238acfc6884
     type: regular
     task:
-      id: f4049694-1849-47f9-8fdc-1d24320d26cb
+      id: 7df8476e-fd02-4f5f-8152-4238acfc6884
       version: -1
       name: Delete context Rule
       description: |-
@@ -1818,8 +1736,8 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
-      - "27"
+      "#none#":
+        - "27"
     scriptarguments:
       key:
         simple: NSM.Rule
@@ -1828,7 +1746,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
+          "x": 50,
           "y": 5795
         }
       }
@@ -1841,20 +1759,20 @@ tasks:
     isautoswitchedtoquietmode: false
   "50":
     id: "50"
-    taskid: 383873ff-7c90-4996-8c51-1b7f0f06c8c8
+    taskid: 1bd65305-59f7-4b39-85bb-c0af70120c97
     type: regular
     task:
-      id: 383873ff-7c90-4996-8c51-1b7f0f06c8c8
+      id: 1bd65305-59f7-4b39-85bb-c0af70120c97
       version: -1
       name: List domain rule object
       description: Updates the Firewall Policy details.
-      script: '|||nsm-list-domain-rule-object'
+      script: "|||nsm-list-domain-rule-object"
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
-      '#none#':
-      - "26"
+      "#none#":
+        - "26"
     scriptarguments:
       domain_id:
         simple: "0"
@@ -1876,32 +1794,32 @@ tasks:
     isautoswitchedtoquietmode: false
   "51":
     id: "51"
-    taskid: 88a0ec2d-2765-4a84-8f0f-d98506ad17b6
+    taskid: 2c8b05f9-0aed-4e4e-8bea-dbc8429bba21
     type: condition
     task:
-      id: 88a0ec2d-2765-4a84-8f0f-d98506ad17b6
+      id: 2c8b05f9-0aed-4e4e-8bea-dbc8429bba21
       version: -1
       name: does firewall policy name exist
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#default#':
-      - "48"
+      "#default#":
+        - "48"
       "yes":
-      - "41"
+        - "41"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: NSM.Policy.Name
-            iscontext: true
-          right:
-            value:
-              simple: demisto-policy
+      - label: "yes"
+        condition:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: NSM.Policy.Name
+                iscontext: true
+              right:
+                value:
+                  simple: demisto-policy
     continueonerrortype: ""
     view: |-
       {
@@ -1919,10 +1837,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "53":
     id: "53"
-    taskid: 7102935b-758a-4200-8eac-809441c5edbf
+    taskid: 502caa1e-d77a-4c68-86fc-a99ea4f394df
     type: regular
     task:
-      id: 7102935b-758a-4200-8eac-809441c5edbf
+      id: 502caa1e-d77a-4c68-86fc-a99ea4f394df
       version: -1
       name: Delete context Rule
       description: |-
@@ -1936,8 +1854,8 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
-      - "46"
+      "#none#":
+        - "46"
     scriptarguments:
       key:
         simple: NSM.Rule
@@ -1946,7 +1864,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 480,
           "y": 5970
         }
       }
@@ -1959,26 +1877,23 @@ tasks:
     isautoswitchedtoquietmode: false
   "54":
     id: "54"
-    taskid: 17bfd4c2-ef99-4ddc-8759-a3992a00e690
+    taskid: 4b790ce6-7cdf-4981-8353-2c2fc5a6f9ec
     type: regular
     task:
-      id: 17bfd4c2-ef99-4ddc-8759-a3992a00e690
+      id: 4b790ce6-7cdf-4981-8353-2c2fc5a6f9ec
       version: -1
       name: List device interface
       description: List the interfaces related to a given device.
-      script: '|||nsm-list-device-interface'
+      script: "|||nsm-list-device-interface"
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
-      '#none#':
-      - "55"
-      - "55"
-      - "55"
-      - "55"
+      "#none#":
+        - "55"
     scriptarguments:
       device_id:
-        simple: "1003"
+        simple: "1001"
       domain_id:
         simple: "0"
     separatecontext: false
@@ -1999,10 +1914,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "55":
     id: "55"
-    taskid: 18ee2445-464e-4a72-87c3-4f4cbf0cae0d
+    taskid: 80e5e858-a712-4e63-80ee-3c1622a2bf5c
     type: condition
     task:
-      id: 18ee2445-464e-4a72-87c3-4f4cbf0cae0d
+      id: 80e5e858-a712-4e63-80ee-3c1622a2bf5c
       version: -1
       name: Verify device interfaces were returned
       type: condition
@@ -2010,23 +1925,20 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "56"
-      - "56"
-      - "56"
-      - "56"
+        - "56"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: NSM
-                accessor: Interface
-            iscontext: true
-          right:
-            value: {}
+      - label: "yes"
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  complex:
+                    root: NSM
+                    accessor: Interface
+                iscontext: true
+              right:
+                value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -2044,23 +1956,20 @@ tasks:
     isautoswitchedtoquietmode: false
   "56":
     id: "56"
-    taskid: 19b9ae67-4667-4dbb-8d44-0e695b06a37f
+    taskid: 66c89b7c-456a-4df0-8544-ba4f3ae4049e
     type: regular
     task:
-      id: 19b9ae67-4667-4dbb-8d44-0e695b06a37f
+      id: 66c89b7c-456a-4df0-8544-ba4f3ae4049e
       version: -1
       name: List domain device
       description: List the devices related to a given domain.
-      script: '|||nsm-list-domain-device'
+      script: "|||nsm-list-domain-device"
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
-      '#none#':
-      - "57"
-      - "57"
-      - "57"
-      - "57"
+      "#none#":
+        - "57"
     scriptarguments:
       domain_id:
         simple: "0"
@@ -2082,10 +1991,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "57":
     id: "57"
-    taskid: ce5b34b9-1e73-4357-8586-d9f494bcb8f8
+    taskid: 3db8460e-32bf-47c8-8a9e-31ab698e592a
     type: condition
     task:
-      id: ce5b34b9-1e73-4357-8586-d9f494bcb8f8
+      id: 3db8460e-32bf-47c8-8a9e-31ab698e592a
       version: -1
       name: Verify devices were returned
       type: condition
@@ -2093,21 +2002,18 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "58"
-      - "58"
-      - "58"
-      - "58"
+        - "58"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: NSM
-                accessor: Device
-            iscontext: true
+      - label: "yes"
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  complex:
+                    root: NSM
+                    accessor: Device
+                iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -2125,23 +2031,20 @@ tasks:
     isautoswitchedtoquietmode: false
   "58":
     id: "58"
-    taskid: 97d3c634-df01-41eb-87bb-e8233a33c519
+    taskid: 9786b92c-f865-4e05-8607-e2f630ba67d5
     type: regular
     task:
-      id: 97d3c634-df01-41eb-87bb-e8233a33c519
+      id: 9786b92c-f865-4e05-8607-e2f630ba67d5
       version: -1
       name: List device policy
       description: List all the policies assigned to a domain or a specific device.
-      script: '|||nsm-list-device-policy'
+      script: "|||nsm-list-device-policy"
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
-      '#none#':
-      - "59"
-      - "59"
-      - "59"
-      - "59"
+      "#none#":
+        - "59"
     scriptarguments:
       domain_id:
         simple: "0"
@@ -2163,10 +2066,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "59":
     id: "59"
-    taskid: 3f8e0ad7-2de7-4841-810c-c872fe57be2d
+    taskid: fbe11741-f87a-4c09-875a-0c3fb41ecd81
     type: condition
     task:
-      id: 3f8e0ad7-2de7-4841-810c-c872fe57be2d
+      id: fbe11741-f87a-4c09-875a-0c3fb41ecd81
       version: -1
       name: Verify device policies were returned
       type: condition
@@ -2174,21 +2077,18 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "60"
-      - "60"
-      - "60"
-      - "60"
+        - "60"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: NSM
-                accessor: DevicePolicy
-            iscontext: true
+      - label: "yes"
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  complex:
+                    root: NSM
+                    accessor: DevicePolicy
+                iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -2206,24 +2106,22 @@ tasks:
     isautoswitchedtoquietmode: false
   "60":
     id: "60"
-    taskid: d05a87f7-783d-4445-8632-1ee16287ac8c
+    taskid: 8b7d0522-0d84-46d9-8405-66309572cc99
     type: regular
     task:
-      id: d05a87f7-783d-4445-8632-1ee16287ac8c
+      id: 8b7d0522-0d84-46d9-8405-66309572cc99
       version: -1
       name: List interface policy
-      description: List all the policies assigned to all interfaces or a specific
+      description:
+        List all the policies assigned to all interfaces or a specific
         interface.
-      script: '|||nsm-list-interface-policy'
+      script: "|||nsm-list-interface-policy"
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
-      '#none#':
-      - "61"
-      - "61"
-      - "61"
-      - "61"
+      "#none#":
+        - "61"
     scriptarguments:
       domain_id:
         simple: "0"
@@ -2245,10 +2143,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "61":
     id: "61"
-    taskid: 497fbb2d-64ac-452a-8ced-80aa5a83f57d
+    taskid: 632406bc-7dca-481c-8612-92a6f9b8c4f9
     type: condition
     task:
-      id: 497fbb2d-64ac-452a-8ced-80aa5a83f57d
+      id: 632406bc-7dca-481c-8612-92a6f9b8c4f9
       version: -1
       name: Verify interface policies were returned
       type: condition
@@ -2256,21 +2154,18 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "62"
-      - "62"
-      - "62"
-      - "62"
+        - "14"
     separatecontext: false
     conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: NSM
-                accessor: InterfacePolicy
-            iscontext: true
+      - label: "yes"
+        condition:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  complex:
+                    root: NSM
+                    accessor: InterfacePolicy
+                iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -2286,508 +2181,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "62":
-    id: "62"
-    taskid: fced9308-48a2-48de-8683-ccc7ca7a5d96
-    type: regular
-    task:
-      id: fced9308-48a2-48de-8683-ccc7ca7a5d96
-      version: -1
-      name: Assign device policy
-      description: Assign a policy to a specific device.
-      script: '|||nsm-assign-device-policy'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-      - "63"
-    scriptarguments:
-      device_id:
-        simple: "1003"
-      domain_id:
-        simple: "0"
-      pre_firewall_policy_name:
-        simple: Test
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 8595
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "63":
-    id: "63"
-    taskid: a73efd0a-6ab1-453d-872f-cdd1c5d7b770
-    type: regular
-    task:
-      id: a73efd0a-6ab1-453d-872f-cdd1c5d7b770
-      version: -1
-      name: Get device configuration
-      description: Provides configuration information of a given device.
-      script: '|||nsm-get-device-configuration'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "64"
-      - "64"
-      - "64"
-      - "64"
-    scriptarguments:
-      device_id:
-        simple: "1003"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 8770
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "64":
-    id: "64"
-    taskid: 561e5606-9a0b-4e38-8d05-84343a424c91
-    type: condition
-    task:
-      id: 561e5606-9a0b-4e38-8d05-84343a424c91
-      version: -1
-      name: Was the policy assigned?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "65"
-      - "65"
-      - "65"
-      - "65"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isTrue
-          left:
-            value:
-              complex:
-                root: NSM.DeviceConfiguration
-                accessor: IsConfigurationChanged
-            iscontext: true
-          right:
-            value: {}
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 8945
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "65":
-    id: "65"
-    taskid: 0f3dc58c-a6d8-4806-89f1-3686140c56d5
-    type: regular
-    task:
-      id: 0f3dc58c-a6d8-4806-89f1-3686140c56d5
-      version: -1
-      name: Deploy the pending change
-      description: |-
-        Deploy the pending changes.
-         Note: In order to avoid extra run time, it is recommended to deploy only the changes that are pending.
-        To get the pending changes, use the !nsm-get-device-configuration command.
-      script: '|||nsm-deploy-device-configuration'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "66"
-      - "66"
-      - "66"
-      - "66"
-    scriptarguments:
-      device_id:
-        simple: "1003"
-      push_configuration_signature_set:
-        simple: "true"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 9120
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "66":
-    id: "66"
-    taskid: f3fb499b-0c50-47cc-87a5-332bbb875dd8
-    type: regular
-    task:
-      id: f3fb499b-0c50-47cc-87a5-332bbb875dd8
-      version: -1
-      name: Get device configuration
-      description: Provides configuration information of a given device.
-      script: '|||nsm-get-device-configuration'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "67"
-      - "67"
-      - "67"
-      - "67"
-    scriptarguments:
-      device_id:
-        simple: "1003"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 9295
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "67":
-    id: "67"
-    taskid: cfe8bb82-234a-43be-83d6-f4abd5d691ab
-    type: condition
-    task:
-      id: cfe8bb82-234a-43be-83d6-f4abd5d691ab
-      version: -1
-      name: Verify the pending changes are no longer pending
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "68"
-      - "68"
-      - "68"
-      - "68"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isFalse
-          left:
-            value:
-              complex:
-                root: NSM.DeviceConfiguration
-                accessor: IsConfigurationChanged
-            iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 9470
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "68":
-    id: "68"
-    taskid: ad8dd826-ba23-4496-843e-061f0809771f
-    type: regular
-    task:
-      id: ad8dd826-ba23-4496-843e-061f0809771f
-      version: -1
-      name: Assign interface policy
-      description: Assign a policy to a specific interface.
-      script: '|||nsm-assign-interface-policy'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "69"
-      - "69"
-      - "69"
-      - "69"
-    scriptarguments:
-      domain_id:
-        simple: "0"
-      interface_id:
-        simple: "103"
-      ips_policy_name:
-        simple: testing
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 9645
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "69":
-    id: "69"
-    taskid: 88f14545-d4a7-4740-8548-d577e334984e
-    type: regular
-    task:
-      id: 88f14545-d4a7-4740-8548-d577e334984e
-      version: -1
-      name: Get device configuration
-      description: Provides configuration information of a given device.
-      script: '|||nsm-get-device-configuration'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "70"
-      - "70"
-      - "70"
-      - "70"
-    scriptarguments:
-      device_id:
-        simple: "1003"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 9820
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "70":
-    id: "70"
-    taskid: 23cc2dbc-74b5-4b55-874b-e103d2d19c50
-    type: condition
-    task:
-      id: 23cc2dbc-74b5-4b55-874b-e103d2d19c50
-      version: -1
-      name: Verify the policy was assigned
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "14"
-      - "14"
-      - "14"
-      - "14"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isTrue
-          left:
-            value:
-              complex:
-                root: NSM.DeviceConfiguration
-                accessor: IsConfigurationChanged
-            iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 9995
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 10185,
+        "height": 8610,
         "width": 810,
         "x": 50,
         "y": 50
@@ -2796,4 +2195,3 @@ view: |-
   }
 inputs: []
 outputs: []
-description: A test playbook for McAfee NSM v2
