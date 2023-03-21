@@ -16,11 +16,11 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "23"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -35,6 +35,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "10":
     id: "10"
     taskid: 9d087581-2976-4b96-887a-27a3a8edd630
@@ -46,8 +47,8 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -62,6 +63,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "22":
     id: "22"
     taskid: c33bfc3b-3bfd-4b09-8fef-d7c299ddbcab
@@ -87,7 +89,6 @@ tasks:
           root: inputs.DBotScore
     reputationcalc: 1
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -102,6 +103,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "23":
     id: "23"
     taskid: 0cc4278a-6b22-4ea9-834f-3ed21c346499
@@ -128,7 +130,6 @@ tasks:
             value:
               simple: inputs.DBotScore
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -143,6 +144,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "24":
     id: "24"
     taskid: d6b7eccb-3284-460d-8b20-197ea1c62f8a
@@ -154,11 +156,11 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "30"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -173,6 +175,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "25":
     id: "25"
     taskid: 7082757c-758b-4cda-803e-526f85f26a68
@@ -253,7 +256,6 @@ tasks:
                       value:
                         simple: "1"
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -268,6 +270,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "27":
     id: "27"
     taskid: 86bc9089-08a5-44e2-8a0f-03dd11411f9b
@@ -276,8 +279,7 @@ tasks:
       id: 86bc9089-08a5-44e2-8a0f-03dd11411f9b
       version: -1
       name: Set severity to high
-      description: Sets the severity of the incident to "High". This severity level
-        means that malicious indicators were identified.
+      description: Sets the severity of the incident to "High". This severity level means that malicious indicators were identified.
       scriptName: Set
       type: regular
       iscommand: false
@@ -292,7 +294,6 @@ tasks:
         simple: High
     reputationcalc: 1
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -307,6 +308,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "28":
     id: "28"
     taskid: 288ac730-e8e3-4782-805f-e54721977877
@@ -315,8 +317,7 @@ tasks:
       id: 288ac730-e8e3-4782-805f-e54721977877
       version: -1
       name: Set severity to medium
-      description: Sets the severity of the incident to "Medium". This severity level
-        means that only suspicious indicators were identified (no malicious indicators).
+      description: Sets the severity of the incident to "Medium". This severity level means that only suspicious indicators were identified (no malicious indicators).
       scriptName: Set
       type: regular
       iscommand: false
@@ -331,7 +332,6 @@ tasks:
         simple: Medium
     reputationcalc: 1
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -346,6 +346,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "29":
     id: "29"
     taskid: 3132e114-0841-4c3f-800f-fab492944f7a
@@ -354,8 +355,7 @@ tasks:
       id: 3132e114-0841-4c3f-800f-fab492944f7a
       version: -1
       name: Set severity to low
-      description: Sets the severity of the incident to "Low". This severity level
-        means no suspicious or malicious indicators were identified.
+      description: Sets the severity of the incident to "Low". This severity level means no suspicious or malicious indicators were identified.
       scriptName: Set
       type: regular
       iscommand: false
@@ -370,7 +370,6 @@ tasks:
         simple: Low
     reputationcalc: 1
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -385,6 +384,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "30":
     id: "30"
     taskid: ca3d7b7e-95d9-48b6-87e1-c625b8f53c43
@@ -393,9 +393,7 @@ tasks:
       id: ca3d7b7e-95d9-48b6-87e1-c625b8f53c43
       version: -1
       name: Set severity to unknown
-      description: Sets the severity of the incident to "Unknown". This severity level
-        means that either unknown indicators were identified, or no indicators were
-        identified.
+      description: Sets the severity of the incident to "Unknown". This severity level means that either unknown indicators were identified, or no indicators were identified.
       scriptName: Set
       type: regular
       iscommand: false
@@ -410,7 +408,6 @@ tasks:
         simple: Unknown
     reputationcalc: 1
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -425,6 +422,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "31":
     id: "31"
     taskid: b894e09e-1a9a-4c62-80df-f1b53961c7c9
@@ -445,7 +443,6 @@ tasks:
       value:
         simple: ${DBotScore.Indicator}
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -460,6 +457,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "32":
     id: "32"
     taskid: 0036cf03-36a0-4182-8466-db7daabf4766
@@ -472,6 +470,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "31"
@@ -526,11 +525,10 @@ inputs:
       root: DBotScore
   required: false
   description: 'Array of all indicators associated with the incident. '
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs:
 - contextPath: Severities.DBotScoreSeverity
-  description: The severity level of the incident identified and set in the Calculate
-    Severity By Highest DBotScore playbook.
+  description: The severity level of the incident identified and set in the Calculate Severity By Highest DBotScore playbook.
   type: string
 tests:
 - Calculate Severity - Standard - Test
