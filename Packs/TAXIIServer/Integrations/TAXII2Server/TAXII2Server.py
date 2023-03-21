@@ -823,13 +823,13 @@ def create_stix_object(xsoar_indicator: dict, xsoar_type: str, extensions_dict: 
     return stix_object, extension_definition, extensions_dict
 
 
-def build_sco_object(stix_object: Dict[str, Any], xsoar_indicator) -> Dict[str, Any]:
+def build_sco_object(stix_object: Dict[str, Any], xsoar_indicator: Dict[str, Any]) -> Dict[str, Any]:
     """
     Builds a correct JSON object for specific SCO types
 
     Args:
         stix_object (Dict[str, Any]): A JSON object of a STIX indicator
-        xsoar_indicator (_type_): A JSON object of an XSOAR indicator
+        xsoar_indicator (Dict[str, Any]): A JSON object of an XSOAR indicator
 
     Returns:
         Dict[str, Any]: A JSON object of a STIX indicator
