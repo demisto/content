@@ -65,7 +65,7 @@ description: Reco is a Saas data security solution that protects your data from 
 display: Reco
 name: Reco
 script:
-  dockerimage: demisto/python3:3.10.10.48392
+  dockerimage: demisto/python3:3.10.10.49934
   feed: false
   isfetch: true
   longRunning: false
@@ -128,6 +128,27 @@ script:
     description: Tag a user as risky in Reco
     execution: false
     name: reco-add-risky-user-label
+  - arguments:
+    - default: false
+      description: Email address of the user
+      isArray: false
+      name: email_address
+      required: true
+      secret: false
+    - default: false
+      description: Return only sensitive assets owned by this user
+      isArray: false
+      name: only_sensitive
+      type: Boolean
+      required: false
+      secret: false
+    deprecated: false
+    description: Get all files user has access to from Reco
+    execution: false
+    name: reco-get-assets-user-has-access-to
+    outputs:
+    - contextPath: Reco.Assets
+      description: Assets user has access to
 tests:
 - No tests
 fromversion: 6.5.0

@@ -652,6 +652,15 @@ script:
     - contextPath: Securonix.ViolationData.Violator
       description: Violator.
       type: String
+    - contextPath: Securonix.Violation.totalDocuments
+      description: Total number of events.
+      type: Number
+    - contextPath: Securonix.Violation.message
+      description: Message from the API.
+      type: String
+    - contextPath: Securonix.Violation.queryId
+      description: Query Id for the pagination.
+      type: String
   - arguments:
     - default: false
       description: ' Start time range for which to return incidents (<number> <time
@@ -1813,13 +1822,13 @@ script:
       required: false
     - default: false
       description: |-
-        JSON formatted string containing the field names and values in the below format.
+        JSON formatted string containing the field names and values in the below format. To specify an expiration date for an entry, add "expiryDate" key (in the format of "MM/DD/YYYY") in the respective JSON object.
 
         E.g. [{"field1": "Value1", "field2": "Value2"}, {"field1": "Value3", "field2": "Value4"}]
       name: json_data
       required: false
     - default: false
-      description: War room entry of the file.
+      description: War room entry of the file. To specify an expiration date for an entry, add "expiryDate" key (in the format of "MM/DD/YYYY") in the respective JSON object.
       name: file_entry_id
       required: false
     description: Add entries to the provided lookup table.
@@ -1831,11 +1840,11 @@ script:
       name: name
       required: True
     - default: false
-      description: Use to filter the records.
+      description: Use to filter the records. By default it will filter the records on key. To filter on other column use attribute argument.
       name: query
       required: false
     - default: false
-      description: Column name to sort the data.
+      description: Column name on which to filter the data.
       name: attribute
       defaultValue: 'key'
       required: false
@@ -1854,6 +1863,21 @@ script:
       name: page_num
       defaultValue: '1'
       required: false
+    - default: false
+      description: Name of the column on which to sort the data. By default the data will be sorted on the key.
+      name: sort
+      required: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: asc
+      description: The order in which to sort the data. By default the data will be sorted in ascending order.
+      isArray: false
+      name: order
+      predefined:
+        - asc
+        - desc
+      required: false
+      secret: false
     description: Retrieves the entries stored in a specified lookup table.
     execution: false
     name: securonix-lookup-table-entries-list
@@ -1934,7 +1958,24 @@ script:
     description: Creates a lookup table.
     execution: false
     name: securonix-lookup-table-create
-  dockerimage: demisto/python3:3.10.10.48392
+  - arguments:
+    - default: false
+      description: Comma-separated list of lookup unique keys to delete.
+      isArray: false
+      name: lookup_unique_keys
+      required: true
+      secret: false
+    - default: false
+      description: Name of the lookup table from which to delete the entries.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    deprecated: false
+    description: Deletes the entries from the lookup table.
+    execution: false
+    name: securonix-lookup-table-entries-delete
+  dockerimage: demisto/python3:3.10.10.49934
   feed: false
   isfetch: true
   longRunning: false
