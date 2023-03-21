@@ -1,0 +1,28 @@
+{
+    "prisma_cloud_raw": {
+        "policy": {
+            "type": "string",
+            "is_array": false
+        },
+        "resource": {
+            "type": "string",
+            "is_array": false
+        },
+        "id": {
+            "type": "string",
+            "is_array": false
+        },
+        "policyId": {
+            "type": "string",
+            "is_array": false
+        },
+        "reason": {
+            "type": "string",
+            "is_array": false
+        },
+        "status": {
+            "type": "string",
+            "is_array": true
+        }
+   }
+}

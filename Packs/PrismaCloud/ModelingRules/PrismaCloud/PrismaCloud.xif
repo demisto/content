@@ -1,0 +1,39 @@
+[MODEL: dataset="prisma_cloud_raw"]
+alter
+    policy_cloud_type = arraystring(regextract(policy, "cloudType\":\"([^\"]+)"), ""),
+    policy_description = arraystring(regextract(policy, "\"description\":\"([^\"]+)\""), ""),
+    policy_labels = arraystring(regextract(policy, "\"labels\":\[\"([^\]]+)\""), ""),
+    policy_name = arraystring(regextract(policy, "\"name\":\"([^\"]+)\""), ""),
+    policy_policyId = arraystring(regextract(policy, "\"policyId\":\"([^\"]+)\".*complianceMetadata\":\["), ""),
+    policy_severity = arraystring(regextract(policy, "severity\":\"([^\"]+)\""), ""),
+    resource_account = arraystring(regextract(resource, "account\":\"([^\"]+)\""), ""),
+    resource_accountId = arraystring(regextract(resource, "accountId\":\"([^\"]+)\""), ""),
+    resource_cloudaccountgroups = arraystring(regextract(resource, "cloudAccountGroups\":\[([^\]]+)\]"), ""),
+    resource_cloudaccountowners = arraystring(regextract(resource, "cloudAccountOwners\":\[\"([^\"]+)\""), ""),
+    resource_id = arraystring(regextract(resource, "id\":\"([^\"]+)\""), ""),
+    resource_name = arraystring(regextract(resource, "name\":\"([^\"]+)\".*\"disks\""), ""),
+    resource_region = arraystring(regextract(resource, "\"region\":\"([^\"]+)\""), ""),
+    resource_resourcetype = arraystring(regextract(resource, "\"region\":\"([^\"]+)\""), ""),
+    resource_url = arraystring(regextract(resource, "\"url\":\"([^\"]+)\""), "")
+| alter
+	lower_cloud_type = lowercase(policy_cloud_type)
+| alter
+	xdm.event.id = id,
+	xdm.source.cloud.provider = if(lower_cloud_type ~= "baba", XDM_CONST.CLOUD_PROVIDER_ALIBABA, lower_cloud_type ~= "aws|amazon", XDM_CONST.CLOUD_PROVIDER_AWS, lower_cloud_type ~= "azure|ms|microsoft", XDM_CONST.CLOUD_PROVIDER_AZURE, lower_cloud_type ~= "google|gcp", XDM_CONST.CLOUD_PROVIDER_GCP, lower_cloud_type = null, null, to_string(lower_cloud_type)),
+	xdm.alert.description = policy_description,
+	xdm.alert.subcategory = policy_labels,
+	xdm.alert.name = policy_name,
+	xdm.alert.original_threat_id = policy_policyId,
+	xdm.alert.severity = policy_severity,
+	xdm.alert.original_alert_id = policyId,
+	xdm.event.operation_sub_type = reason,
+	xdm.source.agent.identifier = resource_account,
+	xdm.source.user.identifier = resource_accountId,
+	xdm.source.user.groups = arraycreate(resource_cloudaccountgroups),
+	xdm.source.user.username = resource_cloudaccountowners,
+	xdm.source.host.device_id = resource_id,
+	xdm.source.host.hostname = resource_name,
+	xdm.source.cloud.region = resource_region,
+	xdm.intermediate.host.device_category = resource_resourcetype,
+	xdm.network.http.url = resource_url,
+	xdm.event.outcome_reason = status;
