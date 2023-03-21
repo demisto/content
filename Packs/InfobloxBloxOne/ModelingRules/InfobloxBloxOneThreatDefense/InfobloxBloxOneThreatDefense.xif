@@ -1,0 +1,32 @@
+[MODEL:dataset="infoblox_bloxone_threat_defense_raw"]
+alter 
+xdm.source.ipv4 = if(qip ~= "(\d{1,3}\.){3}\d{1,3}", qip),
+xdm.target.ipv4 = if(rip ~= "(\d{1,3}\.){3}\d{1,3}", rip),
+xdm.source.host.ipv4_addresses = arraymap(split(private_ip, ","), if("@element" ~= "(\d{1,3}\.){3}\d{1,3}", "@element")) |
+
+alter
+xdm.source.ipv6 = if(xdm.source.ipv4 = null and qip ~= "([a-fA-F0-9]{1,4}\:){7}[a-fA-F0-9]{1,4}", qip),
+xdm.target.ipv6 = if(xdm.target.ipv4 = null and rip ~= "([a-fA-F0-9]{1,4}\:){7}[a-fA-F0-9]{1,4}", rip),
+xdm.source.host.ipv6_addresses = if(array_length(xdm.source.host.ipv4_addresses) = 0, arraymap(split(private_ip, ","), if("@element" ~= "([a-fA-F0-9]{1,4}\:){7}[a-fA-F0-9]{1,4}", "@element"))),
+
+xdm.network.dns.dns_question.type = if(qtype="A",XDM_CONST.DNS_RECORD_TYPE_A,qtype="AAAA",XDM_CONST.DNS_RECORD_TYPE_AAAA,qtype="AFSDB",XDM_CONST.DNS_RECORD_TYPE_AFSDB,qtype="APL",XDM_CONST.DNS_RECORD_TYPE_APL,qtype="CAA",XDM_CONST.DNS_RECORD_TYPE_CAA,qtype="CDNSKEY",XDM_CONST.DNS_RECORD_TYPE_CDNSKEY,qtype="CDS",XDM_CONST.DNS_RECORD_TYPE_CDS,qtype="CERT",XDM_CONST.DNS_RECORD_TYPE_CERT,qtype="CNAME",XDM_CONST.DNS_RECORD_TYPE_CNAME,qtype="CSYNC",XDM_CONST.DNS_RECORD_TYPE_CSYNC,qtype="DHCID",XDM_CONST.DNS_RECORD_TYPE_DHCID,qtype="DLV",XDM_CONST.DNS_RECORD_TYPE_DLV,qtype="DNAME",XDM_CONST.DNS_RECORD_TYPE_DNAME,qtype="DNSKEY",XDM_CONST.DNS_RECORD_TYPE_DNSKEY,qtype="DS",XDM_CONST.DNS_RECORD_TYPE_DS,qtype="EUI48",XDM_CONST.DNS_RECORD_TYPE_EUI48,qtype="EUI64",XDM_CONST.DNS_RECORD_TYPE_EUI64,qtype="HINFO",XDM_CONST.DNS_RECORD_TYPE_HINFO,qtype="HIP",XDM_CONST.DNS_RECORD_TYPE_HIP,qtype="HTTPS",XDM_CONST.DNS_RECORD_TYPE_HTTPS,qtype="IPSECKEY",XDM_CONST.DNS_RECORD_TYPE_IPSECKEY,qtype="KEY",XDM_CONST.DNS_RECORD_TYPE_KEY,qtype="KX",XDM_CONST.DNS_RECORD_TYPE_KX,qtype="LOC",XDM_CONST.DNS_RECORD_TYPE_LOC,qtype="MX",XDM_CONST.DNS_RECORD_TYPE_MX,qtype="NAPTR",XDM_CONST.DNS_RECORD_TYPE_NAPTR,qtype="NS",XDM_CONST.DNS_RECORD_TYPE_NS,qtype="NSEC",XDM_CONST.DNS_RECORD_TYPE_NSEC,qtype="NSEC3",XDM_CONST.DNS_RECORD_TYPE_NSEC3,qtype="NSEC3PARAM",XDM_CONST.DNS_RECORD_TYPE_NSEC3PARAM,qtype="OPENPGPKEY",XDM_CONST.DNS_RECORD_TYPE_OPENPGPKEY,qtype="PTR",XDM_CONST.DNS_RECORD_TYPE_PTR,qtype="RRSIG",XDM_CONST.DNS_RECORD_TYPE_RRSIG,qtype="RP",XDM_CONST.DNS_RECORD_TYPE_RP,qtype="SIG",XDM_CONST.DNS_RECORD_TYPE_SIG,qtype="SMIMEA",XDM_CONST.DNS_RECORD_TYPE_SMIMEA,qtype="SOA",XDM_CONST.DNS_RECORD_TYPE_SOA,qtype="SRV",XDM_CONST.DNS_RECORD_TYPE_SRV,qtype="SSHFP",XDM_CONST.DNS_RECORD_TYPE_SSHFP,qtype="SVCB",XDM_CONST.DNS_RECORD_TYPE_SVCB,qtype="TA",XDM_CONST.DNS_RECORD_TYPE_TA,qtype="TKEY",XDM_CONST.DNS_RECORD_TYPE_TKEY,qtype="TLSA",XDM_CONST.DNS_RECORD_TYPE_TLSA,qtype="TSIG",XDM_CONST.DNS_RECORD_TYPE_TSIG,qtype="TXT",XDM_CONST.DNS_RECORD_TYPE_TXT,qtype="URI",XDM_CONST.DNS_RECORD_TYPE_URI,qtype="ZONEMD",XDM_CONST.DNS_RECORD_TYPE_ZONEMD, qtype),
+xdm.network.dns.response_code = if(rcode="NOERROR",XDM_CONST.DNS_RESPONSE_CODE_NO_ERROR ,rcode="FORMERR",XDM_CONST.DNS_RESPONSE_CODE_FORMAT_ERROR,rcode="SERVFAIL",XDM_CONST.DNS_RESPONSE_CODE_SERVER_FAILURE,rcode="NXDOMAIN",XDM_CONST.DNS_RESPONSE_CODE_NON_EXISTENT_DOMAIN,rcode="NOTIMP",XDM_CONST.DNS_RESPONSE_CODE_NOT_IMPLEMENTED,rcode="REFUSED",XDM_CONST.DNS_RESPONSE_CODE_QUERY_REFUSED,rcode="YXDOMAIN",XDM_CONST.DNS_RESPONSE_CODE_NAME_EXISTS_WHEN_IT_SHOULD_NOT,rcode="YXRRSET",XDM_CONST.DNS_RESPONSE_CODE_RR_SET_EXISTS_WHEN_IT_SHOULD_NOT,rcode="NXRRSET",XDM_CONST.DNS_RESPONSE_CODE_RR_SET_THAT_SHOULD_EXIST_DOES_NOT,rcode="NOTAUTH",XDM_CONST.DNS_RESPONSE_CODE_SERVER_NOT_AUTHORITATIVE_FOR_ZONE,rcode="NOTZONE",XDM_CONST.DNS_RESPONSE_CODE_NAME_NOT_CONTAINED_IN_ZONE,rcode="BADVERS",XDM_CONST.DNS_RESPONSE_CODE_BAD_OPT_VERSION,rcode="BADSIG",XDM_CONST.DNS_RESPONSE_CODE_TSIG_SIGNATURE_FAILURE,rcode="BADKEY",XDM_CONST.DNS_RESPONSE_CODE_KEY_NOT_RECOGNIZED,rcode="BADTIME",XDM_CONST.DNS_RESPONSE_CODE_SIGNATURE_OUT_OF_TIME_WINDOW,rcode="BADMODE",XDM_CONST.DNS_RESPONSE_CODE_BAD_TKEY_MODE,rcode="BADNAME",XDM_CONST.DNS_RESPONSE_CODE_DUPLICATE_KEY_NAME,rcode="BADALG",XDM_CONST.DNS_RESPONSE_CODE_ALGORITHM_NOT_SUPPORTED,rcode="BADTRUNC",XDM_CONST.DNS_RESPONSE_CODE_BAD_TRUNCATION, rcode),
+
+xdm.source.user.groups = split(user_groups, ","),
+xdm.source.host.mac_addresses = split(mac_address, ","),
+xdm.network.dns.dns_question.name = rtrim(qname, "."),
+
+xdm.source.user.username = user,
+xdm.network.dns.dns_resource_record.value = rdata,
+xdm.source.host.hostname = device,
+xdm.alert.subcategory = tclass,
+// xdm.target.location.country = country,
+xdm.source.zone = network,
+xdm.source.application.name = app_name,
+xdm.event.description = category,
+xdm.alert.severity = severity,
+xdm.alert.name = feed_name,
+xdm.alert.description = feed_type,
+xdm.source.host.os = os_version,
+xdm.network.rule = policy_name,
+xdm.observer.action = policy_action;
