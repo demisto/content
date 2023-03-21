@@ -13,7 +13,7 @@ def sharpened(image: np.ndarray):
     Args:
         image(np.ndarray): the image that would be sharpened.
     Returns:
-        (CommandResults).
+        (np.ndarray).
     """
     kernel = np.array([[-1, -1, -1], [-1, 8, -1], [-1, -1, 0]], np.float32)
     kernel = 1 / 3 * kernel
@@ -29,7 +29,7 @@ def image_resize(image: Image, width: int, height: int):
         width(int): new width.
         height(int): new height.
     Returns:
-        (CommandResults).
+        (Image).
     """
     image = image.resize((width, height), Image.ANTIALIAS)
     return image
@@ -39,7 +39,7 @@ def action_grey() -> dict[str, Any]:
     """
     Generate grayscale image.
     Returns:
-        (CommandResults).
+        FileResult (dict[str, Any]).
     """
     args = demisto.args()
     entry_id = args.get('file_entry_id')
@@ -61,7 +61,7 @@ def action_sharpen() -> dict[str, Any]:
     """
     Generate sharpened image.
     Returns:
-        (CommandResults).
+        FileResult (dict[str, Any]).
     """
     args = demisto.args()
     entry_id = args.get('file_entry_id')
@@ -83,7 +83,7 @@ def action_original() -> dict[str, Any]:
     """
     Generate original image
     Returns:
-        (CommandResults).
+        FileResult (dict[str, Any]).
     """
     args = demisto.args()
     entry_id = args.get('file_entry_id')
