@@ -20189,7 +20189,8 @@ Add a note to a Service Record
 There is no context output for this command.
 
 #### Command example
-```!sysaid-service-record-add-note id=32 note=`this is a new note 3````
+
+`!sysaid-service-record-add-note id=32 note=`this is a new note 3`
 
 #### Human Readable Output
 >Updated record with new note
