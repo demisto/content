@@ -23,6 +23,8 @@ This script is running the `send-mail` command, make sure there is a mail sender
 | to_email | The email address that the password will be sent to. |
 | inc_id | The incident ID. |
 | email_subject | The subject of the email sent to IT. |
+| email_body | The body of the email sent to IT. |
+| ZipProtectWithPassword | The password to protect the zip file that contains the generated password. if not provided, the generated password will be send in the body of the email. |
 | min_lcase | Minimum number of lower case characters to include in password. Used with the GeneratePassword script \(leave empty if using another script\). |
 | max_lcase | Maximum number of lower case characters to include in password. Used with the GeneratePassword script \(leave empty if using another script\). |
 | min_ucase | Minimum number of upper case characters to include in password. Used with the GeneratePassword script \(leave empty if using another script\). |

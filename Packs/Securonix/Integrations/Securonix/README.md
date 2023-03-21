@@ -39,6 +39,7 @@ Ensure the integration user satisfies below mentioned pre-requisites:
 | Tenant Name | Name of the tenant to fetch threats from. This parameter is optional for Non MSSP users. | No |
 | Incidents to fetch | Selecting "all" will fetch incidents updated in the given time range.<br/>Selecting "opened" will fetch incidents opened in the given time range.<br/>Selecting "closed" will fetch incidents closed in the given time range.| No |
 | Set the default incident severity | | No |
+| First fetch time range | The date or relative timestamp from where to start fetching incidents.<br/><br/>Supported formats: &lt;number&gt; &lt;time unit&gt;, e.g., 1 hour, 30 minutes, 7 days, 3 months, 1 year. Default is 1 hour. | No |
 | The maximum number of incidents to fetch each time. | If the value is greater than 200, it will be considered as 200. The maximum is 200. | No |
 | Incident Mirroring Direction | The mirroring direction in which to mirror the incidents. You can mirror "Incoming" (from Securonix to XSOAR), "Outgoing" (from XSOAR to Securonix), or in both directions. | No |
 | Close respective Securonix incident after fetching | If enabled, the integration will close the respective Securonix incident after fetching it in XSOAR. Following fields will be required for this functionality:<br/><br/>1. Securonix action name to map with XSOAR's active state for Outgoing mirroring<br/>2. Securonix status to map with XSOAR's active state for Outgoing mirroring<br/>3. Securonix action name to map with XSOAR's closed state for Outgoing mirroring<br/>4. Securonix status to map with XSOAR's closed state for Outgoing mirroring | No |
@@ -100,7 +101,12 @@ Below Parameters are required if this option is checked:
 * For mirroring to work flawlessly, a three-state workflow(similar to XSOAR) must be configured on the Securonix Incident side.
 * The mirroring is strictly tied to Incident type "Securonix Incident" & Incoming mapper "Securonix Incident - Incoming Mapper" if you want to change or use your custom incident type/mapper then make sure changes related to these are present.
 * If you want to use the mirror mechanism and you're using custom mappers, then the incoming mapper must contain the following fields: dbotMirrorDirection, dbotMirrorId, dbotMirrorInstance, dbotMirrorTags and securonixcloseincident.
-* To use a custom mapper, you must first duplicate the mapper and update the fields in the copy of the mapper. (Refer to the "Create a custom mapper consisting of the default Securonix mapper" section for more information.
+* To use a custom mapper, you must first duplicate the mapper and update the fields in the copy of the mapper. (Refer to the "Create a custom mapper consisting of the default Securonix mapper" section for more information.)
+* Following new fields are introduced in the response of the incident to enable the mirroring:
+  * **mirror_direction**: This field determines the mirroring direction for the incident. It is a required field for XSOAR to enable mirroring support.
+  * **mirror_tags**: This field determines what would be the tag needed to mirror the XSOAR entry out to Securonix. It is a required field for XSOAR to enable mirroring support.
+  * **mirror_instance**: This field determines from which instance the XSOAR incident was created. It is a required field for XSOAR to enable mirroring support.
+  * **close_sx_incident**: This field determines whether to close the respective Securonix incident once fetched in the XSOAR based on the instance configuration. It is required for closing the respective incident on Securonix. This will be used in the playbook to close the securonix incident.
 
 ## Configuration for fetching Securonix Threat as an XSOAR Incident
 To fetch Securonix Threat follow the next steps:
@@ -148,6 +154,12 @@ To fetch Securonix Threat follow the next steps:
 ### Receive Notification on an Incident Fetch Error
 The administrator and Cortex XSOAR users on the recipient's list receive a notification when an integration experiences an incident fetch error. Cortex XSOAR users can select their notification method, such as email, from their user preferences. Refer to [this XSOAR documentation](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Receive-Notification-on-an-Incident-Fetch-Error) for more information.
 
+### Input and output entries of the playbook are not visible in the war room.
+Follow the below steps and add a new server configuration:
+1. Go to Settings > About > Troubleshooting.
+2. Add new server configuration as "task.auto.quiet.mode.enabled" and enter the value as "false" and save. Refer to [this XSOAR documentation](https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA14u0000001V4oCAE&lang=en_US%E2%80%A9)
+3. After this configuration, all the output entries for the execution of the playbook gets displayed in the war room.
+
 The following are tips for handling issues with mirroring incidents between Securonix and Cortex XSOAR.
 
 | **Issue** | **Recommendation** |
@@ -188,7 +200,7 @@ There are no input arguments for this command.
 ```!securonix-list-workflows```
 
 ##### Context Example
-```
+```json
 {
     "Securonix": {
         "Workflows": [
@@ -218,13 +230,13 @@ There are no input arguments for this command.
 ```
 
 ##### Human Readable Output
-### Available workflows:
-|Workflow|Type|Value|
-|---|---|---|
-| SOCTeamReview | USER | admin |
-| ActivityOutlierWorkflow | USER | admin |
-| AccessCertificationWorkflow | USER | admin |
-| test | USER | admin |
+>### Available workflows:
+>|Workflow|Type|Value|
+>|---|---|---|
+>| SOCTeamReview | USER | admin |
+>| ActivityOutlierWorkflow | USER | admin |
+>| AccessCertificationWorkflow | USER | admin |
+>| test | USER | admin |
 
 
 ### securonix-get-default-assignee-for-workflow
@@ -255,7 +267,7 @@ Gets the default assignee for the specified workflow.
 ```!securonix-get-default-assignee-for-workflow workflow=SOCTeamReview```
 
 ##### Context Example
-```
+```json
 {
     "Securonix": {
         "Workflows": {
@@ -268,7 +280,7 @@ Gets the default assignee for the specified workflow.
 ```
 
 ##### Human Readable Output
-Default assignee for the workflow SOCTeamReview is: admin.
+>Default assignee for the workflow SOCTeamReview is: admin.
 
 ### securonix-list-possible-threat-actions
 ***
@@ -293,7 +305,7 @@ There are no input arguments for this command.
 ```!securonix-list-possible-threat-actions```
 
 ##### Context Example
-```
+```json
 {
     "Securonix": {
         "ThreatActions": [
@@ -306,7 +318,7 @@ There are no input arguments for this command.
 ```
 
 ##### Human Readable Output
-Possible threat actions are: Mark as concern and create incident, Non-Concern, Mark in progress (still investigating).
+>Possible threat actions are: Mark as concern and create incident, Non-Concern, Mark in progress (still investigating).
 
 ### securonix-list-policies
 ***
@@ -337,7 +349,7 @@ There are no input arguments for this command.
 ```!securonix-list-policies```
 
 ##### Context Example
-```
+```json
 {
     "Securonix": {
         "Policies": [
@@ -366,11 +378,11 @@ There are no input arguments for this command.
 ```
 
 ##### Human Readable Output
-### Policies:
-|ID|Name|Criticality|Created On|Created By|Description|
-|---|---|---|---|---|---|
-| 1 | Accounts that dont have Users | Low | 2013-11-09T16:13:23Z | admin |  |
-| 2 | Accounts that belong to terminated user | Medium | 2013-11-09T16:31:09Z | admin |  |
+>### Policies:
+>|ID|Name|Criticality|Created On|Created By|Description|
+>|---|---|---|---|---|---|
+>| 1 | Accounts that dont have Users | Low | 2013-11-09T16:13:23Z | admin |  |
+>| 2 | Accounts that belong to terminated user | Medium | 2013-11-09T16:31:09Z | admin |  |
 
 
 ### securonix-list-resource-groups
@@ -397,7 +409,7 @@ There are no input arguments for this command.
 ```!securonix-list-resource-groups```
 
 ##### Context Example
-```
+```json
 {
     "Securonix": {
         "ResourceGroups": [
@@ -467,24 +479,24 @@ There are no input arguments for this command.
 ```
 
 ##### Human Readable Output
-### Resource groups:
-|Name|Type|
-|---|---|
-| Windows-CST1 | Microsoft Windows SNARE |
-| Websense Proxy | Websense Proxy Server |
-| Palo Alto | Palo Alto Next-Generation Firewall |
-| CDS1 | ControlsDS1 |
-| Bluecoat | Bluecoat Proxy |
-| Symantec-Email | Symantec Message Security Gateway |
-| Proofpoint Email Gateway | Proofpoint Email Gateway |
-| CiscoASA | Cisco ASA |
-| CiscoAMP | Cisco FireAMP |
-| PA800-adam | Palo Alto Next-Generation Firewall |
-| CrowdStrike-PartnerAPI | Crowdstrike Alerts Streaming |
-| squid-partners | Squid Proxy |
-| Bluecoat_OP | Bluecat_DHCP |
-| Bluecoat - Test | Bluecoat Proxy |
-| Bluecoat_New | Bluecoat Proxy |
+>### Resource groups:
+>|Name|Type|
+>|---|---|
+>| Windows-CST1 | Microsoft Windows SNARE |
+>| Websense Proxy | Websense Proxy Server |
+>| Palo Alto | Palo Alto Next-Generation Firewall |
+>| CDS1 | ControlsDS1 |
+>| Bluecoat | Bluecoat Proxy |
+>| Symantec-Email | Symantec Message Security Gateway |
+>| Proofpoint Email Gateway | Proofpoint Email Gateway |
+>| CiscoASA | Cisco ASA |
+>| CiscoAMP | Cisco FireAMP |
+>| PA800-adam | Palo Alto Next-Generation Firewall |
+>| CrowdStrike-PartnerAPI | Crowdstrike Alerts Streaming |
+>| squid-partners | Squid Proxy |
+>| Bluecoat_OP | Bluecat_DHCP |
+>| Bluecoat - Test | Bluecoat Proxy |
+>| Bluecoat_New | Bluecoat Proxy |
 
 
 ### securonix-list-users
@@ -521,7 +533,7 @@ There are no input arguments for this command.
 ```!securonix-list-users```
 
 ##### Context Example
-```
+```json
 {
     "Securonix": {
         "Users": [
@@ -546,10 +558,10 @@ There are no input arguments for this command.
 ```
 
 ##### Human Readable Output
-### Resource groups:
-|First Name|Last Name|Criticality|Title|Email|
-|---|---|---|---|---|
-| jon | doe | Low | Associate-Data Services | jon.doe@test.com |
+>### Resource groups:
+>|First Name|Last Name|Criticality|Title|Email|
+>|---|---|---|---|---|
+>| jon | doe | Low | Associate-Data Services | jon.doe@test.com |
 
 
 ### securonix-list-activity-data
@@ -610,10 +622,54 @@ Gets a list of activity data for the specified resource group.
 
 
 ##### Command Example
-``` ```
+```!securonix-list-activity-data from="03/08/2023 00:00:00" to="03/09/2023 00:00:00"```
+
+##### Context Example
+```json
+{
+    "Securonix": {
+        "ActivityData": [
+            {
+                "Accountname": "ACCOUNT617",
+                "Agentfilename": "test.txt",
+                "Categoryseverity": "0",
+                "Collectionmethod": "file",
+                "Collectiontimestamp": "1678435071000",
+                "Ingestionnodeid": "CONSOLE",
+                "Jobstarttime": "1678435071000",
+                "Publishedtime": "1678435071533",
+                "Receivedtime": "1678435081978",
+                "Resourcename": "test",
+                "TenantID": "2",
+                "Tenantname": "test_tenant",
+                "Timeline": "1678255200000"
+            },
+            {
+                "Accountname": "ACCOUNT618",
+                "Agentfilename": "test.txt",
+                "Categoryseverity": "0",
+                "Collectionmethod": "file",
+                "Collectiontimestamp": "1678431865000",
+                "Ingestionnodeid": "CONSOLE",
+                "Jobstarttime": "1678431865000",
+                "Publishedtime": "1678431869722",
+                "Receivedtime": "1678431877794",
+                "Resourcename": "test",
+                "TenantID": "2",
+                "Tenantname": "test_tenant",
+                "Timeline": "1678255200000"
+            }
+        ]
+    }
+}
+```
 
 ##### Human Readable Output
-
+>### Activity data:
+>|Accountname|
+>|---|
+>| ACCOUNT617 |
+>| ACCOUNT618 |
 
 ### securonix-list-violation-data
 ***
@@ -697,13 +753,112 @@ Gets a list activity data for an account name.
 | Securonix.ViolationData.UserID | String | Last sync time, in Epoch time. | 
 | Securonix.ViolationData.Workemail | String | Work email address of the user that violated the policy. | 
 | Securonix.ViolationData.Violator | String | Violator. | 
+| Securonix.Violation.totalDocuments | Number | Total number of events. | 
+| Securonix.Violation.message | String | Message from the API. | 
+| Securonix.Violation.queryId | String | Query Id for the pagination. | 
 
 
 ##### Command Example
-``` ```
+```!securonix-list-violation-data from="01/01/2023 00:00:00" to="03/10/2023 00:00:00"```
+
+##### Context Example
+```json
+{
+    "Securonix": {
+        "ViolationData": [
+        {
+            "Accountname": "TESTDPB30",
+            "Categorizedtime": "Morning",
+            "Category": "Account Compromise",
+            "Categoryseverity": "0",
+            "Datetime": "1676960205747",
+            "Dayofmonth": "21",
+            "Dayofweek": "3",
+            "Dayofyear": "52",
+            "Eventid": "test_event",
+            "GenerationTime": "02/21/2023 00:17:19",
+            "Hour": "0",
+            "ID": "-1",
+            "Invalid": "false",
+            "Ipaddress": "IP Address",
+            "Jobid": "140",
+            "Jobstarttime": "1676960199000",
+            "Month": "1",
+            "Policyname": "Policy1",
+            "Resourcecomments": "ingestion_2.0",
+            "Resourcegroupid": "6",
+            "Resourcegroupname": "test",
+            "Resourcename": "mac30",
+            "Resourcetype": "mvk",
+            "Riskthreatname": "Abnormal amount of data egressed compared to peer",
+            "TenantID": "2",
+            "Tenantname": "test_tenant",
+            "Timeline": "1676959200000",
+            "Timeline_By_Hour": "1676980800000",
+            "Timeline_By_Minute": "1676960100000",
+            "Timeline_By_Month": "1675231200000",
+            "Timeline_By_Week": "1676786400000",
+            "Transactionstring1": "Logon failure 30",
+            "Userid": "-1",
+            "Violator": "RTActivityAccount",
+            "Week": "8",
+            "Year": "2023"
+        },
+        {
+            "Accountname": "TESTDPB30",
+            "Categorizedtime": "Morning",
+            "Category": "Account Compromise",
+            "Categoryseverity": "0",
+            "Datetime": "1676960205747",
+            "Dayofmonth": "21",
+            "Dayofweek": "3",
+            "Dayofyear": "52",
+            "Eventid": "Event ID",
+            "GenerationTime": "02/21/2023 00:17:19",
+            "Hour": "0",
+            "ID": "-1",
+            "Invalid": "false",
+            "Ipaddress": "IP Address",
+            "Jobid": "140",
+            "Jobstarttime": "1676960199000",
+            "Month": "1",
+            "Policyname": "Policy2",
+            "Resourcecomments": "ingestion_2.0",
+            "Resourcegroupid": "6",
+            "Resourcegroupname": "tets",
+            "Resourcename": "mac30",
+            "Resourcetype": "mvk",
+            "Riskthreatname": "Abnormal attempts to reset domain admin password",
+            "TenantID": "2",
+            "Tenantname": "test_tenant",
+            "Timeline": "1676959200000",
+            "Timeline_By_Hour": "1676980800000",
+            "Timeline_By_Minute": "1676960100000",
+            "Timeline_By_Month": "1675231200000",
+            "Timeline_By_Week": "1676786400000",
+            "Transactionstring1": "Logon failure 30",
+            "Userid": "-1",
+            "Violator": "RTActivityAccount",
+            "Week": "8",
+            "Year": "2023"
+        }
+        ],
+        "Violation": {
+            "totalDocuments": 2,
+            "message": "",
+            "queryId": "abcd1234"
+        }
+    }
+}
+```
 
 ##### Human Readable Output
-
+>### Activity data:
+>|Policyname|Accountname|
+>|---|---|
+>| Policy1 | TESTDPB30 |
+>| Policy2 | TESTDPB30 |
+>#### Next page query id: abcd1234
 
 ### securonix-list-incidents
 ***
@@ -747,11 +902,88 @@ Gets a list of incidents.
 ```!securonix-list-incidents from="5 days" incident_types=opened```
 
 ##### Context Example
-```
+
+```json
+{
+    "Securonix": {
+        "Incidents": [
+            {
+                "AssignedUser": "Admin Admin",
+                "Bulkactionallowed": true,
+                "CaseEventEndTime": 1675849673983,
+                "CaseEventStartTime": 1675845486324,
+                "Casecreatetime": 1675849649900,
+                "Entity": "RTActivityAccount",
+                "IncidentID": "Incident ID",
+                "IncidentStatus": "COMPLETED",
+                "IncidentType": "HighRiskRTActivityAccount",
+                "IsWhitelisted": false,
+                "LastUpdateDate": 1675849674032,
+                "ParentCaseId": "",
+                "Priority": "None",
+                "Reason": [
+                    "ResourceType: mvk",
+                    "Policy: SandboxFeb8",
+                    "Threat: Abnormal attempts to reset domain admin password"
+                ],
+                "Riskscore": 0,
+                "SandBoxPolicy": true,
+                "StatusCompleted": true,
+                "TenantInfo": {
+                "tenantid": 2,
+                "tenantname": "test_tenant"
+                },
+                "Type": "HighRiskRTActivityAccount",
+                "Url": "url",
+                "ViolatorID": "TESTING2",
+                "ViolatorText": "TESTING2",
+                "Watchlisted": false,
+                "WorkflowName": "SOCTeamReview"
+            },
+            {
+                "AssignedUser": "Admin Admin",
+                "Bulkactionallowed": true,
+                "CaseEventEndTime": 1675851019318,
+                "CaseEventStartTime": 1675850440699,
+                "Casecreatetime": 1675850942351,
+                "Entity": "RTActivityAccount",
+                "IncidentID": "Incident ID",
+                "IncidentStatus": "COMPLETED",
+                "IncidentType": "HighRiskRTActivityAccount",
+                "IsWhitelisted": true,
+                "LastUpdateDate": 1675851019367,
+                "ParentCaseId": "",
+                "Priority": "None",
+                "Reason": [
+                    "ResourceType: mvk",
+                    "Policy: SandboxFeb8",
+                    "Threat: Abnormal attempts to reset domain admin password"
+                ],
+                "Riskscore": 0,
+                "SandBoxPolicy": true,
+                "StatusCompleted": true,
+                "TenantInfo": {
+                "tenantid": 2,
+                "tenantname": "test_tenant"
+                },
+                "Type": "HighRiskRTActivityAccount",
+                "Url": "url",
+                "ViolatorID": "TESTING4",
+                "ViolatorText": "TESTING4",
+                "Watchlisted": false,
+                "WorkflowName": "SOCTeamReview"
+            }
+        ]
+    }
+}
 ```
 
 ##### Human Readable Output
-No incidents where found in this time frame.
+>### Incidents:
+>|Incident Status|Incident Type|Priority|Reason|
+>|---|---|---|---|
+>| COMPLETED | HighRiskRTActivityAccount | None | ResourceType: mvk,<br/>Policy: SandboxFeb8,<br/>Threat: Abnormal attempts to reset domain admin password |
+>| COMPLETED | HighRiskRTActivityAccount | None | ResourceType: mvk,<br/>Policy: SandboxFeb8,<br/>Threat: Abnormal attempts to reset domain admin password |
 
 ### securonix-get-incident
 ***
@@ -793,7 +1025,7 @@ Gets details of the specified incident.
 ```!securonix-get-incident incident_id=30107```
 
 ##### Context Example
-```
+```json
 {
     "Securonix": {
         "Incidents": {
@@ -821,7 +1053,7 @@ Gets details of the specified incident.
                 "tenantname": "Securonix",
                 "tenantshortcode": "SE"
             },
-            "Url": {url},
+            "Url": "url",
             "ViolatorID": "9",
             "ViolatorSubText": "1009",
             "ViolatorText": "Judi Mcabee",
@@ -833,10 +1065,10 @@ Gets details of the specified incident.
 ```
 
 ##### Human Readable Output
-### Incident:
-|Assigned User|Casecreatetime|Entity|Incident Status|Incident Type|IncidentID|Is Whitelisted|Last Update Date|Priority|Reason|Riskscore|Sand Box Policy|Status Completed|Tenant Info|Url|Violator Sub Text|Violator Text|ViolatorID|Watchlisted|Workflow Name|
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| Admin Admin | 1579687173702 | Users | Open | Policy | 30107 | false | 1579687173702 | Critical | Resource: BLUECOAT,Policy: Uploads to personal websites,Threat: Data egress via network uploads | 0.0 | false | false | tenantid: 1 tenantname: {name} | {url} | 1009 | john smith | 9 | false | SOCTeamReview |
+>### Incident:
+>|Assigned User|Casecreatetime|Entity|Incident Status|Incident Type|IncidentID|Is Whitelisted|Last Update Date|Priority|Reason|Riskscore|Sand Box Policy|Status Completed|Tenant Info|Url|Violator Sub Text|Violator Text|ViolatorID|Watchlisted|Workflow Name|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| Admin Admin | 1579687173702 | Users | Open | Policy | 30107 | false | 1579687173702 | Critical | Resource: BLUECOAT,Policy: Uploads to personal websites,Threat: Data egress via network uploads | 0.0 | false | false | tenantid: 1 tenantname: {name} | url | 1009 | john smith | 9 | false | SOCTeamReview |
 
 
 ### securonix-get-incident-status
@@ -866,7 +1098,7 @@ Gets the status of the specified incident.
 ```!securonix-get-incident-status incident_id=30107```
 
 ##### Context Example
-```
+```json
 {
     "Securonix": {
         "Incidents": {
@@ -878,7 +1110,7 @@ Gets the status of the specified incident.
 ```
 
 ##### Human Readable Output
-Incident 30107 status is Open.
+>Incident 30107 status is Open.
 
 ### securonix-get-incident-workflow
 ***
@@ -907,7 +1139,7 @@ Gets the workflow of the specified incident.
 ```!securonix-get-incident-workflow incident_id=30107```
 
 ##### Context Example
-```
+```json
 {
     "Securonix": {
         "Incidents": {
@@ -919,7 +1151,7 @@ Gets the workflow of the specified incident.
 ```
 
 ##### Human Readable Output
-Incident 30107 workflow is SOCTeamReview.
+>Incident 30107 workflow is SOCTeamReview.
 
 ### securonix-get-incident-available-actions
 ***
@@ -944,7 +1176,7 @@ There is no context output for this command.
 ```!securonix-get-incident-available-actions incident_id=30107```
 
 ##### Context Example
-```
+```json
 {
     "Securonix": {
         "Incidents": {
@@ -960,7 +1192,7 @@ There is no context output for this command.
 ```
 
 ##### Human Readable Output
-Incident 30107 available actions: ['CLAIM', 'ASSIGN TO ANALYST', 'ASSIGN TO SECOPS'].
+>Incident 30107 available actions: ['CLAIM', 'ASSIGN TO ANALYST', 'ASSIGN TO SECOPS'].
 
 ### securonix-perform-action-on-incident
 ***
@@ -984,10 +1216,15 @@ Performs an action on the specified incident.
 There is no context output for this command.
 
 ##### Command Example
-``` ```
+```!securonix-perform-action-on-incident action="Close Incident" incident_id=330365```
+
+##### Context Example
+```json
+{}
+```
 
 ##### Human Readable Output
-
+>Action Close Incident was performed on incident 330365.
 
 ### securonix-add-comment-to-incident
 ***
@@ -1013,12 +1250,12 @@ There is no context output for this command.
 ```!securonix-add-comment-to-incident incident_id=30107 comment="Just a comment"```
 
 ##### Context Example
-```
+```json
 {}
 ```
 
 ##### Human Readable Output
-Comment was added to the incident 30107 successfully.
+>Comment was added to the incident 30107 successfully.
 
 ### securonix-list-watchlists
 ***
@@ -1043,7 +1280,7 @@ There are no input arguments for this command.
 ```!securonix-list-watchlists```
 
 ##### Context Example
-```
+```json
 {
     "Securonix": {
         "WatchlistsNames": {
@@ -1067,7 +1304,7 @@ There are no input arguments for this command.
 ```
 
 ##### Human Readable Output
-Watchlists: Domain_Admin, Flight_Risk_Users_Watchlist, Recent_Transfers, Exiting_Behavior_Watchlist, Test_watchlist2, Bad_Performance_Review, Terminated_Contractors, Contractors-UpComing_Termination, Privileged_Accounts, Terminated_Employees, Test_watchlist, Privileged_Users, Recent_Hires, Employees-UpComing_Terminations.
+>Watchlists: Domain_Admin, Flight_Risk_Users_Watchlist, Recent_Transfers, Exiting_Behavior_Watchlist, Test_watchlist2, Bad_Performance_Review, Terminated_Contractors, Contractors-UpComing_Termination, Privileged_Accounts, Terminated_Employees, Test_watchlist, Privileged_Users, Recent_Hires, Employees-UpComing_Terminations.
 
 ### securonix-get-watchlist
 ***
@@ -1109,10 +1346,38 @@ Gets information for the specified watchlist.
 
 
 ##### Command Example
-``` ```
+```!securonix-get-watchlist watchlist_name="test_watchlist"```
+
+##### Context Example
+```json
+{
+    "Securonix": {
+        "Watchlists": {
+            "Events": [{
+                "Createdate": "1678438310720",
+                "Entityname": "123",
+                "Expired": "false",
+                "Expirydate": "1681084799000",
+                "Reason": "Added from web service..!",
+                "Resourcegroupid": "-1",
+                "Resourcename": "123",
+                "Uniqueid": "2^~R^~-1|123",
+                "Updatedate": "1678438310720"
+            }],
+            "TenantID": "2",
+            "TenantName": "test_tenant",
+            "Type": "Resources",
+            "Watchlistname": "test_watchlist"
+          }
+    }
+}
+```
 
 ##### Human Readable Output
-
+>### Watchlist test_watchlist of type Resources:
+>|Entityname|Expired|
+>|---|---|
+>| 123 | false |
 
 ### securonix-create-watchlist
 ***
@@ -1140,7 +1405,7 @@ Creates a watchlist in Securonix.
 ```!securonix-create-watchlist watchlist_name=test_watchlist```
 
 ##### Context Example
-```
+```json
 {
     "Securonix": {
         "Watchlists": "test_watchlist"
@@ -1149,7 +1414,7 @@ Creates a watchlist in Securonix.
 ```
 
 ##### Human Readable Output
-Watchlist test_watchlist was created successfully.
+>Watchlist test_watchlist was created successfully.
 
 ### securonix-check-entity-in-watchlist
 ***
@@ -1179,7 +1444,7 @@ Checks if the specified entity is in a watchlist.
 ```!securonix-check-entity-in-watchlist entity_name=1002 watchlist_name=test_watchlist```
 
 ##### Context Example
-```
+```json
 {
     "Securonix": {
         "EntityInWatchlist": {
@@ -1190,7 +1455,7 @@ Checks if the specified entity is in a watchlist.
 ```
 
 ##### Human Readable Output
-Entity unique identifier 1002 provided is not in the watchlist: test_watchlist.
+>Entity unique identifier 1002 provided is not in the watchlist: test_watchlist.
 
 ### securonix-add-entity-to-watchlist
 ***
@@ -1215,10 +1480,15 @@ Adds an entity to a watchlist.
 There is no context output for this command.
 
 ##### Command Example
-``` ```
+```!securonix-add-entity-to-watchlist entity_type=Resources entity_name=123 watchlist_name=test_watchlist ```
+
+##### Context Example
+```json
+{}
+```
 
 ##### Human Readable Output
-
+>Added successfully the entity 123 to the watchlist test_watchlist.
 
 ### securonix-create-incident
 ***
@@ -1268,7 +1538,7 @@ Creates an incident. For more information about the required arguments, see the 
 ```!securonix-create-incident action_name="Mark as concern and create incident" entity_name=MH1014 entity_type=Users resource_group="BLUECOAT" resource_name="BLUECOAT" violation_name="Uploads to personal Websites" workflow=SOCTeamReview  comment=bgdfs criticality=Critical```
 
 ##### Context Example
-```
+```json
 {
     "Securonix": {
         "Incidents": {
@@ -1308,10 +1578,10 @@ Creates an incident. For more information about the required arguments, see the 
 ```
 
 ##### Human Readable Output
-### Incident was created successfully
-|Entity|Incident Status|Incident Type|IncidentID|Priority|Reason|Url|
-|---|---|---|---|---|---|---|
-| Users | Open | Policy | 30134 | Critical | Resource: BLUECOAT,Policy: Uploads to personal websites,Threat: Data egress via network uploads | {url} |
+>### Incident was created successfully
+>|Entity|Incident Status|Incident Type|IncidentID|Priority|Reason|Url|
+>|---|---|---|---|---|---|---|
+>| Users | Open | Policy | 30134 | Critical | Resource: BLUECOAT,Policy: Uploads to personal websites,Threat: Data egress via network uploads | url |
 
 
 ### securonix-threats-list
@@ -1358,7 +1628,7 @@ the threat models and policies violated.
 ```!securonix-threats-list date_from="1 day"```
 
 ##### Context Example
-```
+```json
 {
     "Securonix": {
         "Threats": {
@@ -1378,22 +1648,17 @@ the threat models and policies violated.
             ],
             "policystarttime": 1661161072000,
             "policyendtime": 1661161072000,
-            "solrquery": "index = violation and ( ( @policyname = \"Response-PB-ActivityAccount-Manual\" and @ipaddress=\"169.114.215.248\" )  ) AND @tenantname=\"Response-Automation\" AND datetime between \"08/22/2022 04:37:52\" \"08/22/2022 04:37:53\""
+            "solrquery": "index = violation and ( ( @policyname = \"Response-PB-ActivityAccount-Manual\" and @ipaddress=\"127.0.0.1\" )  ) AND @tenantname=\"Response-Automation\" AND datetime between \"08/22/2022 04:37:52\" \"08/22/2022 04:37:53\""
         }
     }
 }
 ```
 
 ##### Human Readable Output
-### Threats:
-|ThreatName|EntityID|Violator|Category|Resourcegroupname|Resourcename|Resourcetype|GenerationTime|Policies|TenantID|Tenantname|
-|---|---|---|---|---|---|---|---|---|---|---|
-| TM_Response-PB-ActivityAccount-Manual | VIOLATOR5-1673852881421 | Activityaccount | NONE | RES-PLAYBOOK-DS-AUTOMATION | RES10-RESOURCE-302184 | Res-Playbook | Mon, 16 Jan 2023 @ 01:53:31 AM | Response-PB-ActivityAccount-Manual | 2 | Response-Automation |
-
-## Limitations
-  - The `opened` argument for fetching and listing incidents is currently not filtering only the opened incidents.
-    This is an open issue on the vendor side.
-  - Until version 6.3.1, the *max_fetch argument is not used. Hence, every *fetch incidents*, only the 10 most recent incidents are going to be fetched.
+>### Threats:
+>|ThreatName|EntityID|Violator|Category|Resourcegroupname|Resourcename|Resourcetype|GenerationTime|Policies|TenantID|Tenantname|
+>|---|---|---|---|---|---|---|---|---|---|---|
+>| TM_Response-PB-ActivityAccount-Manual | VIOLATOR5-1673852881421 | Activityaccount | NONE | RES-PLAYBOOK-DS-AUTOMATION | RES10-RESOURCE-302184 | Res-Playbook | Mon, 16 Jan 2023 @ 01:53:31 AM | Response-PB-ActivityAccount-Manual | 2 | Response-Automation |
 
 
 ### securonix-incident-activity-history-get
@@ -1449,7 +1714,7 @@ Retrieves incident activity history for a specified incident.
 | Securonix.IncidentHistory.playBookOutput.tasksForParticularRun.connectionMetadata | String | Connection metadata. | 
 
 #### Command example
-```!securonix-incident-activity-history-get incident_id=3235505380```
+```!securonix-incident-activity-history-get incident_id=3235505```
 
 #### Context Example
 ```json
@@ -1457,7 +1722,7 @@ Retrieves incident activity history for a specified incident.
     "Securonix": {
         "IncidentHistory": [
             {
-                "caseid": "3235505380",
+                "caseid": "3235505",
                 "eventTime": "Jan 18, 2023 2:34:21 AM",
                 "isPlayBookOutAvailable": true,
                 "playBookOutput": {
@@ -1465,7 +1730,7 @@ Retrieves incident activity history for a specified incident.
                     "executorId": 41,
                     "playBookId": 104,
                     "playBookName": "Create Security Incident",
-                    "playRunId": "5c0f62c1-23b4-4c5a-8c40-0aa9f3def050",
+                    "playRunId": "Playbook Run ID",
                     "tasksForParticularRun": [
                         {
                             "connectionMetadata": "{\"source\":\"test\"}",
@@ -1526,7 +1791,7 @@ Retrieves incident activity history for a specified incident.
             },
             {
                 "actiontaken": "CREATED",
-                "caseid": "3235505380",
+                "caseid": "3235505",
                 "comment": [
                     {
                         "Comments": "Incident created while executing playbook - Create Security Incident"
@@ -1545,7 +1810,7 @@ Retrieves incident activity history for a specified incident.
             },
             {
                 "actiontaken": "CLOSE AS FIXED",
-                "caseid": "3235505380",
+                "caseid": "3235505",
                 "comment": [
                     {
                         "Comments": "Incident closed as part of AutoClosure"
@@ -1572,7 +1837,7 @@ Retrieves incident activity history for a specified incident.
 
 #### Human Readable Output
 
-### Incident activity history for ID: 3235505380
+>### Incident activity history for ID: 3235505
 >|Action Taken|Username|Event Time|Status|Last Status|Comment|Playbook ID|Playbook Name|Playbook Executor|
 >|---|---|---|---|---|---|---|---|---|
 >| CLOSE AS FIXED | Admin Admin | Jan 20, 2023 5:08:42 AM | COMPLETED | Open | Incident closed as part of AutoClosure |  |  |  |
@@ -1624,12 +1889,12 @@ Retrieves the attachments available on the Securonix platform.
 {
     "Securonix": {
         "Incidents": {
-            "Attachments": {
+            "Attachments": [
                 {
                     "Files": "REST_API_Categories___SNYPR_6.4.pdf",
                     "IncidentID": 3422464053
                 }
-            }
+            ]
         }
     },
     "File": {
@@ -1647,8 +1912,8 @@ Retrieves the attachments available on the Securonix platform.
 
 #### Human Readable Output
 
-##### Incident ID: 3235505380
-Uploaded file: REST_API_Categories___SNYPR_6.4.pdfDownload
+>### Incident ID: 3235505
+>Uploaded file: REST_API_Categories___SNYPR_6.4.pdfDownload
 >|Property|Type|Size|Info|MD5|SHA1|SHA256|SHA512|SSDeep|
 >|---|---|---|---|---|---|---|---|---|
 >| Value | application/pdf | 6,157,973 bytes | PDF document, version 1.4 | ee0e57a311beb1c9a326b921625d31e4 | ae60bb6364981039bca21285a5c35a41afcbcdbb | 8b1c383bb218218b5a816841a7a91f1dcab08c1034d434fcefab70b4d804b7cc | 60c2208f9dd5c65b18fb88dc8dec81c412e2b22b6122f837827079c7dad9b27c5d691a4d09edf3583a8313fae2a7a620c86ff4a186e46273970e542d42ca4bb0 | 98304:EIkHaH04jKTu8dEp/i6fVm+RG9de2VaqhEIrST6k2WLcJVHvLx4jO1mzPyX:BYgjfyE46fbRGze2gTILk+VHvLx719 |
@@ -1694,11 +1959,11 @@ Gets a list of whitelists.
 }
 ```
 #### Human Readable Output
-### Whitelist: Dummy Threat Model MM
-|WhitelistName|WhitelistType|TenantName|
-|---|---|---|
-| Dummy Whitelist 1 | Automated | test_tenant |
-| Dummy Whitelist 2 | Automated | test_tenant |
+>### Whitelists:
+>|WhitelistName|WhitelistType|TenantName|
+>|---|---|---|
+>| Dummy Whitelist 1 | Automated | test_tenant |
+>| Dummy Whitelist 2 | Automated | test_tenant |
 
 
 ### securonix-whitelist-entry-list
@@ -1748,10 +2013,10 @@ Gets information for the specified whitelist.
 ```
 
 #### Human Readable Output
-### Whitelist: Dummy Threat Model MM
-|Entity/Attribute|ExpiryDate|
-|---|---|
-| TEST123 | 09/28/2035 21:21:19 |
+>### Whitelist: Dummy Threat Model MM
+>|Entity/Attribute|ExpiryDate|
+>|---|---|
+>| TEST123 | 09/28/2035 21:21:19 |
 
 
 
@@ -1800,11 +2065,11 @@ This command does not have any arguments.
 
 #### Human Readable Output
 
-### State Mapping:
-|XSOAR Status|Securonix Status|Securonix Action Name|
-|---|---|---|
-| Active | in progress | Start Investigation |
-| Closed | completed | Close Incident |
+>### State Mapping:
+>|XSOAR Status|Securonix Status|Securonix Action Name|
+>|---|---|---|
+>| Active | in progress | Start Investigation |
+>| Closed | completed | Close Incident |
 
 ### securonix-whitelist-create
 ***
@@ -1831,12 +2096,12 @@ There is no context output for this command.
 ```!securonix-whitelist-create whitelistname="test_whitelist" entity_type="Users"```
 
 ##### Context Example
-```
+```json
 {}
 ```
 
 ##### Human Readable Output
-Whitelist test_whitelist was created successfully.
+>Whitelist test_whitelist was created successfully.
 
 
 ### securonix-whitelist-entry-add
@@ -1873,17 +2138,11 @@ There is no context output for this command.
 
 #### Context example
 ```json
-{
-    "status": "OK",
-    "messages": [
-        "entity added to global whitelist Successfully...!"
-    ],
-    "result": []
-}
+{}
 ```
 
 #### Human Readable Output
-Entity added to global whitelist Successfully.
+>Entity added to global whitelist Successfully.
 
 
 ### securonix-lookup-table-create
@@ -1912,12 +2171,12 @@ There is no context output for this command.
 ```!securonix-lookup-table-create name=test_lookup_table field_names="samplefield,samplefield2" key="samplefield" tenant_name=test_tenant scope=Global```
 
 ##### Context Example
-```
+```json
 {}
 ```
 
 ##### Human Readable Output
-Lookup Table test_lookup_table created successfully
+>Lookup Table test_lookup_table created successfully
 
 
 ### securonix-lookup-table-config-and-data-delete
@@ -1947,7 +2206,7 @@ Deletes the data and configuration of the provided lookup table.
 ```!securonix-lookup-table-config-and-data-delete name="test"```
 
 ##### Context Example
-```
+```json
 {
   "Securonix": {
     "LookupTable": {
@@ -1959,7 +2218,7 @@ Deletes the data and configuration of the provided lookup table.
 ```
 
 ##### Human Readable Output
-test and data deleted successfully
+>test and data deleted successfully
 
 
 ### securonix-lookup-tables-list
@@ -2052,12 +2311,12 @@ There is no context output for this command.
 ```!securonix-whitelist-entry-delete whitelistname="test_whitelist" entity_id="test_user"```
 
 ##### Context Example
-```
+```json
 {}
 ```
 
 ##### Human Readable Output
-test_user Item removed from whitelist Successfully.
+>test_user Item removed from whitelist Successfully.
 
 
 ### securonix-lookup-table-entries-list
@@ -2073,11 +2332,13 @@ Retrieves the entries stored in a specified lookup table.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | name | Lookup Table name. | Required | 
-| query | Use to filter the records. | Optional | 
-| attribute | Column name to sort the data. Default is key. | Optional | 
+| query | Use to filter the records. By default it will filter the records on key. To filter on other column use attribute argument. | Optional | 
+| attribute | Column name on which to filter the data. Default is key. | Optional | 
 | max | Number of records to retrieve. Default is 15. | Optional | 
 | offset | Specify from which record the data should be returned. Default is 0. | Optional | 
 | page_num | Specify a value to retrieve records from a specific page. Default is 1. | Optional | 
+| sort | Name of the column on which to sort the data. By default the data will be sorted on the key. | Optional | 
+| order | The order in which to sort the data. By default the data will be sorted in ascending order. Possible values are: asc, desc. Default is asc. | Optional | 
 
 
 #### Context Output
@@ -2094,70 +2355,69 @@ Retrieves the entries stored in a specified lookup table.
 | Securonix.LookupTableEntries.entry.key | String | Key of the entry. | 
 | Securonix.LookupTableEntries.entry.value | String | Value of the entry. | 
 
-
 #### Command example
-```!securonix-lookup-table-entries-list name=TEST_M max=2```
-
+```!securonix-lookup-table-entries-list name="TEST_M" max=2 sort="ip" order=desc```
 #### Context Example
 ```json
 {
-  "Securonix": {
-    "LookupTableEntries": [
-    {
-      "defaultenrichedevent": [
-        "127.0.0.12",
-        "158267F0BC6E7484E3C0F5964ABE9D2B",
-        "good"
-      ],
-      "entry": [
-        {
-          "key": "reputation",
-          "value": "good"
-        },
-        {
-          "key": "ip",
-          "value": "127.0.0.12"
-        },
-        {
-          "key": "id",
-          "value": "158267F0BC6E7484E3C0F5964ABE9D2B"
-        }
-      ],
-      "key": "158267F0BC6E7484E3C0F5964ABE9D2B",
-      "lookupname": "TEST_M",
-      "lookupuniquekey": "2^~TEST_M|158267F0BC6E7484E3C0F5964ABE9D2B",
-      "tenantid": 2,
-      "tenantname": "novr3nonmssp",
-      "timestamp": "Feb 18, 2023 5:50:16 AM"
-    },
-    {
-      "defaultenrichedevent": [
-        "127.0.0.50",
-        "175A9FFD55480ED376C992AC86ABE3D7",
-        "verybad"
-      ],
-      "entry": [
-        {
-          "key": "reputation",
-          "value": "verybad"
-        },
-        {
-          "key": "ip",
-          "value": "127.0.0.50"
-        },
-        {
-          "key": "id",
-          "value": "175A9FFD55480ED376C992AC86ABE3D7"
-        }
-      ],
-      "key": "175A9FFD55480ED376C992AC86ABE3D7",
-      "lookupname": "TEST_M",
-      "lookupuniquekey": "2^~TEST_M|175A9FFD55480ED376C992AC86ABE3D7",
-      "tenantid": 2,
-      "tenantname": "novr3nonmssp",
-      "timestamp": "Feb 18, 2023 6:01:01 AM"
+    "Securonix": {
+        "LookupTableEntries": [
+            {
+                "defaultenrichedevent": [
+                    "127.0.0.9",
+                    "B5E3195FB4E1EB3BE797077CEE398C04",
+                    "bad"
+                ],
+                "entry": [
+                    {
+                        "key": "reputation",
+                        "value": "bad"
+                    },
+                    {
+                        "key": "ip",
+                        "value": "127.0.0.9"
+                    },
+                    {
+                        "key": "id",
+                        "value": "B5E3195FB4E1EB3BE797077CEE398C04"
+                    }
+                ],
+                "key": "B5E3195FB4E1EB3BE797077CEE398C04",
+                "lookupname": "TEST_M",
+                "lookupuniquekey": "2^~TEST_M|B5E3195FB4E1EB3BE797077CEE398C04",
+                "tenantid": 2,
+                "tenantname": "novr3nonmssp",
+                "timestamp": "Feb 18, 2023 5:50:16 AM"
+            },
+            {
+                "defaultenrichedevent": [
+                    "127.0.0.8",
+                    "497B9EC67354A28D62A98E82299871CC",
+                    "good"
+                ],
+                "entry": [
+                    {
+                        "key": "reputation",
+                        "value": "good"
+                    },
+                    {
+                        "key": "ip",
+                        "value": "127.0.0.8"
+                    },
+                    {
+                        "key": "id",
+                        "value": "497B9EC67354A28D62A98E82299871CC"
+                    }
+                ],
+                "key": "497B9EC67354A28D62A98E82299871CC",
+                "lookupname": "TEST_M",
+                "lookupuniquekey": "2^~TEST_M|497B9EC67354A28D62A98E82299871CC",
+                "tenantid": 2,
+                "tenantname": "novr3nonmssp",
+                "timestamp": "Feb 18, 2023 5:50:16 AM"
+            }
+        ]
     }
-  ]}
 }
 ```
 
@@ -2166,9 +2426,43 @@ Retrieves the entries stored in a specified lookup table.
 >### Entries:
 >|Key|Lookup Unique Key|Tenant Name|Timestamp|id|ip|reputation|
 >|---|---|---|---|---|---|---|
->| 158267F0BC6E7484E3C0F5964ABE9D2B | 2^~TEST_M\\|158267F0BC6E7484E3C0F5964ABE9D2B | novr3nonmssp | Feb 18, 2023 5:50:16 AM | 158267F0BC6E7484E3C0F5964ABE9D2B | 127.0.0.12 | good |
->| 175A9FFD55480ED376C992AC86ABE3D7 | 2^~TEST_M\\|175A9FFD55480ED376C992AC86ABE3D7 | novr3nonmssp | Feb 18, 2023 6:01:01 AM | 175A9FFD55480ED376C992AC86ABE3D7 | 127.0.0.50 | verybad |
+>| B5E3195FB4E1EB3BE797077CEE398C04 | 2^~TEST_M\|B5E3195FB4E1EB3BE797077CEE398C04 | novr3nonmssp | Feb 18, 2023 5:50:16 AM | B5E3195FB4E1EB3BE797077CEE398C04 | 127.0.0.9 | bad |
+>| 497B9EC67354A28D62A98E82299871CC | 2^~TEST_M\|497B9EC67354A28D62A98E82299871CC | novr3nonmssp | Feb 18, 2023 5:50:16 AM | 497B9EC67354A28D62A98E82299871CC | 127.0.0.8 | good |
 
+
+
+
+### securonix-lookup-table-entries-delete
+***
+Deletes the entries from the lookup table.
+
+
+#### Base Command
+
+`securonix-lookup-table-entries-delete`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| lookup_unique_keys | Comma-separated list of lookup unique keys to delete. | Required | 
+| name | Name of the lookup table from which to delete the entries. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+```!securonix-lookup-table-entries-delete name=TEST_M lookup_unique_keys=2^~TEST_M|158267F0BC6E7484E3C0F5964ABE9D2B,2^~TEST_M|175A9FFD55480ED376C992AC86ABE3D7```
+
+##### Context Example
+```json
+{}
+```
+
+#### Human Readable Output
+
+>Successfully deleted following entries from TEST_M: 2^~TEST_M|158267F0BC6E7484E3C0F5964ABE9D2B, 2^~TEST_M|175A9FFD55480ED376C992AC86ABE3D7.
 
 ### securonix-lookup-table-entry-add
 ***
@@ -2184,21 +2478,20 @@ Add entries to the provided lookup table.
 | --- | --- | --- |
 | name | Lookup Table name to which the data needs to be added. | Required | 
 | tenant_name | Name of the tenant to which the lookup table belongs. This argument is required for MSSP users and if the scope of the lookup table is "Meta". | Optional | 
-| json_data | JSON formatted string containing the field names and values in the below format.<br/><br/>E.g. [{"field1": "Value1", "field2": "Value2"}, {"field1": "Value3", "field2": "Value4"}]. | Optional | 
-| file_entry_id | War room entry of the file. | Optional | 
+| json_data | JSON formatted string containing the field names and values in the below format. To specify an expiration date for an entry, add "expiryDate" key (in the format of "MM/DD/YYYY") in the respective JSON object.<br/><br/>E.g. [{"field1": "Value1", "field2": "Value2"}, {"field1": "Value3", "field2": "Value4"}]. | Optional | 
+| file_entry_id | War room entry of the file. To specify an expiration date for an entry, add "expiryDate" key (in the format of "MM/DD/YYYY") in the respective JSON object. | Optional | 
 
 
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!securonix-lookup-table-entry-add name="TEST_TABLE" json_data="[{\"id\": \"1\",\"ip\": \"127.0.0.1\",\"reputation\": \"bad\",\"expiryDate\":\"02/13/2023\"},{\"id\": \"2\",\"ip\": \"127.0.0.2\",\"reputation\": \"good\"}]"```
+#### Human Readable Output
 
-##### Command Example
-```!securonix-lookup-table-entry-add name=test_lookup file_entry_id=128@1f9c2de5-8006-4686-8a6a-cc0a17013434```
+>Entries added to  TEST_TABLE successfully
 
-##### Context Example
-```
-{}
-```
 
-##### Human Readable Output
-Entries added to  test_lookup successfully
+## Limitations
+  - The `opened` argument for fetching and listing incidents is currently not filtering only the opened incidents.
+    This is an open issue on the vendor side.

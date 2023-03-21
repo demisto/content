@@ -735,6 +735,8 @@ RESPONSE_LOOKUP_TABLE_ENTRIES_LIST = [
     }
 ]
 
+RESPONSE_DELETE_LOOKUP_ENTRIES_DELETE = 'Successfully deleted the given key(s)!'
+
 
 RESPONSE_GET_INCIDENT_WORKFLOW = {
     "status": "OK",
@@ -828,6 +830,23 @@ def get_mock_attachment_response():
     RESPONSE_GET_INCIDENT_ATTACHMENT_6_4._content = b'test file'
     return RESPONSE_GET_INCIDENT_ATTACHMENT_6_4
 
+
+DELETE_LOOKUP_TABLE_ENTRIES_INVALID_LOOKUP_NAME = [
+    {
+        "errorCode": 404,
+        "errorMessage": "lookupTableName doesn't exists. Please provide available lookupTableName.",
+        "errorType": "Functional"
+    }
+]
+
+DELETE_LOOKUP_TABLE_ENTRIES_INVALID_LOOKUP_KEYS = [
+    {
+        "errorCode": 404,
+        "errorMessage": "Error deleting the key! Please check the input params!key1",
+        "errorType": "Functional"
+    }
+]
+
 MIRROR_RESPONSE_GET_INCIDENT_ACTIVITY_HISTORY = {
     "status": "OK",
     "messages": [
@@ -894,3 +913,42 @@ MIRROR_ENTRIES = [
     {'type': None, 'category': None, 'contents': 'This is a comment', 'contentsFormat': None,
      'tags': ['comments', 'work_notes'], 'note': True, 'user': 'Admin'}
 ]
+
+MIRROR_RESPONSE_GET_INCIDENT_ACTIVITY_HISTORY_ATTACHMENT = {
+    "status": "OK",
+    "messages": [
+        "Get activity stream details for incident ID [5010212504]"
+    ],
+    "result": {
+        "activityStreamData": [
+            {
+                "caseid": "1234",
+                "actiontaken": "CREATED",
+                "status": "Open",
+                "comment": [
+                    {
+                        "Comments": "Incident created while executing playbook - ServiceNow - Create Incident"
+                    }
+                ],
+                "eventTime": "Feb 22, 2023 8:39:50 PM",
+                "username": "Admin Admin",
+                "currentassignee": "API_TEST_SS",
+                "commentType": [
+                    "text"
+                ],
+                "currWorkflow": "SOCTeamReview",
+                "isPlayBookOutAvailable": False,
+                "creator": "admin"
+            },
+            {
+                "caseid": "1234",
+                "actiontaken": "ATTACHED_FILE",
+                "eventTime": "Feb 23, 2023 9:45:53 AM",
+                "attachment": "test.txt",
+                "username": "Crest Team",
+                "attachmentType": "doc",
+                "isPlayBookOutAvailable": False
+            }
+        ]
+    }
+}
