@@ -46,15 +46,15 @@ script:
             - "True"
             - "False"
           required: true
-        - description: timestamp to start.
+        - description: Timestamp indicating when to start fetching events.
           isArray: false
           name: from
           required: true
-        - description: timestamp to end.
+        - description: Timestamp indicating when to stop fetching events.
           isArray: false
           name: to
           required: true
-        - description: maximum events to fetch.
+        - description: Maximum number of events to fetch.
           defaultValue: 1000
           isArray: false
           name: limit
@@ -65,7 +65,7 @@ script:
           name: offset
           required: true
       deprecated: false
-      description: "this command is for debugging purposes."
+      description: "Gets events. This command is for debugging purposes."
       execution: false
       name: bloxone-td-event-collector-get-events
   isfetch: false

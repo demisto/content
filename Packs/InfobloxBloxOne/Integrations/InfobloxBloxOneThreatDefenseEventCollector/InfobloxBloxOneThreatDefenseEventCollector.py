@@ -18,7 +18,7 @@ class BloxOneTDEventCollectorClient(BaseClient):
 
     def fetch_events(self, from_ts: int, to_ts: int, limit: int = 1000, offset: int = 0) -> list[dict]:
         def map_time(event: dict) -> dict:
-            event['_time'] = event['event_time']
+            event['_time'] = event.get('event_time')
             return event
 
         events = self._http_request('GET', '/api/dnsdata/v2/dns_event',
@@ -55,7 +55,7 @@ def get_events_command(client: BloxOneTDEventCollectorClient, args: dict):
 
 def parse_from_ts_from_params(first_fetch_str: str = None) -> int:
     from_date_time = dateparser.parse(first_fetch_str or '1 day', settings={'TIMEZONE': 'UTC'})
-    if from_date_time is None:
+    if not from_date_time:
         raise DemistoException('Invalid date format in "First fetch time interval" parameter')
     return int(from_date_time.timestamp())
 
@@ -77,7 +77,7 @@ def main():
     )
 
     command = demisto.command()
-    results: Optional[CommandResults | str] = None
+    results: CommandResults | str | None = None
     try:
         if command == 'test-module':
             results = command_test_module(client, params)
@@ -94,7 +94,7 @@ def main():
         auth_error = isinstance(e, DemistoException) and getattr(e, 'res') is not None\
             and e.res.status_code == 401  # pylint: disable=E1101
         if auth_error:
-            error_msg = 'authentication error'
+            error_msg = 'authentication error please check your API key and try again.'
         else:
             error_msg = f'an error occurred while executing command {command}\nerror: {e}'
 
