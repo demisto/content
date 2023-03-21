@@ -1,9 +1,15 @@
-id: Test Playbook - Cortex XDR - False Positive Incident Handling
-version: -1
+id: 25b1ef4b-97a8-4927-86d4-ddc0d893c844
+version: 138
+vcShouldKeepItemLegacyProdMachine: false
 name: Test Playbook - Cortex XDR - False Positive Incident Handling
 description: |-
   This playbook tests the 'Cortex XDR - False Positive Incident Handling' playbook which is part of the 'Malware Investigation and Response' pack.
-  The testing flow is based on Cortex XDR incident number 54.
+
+  Following are the tests conducted in the playbook:
+  1- Incident Status.
+  2- Incident close note.
+  3. Verify that the XSOAR indicators include the file hashes of the test incident and correctly tag them.
+  4- Verify that the XDR allow list includes the file hashes of the test incident.
 starttaskid: "0"
 tasks:
   "0":
@@ -16,7 +22,6 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "32"
@@ -44,7 +49,9 @@ tasks:
       id: 6eebd48a-4a31-4a46-8f8e-9861faacf644
       version: -1
       name: Delete Context
-      description: The task deletes all of the context data. Having a clean beginning to a test playbook ensures that a test can be sterile and that unrelated issues can be eliminated.
+      description: The task deletes all of the context data. Having a clean beginning
+        to a test playbook ensures that a test can be sterile and that unrelated issues
+        can be eliminated.
       scriptName: DeleteContext
       type: regular
       iscommand: false
@@ -116,7 +123,8 @@ tasks:
       id: 0349926e-9011-4eef-8724-d138ea6936fc
       version: -1
       name: Wait for incident to be created
-      description: 'This task delays the playbook flow progress for 15 seconds to ensure that the incident has been created before moving on. '
+      description: 'This task delays the playbook flow progress for 15 seconds to
+        ensure that the incident has been created before moving on. '
       scriptName: Sleep
       type: regular
       iscommand: false
@@ -154,7 +162,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "171"
@@ -182,7 +189,8 @@ tasks:
       id: 2c7351bb-4408-4a01-8ef1-7e8a9aefca9c
       version: -1
       name: Set playbook for new incident
-      description: Assign the 'Cortex XDR - False Positive Incident Handling' playbook to the newly created test incident.
+      description: Assign the 'Cortex XDR - False Positive Incident Handling' playbook
+        to the newly created test incident.
       script: Builtin|||setPlaybook
       type: regular
       iscommand: true
@@ -220,7 +228,9 @@ tasks:
       id: 918b1e3b-0596-4c16-852f-a1245b6acae6
       version: -1
       name: Create New Incident For Testing
-      description: 'As part of this task, an incident will be created for testing purposes, which includes all the incident fields that are essential to the testing process. '
+      description: 'As part of this task, an incident will be created for testing
+        purposes, which includes all the incident fields that are essential to the
+        testing process. '
       script: Builtin|||createNewIncident
       type: regular
       iscommand: true
@@ -238,7 +248,8 @@ tasks:
       externalsystemid:
         simple: "54"
       filesha256:
-        simple: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855, cd6e0d42f2f24b1202d1d9ce7976ceb5dc2258c20989074b557b0a5eaf6185a0, 37dda78756d7ab9e446f04816451c8946ab2fd6672cdfdfd731c38020b44f3e4
+        simple: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855,
+          cd6e0d42f2f24b1202d1d9ce7976ceb5dc2258c20989074b557b0a5eaf6185a0, 37dda78756d7ab9e446f04816451c8946ab2fd6672cdfdfd731c38020b44f3e4
       name:
         simple: Test Incident for Cortex XDR - False Positive Incident Handling
       type:
@@ -268,7 +279,8 @@ tasks:
     task:
       id: f5ffcc11-bd19-4f4c-8973-1fc35ff772ab
       version: -1
-      name: Complete Data Collection Task - Choose the marked IOC to be added to approve list
+      name: Complete Data Collection Task - Choose the marked IOC to be added to approve
+        list
       description: |
         Complete the 'Choose the marked IOC to be added to approve list' task (task number 14) of the 'Cortex XDR - False Positive Incident Handling' playbook automatically.
       scriptName: WaitAndCompleteTask
@@ -316,7 +328,10 @@ tasks:
       id: a7be3dad-cda0-45c2-8145-9a7eb0fee17a
       version: -1
       name: Completed Task Manually - Approve Un-isolation
-      description: Complete the 'Approve unisolation' task (task number 5) of the 'Cortex XDR - False Positive Incident Handling' playbook automatically. In order to run the 'Cortex XDR - Unisolate Endpoint' sub-playbook, the task is configured to select the 'Yes' replay option.
+      description: Complete the 'Approve unisolation' task (task number 5) of the
+        'Cortex XDR - False Positive Incident Handling' playbook automatically. In
+        order to run the 'Cortex XDR - Unisolate Endpoint' sub-playbook, the task
+        is configured to select the 'Yes' replay option.
       scriptName: WaitAndCompleteTask
       type: regular
       iscommand: false
@@ -367,7 +382,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "175"
@@ -396,7 +410,8 @@ tasks:
       id: 28c88d35-6740-4ce1-884d-bd8d47128e6f
       version: -1
       name: Get Indicators Details
-      description: 'Return details of the XSOAR indicators that match the hashes stored in the ''filesha256'' incident field. '
+      description: 'Return details of the XSOAR indicators that match the hashes stored
+        in the ''filesha256'' incident field. '
       scriptName: SearchIndicator
       type: regular
       iscommand: false
@@ -408,7 +423,8 @@ tasks:
       add_fields_to_context:
         simple: tags
       query:
-        simple: value:${foundIncidents.CustomFields.filesha256.[0]} or value:${foundIncidents.CustomFields.filesha256.[1]} or value:${foundIncidents.CustomFields.filesha256.[2]}
+        simple: value:${foundIncidents.CustomFields.filesha256.[0]} or value:${foundIncidents.CustomFields.filesha256.[1]}
+          or value:${foundIncidents.CustomFields.filesha256.[2]}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -569,7 +585,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "202"
@@ -600,7 +615,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "165"
@@ -631,7 +645,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "184"
@@ -659,7 +672,14 @@ tasks:
       id: feac293a-a2c5-4b90-8316-dfa8c732ed24
       version: -1
       name: Verify indicators appear in the XDR allow list
-      description: "Ensure that the SHA256 file hashes stored in the 'filesha256' incident field are permitted in Cortex XDR by trying to add them to the Cortex XDR allowlist again. \n\nSince the file hashes were already added to the XDR allowlist by the 'Create IOCs in Cortex XDR - Approved Hashes' task of the tested playbook, this task is expected to return an error. \n\nIn cases where this task does not return an error but successfully adds the files to the Cortex XDR allowlist, it means that the 'Create IOCs in Cortex XDR - Approved Hashed' task of the tested playbook failed."
+      description: "Ensure that the SHA256 file hashes stored in the 'filesha256'
+        incident field are permitted in Cortex XDR by trying to add them to the Cortex
+        XDR allowlist again. \n\nSince the file hashes were already added to the XDR
+        allowlist by the 'Create IOCs in Cortex XDR - Approved Hashes' task of the
+        tested playbook, this task is expected to return an error. \n\nIn cases where
+        this task does not return an error but successfully adds the files to the
+        Cortex XDR allowlist, it means that the 'Create IOCs in Cortex XDR - Approved
+        Hashed' task of the tested playbook failed."
       script: Cortex XDR - IR|||xdr-allowlist-files
       type: regular
       iscommand: true
@@ -699,7 +719,9 @@ tasks:
       id: b604e16b-77b6-4988-8cbd-9d1ff9cf19a4
       version: -1
       name: Complete Data Collection Task - Create IOCs in Cortex XDR - Approved Hashes
-      description: Complete the 'Create IOCs in Cortex XDR - Approved Hashes' task (task number 71) of the 'Cortex XDR - False Positive Incident Handling' playbook automatically.
+      description: Complete the 'Create IOCs in Cortex XDR - Approved Hashes' task
+        (task number 71) of the 'Cortex XDR - False Positive Incident Handling' playbook
+        automatically.
       scriptName: WaitAndCompleteTask
       type: regular
       iscommand: false
@@ -763,7 +785,8 @@ tasks:
       key:
         simple: Indicators to Allow.Answers.0
       value:
-        simple: '["e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855", "cd6e0d42f2f24b1202d1d9ce7976ceb5dc2258c20989074b557b0a5eaf6185a0", "37dda78756d7ab9e446f04816451c8946ab2fd6672cdfdfd731c38020b44f3e4"]'
+        simple: '["e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "cd6e0d42f2f24b1202d1d9ce7976ceb5dc2258c20989074b557b0a5eaf6185a0", "37dda78756d7ab9e446f04816451c8946ab2fd6672cdfdfd731c38020b44f3e4"]'
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -788,7 +811,8 @@ tasks:
       id: e6998b89-3685-4020-8fc9-a7c4e87fe2e1
       version: -1
       name: get the relevant error entry and Check WarRoom Notes
-      description: 'Get the error(s) associated with the previous task entries if exists. '
+      description: 'Get the error(s) associated with the previous task entries if
+        exists. '
       scriptName: GetErrorsFromEntry
       type: regular
       iscommand: false
@@ -823,7 +847,9 @@ tasks:
       id: 591a36ce-3d96-41d0-8045-3840a2670b60
       version: -1
       name: Check the Error Entry Message
-      description: 'Ensure that the Error Entry Message contains "All hashes have already been added to the allow or block list". This means that the indicators have been added to the XDR allow list. '
+      description: 'Ensure that the Error Entry Message contains "All hashes have
+        already been added to the allow or block list". This means that the indicators
+        have been added to the XDR allow list. '
       type: condition
       iscommand: false
       brand: ""
@@ -907,7 +933,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "199"
@@ -1035,7 +1060,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "202"
@@ -1066,7 +1090,6 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1091,7 +1114,8 @@ tasks:
       id: d1e6bd34-a6f8-4a78-86be-04ad447dbd72
       version: -1
       name: Wait for incident to close
-      description: 'Ensure that the playbook is complete before starting tests by waiting until the final task (Close XSOAR incident) is completed. '
+      description: 'Ensure that the playbook is complete before starting tests by
+        waiting until the final task (Close XSOAR incident) is completed. '
       scriptName: WaitAndCompleteTask
       type: regular
       iscommand: false
@@ -1137,7 +1161,8 @@ tasks:
       id: 504c04a7-d89c-4062-81ef-ec3bd1d76c7a
       version: -1
       name: Verify CloseReason
-      description: 'Verify that the ''closeReason'' incident field was filled out correctly. '
+      description: 'Verify that the ''closeReason'' incident field was filled out
+        correctly. '
       type: condition
       iscommand: false
       brand: ""
@@ -1253,7 +1278,9 @@ tasks:
       id: 60863741-5b8a-4026-8706-6eaca0df4264
       version: -1
       name: Remove indicators from XDR allow list
-      description: 'This task removes the SHA256 file hashes from the Cortex XDR allow list, as they were added by the test playbook instead of the ''Cortex XDR - False Positive Incident Handling'' playbook. '
+      description: 'This task removes the SHA256 file hashes from the Cortex XDR allow
+        list, as they were added by the test playbook instead of the ''Cortex XDR
+        - False Positive Incident Handling'' playbook. '
       script: Cortex XDR - IR|||xdr-remove-allowlist-files
       type: regular
       iscommand: true
@@ -1290,7 +1317,9 @@ tasks:
       id: 21749081-573d-4fff-8f3e-c5551e24c58b
       version: -1
       name: Complete Data Collection Task - Cortex XDR - Unisolate Endpoint
-      description: Complete the 'Create IOCs in Cortex XDR - Approved Hashes' task (task number 71) of the 'Cortex XDR - False Positive Incident Handling' playbook automatically.
+      description: Complete the 'Create IOCs in Cortex XDR - Approved Hashes' task
+        (task number 71) of the 'Cortex XDR - False Positive Incident Handling' playbook
+        automatically.
       scriptName: WaitAndCompleteTask
       type: regular
       iscommand: false
@@ -1348,4 +1377,3 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 6.8.0
