@@ -1,5 +1,18 @@
+import time
+import sys
+
 import demistomock as demisto
 import requests_mock
+
+import pytest
+
+
+@pytest.fixture(autouse=True)
+def mock_sleep(monkeypatch):
+    def sleep(seconds):
+        pass
+
+    monkeypatch.setattr(time, "sleep", sleep)
 
 
 def test_upload_sample_command(mocker):
@@ -153,3 +166,29 @@ def test_rate_limit(requests_mock, mocker):
 
     assert requests_mock.call_count == 2
     assert response == {"foo": "bar"}
+
+
+def test_rate_limit_max_reties(requests_mock, mocker):
+    mocker.patch.object(demisto, "params", return_value={"api_key": "123456", "server": "https://cloud.vmray.com/"})
+    mocker.patch.object(sys, "exit", return_value=None)
+    requests_mock.get(
+        "https://cloud.vmray.com/rest/analysis/123",
+        [
+            {
+                "status_code": 429,
+                "json": {
+                    "error_msg": "Request was throttled. Expected available in 60 seconds.",
+                    "result": "error"
+                },
+                "headers": {
+                    "Retry-After": "60"
+                }
+            }
+        ]
+    )
+
+    from VMRay import http_request
+    response = http_request("GET", "analysis/123")
+
+    assert requests_mock.call_count == 11
+    assert response["error_msg"] == "Request was throttled. Expected available in 60 seconds."
