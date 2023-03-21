@@ -9,12 +9,14 @@ import pytest
 import demistomock as demisto
 from CommonServerPython import Common, tableToMarkdown, pascalToSpace
 from CoreIRApiModule import CoreClient
-from CoreIRApiModule import add_tag_to_endpoints_command, remove_tag_from_endpoints_command
+from CoreIRApiModule import add_tag_to_endpoints_command, remove_tag_from_endpoints_command, quarantine_files_command, \
+    isolate_endpoint_command
+from Packs.Base.Scripts.CommonServerPython.CommonServerPython import DemistoException
+from contextlib import nullcontext as does_not_raise
 
 test_client = CoreClient(
     base_url='https://test_api.com/public_api/v1', headers={}
 )
-
 
 Core_URL = 'https://api.xdrurl.com'
 
@@ -77,7 +79,7 @@ def test_get_endpoints(requests_mock):
 
     res = get_endpoints_command(client, args)
     assert get_endpoints_response.get('reply').get('endpoints') == \
-        res.outputs['CoreApiModule.Endpoint(val.endpoint_id == obj.endpoint_id)']
+           res.outputs['CoreApiModule.Endpoint(val.endpoint_id == obj.endpoint_id)']
 
 
 def test_get_all_endpoints_using_limit(requests_mock):
@@ -541,7 +543,7 @@ def test_allowlist_files_command_with_more_than_one_file(requests_mock):
     test_data = load_test_data('test_data/blocklist_allowlist_files_success.json')
     expected_command_result = {
         'CoreApiModule.allowlist.added_hashes.fileHash(val.fileHash == obj.fileHash)':
-        test_data['multi_command_args']['hash_list']
+            test_data['multi_command_args']['hash_list']
     }
     requests_mock.post(f'{Core_URL}/public_api/v1/hash_exceptions/allowlist/', json=test_data['api_response'])
 
@@ -2981,52 +2983,52 @@ class TestPollingCommands:
     'args, expected_filters, func, url_suffix, expected_human_readable',
     [
         (
-            {'endpoint_ids': '1,2', 'tag': 'test'},
-            [{'field': 'endpoint_id_list', 'operator': 'in', 'value': ['1', '2']}],
-            add_tag_to_endpoints_command,
-            '/tags/agents/assign/',
-            "Successfully added tag test to endpoint(s) ['1', '2']"
+                {'endpoint_ids': '1,2', 'tag': 'test'},
+                [{'field': 'endpoint_id_list', 'operator': 'in', 'value': ['1', '2']}],
+                add_tag_to_endpoints_command,
+                '/tags/agents/assign/',
+                "Successfully added tag test to endpoint(s) ['1', '2']"
         ),
         (
-            {'endpoint_ids': '1,2', 'tag': 'test', 'status': 'disconnected'},
-            [{'field': 'endpoint_status', 'operator': 'IN', 'value': ['disconnected']}],
-            add_tag_to_endpoints_command,
-            '/tags/agents/assign/',
-            "Successfully added tag test to endpoint(s) ['1', '2']"
+                {'endpoint_ids': '1,2', 'tag': 'test', 'status': 'disconnected'},
+                [{'field': 'endpoint_status', 'operator': 'IN', 'value': ['disconnected']}],
+                add_tag_to_endpoints_command,
+                '/tags/agents/assign/',
+                "Successfully added tag test to endpoint(s) ['1', '2']"
         ),
         (
-            {'endpoint_ids': '1,2', 'tag': 'test', 'hostname': 'hostname', 'group_name': 'test_group'},
-            [
-                {'field': 'group_name', 'operator': 'in', 'value': ['test_group']},
-                {'field': 'hostname', 'operator': 'in', 'value': ['hostname']}
-            ],
-            add_tag_to_endpoints_command,
-            '/tags/agents/assign/',
-            "Successfully added tag test to endpoint(s) ['1', '2']"
+                {'endpoint_ids': '1,2', 'tag': 'test', 'hostname': 'hostname', 'group_name': 'test_group'},
+                [
+                    {'field': 'group_name', 'operator': 'in', 'value': ['test_group']},
+                    {'field': 'hostname', 'operator': 'in', 'value': ['hostname']}
+                ],
+                add_tag_to_endpoints_command,
+                '/tags/agents/assign/',
+                "Successfully added tag test to endpoint(s) ['1', '2']"
         ),
         (
-            {'endpoint_ids': '1,2', 'tag': 'test'},
-            [{'field': 'endpoint_id_list', 'operator': 'in', 'value': ['1', '2']}],
-            remove_tag_from_endpoints_command,
-            '/tags/agents/remove/',
-            "Successfully removed tag test from endpoint(s) ['1', '2']"
+                {'endpoint_ids': '1,2', 'tag': 'test'},
+                [{'field': 'endpoint_id_list', 'operator': 'in', 'value': ['1', '2']}],
+                remove_tag_from_endpoints_command,
+                '/tags/agents/remove/',
+                "Successfully removed tag test from endpoint(s) ['1', '2']"
         ),
         (
-            {'endpoint_ids': '1,2', 'tag': 'test', 'platform': 'linux'},
-            [{'field': 'platform', 'operator': 'in', 'value': ['linux']}],
-            remove_tag_from_endpoints_command,
-            '/tags/agents/remove/',
-            "Successfully removed tag test from endpoint(s) ['1', '2']"
+                {'endpoint_ids': '1,2', 'tag': 'test', 'platform': 'linux'},
+                [{'field': 'platform', 'operator': 'in', 'value': ['linux']}],
+                remove_tag_from_endpoints_command,
+                '/tags/agents/remove/',
+                "Successfully removed tag test from endpoint(s) ['1', '2']"
         ),
         (
-            {'endpoint_ids': '1,2', 'tag': 'test', 'isolate': 'isolated', 'alias_name': 'alias_name'},
-            [
-                {'field': 'alias', 'operator': 'in', 'value': ['alias_name']},
-                {'field': 'isolate', 'operator': 'in', 'value': ['isolated']}
-            ],
-            remove_tag_from_endpoints_command,
-            '/tags/agents/remove/',
-            "Successfully removed tag test from endpoint(s) ['1', '2']"
+                {'endpoint_ids': '1,2', 'tag': 'test', 'isolate': 'isolated', 'alias_name': 'alias_name'},
+                [
+                    {'field': 'alias', 'operator': 'in', 'value': ['alias_name']},
+                    {'field': 'isolate', 'operator': 'in', 'value': ['isolated']}
+                ],
+                remove_tag_from_endpoints_command,
+                '/tags/agents/remove/',
+                "Successfully removed tag test from endpoint(s) ['1', '2']"
         )
     ]
 )
@@ -3103,3 +3105,53 @@ def test_endpoint_alias_change_command__no_filters(mocker):
     with pytest.raises(Exception) as e:
         endpoint_alias_change_command(client=client, new_alias_name='test')
     assert e.value.message == "Please provide at least one filter."
+
+
+GRACEFULLY_FAILING = [pytest.param(quarantine_files_command, {
+    "endpoint_id_list": "123",
+    "file_path": "C:\\Users\\test\\Desktop\\test_x64.msi",
+    "file_hash": "123"
+},
+                                   {
+                                       "err_msg": "An error occurred while processing XDR public API - No endpoint was found "
+                                                  "for creating the requested action",
+                                       "status_code": 500},
+                                   False,
+                                   id="Success"
+                                   ),
+                      pytest.param(isolate_endpoint_command, {
+                          "endpoint_id": "1111"
+                      },
+                                   {"err_msg": "Other error",
+                                    "status_code": 401},
+                                   True,
+                                   id="Failure"
+                                   )]
+
+
+@pytest.mark.parametrize('command_to_run, args, error, raises', GRACEFULLY_FAILING)
+def test_core_commands_raise_exception(mocker, command_to_run, args, error, raises):
+    """
+    Given:
+    - XDR API error.
+    when:
+    - executing the isolate-endpoint-command and quarantine-files-command command
+    then:
+    - make sure the correct error message wil raise.
+    """
+
+    class MockException:
+        def __init__(self, status_code) -> None:
+            self.status_code = status_code
+
+    client = CoreClient(base_url=f'{Core_URL}/public_api/v1/', headers={})
+    mocker.patch.object(client, '_http_request',
+                        side_effect=DemistoException(error.get("err_msg"), res=MockException(error.get('status_code'))))
+
+    if raises:
+        with pytest.raises(Exception) as e:
+            command_to_run(client, args)
+            assert "Other error" in str(e)
+    else:
+        assert command_to_run(client, args).readable_output == 'The operation executed is not supported on the given ' \
+                                                               'machine.'
