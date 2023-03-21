@@ -1755,7 +1755,7 @@ def get_contacts(limit, target_mailbox=None):     # pragma: no cover
 
     for contact in account.contacts.all()[:int(limit)]:  # pylint: disable=E1101
         contacts.append(parse_contact(contact))
-    return get_entry_for_object('Email contacts for %s' % target_mailbox,
+    return get_entry_for_object('Email contacts for %s' % target_mailbox or ACCOUNT_EMAIL,
                                 'Account.Email(val.Address == obj.originMailbox).EwsContacts',
                                 contacts)
 
