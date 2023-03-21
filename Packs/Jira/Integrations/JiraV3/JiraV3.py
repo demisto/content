@@ -21,6 +21,12 @@ OAUTH2_AUTH_NOT_APPLICABLE_ERROR = ('This command is not applicable to run with 
 ID_OR_KEY_MISSING_ERROR = 'Please provide either the issue ID or key.'
 EPIC_ID_OR_KEY_MISSING_ERROR = 'Please provide either the epic ID or key.'
 JIRA_RESOLVE_REASON = 'Issue was marked as "Done"'
+MIRROR_DIRECTION_DICT = {
+    'None': None,
+    'Incoming': 'In',
+    'Outgoing': 'Out',
+    'Incoming And Outgoing': 'Both'
+}
 # Scopes
 SCOPES = [
     'write:jira-work',
@@ -1902,6 +1908,9 @@ def edit_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandR
     Returns:
         CommandResults: CommandResults to return to XSOAR.
     """
+    # TODO If the action is rewrite, then use the same issue fields object as returned by get_issue_fields_for_create,
+    # and if the action is append, the use get_issue_fields_for_update, this way, we will also be able to change the parent issue
+    # of a subtask.
     issue_id_or_key = args.get('issue_id', args.get('issue_key', ''))
     if not issue_id_or_key:
         raise DemistoException(ID_OR_KEY_MISSING_ERROR)
@@ -1918,6 +1927,8 @@ def edit_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandR
     action = args.get('action', 'rewrite')
     update_fields = get_issue_fields_for_update(
         issue_args=args, issue_update_mapper=client.ISSUE_FIELDS_UPDATE_MAPPER, action=action)
+    # issue_fields = get_issue_fields_for_create(issue_args=args, issue_fields_mapper=client.ISSUE_FIELDS_CREATE_MAPPER)
+    # client.edit_issue(issue_id_or_key=issue_id_or_key, json_data=issue_fields)
     client.edit_issue(issue_id_or_key=issue_id_or_key, json_data=update_fields)
     demisto.log(f'Issue {issue_id_or_key} was updated successfully')
     res = client.get_issue(issue_id_or_key=issue_id_or_key)
@@ -2906,9 +2917,8 @@ def test_module() -> str:
 
 # Fetch Incidents
 def fetch_incidents(client: JiraBaseClient, issue_field_to_fetch_from: str, fetch_query: str, id_offset: int,
-                    fetch_attachments: bool, fetch_comments: bool, max_fetch_incidents: int,
-                    first_fetch_interval: str, incoming_mirror: bool, outgoing_mirror: bool,
-                    comment_tag: str, attachment_tag: str) -> List[Dict[str, Any]]:
+                    fetch_attachments: bool, fetch_comments: bool, mirror_direction: str, max_fetch_incidents: int,
+                    first_fetch_interval: str, comment_tag: str, attachment_tag: str) -> List[Dict[str, Any]]:
     """This function is the entry point of fetching incidents.
 
     Args:
@@ -2921,8 +2931,7 @@ def fetch_incidents(client: JiraBaseClient, issue_field_to_fetch_from: str, fetc
         max_fetch_incidents (int): The maximum number of incidents to fetch per fetch.
         first_fetch_interval (str): The first fetch interval to fetch from if the fetch timestamp is empty,
         and we are fetching using created time.
-        incoming_mirror (bool): Whether incoming mirroring is configured or not.
-        outgoing_mirror (bool): Whether outgoing mirroring is configured or not.
+        mirror_direction (str): The mirroring direction.
         comment_tag (str): The comment tag.
         attachment_tag (str): The attachment tag.
 
@@ -2963,7 +2972,7 @@ def fetch_incidents(client: JiraBaseClient, issue_field_to_fetch_from: str, fetc
             remove_empty_custom_fields(issue=issue, issue_fields_id_to_name_mapping=query_res.get('names', {}))
             incidents.append(create_incident_from_issue(
                 client=client, issue=issue, fetch_attachments=fetch_attachments, fetch_comments=fetch_comments,
-                incoming_mirror=incoming_mirror, outgoing_mirror=outgoing_mirror,
+                mirror_direction=mirror_direction,
                 comment_tag=comment_tag,
                 attachment_tag=attachment_tag))
     # If we did no progress in terms of time (the created time stayed the same as the last fetch), we should keep the
@@ -3059,27 +3068,6 @@ def create_fetch_incidents_query(issue_field_to_fetch_from: str, fetch_query: st
     raise DemistoException('Could not create the proper fetch query')
 
 
-def get_mirror_type(incoming_mirror: bool, outgoing_mirror: bool) -> str | None:
-    """This function return the type of mirror to perform on a Jira incident.
-    NOTE: in order to not mirror an incident, the type should be None.
-
-    Args:
-        should_mirror_in (bool): If we should implement mirroring in
-        should_mirror_out (bool): If we should implement mirroring out
-
-    Returns:
-        str | None: The mirror type (Both, In, Out), or None if we should not mirror an incident.
-    """
-    mirror_type = None
-    if incoming_mirror and outgoing_mirror:
-        mirror_type = 'Both'
-    elif incoming_mirror:
-        mirror_type = 'In'
-    elif outgoing_mirror:
-        mirror_type = 'Out'
-    return mirror_type
-
-
 def get_comments_entries_for_fetched_incident(client: JiraBaseClient, issue_id_or_key: str) -> List[str]:
     """Return the comment entries for a fetched incident
 
@@ -3119,8 +3107,7 @@ def get_attachments_entries_for_fetched_incident(client: JiraBaseClient, attachm
 
 
 def create_incident_from_issue(client: JiraBaseClient, issue: Dict[str, Any], fetch_attachments: bool, fetch_comments: bool,
-                               incoming_mirror: bool, outgoing_mirror: bool,
-                               comment_tag: str, attachment_tag: str) -> Dict[str, Any]:
+                               mirror_direction: str, comment_tag: str, attachment_tag: str) -> Dict[str, Any]:
     """Create an incident from a Jira Issue.
 
     Args:
@@ -3128,8 +3115,7 @@ def create_incident_from_issue(client: JiraBaseClient, issue: Dict[str, Any], fe
         issue (Dict[str, Any]): The issue object to create the incident from.
         fetch_attachments (bool): Whether to fetch the attachments or not.
         fetch_comments (bool): Whether to fetch the comments or not.
-        incoming_mirror (bool): Whether incoming mirroring is configured or not.
-        outgoing_mirror (bool): Whether outgoing mirroring is configured or not.
+        mirror_direction (str): The mirroring direction.
         comment_tag (str): The comment tag.
         attachment_tag (str): The attachment tag.
 
@@ -3187,7 +3173,7 @@ def create_incident_from_issue(client: JiraBaseClient, issue: Dict[str, Any], fe
     else:
         labels.append({'type': 'comments', 'value': '[]'})
 
-    issue['mirror_direction'] = get_mirror_type(incoming_mirror, outgoing_mirror)
+    issue['mirror_direction'] = MIRROR_DIRECTION_DICT.get(mirror_direction, None)
 
     issue['mirror_tags'] = [
         comment_tag,
@@ -3406,6 +3392,7 @@ def main() -> None:
     # This is used for when issue_field_to_fetch_from is either, update date, created date, or status category change date,
     # it holds values such as: 3 days, 1 minute, 5 hours,...
     first_fetch_interval = params.get('first_fetch', DEFAULT_FIRST_FETCH_INTERVAL)
+    mirror_direction = params.get('mirror_direction', 'None')
     incoming_mirror = params.get("incoming_mirror", False)
     outgoing_mirror = params.get('outgoing_mirror', False)
     comment_tag = params.get('comment_tag', 'comment tag')
@@ -3481,8 +3468,7 @@ def main() -> None:
                 fetch_comments=fetch_comments,
                 max_fetch_incidents=arg_to_number(max_fetch) or DEFAULT_FETCH_LIMIT,
                 first_fetch_interval=first_fetch_interval,
-                incoming_mirror=argToBoolean(incoming_mirror),
-                outgoing_mirror=argToBoolean(outgoing_mirror),
+                mirror_direction=mirror_direction,
                 comment_tag=comment_tag,
                 attachment_tag=attachment_tag,
             ),
