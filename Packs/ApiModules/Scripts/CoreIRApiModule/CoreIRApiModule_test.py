@@ -12,7 +12,6 @@ from CoreIRApiModule import CoreClient
 from CoreIRApiModule import add_tag_to_endpoints_command, remove_tag_from_endpoints_command, quarantine_files_command, \
     isolate_endpoint_command
 from Packs.Base.Scripts.CommonServerPython.CommonServerPython import DemistoException
-from contextlib import nullcontext as does_not_raise
 
 test_client = CoreClient(
     base_url='https://test_api.com/public_api/v1', headers={}
@@ -3107,29 +3106,34 @@ def test_endpoint_alias_change_command__no_filters(mocker):
     assert e.value.message == "Please provide at least one filter."
 
 
-GRACEFULLY_FAILING = [pytest.param(quarantine_files_command, {
-    "endpoint_id_list": "123",
-    "file_path": "C:\\Users\\test\\Desktop\\test_x64.msi",
-    "file_hash": "123"
-},
-                                   {
-                                       "err_msg": "An error occurred while processing XDR public API - No endpoint was found "
-                                                  "for creating the requested action",
-                                       "status_code": 500},
-                                   False,
-                                   id="Success"
-                                   ),
-                      pytest.param(isolate_endpoint_command, {
-                          "endpoint_id": "1111"
-                      },
-                                   {"err_msg": "Other error",
-                                    "status_code": 401},
-                                   True,
-                                   id="Failure"
-                                   )]
+GRACEFULLY_FAILING = [
+    pytest.param(
+        quarantine_files_command,
+        {
+            "endpoint_id_list": "123",
+            "file_path": "C:\\Users\\test\\Desktop\\test_x64.msi",
+            "file_hash": "123",
+        },
+        {
+            "err_msg": "An error occurred while processing XDR public API - No endpoint "
+            "was found "
+            "for creating the requested action",
+            "status_code": 500,
+        },
+        False,
+        id="Success",
+    ),
+    pytest.param(
+        isolate_endpoint_command,
+        {"endpoint_id": "1111"},
+        {"err_msg": "Other error", "status_code": 401},
+        True,
+        id="Failure",
+    ),
+]
 
 
-@pytest.mark.parametrize('command_to_run, args, error, raises', GRACEFULLY_FAILING)
+@pytest.mark.parametrize("command_to_run, args, error, raises", GRACEFULLY_FAILING)
 def test_core_commands_raise_exception(mocker, command_to_run, args, error, raises):
     """
     Given:
@@ -3144,14 +3148,19 @@ def test_core_commands_raise_exception(mocker, command_to_run, args, error, rais
         def __init__(self, status_code) -> None:
             self.status_code = status_code
 
-    client = CoreClient(base_url=f'{Core_URL}/public_api/v1/', headers={})
-    mocker.patch.object(client, '_http_request',
-                        side_effect=DemistoException(error.get("err_msg"), res=MockException(error.get('status_code'))))
+    client = CoreClient(base_url=f"{Core_URL}/public_api/v1/", headers={})
+    mocker.patch.object(
+        client,
+        "_http_request",
+        side_effect=DemistoException(
+            error.get("err_msg"), res=MockException(error.get("status_code"))
+        ),
+    )
 
     if raises:
         with pytest.raises(Exception) as e:
             command_to_run(client, args)
             assert "Other error" in str(e)
     else:
-        assert command_to_run(client, args).readable_output == 'The operation executed is not supported on the given ' \
-                                                               'machine.'
+        assert (command_to_run(client, args).readable_output == "The operation executed is not supported on the given "
+            "machine.")

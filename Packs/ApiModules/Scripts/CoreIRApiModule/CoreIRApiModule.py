@@ -1241,7 +1241,16 @@ class AlertFilterArg:
 
 
 def catch_and_exit_gracefully(e):
-    if e.res.status_code == 500 and 'An error occurred while processing XDR public API - No endpoint was found for creating the requested action' in str(e):
+    """
+
+    Args:
+        e: DemistoException caught while running a command.
+
+    Returns:
+        CommandResult if the error is internal XDR error, else, the exception.
+    """
+    if e.res.status_code == 500 and 'An error occurred while processing XDR public API - No endpoint was found for ' \
+                                    'creating the requested action' in str(e):
         return CommandResults(readable_output="The operation executed is not supported on the given machine.")
     else:
         raise e
