@@ -20,7 +20,7 @@ More playbooks are available in the following packs:
 - [CVE-2022-30190 - MSDT RCE](https://xsoar.pan.dev/docs/reference/playbooks/cve-2022-30190---msdt-rce)
 - [CVE-2022-3786 & CVE-2022-3602 - OpenSSL X.509 Buffer Overflows](https://xsoar.pan.dev/docs/reference/playbooks/cve-2022-3786--cve-2022-3602---open-ssl-x509-buffer-overflows)
 - [CVE-2022-41040 & CVE-2022-41082 - ProxyNotShell](https://xsoar.pan.dev/docs/reference/playbooks/cve-2022-41040--cve-2022-41082---proxy-not-shell)
-- [CVE-2023-23397 - Microsoft Outlook EoP](https://xsoar.pan.dev/docs/reference/playbooks/cve-2023-23397---microsoft-outlook-eop)
+- [CVE-2023-23397 - Microsoft Outlook EoP](https://cortex.marketplace.pan.dev/marketplace/details/CVE_2023_23397__Microsoft_Outlook_EoP/)
 
 ##### How to enable it?
 
