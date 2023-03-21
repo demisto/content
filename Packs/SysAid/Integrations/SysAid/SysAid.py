@@ -1,13 +1,18 @@
+register_module_line('SysAid', 'start', __line__())
 import urllib3
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
-from CommonServerUserPython import *  # noqa
+
+import re
+import os
+import mimetypes
+from datetime import datetime
+
 
 import requests
 from typing import Dict, Any, Tuple, Callable
 
 # Disable insecure warnings
 urllib3.disable_warnings()
+
 
 ''' CONSTANTS '''
 
@@ -27,6 +32,7 @@ DEFAULT_PAGE_SIZE = 100
 DEFAULT_PAGE_NUMBER = 1
 MAX_INCIDENTS_TO_FETCH = 200
 FETCH_DEFAULT_TIME = '3 days'
+
 
 ''' CLIENT CLASS '''
 
@@ -102,10 +108,9 @@ class Client(BaseClient):
         return response
 
     def service_record_list_request(self, record_type: str, fields: str = None, offset: int = None, limit: int = None,
-                                    ids: List[str] = None, archive: int = None, filters: Dict[str, Any] = None):
+                                    ids: List[str] = None, archive: int = None, filters: Dict[str, Any] = None, ):
         params = assign_params(type=record_type, fields=fields, offset=offset, limit=limit, ids=ids, archive=archive)
         params.update(filters or {})
-
         response = self._http_request('GET', 'sr', params=params, cookies=self._cookies)
 
         return response
@@ -160,8 +165,92 @@ class Client(BaseClient):
                                       ok_codes=(200, 400))
         return response
 
+    def service_record_attach_file_request(self, sr_id: str, file_id: str):
+        # Get file info
+        file_data, file_size, file_name = read_file(file_id)
+        file_type = get_content_type(file_name)
+
+        response = self._http_request('POST', f'sr/{sr_id}/attachment', files={'file': (file_name, file_data, file_type)},
+                                      cookies=self._cookies, resp_type='response')
+
+        return response
+
+    def service_record_delete_file_request(self, sr_id: str, file_id: str):
+        data = {'fileId': f'{file_id}'}
+
+        response = self._http_request('DELETE', f'sr/{sr_id}/attachment', json_data=data, cookies=self._cookies,
+                                      resp_type='response')
+
+        return response
+
+    def service_record_get_request(self, sr_id: str, fields: str = None):
+        params = assign_params(fields=fields)
+        response = self._http_request('GET', f'sr/{sr_id}', params=params, cookies=self._cookies)
+
+        return response
+
+    def service_record_add_note_request(self, sr_id: str, note: str, username: str):
+        now = datetime.now().strftime('%s')
+        now_ms = f'{now}000'
+
+        data = {
+            "id": f"{sr_id}",
+            "info": [
+                {
+                    "key": "notes",
+                    "value": [
+                        {
+                            "userName": f"{username}",
+                            "createDate": f"{now_ms}",
+                            "text": f"{note}"
+                        }
+                    ]
+                }
+            ]
+        }
+        response = self._http_request('PUT', f'sr/{sr_id}', json_data=data, cookies=self._cookies, resp_type='response')
+
+        return response
+
 
 ''' HELPER FUNCTIONS '''
+
+
+def read_file(file_id: str) -> Tuple[bytes, int, str]:
+    """
+    Reads file that was uploaded to War Room.
+
+    :type file_id: ``str``
+    :param file_id: The id of uploaded file to War Room
+
+    :return: data, size of the file in bytes and uploaded file name.
+    :rtype: ``bytes``, ``int``, ``str``
+    """
+    try:
+        file_info = demisto.getFilePath(file_id)
+        with open(file_info['path'], 'rb') as file_data:
+            data = file_data.read()
+            file_size = os.path.getsize(file_info['path'])
+            return data, file_size, file_info['name']
+    except Exception as e:
+        raise Exception(f'Unable to read file with id {file_id}', e)
+
+
+def get_content_type(file_name):
+    """Get the correct content type for the POST request.
+
+    Args:
+        file_name: file name
+
+    Returns:
+        the content type - image with right type for images , and general for other types..
+    """
+    file_type = None
+    if not file_name:
+        demisto.debug("file name was not suplied, uploading with general type")
+    else:
+        file_type, _ = mimetypes.guess_type(file_name)
+    return file_type or '*/*'
 
 
 def create_readable_response(responses: Union[dict, List[dict], str], handle_one_response: Callable, remove_if_null: str = None) \
@@ -351,14 +440,17 @@ def set_returned_fields(fields: str = None) -> Optional[str]:
 ''' FETCH HELPER FUNCTIONS '''
 
 
-def fetch_request(client: Client, fetch_types: str = None, include_archived: bool = False, included_statuses: str = None):
+def fetch_request(client: Client, fetch_types: str = None, include_archived: bool = False, included_statuses: str = None,
+                  first_fetch: str = None, filter_times: str = None):
     fetch_types = 'all' if not fetch_types or 'all' in fetch_types else fetch_types
     filters = {'status': included_statuses} if included_statuses else {}
+    if filter_times is not None:
+        filters.update({'insert_time': filter_times})
 
     response = client.service_record_list_request(record_type=fetch_types, archive=int(include_archived), filters=filters)
-
     responses = [response] if isinstance(response, dict) else response
     demisto.debug(f'The request returned {len(response)} service records.')
+
     return responses
 
 
@@ -631,6 +723,10 @@ def service_record_list_command(client: Client, args: Dict[str, Any]) -> Command
 
     custom_fields_keys = argToList(args.get('custom_fields_keys'))
     custom_fields_values = argToList(args.get('custom_fields_values'))
+
+    # SysAid expects the timestamp to be provided as `timestamp,timestamp`, but we are splitting on ,
+    # This breaks the inputs. Instead we are asking for `timestamp-timestamp` as input, then convert the - to ,
+    custom_fields_values = [re.sub(r"-", ",", value, 0, re.MULTILINE) for value in custom_fields_values]
     filters = extract_filters(custom_fields_keys, custom_fields_values)
 
     response = client.service_record_list_request(str(record_type), fields, offset, limit, ids, archive, filters)
@@ -748,6 +844,7 @@ def service_record_create_command(client: Client, args: Dict[str, Any]) -> Comma
     info = set_service_record_info(args)
 
     response = client.service_record_create_request(str(record_type), info, fields, template_id)
+
     headers = ['id', 'title', 'Status', 'Modify time', 'Service Record Type', 'notes']
     readable_response = create_readable_response(response, service_record_handler)
     command_results = CommandResults(
@@ -784,6 +881,80 @@ def service_record_delete_command(client: Client, args: Dict[str, Any]) -> Comma
     return command_results
 
 
+def service_record_attach_file_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    sr_id = str(args.get('id'))
+    file_id = str(args.get('file_id'))
+
+    response = client.service_record_attach_file_request(sr_id, file_id)
+    if response.status_code == 200:
+        msg = f'File uploaded to Service Record {sr_id} successfully.'
+    else:
+        msg = f'Error {response.status_code} occurred while uploading file to service record {id}.'
+
+    command_results = CommandResults(
+        outputs_prefix='SysAid.ServiceRecord',
+        readable_output=msg
+    )
+
+    return command_results
+
+
+def service_record_delete_file_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    sr_id = str(args.get('id'))
+    file_id = str(args.get('file_id'))
+
+    response = client.service_record_delete_file_request(sr_id, file_id)
+    if response.status_code == 200:
+        msg = f'File deleted from Service Record {sr_id} successfully.'
+    else:
+        msg = f'Error {response.status_code} occurred while deleting file from service record {id}.'
+
+    command_results = CommandResults(
+        outputs_prefix='SysAid.ServiceRecord',
+        readable_output=msg
+    )
+
+    return command_results
+
+
+def service_record_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    sr_id = str(args.get('id'))
+    fields = set_returned_fields(args.get('fields'))
+
+    response = client.service_record_get_request(sr_id, fields)
+    headers = ['id', 'title', 'Status', 'Modify time', 'Service Record Type', 'notes']
+    readable_response = create_readable_response(response, service_record_handler)
+    command_results = CommandResults(
+        outputs_prefix='SysAid.ServiceRecord',
+        outputs_key_field='id',
+        outputs=response,
+        raw_response=response,
+        readable_output=tableToMarkdown('Service Record Results:',
+                                        readable_response,
+                                        headers=headers,
+                                        removeNull=True,
+                                        headerTransform=pascalToSpace)
+    )
+
+    return command_results
+
+
+def service_record_add_note_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    sr_id = str(args.get('id'))
+    note = args.get('note')
+    username = args.get('username')
+
+    client.service_record_add_note_request(sr_id, note, username)
+    msg = 'Updated record with new note'
+
+    command_results = CommandResults(
+        outputs_prefix='SysAid.ServiceRecord',
+        readable_output=msg
+    )
+
+    return command_results
+
+
 def fetch_incidents(client: Client, first_fetch: str, limit: Optional[int] = MAX_INCIDENTS_TO_FETCH,
                     included_statuses: str = None, include_archived: bool = False, fetch_types: str = None):
     last_fetch = demisto.getLastRun().get('last_fetch')
@@ -791,12 +962,14 @@ def fetch_incidents(client: Client, first_fetch: str, limit: Optional[int] = MAX
     fetch_start_datetime = calculate_fetch_start_datetime(last_fetch, first_fetch)
     demisto.debug(f'last fetch was at: {last_fetch}, last id fetched was: {last_id_fetched}, '
                   f'time to fetch from is: {fetch_start_datetime}.')
+    filter_times = None
 
-    responses = fetch_request(client, fetch_types, include_archived, included_statuses)
+    responses = fetch_request(client, fetch_types, include_archived, included_statuses, first_fetch, filter_times)
 
     limit = limit or MAX_INCIDENTS_TO_FETCH
     last_fetch, last_id_fetched, incidents = parse_service_records(responses, limit, fetch_start_datetime, last_id_fetched)
     demisto.setLastRun({'last_fetch': last_fetch.isoformat(), 'last_id_fetched': last_id_fetched})
+
     return incidents
 
 
@@ -863,6 +1036,10 @@ def main() -> None:
             'sysaid-service-record-template-get': service_record_template_get_command,
             'sysaid-service-record-create': service_record_create_command,
             'sysaid-service-record-delete': service_record_delete_command,
+            'sysaid-service-record-attach-file': service_record_attach_file_command,
+            'sysaid-service-record-delete-file': service_record_delete_file_command,
+            'sysaid-service-record-get': service_record_get_command,
+            'sysaid-service-record-add-note': service_record_add_note_command,
         }
         if command == 'fetch-incidents':
             first_fetch = params.get('first_fetch', FETCH_DEFAULT_TIME)
@@ -877,6 +1054,7 @@ def main() -> None:
         elif command == 'test-module':
             test_module(client, params)
         elif command in commands:
+            args['username'] = username
             return_results(commands[command](client, args))
         else:
             raise NotImplementedError(f'{command} command is not implemented.')
@@ -889,3 +1067,5 @@ def main() -> None:
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
     main()
+
+register_module_line('SysAid', 'end', __line__())
