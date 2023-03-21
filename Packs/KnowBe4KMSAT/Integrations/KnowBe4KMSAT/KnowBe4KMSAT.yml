@@ -35,8 +35,9 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: "KnowBe4 KMSAT integration allows you to pull Risk Scores, Phishing Tests, Campaigns and Enrollments"
-display: "KnowBe4KMSAT"
+description: "Deprecated. Use KnowBe4KMSAT instead."
+display: "KnowBe4KMSAT (Deprecated)"
+deprecated: true
 name: KnowBe4KMSAT
 script:
   commands:
