@@ -26,7 +26,7 @@ tasks:
       {
         "position": {
           "x": 560,
-          "y": -2345
+          "y": -2485
         }
       }
     note: false
@@ -61,7 +61,7 @@ tasks:
       {
         "position": {
           "x": 560,
-          "y": -2215
+          "y": -2355
         }
       }
     note: false
@@ -98,7 +98,7 @@ tasks:
       {
         "position": {
           "x": 560,
-          "y": -1405
+          "y": -1545
         }
       }
     note: false
@@ -133,7 +133,7 @@ tasks:
       {
         "position": {
           "x": 560,
-          "y": -1890
+          "y": -2030
         }
       }
     note: false
@@ -202,7 +202,7 @@ tasks:
       {
         "position": {
           "x": 560,
-          "y": -1570
+          "y": -1710
         }
       }
     note: false
@@ -251,7 +251,7 @@ tasks:
       {
         "position": {
           "x": 560,
-          "y": -2050
+          "y": -2190
         }
       }
     note: false
@@ -298,7 +298,7 @@ tasks:
       {
         "position": {
           "x": 560,
-          "y": -1080
+          "y": -1220
         }
       }
     note: false
@@ -346,7 +346,7 @@ tasks:
       {
         "position": {
           "x": 560,
-          "y": -1240
+          "y": -1380
         }
       }
     note: false
@@ -377,7 +377,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1640,
+          "x": 1430,
           "y": -285
         }
       }
@@ -414,7 +414,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1380,
+          "x": 1170,
           "y": -15
         }
       }
@@ -441,7 +441,6 @@ tasks:
     nexttasks:
       '#none#':
       - "164"
-      - "193"
       - "198"
     scriptarguments:
       id:
@@ -512,7 +511,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1380,
+          "x": 1170,
           "y": 160
         }
       }
@@ -548,7 +547,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1380,
+          "x": 1170,
           "y": 550
         }
       }
@@ -579,7 +578,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 940,
+          "x": 730,
           "y": 490
         }
       }
@@ -610,7 +609,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1380,
+          "x": 1170,
           "y": -145
         }
       }
@@ -641,7 +640,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1990,
+          "x": 1780,
           "y": -145
         }
       }
@@ -681,7 +680,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1990,
+          "x": 1780,
           "y": -15
         }
       }
@@ -707,7 +706,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "203"
+      - "208"
     scriptarguments:
       complete_task:
         simple: "true"
@@ -726,7 +725,7 @@ tasks:
       {
         "position": {
           "x": 560,
-          "y": -920
+          "y": -1060
         }
       }
     note: false
@@ -771,7 +770,7 @@ tasks:
       {
         "position": {
           "x": 560,
-          "y": -1730
+          "y": -1870
         }
       }
     note: false
@@ -805,7 +804,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1780,
+          "x": 1570,
           "y": 160
         }
       }
@@ -818,10 +817,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "190":
     id: "190"
-    taskid: df32e725-a51f-4b89-808b-f9cbfee864d7
+    taskid: 591a36ce-3d96-41d0-8045-3840a2670b60
     type: condition
     task:
-      id: df32e725-a51f-4b89-808b-f9cbfee864d7
+      id: 591a36ce-3d96-41d0-8045-3840a2670b60
       version: -1
       name: Check the Error Entry Message
       description: 'Ensure that the Error Entry Message contains "All hashes have already been added to the allow or block list". This means that the indicators have been added to the XDR allow list. '
@@ -837,7 +836,7 @@ tasks:
     conditions:
     - label: Verified
       condition:
-      - - operator: containsGeneral
+      - - operator: containsString
           left:
             value:
               complex:
@@ -845,12 +844,12 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: '"All hashes have already been added to the allow or block list"'
+              simple: All hashes have already been added to the allow or block list
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1780,
+          "x": 1570,
           "y": 320
         }
       }
@@ -886,190 +885,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1780,
+          "x": 1570,
           "y": 550
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "193":
-    id: "193"
-    taskid: a832d5a6-de2b-4a61-8d86-4ac5180e5359
-    type: title
-    task:
-      id: a832d5a6-de2b-4a61-8d86-4ac5180e5359
-      version: -1
-      name: Check Endpoint Status
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "194"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 560,
-          "y": -285
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "194":
-    id: "194"
-    taskid: 2199ac2d-4e1f-495d-892d-66b32f1b38c2
-    type: regular
-    task:
-      id: 2199ac2d-4e1f-495d-892d-66b32f1b38c2
-      version: -1
-      name: Get Endpoint Details
-      description: 'Provides details about the endpoint so that later the playbook can determine if it was un-isolated. '
-      script: '|||xdr-get-endpoints'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "195"
-    scriptarguments:
-      endpoint_id_list:
-        complex:
-          root: foundIncidents.CustomFields
-          accessor: deviceid
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 560,
-          "y": -145
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "195":
-    id: "195"
-    taskid: 21e3e2d1-0f95-41e1-86ac-8f4534cc8240
-    type: condition
-    task:
-      id: 21e3e2d1-0f95-41e1-86ac-8f4534cc8240
-      version: -1
-      name: Verify Endpoint Isolation Status
-      description: Verify that the endpoint was un-isolated.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "196"
-      Verified:
-      - "197"
-    separatecontext: false
-    conditions:
-    - label: Verified
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: Endpoint
-                accessor: IsIsolated
-            iscontext: true
-          right:
-            value:
-              simple: "No"
-          ignorecase: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 560,
-          "y": 20
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "196":
-    id: "196"
-    taskid: c330a3bd-cd2e-4641-899a-2146cf9fe982
-    type: regular
-    task:
-      id: c330a3bd-cd2e-4641-899a-2146cf9fe982
-      version: -1
-      name: Verify Endpoint Status Error - Endpoint is Isolated
-      description: Prints an error entry with a given message
-      scriptName: PrintErrorEntry
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      message:
-        simple: |-
-          The endpoint is still isolated 'IsIsolated' (the 'Endpoint.IsIsolated' context key value is not 'No'). This could indicate one of the following problems:
-          1- The 'HostID' value of the 'Cortex XDR - False Positive Incident Handling' playbook input was changed.
-          2- The 'Endpoint_ID' argument input configuration was changed for the 'Cortex XDR - Unisolate Endpoint' sub-playbook used as part of the 'Cortex XDR - False Positive Incident Handling' playbook.
-          3- The 'endpoint_id' argument input configuration has been changed for the 'xdr-endpoint-unisolate' automation within the 'Cortex XDR - Unisolate Endpoint' sub-playbook's 'Unisolate Endpoint' task.
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 160,
-          "y": 200
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "197":
-    id: "197"
-    taskid: d78550be-8976-46b7-8640-e48479cc67c8
-    type: title
-    task:
-      id: d78550be-8976-46b7-8640-e48479cc67c8
-      version: -1
-      name: Done Checking Endpoint Status
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "202"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 560,
-          "y": 255
         }
       }
     note: false
@@ -1100,7 +917,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -440,
+          "x": -260,
           "y": -285
         }
       }
@@ -1160,7 +977,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -230,
+          "x": -50,
           "y": -145
         }
       }
@@ -1196,7 +1013,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -230,
+          "x": -50,
           "y": 65
         }
       }
@@ -1227,8 +1044,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1060,
-          "y": 35
+          "x": 350,
+          "y": 30
         }
       }
     note: false
@@ -1255,7 +1072,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 560,
+          "x": 350,
           "y": 630
         }
       }
@@ -1268,10 +1085,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "203":
     id: "203"
-    taskid: 85fde50e-7b75-4e2d-86ca-96780860b385
+    taskid: d1e6bd34-a6f8-4a78-86be-04ad447dbd72
     type: regular
     task:
-      id: 85fde50e-7b75-4e2d-86ca-96780860b385
+      id: d1e6bd34-a6f8-4a78-86be-04ad447dbd72
       version: -1
       name: Wait for incident to close
       description: 'Ensure that the playbook is complete before starting tests by waiting until the final task (Close XSOAR incident) is completed. '
@@ -1302,7 +1119,7 @@ tasks:
       {
         "position": {
           "x": 560,
-          "y": -755
+          "y": -735
         }
       }
     note: false
@@ -1348,7 +1165,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -650,
+          "x": -470,
           "y": -145
         }
       }
@@ -1383,7 +1200,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -650,
+          "x": -470,
           "y": 65
         }
       }
@@ -1417,7 +1234,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2210,
+          "x": 2000,
           "y": 320
         }
       }
@@ -1454,8 +1271,52 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2210,
+          "x": 2000,
           "y": 160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "208":
+    id: "208"
+    taskid: 21749081-573d-4fff-8f3e-c5551e24c58b
+    type: regular
+    task:
+      id: 21749081-573d-4fff-8f3e-c5551e24c58b
+      version: -1
+      name: Complete Data Collection Task - Cortex XDR - Unisolate Endpoint
+      description: Complete the 'Create IOCs in Cortex XDR - Approved Hashes' task (task number 71) of the 'Cortex XDR - False Positive Incident Handling' playbook automatically.
+      scriptName: WaitAndCompleteTask
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "203"
+    scriptarguments:
+      complete_task:
+        simple: "true"
+      incident_id:
+        complex:
+          root: CreatedIncidentID
+      interval_between_tries:
+        simple: "15"
+      task_name:
+        simple: Cortex XDR - Unisolate Endpoint
+      task_states:
+        simple: Error,Completed
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": -900
         }
       }
     note: false
@@ -1478,10 +1339,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 3040,
-        "width": 3650,
-        "x": -1060,
-        "y": -2345
+        "height": 3180,
+        "width": 2850,
+        "x": -470,
+        "y": -2485
       }
     }
   }
