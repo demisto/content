@@ -4406,13 +4406,14 @@ def delete_ioa_exclusion_command(args):
 
 
 def search_ioa_exclusion_command(args):
+    exclusion_name = args.get('name')
     if not (ids := argToList(args.get('ids'))):
         search_args = assign_params(
             limit=args.get('limit'),
             offset=args.get('offset')
         )
-        if name := args.get('name'):
-            ids = get_exclusions('ioa', f"name:'{name}'", search_args).get('resources')
+        if exclusion_name:
+            ids = get_exclusions('ioa', f"name:~'{exclusion_name}'", search_args).get('resources')
         else:
             ids = get_exclusions('ioa', args.get('filter'), search_args).get('resources')
 
@@ -4422,6 +4423,8 @@ def search_ioa_exclusion_command(args):
         )
 
     exclusions = get_exclusion_entities('ioa', ids).get('resources')
+    if exclusion_name:
+        exclusions = list(filter(lambda x: x.get('name') == exclusion_name, exclusions))
     human_readable = tableToMarkdown('CrowdStrike Falcon IOA exclusions', exclusions, is_auto_json_transform=True,
                                      headerTransform=underscoreToCamelCase, removeNull=True, sort_headers=False)
 
