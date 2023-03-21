@@ -1,7 +1,7 @@
 ## Overview
 ---
 
-The Devo_v2 Integration with enhanced functionality and data structures.
+The Devo_v3 Integration carries over everyting from the version 2 and adds pagination support for single table query and multitable query.
 This integration was integrated and tested with version 6.0+ Devo. Devo is a generic log management
 solution which can also act as an advanced SIEM. Users are able to query petabytes of data in a fraction
 of the time that other traditional time series databases can't.
@@ -78,13 +78,18 @@ of the time that other traditional time series databases can't.
         ]
     }
     ```
-    * __Deduplication parameters JSON if required. SEE README__ *Optional*
-    ```
-    {
-        "cooldown": <int seconds cooldown for each type of alert>
-    }
-    ```
+    * __Custom Alert table name__ If not provided, 'siem.logtrust.alert.info' will be used.
+    * __Custom Alert table prefix__ Please provide if Custom alert table name is provided.
+    * __Fetch Incident Limit__ *Required*
 4. Click __Test__ to validate the URLs, token, and connection.
+Note: single table query and multi table query can take long hours to complete runing and xsoar only allows commands to run for 5 minutes. To override that follow the below setps:
+- Login to xsoar.
+- Go to settings.
+- Go to about > troubleshooting.
+- In server configurations add the following:
+    - key = <name_of_integration>.devo-run-query.timeout, value = 1440
+    - key = <name_of_integration>.devo-multi-table-query.timeout, value = 1440
+- Click save.
 ## Fetched Incidents Data
 ---
 Fetched incidents data will resemble closely to that of the data you get back from the `devo-get-alerts` command.
@@ -144,6 +149,7 @@ Please refer to to the Devo documentation for building a query with LINQ
 | query             | A LINQ Query to run                                                                                | Required     |
 | from              | Start datetime for specified query. Unix timestamp in seconds expected (Decimal milliseconds okay) | Required     |
 | to                | End datetime for specified query. Unix timestamp in seconds expected (Decimal milliseconds okay)   | Optional     |
+| items_per_page               | per page item count.   | Required     |
 | queryTimeout      | Query timeout in seconds. Defaults to global which defaults to 60 seconds                          | Optional     |
 | writeToContext    | Whether to write results to context or not                                                         | Optional     |
 | linqLinkBase      | Overrides the global link base so is able to be set at run time                                    | Optional     |
@@ -167,7 +173,7 @@ are both given that they must be the same given format.
 
 ##### Command Example
 ```
-!devo-run-query query="from siem.logtrust.web.activity select *" from=1576845233.193244 to=1576845293.193244
+!devo-run-query query="from siem.logtrust.web.activity select *" from=1576845233.193244 to=1576845293.193244 items_per_page=1000
 ```
 
 ##### Human Readable Output
@@ -260,6 +266,7 @@ Thus querying all columns for the search token and returning a union of the give
 | searchToken       | String that you wish to search for in given tables in any column          | Required     |
 | from              | Start time in seconds unix timestamp                                      | Required     |
 | to                | End time in seconds unix timestamp                                        | Optional     |
+| items_per_page               | per page item count.   | Required     |
 | limit             | Number of entries to return to context. Default is 50. 0 sets to no limit | Optional     |
 | queryTimeout      | Query timeout in seconds. Defaults to global which defaults to 60 seconds | Optional     |
 | writeToContext    | write results to context or not                                           | Optional     |
@@ -282,7 +289,7 @@ are both given that they must be the same given format.
 
 ##### Command Example
 ```
-!devo-multi-table-query tables='["siem.logtrust.web.activity", "siem.logtrust.web.navigation"]' searchToken="john@doe.com" from=1576845233.193244 to=1576845293.193244
+!devo-multi-table-query tables='["siem.logtrust.web.activity", "siem.logtrust.web.navigation"]' searchToken="john@doe.com" from=1576845233.193244 to=1576845293.193244 items_per_page=1000
 ```
 
 ##### Human Readable Output
@@ -333,7 +340,7 @@ For more information on the way we write to a table please refer to this documen
 
 ##### Command Example
 ```
-!devo-write-to-table tableName="my.app.demisto.test" records='[{"hello": "world"}, {"hello": "demisto"}]'
+!devo-write-to-table tableName="my.app.test.test" records='[{"hello": "world"}, {"hello": "world"}]'
 ```
 
 ##### Human Readable Output
@@ -342,7 +349,7 @@ Entries to load into Devo
 |hello|
 |---|
 |world|
-|demisto||
+|world||
 
 Link to Devo Query
 
@@ -389,7 +396,7 @@ N/A
 
 
 #### Youtube Video Demo (Click Image, Will redirect to youtube)
-[![Devo-Demisto Plugin Demo](https://img.youtube.com/vi/jyUqEcWOXfU/0.jpg)](https://www.youtube.com/watch?v=jyUqEcWOXfU)
+[(https://img.youtube.com/vi/jyUqEcWOXfU/0.jpg)](https://www.youtube.com/watch?v=jyUqEcWOXfU)
 
 ## Known Limitations
 ---
