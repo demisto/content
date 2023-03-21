@@ -2712,5 +2712,5 @@ There is no context output for this command.
 
 
 ## Known limitations:
-When fetching an incident from the prisma cloud compute platform, the platform will delete the fetched incident.
-Therefore, we suggest to use the fetch only for one instance pr user.
+When fetching an incident from the Prisma Cloud Compute platform, the platform will delete the fetched incident.
+Therefore, it is recommended to configure only one instance per user to fetch incidents.
