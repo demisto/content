@@ -1998,12 +1998,6 @@ script:
       name: hostname
       required: false
       secret: false
-    - default: false
-      description: ''
-      isArray: true
-      name: endpoint
-      required: true
-      secret: false
     deprecated: false
     description: Display information about the given sensor
     execution: false
