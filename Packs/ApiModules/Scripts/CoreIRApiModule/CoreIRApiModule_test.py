@@ -3164,4 +3164,4 @@ def test_core_commands_raise_exception(mocker, command_to_run, args, error, rais
             assert "Other error" in str(e)
     else:
         assert (command_to_run(client, args).readable_output == "The operation executed is not supported on the given "
-            "machine.")
+                                                                "machine.")
