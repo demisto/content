@@ -1,5 +1,5 @@
 ### FireEye HX events
-|Id|Condition|EventAt|Indicator|MatchedAt|Md5Values|ReportedAt|Source|
-|---|---|---|---|---|---|---|---|
-| 4000 | _id: 07p68ZtTsFCDx6Vv7s6FDg==<br>url: /hx/api/v3/conditions/07p68ZtTsFCDx6Vv7s6FDg== | 2023-03-14T21:27:51.199Z | _id: 2b4753b0-9972-477e-ba16-1a7c29058cee<br>url: /hx/api/v3/indicators/mandiant_unrestricted/2b4753b0_9972_477e_ba16_1a7c29058cee<br>name: FIREEYE END2END TEST<br>uri_name: 2b4753b0-9972-477e-ba16-1a7c29058cee<br>display_name: FIREEYE END2END TEST<br>signature: null<br>category: mandiant_unrestricted | 2023-03-14T21:28:27.000Z | 73b215a6e489a4f7e0ee845a3a306284 | 2023-03-14T21:28:45.071Z | IOC |
-| 4001 | _id: 07p68ZtTsFCDx6Vv7s6FDg==<br>url: /hx/api/v3/conditions/07p68ZtTsFCDx6Vv7s6FDg== | 2023-03-14T21:27:51.199Z | _id: 2b4753b0-9972-477e-ba16-1a7c29058cee<br>url: /hx/api/v3/indicators/mandiant_unrestricted/2b4753b0_9972_477e_ba16_1a7c29058cee<br>name: FIREEYE END2END TEST<br>uri_name: 2b4753b0-9972-477e-ba16-1a7c29058cee<br>display_name: FIREEYE END2END TEST<br>signature: null<br>category: mandiant_unrestricted | 2023-03-14T21:28:27.000Z | 73b215a6e489a4f7e0ee845a3a306284 | 2023-03-14T21:28:45.071Z | IOC |
+|Id|EventAt|MatchedAt|ReportedAt|Source|
+|---|---|---|---|---|
+| 4000 | 2023-03-14T21:27:51.199Z | 2023-03-14T21:28:27.000Z | 2023-03-14T21:28:45.071Z | IOC |
+| 4001 | 2023-03-14T21:27:51.199Z | 2023-03-14T21:28:27.000Z | 2023-03-14T21:28:45.071Z | IOC |

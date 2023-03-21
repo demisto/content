@@ -74,7 +74,6 @@ def test_get_events_request(mocker):
 
 def test_get_events_command(mocker):
     mocker.patch('FireEyeHXEventCollector.fetch_events', return_value=EVENTS_RAW)
-    readable_output = ''
     res = get_events_command(None, '', '', False)
     with io.open('test_data/get_events_readable_outputs.md', mode='r', encoding='utf-8') as f:
         readable_output = f.read()

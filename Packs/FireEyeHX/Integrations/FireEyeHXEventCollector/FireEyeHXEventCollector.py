@@ -134,10 +134,10 @@ def get_events_command(
 
 def fetch_events(
     client: Client, max_fetch: str, first_fetch: str, resolution: str = None, min_id: str = None,
-        should_push_events=True
+        should_push_events: bool = True
 ) -> list:
     """
-    Fetches events from fireye.
+    Fetches events from fireeye.
     """
 
     # incase we want to retrieve all the resolution type, no need for this parameter.
