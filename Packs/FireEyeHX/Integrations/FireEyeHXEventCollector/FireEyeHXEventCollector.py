@@ -71,14 +71,12 @@ class Client(BaseClient):
         demisto.setIntegrationContext({'token': token})
         return token
 
-    def get_events_request(self, limit: str = '100', min_id: str = None, filter_query: str = None,
-                           resolution: str = None) -> dict:
+    def get_events_request(self, limit: str = '100', min_id: str = None, filter_query: str = None) -> dict:
         """
         Get alerts from fireeye
         """
 
-        params = assign_params(resolution=resolution,
-                               sort='event_at+ascending',
+        params = assign_params(sort='event_at+ascending',
                                limit=limit,
                                min_id=min_id,
                                filterQuery=filter_query)
@@ -132,22 +130,16 @@ def get_events_command(
 
 
 def fetch_events(
-    client: Client, max_fetch: str, first_fetch: str, resolution: str = None, min_id: str = None,
-        should_push_events: bool = True
+    client: Client, max_fetch: str, first_fetch: str, min_id: str = None, should_push_events: bool = True
 ) -> list:
     """
     Fetches events from fireeye.
     """
 
-    # incase we want to retrieve all the resolution type, no need for this parameter.
-    if resolution and resolution.lower() == 'all':
-        resolution = None
-
     to_date = (datetime.now() + timedelta(days=1)).strftime(DATE_FORMAT)
     filter_query = {'operator': 'between', 'arg': [first_fetch, to_date], 'field': 'reported_at'}
 
-    response = client.get_events_request(max_fetch, filter_query=json.dumps(filter_query), resolution=resolution,
-                                         min_id=min_id)
+    response = client.get_events_request(max_fetch, filter_query=json.dumps(filter_query), min_id=min_id)
 
     fetched_events = response.get('data', {}).get('entries', [])
     demisto.info(f'fetched events length: ({len(fetched_events)})')
@@ -194,7 +186,6 @@ def main() -> None:  # pragma: no cover
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     should_push_events = argToBoolean(args.get("should_push_events", False))
-    resolution = params.get('resolution')
     max_fetch = args.get('limit') or params.get('max_fetch')
 
     last_run = demisto.getLastRun()
@@ -218,7 +209,7 @@ def main() -> None:  # pragma: no cover
         if command == 'test-module':
             return_results(test_module(client))
         elif command == 'fetch-events':
-            fetch_events(client=client, max_fetch=max_fetch, first_fetch=last_fetch, resolution=resolution,
+            fetch_events(client=client, max_fetch=max_fetch, first_fetch=last_fetch,
                          min_id=last_run.get('last_alert_id'))
         elif command == 'fireeye-hx-get-events':
             since = args.get("since") or "3 days"
