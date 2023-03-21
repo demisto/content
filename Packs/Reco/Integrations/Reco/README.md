@@ -126,3 +126,25 @@ Get assets user has access to (optional to get only sensitive assets)
 #### Context Output
 
 There is no context output for this command.
+
+
+### reco-get-sensitive-assets-by-name
+
+***
+Get sensitive assets by name (optional to search by regex)
+
+#### Base Command
+
+`reco-get-sensitive-assets-by-name`
+
+#### Input
+
+| **Argument Name** | **Description**                               | **Required** |
+|-------------------|-----------------------------------------------|--------------|
+| asset_name        | Asset Name to search                          | Required     | 
+| regex_search      | Search assets by regex (Default string equal) | Optional     |
+
+
+#### Context Output
+
+There is no context output for this command.
