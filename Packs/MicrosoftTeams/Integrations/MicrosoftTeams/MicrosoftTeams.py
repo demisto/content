@@ -189,11 +189,15 @@ def create_incidents(demisto_user: dict, incidents: list) -> dict:
     return data
 
 
-def process_incident_create_message(demisto_user: dict, message: str) -> str:
+def add_req_data_to_incident(incidents: list, request_body: dict):
+    return [incident.update({'rawJSON': request_body}) for incident in incidents]
+
+def process_incident_create_message(demisto_user: dict, message: str, request_body: dict) -> str:
     """
     Processes an incident creation message
     :param demisto_user: The Demisto user associated with the message (if exists)
     :param message: The creation message
+    :param request_body: The original API request body
     :return: Creation result
     """
     json_pattern: str = r'(?<=json=).*'
@@ -210,6 +214,8 @@ def process_incident_create_message(demisto_user: dict, message: str) -> str:
             incidents: Union[dict, list] = json.loads(incidents_json.replace('“', '"').replace('”', '"'))
             if not isinstance(incidents, list):
                 incidents = [incidents]
+
+            add_req_data_to_incident(incidents, request_body)
             created_incident = create_incidents(demisto_user, incidents)
             if not created_incident:
                 data = 'Failed creating incidents.'
@@ -231,7 +237,8 @@ def process_incident_create_message(demisto_user: dict, message: str) -> str:
             if incident_type:
                 incident['type'] = incident_type
 
-            created_incident = create_incidents(demisto_user, [incident])
+            incidents = add_req_data_to_incident([incident], request_body)
+            created_incident = create_incidents(demisto_user, incidents)
             if not created_incident:
                 data = 'Failed creating incidents.'
 
@@ -2239,7 +2246,7 @@ def direct_message_handler(integration_context: dict, request_body: dict, conver
     # internal user or external who's trying to create incident
     if not data:
         if create_incident:
-            data = process_incident_create_message(demisto_user, message)
+            data = process_incident_create_message(demisto_user, message, request_body)
             formatted_message = urlify_hyperlinks(data)
         else:   # internal user running any command except for new incident
             try:
