@@ -6,61 +6,11 @@ import urllib.parse
 import fileinput
 import re
 from Tests.Marketplace.marketplace_constants import BucketUploadFlow
-from typing import List
 from Tests.scripts.utils import logging_wrapper as logging
 
 
-def upload_readme_images(storage_bucket, storage_base_path, pack_readme_path, pack_name,
-                         marketplace='xsoar', use_api=False) -> None | List[str]:
-    """ Downloads pack readme links to images, and upload them to gcs.
-
-        Searches for image links in pack readme.
-        In case no images links were found does nothing
-
-        Args:
-            storage_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where readme image will be uploaded.
-            storage_base_path (str): the path under the bucket to upload to.
-            diff_files_list (list): The list of all modified/added files found in the diff
-            detect_changes (bool): Whether to detect changes or upload the readme images in any case.
-            marketplace (str): The marketplace the upload is made for.
-        Returns:
-            bool: whether the operation succeeded.
-    """
-    readme_images = []
-    try:
-        if not os.path.exists(pack_readme_path):
-            return None
-
-        storage_pack_path = os.path.join(storage_base_path, pack_name)  # disable-secrets-detection
-
-        # detect added/modified integration readme files
-        logging.info(f'found a pack: {pack_name} with changes in README')
-        readme_images_storage_paths = collect_images_from_readme_and_replace_with_storage_path(
-            pack_readme_path, storage_pack_path, pack_name, marketplace=marketplace, use_api=use_api)
-
-        # no external image urls were found in the readme file
-        if not readme_images_storage_paths:
-            logging.info(f'no image links were found in {pack_name} readme file')
-            return None
-
-        for image_info in readme_images_storage_paths:
-            readme_original_url = image_info.get('original_read_me_url')
-            gcs_storage_path = str(image_info.get('new_gcs_image_path'))
-            image_name = str(image_info.get('image_name'))
-
-            if not use_api:
-                download_readme_image_from_url_and_upload_to_gcs(readme_original_url,
-                                                                 gcs_storage_path,
-                                                                 image_name, storage_bucket)
-            readme_images.append(image_name)
-        return readme_images
-    except Exception:
-        logging.exception(f"Failed uploading {pack_name} pack readme image.")
-        return None
-
-
-def replace_readme_urls(index_local_path, storage_base_path,
-                        marketplace='xsoar', use_api=False) -> tuple:
+def replace_readme_urls(index_local_path: str, storage_base_path: str,
+                        marketplace: str = 'xsoar', index_v2: bool = False) -> tuple:
     """
     This function goes over the index.zip folder. iterates over all the pack README.md files.
     It replaces inplace the readme images path to point to there new location gcp or api.
@@ -80,9 +30,9 @@ def replace_readme_urls(index_local_path, storage_base_path,
         if not os.path.exists(pack_readme_path):
             continue
 
-        storage_pack_path = os.path.join(storage_base_path, pack_name)  # disable-secrets-detection
+        storage_pack_path = os.path.join(storage_base_path, pack_name)
         readme_images_storage_paths = collect_images_from_readme_and_replace_with_storage_path(
-            pack_readme_path, storage_pack_path, pack_name, marketplace=marketplace, use_api=use_api)
+            pack_readme_path, storage_pack_path, pack_name, marketplace=marketplace, index_v2=index_v2)
 
         # no external image urls were found in the readme file
         if not readme_images_storage_paths:
@@ -97,8 +47,8 @@ def replace_readme_urls(index_local_path, storage_base_path,
     return readme_images, readme_urls_data_list
 
 
-def collect_images_from_readme_and_replace_with_storage_path(pack_readme_path, gcs_pack_path, pack_name, marketplace='xsoar',
-                                                             use_api=False):
+def collect_images_from_readme_and_replace_with_storage_path(pack_readme_path: str, gcs_pack_path, pack_name: str,
+                                                             marketplace: str = 'xsoar', index_v2: bool = False) -> list:
     """
     Replaces inplace all images links in the pack README.md with their new gcs location
 
@@ -111,7 +61,7 @@ def collect_images_from_readme_and_replace_with_storage_path(pack_readme_path, g
         A list of dicts of all the image urls found in the README.md file with all related data
         (original_url, new_gcs_path, image_name)
     """
-    if use_api:
+    if index_v2:
         google_api_readme_images_url = f'api/marketplace/file?name=content/packs/{pack_name}'
     else:
         marketplace_bucket = (
@@ -140,6 +90,7 @@ def collect_images_from_readme_and_replace_with_storage_path(pack_readme_path, g
 
             image_gcp_path = Path(gcs_pack_path, BucketUploadFlow.README_IMAGES, image_name)
             urls_list.append({
+                'pack_name': pack_name,
                 'original_read_me_url': url,
                 'new_gcs_image_path': image_gcp_path,
                 'image_name': image_name
@@ -150,28 +101,31 @@ def collect_images_from_readme_and_replace_with_storage_path(pack_readme_path, g
     return urls_list
 
 
-def download_readme_images_from_url_data_list(readme_urls_data_list: list, packs_artifacts_path: Path, storage_bucket):
+def download_readme_images_from_url_data_list(readme_urls_data_list: list, artifacts_path: str, storage_bucket):
+    """
+    Iterates over the readme_url_data_list and calls the download_readme_image_from_url_and_upload_to_gcs
+    """
+    logging.info(f'{artifacts_path=} MORE-INFORMATION')
     for readme_url_data in readme_urls_data_list:
-        readme_original_url = readme_url_data.get('original_read_me_url')
+        readme_original_url = str(readme_url_data.get('original_read_me_url'))
         gcs_storage_path = str(readme_url_data.get('new_gcs_image_path'))
         image_name = str(readme_url_data.get('image_name'))
-
+        pack_name = readme_url_data.get('pack_name')
         if readme_original_url.startswith('https'):
+            logging.info(f'{readme_original_url=} (HTTPS) MORE-INFORMATION')
             download_readme_image_from_url_and_upload_to_gcs(readme_original_url,
                                                              gcs_storage_path,
                                                              image_name, storage_bucket)
-        elif readme_original_url.startswith('binary_files/'):
-            extracting_the_readme_image_from_pack_and_upload_to_gcs(readme_original_url, gcs_storage_path,
-                                                                    packs_artifacts_path, image_name, storage_bucket)
+        elif readme_original_url.startswith('binary_files'):
+            logging.info(f'{readme_original_url=} (BINARY_FILES) MORE-INFORMATION')
+            extracting_the_readme_image_from_pack_and_upload_to_gcs(artifacts_path,
+                                                                    gcs_storage_path,
+                                                                    readme_original_url,
+                                                                    pack_name, image_name,
+                                                                    storage_bucket)
         else:
-            logging.debug(f'The image path {readme_original_url} is invalid')
-
-
-def extracting_the_readme_image_from_pack_and_upload_to_gcs(readme_original_url: str, gcs_storage_path: str,
-                                                            packs_artifacts_path: Path, image_name: str, storage_bucket):
-    logging.info(f'{readme_original_url=}\n{gcs_storage_path=}\n{packs_artifacts_path=}\n{image_name=} MORE-INFORMATION')
-    # readme_original_url_parsed = urllib.parse.urlparse(readme_original_url)
-    pass
+            logging.info(f'The image path {readme_original_url}'
+                         f' that exists in the Packs/{pack_name}/README.md file is invalid')
 
 
 def download_readme_image_from_url_and_upload_to_gcs(readme_original_url: str, gcs_storage_path: str,
@@ -223,7 +177,29 @@ def download_readme_image_from_url_and_upload_to_gcs(readme_original_url: str, g
         return False
 
 
-def copy_readme_images(production_bucket, build_bucket, images_data, storage_base_path,
+def extracting_the_readme_image_from_pack_and_upload_to_gcs(artifacts_path: str,
+                                                            gcs_storage_path: str,
+                                                            readme_original_url: str,
+                                                            pack_name: str,
+                                                            image_name: str,
+                                                            storage_bucket):
+    img_path = Path(os.path.join(artifacts_path, pack_name, readme_original_url))
+
+    readme_image = storage_bucket.blob(gcs_storage_path)
+    with open(img_path, 'rb') as image_file:
+        readme_image.upload_from_file(image_file)
+
+    os.remove(img_path)
+
+    logging.info(f'Image was copied successfully: {image_name}')
+
+    if len(img_path.parent) == 0:
+        shutil.rmtree(img_path.parent)
+        logging.info(f'The {img_path.parent} folder is removing successfully')
+    pass
+
+
+def copy_readme_images(production_bucket, build_bucket, images_data: dict, storage_base_path,
                        build_bucket_base_path):
     """ Copies pack's readme_images from the build bucket to the production bucket
 

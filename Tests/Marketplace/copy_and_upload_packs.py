@@ -68,28 +68,31 @@ def copy_index(index_folder_path: str, build_index_blob: Blob, build_index_gener
         build_index_blob.reload()
         build_current_index_generation = build_index_blob.generation
 
-        # disabling caching for prod index blob
-        prod_index_storage_path = os.path.join(storage_base_path, f"{GCPConfig.INDEX_NAME}.zip")
-        prod_index_blob = production_bucket.blob(prod_index_storage_path)
-        prod_index_blob.cache_control = "no-cache,max-age=0"
-        prod_index_json_storage_path = os.path.join(storage_base_path, f"{GCPConfig.INDEX_NAME}.json")
-        prod_index_json_blob = production_bucket.blob(prod_index_json_storage_path)
-        prod_index_json_blob.cache_control = "no-cache,max-age=0"
-
         if build_current_index_generation == build_index_generation:
             # copy index.zip from build to prod
             index_name = f'{GCPConfig.INDEX_NAME}.zip'
+            prod_index_storage_path = init_index_prod_bucket(storage_base_path=storage_base_path,
+                                                             production_bucket=production_bucket,
+                                                             index_name=index_name)
             copy_from_build_to_prod(build_bucket=build_bucket, build_index_blob=build_index_blob,
                                     production_bucket=production_bucket, prod_index_storage_path=prod_index_storage_path,
                                     index_name=index_name)
+
             # copy index.json from build to prod
             index_json_name = f"{GCPConfig.INDEX_NAME}.json"
+            prod_index_storage_path = init_index_prod_bucket(storage_base_path=storage_base_path,
+                                                             production_bucket=production_bucket,
+                                                             index_name=index_json_name)
             build_index_json_blob = build_bucket.blob(os.path.join(build_bucket_base_path, index_json_name))
             copy_from_build_to_prod(build_bucket=build_bucket, build_index_blob=build_index_json_blob,
                                     production_bucket=production_bucket, prod_index_storage_path=prod_index_storage_path,
                                     index_name=index_json_name)
+
             # copy index_v2.zip from build to prod
             index_v2_name = f'{GCPConfig.INDEX_V2_NAME}.zip'
+            prod_index_storage_path = init_index_prod_bucket(storage_base_path=storage_base_path,
+                                                             production_bucket=production_bucket,
+                                                             index_name=index_v2_name)
             build_index_v2_blob = build_bucket.blob(os.path.join(build_bucket_base_path, index_v2_name))
             copy_from_build_to_prod(build_bucket=build_bucket, build_index_blob=build_index_v2_blob,
                                     production_bucket=production_bucket, prod_index_storage_path=prod_index_storage_path,
@@ -104,6 +107,15 @@ def copy_index(index_folder_path: str, build_index_blob: Blob, build_index_gener
         sys.exit(1)
     finally:
         shutil.rmtree(index_folder_path)
+
+
+def init_index_prod_bucket(storage_base_path, production_bucket, index_name):
+    # disabling caching for prod index blob
+    prod_index_storage_path = os.path.join(storage_base_path, index_name)
+    prod_index_blob = production_bucket.blob(prod_index_storage_path)
+    prod_index_blob.cache_control = "no-cache,max-age=0"
+    logging.info(f'Init prod bucket at {prod_index_storage_path}')
+    return prod_index_storage_path
 
 
 def copy_from_build_to_prod(build_bucket, build_index_blob, production_bucket, prod_index_storage_path, index_name):

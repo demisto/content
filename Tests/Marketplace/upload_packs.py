@@ -78,6 +78,7 @@ def download_and_extract_index(storage_bucket: Any, extract_destination_path: st
         str: downloaded index generation.
 
     """
+    logging.info('Start of download_and_extract_index')
     if storage_bucket.name == GCPConfig.PRODUCTION_PRIVATE_BUCKET:
         index_storage_path = os.path.join(GCPConfig.PRIVATE_BASE_PATH, f"{GCPConfig.INDEX_NAME}.zip")
     else:
@@ -1050,7 +1051,6 @@ def main():
     install_logging('Prepare_Content_Packs_For_Testing.log', logger=logging)
     option = option_handler()
     packs_artifacts_path = option.packs_artifacts_path
-    logging.info(f'{packs_artifacts_path=} MORE-INFORMATION')
     id_set = None
     try:
         with Neo4jContentGraphInterface():
@@ -1089,7 +1089,7 @@ def main():
     index_folder_path, index_blob, index_generation = download_and_extract_index(storage_bucket,
                                                                                  extract_destination_path,
                                                                                  storage_base_path)
-    logging.info(f'{index_folder_path=} MORE-INFORMATION')
+
     # content repo client initialized
     content_repo = get_content_git_client(CONTENT_ROOT_PATH)
     current_commit_hash, previous_commit_hash = get_recent_commits_data(content_repo, index_folder_path,
@@ -1164,7 +1164,7 @@ def main():
 
         # upload author integration images and readme images
         if not pack.upload_images(index_folder_path, storage_bucket, storage_base_path, diff_files_list,
-                                  override_all_packs, marketplace):
+                                  override_all_packs):
             continue
 
         # detect if the pack is modified and return modified RN files
@@ -1307,7 +1307,7 @@ def main():
     logging.info('replacing the urls in index_V2')
 
     replace_readme_urls(index_v2_local_path, storage_base_path=storage_base_path,
-                        marketplace=marketplace, use_api=True)
+                        marketplace=marketplace, index_v2=True)
 
     logging.info('uploading new index')
 
@@ -1322,7 +1322,7 @@ def main():
     readme_images_dict, readme_urls_data_list = replace_readme_urls(index_folder_path,
                                                                     storage_base_path=storage_base_path,
                                                                     marketplace=marketplace)
-    download_readme_images_from_url_data_list(readme_urls_data_list, Path(packs_artifacts_path), storage_bucket=storage_bucket)
+    download_readme_images_from_url_data_list(readme_urls_data_list, extract_destination_path, storage_bucket=storage_bucket)
 
     # finished iteration over content packs
     upload_index_to_storage(index_folder_path=index_folder_path,
