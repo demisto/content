@@ -7,13 +7,13 @@ from Tests.scripts.utils import logging_wrapper as logging
 from pathlib import Path
 import yaml
 
+
 def get_git_diff(branch_name, repo):
     changed_files: list[str] = []
     packs_files_were_removed_from: set[str] = set()
 
     previous_commit = 'origin/master'
     current_commit = branch_name
-
 
     # if os.getenv('IFRA_ENV_TYPE') == 'Bucket-Upload':
     #     # logger.info('bucket upload: getting last commit from index')
@@ -71,6 +71,7 @@ def get_git_diff(branch_name, repo):
         #                       pack_ids_files_were_removed_from=tuple(packs_files_were_removed_from))
     return changed_files
 
+
 def run(options):
     # raise Exception(f'ppppaaaaattttthhhh: {Path(__file__).absolute()},ppppaaaaattttthhhh: {Path(__file__).absolute().parents[3]},ppppaaaaattttthhhh: {Path(__file__).absolute().parents[2]}')
     PATHS = PathManager(Path(__file__).absolute().parents[2])
@@ -102,7 +103,7 @@ def run(options):
         print('******************************')
         print(changed_pack)  # the path of the changed integration
         print('******************************')
-        print(pack_files) # the content of the paath location
+        print(pack_files)  # the content of the paath location
         root_dir = Path(changed_pack)
         root_dir_instance = pathlib.Path(root_dir)
         filesindir = [item.name for item in root_dir_instance.glob("*") if str(item.name).endswith('yml')]
@@ -117,8 +118,24 @@ def run(options):
                     print(exc)
     print('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^')
     print(yml_ids)
-    secret_conf = GoogleSecreteManagerModule(options.service_account)
-    secrets = secret_conf.list_secrets(options.gsm_project_id, name_filter=yml_ids, with_secret=True, attr_validation=('name', 'params'))
+    secret_conf_prod = GoogleSecreteManagerModule(options.service_account)
+    secret_conf_dev = GoogleSecreteManagerModule(options.service_account)
+    secrets = secret_conf_prod.list_secrets(options.gsm_project_id, name_filter=yml_ids, with_secret=True,
+                                            attr_validation=('name', 'params'))
+    secrets_dev = secret_conf_dev.list_secrets(options.gsm_project_id, with_secret=True,
+                                                attr_validation=('name', 'params'), branch_name=branch_name)
+    print(f'secrets pre merge: {secrets}')
+    print(f'secrets_dev: {secrets_dev}')
+    if secrets_dev:
+        for dev_secret in secrets_dev:
+            replaced = False
+            for i in range(len(secrets)):
+                if dev_secret['secret_name'] == secrets[i]['secret_name']:
+                    dev_secret['test'] = 'test secret'
+                    secrets[i] = dev_secret
+                    replaced = True
+            if not replaced:
+                secrets.append(dev_secret)
     print('************************')
     print(f'secrets: {secrets}')
     secret_file = {

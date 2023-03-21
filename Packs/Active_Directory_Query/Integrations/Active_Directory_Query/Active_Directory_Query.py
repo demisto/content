@@ -81,7 +81,7 @@ FIELDS_THAT_CANT_BE_MODIFIED = [
 
 def get_ssl_version(ssl_version):
     """
-        Returns the ssl versi gfgghon object according to the user's selection.
+        Returns the ssl version object according to the user's selection.
     """
     version = SSL_VERSIONS.get(ssl_version)
     if version:

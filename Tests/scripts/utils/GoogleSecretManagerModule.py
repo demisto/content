@@ -29,7 +29,8 @@ class GoogleSecreteManagerModule:
             logging.error(
                 f'Secret json is malformed for: {secret_id} version: {response.name.split("/")[-1]}, got error: {e}')
 
-    def list_secrets(self, project_id: str, name_filter: list = [], with_secret=False, attr_validation=tuple()) -> list:
+    def list_secrets(self, project_id: str, name_filter: list = [], with_secret=False, attr_validation=tuple(),
+                     branch_name='') -> list:
         secrets = []
         parent = f"projects/{project_id}"
         for secret in self.client.list_secrets(request={"parent": parent}):
@@ -43,15 +44,16 @@ class GoogleSecreteManagerModule:
             logging.debug(f'Getting the secret: {secret.name}')
             formatted_integration_search_ids = [GoogleSecreteManagerModule.convert_to_gsm_format(s.lower()) for s in
                                                 name_filter]
-            if name_filter and not secret_pack_id and secret_pack_id not in formatted_integration_search_ids:
+            if (name_filter and not secret_pack_id and secret_pack_id not in formatted_integration_search_ids) or (
+                    branch_name and labels.get('branch') != branch_name):
                 continue
             print(f'formatted_integration_search_ids:{formatted_integration_search_ids}')
             print(f'secret_pack_id:{secret_pack_id}')
             if with_secret:
                 try:
                     secret_value = self.get_secret(project_id, secret.name)
+                    secret_value['secret_name'] = secret.name
                     # We make sure that the keys we want in the dict are present
-                    print(f'secret_value:{secret_value}')
                     missing_attrs = [attr for attr in attr_validation if attr not in secret_value]
                     if missing_attrs:
                         missing_attrs_str = ','.join(missing_attrs)
