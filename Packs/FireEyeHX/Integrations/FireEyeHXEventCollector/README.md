@@ -1,8 +1,8 @@
 Palo Alto Networks FireEye HX Event Collector integration for XSIAM.
 
-## Configure FireEye HX Event Collector on Cortex XSOAR
+## Configure FireEye HX Event Collector on Cortex XSIAM
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+1. Navigate to **Settings** > **Configurations** > **Data Collection** > **Automation & Feed Integrations**.
 2. Search for FireEye HX Event Collector.
 3. Click **Add instance** to create and configure a new integration instance.
 
@@ -14,14 +14,14 @@ Palo Alto Networks FireEye HX Event Collector integration for XSIAM.
     | Filter by resolution of the alert. |  | True |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
-    | The maximum number of events per fetch. | The maximum number of events to fetch every time fetch is being executed. | False |
+    | The maximum number of events per fetch. | The maximum number of events to fetch every time fetch is executed. | False |
     | First Fetch Time | The First Fetch Time, e.g., 1 hour, 3 days | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSIAM CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### fireeye-hx-get-events
