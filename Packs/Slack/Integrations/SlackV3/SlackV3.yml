@@ -44,6 +44,8 @@ configuration:
   name: permitted_notifications
   type: 16
   required: false
+  defaultvalue: externalFormSubmit
+  additionalinfo: By default, externalFormSubmit is enabled in order to allow Ask tasks to be sent correctly.
   options:
   - incidentOpened
   - incidentChanged
