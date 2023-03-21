@@ -28,12 +28,14 @@ configuration:
   name: max_fetch
   required: false
   type: 0
+  section: Collect
 - additionalinfo: The first fetch time, e.g., 1 hour, 3 days
   display: First Fetch Time
   defaultvalue: 3 days
   name: first_fetch
   required: false
   type: 0
+  section: Collect
 script:
   commands:
   - deprecated: false

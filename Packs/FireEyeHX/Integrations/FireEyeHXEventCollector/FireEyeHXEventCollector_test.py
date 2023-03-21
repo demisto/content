@@ -53,14 +53,11 @@ def test_fetch_events(mocker):
     events = fetch_events(client=client, max_fetch='100', first_fetch='2023-02-01T11:21:12.135Z',
                           min_id='100', should_push_events=True)
     assert len(events) == 2
-    assert get_events_request_mock.call_args.kwargs['filter_query'] == filter_query
-    assert not get_events_request_mock.call_args.kwargs['resolution']
     assert get_events_request_mock.call_args.kwargs['min_id'] == '100'
     assert send_events_mocker.call_args.kwargs['events'] == events
     assert send_events_mocker.call_args.kwargs['vendor'] == 'FireEye'
     assert send_events_mocker.call_args.kwargs['product'] == 'HX'
     assert demisto_set_last_run_mock.call_args[0][0]['last_alert_id'] == '4001'
-    assert demisto_set_last_run_mock.call_args[0][0]['last_alert_time'] == '2023-03-14T21:27:51.199Z'
 
 
 def test_http_request_token_already_created(mocker):
@@ -109,9 +106,8 @@ def test_get_events_request(mocker):
     """
     client = Client(BASE_URL, 'username', 'password', False, False)
     http_request = mocker.patch.object(Client, 'http_request')
-    client.get_events_request(min_id='100', resolution='alert')
+    client.get_events_request(min_id='100')
     assert http_request.call_args.kwargs['url_suffix'] == '/hx/api/v3/alerts'
-    assert http_request.call_args.kwargs['params']['resolution'] == 'alert'
     assert http_request.call_args.kwargs['params']['min_id'] == '100'
 
 

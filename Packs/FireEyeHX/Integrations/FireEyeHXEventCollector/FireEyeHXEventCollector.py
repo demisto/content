@@ -76,7 +76,7 @@ class Client(BaseClient):
         Get alerts from fireeye
         """
 
-        params = assign_params(sort='event_at+ascending',
+        params = assign_params(sort='_id+ascending',
                                limit=limit,
                                min_id=min_id,
                                filterQuery=filter_query)
@@ -136,10 +136,13 @@ def fetch_events(
     Fetches events from fireeye.
     """
 
-    to_date = (datetime.now() + timedelta(days=1)).strftime(DATE_FORMAT)
-    filter_query = {'operator': 'between', 'arg': [first_fetch, to_date], 'field': 'reported_at'}
+    filter_query_str = None
+    if not min_id:
+        to_date = (datetime.now() + timedelta(days=1)).strftime(DATE_FORMAT)
+        filter_query = {'operator': 'between', 'arg': [first_fetch, to_date], 'field': 'reported_at'}
+        filter_query_str = json.dumps(filter_query)
 
-    response = client.get_events_request(max_fetch, filter_query=json.dumps(filter_query), min_id=min_id)
+    response = client.get_events_request(max_fetch, filter_query=filter_query_str, min_id=min_id)
 
     fetched_events = response.get('data', {}).get('entries', [])
     demisto.info(f'fetched events length: ({len(fetched_events)})')
@@ -151,8 +154,7 @@ def fetch_events(
 
     if fetched_events:
         last_alert: dict = fetched_events[-1]
-        demisto.setLastRun({'last_alert_id': str(last_alert.get('_id')),
-                            'last_alert_time': last_alert.get('event_at')})
+        demisto.setLastRun({'last_alert_id': str(last_alert.get('_id'))})
     try:
         demisto.info(f'sending the following amount of events into XSIAM: {len(fetched_events)}')
         send_events_to_xsiam(
@@ -190,11 +192,8 @@ def main() -> None:  # pragma: no cover
 
     last_run = demisto.getLastRun()
 
-    if last_run.get('last_alert_time'):
-        last_fetch = last_run.get('last_alert_time')
-    else:
-        first_fetch = params.get("first_fetch") or "3 days"
-        last_fetch = arg_to_datetime(first_fetch).strftime(DATE_FORMAT)  # type: ignore[union-attr]
+    first_fetch = params.get("first_fetch") or "3 days"
+    last_fetch = arg_to_datetime(first_fetch).strftime(DATE_FORMAT)  # type: ignore[union-attr]
 
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
