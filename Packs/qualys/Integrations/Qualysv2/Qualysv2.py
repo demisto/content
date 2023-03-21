@@ -1,8 +1,10 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 from typing import Callable, Dict, Tuple
 
-import demistomock as demisto  # noqa: F401
+
 import requests
-from CommonServerPython import *  # noqa: F401
+
 from urllib3 import disable_warnings
 
 
@@ -908,6 +910,7 @@ COMMANDS_ARGS_DATA: Dict[str, Any] = {
             "host_metadata_fields",
             "show_cloud_tags",
             "cloud_tag_fields",
+            "details"
         ],
         "inner_args": ["limit"],
     },
