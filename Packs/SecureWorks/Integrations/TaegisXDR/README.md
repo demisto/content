@@ -258,7 +258,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 
 #### Base Command
 
-`!taegis-create-comment`
+`!taegis-fetch-comment`
 
 #### Inputs
 
