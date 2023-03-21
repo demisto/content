@@ -19527,3 +19527,667 @@ There is no context output for this command.
 #### Human Readable Output
 
 >Service Records 2,32 Deleted Successfully.
+
+### sysaid-service-record-attach-file
+***
+Add an attachment to a service record.
+
+
+#### Base Command
+
+`sysaid-service-record-attach-file`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The service record ID. | Required | 
+| file_id | File file ID to upload. | Required | 
+
+
+#### Context Output
+There is no context output for this command.
+
+#### Command example
+```!sysaid-service-record-attach-file id=2 file_id="50@519fe085-179d-43f4-85c7-795eb4edd1a0"```
+
+#### Human Readable Output
+
+>File uploaded to Service Record {id} successfully.
+
+
+### sysaid-service-record-delete-file
+***
+Delete an attachment from a service record.
+
+#### Base Command
+
+`sysaid-service-record-delete-file`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The service record ID. | Required | 
+| file_id | The attachment file ID to delete. | Required | 
+
+
+#### Context Output
+There is no context output for this command.
+
+#### Command example
+```!sysaid-service-record-delete-file id=2 file_id="1147906284_-769427333"```
+
+#### Human Readable Output
+>File deleted from Service Record {id} successfully.
+
+
+### sysaid-service-record-get
+***
+Returns the information for the specified service record.
+
+#### Base Command
+`sysaid-service-record-get`
+
+#### Input
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The service record ID. | Required | 
+| fields | List of fields to return, comma separated. If sent together with view parameter, returns both view’s fields and the requested fields. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| SysAid.ServiceRecord.id | String | The ID of the service record. | 
+| SysAid.ServiceRecord.title | String | The title of the service record. | 
+| SysAid.ServiceRecord.status | String | The status of the service record. | 
+| SysAid.ServiceRecord.update_time | Date | The modify time of the service record. | 
+| SysAid.ServiceRecord.sr_type | String | The type of the service record. | 
+| SysAid.ServiceRecord.notes | String | The notes of the service record. | 
+
+#### Command example
+```!service_record_get_command id=2 fields=all```
+
+#### Context Example
+    {
+        "SysAid": {
+            "ServiceRecord": {
+                "canArchive": true,
+                "canDelete": true,
+                "canUpdate": true,
+                "hasChildren": false,
+                "id": "25",
+                "info": [
+                    {
+                        "key": "third_level_category",
+                        "keyCaption": "Third Level Category",
+                        "value": "Cannot access email",
+                        "valueCaption": "Cannot access email",
+                        "valueClass": ""
+                    },
+                    {
+                        "key": "cust_list1",
+                        "keyCaption": "SR Custom List 1",
+                        "value": 0,
+                        "valueCaption": "",
+                        "valueClass": ""
+                    },
+                    {
+                        "key": "max_support_level",
+                        "keyCaption": "Max Support Level",
+                        "value": 0,
+                        "valueCaption": "0",
+                        "valueClass": ""
+                    },
+                    {
+                        "key": "quick_name",
+                        "keyCaption": "Template",
+                        "value": "Cannot access email - Test ",
+                        "valueCaption": "",
+                        "valueClass": ""
+                    },
+                    {
+                        "key": "lock_field",
+                        "keyCaption": "=== Hide/Show Divider ===",
+                        "value": 25,
+                        "valueCaption": "25",
+                        "valueClass": ""
+                    },
+                    {
+                        "key": "source",
+                        "keyCaption": "Source",
+                        "value": 4,
+                        "valueCaption": "Self-Service Portal",
+                        "valueClass": ""
+                    },
+                    {
+                        "key": "resolution",
+                        "keyCaption": "Resolution",
+                        "value": "",
+                        "valueCaption": "",
+                        "valueClass": ""
+                    },
+                    {
+                        "key": "cust_list2",
+                        "keyCaption": "SR Custom List 2",
+                        "value": 0,
+                        "valueCaption": "",
+                        "valueClass": ""
+                    },
+                    {
+                        "key": "parent_link",
+                        "keyCaption": "Parent ID",
+                        "value": 0,
+                        "valueCaption": "",
+                        "valueClass": ""
+                    },
+                    {
+                        "key": "solution",
+                        "keyCaption": "Solution",
+                        "value": "",
+                        "valueCaption": "",
+                        "valueClass": ""
+                    },
+                    {
+                        "key": "user_manager_name",
+                        "keyCaption": "Request User Manager",
+                        "value": null,
+                        "valueCaption": "",
+                        "valueClass": ""
+                    },
+                    {
+                        "key": "survey_status",
+                        "keyCaption": "Survey Status",
+                        "value": 0,
+                        "valueCaption": "The survey has not been sent.",
+                        "valueClass": ""
+                    },
+                    {
+                        "key": "sr_weight",
+                        "keyCaption": "Weight",
+                        "value": 0,
+                        "valueCaption": "0",
+                        "valueClass": ""
+                    },
+                    {
+                        "key": "followup_planned_date",
+                        "keyCaption": "Followup Planned Date",
+                        "value": null,
+                        "valueCaption": "",
+                        "valueClass": ""
+                    },
+                    {
+                        "key": "submit_user",
+                        "keyCaption": "Submit user",
+                        "value": 1,
+                        "valueCaption": "sysaid-dmst",
+                        "valueClass": ""
+                    },
+                    {
+                        "key": "agreement",
+                        "keyCaption": "Agreement",
+                        "value": 1,
+                        "valueCaption": "DEFAULT SLA",
+                        "valueClass": ""
+                    },
+                    {
+                        "key": "cust_int2",
+                        "keyCaption": "SR Custom Int 2",
+                        "value": 0,
+                        "valueCaption": "0",
+                        "valueClass": ""
+                    },
+                    {
+                        "key": "cust_date1",
+                        "keyCaption": "SR Custom Date 1",
+                        "value": null,
+                        "valueCaption": "",
+                        "valueClass": ""
+                    },
+                    {
+                        "key": "cust_int1",
+                        "keyCaption": "SR Custom Int 1",
+                        "value": 0,
+                        "valueCaption": "0",
+                        "valueClass": ""
+                    },
+                    {
+                        "key": "totalTime",
+                        "keyCaption": "Total Activities time",
+                        "value": 25,
+                        "valueCaption": "25",
+                        "valueClass": ""
+                    },
+                    {
+                        "key": "impact",
+                        "keyCaption": "Impact",
+                        "value": 4,
+                        "valueCaption": "Low",
+                        "valueClass": ""
+                    },
+                    {
+                        "key": "reopen_counter",
+                        "keyCaption": "Reopen Counter",
+                        "value": 0,
+                        "valueCaption": "0",
+                        "valueClass": ""
+                    },
+                    {
+                        "key": "cust_date2",
+                        "keyCaption": "SR Custom Date 2",
+                        "value": null,
+                        "valueCaption": "",
+                        "valueClass": ""
+                    },
+                    {
+                        "key": "archive",
+                        "keyCaption": "Archive",
+                        "value": 0,
+                        "valueCaption": "No",
+                        "valueClass": ""
+                    },
+                    {
+                        "key": "close_time",
+                        "keyCaption": "Close time",
+                        "value": null,
+                        "valueCaption": "",
+                        "valueClass": ""
+                    },
+                    {
+                        "key": "priority",
+                        "keyCaption": "Priority",
+                        "value": 5,
+                        "valueCaption": "Low",
+                        "valueClass": ""
+                    },
+                    {
+                        "key": "merged_service_records",
+                        "keyCaption": "Merged service records",
+                        "value": null,
+                        "valueCaption": "",
+                        "valueClass": ""
+                    },
+                    {
+                        "key": "version",
+                        "keyCaption": "Version",
+                        "value": 6,
+                        "valueCaption": "6",
+                        "valueClass": ""
+                    },
+                    {
+                        "key": "is_escalated",
+                        "keyCaption": "Is Escalated",
+                        "value": 0,
+                        "valueCaption": "No",
+                        "valueClass": ""
+                    },
+                    {
+                        "key": "CustomColumn3sr",
+                        "keyCaption": "Test Field",
+                        "value": "Demo Test",
+                        "valueCaption": "Demo Test",
+                        "valueClass": ""
+                    },
+                    {
+                        "key": "closure_information",
+                        "keyCaption": "Closure Information",
+                        "value": 0,
+                        "valueCaption": "",
+                        "valueClass": ""
+                    },
+                    {
+                        "key": "assign_counter",
+                        "keyCaption": "Assigned Counter",
+                        "value": 1,
+                        "valueCaption": "1",
+                        "valueClass": ""
+                    },
+                    {
+                        "key": "problem_type",
+                        "keyCaption": "Category",
+                        "value": "Mobile Devices",
+                        "valueCaption": "Mobile Devices",
+                        "valueClass": ""
+                    },
+                    {
+                        "key": "alertID",
+                        "keyCaption": "Alert",
+                        "value": 25,
+                        "valueCaption": "green",
+                        "valueClass": ""
+                    },
+                    {
+                        "key": "status",
+                        "keyCaption": "Status",
+                        "value": 1,
+                        "valueCaption": "New",
+                        "valueClass": 0
+                    },
+                    {
+                        "key": "problem_sub_type",
+                        "keyCaption": "Sub-Category",
+                        "value": "Tablet",
+                        "valueCaption": "Tablet",
+                        "valueClass": ""
+                    },
+                    {
+                        "key": "known_error",
+                        "keyCaption": "Known Error",
+                        "value": null,
+                        "valueCaption": "",
+                        "valueClass": ""
+                    },
+                    {
+                        "key": "description",
+                        "keyCaption": "Description",
+                        "value": "This is a test incident",
+                        "valueCaption": "This is a test incident",
+                        "valueClass": ""
+                    },
+                    {
+                        "key": "insert_time",
+                        "keyCaption": "Request time",
+                        "value": 1646661395760,
+                        "valueCaption": "03/07/2022 08:56:35 AM",
+                        "valueClass": ""
+                    },
+                    {
+                        "key": "task_id",
+                        "keyCaption": "Main task",
+                        "value": 0,
+                        "valueCaption": "",
+                        "valueClass": ""
+                    },
+                    {
+                        "key": "title",
+                        "keyCaption": "Title",
+                        "value": "Cannot access email - Test ",
+                        "valueCaption": "Cannot access email - Test ",
+                        "valueClass": ""
+                    },
+                    {
+                        "key": "request_user_name",
+                        "keyCaption": "Request username",
+                        "value": 1,
+                        "valueCaption": "sysaid-dmst",
+                        "valueClass": ""
+                    },
+                    {
+                        "key": "followup_user",
+                        "keyCaption": "Followup User",
+                        "value": null,
+                        "valueCaption": "",
+                        "valueClass": ""
+                    },
+                    {
+                        "key": "workaround",
+                        "keyCaption": "Workaround",
+                        "value": "",
+                        "valueCaption": "",
+                        "valueClass": ""
+                    },
+                    {
+                        "key": "current_support_level",
+                        "keyCaption": "Current Support Level",
+                        "value": 0,
+                        "valueCaption": "0",
+                        "valueClass": ""
+                    },
+                    {
+                        "key": "update_time",
+                        "keyCaption": "Modify time",
+                        "value": 1647338000987,
+                        "valueCaption": "03/15/2022 04:53:20 AM",
+                        "valueClass": ""
+                    },
+                    {
+                        "key": "success_rating",
+                        "keyCaption": "Success Rating",
+                        "value": 0,
+                        "valueCaption": "0",
+                        "valueClass": ""
+                    },
+                    {
+                        "key": "update_user",
+                        "keyCaption": "Modify User",
+                        "value": 1,
+                        "valueCaption": "sysaid-dmst",
+                        "valueClass": ""
+                    },
+                    {
+                        "key": "cust_notes",
+                        "keyCaption": "SR Custom Notes",
+                        "value": "This is a note for the API",
+                        "valueCaption": "This is a note for the API",
+                        "valueClass": ""
+                    },
+                    {
+                        "key": "followup_text",
+                        "keyCaption": "Followup Text",
+                        "value": "",
+                        "valueCaption": "",
+                        "valueClass": ""
+                    },
+                    {
+                        "key": "email_account",
+                        "keyCaption": "Email Account",
+                        "value": " ",
+                        "valueCaption": " ",
+                        "valueClass": ""
+                    },
+                    {
+                        "key": "responsibility",
+                        "keyCaption": "Process manager",
+                        "value": 1,
+                        "valueCaption": "sysaid-dmst",
+                        "valueClass": ""
+                    },
+                    {
+                        "key": "urgency",
+                        "keyCaption": "Urgency",
+                        "value": 4,
+                        "valueCaption": "Normal",
+                        "valueClass": ""
+                    },
+                    {
+                        "key": "request_user",
+                        "keyCaption": "Request user",
+                        "value": 1,
+                        "valueCaption": "sysaid-dmst",
+                        "valueClass": ""
+                    },
+                    {
+                        "key": "sub_type",
+                        "keyCaption": "Sub Type",
+                        "value": 6,
+                        "valueCaption": "DEFAULT",
+                        "valueClass": ""
+                    },
+                    {
+                        "key": "company",
+                        "keyCaption": "Company",
+                        "value": null,
+                        "valueCaption": "",
+                        "valueClass": ""
+                    },
+                    {
+                        "key": "followup_actual_date",
+                        "keyCaption": "Followup Actual Date",
+                        "value": null,
+                        "valueCaption": "",
+                        "valueClass": ""
+                    },
+                    {
+                        "key": "department",
+                        "keyCaption": "Department",
+                        "value": null,
+                        "valueCaption": "",
+                        "valueClass": ""
+                    },
+                    {
+                        "key": "all_active_assigned_to",
+                        "keyCaption": "Users assigned to active action items",
+                        "value": 25,
+                        "valueCaption": "",
+                        "valueClass": ""
+                    },
+                    {
+                        "key": "computer_id",
+                        "keyCaption": "Asset ID",
+                        "value": null,
+                        "valueCaption": "",
+                        "valueClass": ""
+                    },
+                    {
+                        "key": "cc",
+                        "keyCaption": "CC",
+                        "value": "",
+                        "valueCaption": "",
+                        "valueClass": ""
+                    },
+                    {
+                        "key": "timer1",
+                        "keyCaption": "Time to Repair",
+                        "value": 1131881301,
+                        "valueCaption": "1131881301",
+                        "valueClass": ""
+                    },
+                    {
+                        "key": "computer_name",
+                        "keyCaption": "Main Asset",
+                        "value": null,
+                        "valueCaption": "",
+                        "valueClass": ""
+                    },
+                    {
+                        "key": "timer2",
+                        "keyCaption": "Time to Respond",
+                        "value": 1131881301,
+                        "valueCaption": "1131881301",
+                        "valueClass": ""
+                    },
+                    {
+                        "key": "ci",
+                        "keyCaption": "Main CI",
+                        "value": 0,
+                        "valueCaption": "",
+                        "valueClass": ""
+                    },
+                    {
+                        "key": "due_date",
+                        "keyCaption": "Due Date",
+                        "value": null,
+                        "valueCaption": "",
+                        "valueClass": ""
+                    },
+                    {
+                        "key": "cust_text1",
+                        "keyCaption": "SR Custom Text 1",
+                        "value": "",
+                        "valueCaption": "",
+                        "valueClass": ""
+                    },
+                    {
+                        "key": "cust_text2",
+                        "keyCaption": "SR Custom Text 2",
+                        "value": "",
+                        "valueCaption": "",
+                        "valueClass": ""
+                    },
+                    {
+                        "key": "merged_to",
+                        "keyCaption": "Merged to",
+                        "value": null,
+                        "valueCaption": "",
+                        "valueClass": ""
+                    },
+                    {
+                        "key": "responsible_manager",
+                        "keyCaption": "Responsible Admin",
+                        "value": null,
+                        "valueCaption": "",
+                        "valueClass": ""
+                    },
+                    {
+                        "key": "account_id",
+                        "keyCaption": "Account",
+                        "value": "paloaltonetworks_trial",
+                        "valueCaption": "paloaltonetworks_trial",
+                        "valueClass": ""
+                    },
+                    {
+                        "key": "escalation",
+                        "keyCaption": "Escalation Level",
+                        "value": 0,
+                        "valueCaption": "0",
+                        "valueClass": ""
+                    },
+                    {
+                        "key": "change_category",
+                        "keyCaption": "Classification",
+                        "value": 0,
+                        "valueCaption": "",
+                        "valueClass": ""
+                    },
+                    {
+                        "key": "assigned_group",
+                        "keyCaption": "Admin group",
+                        "value": null,
+                        "valueCaption": "",
+                        "valueClass": ""
+                    },
+                    {
+                        "key": "location",
+                        "keyCaption": "Location",
+                        "value": 0,
+                        "valueCaption": "",
+                        "valueClass": ""
+                    },
+                    {
+                        "key": "sr_type",
+                        "keyCaption": "Service Record Type",
+                        "value": 1,
+                        "valueCaption": "Incident",
+                        "valueClass": ""
+                    }
+                ]
+            }
+        }
+    }
+
+#### Human Readable Output
+
+## Service Record Results:
+
+| Id |	37 |
+| Title |	Basic Request Process2 |
+| Status |	New |
+| Modify Time |	03/30/2022 01:56:47 AM |
+| Service Record Type |	Request |
+| Notes |	If relevant, add this Request details to the Knowledge base. Close the Request. |
+
+
+### sysaid-service-record-add-note
+***
+Add a note to a Service Record
+
+
+#### Base Command
+
+`sysaid-service-record-add-note`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | The service record ID. | Required | 
+| note | The solution for deleting the service record. | Required | 
+
+
+#### Context Output
+There is no context output for this command.
+
+#### Command example
+```!sysaid-service-record-add-note id=32 note=`this is a new note 3````
+
+#### Human Readable Output
+>Updated record with new note
