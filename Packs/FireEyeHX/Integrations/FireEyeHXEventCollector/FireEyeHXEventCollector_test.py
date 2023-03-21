@@ -1,9 +1,8 @@
 import io
 import json
-from datetime import datetime, timedelta
 import demistomock as demisto
 from CommonServerPython import BaseClient
-from FireEyeHXEventCollector import populate_modeling_rule_fields, fetch_events, get_events_command, Client, DATE_FORMAT
+from FireEyeHXEventCollector import populate_modeling_rule_fields, fetch_events, get_events_command, Client
 
 
 def util_load_json(path):
@@ -45,10 +44,6 @@ def test_fetch_events(mocker):
     get_events_request_mock = mocker.patch.object(client, 'get_events_request', return_value=EVENTS_RES)
     send_events_mocker = mocker.patch('FireEyeHXEventCollector.send_events_to_xsiam')
     demisto_set_last_run_mock = mocker.patch('demistomock.setLastRun')
-
-    to_date = (datetime.now() + timedelta(days=1)).strftime(DATE_FORMAT)
-    filter_query = '{"operator": "between", "arg": ["2023-02-01T11:21:12.135Z",' \
-                   ' "' + to_date + '"], "field": "reported_at"}'
 
     events = fetch_events(client=client, max_fetch='100', first_fetch='2023-02-01T11:21:12.135Z',
                           min_id='100', should_push_events=True)

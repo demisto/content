@@ -11,7 +11,6 @@ Palo Alto Networks FireEye HX Event Collector integration for XSIAM.
     | Server URL (e.g., https://192.168.0.1:3000) |  | True |
     | User Name |  | True |
     | Password |  | True |
-    | Filter by resolution of the alert. |  | True |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
     | The maximum number of events per fetch. | The maximum number of events to fetch every time fetch is executed. | False |
