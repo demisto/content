@@ -9,8 +9,8 @@ from Tests.Marketplace.marketplace_constants import BucketUploadFlow
 from Tests.scripts.utils import logging_wrapper as logging
 
 
-def replace_readme_urls(index_local_path, storage_base_path,
-                        marketplace='xsoar', index_v2=False) -> tuple:
+def replace_readme_urls(index_local_path: str, storage_base_path: str,
+                        marketplace: str = 'xsoar', index_v2: bool = False) -> tuple:
     """
     This function goes over the index.zip folder. iterates over all the pack README.md files.
     It replaces inplace the readme images path to point to there new location gcp or api.
@@ -47,8 +47,8 @@ def replace_readme_urls(index_local_path, storage_base_path,
     return readme_images, readme_urls_data_list
 
 
-def collect_images_from_readme_and_replace_with_storage_path(pack_readme_path, gcs_pack_path, pack_name, marketplace='xsoar',
-                                                             index_v2=False):
+def collect_images_from_readme_and_replace_with_storage_path(pack_readme_path: str, gcs_pack_path, pack_name: str,
+                                                             marketplace: str = 'xsoar', index_v2: bool = False) -> list:
     """
     Replaces inplace all images links in the pack README.md with their new gcs location
 
@@ -101,6 +101,9 @@ def collect_images_from_readme_and_replace_with_storage_path(pack_readme_path, g
 
 
 def download_readme_images_from_url_data_list(readme_urls_data_list: list, storage_bucket):
+    """
+    Iterates over the readme_url_data_list and calls the download_readme_image_from_url_and_upload_to_gcs
+    """
     for readme_url_data in readme_urls_data_list:
         readme_original_url = readme_url_data.get('original_read_me_url')
         gcs_storage_path = str(readme_url_data.get('new_gcs_image_path'))
@@ -160,7 +163,7 @@ def download_readme_image_from_url_and_upload_to_gcs(readme_original_url: str, g
         return False
 
 
-def copy_readme_images(production_bucket, build_bucket, images_data, storage_base_path,
+def copy_readme_images(production_bucket, build_bucket, images_data: dict, storage_base_path,
                        build_bucket_base_path):
     """ Copies pack's readme_images from the build bucket to the production bucket
 
