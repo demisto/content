@@ -236,6 +236,3 @@ def test_test_command(mocker):
     mocker.patch.object(CymruClient, "lookup", return_value=return_value)
     TeamCymru.main()
     assert_results_ok()
-
-
-# todo - add proxy tests

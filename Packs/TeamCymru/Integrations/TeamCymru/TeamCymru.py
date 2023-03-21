@@ -1,5 +1,4 @@
 from CommonServerPython import *
-from CommonServerUserPython import *
 import demistomock as demisto
 
 '''IMPORTS'''
@@ -25,39 +24,34 @@ MAPPING = {'ip': 'IP', 'asn': 'ASN', 'owner': 'Organization', 'cc': 'Country', '
 class CymruClient(Client):
 
     def _connect(self):
-        demisto.debug("start connecting")
+        demisto.debug("Start connecting...")
         self.socket = socks.socksocket()
-        demisto.debug("before settimeout")
         self.socket.settimeout(30.0)
-        demisto.debug("after settimeout before connect")
         self.socket.connect((self.host, self.port))
-        demisto.debug("after connect")
         self.socket.settimeout(60.0)
-        demisto.debug("after settimeout before makefile")
         self.file = self.socket.makefile("rw")
-        demisto.debug("after makefile")
 
-    def lookup(self, ip: str) -> Optional[Dict[str, Any]]:
+    def lookup(self, ip: str) -> dict[str, Any] | None:
         """Perform lookups by ip address and return ASN, Country Code, and Network Owner.
 
         :type ip: ``str``
         :param ip: string to add in the dummy dict that is returned
 
-        :return: Dictionary contains the results of the lookup API call.
-        :rtype: Dict[str, str]
+        :return: Dictionary contains the results of the lookup API call if succeeded, else None
+        :rtype: Dict[str, Any] or None
         """
         raw_result = super().lookup(ip)
         return vars(raw_result) if raw_result else None
 
-    def lookupmany_dict(self, bulk: List[str]) -> Optional[Dict[str, Any]]:
+    def lookupmany_dict(self, bulk: list[str]) -> Optional[dict[str, Any]]:
         """Perform lookups by bulk of ip addresses,
         returning a dictionary of ip -> record (ASN, Country Code, and Netblock Owner.)
 
         :type bulk: ``list``
         :param bulk: list of ip addresses
 
-        :return: Dictionary contains the results of the lookupmany API call.
-        :rtype: Dict[str, Dict[str, str]]
+        :return: Dictionary contains the results of the lookupmany API call if succeeded, else None
+        :rtype: Dict[str, Dict[str, str]] or None
         """
 
         raw_result = super().lookupmany_dict(bulk)
@@ -140,7 +134,7 @@ def parse_file(file_path_res: dict[str, str], delimiter: str = ",") -> List[str]
     return bulk_list
 
 
-def parse_ips_list(client: CymruClient, ips_list: list[str]) -> List[CommandResults]:
+def parse_ips_list(client: CymruClient, ips_list: list[str]) -> list[CommandResults]:
     """
     Creates a commandResults array based on a list of IP addresses,
     this by calling the relevant functions.
@@ -148,7 +142,7 @@ def parse_ips_list(client: CymruClient, ips_list: list[str]) -> List[CommandResu
     :param ips_list: list of IP addresses
     :return: CommandResults object
     """
-    command_results: List[CommandResults] = []
+    command_results: list[CommandResults] = []
     invalid_ips, valid_ips = validate_ip_addresses(ips_list)
     if invalid_ips:
         return_warning('The following IP Addresses were found invalid: {}'.format(', '.join(invalid_ips)),
@@ -192,7 +186,7 @@ def test_module(client: CymruClient) -> str:
     return message
 
 
-def ip_command(client: CymruClient, args: Dict[str, Any]) -> List[CommandResults]:
+def ip_command(client: CymruClient, args: dict[str, Any]) -> list[CommandResults]:
     """
     Returns the results of 'ip' command
     :type client: ``Client``
@@ -203,7 +197,7 @@ def ip_command(client: CymruClient, args: Dict[str, Any]) -> List[CommandResults
     :return: CommandResults object containing the results of the lookup action as returned from the API
     and its readable output.
     """
-    command_results: List[CommandResults] = []
+    command_results: list[CommandResults] = []
     ip = argToList(args.get('ip'))
     if not ip:
         raise ValueError('IP not specified')
@@ -219,7 +213,7 @@ def ip_command(client: CymruClient, args: Dict[str, Any]) -> List[CommandResults
     return command_results
 
 
-def cymru_bulk_whois_command(client: CymruClient, args: Dict[str, Any]) -> List[CommandResults]:
+def cymru_bulk_whois_command(client: CymruClient, args: dict[str, Any]) -> list[CommandResults]:
     """
     Returns results of 'cymru-bulk-whois' command
     :type client: ``Client``
@@ -244,6 +238,9 @@ def cymru_bulk_whois_command(client: CymruClient, args: Dict[str, Any]) -> List[
 
 
 def setup_proxy():
+    """
+    The function is based on setup_proxy() from 'Whois' pack
+    """
     scheme_to_proxy_type = {
         'socks5': [socks.PROXY_TYPE_SOCKS5, False],
         'socks5h': [socks.PROXY_TYPE_SOCKS5, True],
@@ -269,6 +266,7 @@ def setup_proxy():
         raise ValueError("Un supported proxy scheme: {}".format(scheme))
     socks.set_default_proxy(proxy_type[0], host, port, proxy_type[1])
     socket.socket = socks.socksocket  # type: ignore
+    demisto.info("Proxy setup completed successfully.")
 
 
 ''' MAIN FUNCTION '''
@@ -279,16 +277,11 @@ def main() -> None:
     main function, parses params and runs command functions
     """
 
-    # verify_certificate = not demisto.params().get('insecure', False)  # noqa: F841
-
     demisto.debug(f'Command being called is {demisto.command()}')
-    org_socket = socket.socket
-
+    org_socket = None
     try:
-        # handle_proxy('proxy')
-
+        org_socket = socket.socket
         setup_proxy()
-        # client = CymruClient(proxy_host=host, proxy_port=port, proxy_type=socks.SOCKS5)
         client = CymruClient()
 
         if demisto.command() == 'test-module':
@@ -306,7 +299,7 @@ def main() -> None:
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
     finally:
-        socks.set_default_proxy()  # clear proxy settings
+        socks.set_default_proxy()   # clear proxy settings
         socket.socket = org_socket  # type: ignore
 
 
