@@ -212,7 +212,8 @@ class CoreClient(BaseClient):
         endpoints = reply.get('reply').get('endpoints', [])
         return endpoints
 
-    def set_endpoints_alias(self, filters: list[dict[str, str]], new_alias_name: str | None) -> dict:      # pragma: no cover
+    def set_endpoints_alias(self, filters: list[dict[str, str]],
+                            new_alias_name: str | None) -> dict:  # pragma: no cover
         """
         This func is used to set the alias name of an endpoint.
 
@@ -995,7 +996,8 @@ class CoreClient(BaseClient):
 
     @logger
     def run_script(self,
-                   script_uid: str, endpoint_ids: list, parameters: Dict[str, Any], timeout: int, incident_id: Optional[int],
+                   script_uid: str, endpoint_ids: list, parameters: Dict[str, Any], timeout: int,
+                   incident_id: Optional[int],
                    ) -> Dict[str, Any]:
         filters: list = [{
             'field': 'endpoint_id_list',
@@ -1238,6 +1240,13 @@ class AlertFilterArg:
         self.option_mapper = option_mapper
 
 
+def catch_and_exit_gracefully(e):
+    if e.res.status_code == 500 and 'An error occurred while processing XDR public API - No endpoint was found for creating the requested action' in str(e):
+        return CommandResults(readable_output="The operation executed is not supported on the given machine.")
+    else:
+        raise e
+
+
 def init_filter_args_options():
     array = 'array'
     dropdown = 'dropdown'
@@ -1450,7 +1459,8 @@ def create_filter_from_args(args: dict) -> dict:
             and_operator_list.append({
                 'SEARCH_FIELD': arg_properties.search_field,
                 'SEARCH_TYPE': arg_properties.search_type,
-                'SEARCH_VALUE': arg_properties.option_mapper.get(arg_value) if arg_properties.option_mapper else arg_value
+                'SEARCH_VALUE': arg_properties.option_mapper.get(
+                    arg_value) if arg_properties.option_mapper else arg_value
             })
 
     return {'AND': and_operator_list}
@@ -1542,7 +1552,8 @@ def endpoint_scan_command(client: CoreClient, args) -> CommandResults:
 
     return CommandResults(
         readable_output=tableToMarkdown('Endpoint scan', {'Action Id': action_id}, ['Action Id']),
-        outputs={f'{args.get("integration_context_brand", "CoreApiModule")}.endpointScan(val.actionId == obj.actionId)': context},
+        outputs={
+            f'{args.get("integration_context_brand", "CoreApiModule")}.endpointScan(val.actionId == obj.actionId)': context},
         raw_response=reply
     )
 
@@ -1605,14 +1616,17 @@ def isolate_endpoint_command(client: CoreClient, args) -> CommandResults:
         raise ValueError(
             f'Error: Endpoint {endpoint_id} is pending isolation cancellation and therefore can not be isolated.'
         )
-    result = client.isolate_endpoint(endpoint_id=endpoint_id, incident_id=incident_id)
+    try:
+        result = client.isolate_endpoint(endpoint_id=endpoint_id, incident_id=incident_id)
 
-    return CommandResults(
-        readable_output=f'The isolation request has been submitted successfully on Endpoint {endpoint_id}.\n',
-        outputs={f'{args.get("integration_context_brand", "CoreApiModule")}.'
-                 f'Isolation.endpoint_id(val.endpoint_id == obj.endpoint_id)': endpoint_id},
-        raw_response=result
-    )
+        return CommandResults(
+            readable_output=f'The isolation request has been submitted successfully on Endpoint {endpoint_id}.\n',
+            outputs={f'{args.get("integration_context_brand", "CoreApiModule")}.'
+                     f'Isolation.endpoint_id(val.endpoint_id == obj.endpoint_id)': endpoint_id},
+            raw_response=result
+        )
+    except Exception as e:
+        return catch_and_exit_gracefully(e)
 
 
 def arg_to_timestamp(arg, arg_name: str, required: bool = False):
@@ -1835,7 +1849,8 @@ def endpoint_alias_change_command(client: CoreClient, **args) -> CommandResults:
     # create filters
     filters: list[dict[str, str]] = create_request_filters(
         status=status, username=username_list, endpoint_id_list=endpoint_id_list, dist_name=dist_name_list,
-        ip_list=ip_list, group_name=group_name_list, platform=platform_list, alias_name=alias_name_list, isolate=isolate,
+        ip_list=ip_list, group_name=group_name_list, platform=platform_list, alias_name=alias_name_list,
+        isolate=isolate,
         hostname=hostname_list, first_seen_gte=first_seen_gte, first_seen_lte=first_seen_lte,
         last_seen_gte=last_seen_gte, last_seen_lte=last_seen_lte, scan_status=scan_status
     )
@@ -1928,7 +1943,8 @@ def run_snippet_code_script_command(client: CoreClient, args: Dict) -> CommandRe
     snippet_code = args.get('snippet_code')
     endpoint_ids = argToList(args.get('endpoint_ids'))
     incident_id = arg_to_number(args.get('incident_id'))
-    response = client.run_snippet_code_script(snippet_code=snippet_code, endpoint_ids=endpoint_ids, incident_id=incident_id)
+    response = client.run_snippet_code_script(snippet_code=snippet_code, endpoint_ids=endpoint_ids,
+                                              incident_id=incident_id)
     reply = response.get('reply')
     return CommandResults(
         readable_output=tableToMarkdown('Run Snippet Code Script', reply),
@@ -2022,25 +2038,29 @@ def quarantine_files_command(client, args):
     file_hash = args.get("file_hash")
     incident_id = arg_to_number(args.get('incident_id'))
 
-    reply = client.quarantine_files(
-        endpoint_id_list=endpoint_id_list,
-        file_path=file_path,
-        file_hash=file_hash,
-        incident_id=incident_id
-    )
-    output = {
-        'endpointIdList': endpoint_id_list,
-        'filePath': file_path,
-        'fileHash': file_hash,
-        'actionId': reply.get("action_id")
-    }
+    try:
+        reply = client.quarantine_files(
+            endpoint_id_list=endpoint_id_list,
+            file_path=file_path,
+            file_hash=file_hash,
+            incident_id=incident_id
+        )
+        output = {
+            'endpointIdList': endpoint_id_list,
+            'filePath': file_path,
+            'fileHash': file_hash,
+            'actionId': reply.get("action_id")
+        }
 
-    return CommandResults(
-        readable_output=tableToMarkdown('Quarantine files', output, headers=[*output], headerTransform=pascalToSpace),
-        outputs={f'{args.get("integration_context_brand", "CoreApiModule")}.'
-                 f'quarantineFiles.actionIds(val.actionId === obj.actionId)': output},
-        raw_response=reply
-    )
+        return CommandResults(
+            readable_output=tableToMarkdown('Quarantine files', output, headers=[*output],
+                                            headerTransform=pascalToSpace),
+            outputs={f'{args.get("integration_context_brand", "CoreApiModule")}.'
+                     f'quarantineFiles.actionIds(val.actionId === obj.actionId)': output},
+            raw_response=reply
+        )
+    except Exception as e:
+        return catch_and_exit_gracefully(e)
 
 
 def restore_file_command(client, args):
@@ -2389,7 +2409,8 @@ def endpoint_command(client, args):
         ip_list=endpoint_ip_list,
         hostname=endpoint_hostname_list,
     )
-    standard_endpoints = generate_endpoint_by_contex_standard(endpoints, True, args.get("integration_name", "CoreApiModule"))
+    standard_endpoints = generate_endpoint_by_contex_standard(endpoints, True,
+                                                              args.get("integration_name", "CoreApiModule"))
     command_results = []
     if standard_endpoints:
         for endpoint in standard_endpoints:
@@ -2498,7 +2519,8 @@ def get_quarantine_status_command(client, args):
     }
 
     return CommandResults(
-        readable_output=tableToMarkdown('Quarantine files status', output, headers=[*output], headerTransform=pascalToSpace),
+        readable_output=tableToMarkdown('Quarantine files status', output, headers=[*output],
+                                        headerTransform=pascalToSpace),
         outputs={f'{args.get("integration_context_brand", "CoreApiModule")}.'
                  f'quarantineFiles.status(val.fileHash === obj.fileHash &&'
                  f'val.endpointId === obj.endpointId && val.filePath === obj.filePath)': output},
@@ -2616,7 +2638,7 @@ def handle_outgoing_issue_closure(remote_args):
     #   The XSOAR incident is closed
     #   and the remote incident isn't already closed
     if remote_args.inc_status == 2 and \
-       current_remote_status not in XDR_RESOLVED_STATUS_TO_XSOAR:
+            current_remote_status not in XDR_RESOLVED_STATUS_TO_XSOAR:
 
         if close_notes := update_args.get('closeNotes'):
             update_args['resolve_comment'] = close_notes
@@ -2895,7 +2917,6 @@ def get_script_code_command(client: CoreClient, args: Dict[str, str]) -> Tuple[s
     requires_polling_arg=False  # means it will always be default to poll, poll=true
 )
 def script_run_polling_command(args: dict, client: CoreClient) -> PollResult:
-
     if action_id := args.get('action_id'):
         response = client.get_script_execution_status(action_id)
         general_status = response.get('reply', {}).get('general_status') or ''
@@ -3333,21 +3354,21 @@ def get_dynamic_analysis_command(client: CoreClient, args: Dict) -> CommandResul
 
 
 def create_request_filters(
-    status: Optional[str] = None,
-    username: Optional[List] = None,
-    endpoint_id_list: Optional[List] = None,
-    dist_name: Optional[List] = None,
-    ip_list: Optional[List] = None,
-    group_name: Optional[List] = None,
-    platform: Optional[List] = None,
-    alias_name: Optional[List] = None,
-    isolate: Optional[str] = None,
-    hostname: Optional[List] = None,
-    first_seen_gte=None,
-    first_seen_lte=None,
-    last_seen_gte=None,
-    last_seen_lte=None,
-    scan_status=None,
+        status: Optional[str] = None,
+        username: Optional[List] = None,
+        endpoint_id_list: Optional[List] = None,
+        dist_name: Optional[List] = None,
+        ip_list: Optional[List] = None,
+        group_name: Optional[List] = None,
+        platform: Optional[List] = None,
+        alias_name: Optional[List] = None,
+        isolate: Optional[str] = None,
+        hostname: Optional[List] = None,
+        first_seen_gte=None,
+        first_seen_lte=None,
+        last_seen_gte=None,
+        last_seen_lte=None,
+        scan_status=None,
 ):
     filters = []
 
@@ -3460,7 +3481,6 @@ def create_request_filters(
 
 
 def args_to_request_filters(args):
-
     if set(args.keys()) & {  # check if any filter argument was provided
         'endpoint_id_list', 'dist_name', 'ip_list', 'group_name', 'platform', 'alias_name',
         'isolate', 'hostname', 'status', 'first_seen_gte', 'first_seen_lte', 'last_seen_gte', 'last_seen_lte'
