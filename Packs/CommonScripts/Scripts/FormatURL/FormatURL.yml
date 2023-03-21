@@ -1,6 +1,6 @@
 args:
 - default: false
-  description: A comma-separated list of URL inputs.
+  description: A pipe ("|") separated list of URL inputs.
   isArray: true
   name: input
   required: true
