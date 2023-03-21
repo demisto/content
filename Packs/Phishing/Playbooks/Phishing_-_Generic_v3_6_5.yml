@@ -3,7 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Phishing - Generic v3
-description: "This playbook investigates and remediates a potential phishing incident. It engages with the user who triggered the incident while investigating the incident itself.\n\nNote: \n- Final remediation tasks are manual by default. can be managed by \"SearchAndDelete\" and \"BlockIndicators\" inputs.\n- Please do not rerun this playbook inside a phishing incident since it can produce an unexpected result. Create a new incident instead if needed."
+description: "This playbook investigates and remediates a potential phishing incident. It engages with the user who triggered the incident while investigating the incident itself.\n\nNote: \n- Final remediation tasks are manual by default. can be managed by \"SearchAndDelete\" and \"BlockIndicators\" inputs.\n- Do not rerun this playbook inside a phishing incident since it can produce an unexpected result. Create a new incident instead if needed."
 starttaskid: "0"
 tasks:
   "0":
@@ -194,7 +194,7 @@ tasks:
       - "56"
     scriptarguments:
       body:
-        simple: "Hi ${.=function(val) { if(!(val.Account.length > 1)) return val.incident.reporteremailaddress; var reporter = val.incident.reporteremailaddress; var account = val.Account && val.Account.filter(function(acc) { return acc.DisplayName && (acc.Email  === reporter || Array.isArray(acc.Email) && acc.Email.indexOf(reporter) > -1) }); return account && account[0] && account[0].DisplayName[0] || reporter || ''; }(val)},\nWe've received your email and are investigating.\n do not touch the email until further notice.\n\nCordially, \n  Your friendly neighborhood security team"
+        simple: "Hi ${.=function(val) { if(!(val.Account.length > 1)) return val.incident.reporteremailaddress; var reporter = val.incident.reporteremailaddress; var account = val.Account && val.Account.filter(function(acc) { return acc.DisplayName && (acc.Email  === reporter || Array.isArray(acc.Email) && acc.Email.indexOf(reporter) > -1) }); return account && account[0] && account[0].DisplayName[0] || reporter || ''; }(val)},\nWe've received your email and are investigating.\n Do not touch the email until further notice.\n\nCordially, \n  Your friendly neighborhood security team"
       subject:
         simple: 'Re: Phishing Investigation - ${incident.name}'
       to:
