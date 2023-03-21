@@ -30,7 +30,7 @@ def replace_readme_urls(index_local_path, storage_base_path,
         if not os.path.exists(pack_readme_path):
             continue
 
-        storage_pack_path = os.path.join(storage_base_path, pack_name)  # disable-secrets-detection
+        storage_pack_path = os.path.join(storage_base_path, pack_name)
         readme_images_storage_paths = collect_images_from_readme_and_replace_with_storage_path(
             pack_readme_path, storage_pack_path, pack_name, marketplace=marketplace, index_v2=index_v2)
 
