@@ -409,7 +409,8 @@ def prisma_access_logout_user(computer: str, domain: str, user: str, tenant: str
 
         if tenant:
             tenant_entry = f"<tenant-name><entry name='{tenant}'></entry></tenant-name>"
-            cmd = cmd.replace('<gpcs>', f'<gpcs>{tenant_entry}').replace('</logout_mobile_user>', '</logout_mobile_user></multi-tenant>')
+            cmd = cmd.replace('<gpcs>', f'<gpcs>{tenant_entry}').replace('</logout_mobile_user>',
+                                                                         '</logout_mobile_user></multi-tenant>')
         params = {
             'type': 'op',
             'key': API_KEY,
