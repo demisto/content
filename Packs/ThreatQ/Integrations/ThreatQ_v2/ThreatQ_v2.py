@@ -182,45 +182,29 @@ def get_generic_context(indicator, generic_context=None):
     return generic_context
 
 
-def tq_request(method, url_suffix, params=None, files=None, retrieve_entire_response=False, allow_redirects=True,
-               make_second_attempt=True):
+def tq_request(method, url_suffix, params=None, files=None, retrieve_entire_response=False, allow_redirects=True):
     api_call_headers = None
-    request_params = params
     if url_suffix != '/token':
         access_token = get_access_token()
         api_call_headers = {'Authorization': 'Bearer ' + access_token}
 
         if not files:
-            request_params = json.dumps(params)
+            params = json.dumps(params)
             api_call_headers.update({'Content-Type': 'application/json'})
 
+    demisto.debug(f"[TEST] - Sending request with url endpoint: {url_suffix}")
     response = requests.request(
         method,
         API_URL + url_suffix,
-        data=request_params,
+        data=params,
         headers=api_call_headers,
         verify=USE_SSL,
         files=files,
         allow_redirects=allow_redirects
     )
+    demisto.debug(f"Response status code: {response.status_code}")
 
     if response.status_code >= 400:
-
-        if make_second_attempt and response.status_code == 500:
-            value = params.get("criteria", {}).get("value", {}).get("+equals")
-            if value:  # Trying with an other body
-                params["criteria"]["value"] = value
-
-                return tq_request(
-                    method=method,
-                    url_suffix=url_suffix,
-                    params=params,
-                    files=files,
-                    retrieve_entire_response=retrieve_entire_response,
-                    allow_redirects=allow_redirects,
-                    make_second_attempt=False
-                )
-
         errors_string = get_errors_string_from_bad_request(response, response.status_code)
         error_message = 'Received an error - status code [{0}].\n{1}'.format(response.status_code, errors_string)
         return_error(error_message)
@@ -315,11 +299,11 @@ def make_indicator_reputation_request(indicator_type, value, generic_context):
             is_httpx = True
 
         if is_httpx:
-            body = {"criteria": {"+or": [{"value": {"+equals": value}}, {"value": {"+equals": value_without_proto}}]},
+            body = {"criteria": {"+or": [{"value": value}, {"value": value_without_proto}]},
                     "filters": {"type_name": tq_type}}
         else:
             body = {
-                "criteria": {"value": {"+equals": value}},
+                "criteria": {"value": value},
                 "filters": {"type_name": tq_type}
             }
 
@@ -329,13 +313,13 @@ def make_indicator_reputation_request(indicator_type, value, generic_context):
         tq_type = "Email Address"
 
     if indicator_type == 'file':
-        body = {"criteria": {"value": {"+equals": value}},
+        body = {"criteria": {"value": value},
                 "filters": {
                     "+or": [{"type_name": "MD5"}, {"type_name": "SHA-1"}, {"type_name": "SHA-256"}, {"type_name": "SHA-384"},
                             {"type_name": "SHA-512"}]}}
     elif tq_type != "URL":
         body = {
-            "criteria": {"value": {"+equals": value}},
+            "criteria": {"value": value},
             "filters": {"type_name": tq_type}
         }
 
