@@ -54,6 +54,7 @@ DBOTSCORE = {
 }
 
 RATE_LIMIT_REACHED = 429
+MAX_RETIES = 10
 
 ''' HELPER FUNCTIONS '''
 
@@ -108,7 +109,7 @@ def build_errors_string(errors):
     return err_str
 
 
-def http_request(method, url_suffix, params=None, files=None, ignore_errors=False, get_raw=False):
+def http_request(method, url_suffix, params=None, files=None, ignore_errors=False, get_raw=False, reties=0):
     """ General HTTP request.
     Args:
         ignore_errors (bool):
@@ -171,17 +172,18 @@ def http_request(method, url_suffix, params=None, files=None, ignore_errors=Fals
         method, url, params=params, headers=HEADERS, files=files, verify=USE_SSL, proxies=PROXIES
     )
 
-    if RETRY_ON_RATE_LIMIT and (r.status_code == RATE_LIMIT_REACHED or "Retry-After" in r.headers):
+    if RETRY_ON_RATE_LIMIT and reties < MAX_RETIES \
+            and (r.status_code == RATE_LIMIT_REACHED or "Retry-After" in r.headers):
         seconds_to_wait = random.uniform(1.0, 5.0)
         try:
             seconds_to_wait += float(r.headers.get("Retry-After", 0))
         except ValueError:
             pass
 
-        demisto.debug(f"Rate limit exceeded! Waiting {seconds_to_wait} seconds and then retry.")
+        demisto.debug(f"Rate limit exceeded! Waiting {seconds_to_wait} seconds and then retry #{reties}.")
         time.sleep(seconds_to_wait)  # pylint: disable=sleep-exists
         reset_file_buffer(files)
-        return http_request(method, url_suffix, params, files, ignore_errors, get_raw)
+        return http_request(method, url_suffix, params, files, ignore_errors, get_raw, reties + 1)
 
     # Handle errors
     try:
