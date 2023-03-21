@@ -1,7 +1,6 @@
 id: 5cfcd8f7-3c1f-47c1-863d-9be3f5830832
-version: 29
-vcShouldKeepItemLegacyProdMachine: false
-name: Darktrace Basic Model Breach Handler
+version: -1
+name: 5cfcd8f7-3c1f-47c1-863d-9be3f5830832
 starttaskid: "0"
 tasks:
   "0":
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -142,9 +142,7 @@ tasks:
       id: 4e49dbaf-b5f8-4b56-85fc-887f81ac0c8e
       version: -1
       name: Apply a comment on Darktrace?
-      description: "Gets a value and return it. This is to be used in playbook conditional
-        tasks - get a value from incident field, label or context, and act accordingly.
-        \nIf an array is returned. the first value will be the decision making value."
+      description: "Gets a value and return it. This is to be used in playbook conditional tasks - get a value from incident field, label or context, and act accordingly. \nIf an array is returned. the first value will be the decision making value."
       type: condition
       iscommand: false
       brand: ""
@@ -165,13 +163,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
-      body: null
+      to:
+      subject:
+      body:
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -214,13 +212,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
-      body: null
+      to:
+      subject:
+      body:
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -266,13 +264,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
-      body: null
+      to:
+      subject:
+      body:
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -419,3 +417,6 @@ view: |-
 inputs: []
 outputs: []
 description: Runs a common Model Breach workflow for fetched Model breach alerts.
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0

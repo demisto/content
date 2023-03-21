@@ -13,14 +13,12 @@
         "Network Security"
     ],
     "tags": [
-        "marketplace_name:breach",
-        "marketplace_name:compliance",
-        "marketplace_name:attack",
-        "marketplace_name:alerts",
-        "marketplace_name:malware",
-        "marketplace_name:network",
-        "marketplace_name:Darktrace",
-        "marketplace_name:threat_detection"
+        "Breach",
+        "Compliance",
+        "Attack",
+        "Alerts",
+        "Malware",
+        "Network"
     ],
     "useCases": [],
     "keywords": [
@@ -28,7 +26,6 @@
     ],
     "certification": "certified",
     "marketplaces": [
-        "xsoar",
-        "marketplacev2"
+        "xsoar"
     ]
 }

@@ -1,6 +1,5 @@
 id: 67a32bd3-06e4-4ff4-8237-30d3c86247b6
-version: 28
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: Darktrace Basic AI Analyst Event Handler
 starttaskid: "0"
 tasks:
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -102,9 +102,7 @@ tasks:
       id: ba9c65e6-907e-4a09-8821-860b352713dd
       version: -1
       name: Get  Entire AI Analyst Investigation Group
-      description: Pulls all linked events for a given event. Over time, events can
-        become merged with one another. This happens when two sets of disparate activity
-        are suddenly linked by shared factors.
+      description: Pulls all linked events for a given event. Over time, events can become merged with one another. This happens when two sets of disparate activity are suddenly linked by shared factors.
       script: DarktraceAIA|||darktrace-get-ai-analyst-incident-group-from-eventId
       type: regular
       iscommand: true
@@ -138,8 +136,7 @@ tasks:
       id: dae96048-5f56-43f9-8112-19ca3ab9f074
       version: -1
       name: Is Incident Category Significant?
-      description: Check whether the values provided in arguments are equal. If either
-        of the arguments are missing, no is returned.
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
       type: condition
       iscommand: false
       brand: ""
@@ -229,6 +226,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "No":
       - "3"
@@ -246,13 +244,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
-      body: null
+      to:
+      subject:
+      body:
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -311,6 +309,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "No":
       - "7"
@@ -328,13 +327,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
-      body: null
+      to:
+      subject:
+      body:
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -359,6 +358,7 @@ tasks:
       type: collection
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "11"
@@ -374,13 +374,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
-      body: null
+      to:
+      subject:
+      body:
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -400,8 +400,7 @@ tasks:
         options: []
         optionsarg: []
         fieldassociated: ""
-        placeholder: Tags can be used to lower future activity thresholds for certain
-          devices
+        placeholder: Tags can be used to lower future activity thresholds for certain devices
         tooltip: The tag needs to previously exist on your Darktrace
         readonly: false
       - id: "1"
@@ -484,3 +483,6 @@ view: |-
 inputs: []
 outputs: []
 description: Runs a common AI Analyst workflow for fetched AI Analyst events.
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0
