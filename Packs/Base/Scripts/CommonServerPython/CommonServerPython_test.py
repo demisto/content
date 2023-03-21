@@ -3324,6 +3324,7 @@ regexes_test = [
     (ipv4Regex, '192.256.1.1', False),
     (ipv4Regex, '192.256.1.1.1', False),
     (ipv4Regex, '192.168.1.1/12', False),
+    (ipv4Regex, '', False),
     (ipv4cidrRegex, '192.168.1.1/32', True),
     (ipv4cidrRegex, '192.168.1.1.1/30', False),
     (ipv4cidrRegex, '192.168.1.b/30', False),
@@ -3543,7 +3544,8 @@ INDICATOR_VALUE_AND_TYPE = [
     ('1[.]1[.]1[.]1', 'IP'),
     ('test[@]test.com', 'Email'),
     ('https[:]//www[.]test[.]com/abc', 'URL'),
-    ('test[.]com', 'Domain')
+    ('test[.]com', 'Domain'),
+    ('https://192.168.1.1:8080', 'URL'),
 ]
 
 
@@ -3651,7 +3653,7 @@ VALID_URL_INDICATORS = [
     'wwW.GooGle.com/path',
     '2001:db8:85a3:8d3:1319:8a2e:370:7348/65/path/path',
     '2001:db8:3333:4444:5555:6666:7777:8888/32/path/path',
-    '2001:db8:85a3:8d3:1319:8a2e:370:7348/h'
+    '2001:db8:85a3:8d3:1319:8a2e:370:7348/h',
     '1.1.1.1/7/server',
     "1.1.1.1/32/path",
     'https://evil.tld/evil.html',
@@ -3716,7 +3718,8 @@ def test_valid_url_indicator_types(indicator_value):
     Then
     - The indicators are classified as URL indicators.
     """
-    assert re.match(urlRegex, indicator_value)
+    regex_match = re.match(urlRegex, indicator_value)
+    assert regex_match.group(0) == indicator_value
 
 
 INVALID_URL_INDICATORS = [
@@ -3728,7 +3731,6 @@ INVALID_URL_INDICATORS = [
     'google.com*',
     '1.1.1.1',
     'path/path',
-    '1.1.1.1:8080',
     '1.1.1.1:111112243245/path',
     '3.4.6.92:8080:/test',
     '1.1.1.1:4lll/',
@@ -6735,6 +6737,30 @@ class TestIndicatorsSearcher:
             results.append(res)
         assert len(results) == 1
 
+    def test_search_indicators_with_sort(self, mocker):
+        """
+        Given:
+          - Searching indicators with a custom sort parameter.
+          - Mocking the searchIndicators function.
+        When:
+          - Calling the searchIndicators function with the custom sort parameter.
+        Then:
+          - Ensure that the sort parameter is set correctly.
+          - Ensure that the searchIndicators function is called with the expected arguments.
+        """
+        from CommonServerPython import IndicatorsSearcher
+        get_demisto_version._version = None  # clear cache between runs of the test
+        mocker.patch.object(demisto, 'demistoVersion', return_value={'version': '6.6.0'})
+
+        mocker.patch.object(demisto, 'searchIndicators')
+        sort_param = [{"field": "created", "asc": False}]
+        search_indicators_obj_search_after = IndicatorsSearcher(sort=sort_param)
+        search_indicators_obj_search_after.search_indicators_by_version()
+        expected_args = {'size': 100, 'sort': [{'asc': False, 'field': 'created'}]}
+        assert search_indicators_obj_search_after._sort == sort_param
+        demisto.searchIndicators.assert_called_once_with(**expected_args)
+
+
 
 class TestAutoFocusKeyRetriever:
     def test_instantiate_class_with_param_key(self, mocker, clear_version_cache):
@@ -7772,7 +7798,7 @@ class TestFetchWithLookBack:
                     {'limit': 3, 'first_fetch': '20 minutes', 'look_back': 30},
                     [INCIDENTS[2], INCIDENTS[3], INCIDENTS[4]], [NEW_INCIDENTS[1], NEW_INCIDENTS[2]], [],
                     {'found_incident_ids': {3: '', 4: '', 5: ''}, 'limit': 6},
-                    {'found_incident_ids': {3: '', 4: '', 5: '', 7: '', 8: ''}, 'limit': 3},
+                    {'found_incident_ids': {3: '', 4: '', 5: '', 7: '', 8: ''}, 'limit': 8},
                     [NEW_INCIDENTS[1], NEW_INCIDENTS[2]], 3
             ),
 
@@ -7804,7 +7830,7 @@ class TestFetchWithLookBack:
                     [INCIDENTS_TIME_AWARE[2], INCIDENTS_TIME_AWARE[3], INCIDENTS_TIME_AWARE[4]],
                     [NEW_INCIDENTS_TIME_AWARE[1], NEW_INCIDENTS_TIME_AWARE[2]], [],
                     {'found_incident_ids': {3: '', 4: '', 5: ''}, 'limit': 6},
-                    {'found_incident_ids': {3: '', 4: '', 5: '', 7: '', 8: ''}, 'limit': 3},
+                    {'found_incident_ids': {3: '', 4: '', 5: '', 7: '', 8: ''}, 'limit': 8},
                     [NEW_INCIDENTS_TIME_AWARE[1], NEW_INCIDENTS_TIME_AWARE[2]], 3
             ),
         ])
@@ -7982,7 +8008,7 @@ class TestFetchWithLookBack:
                 },
                 {
                     'time': '2022-04-02T10:12:00',
-                    'limit': 3,
+                    'limit': 8,
                     'found_incident_ids': {'4': '', '5': ''}
                 },
                 {
@@ -8002,7 +8028,7 @@ class TestFetchWithLookBack:
                 },
                 {
                     'time': '2022-04-02T10:12:00',
-                    'limit': 6,
+                    'limit': 8,
                     'found_incident_ids': {'4': '', '5': '',
                                            '7': '', '8': '', '9': ''}
                 }
@@ -8041,7 +8067,7 @@ class TestFetchWithLookBack:
                 },
                 {
                     'time': '2022-04-06T10:11:00',
-                    'limit': 3,
+                    'limit': 6,
                     'found_incident_ids': {'1': '', '2': '', '3': ''}
                 },
                 {
@@ -8057,7 +8083,7 @@ class TestFetchWithLookBack:
                 },
                 {
                     'time': '2022-04-07T10:11:00',
-                    'limit': 3,
+                    'limit': 6,
                     'found_incident_ids': {'1': '', '2': '', '3': ''}
                 }
             )

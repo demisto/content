@@ -1,6 +1,7 @@
 from unittest.mock import Mock
 import demistomock as demisto
 
+
 MOCK_URL = "http://123-fake-api.com"
 MOCK_API_URL = MOCK_URL + "/api"
 
@@ -410,3 +411,40 @@ def test_get_errors_string_from_bad_request():
         res.json.return_value = error_response
         actual_result = get_errors_string_from_bad_request(res, 400)
         assert expected_result in actual_result
+
+
+def test_second_attempt_for_reputation_requests(mocker):
+    """
+        Given:
+            - An old format ThreatQ request body.
+        When:
+            - run tq_request to send a request
+        Then:
+            - Verify that a request with the new format body was sent and returned a response as expected.
+    """
+    mock_demisto(mocker, MOCK_EMAIL_REPUTATION_ARGUMENTS)
+
+    import requests
+    from ThreatQ_v2 import tq_request
+
+    class MockResponse:
+        def __init__(self, status_code, data={}) -> None:
+            self.status_code = status_code
+            self.data = data
+
+        def json(self):
+            return self.data
+
+    def get_response(
+        method, url, data=None, headers=None, verify=False, files=None, allow_redirects=True
+    ):
+        if url.endswith('/token'):
+            return MockResponse(status_code=200, data=MOCK_ACCESS_TOKEN)
+        return MockResponse(status_code=200, data=MOCK_SEARCH_BY_EMAIL_RESPONSE)
+
+    mocker.patch.object(requests, "request", side_effect=get_response)
+
+    results = tq_request('post', '', params={"criteria": {"value": "foo@demisto.com"}},
+                         retrieve_entire_response=True)
+    assert results.status_code == 200
+    assert results.json()['data'][0]['value'] == 'foo@demisto.com'

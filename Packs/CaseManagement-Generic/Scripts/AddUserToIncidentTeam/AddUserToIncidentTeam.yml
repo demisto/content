@@ -9,7 +9,7 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
-dockerimage: demisto/python3:3.10.9.40422
+dockerimage: demisto/python3:3.10.10.49934
 enabled: true
 name: AddUserToIncidentTeam
 runas: DBotWeakRole

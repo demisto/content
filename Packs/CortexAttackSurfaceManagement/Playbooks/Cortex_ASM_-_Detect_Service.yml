@@ -242,7 +242,7 @@ tasks:
       NMAPOptions:
         simple: -sV --version-intensity 0 --unprivileged -Pn
       Regex:
-        simple: '(?<=OpenSSH version: )(?:(?:(?:[0-7]|8\.[0-7])(?:\..*)?))'
+        simple: '(?<=OpenSSH version: )(?:(?:(?:[0-8]|9\.[0-1])(?:\..*)?))'
       RemoteIP:
         complex:
           root: inputs.RemoteIP

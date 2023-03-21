@@ -1,4 +1,4 @@
-category: Authentication
+category: Authentication & Identity Management
 commonfields:
   id: DelineaDSV
   version: -1
@@ -45,7 +45,7 @@ script:
     - contextPath: secret
       description: Received JSON object secret
       type: String
-  dockerimage: demisto/python3:3.10.7.35188
+  dockerimage: demisto/python3:3.10.10.48392
   feed: false
   isfetch: false
   longRunning: false

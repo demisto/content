@@ -1,4 +1,4 @@
-category: Messaging
+category: Email
 sectionorder:
 - Connect
 - Collect
@@ -1011,11 +1011,316 @@ script:
     - contextPath: O365.SecurityAndCompliance.ContentSearch.SearchAction.TenantId
       description: Security and compliance search action Tenant ID.
       type: String
-  dockerimage: demisto/pwsh-exchangev3:1.0.0.40040
+  - name: o365-sc-compliance-case-create
+    deprecated: false
+    description: Create eDiscovery cases in the Microsoft Purview compliance portal.
+    execution: false
+    arguments:
+    - name: case_name
+      description: Case name create.
+      required: true
+      isArray: false
+    - name: case_type
+      description: |
+                   "AdvancedEdiscovery: Used to manage legal or other types of investigations.
+                    ComplianceClassifier: This type of case corresponds to a trainable classifier.
+                    DataInvestigation: Data investigation cases are used to investigate data spillage incidents.
+                    DSR: Data Subject Request (DSR) cases are used to manage General Data Protection Regulation (GDPR) DSR investigations.
+                    eDiscovery: eDiscovery (also called eDiscovery Standard) cases are used to manage legal or other types of investigations.
+                    This is the default value.
+                    InsiderRisk: Insider risk cases are used to manage insider risk management cases.
+                    Typically, insider risk management cases are manually created in the Microsoft Purview
+                    compliance portal to further investigate activity based on a risk alert.
+                    SupervisionPolicy: This type of case corresponds to communication compliance policy."
+      required: false
+      defaultValue: "eDiscovery"
+      isArray: false
+      auto: PREDEFINED
+      predefined:
+      - AdvancedEdiscovery
+      - ComplianceClassifier
+      - DataInvestigation
+      - DSR
+      - eDiscovery
+      - InsiderRisk
+      - SupervisionPolicy
+    - name: description
+      description: Case description.
+      required: false
+      isArray: false
+    - name: external_id
+      description: Case external ID.
+      required: false
+      isArray: false
+    outputs:
+    - contextPath: O365.SecurityAndCompliance.ComplianceCase.Name
+      description: Case name.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ComplianceCase.Status
+      description: Case status.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ComplianceCase.CreatedDateTime
+      description: Case created date time.
+      type: String
+  - name: o365-sc-compliance-case-list
+    deprecated: false
+    description: List different types of compliance cases in the Microsoft Purview compliance portal 
+    execution: false
+    arguments:
+    - name: identity
+      description: List cases by identity.
+      required: false
+      isArray: false  
+    - name: case_type
+      description: Comma-separated closed list of Case Types to filter by.
+      required: false
+      isArray: true
+      auto: PREDEFINED
+      predefined:
+      - AdvancedEdiscovery
+      - ComplianceClassifier
+      - DataInvestigation
+      - DSR
+      - eDiscovery
+      - InsiderRisk
+      - SupervisionPolicy
+    - name: limit
+      description: Limit returned cases list size.
+      required: false
+      isArray: false
+      defaultValue: 50
+    outputs:
+    - contextPath: O365.SecurityAndCompliance.ComplianceCase.Name
+      description: Case name.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ComplianceCase.Status
+      description: Case status.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.ComplianceCase.GUID
+      description: Case GUID.
+      type: UUID
+    - contextPath: O365.SecurityAndCompliance.ComplianceCase.CreatedDateTime
+      description: Case created date time.
+      type: String
+  - name: o365-sc-compliance-case-delete
+    deprecated: false
+    description: Removes compliance cases from the Microsoft Purview compliance portal or the Microsoft Purview compliance portal.
+    execution: false
+    arguments:
+    - name: identity
+      description: Delete case by identity.
+      required: true
+      isArray: false
+  - name: o365-sc-case-hold-policy-create
+    deprecated: false
+    description: Creates new case hold policies in the Microsoft Purview compliance portal.
+    execution: false
+    arguments:
+    - name: policy_name
+      description: Name of the policy to create.
+      required: true
+      isArray: false  
+    - name: case
+      description: eDiscovery case, Case Name, Case Identity (GUID value).
+      required: true
+      isArray: false  
+    - name: comment
+      description: Attach a comment to the case.
+      required: false
+      isArray: false  
+    - name: exchange_location
+      description: Mailbox or distribution group.
+      required: false
+      isArray: true  
+    - name: public_folder_location
+      description: Comma-separated list of public folders to include, or you can use the value "All" to include all.      
+      required: false
+      isArray: true      
+    - name: share_point_location
+      description: SharePoint Online and OneDrive for Business sites to include.
+      required: false
+      isArray: true
+    - name: enabled
+      description: Set hold policy as enabled or not.
+      required: false
+      isArray: false
+      auto: PREDEFINED
+      defaultValue: 'true'
+      predefined:
+      - 'true'
+      - 'false'
+    outputs:
+    - contextPath: O365.SecurityAndCompliance.CaseHoldPolicy.Name
+      description: Case hold policy name.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.CaseHoldPolicy.Workload
+      description: Case hold policy workload.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.CaseHoldPolicy.Enabled
+      description: Is case hold policy enabled.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.CaseHoldPolicy.Mode
+      description: Case hold policy mode.
+      type: String
+  - name: o365-sc-case-hold-policy-get
+    deprecated: false
+    description: View existing case hold policies in the Microsoft Purview compliance portal.
+    execution: false
+    arguments:
+    - name: identity
+      description: Identity of the case hold policy to get.
+      required: false
+      isArray: false 
+    - name: case
+      description: Case of policy to get. Case name or case GUID.
+      required: false
+      isArray: false
+    - name: distribution_detail
+      description: Whether to include distribution details or not.
+      required: false
+      isArray: false
+      auto: PREDEFINED
+      defaultValue: 'true'
+      predefined:
+      - 'true'
+      - 'false'
+    - name: include_bindings
+      description: Whether to include bindings or not.
+      required: false
+      isArray: false
+      auto: PREDEFINED
+      defaultValue: 'true'
+      predefined:
+      - 'true'
+      - 'false'
+    outputs:
+    - contextPath: O365.SecurityAndCompliance.CaseHoldPolicy.Name
+      description: Case hold policy name.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.CaseHoldPolicy.GUID
+      description: Case hold policy GUID.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.CaseHoldPolicy.Workload
+      description: Case hold policy workload.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.CaseHoldPolicy.Status
+      description: Case hold policy status.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.CaseHoldPolicy.Mode
+      description: Case hold policy mode.
+      type: String
+  - name: o365-sc-case-hold-policy-delete
+    deprecated: false
+    description: Removes case hold policies from the Microsoft Purview compliance portal.
+    execution: false
+    arguments:
+    - name: identity
+      description: Identify of the case hold policy to delete.
+      required: true
+      isArray: false 
+    - name: force_delete
+      description: Whether to use force delete or not. Can be used if current policy status is pending delete. 
+      required: false
+      isArray: false
+      auto: PREDEFINED
+      defaultValue: 'false'
+      predefined:
+      - 'true'
+      - 'false' 
+  - name: o365-sc-case-hold-rule-create
+    deprecated: false
+    description: Creates new case hold rules in the Microsoft Purview compliance portal.
+    execution: false
+    arguments:
+    - name: rule_name
+      description: Create rule with the specified name.
+      required: true
+      isArray: false 
+    - name: policy_name
+      description: Create rule for the specified policy.
+      required: true
+      isArray: false 
+    - name: query
+      description: Query using Keyword Query Language (KQL).
+      required: false
+      isArray: false 
+    - name: comment
+      description: Attach a comment to the created rule.
+      required: false
+      isArray: false 
+    - name: is_disabled
+      description: Whether the rule is disabled or not.
+      required: false
+      isArray: false
+      auto: PREDEFINED
+      defaultValue: 'false'
+      predefined:
+      - 'true'
+      - 'false'
+    outputs:
+    - contextPath: O365.SecurityAndCompliance.CaseHoldRule.Name
+      description: Case hold policy name.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.CaseHoldRule.Status
+      description: Case hold policy status.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.CaseHoldRule.Mode
+      description: Case hold policy mode.
+      type: String
+  - name: o365-sc-case-hold-rule-list
+    deprecated: false
+    description: View case hold rules in the Microsoft Purview compliance portal.
+    execution: false
+    arguments:
+    - name: identity
+      description: Get hold rule list by identity.
+      required: false
+      isArray: false 
+    - name: policy
+      description: Get hold rule list by policy.
+      required: false
+      isArray: false 
+    - name: limit
+      description: Limit the returned items list size.
+      required: false
+      isArray: false 
+      defaultValue: 50
+    outputs:
+    - contextPath: O365.SecurityAndCompliance.CaseHoldRule.Name
+      description: Case hold policy name.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.CaseHoldRule.GUID
+      description: Case hold policy GUID.
+      type: UUID
+    - contextPath: O365.SecurityAndCompliance.CaseHoldRule.Enabled
+      description: Whether case hold policy is enabled.
+      type: String
+    - contextPath: O365.SecurityAndCompliance.CaseHoldRule.Mode
+      description: Case hold policy mode.
+      type: String
+  - name: o365-sc-case-hold-rule-delete
+    deprecated: false
+    description: Removes case hold rules from the Microsoft Purview compliance portal.
+    execution: false
+    arguments:
+    - name: identity
+      description: Delete rule by identity.
+      required: false
+      isArray: false 
+    - name: force_delete
+      description: Whether to use force delete or not. Can be used if current rule status is pending delete. 
+      required: false
+      isArray: false
+      auto: PREDEFINED
+      defaultValue: 'false'
+      predefined:
+      - 'true'
+      - 'false'
+  dockerimage: demisto/pwsh-exchangev3:1.0.0.49044
   isfetch: false
   longRunning: false
   longRunningPort: false
-  runonce: false
+  runonce: true
   script: '-'
   type: powershell
 fromversion: 5.5.0

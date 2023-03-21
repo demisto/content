@@ -978,7 +978,7 @@ def get_alerts(client, data_args) -> Tuple[str, dict, Union[list, dict]]:
     offset = arg_to_number(data_args.get('offset'))
     ip_address = data_args.get('computer_ip_address')
     computer_name = data_args.get('computer_name')
-    scan_config_id = data_args.get('scan-config-id')
+    scan_config_id = data_args.get('scan_config_id')
     intel_doc_id = data_args.get('intel_doc_id')
     severity = data_args.get('severity')
     priority = data_args.get('priority')
@@ -1054,7 +1054,7 @@ def alert_update_state(client, data_args) -> Tuple[str, dict, Union[list, dict]]
         :rtype: ``tuple``
 
     """
-    alert_ids = [int(alert) for alert in argToList(data_args.get('alert_ids'))]
+    alert_ids = argToList(data_args.get('alert_ids'))
     state = data_args.get('state')
 
     body = {

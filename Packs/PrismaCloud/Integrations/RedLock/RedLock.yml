@@ -1274,7 +1274,7 @@ script:
       - year
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Returns a list of IaC scans that meet the given conditions.
     execution: false
     name: redlock-list-scans
@@ -1367,7 +1367,7 @@ script:
       name: scan_id
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: Returns the status of the asynchronous IaC scan job that has the specified scan ID.
     execution: false
     name: redlock-get-scan-status
@@ -1385,7 +1385,7 @@ script:
       name: scan_id
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: Returns scan result details for the completed scan that has the specified scan ID
     execution: false
     name: redlock-get-scan-results
@@ -1429,7 +1429,7 @@ script:
     - contextPath: Redlock.Scans.results.id
       description: Scan results ID
       type: String
-  dockerimage: demisto/python3:3.10.9.42476
+  dockerimage: demisto/python3:3.10.10.49934
   feed: false
   isfetch: true
   longRunning: false
