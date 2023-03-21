@@ -96,7 +96,7 @@ def action_original() -> dict[str, Any]:
         final_orig_image = image_resize(final_orig_image, width, height)
     final_orig_image.save(stream_orig, format="jpeg")
     stream_orig.seek(0)
-    file_result = fileResult(filename=f'original_{name}', data=stream_orig.read(), file_type=EntryType.ENTRY_INFO_FILE)
+    file_result = fileResult(filename=f'original_{name}', data=stream_orig.read())
     return file_result
 
 
