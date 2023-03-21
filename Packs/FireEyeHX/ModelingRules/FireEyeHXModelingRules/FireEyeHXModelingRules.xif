@@ -62,7 +62,7 @@ fileWriteEvent_md5=if(event_values ~= "\"fileWriteEvent\/md5\"\:\"([^,]+)\"", ar
 
 
 | alter
-xdm.event.id=_id,
+xdm.event.id=id,
 xdm.event.type=coalesce(event_type,json_extract_scalar(condition, "$.event_type")),
 xdm.observer.unique_identifier=json_extract_scalar(indicator , "$._id"),
 xdm.alert.name=coalesce(json_extract_scalar(indicator , "$.display_name"),json_extract_scalar(indicator , "$.name")),

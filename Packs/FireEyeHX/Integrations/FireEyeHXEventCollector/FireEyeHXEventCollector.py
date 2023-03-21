@@ -154,7 +154,7 @@ def fetch_events(
 
     if fetched_events:
         last_alert: dict = fetched_events[-1]
-        demisto.setLastRun({'last_alert_id': str(last_alert.get('_id'))})
+        demisto.setLastRun({'last_alert_id': str(last_alert.get('id'))})
     try:
         demisto.info(f'sending the following amount of events into XSIAM: {len(fetched_events)}')
         send_events_to_xsiam(
@@ -171,6 +171,10 @@ def fetch_events(
 def populate_modeling_rule_fields(events: list) -> None:
     for event in events:
         try:
+            # remove the _id field from the alert and set the id value instead
+            event['id'] = event['_id']
+            del event['_id']
+
             if event_date := arg_to_datetime(event.get('event_at')):
                 event['_time'] = timestamp_to_datestring(event_date.timestamp() * 1000)
         except TypeError:

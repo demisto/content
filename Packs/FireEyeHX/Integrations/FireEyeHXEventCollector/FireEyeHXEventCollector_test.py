@@ -26,6 +26,7 @@ def test_populate_modeling_rule_fields():
     """
     populate_modeling_rule_fields(EVENTS_RAW)
     assert EVENTS_RAW[0]['_time'] == '2023-03-14T21:27:51.000Z'
+    assert EVENTS_RAW[0]['id'] == 4000
 
 
 def test_fetch_events(mocker):
