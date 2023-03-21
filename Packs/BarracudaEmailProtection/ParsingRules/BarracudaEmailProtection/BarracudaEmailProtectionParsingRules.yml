@@ -1,0 +1,6 @@
+name: Barracuda Email Protection Parsing Rule
+id: BarracudaEmailProtectionParsingRule
+fromversion: 6.10.0
+tags: []
+rules: ''
+samples: ''
