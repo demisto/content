@@ -28,7 +28,7 @@ def test_get_file_details(mocker):
     mocker.patch.object(demisto, 'getFilePath', side_effect=mock_file)
     img, name = get_file_details(IMAGE_NAME)
     width, height = ORIGIN_IMG.size
-    assert name == 'test_picture.jpg'
+    assert name == 'test_picture'
     assert img.shape == (height, width, 3)
 
 

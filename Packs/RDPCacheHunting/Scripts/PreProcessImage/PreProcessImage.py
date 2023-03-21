@@ -1,4 +1,4 @@
-from cv2 import cv2
+import cv2   # noqa: F401
 import numpy as np
 from PIL import Image
 import io
@@ -8,18 +8,34 @@ from CommonServerPython import *  # noqa: F401
 
 # sharpened
 def sharpened(image: np.ndarray):
+    """
+    Sharpens image according to selected values.
+    Args:
+        image(np.ndarray): the image that would be sharpened.
+    Returns:
+        (CommandResults).
+    """
     kernel = np.array([[-1, -1, -1], [-1, 8, -1], [-1, -1, 0]], np.float32)
     kernel = 1 / 3 * kernel
-    sharp = cv2.filter2D(image, -1, kernel)
+    sharp = cv2.filter2D(image, -1, kernel)  # pylint: disable=E1101
     return sharp
 
 
 def image_resize(image: Image, width: int, height: int):
+    """
+    REsizes image according to width and heights values.
+    Args:
+        image(np.ndarray): the image that would be sharpened.
+        width(int): new width.
+        height(int): new height.
+    Returns:
+        (CommandResults).
+    """
     image = image.resize((width, height), Image.ANTIALIAS)
     return image
 
 
-def action_grey() -> CommandResults:
+def action_grey() -> dict[str, Any]:
     """
     Generate grayscale image.
     Returns:
@@ -31,21 +47,17 @@ def action_grey() -> CommandResults:
     height = arg_to_number(args.get('image_resize_height'))
     image, name = get_file_details(entry_id)
     stream_gray = io.BytesIO()
-    grayscale_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    grayscale_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)  # pylint: disable=E1101
     final_grayscale_image = Image.fromarray(grayscale_image)
     if width and height:
         final_grayscale_image = image_resize(final_grayscale_image, width, height)
     final_grayscale_image.save(stream_gray, format="png")
     stream_gray.seek(0)
-    file_result = fileResult(f'grayscale_{name}.png', stream_gray.read())
-    return CommandResults(
-        outputs_prefix='PreProcessImage',
-        outputs=file_result,
-        raw_response=file_result
-    )
+    file_result = fileResult(f'grayscale_{name}', stream_gray.read())
+    return file_result
 
 
-def action_sharpen() -> CommandResults:
+def action_sharpen() -> dict[str, Any]:
     """
     Generate sharpened image.
     Returns:
@@ -63,15 +75,11 @@ def action_sharpen() -> CommandResults:
         final_sharp_image = image_resize(final_sharp_image, width, height)
     final_sharp_image.save(stream_sharp, format="png")
     stream_sharp.seek(0)
-    file_result = fileResult(f'sharpened_{name}.png', stream_sharp.read())
-    return CommandResults(
-        outputs_prefix='PreProcessImage',
-        outputs=file_result,
-        raw_response=file_result
-    )
+    file_result = fileResult(f'sharpened_{name}', stream_sharp.read())
+    return file_result
 
 
-def action_original() -> CommandResults:
+def action_original() -> dict[str, Any]:
     """
     Generate original image
     Returns:
@@ -88,12 +96,8 @@ def action_original() -> CommandResults:
         final_orig_image = image_resize(final_orig_image, width, height)
     final_orig_image.save(stream_orig, format="jpeg")
     stream_orig.seek(0)
-    file_result = fileResult(filename=f'original_{name}', data=stream_orig.read())
-    return CommandResults(
-        outputs_prefix='PreProcessImage',
-        outputs=file_result,
-        raw_response=file_result
-    )
+    file_result = fileResult(filename=f'original_{name}', data=stream_orig.read(), file_type=EntryType.ENTRY_INFO_FILE)
+    return file_result
 
 
 def get_file_details(entry_id: str) -> tuple[Any, str]:
@@ -108,8 +112,11 @@ def get_file_details(entry_id: str) -> tuple[Any, str]:
     file = demisto.getFilePath(entry_id)
     if not file:
         raise DemistoException("Couldn't find entry id: {}".format(entry_id))
-    img = cv2.imread(file['path'])
-    name = file['name']
+    img = cv2.imread(file['path'])  # pylint: disable=E1101
+    # Check if the image was successfully loaded
+    if img is None:
+        raise DemistoException("Could not read the image file.")
+    name = os.path.splitext(file['name'])[0]
     return img, name
 
 
