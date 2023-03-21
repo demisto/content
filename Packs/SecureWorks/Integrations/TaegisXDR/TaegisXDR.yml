@@ -347,6 +347,7 @@ script:
       description: A reason for the isolation
     outputs:
     - contextPath: TaegisXDR.AssetIsolation
+      description: Results from the asset isolation
     description: Isolate a specific asset
   - name: taegis-fetch-endpoint
     arguments:
@@ -355,6 +356,7 @@ script:
       description: The endpoint ID to fetch
     outputs:
     - contextPath: TaegisXDR.Endpoint
+      description: Results from fetching the endpoint information
     description: Fetch endpoint information
   dockerimage: demisto/python3:3.10.10.49934
   runonce: false
