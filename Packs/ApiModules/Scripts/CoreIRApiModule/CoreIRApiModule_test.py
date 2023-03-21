@@ -17,6 +17,7 @@ test_client = CoreClient(
     base_url='https://test_api.com/public_api/v1', headers={}
 )
 
+
 Core_URL = 'https://api.xdrurl.com'
 
 ''' HELPER FUNCTIONS '''
@@ -78,7 +79,7 @@ def test_get_endpoints(requests_mock):
 
     res = get_endpoints_command(client, args)
     assert get_endpoints_response.get('reply').get('endpoints') == \
-           res.outputs['CoreApiModule.Endpoint(val.endpoint_id == obj.endpoint_id)']
+        res.outputs['CoreApiModule.Endpoint(val.endpoint_id == obj.endpoint_id)']
 
 
 def test_get_all_endpoints_using_limit(requests_mock):
@@ -542,7 +543,7 @@ def test_allowlist_files_command_with_more_than_one_file(requests_mock):
     test_data = load_test_data('test_data/blocklist_allowlist_files_success.json')
     expected_command_result = {
         'CoreApiModule.allowlist.added_hashes.fileHash(val.fileHash == obj.fileHash)':
-            test_data['multi_command_args']['hash_list']
+        test_data['multi_command_args']['hash_list']
     }
     requests_mock.post(f'{Core_URL}/public_api/v1/hash_exceptions/allowlist/', json=test_data['api_response'])
 
@@ -2982,52 +2983,52 @@ class TestPollingCommands:
     'args, expected_filters, func, url_suffix, expected_human_readable',
     [
         (
-                {'endpoint_ids': '1,2', 'tag': 'test'},
-                [{'field': 'endpoint_id_list', 'operator': 'in', 'value': ['1', '2']}],
-                add_tag_to_endpoints_command,
-                '/tags/agents/assign/',
-                "Successfully added tag test to endpoint(s) ['1', '2']"
+            {'endpoint_ids': '1,2', 'tag': 'test'},
+            [{'field': 'endpoint_id_list', 'operator': 'in', 'value': ['1', '2']}],
+            add_tag_to_endpoints_command,
+            '/tags/agents/assign/',
+            "Successfully added tag test to endpoint(s) ['1', '2']"
         ),
         (
-                {'endpoint_ids': '1,2', 'tag': 'test', 'status': 'disconnected'},
-                [{'field': 'endpoint_status', 'operator': 'IN', 'value': ['disconnected']}],
-                add_tag_to_endpoints_command,
-                '/tags/agents/assign/',
-                "Successfully added tag test to endpoint(s) ['1', '2']"
+            {'endpoint_ids': '1,2', 'tag': 'test', 'status': 'disconnected'},
+            [{'field': 'endpoint_status', 'operator': 'IN', 'value': ['disconnected']}],
+            add_tag_to_endpoints_command,
+            '/tags/agents/assign/',
+            "Successfully added tag test to endpoint(s) ['1', '2']"
         ),
         (
-                {'endpoint_ids': '1,2', 'tag': 'test', 'hostname': 'hostname', 'group_name': 'test_group'},
-                [
-                    {'field': 'group_name', 'operator': 'in', 'value': ['test_group']},
-                    {'field': 'hostname', 'operator': 'in', 'value': ['hostname']}
-                ],
-                add_tag_to_endpoints_command,
-                '/tags/agents/assign/',
-                "Successfully added tag test to endpoint(s) ['1', '2']"
+            {'endpoint_ids': '1,2', 'tag': 'test', 'hostname': 'hostname', 'group_name': 'test_group'},
+            [
+                {'field': 'group_name', 'operator': 'in', 'value': ['test_group']},
+                {'field': 'hostname', 'operator': 'in', 'value': ['hostname']}
+            ],
+            add_tag_to_endpoints_command,
+            '/tags/agents/assign/',
+            "Successfully added tag test to endpoint(s) ['1', '2']"
         ),
         (
-                {'endpoint_ids': '1,2', 'tag': 'test'},
-                [{'field': 'endpoint_id_list', 'operator': 'in', 'value': ['1', '2']}],
-                remove_tag_from_endpoints_command,
-                '/tags/agents/remove/',
-                "Successfully removed tag test from endpoint(s) ['1', '2']"
+            {'endpoint_ids': '1,2', 'tag': 'test'},
+            [{'field': 'endpoint_id_list', 'operator': 'in', 'value': ['1', '2']}],
+            remove_tag_from_endpoints_command,
+            '/tags/agents/remove/',
+            "Successfully removed tag test from endpoint(s) ['1', '2']"
         ),
         (
-                {'endpoint_ids': '1,2', 'tag': 'test', 'platform': 'linux'},
-                [{'field': 'platform', 'operator': 'in', 'value': ['linux']}],
-                remove_tag_from_endpoints_command,
-                '/tags/agents/remove/',
-                "Successfully removed tag test from endpoint(s) ['1', '2']"
+            {'endpoint_ids': '1,2', 'tag': 'test', 'platform': 'linux'},
+            [{'field': 'platform', 'operator': 'in', 'value': ['linux']}],
+            remove_tag_from_endpoints_command,
+            '/tags/agents/remove/',
+            "Successfully removed tag test from endpoint(s) ['1', '2']"
         ),
         (
-                {'endpoint_ids': '1,2', 'tag': 'test', 'isolate': 'isolated', 'alias_name': 'alias_name'},
-                [
-                    {'field': 'alias', 'operator': 'in', 'value': ['alias_name']},
-                    {'field': 'isolate', 'operator': 'in', 'value': ['isolated']}
-                ],
-                remove_tag_from_endpoints_command,
-                '/tags/agents/remove/',
-                "Successfully removed tag test from endpoint(s) ['1', '2']"
+            {'endpoint_ids': '1,2', 'tag': 'test', 'isolate': 'isolated', 'alias_name': 'alias_name'},
+            [
+                {'field': 'alias', 'operator': 'in', 'value': ['alias_name']},
+                {'field': 'isolate', 'operator': 'in', 'value': ['isolated']}
+            ],
+            remove_tag_from_endpoints_command,
+            '/tags/agents/remove/',
+            "Successfully removed tag test from endpoint(s) ['1', '2']"
         )
     ]
 )
