@@ -120,8 +120,8 @@ def build_ip_rule_object(args: dict) -> dict:
     Returns:
         Ip rule statement object
     """
-    ip_rule = {'Statement': {}}
-    ip_set_arn = argToList(args.get('ip_set_arn')) or []
+    ip_rule = {}
+    ip_set_arn = argToList(args.get('ip_set_arn'))
     condition_operator = args.get('condition_operator', '')
     if len(ip_set_arn) > 1 and not condition_operator:
         raise DemistoException('The condition_operator argument must be specified when '
@@ -131,7 +131,7 @@ def build_ip_rule_object(args: dict) -> dict:
         ip_rule['Statement'] = build_ip_statement(ip_set_arn)
     elif len(ip_set_arn) > 1:
         statement_operator = OPERATOR_TO_STATEMENT_OPERATOR[condition_operator]
-        ip_rule['Statement'][statement_operator] = {
+        ip_rule.setdefault('Statement', {})[statement_operator] = {
             'Statements': build_ip_statement(ip_set_arn)
         }
     return ip_rule
@@ -179,29 +179,32 @@ def build_country_rule_object(args: dict) -> dict:
     }
 
 
-def build_string_match_statement(args: dict) -> dict:
+def build_string_match_statement(match_type: str = '',
+                                 string_to_match: str = '',
+                                 regex_set_arn: str = '',
+                                 oversize_handling: str = '',
+                                 text_transformation: str = 'NONE',
+                                 web_request_component: str = '', **kwargs) -> dict:
     """
     Creates a byte/regex match statement that can be added to a statements list of a rule
     Args:
-        args: The command arguments
+        match_type: Which match type should be performed
+        string_to_match: string_to_match: The string to match to
+        regex_set_arn: The regex set to match to
+        oversize_handling: The oversize handling to be applied to web request contents
+        text_transformation: The text transformation to perform on the component
+        web_request_component: web_request_component: The web request component to inspect
+        kwargs: Args that are not in use in this method but passed from the command arguments
 
     Returns:
         A byte/regex match statement object
     """
-    match_type = args.get('match_type') or ''
     match_statement = REGEX_MATCH_STATEMENT if match_type == 'Matches Regex Pattern Set' \
         else BYTE_MATCH_STATEMENT
-    string_to_match = args.get('string_to_match') or ''
-    regex_set_arn = args.get('regex_set_arn') or ''
-    if match_statement == REGEX_MATCH_STATEMENT and not regex_set_arn:
-        raise DemistoException('regex_set_arn must be provided when using Matches Regex Pattern Set match_type')
-
-    elif match_statement == BYTE_MATCH_STATEMENT and not string_to_match:
-        raise DemistoException('string_to_match must be provided when using strings match_type')
-    web_request_component = WEB_REQUEST_COMPONENT_MAP.get(args.get('web_request_component', '')) or ''
-    oversize_handling = args.get('oversize_handling', '')
-    text_transformation = args.get('text_transformation') or 'NONE'
+    web_request_component = WEB_REQUEST_COMPONENT_MAP.get(web_request_component) or ''
     if match_statement == BYTE_MATCH_STATEMENT:
+        if not string_to_match:
+            raise DemistoException('string_to_match must be provided when using strings match_type')
         statement = build_byte_match_statement(web_request_component=web_request_component,
                                                oversize_handling=oversize_handling,
                                                text_transformation=text_transformation,
@@ -209,6 +212,8 @@ def build_string_match_statement(args: dict) -> dict:
                                                match_type=match_type)
 
     else:  # match_statement == REGEX_MATCH_STATEMENT
+        if not regex_set_arn:
+            raise DemistoException('regex_set_arn must be provided when using Matches Regex Pattern Set match_type')
         statement = build_regex_match_statement(web_request_component=web_request_component,
                                                 oversize_handling=oversize_handling,
                                                 regex_set_arn=regex_set_arn,
@@ -310,7 +315,8 @@ def build_byte_match_statement(web_request_component: str,
             web_request_component: web_request_component_object
         },
         'TextTransformations': [
-            {'Priority': 0, 'Type': text_transformation
+            {'Priority': 0,
+             'Type': text_transformation
              }
         ],
         'PositionalConstraint': MATCH_TYPE_TO_POSITIONAL_CONSTRAIN[match_type]}
@@ -355,7 +361,7 @@ def build_string_match_rule_object(args: dict) -> dict:
         String match rule statement object
     """
     return {
-        'Statement': build_string_match_statement(args)
+        'Statement': build_string_match_statement(**args)
     }
 
 
@@ -971,7 +977,7 @@ def add_string_match_statement_command(client: boto3.client, args: dict) -> Comm
 
     rules, rule_group_visibility_config, lock_token = get_required_response_fields_from_rule_group(client, kwargs)
 
-    statement = build_string_match_statement(args)
+    statement = build_string_match_statement(**args)
     updated_rules = create_rules_list_with_new_rule_statement(args, statement, rules)
 
     response = update_rule_group_rules(client=client,

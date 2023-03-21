@@ -2,7 +2,7 @@ import json
 import io
 from CommonServerPython import *
 import pytest
-from AWS_WAF import OPERATOR_TO_STATEMENT_OPERATOR
+from AWS_WAF import OPERATOR_TO_STATEMENT_OPERATOR, REGEX_MATCH_STATEMENT, BYTE_MATCH_STATEMENT
 
 
 class MockedBoto3Client:
@@ -67,7 +67,7 @@ def test_build_regex_pattern_object():
     assert len(result) == 2
 
 
-IP_ARN_LIST = ['pi_arn', 'ip_arn']
+IP_ARN_LIST = ['ip_arn', 'ip_arn1']
 AND_CONDITION_OPERATOR = 'And'
 OR_CONDITION_OPERATOR = 'Or'
 
@@ -112,6 +112,40 @@ def test_create_rules_list_with_new_rule_statement(mocker):
     res = mocker.patch('AWS_WAF.update_rule_with_statement')
     create_rules_list_with_new_rule_statement(args=args, statement={}, rules=rules)
     assert res.call_count == 1
+
+
+@pytest.mark.parametrize('match_type, regex_set_arn, string_to_match, expected_exception',
+                         [('Exactly Matches String', 'regex_arn', None, 'string_to_match must be provided'),
+                          ('Matches Regex Pattern Set', None, 'str_to_match', 'regex_set_arn must be provided')])
+def test_build_string_match_statement_raise_exception(match_type, regex_set_arn, string_to_match, expected_exception):
+    from AWS_WAF import build_string_match_statement
+    with pytest.raises(DemistoException) as e:
+        build_string_match_statement(match_type=match_type)
+        assert expected_exception in str(e)
+
+
+@pytest.mark.parametrize('match_type, string_to_match, regex_set_arn, oversize_handling, '
+                         'text_transformation, web_request_component, expected_result, match_statement',
+                         [('Exactly Matches String', 'str_to_match', None, 'CONTINUE', 'NONE', 'Body',
+                           'SearchString', BYTE_MATCH_STATEMENT),
+                          ('Matches Regex Pattern Set', None, 'regex_arn', None, None, 'UriPath',
+                           'ARN', REGEX_MATCH_STATEMENT)])
+def test_build_string_match_statement(match_type,
+                                      string_to_match,
+                                      regex_set_arn,
+                                      oversize_handling,
+                                      text_transformation,
+                                      web_request_component,
+                                      expected_result,
+                                      match_statement):
+    from AWS_WAF import build_string_match_statement
+    statement = build_string_match_statement(match_type,
+                                             string_to_match,
+                                             regex_set_arn,
+                                             oversize_handling,
+                                             text_transformation,
+                                             web_request_component)
+    assert expected_result in statement[match_statement]
 
 
 @pytest.mark.parametrize('web_request_component, oversize_handling, expected_result',
