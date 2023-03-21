@@ -16,26 +16,19 @@ class BloxOneTDEventCollectorClient(BaseClient):
             proxy=proxy
         )
 
-    def fetch_events(self, from_ts: int, to_ts: int, limit: int = 1000, offset: int = 0) -> List[Dict]:
-        def map_time(event: Dict) -> Dict:
+    def fetch_events(self, from_ts: int, to_ts: int, limit: int = 1000, offset: int = 0) -> list[dict]:
+        def map_time(event: dict) -> dict:
             event['_time'] = event['event_time']
             return event
 
         events = self._http_request('GET', '/api/dnsdata/v2/dns_event',
                                     params={'t0': from_ts, 't1': to_ts, '_limit': limit, '_offset': offset}
-                                    )['result']
+                                    ).get('result', [])
         return list(map(map_time, events))
 
 
-def fetch_events_command(client: BloxOneTDEventCollectorClient, params: Dict, last_run: Dict):
-    from_ts = last_run.get('from_ts')
-    if from_ts is None:
-        from_date_time = dateparser.parse(params.get('first_fetch', '1 day'), settings={'TIMEZONE': 'UTC'})
-        if from_date_time is None:
-            raise DemistoException('Invalid date format in "First fetch time interval" parameter')
-
-        from_ts = int(from_date_time.timestamp())
-
+def fetch_events_command(client: BloxOneTDEventCollectorClient, params: dict, last_run: dict):
+    from_ts = last_run.get('from_ts') or parse_from_ts_from_params(params.get('first_fetch'))
     current_ts = int(datetime.utcnow().timestamp())
     offset = arg_to_number(last_run.get('offset')) or 0
     limit = arg_to_number(params.get('max_fetch')) or 1000
@@ -48,29 +41,37 @@ def fetch_events_command(client: BloxOneTDEventCollectorClient, params: Dict, la
     )
 
 
-def get_events_command(client: BloxOneTDEventCollectorClient, args: Dict):
+def get_events_command(client: BloxOneTDEventCollectorClient, args: dict):
     events = client.fetch_events(
         args['from'], args['to'],
         min(arg_to_number(args.get('limit')) or 1000, 10000),
         arg_to_number(args.get('offset')) or 0
     )
-    if argToBoolean(args.get('should_push_events')):
+    if argToBoolean(args.get('should_push_events', False)):
         send_events_to_xsiam(events, VENDOR, PRODUCT)
 
-    return CommandResults(outputs=events)
+    return CommandResults(outputs=events, outputs_prefix="test_get_events")
 
 
-def command_test_module(client: BloxOneTDEventCollectorClient) -> str:
+def parse_from_ts_from_params(first_fetch_str: str = None) -> int:
+    from_date_time = dateparser.parse(first_fetch_str or '1 day', settings={'TIMEZONE': 'UTC'})
+    if from_date_time is None:
+        raise DemistoException('Invalid date format in "First fetch time interval" parameter')
+    return int(from_date_time.timestamp())
+
+
+def command_test_module(client: BloxOneTDEventCollectorClient, params: dict) -> str:
     current_ts = int(datetime.utcnow().timestamp())
     previous_ts = current_ts - 60
     client.fetch_events(previous_ts, current_ts, 1)
+    parse_from_ts_from_params(params.get('first_fetch'))
     return 'ok'
 
 
 def main():
     params = demisto.params()
     client = BloxOneTDEventCollectorClient(
-        api_key=params['credentials']['password'],
+        api_key=dict_safe_get(params, ['credentials', 'password']),
         verify=not argToBoolean(params.get('insecure', False)),
         proxy=argToBoolean(params.get('proxy', False))
     )
@@ -79,7 +80,7 @@ def main():
     results: Optional[CommandResults | str] = None
     try:
         if command == 'test-module':
-            results = command_test_module(client)
+            results = command_test_module(client, params)
         elif command == 'bloxone-td-event-collector-get-events':
             results = get_events_command(client, demisto.args())
         elif command == 'fetch-events':
