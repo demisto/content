@@ -1,5 +1,5 @@
 {
-    "zscaler_nssweblog_raw": {
+    "observeit_observeit_raw": {
         "cefDeviceEventClassId": {
           "type": "string",
           "is_array": false
