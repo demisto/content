@@ -929,10 +929,10 @@ tasks:
     continueonerrortype: ""
   "34":
     id: "34"
-    taskid: 06214be3-c325-4805-8b3f-ad0a3bce4872
+    taskid: 968db0d2-282a-4a9b-8071-39de4a0b5b09
     type: regular
     task:
-      id: 06214be3-c325-4805-8b3f-ad0a3bce4872
+      id: 968db0d2-282a-4a9b-8071-39de4a0b5b09
       version: -1
       name: Get- host information from McAfee ePO v2
       description: Finds systems in the McAfee ePO system tree.
