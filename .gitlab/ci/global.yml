@@ -271,7 +271,7 @@
         if [[ -f $ARTIFACTS_FOLDER/coverage_report/.coverage ]]; then
           if [[ "$CI_PIPELINE_SOURCE" == "schedule" ||   -n "$SHOULD_LINT_ALL"  ||  -n "${NIGHTLY}" || -n "${BUCKET_UPLOAD}" || -n "${DEMISTO_SDK_NIGHTLY}" ]]; then
             demisto-sdk coverage-analyze -i $ARTIFACTS_FOLDER/coverage_report/.coverage --report-dir $ARTIFACTS_FOLDER/coverage_report --report-type all --allowed-coverage-degradation-percentage 100
-            if [[ -n "${NIGHTLY}" && "$CI_COMMIT_BRANCH" == "master" ]]; then
+            if [[ -n "${NIGHTLY}" && "$CI_COMMIT_BRANCH" == "master" && $DOCKER == "from-yml" ]]; then
               python3 Utils/upload_code_coverage_report.py --service_account $GCS_MARKET_KEY --source_file_name $ARTIFACTS_FOLDER/coverage_report/coverage.json --minimal_file_name $ARTIFACTS_FOLDER/coverage_report/coverage-min.json
             fi
           else
