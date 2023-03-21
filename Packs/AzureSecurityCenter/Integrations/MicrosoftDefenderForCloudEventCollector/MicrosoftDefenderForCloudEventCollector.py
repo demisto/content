@@ -100,7 +100,7 @@ def get_events(client: MsClient, last_run: str, limit: int):
     """
     events_list = client.get_event_list(last_run)
 
-    if limit:
+    if limit and len(events_list) > limit:
         events_list = events_list[-limit:]
 
     outputs = []
@@ -143,14 +143,13 @@ def find_next_run(events_list: list, last_run: dict) -> dict:
     Returns:
         The next run for the next fetch-event command.
     """
-    next_run = (
-        events_list[0].get('properties').get('startTimeUtc')
-        if events_list
-        else last_run
-    )
-    id_same_next_run_list = [event.get('id') for event in events_list if event.get(
+    if not events_list:
+        return last_run
+
+    next_run = events_list[0].get('properties').get('startTimeUtc')
+    id_same_next_run_list = [event.get('id') for event in events_list if event.get('properties', {}).get(
         'startTimeUtc') == next_run]
-    demisto.info(f'Setting next run {next_run}.')
+    demisto.info(f'Setting next run time to {next_run}, events with same time are {id_same_next_run_list}.')
     return {'last_run': next_run, 'dup_digested_time_id': id_same_next_run_list}
 
 
