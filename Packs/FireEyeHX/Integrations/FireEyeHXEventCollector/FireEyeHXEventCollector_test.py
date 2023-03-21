@@ -17,11 +17,30 @@ EVENTS_RAW = util_load_json('test_data/events_raw.json')
 
 
 def test_populate_modeling_rule_fields():
+    """
+    Given
+            List of FireEye alerts
+    When
+            Calling populate_modeling_rule_fields
+    Then
+            Make sure that the method updated the _time field with the value from event_at field as datestring
+    """
     populate_modeling_rule_fields(EVENTS_RAW)
     assert EVENTS_RAW[0]['_time'] == '2023-03-14T21:27:51.000Z'
 
 
 def test_fetch_events(mocker):
+    """
+    Given:
+        - fireeye get events request
+    When:
+        - Running fetch_events
+    Then:
+        - Make sure all the events are returned
+        - Make sure get_events_request method executes with the correct parameters
+        - Make sure send_events_to_xsiam method executes with the correct parameters
+        - Make sure demisto.lastrun contains the last alert id and time
+    """
     client = Client(BASE_URL, 'username', 'password', False, False)
     get_events_request_mock = mocker.patch.object(client, 'get_events_request', return_value=EVENTS_RES)
     send_events_mocker = mocker.patch('FireEyeHXEventCollector.send_events_to_xsiam')
@@ -45,6 +64,14 @@ def test_fetch_events(mocker):
 
 
 def test_http_request_token_already_created(mocker):
+    """
+    Given
+            Integration context with token
+    When
+            Calling client.http_request
+    Then
+            Make sure that the method using the token from the context inside X-FeApi-Token header
+    """
     client = Client(BASE_URL, 'username', 'password', False, False)
     demisto.setIntegrationContext({'token': 'TOKEN'})
     http_request = mocker.patch.object(BaseClient, '_http_request', return_value={})
@@ -54,6 +81,14 @@ def test_http_request_token_already_created(mocker):
 
 
 def test_http_request_token_not_created(mocker):
+    """
+    Given
+            Empty integration context
+    When
+            Calling client.http_request
+    Then
+            Make sure that the method call get_access_token and use the returned token inside X-FeApi-Token header
+    """
     client = Client(BASE_URL, 'username', 'password', False, False)
     demisto.setIntegrationContext({})
     http_request = mocker.patch.object(BaseClient, '_http_request', return_value={})
@@ -64,6 +99,14 @@ def test_http_request_token_not_created(mocker):
 
 
 def test_get_events_request(mocker):
+    """
+    Given
+            no params
+    When
+            Calling client.get_events_request
+    Then
+            Make sure http_request method executes with the correct parameters
+    """
     client = Client(BASE_URL, 'username', 'password', False, False)
     http_request = mocker.patch.object(Client, 'http_request')
     client.get_events_request(min_id='100', resolution='alert')
@@ -73,12 +116,29 @@ def test_get_events_request(mocker):
 
 
 def test_get_events_command(mocker):
+    """
+    Given
+            fireeye get events request
+    When
+            Calling get_events_command
+    Then
+            Make sure the command results are correct
+    """
     mocker.patch('FireEyeHXEventCollector.fetch_events', return_value=EVENTS_RAW)
     res = get_events_command(None, '', '', False)
     assert res.raw_response == EVENTS_RAW
+    assert res.outputs == EVENTS_RAW
 
 
 def test_get_events_command_empty_res(mocker):
+    """
+    Given
+            Empty alerts list
+    When
+            Calling get_events_command
+    Then
+            Make sure the command results is No events were found.
+    """
     mocker.patch('FireEyeHXEventCollector.fetch_events', return_value=[])
     res = get_events_command(None, '', '', False)
     assert res == 'No events were found.'
