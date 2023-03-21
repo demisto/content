@@ -4428,7 +4428,7 @@ def aggregated_list_instances_ip(args: Dict[str, Any]) -> CommandResults:
     while request_comp:
         response_comp = request_comp.execute()
         if 'items' in response_comp.keys():
-            for name, instances_scoped_list in response_comp['items'].items():
+            for _, instances_scoped_list in response_comp['items'].items():
                 if 'warning' not in instances_scoped_list.keys():
                     for inst in instances_scoped_list.get('instances', []):
                         for interface in inst.get('networkInterfaces', []):
