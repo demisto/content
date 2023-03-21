@@ -8412,7 +8412,7 @@ script:
     - contextPath: GoogleCloudCompute.Instances.kind
       description: '] Type of the resource. Always compute#instance for instances.'
       type: string
-  dockerimage: demisto/googleapi-python3:1.0.0.41311
+  dockerimage: demisto/googleapi-python3:1.0.0.49917
   runonce: false
   script: ''
   subtype: python3
