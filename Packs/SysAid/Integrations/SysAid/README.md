@@ -20159,6 +20159,8 @@ Returns the information for the specified service record.
 
 ## Service Record Results:
 
+| | |
+| --- | --- |
 | Id |	37 |
 | Title |	Basic Request Process2 |
 | Status |	New |
