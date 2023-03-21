@@ -39,8 +39,7 @@ class Client(BaseClient):
         Overrides Base client request function, retrieves and adds to headers access token before sending the request.
         """
 
-        token = demisto.getIntegrationContext().get('token')
-        if not token:
+        if not (token := demisto.getIntegrationContext().get('token')):
             token = self.get_access_token()
 
         headers = {'X-FeApi-Token': token}
@@ -73,7 +72,7 @@ class Client(BaseClient):
         return token
 
     def get_events_request(self, limit: str = '100', min_id: str = None, filter_query: str = None,
-                           resolution: str = None):
+                           resolution: str = None) -> dict:
         """
         Get alerts from fireeye
         """
@@ -175,11 +174,10 @@ def fetch_events(
     return fetched_events
 
 
-def populate_modeling_rule_fields(events: list):
+def populate_modeling_rule_fields(events: list) -> None:
     for event in events:
         try:
-            event_date = arg_to_datetime(event.get('event_at'))
-            if event_date:
+            if event_date := arg_to_datetime(event.get('event_at')):
                 event['_time'] = timestamp_to_datestring(event_date.timestamp() * 1000)
         except TypeError:
             # modeling rule will default on ingestion time if _time is missing
