@@ -1,32 +1,46 @@
 category: Analytics & SIEM
 commonfields:
-  id: HelloWorldEventCollector
+  id: OracleCloudInfrastructureEventCollector
   version: -1
 configuration:
-- defaultvalue: https://some_url.com
-  display: Server URL (e.g. https://some_url.com)
-  name: url
+- display: Tenancy OCID
+  name: tenancy_ocid
   required: true
   type: 0
-- displaypassword: API Key
-  additionalinfo: The API Key to use for connection
-  name: credentials
-  required: false
-  hiddenusername: true
-  type: 9
-- defaultvalue: ACTIVE
-  display: Fetch alerts with status (ACTIVE, CLOSED)
-  name: alert_status
-  options:
-  - ACTIVE
-  - CLOSED
-  required: false
-  type: 15
-- defaultvalue: 3 days
-  display: First fetch time
+  section: Connect
+- display: User OCID
+  name: user_ocid
+  required: true
+  type: 0
+  section: Connect
+- display: API Key Fingerprint
+  defaultvalue: https://some_url.com
+  name: key_fingerprint
+  required: true
+  type: 0
+- display: Private Key
+  additionalinfo: privateKey RSA key pair in PEM format, add 
+  name: private_key
+  required: true
+  type: 4
+  section: Connect
+- display: Region
+  name: region
+  required: true
+  type: 0
+  section: Connect
+- display: First fetch time
+  defaultvalue: 3 days
   name: first_fetch
   required: false
   type: 0
+  section: Collect
+- display: Number of events to fetch per fetch.
+  name: max_fetch
+  type: 0
+  defaultvalue: 1000
+  required: false
+  section: Collect
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -35,9 +49,9 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: This is the Hello World event collector integration for XSIAM.
-display: HelloWorld Event Collector
-name: HelloWorldEventCollector
+description: This is the Oracle Cloud Infrastructure event collector integration for XSIAM.
+display: Oracle Cloud Infrastructure 
+name: OracleCloudInfrastructure
 script:
   commands:
   - arguments:
@@ -67,9 +81,9 @@ script:
       required: false
       secret: false
     deprecated: false
-    description: Gets events from Hello World.
+    description: Gets events from Oracle Cloud Infrastructure.
     execution: false
-    name: hello-world-get-events
+    name: oracle-cloud-infrastructure-get-events
   dockerimage: demisto/python3:3.10.5.31928
   isfetchevents: true
   runonce: false

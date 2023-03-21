@@ -1,12 +1,10 @@
-import uuid
-
-from requests import Response
-
 import demistomock as demisto
 from CommonServerPython import *
-import json
 import urllib3
-from typing import Any, Dict, Tuple, List, Optional, Union, cast
+from typing import Any, Dict, List, Optional
+from oci.config import validate_config
+from oci.regions import is_region
+import oci.audit
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -14,120 +12,187 @@ urllib3.disable_warnings()
 ''' CONSTANTS '''
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-VENDOR = 'hello'
-PRODUCT = 'world'
+VENDOR = 'oracle'
+PRODUCT = 'cloud_infrastructure'
+MAX_EVENTS_TO_FETCH = 1000
+FETCH_DEFAULT_TIME = '3 days'
+
 
 ''' CLIENT CLASS '''
 
 
 class Client(BaseClient):
-    """Client class to interact with the service API
-    This Client implements API calls, and does not contain any Demisto logic.
-    Should only do requests and return data.
-    It inherits from BaseClient defined in CommonServer Python.
-    Most calls use _http_request() that handles proxy, SSL verification, etc.
-    For this HelloWorld implementation, no special attributes defined
+    """Client class to interact with the OCI SDK"""
+    def __init__(self, verify_certificate: bool, proxy: bool, user_ocid: str, private_key: str, key_fingerprint: str,
+                 tenancy_ocid: str, region: str):
+        self.config = self.build_oci_config(user_ocid, private_key, key_fingerprint, tenancy_ocid, region)
+        self.audit_client = oci.audit.AuditClient(self.config)
+        super().__init__(proxy=proxy, verify=verify_certificate, base_url=None)
+
+    def build_oci_config(
+            self, user_ocid: str, private_key: str, key_fingerprint: str, tenancy_ocid: str, region: str) -> Dict[str, str]:
+        """Build an OCI config object
+
+        Args:
+            user_ocid (str): user OCID.
+            private_key (str): RSA key pair in PEM format.
+            key_fingerprint (str): key fingerprint.
+            tenancy_ocid (str): tenancy OCID.
+            region (str): region.
+
+        Raises:
+            DemistoException: If the config object is invalid.
+
+        Returns:
+            (dict): A config dict that can be used to create clients.
+        """
+        config = {
+            'user': user_ocid,
+            'key_content': private_key,
+            'fingerprint': key_fingerprint,
+            'tenancy': tenancy_ocid,
+            'region': region
+        }
+
+        return config if self.validate_oci_config(config) else {}
+
+    def validate_oci_config(self, config: Dict[str, str]) -> bool:
+        """Validate the OCI config dictionary structure.
+
+        Args:
+            config (Dict[str, str]): A config dict that can be used to create clients.
+
+        Raises:
+            DemistoException: if the region is not valid.
+            DemistoException: if the config  dictionary is invalid.
+
+        Returns:
+            bool: True if the config dictionary is valid, False otherwise.
+        """
+
+        if not is_region(config.get('region')):
+            raise DemistoException('Could not create a valid OCI configuration dictionary fou to invalid region parameter. \
+                Please check your OCI related instance configuration parameters.')
+        try:
+            validate_config(config)
+        except Exception as e:
+            raise DemistoException(
+                'Could not create a valid OCI configuration dictionary, Please check OCI instance configuration parameters.',
+                exception=e,
+            ) from e
+        return True
+
+
+''' OCI Event Handler Class '''
+
+
+class OCIEventHandler:
+    """
+    Oracle Cloud Infrastructure event handler class.
+    Handles the logic for fetching events.
     """
 
-    def search_events(self, prev_id, alert_status):
+    def __init__(self, client: Client, last_run: Dict[str, Any], max_fetch: int, first_fetch_time: datetime):
+        self.client: Client = client
+        self.last_run = last_run
+        self.max_fetch = max_fetch
+        self.first_fetch_time = first_fetch_time
+
+    def __str__(self):
+        return f'OCIEventHandler: {self.last_run=}, {self.max_fetch=}, {self.first_fetch_time=}'
+
+    def get_events(self) -> List[Dict[str, Any]]:
         """
-        Searches for HelloWorld alerts using the '/get_alerts' API endpoint.
-        All the parameters are passed directly to the API as HTTP POST parameters in the request
+        Get events from CIO client.
+
         Args:
-            prev_id: previous id that was fetched.
-            alert_status:
+            prev_id (int): The id of the last event we got from the last run.
+            alert_status (str): status of the alert to search for. Options are: 'ACTIVE' or 'CLOSED'.
+
         Returns:
-            dict: the next event
+            List[Dict[str, Any]]: List of events.
         """
-        return [{
-            'id': prev_id + 1,
-            'created_time': datetime.now().isoformat(),
-            'description': f'This is test description {prev_id + 1}',
-            'alert_status': alert_status,
-            'custom_details': {
-                               'triggered_by_name': f'Name for id: {prev_id + 1}',
-                               'triggered_by_uuid': str(uuid.uuid4()),
-                               'type': 'customType'
-            }
-        }]
+        try:
+            events = self.client.audit_client.list_events(
+                compartment_id=self.client.config.get('tenancy'),
+                start_time=self.first_fetch_time,
+                end_time=datetime.now()
+            ).data
+
+        except Exception as e:
+            raise DemistoException(f'Error while fetching events: {e}') from e
+
+        demisto.debug(f'{len(events)} Events fetched successfully from start time: {self.first_fetch_time}. {events=}')
+        return events[:self.max_fetch]
+
+    def set_next_run(self, last_run):
+        demisto.debug(f'Set last run to {last_run}')
+        demisto.setLastRun({"last_run": {last_run}})
+
+    def remove_duplicates(self):
+        ...
+
+    def get_last_event_time(self, events: List[Dict[str, Any]]) -> Optional[datetime]:
+        """Get the last event time from the events list.
+
+        Args:
+            events (List[Dict[str, Any]]): list of events.
+
+        Returns:
+            datetime: last event time in datetime format.
+        """
+        if not events:
+            return arg_to_datetime(arg=self.first_fetch_time)
+        last_event_time = events[-1].get("eventTime")
+        last_event_time = arg_to_datetime(arg=last_event_time)
+        return last_event_time + timedelta(milliseconds=1) if last_event_time else None
 
 
-def test_module(client: Client, params: Dict[str, Any], first_fetch_time: int) -> str:
+def test_module(client: Client, oci_event_handler: OCIEventHandler) -> str:
     """
     Tests API connectivity and authentication'
     When 'ok' is returned it indicates the integration works like it is supposed to and connection to the service is
     successful.
     Raises exceptions if something goes wrong.
     Args:
-        client (Client): HelloWorld client to use.
-        params (Dict): Integration parameters.
-        first_fetch_time (int): The first fetch time as configured in the integration params.
+        client (Client): Client for SDK interaction and api requests.
+        oci_event_handler (OCIEventHandler): OCI event handler.
     Returns:
         str: 'ok' if test passed, anything else will raise an exception and will fail the test.
     """
+    client.validate_oci_config(client.config)
 
     try:
-        alert_status = params.get('alert_status', None)
-
-        fetch_events(
-            client=client,
-            last_run={},
-            first_fetch_time=first_fetch_time,
-            alert_status=alert_status,
-        )
-
+        oci_event_handler.get_events()
     except Exception as e:
-        if 'Forbidden' in str(e):
-            return 'Authorization Error: make sure API Key is correctly set'
+        if 'failed' in str(e):
+            return 'Authorization Error: make sure OCI parameters are correctly set'
         else:
-            raise e
+            raise DemistoException(f'Error while testing: {e}') from e
 
     return 'ok'
 
 
-def get_events(client, alert_status):
-    events = client.search_events(
-        prev_id=0,
-        alert_status=alert_status
-    )
-    hr = tableToMarkdown(name='Test Event', t=events)
-    return events, CommandResults(readable_output=hr)
+def calculate_first_fetch_time(last_run: Optional[str], first_fetch_arg: str) -> Optional[datetime]:
+    first_fetch_arg_datetime = arg_to_datetime(arg=first_fetch_arg)
 
+    # if last_run is None (first time we are fetching) -> return first_fetch_arg datetime object
+    if not last_run:
+        return first_fetch_arg_datetime
+    else:
+        last_run_datetime = arg_to_datetime(arg=last_run)
 
-def fetch_events(client: Client, last_run: Dict[str, int],
-                 first_fetch_time: Optional[int], alert_status: Optional[str]
-                 ):
-    """
-    Args:
-        client (Client): HelloWorld client to use.
-        last_run (dict): A dict with a key containing the latest event created time we got from last fetch.
-        first_fetch_time(int): If last_run is None (first time we are fetching), it contains the timestamp in
-            milliseconds on when to start fetching events.
-        alert_status (str): status of the alert to search for. Options are: 'ACTIVE' or 'CLOSED'.
-    Returns:
-        dict: Next run dictionary containing the timestamp that will be used in ``last_run`` on the next fetch.
-        list: List of events that will be created in XSIAM.
-    """
-    prev_id = last_run.get('prev_id', None)
-    if not prev_id:
-        prev_id = 0
-
-    events = client.search_events(
-        prev_id=prev_id,
-        alert_status=alert_status
-    )
-    demisto.info(f'Fetched event with id: {prev_id + 1}.')
-
-    # Save the next_run as a dict with the last_fetch key to be stored
-    next_run = {'prev_id': prev_id + 1}
-    demisto.info(f'Setting next run {next_run}.')
-    return next_run, events
+    # if last_run is not None -> return max(last_run, first_fetch_arg)
+    if last_run_datetime and first_fetch_arg_datetime:
+        return max(last_run_datetime, first_fetch_arg_datetime)
+    else:  # return default first fetch time datetime object
+        return arg_to_datetime(arg=FETCH_DEFAULT_TIME)
 
 
 ''' MAIN FUNCTION '''
 
 
-def main() -> None:
+def main():
     """
     main function, parses params and runs command functions
     """
@@ -135,63 +200,55 @@ def main() -> None:
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
-    api_key = params.get('apikey', {}).get('password')
-    base_url = urljoin(params.get('url'), '/api/v1')
-    verify_certificate = not params.get('insecure', False)
-
-    # How much time before the first fetch to retrieve events
-    first_fetch_time = arg_to_datetime(
-        arg=params.get('first_fetch', '3 days'),
-        arg_name='First fetch time',
-        required=True
-    )
-    first_fetch_timestamp = int(first_fetch_time.timestamp()) if first_fetch_time else None
-    assert isinstance(first_fetch_timestamp, int)
-    proxy = params.get('proxy', False)
-    alert_status = params.get('alert_status', None)
+    last_run = demisto.getLastRun()
+    max_fetch = arg_to_number(params.get('max_fetch')) or MAX_EVENTS_TO_FETCH
+    first_fetch = params.get('first_fetch') or FETCH_DEFAULT_TIME
+    first_fetch_time = calculate_first_fetch_time(last_run=last_run.get('last_run'), first_fetch_arg=first_fetch)
 
     demisto.debug(f'Command being called is {command}')
+
     try:
-        headers = {
-            'Authorization': f'Bearer {api_key}'
-        }
+        if not isinstance(first_fetch_time, datetime):
+            raise DemistoException('Could not resolve First fetch time parameter.')
+
         client = Client(
-            base_url=base_url,
-            verify=verify_certificate,
-            headers=headers,
-            proxy=proxy)
+            verify_certificate=not params.get('insecure', False),
+            proxy=params.get('proxy', False),
+            user_ocid=params.get('user_ocid'),
+            private_key=params.get('private_key'),
+            key_fingerprint=params.get('key_fingerprint'),
+            tenancy_ocid=params.get('tenancy_ocid'),
+            region=params.get('region')
+        )
+        demisto.debug('Client created successfully.')
+
+        oci_event_handler = OCIEventHandler(client, last_run, max_fetch, first_fetch_time)
+        demisto.debug(f'OCI Event Handler created successfully. {oci_event_handler=}')
 
         if command == 'test-module':
-            # This is the call made when pressing the integration Test button.
-            result = test_module(client, params, first_fetch_timestamp)
-            return_results(result)
+            return_results(test_module(client, oci_event_handler))
 
-        elif command in ('hello-world-get-events', 'fetch-events'):
-            if command == 'hello-world-get-events':
-                should_push_events = argToBoolean(args.pop('should_push_events'))
-                events, results = get_events(client, alert_status)
-                return_results(results)
+        elif command in ('oracle-cloud-infrastructure-get-events', 'fetch-events'):
+            events = oci_event_handler.get_events()
 
-            else:  # command == 'fetch-events':
-                should_push_events = True
-                last_run = demisto.getLastRun()
-                next_run, events = fetch_events(
-                    client=client,
-                    last_run=last_run,
-                    first_fetch_time=first_fetch_timestamp,
-                    alert_status=alert_status,
+            if command == 'fetch-events' or args.get('should_push_events'):
+                send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+                if events:
+                    last_event_time = oci_event_handler.get_last_event_time(events)
+                    demisto.debug(f'Set last run to {last_event_time}')
+                    demisto.setLastRun({"last_run": {last_event_time}})
+                else:
+                    demisto.debug('No new events fetched, Last run was not updated.')
+
+            elif command == 'oracle-cloud-infrastructure-get-events':
+                command_results = CommandResults(
+                    readable_output=tableToMarkdown(
+                        'Oracle Cloud Infrastructure Events', events, removeNull=True, headerTransform=pascalToSpace
+                    ),
+                    raw_response=events,
                 )
-                # saves next_run for the time fetch-events is invoked
-                demisto.setLastRun(next_run)
+                return_results(command_results)
 
-            if should_push_events:
-                send_events_to_xsiam(
-                    events,
-                    vendor=VENDOR,
-                    product=PRODUCT
-                )
-
-    # Log exceptions and return errors
     except Exception as e:
         return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
