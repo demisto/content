@@ -593,6 +593,31 @@
 
     ]
    },
+   "reportedemailcc": {
+    "extractAsIsIndicatorTypeId": "",
+    "extractIndicatorTypesIDs": [],
+    "isExtractingAllIndicatorTypes": true
+   },
+   "reportedemailfrom": {
+    "extractAsIsIndicatorTypeId": "",
+    "extractIndicatorTypesIDs": [],
+    "isExtractingAllIndicatorTypes": true
+   },
+   "reportedemailmessageid": {
+    "extractAsIsIndicatorTypeId": "",
+    "extractIndicatorTypesIDs": [],
+    "isExtractingAllIndicatorTypes": false
+   },
+   "reportedemailsubject": {
+    "extractAsIsIndicatorTypeId": "",
+    "extractIndicatorTypesIDs": [],
+    "isExtractingAllIndicatorTypes": true
+   },
+   "reportedemailto": {
+    "extractAsIsIndicatorTypeId": "",
+    "extractIndicatorTypesIDs": [],
+    "isExtractingAllIndicatorTypes": true
+   },
    "reporteremailaddress": {
     "extractAsIsIndicatorTypeId": "",
     "isExtractingAllIndicatorTypes": false,
