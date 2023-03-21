@@ -7,7 +7,7 @@ This integration enables you to:
 - Create, retrieve, update, or delete IP sets.
 - Create, retrieve, update, or delete Regex patterns sets.
 - Create, retrieve, update, or delete Rule groups.
-- Creating IP rules to associate to a specific rule group.
-- Creating country rules to associate to a specific rule group.
-- Creating sting match rules to associate to a specific rule group.
-- Adding statements to existing rules.
+- Create IP rules to associate to a specific rule group.
+- Create country rules to associate to a specific rule group.
+- Create string match rules to associate to a specific rule group.
+- Add statements to existing rules.

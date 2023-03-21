@@ -61,7 +61,7 @@ configuration:
 - display: Timeout
   name: timeout
   defaultvalue: 60,10
-  additionalinfo: "The time in seconds till a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If a connect timeout is not specified, a default of 10 second will be used."
+  additionalinfo: "The time in seconds until a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If a connect timeout is not specified, a default of 10 second will be used."
   required: false
   type: 0
   section: Connect
@@ -103,7 +103,7 @@ script:
       - "Global"
       - "Regional"
     - name: addresses
-      description: A comma separated list of the IP set addresses in CIDR notation.
+      description: A comma-separated list of the IP set addresses in CIDR notation.
       isArray: true
     - name: description
       description: The IP set description.
@@ -137,30 +137,30 @@ script:
         - us-gov-east-1
         - us-gov-west-1
     - name: tag_key
-      description: A comma separated list of the keys of the tags to associate with the ip set.
+      description: A comma-separated list of the keys of the tags to associate with the IP set.
       isArray: true
     - name: tag_value
-      description: A comma separated list of the values of the tags to associate with the ip set.
+      description: A comma-separated list of the values of the tags to associate with the IP set.
       isArray: true
     deprecated: false
-    description: Create a new ip set.
+    description: Create a new IP set.
     execution: false
     name: aws-waf-ip-set-create
     outputs:
     - contextPath: AWS.Waf.IpSet.Id
-      description: The ip set ID.
+      description: The IP set ID.
       type: String
     - contextPath: AWS.Waf.IpSet.Name
-      description: The ip set name.
+      description: The IP set name.
       type: String
     - contextPath: AWS.Waf.IpSet.Description
-      description: The ip set description.
+      description: The IP set description.
       type: String
     - contextPath: AWS.Waf.IpSet.LockToken
-      description: The ip set lock token.
+      description: The IP set lock token.
       type: String
     - contextPath: AWS.Waf.IpSet.ARN
-      description: The ip set Amazon Resource Name.
+      description: The IP set Amazon Resource Name.
       type: String
   - arguments:
     - name: name
@@ -199,27 +199,27 @@ script:
         - us-gov-east-1
         - us-gov-west-1
     deprecated: false
-    description: Get a specific ip set.
+    description: Get a specific IP set.
     execution: false
     name: aws-waf-ip-set-get
     outputs:
     - contextPath: AWS.Waf.IpSet.Id
-      description: The ip set ID.
+      description: The IP set ID.
       type: String
     - contextPath: AWS.Waf.IpSet.Name
-      description: The ip set name.
+      description: The IP set name.
       type: String
     - contextPath: AWS.Waf.IpSet.Description
-      description: The ip set description.
+      description: The IP set description.
       type: String
     - contextPath: AWS.Waf.IpSet.IPAddressVersion
-      description: The ip set ip version.
+      description: The IP set IP version.
       type: String
     - contextPath: AWS.Waf.IpSet.Addresses
-      description: The ip set ip addresses.
+      description: The IP set IP addresses.
       type: String
     - contextPath: AWS.Waf.IpSet.ARN
-      description: The ip set Amazon Resource Name.
+      description: The IP set Amazon Resource Name.
       type: String
   - arguments:
     - name: name
@@ -236,7 +236,7 @@ script:
       description: The IP set ID.
       required: true
     - name: addresses
-      description: A comma separated list of the IP set addresses in CIDR notation.
+      description: A comma-separated list of the IP set addresses in CIDR notation.
       isArray: true
       required: true
     - name: description
@@ -273,7 +273,7 @@ script:
         - 'true'
         - 'false'
     deprecated: false
-    description: Update an ip set.
+    description: Update an IP set.
     execution: false
     name: aws-waf-ip-set-update
   - arguments:
@@ -312,24 +312,24 @@ script:
         - us-gov-east-1
         - us-gov-west-1
     deprecated: false
-    description: Lists ip sets.
+    description: Lists IP sets.
     execution: false
     name: aws-waf-ip-set-list
     outputs:
     - contextPath: AWS.Waf.IpSet.Id
-      description: The ip set ID.
+      description: The IP set ID.
       type: String
     - contextPath: AWS.Waf.IpSet.Name
-      description: The ip set name.
+      description: The IP set name.
       type: String
     - contextPath: AWS.Waf.IpSet.Description
-      description: The ip set description.
+      description: The IP set description.
       type: String
     - contextPath: AWS.Waf.IpSet.LockToken
-      description: The ip set lock token.
+      description: The IP set lock token.
       type: String
     - contextPath: AWS.Waf.IpSet.ARN
-      description: The ip set Amazon Resource Name.
+      description: The IP set Amazon Resource Name.
     - contextPath: AWS.Waf.IpSetNextToken
       description: The token for the next page.
       type: String
@@ -370,7 +370,7 @@ script:
         - us-gov-east-1
         - us-gov-west-1
     deprecated: false
-    description: Delete a specific ip set.
+    description: Delete a specific IP set.
     execution: false
     name: aws-waf-ip-set-delete
   - arguments:
@@ -385,7 +385,7 @@ script:
       - "Global"
       - "Regional"
     - name: regex_pattern
-      description: A comma separated list of the regex patterns.
+      description: A comma-separated list of the regex patterns.
       isArray: true
       required: true
     - name: description
@@ -413,10 +413,10 @@ script:
         - us-gov-east-1
         - us-gov-west-1
     - name: tag_key
-      description: A comma separated list of the keys of the tags to associate with the regex set.
+      description: A comma-separated list of the keys of the tags to associate with the regex set.
       isArray: true
     - name: tag_value
-      description: A comma separated list of the values of the tags to associate with the regex set.
+      description: A comma-separated list of the values of the tags to associate with the regex set.
       isArray: true
     deprecated: false
     description: Create a new regex set.
@@ -509,7 +509,7 @@ script:
       description: The regex set ID.
       required: true
     - name: regex_pattern
-      description: A comma separated list of the regex patterns.
+      description: A comma-separated list of the regex patterns.
       isArray: true
       required: true
     - name: description
@@ -816,7 +816,7 @@ script:
       - name: description
         description: The rule group description.
       - name: cloud_watch_metrics_enabled
-        description: whether the associated resource sends metrics to Amazon CloudWatch.
+        description: Whether the associated resource sends metrics to Amazon CloudWatch.
         defaultValue: 'true'
         auto: PREDEFINED
         predefined:
@@ -825,7 +825,7 @@ script:
       - name: metric_name
         description: The name of the Amazon CloudWatch metric dimension. The name can contain only the alphanumeric characters, hyphen, and underscore. The name can be from one to 128 characters long. It can't contain whitespace or metric names that are reserved for AWS WAF. The default will be the same as the group name provided in the name argument.
       - name: sampled_requests_enabled
-        description: whether to store a sampling of the web requests that match the rules.
+        description: Whether to store a sampling of the web requests that match the rules.
         defaultValue: 'true'
         auto: PREDEFINED
         predefined:
@@ -854,10 +854,10 @@ script:
           - us-gov-east-1
           - us-gov-west-1
       - name: tag_key
-        description: A comma separated list of the keys of the tags to associate with the rule group.
+        description: A comma-separated list of the keys of the tags to associate with the rule group.
         isArray: true
       - name: tag_value
-        description: A comma separated list of the values of the tags to associate with the rule group.
+        description: A comma-separated list of the values of the tags to associate with the rule group.
         isArray: true
     deprecated: false
     description: Create a new rule group.
@@ -874,14 +874,14 @@ script:
         description: The rule group description.
         type: String
       - contextPath: AWS.Waf.RuleGroup.LockToken
-        description: The ip set lock token.
+        description: The rule group lock token.
         type: String
       - contextPath: AWS.Waf.RuleGroup.ARN
         description: The rule group Amazon Resource Name.
         type: String
   - arguments:
       - name: group_id
-        description: The rule group id to associate the rule to.
+        description: The rule group ID to associate the rule to.
         required: true
       - name: group_name
         description: The rule group name to associate the rule to.
@@ -932,7 +932,7 @@ script:
           - "Captcha"
           - "Challenge"
       - name: ip_set_arn
-        description: A comma separated list of the ip set ARN. You can get those values by running the aws-waf-ip-set-list command.
+        description: A comma-separated list of the IP set ARN. You can get those values by running the aws-waf-ip-set-list command.
         isArray: true
         required: true
       - name: condition_operator
@@ -943,12 +943,12 @@ script:
           - "Or"
           - "Not"
     deprecated: false
-    description: Create an ip rule.
+    description: Create an IP rule.
     execution: false
     name: aws-waf-ip-rule-create
   - arguments:
       - name: group_id
-        description: The rule group id to associate the rule to.
+        description: The rule group ID to associate the rule to.
         required: true
       - name: group_name
         description: The rule group name to associate the rule to.
@@ -999,7 +999,7 @@ script:
           - "Captcha"
           - "Challenge"
       - name: country_codes
-        description: A comma separated list of two-character country codes.
+        description: A comma-separated list of two-character country codes.
         isArray: true
         required: true
     deprecated: false
@@ -1008,7 +1008,7 @@ script:
     name: aws-waf-country-rule-create
   - arguments:
       - name: group_id
-        description: The rule group id to associate the rule to.
+        description: The rule group ID to associate the rule to.
         required: true
       - name: group_name
         description: The rule group name to associate the rule to.
@@ -1124,7 +1124,7 @@ script:
     name: aws-waf-string-match-rule-create
   - arguments:
       - name: group_id
-        description: The rule group id to delete the rule from.
+        description: The rule group ID to delete the rule from.
         required: true
       - name: group_name
         description: The rule group name to delete the rule from.
@@ -1167,7 +1167,7 @@ script:
     name: aws-waf-rule-delete
   - arguments:
       - name: group_id
-        description: The rule group id to associate the statement to.
+        description: The rule group ID to associate the statement to.
         required: true
       - name: group_name
         description: The rule group name to associate the statement to.
@@ -1205,7 +1205,7 @@ script:
           - us-gov-east-1
           - us-gov-west-1
       - name: ip_set_arn
-        description: The ip set ARN. You can get this value by running the aws-waf-ip-set-list command.
+        description: The IP set ARN. You can get this value by running the aws-waf-ip-set-list command.
         isArray: true
         required: true
       - name: condition_operator
@@ -1215,12 +1215,12 @@ script:
           - "And"
           - "Or"
     deprecated: false
-    description: Adds an ip statement to an existing rule.
+    description: Adds an IP statement to an existing rule.
     execution: false
     name: aws-waf-ip-statement-add
   - arguments:
       - name: group_id
-        description: The rule group id to associate the statement to.
+        description: The rule group ID to associate the statement to.
         required: true
       - name: group_name
         description: The rule group name to associate the statement to.
@@ -1258,11 +1258,11 @@ script:
           - us-gov-east-1
           - us-gov-west-1
       - name: country_codes
-        description: A comma separated list of two-character country codes.
+        description: A comma-separated list of two-character country codes.
         isArray: true
         required: true
       - name: condition_operator
-        description: The rule condition operator. If the rule contains only one statement, a value must be provided.
+        description: The rule condition operator. If the rule contains only one statement, a value must be provIDed.
         auto: PREDEFINED
         predefined:
           - "And"
@@ -1273,7 +1273,7 @@ script:
     name: aws-waf-country-statement-add
   - arguments:
       - name: group_id
-        description: The rule group id to associate the statement to.
+        description: The rule group ID to associate the statement to.
         required: true
       - name: group_name
         description: The rule group name to associate the statement to.
@@ -1382,7 +1382,7 @@ script:
     name: aws-waf-string-match-statement-add
   - arguments:
       - name: group_id
-        description: The rule group id to associate the statement to.
+        description: The rule group ID to associate the statement to.
         required: true
       - name: group_name
         description: The rule group name to associate the statement to.
@@ -1420,7 +1420,7 @@ script:
           - us-gov-east-1
           - us-gov-west-1
       - name: statement_json
-        description: A generic json statement to add to the rule. You can get the templates by running the aws-waf-statement-json-template-get command.
+        description: A generic JSON statement to add to the rule. You can get the templates by running the aws-waf-statement-json-template-get command.
         isArray: true
         required: true
       - name: condition_operator
