@@ -7,7 +7,10 @@
     "url": "",
     "email": "",
     "created": "2023-03-21T22:52:38Z",
-    "categories": ["Messaging","Messaging and Conferencing"],
+    "categories": [
+        "Messaging",
+        "Messaging and Conferencing"
+    ],
     "tags": [],
     "useCases": [],
     "keywords": [],
