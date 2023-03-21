@@ -6,7 +6,21 @@ configuration:
 - display: Storage account name
   displaypassword: Account SAS Token
   name: credentials
-  required: true
+  required: false
+  type: 9
+- additionalinfo: Relevant only if the integration is running on Azure VM. 
+    If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field.
+    If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity.
+    For additional information, see the Help tab.
+  display: Use Azure Managed Identities
+  name: use_managed_identities
+  required: false
+  type: 8
+- additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
+  displaypassword: Azure Managed Identities Client ID
+  name: managed_identities_client_id
+  required: false
+  hiddenusername: true
   type: 9
 - display: Use system proxy settings
   name: proxy
@@ -357,7 +371,7 @@ script:
     description: Delete all messages from the specified Queue.
     execution: true
     name: azure-storage-queue-message-clear
-  dockerimage: demisto/python3:3.10.5.31928
+  dockerimage: demisto/python3:3.10.10.49934
   feed: false
   isfetch: true
   longRunning: false

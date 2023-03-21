@@ -22,12 +22,25 @@ You will get an ID, Token, and Key, which you need to enter in the corresponding
     - `ActivityFeed.ReadDlp` of type `Application`
     - `ServiceHealth.Read` of type `Delegated`
     - `ServiceHealth.Read` of type `Application`
-3. Copy the following URL and replace the ***CLIENT_ID*** and ***REDIRECT_URI*** with your own client ID and redirect URI, accordingly.
-https://login.windows.net/common/oauth2/authorize?response_type=code&resource=https://manage.office.com&client_id=CLIENT_ID&redirect_uri=REDIRECT_URI
-4. When prompted, accept the Microsoft authorization request for the required permissions. You will be automatically redirected to a link with the following structure:
-```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```
-5. Copy the ***AUTH_CODE*** (without the “code=” prefix) and paste it in your instance configuration under the **Authorization code** parameter. 
-6. Enter your client ID in the ***ID*** parameter field. 
-7. Enter your client secret in the ***Key*** parameter field.
-8. Enter your tenant ID in the ***Token*** parameter field.
-9. Enter your redirect URI in the ***Redirect URI*** parameter field.
+3. Enter your client ID in the ***ID*** parameter field. 
+4. Enter your client secret in the ***Key*** parameter field.
+5. Enter your tenant ID in the ***Token*** parameter field.
+6. Enter your redirect URI in the ***Redirect URI*** parameter field.
+7. Save the instance.
+8. Run the `!ms-management-activity-generate-login-url` command in the War Room and follow the instruction.
+
+## Authentication using Azure Managed Identities 
+___
+##### Note: This option is relevant only if the integration is running on Azure VM.
+Follow one of these steps for authentication based on Azure Managed Identities:
+
+- ##### To use System Assigned Managed Identity
+   - Select the **Use Azure Managed Identities** checkbox and leave the **Azure Managed Identities Client ID** field empty.
+
+- ##### To use User Assigned Managed Identity
+   1. Go to [Azure Portal](https://portal.azure.com/) -> **Managed Identities**.
+   2. Select your User Assigned Managed Identity -> copy the Client ID -> paste it in the **Azure Managed Identities Client ID** field in the instance settings.
+   3. Select the **Use Azure Managed Identities** checkbox.
+
+For more information, see [Managed identities for Azure resources](https://learn.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview).
+

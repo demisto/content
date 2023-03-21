@@ -19,6 +19,7 @@ class MsGraphClient:
                  certificate_thumbprint: Optional[str] = None,
                  private_key: Optional[str] = None,
                  azure_ad_endpoint: str = 'https://login.microsoftonline.com',
+                 managed_identities_client_id: Optional[str] = None,
                  ):
         client_args = {
             'base_url': 'https://graph.microsoft.com',
@@ -34,6 +35,8 @@ class MsGraphClient:
             'azure_ad_endpoint': azure_ad_endpoint,
             'private_key': private_key,
             'certificate_thumbprint': certificate_thumbprint,
+            'managed_identities_client_id': managed_identities_client_id,
+            'managed_identities_resource_uri': Resources.graph,
         }
         if not (app_secret and tenant_id):
             client_args['grant_type'] = DEVICE_CODE
@@ -72,8 +75,11 @@ def complete_auth(client: MsGraphClient):  # pragma: no cover
     return 'Authorization completed successfully.'
 
 
-def test_module(client: MsGraphClient, app_secret: str, tenant_id: str) -> str:  # pragma: no cover
-    if app_secret and tenant_id:
+def test_module(client: MsGraphClient,
+                app_secret: str,
+                tenant_id: str,
+                managed_identities_client_id: Optional[str]) -> str:  # pragma: no cover
+    if (app_secret and tenant_id) or managed_identities_client_id:
         client.ms_client.get_access_token()
         return 'ok'
     else:
@@ -141,7 +147,8 @@ def main() -> None:  # pragma: no cover
     app_secret = params.get('app_secret') or (params.get('credentials') or {}).get('password')
     app_secret = app_secret if isinstance(app_secret, str) else ''
     certificate_thumbprint = params.get('creds_certificate', {}).get('identifier') or params.get('certificate_thumbprint')
-    private_key = params.get('creds_certificate', {}).get('password') or params.get('private_key')
+    private_key = replace_spaces_in_credential(params.get('creds_certificate', {}).get('password')) or params.get('private_key')
+    managed_identities_client_id = get_azure_managed_identities_client_id(params)
 
     try:
         client = MsGraphClient(
@@ -155,10 +162,11 @@ def main() -> None:  # pragma: no cover
                                          'https://login.microsoftonline.com') or 'https://login.microsoftonline.com',
             certificate_thumbprint=certificate_thumbprint,
             private_key=private_key,
+            managed_identities_client_id=managed_identities_client_id,
         )
 
         if command == 'test-module':
-            result = test_module(client, app_secret, params.get('tenant_id'))
+            result = test_module(client, app_secret, params.get('tenant_id'), managed_identities_client_id)
             return_results(result)
         elif command == 'msgraph-api-request':
             return_results(generic_command(client, demisto.args()))

@@ -32,7 +32,7 @@ This phase will execute the following containment actions:
 
 [Mitre technique T1046 - Network Service Scanning](https://attack.mitre.org/techniques/T1046/)
 
-[Port Scan](https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-analytics-alert-reference/cortex-xdr-analytics-alert-reference/port-scan.html)
+[Port Scan](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Analytics-Alert-Reference/Port-Scan)
 
 ## How to use this playbook
 
@@ -108,7 +108,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| scannerIP | The IP address of the scanner. | alert.hostip | Optional |
+| scannerIP | The IP address of the scanner. | alert.localip | Optional |
 | blockKnownScanner | Whether to block the IP address based on previously seen scanning alerts. | true | Optional |
 | AutoCloseAlert | Whether to close the alert automatically or manually, after an analyst's review. | false | Optional |
 | AutoRecovery | Whether to execute the Recovery playbook. | false | Optional |

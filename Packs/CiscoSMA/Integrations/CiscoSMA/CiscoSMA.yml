@@ -3,7 +3,7 @@ commonfields:
   version: -1
 name: CiscoSMA
 display: Cisco Security Management Appliance
-category: Network Security
+category: Email
 description: The Security Management Appliance (SMA) is used to centralize services from Email Security Appliances (ESAs) and Web Security Appliances (WSAs).
 configuration:
 - name: base_url
@@ -95,7 +95,7 @@ script:
   script: ''
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.9.40422
+  dockerimage: demisto/python3:3.10.10.49934
   isfetch: true
   commands:
   - name: cisco-sma-spam-quarantine-message-search

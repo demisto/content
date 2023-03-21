@@ -1,4 +1,7 @@
 category: Network Security
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: RedLock
   version: -1
@@ -8,47 +11,64 @@ configuration:
   name: url
   required: true
   type: 0
+  section: Connect
 - display: Username
   name: credentials
   required: true
   type: 9
+  section: Connect
 - display: Customer name
   name: customer
   required: false
   type: 0
+  section: Connect
+  advanced: true
 - display: Fetch incidents
   name: isFetch
   required: false
   type: 8
+  section: Collect
 - display: Incident type
   name: incidentType
   required: false
   type: 13
+  section: Connect
 - display: Fetch only incidents matching this rule name
   name: ruleName
   required: false
   type: 0
+  section: Collect
+  advanced: true
 - display: Fetch only incidents matching this policy name
   name: policyName
   required: false
   type: 0
+  section: Collect
+  advanced: true
 - display: Fetch only incidents with this severity
   name: policySeverity
   required: false
   type: 0
+  section: Collect
+  advanced: true
 - defaultvalue: 7 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
   name: fetch_time
   required: false
   type: 0
+  section: Collect
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Trust any certificate (not secure)
   name: unsecure
   required: false
   type: 8
+  section: Connect
+  advanced: true
 description: Cloud threat defense
 display: Prisma Cloud (RedLock)
 name: RedLock
@@ -1254,7 +1274,7 @@ script:
       - year
       required: false
       secret: false
-    deprecated: false
+    deprecated: true
     description: Returns a list of IaC scans that meet the given conditions.
     execution: false
     name: redlock-list-scans
@@ -1347,7 +1367,7 @@ script:
       name: scan_id
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: Returns the status of the asynchronous IaC scan job that has the specified scan ID.
     execution: false
     name: redlock-get-scan-status
@@ -1365,7 +1385,7 @@ script:
       name: scan_id
       required: true
       secret: false
-    deprecated: false
+    deprecated: true
     description: Returns scan result details for the completed scan that has the specified scan ID
     execution: false
     name: redlock-get-scan-results
@@ -1409,7 +1429,7 @@ script:
     - contextPath: Redlock.Scans.results.id
       description: Scan results ID
       type: String
-  dockerimage: demisto/python3:3.10.8.37233
+  dockerimage: demisto/python3:3.10.10.49934
   feed: false
   isfetch: true
   longRunning: false

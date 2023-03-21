@@ -1,0 +1,841 @@
+{
+    "description": "Maps incoming AWSGuardDuty incidents fields.",
+    "feed": false,
+    "id": "AWSGuardDuty - Incoming Mapper",
+    "mapping": {
+        "AWS Guard Duty EC2 Finding": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "AWS Arn": {
+                    "simple": "Arn"
+                },
+                "AWS GuardDuty Confidence Score": {
+                    "simple": "Confidence"
+                },
+                "AWS GuardDuty Iam Instance Profile": {
+                    "complex": {
+                        "accessor": "IamInstanceProfile",
+                        "filters": [],
+                        "root": "Resource.InstanceDetails",
+                        "transformers": []
+                    }
+                },
+                "AWS GuardDuty Instance Details": {
+                    "complex": {
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "Resource.InstanceDetails.AvailabilityZone"
+                                        }
+                                    },
+                                    "operator": "isNotEmpty"
+                                }
+                            ],
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "Resource.InstanceDetails.imageDescription"
+                                        }
+                                    },
+                                    "operator": "isNotEmpty"
+                                }
+                            ],
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "Resource.InstanceDetails.ImageId"
+                                        }
+                                    },
+                                    "operator": "isNotEmpty"
+                                }
+                            ],
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "Resource.InstanceDetails.InstanceId"
+                                        }
+                                    },
+                                    "operator": "isNotEmpty"
+                                }
+                            ],
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "Resource.InstanceDetails.InstanceState"
+                                        }
+                                    },
+                                    "operator": "isNotEmpty"
+                                }
+                            ],
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "Resource.InstanceDetails.InstanceType"
+                                        }
+                                    },
+                                    "operator": "isNotEmpty"
+                                }
+                            ],
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "Resource.InstanceDetails.OutpostArn"
+                                        }
+                                    },
+                                    "operator": "isNotEmpty"
+                                }
+                            ],
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "Resource.InstanceDetails.LaunchTime"
+                                        }
+                                    },
+                                    "operator": "isNotEmpty"
+                                }
+                            ],
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "Resource.InstanceDetails.Platform"
+                                        }
+                                    },
+                                    "operator": "isNotEmpty"
+                                }
+                            ],
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "Resource.InstanceDetails.ProductCodes"
+                                        }
+                                    },
+                                    "operator": "isNotEmpty"
+                                }
+                            ],
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "Resource.InstanceDetails.Tags"
+                                        }
+                                    },
+                                    "operator": "isNotEmpty"
+                                }
+                            ]
+                        ],
+                        "root": "Resource.InstanceDetails",
+                        "transformers": []
+                    }
+                },
+                "AWS GuardDuty Network Interface": {
+                    "complex": {
+                        "accessor": "NetworkInterfaces",
+                        "filters": [],
+                        "root": "Resource.InstanceDetails",
+                        "transformers": []
+                    }
+                },
+                "AWS GuardDuty Partition": {
+                    "simple": "Partition"
+                },
+                "AWS GuardDuty Resource Type": {
+                    "simple": "Resource.ResourceType"
+                },
+                "AWS GuardDuty Schema Version": {
+                    "simple": "SchemaVersion"
+                },
+                "AWS GuardDuty Service": {
+                    "complex": {
+                        "filters": [],
+                        "root": "Service",
+                        "transformers": []
+                    }
+                },
+                "AWS GuardDuty Type": {
+                    "simple": "Type"
+                },
+                "Account ID": {
+                    "simple": "AccountId"
+                },
+                "Alert ID": {
+                    "simple": "Id"
+                },
+                "Description": {
+                    "simple": "Description"
+                },
+                "Last Update Time": {
+                    "simple": "UpdatedAt"
+                },
+                "Region": {
+                    "simple": "Region"
+                },
+                "Title": {
+                    "simple": "Title"
+                },
+                "occurred": {
+                    "simple": "CreatedAt"
+                },
+                "severity": {
+                    "simple": "Severity"
+                }
+            }
+        },
+        "AWS Guard Duty IAM Finding": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "AWS Arn": {
+                    "simple": "Arn"
+                },
+                "AWS GuardDuty Access Key Details": {
+                    "complex": {
+                        "accessor": "AccessKeyDetails",
+                        "filters": [],
+                        "root": "Resource",
+                        "transformers": []
+                    }
+                },
+                "AWS GuardDuty Confidence Score": {
+                    "simple": "Confidence"
+                },
+                "AWS GuardDuty Iam Instance Profile": {
+                    "complex": {
+                        "accessor": "IamInstanceProfile",
+                        "filters": [],
+                        "root": "Resource.InstanceDetails",
+                        "transformers": []
+                    }
+                },
+                "AWS GuardDuty Instance Details": {
+                    "complex": {
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "Resource.InstanceDetails.AvailabilityZone"
+                                        }
+                                    },
+                                    "operator": "isNotEmpty"
+                                }
+                            ],
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "Resource.InstanceDetails.imageDescription"
+                                        }
+                                    },
+                                    "operator": "isNotEmpty"
+                                }
+                            ],
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "Resource.InstanceDetails.ImageId"
+                                        }
+                                    },
+                                    "operator": "isNotEmpty"
+                                }
+                            ],
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "Resource.InstanceDetails.InstanceId"
+                                        }
+                                    },
+                                    "operator": "isNotEmpty"
+                                }
+                            ],
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "Resource.InstanceDetails.InstanceState"
+                                        }
+                                    },
+                                    "operator": "isNotEmpty"
+                                }
+                            ],
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "Resource.InstanceDetails.InstanceType"
+                                        }
+                                    },
+                                    "operator": "isNotEmpty"
+                                }
+                            ],
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "Resource.InstanceDetails.OutpostArn"
+                                        }
+                                    },
+                                    "operator": "isNotEmpty"
+                                }
+                            ],
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "Resource.InstanceDetails.LaunchTime"
+                                        }
+                                    },
+                                    "operator": "isNotEmpty"
+                                }
+                            ],
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "Resource.InstanceDetails.Platform"
+                                        }
+                                    },
+                                    "operator": "isNotEmpty"
+                                }
+                            ],
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "Resource.InstanceDetails.ProductCodes"
+                                        }
+                                    },
+                                    "operator": "isNotEmpty"
+                                }
+                            ],
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "Resource.InstanceDetails.Tags"
+                                        }
+                                    },
+                                    "operator": "isNotEmpty"
+                                }
+                            ]
+                        ],
+                        "root": "Resource.InstanceDetails",
+                        "transformers": []
+                    }
+                },
+                "AWS GuardDuty Network Interface": {
+                    "complex": {
+                        "accessor": "NetworkInterfaces",
+                        "filters": [],
+                        "root": "Resource.InstanceDetails",
+                        "transformers": []
+                    }
+                },
+                "AWS GuardDuty Partition": {
+                    "simple": "Partition"
+                },
+                "AWS GuardDuty Resource Type": {
+                    "simple": "Resource.ResourceType"
+                },
+                "AWS GuardDuty Schema Version": {
+                    "simple": "SchemaVersion"
+                },
+                "AWS GuardDuty Service": {
+                    "complex": {
+                        "filters": [],
+                        "root": "Service",
+                        "transformers": []
+                    }
+                },
+                "AWS GuardDuty Type": {
+                    "simple": "Type"
+                },
+                "Account ID": {
+                    "simple": "AccountId"
+                },
+                "Alert ID": {
+                    "simple": "Id"
+                },
+                "Description": {
+                    "simple": "Description"
+                },
+                "Last Update Time": {
+                    "simple": "UpdatedAt"
+                },
+                "Region": {
+                    "simple": "Region"
+                },
+                "Title": {
+                    "simple": "Title"
+                },
+                "occurred": {
+                    "simple": "CreatedAt"
+                },
+                "severity": {
+                    "simple": "Severity"
+                }
+            }
+        },
+        "AWS Guard Duty Kubernetes Finding": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "AWS Arn": {
+                    "simple": "Arn"
+                },
+                "AWS GuardDuty Confidence Score": {
+                    "simple": "Confidence"
+                },
+                "AWS GuardDuty Eks Cluster Details": {
+                    "complex": {
+                        "accessor": "EksClusterDetails",
+                        "filters": [],
+                        "root": "Resource",
+                        "transformers": []
+                    }
+                },
+                "AWS GuardDuty Kubernetes User Details": {
+                    "complex": {
+                        "accessor": "KubernetesUserDetails",
+                        "filters": [],
+                        "root": "Resource.KubernetesDetails",
+                        "transformers": []
+                    }
+                },
+                "AWS GuardDuty Kubernetes Workload Details": {
+                    "complex": {
+                        "accessor": "KubernetesWorkloadDetails",
+                        "filters": [],
+                        "root": "Resource.KubernetesDetails",
+                        "transformers": []
+                    }
+                },
+                "AWS GuardDuty Partition": {
+                    "simple": "Partition"
+                },
+                "AWS GuardDuty Resource Type": {
+                    "simple": "Resource.ResourceType"
+                },
+                "AWS GuardDuty Schema Version": {
+                    "simple": "SchemaVersion"
+                },
+                "AWS GuardDuty Service": {
+                    "complex": {
+                        "filters": [],
+                        "root": "Service",
+                        "transformers": []
+                    }
+                },
+                "AWS GuardDuty Type": {
+                    "simple": "Type"
+                },
+                "Account ID": {
+                    "simple": "AccountId"
+                },
+                "Alert ID": {
+                    "simple": "Id"
+                },
+                "Description": {
+                    "simple": "Description"
+                },
+                "Last Update Time": {
+                    "simple": "UpdatedAt"
+                },
+                "Region": {
+                    "simple": "Region"
+                },
+                "Title": {
+                    "simple": "Title"
+                },
+                "occurred": {
+                    "simple": "CreatedAt"
+                },
+                "severity": {
+                    "simple": "Severity"
+                }
+            }
+        },
+        "AWS Guard Duty Malware Protection Finding": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "AWS Arn": {
+                    "simple": "Arn"
+                },
+                "AWS GuardDuty Confidence Score": {
+                    "simple": "Confidence"
+                },
+                "AWS GuardDuty Container Details": {
+                    "complex": {
+                        "accessor": "ContainerDetails",
+                        "filters": [],
+                        "root": "Resource",
+                        "transformers": []
+                    }
+                },
+                "AWS GuardDuty Ebs Volume Details": {
+                    "complex": {
+                        "accessor": "EbsVolumeDetails",
+                        "filters": [],
+                        "root": "Resource",
+                        "transformers": []
+                    }
+                },
+                "AWS GuardDuty Ecs Cluster Details": {
+                    "complex": {
+                        "accessor": "EcsClusterDetails",
+                        "filters": [],
+                        "root": "Resource",
+                        "transformers": []
+                    }
+                },
+                "AWS GuardDuty Partition": {
+                    "simple": "Partition"
+                },
+                "AWS GuardDuty Resource Type": {
+                    "simple": "Resource.ResourceType"
+                },
+                "AWS GuardDuty Schema Version": {
+                    "simple": "SchemaVersion"
+                },
+                "AWS GuardDuty Service": {
+                    "complex": {
+                        "filters": [],
+                        "root": "Service",
+                        "transformers": []
+                    }
+                },
+                "AWS GuardDuty Type": {
+                    "simple": "Type"
+                },
+                "Account ID": {
+                    "simple": "AccountId"
+                },
+                "Alert ID": {
+                    "simple": "Id"
+                },
+                "Description": {
+                    "simple": "Description"
+                },
+                "Last Update Time": {
+                    "simple": "UpdatedAt"
+                },
+                "Region": {
+                    "simple": "Region"
+                },
+                "Title": {
+                    "simple": "Title"
+                },
+                "occurred": {
+                    "simple": "CreatedAt"
+                },
+                "severity": {
+                    "simple": "Severity"
+                }
+            }
+        },
+        "AWS Guard Duty S3 Finding": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "AWS Arn": {
+                    "simple": "Arn"
+                },
+                "AWS GuardDuty Access Key Details": {
+                    "complex": {
+                        "accessor": "AccessKeyDetails",
+                        "filters": [],
+                        "root": "Resource",
+                        "transformers": []
+                    }
+                },
+                "AWS GuardDuty Confidence Score": {
+                    "simple": "Confidence"
+                },
+                "AWS GuardDuty Iam Instance Profile": {
+                    "complex": {
+                        "accessor": "IamInstanceProfile",
+                        "filters": [],
+                        "root": "Resource.InstanceDetails",
+                        "transformers": []
+                    }
+                },
+                "AWS GuardDuty Instance Details": {
+                    "complex": {
+                        "filters": [
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "Resource.InstanceDetails.AvailabilityZone"
+                                        }
+                                    },
+                                    "operator": "isNotEmpty"
+                                }
+                            ],
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "Resource.InstanceDetails.imageDescription"
+                                        }
+                                    },
+                                    "operator": "isNotEmpty"
+                                }
+                            ],
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "Resource.InstanceDetails.ImageId"
+                                        }
+                                    },
+                                    "operator": "isNotEmpty"
+                                }
+                            ],
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "Resource.InstanceDetails.InstanceId"
+                                        }
+                                    },
+                                    "operator": "isNotEmpty"
+                                }
+                            ],
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "Resource.InstanceDetails.InstanceState"
+                                        }
+                                    },
+                                    "operator": "isNotEmpty"
+                                }
+                            ],
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "Resource.InstanceDetails.InstanceType"
+                                        }
+                                    },
+                                    "operator": "isNotEmpty"
+                                }
+                            ],
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "Resource.InstanceDetails.OutpostArn"
+                                        }
+                                    },
+                                    "operator": "isNotEmpty"
+                                }
+                            ],
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "Resource.InstanceDetails.LaunchTime"
+                                        }
+                                    },
+                                    "operator": "isNotEmpty"
+                                }
+                            ],
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "Resource.InstanceDetails.Platform"
+                                        }
+                                    },
+                                    "operator": "isNotEmpty"
+                                }
+                            ],
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "Resource.InstanceDetails.ProductCodes"
+                                        }
+                                    },
+                                    "operator": "isNotEmpty"
+                                }
+                            ],
+                            [
+                                {
+                                    "left": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "Resource.InstanceDetails.Tags"
+                                        }
+                                    },
+                                    "operator": "isNotEmpty"
+                                }
+                            ]
+                        ],
+                        "root": "Resource.InstanceDetails",
+                        "transformers": []
+                    }
+                },
+                "AWS GuardDuty Network Interface": {
+                    "complex": {
+                        "accessor": "NetworkInterfaces",
+                        "filters": [],
+                        "root": "Resource.InstanceDetails",
+                        "transformers": []
+                    }
+                },
+                "AWS GuardDuty Partition": {
+                    "simple": "Partition"
+                },
+                "AWS GuardDuty Resource Type": {
+                    "simple": "Resource.ResourceType"
+                },
+                "AWS GuardDuty S3 Bucket Details": {
+                    "complex": {
+                        "filters": [],
+                        "root": "AWS GuardDuty S3 Bucket Details",
+                        "transformers": []
+                    }
+                },
+                "AWS GuardDuty Schema Version": {
+                    "simple": "SchemaVersion"
+                },
+                "AWS GuardDuty Service": {
+                    "complex": {
+                        "filters": [],
+                        "root": "Service",
+                        "transformers": []
+                    }
+                },
+                "AWS GuardDuty Type": {
+                    "simple": "Type"
+                },
+                "Account ID": {
+                    "simple": "AccountId"
+                },
+                "Alert ID": {
+                    "simple": "Id"
+                },
+                "Description": {
+                    "simple": "Description"
+                },
+                "Last Update Time": {
+                    "simple": "UpdatedAt"
+                },
+                "Region": {
+                    "simple": "Region"
+                },
+                "Title": {
+                    "simple": "Title"
+                },
+                "occurred": {
+                    "simple": "CreatedAt"
+                },
+                "severity": {
+                    "simple": "Severity"
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "AWS Arn": {
+                    "simple": "Arn"
+                },
+                "AWS GuardDuty Confidence Score": {
+                    "simple": "Confidence"
+                },
+                "AWS GuardDuty Partition": {
+                    "simple": "Partition"
+                },
+                "AWS GuardDuty Resource Type": {
+                    "simple": "Resource.ResourceType"
+                },
+                "AWS GuardDuty Schema Version": {
+                    "simple": "SchemaVersion"
+                },
+                "AWS GuardDuty Service": {
+                    "complex": {
+                        "filters": [],
+                        "root": "Service",
+                        "transformers": []
+                    }
+                },
+                "AWS GuardDuty Type": {
+                    "simple": "Type"
+                },
+                "Account ID": {
+                    "simple": "AccountId"
+                },
+                "Alert ID": {
+                    "simple": "Id"
+                },
+                "Description": {
+                    "simple": "Description"
+                },
+                "Last Update Time": {
+                    "simple": "UpdatedAt"
+                },
+                "Region": {
+                    "simple": "Region"
+                },
+                "Title": {
+                    "simple": "Title"
+                },
+                "occurred": {
+                    "simple": "CreatedAt"
+                },
+                "severity": {
+                    "simple": "Severity"
+                }
+            }
+        }
+    },
+    "name": "AWSGuardDuty - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.5.0"
+}

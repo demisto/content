@@ -11,7 +11,9 @@ This integration was integrated and tested with version "2020-10-02" of Azure St
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Storage account name |  | True |
-    | Account SAS Token |  | True |
+    | Account SAS Token |  | False |
+    | Use Azure Managed Identities | Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab. | False |
+    | Azure Managed Identities Client ID | The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM. | False |
     | Use system proxy settings |  | False |
     | Trust any certificate (not secure) |  | False |
     | Maximum incidents for one fetch. | Default is 10. Maximum is 32 \(due to an API limit\). | False |

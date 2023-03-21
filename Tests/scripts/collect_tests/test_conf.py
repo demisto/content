@@ -44,11 +44,13 @@ class TestConf(DictFileBased):
         self.test_id_to_test = {test.playbook_id: test
                                 for test in self.tests}
 
+        tests_to_integration_set: dict[str, set[str, ...]] = defaultdict(set)
+        for test in self.tests:
+            tests_to_integration_set[test.playbook_id].update(test.integrations)
         self.tests_to_integrations: dict[str, tuple[str, ...]] = {
-            test.playbook_id: test.integrations
-            for test in self.tests
-            if test.integrations
+            test: tuple(sorted(test_integrations)) for test, test_integrations in tests_to_integration_set.items()
         }
+
         self.integrations_to_tests: dict[str, list[str]] = self._calculate_integration_to_tests()
 
         # Attributes

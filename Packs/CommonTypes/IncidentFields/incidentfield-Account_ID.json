@@ -13,7 +13,9 @@
 		"AWS Guard Duty IAM Finding",
 		"AWS Guard Duty Kubernetes Finding",
 		"AWS Guard Duty Malware Protection Finding",
-		"AWS Guard Duty S3 Finding"
+		"AWS Guard Duty S3 Finding",
+		"AWS Security Hub Finding",
+		"Prisma Cloud - VM Alert Prioritization"
 	],
 	"breachScript": "",
 	"caseInsensitive": true,
@@ -39,7 +41,9 @@
 	"selectValues": null,
 	"sla": 0,
 	"system": false,
-	"systemAssociatedTypes": null,
+	"systemAssociatedTypes": [
+		"Prisma Cloud - VM Alert Prioritization"
+    ],
 	"threshold": 72,
 	"type": "shortText",
 	"unmapped": false,

@@ -1535,26 +1535,26 @@ def test_query_fetch(mocker, args, expected_results):
 UPSERT_COMMAND_DATA_CASES_FETCH_INCIDENTS = [
 
     (
-        {"reported_at": "1990-06-24T22:16:26.865Z"},
+        {"reported_at": "1990-06-24T22:16:26.865Z", 'max_fetch': 60},
         [{"reported_at": "test"}, {"reported_at": "test"}],
-        {"parse_alert": 2, "reported_at": 1, "setLastRun": 1}
+        {"parse_alert": 2, "reported_at": 1, "setLastRun": 1, "limit": 60}
 
     ),
     (
-        {},
+        {'max_fetch': 10},
         [{"reported_at": "test"}, {"reported_at": "test"}],
-        {"parse_alert": 2, "reported_at": 0, "setLastRun": 1}
+        {"parse_alert": 2, "reported_at": 0, "setLastRun": 1, "limit": 10}
     ),
     (
         {},
         [],
-        {"parse_alert": 0, "reported_at": 0, "setLastRun": 0}
+        {"parse_alert": 0, "reported_at": 0, "setLastRun": 0, "limit": 50}
     )
 ]
 
 
-@pytest.mark.parametrize('demisto_args, alerts_return, call_count', UPSERT_COMMAND_DATA_CASES_FETCH_INCIDENTS)
-def test_fetch_incidents(mocker, demisto_args, alerts_return, call_count):
+@pytest.mark.parametrize('demisto_args, alerts_return, expected_call', UPSERT_COMMAND_DATA_CASES_FETCH_INCIDENTS)
+def test_fetch_incidents(mocker, demisto_args, alerts_return, expected_call):
 
     from FireEyeHXv2 import fetch_incidents, Client
 
@@ -1562,13 +1562,14 @@ def test_fetch_incidents(mocker, demisto_args, alerts_return, call_count):
     setLastRun = mocker.patch("FireEyeHXv2.demisto.setLastRun", return_value=demisto_args.get('last_run'))
     mocker.patch("FireEyeHXv2.query_fetch", return_value="test")
     reported_at = mocker.patch("FireEyeHXv2.organize_reported_at", return_value="test")
-    mocker.patch("FireEyeHXv2.get_alerts", return_value=alerts_return)
+    get_alerts_call = mocker.patch("FireEyeHXv2.get_alerts", return_value=alerts_return)
     parse_alert = mocker.patch("FireEyeHXv2.parse_alert_to_incident", return_value="test")
     fetch_incidents(Client, demisto_args)
 
-    assert parse_alert.call_count == call_count["parse_alert"]
-    assert reported_at.call_count == call_count["reported_at"]
-    assert setLastRun.call_count == call_count["setLastRun"]
+    assert get_alerts_call.call_args[0][1]['limit'] == expected_call['limit']
+    assert parse_alert.call_count == expected_call["parse_alert"]
+    assert reported_at.call_count == expected_call["reported_at"]
+    assert setLastRun.call_count == expected_call["setLastRun"]
 
 
 UPSERT_COMMAND_DATA_CASES_RUN_COMMANDS_WITHOUT_POLLING = [
@@ -1953,3 +1954,40 @@ def test_headers_file_acquisition_package_request(requests_mock, mocker):
     client.file_acquisition_package_request('acquisition_id')
     assert requests_mock.request_history[0].headers.get('Accept') == 'application/octet-stream'
     assert requests_mock.request_history[0].headers.get('X-FeApi-Token') == 'test'
+
+
+@pytest.mark.parametrize(
+    'baseurl, expected_error',
+    [
+        (
+            '<dummy_url>/hx',
+            'The base URL is invalid please set the base URL without including /hx'
+        ),
+        (
+            '<dummy_url>/hx/',
+            'The base URL is invalid please set the base URL without including /hx'
+        ),
+        (
+            '<dummy_url>/hx/api',
+            'The base URL is invalid please set the base URL without including /hx/api'
+        ),
+        (
+            '<dummy_url>/hx/api/',
+            'The base URL is invalid please set the base URL without including /hx/api'
+        ),
+        (
+            '<dummy_url>/hx/api/v3',
+            'The base URL is invalid please set the base URL without including /hx/api/v3'
+        ),
+        (
+            '<dummy_url>/hx/api/v3/',
+            'The base URL is invalid please set the base URL without including /hx/api/v3'
+        )
+    ]
+)
+def test_validate_base_url(baseurl: str, expected_error: str):
+    from FireEyeHXv2 import validate_base_url
+
+    with pytest.raises(ValueError) as e:
+        validate_base_url(baseurl)
+    assert str(e.value) == expected_error

@@ -1,0 +1,19 @@
+{
+    "description": "This mapper will set the labels for all Incidents created using it for either the system default Incident type, or the Case Type.   Can be used to quickly ingest alerts from any source without any specific mapping.",
+    "feed": false,
+    "id": "Case Management - Generic Mapper",
+    "mapping": {
+        "Case": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {}
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {}
+        }
+    },
+    "name": "Case Management - Generic Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.8.0"
+}

@@ -1,3 +1,5 @@
+import pytest
+
 from AzureLogAnalytics import Client, execute_query_command, list_saved_searches_command, tags_arg_to_request_format
 
 MOCKED_SAVED_SEARCHES_OUTPUT = {
@@ -140,3 +142,79 @@ def test_tags_arg_to_request_format():
     assert len(parsed_tags) == 2
     assert parsed_tags[0].get('name') == 'name1'
     assert parsed_tags[1].get('value') == 'value2'
+
+
+@pytest.mark.parametrize(argnames='client_id', argvalues=['test_client_id', None])
+def test_test_module_command_with_managed_identities(mocker, requests_mock, client_id):
+    """
+    Scenario: run test module when managed identities client id provided.
+    Given:
+     - User has provided managed identities client oid.
+    When:
+     - test-module called.
+    Then:
+     - Ensure the output are as expected
+    """
+    from AzureLogAnalytics import main, MANAGED_IDENTITIES_TOKEN_URL
+    import AzureLogAnalytics
+    import demistomock as demisto
+
+    mock_token = {'access_token': 'test_token', 'expires_in': '86400'}
+    requests_mock.get(MANAGED_IDENTITIES_TOKEN_URL, json=mock_token)
+    params = {
+        'managed_identities_client_id': {'password': client_id},
+        'use_managed_identities': 'True',
+        'auth_type': 'Azure Managed Identities',
+        'subscription_id': {'password': 'test'},
+        'resource_group': 'test_resource_group'
+    }
+    mocker.patch.object(demisto, 'params', return_value=params)
+    mocker.patch.object(demisto, 'command', return_value='test-module')
+    mocker.patch.object(AzureLogAnalytics, 'return_results')
+    mocker.patch.object(AzureLogAnalytics, 'execute_query_command')
+
+    main()
+
+    assert 'ok' in AzureLogAnalytics.return_results.call_args[0][0]
+
+
+def test_generate_login_url(mocker):
+    """
+    Given:
+        - Self-deployed are true and auth code are the auth flow
+    When:
+        - Calling function azure-log-analytics-generate-login-url
+    Then:
+        - Ensure the generated url are as expected.
+    """
+    # prepare
+    import demistomock as demisto
+    from AzureLogAnalytics import main
+    import AzureLogAnalytics
+
+    redirect_uri = 'redirect_uri'
+    tenant_id = 'tenant_id'
+    client_id = 'client_id'
+    mocked_params = {
+        'redirect_uri': redirect_uri,
+        'self_deployed': 'True',
+        'refresh_token': tenant_id,
+        'credentials': {
+            'identifier': client_id,
+            'password': 'client_secret'
+        }
+    }
+    mocker.patch.object(demisto, 'params', return_value=mocked_params)
+    mocker.patch.object(demisto, 'command', return_value='azure-log-analytics-generate-login-url')
+    mocker.patch.object(AzureLogAnalytics, 'return_results')
+
+    # call
+    main()
+
+    # assert
+    expected_url = f'[login URL](https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/authorize?' \
+                   'response_type=code&scope=offline_access%20https://api.loganalytics.io/Data.Read' \
+                   '%20https://management.azure.com/user_impersonation' \
+                   f'&client_id={client_id}&redirect_uri={redirect_uri})'
+    res = AzureLogAnalytics.return_results.call_args[0][0].readable_output
+    assert expected_url in res

@@ -2592,3 +2592,125 @@ vulnerabilityManager
 >|Cve|Hostname|
 >|---|---|
 >| CVE-2021-31535 | host1 |
+
+
+### prisma-cloud-compute-get-waas-policies
+***
+Get the Waas Container Policies from Defend >> WAAS >> Containers
+
+
+#### Base Command
+
+`prisma-cloud-compute-get-waas-policies`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+
+#### Context Output
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PrismaCloudCompute.Policies.Name | String | The WaaS policy Name. | 
+| PrismaCloudCompute.Policies.WaasPolicy.ATP | String | The list of Waas Policies and there current setting. | 
+| PrismaCloudCompute.Policies.WaasPolicy.CodeInjection | String | The list of Waas Policies and there current setting. | 
+| PrismaCloudCompute.Policies.WaasPolicy.SQLInjection | String | The list of Waas Policies and there current setting. | 
+| PrismaCloudCompute.Policies.WaasPolicy.DetectInformationLeakage | String | The list of Waas Policies and there current setting. | 
+| PrismaCloudCompute.Policies.WaasPolicy.CrossSiteScriptingXSS | String | The list of Waas Policies and there current setting. | 
+| PrismaCloudCompute.Policies.WaasPolicy.OSCommandInjetion | String | The list of Waas Policies and there current setting. | 
+| PrismaCloudCompute.Policies.WaasPolicy.AttackToolsAndVulnScanners | String | The list of Waas Policies and there current setting. | 
+| PrismaCloudCompute.Policies.WaasPolicy.LocalFileInclusion | String | The list of Waas Policies and there current setting. | 
+| PrismaCloudCompute.Policies.WaasPolicy.Shellshock | String | The list of Waas Policies and there current setting. | 
+| PrismaCloudCompute.Policies.WaasPolicy.MalformedHTTPRequest | String | The list of Waas Policies and there current setting. | 
+
+#### Command example
+```!prisma-cloud-compute-get-waas-policies```
+#### Context Example
+```json
+{
+    "PrismaCloudCompute": {
+        "Policies": {
+            "Name": "dvwa",
+            "WaasPolicy": [
+                {
+                    "ATP": "alert",
+                    "AttackToolsAndVulnScanners": "alert",
+                    "CodeInjection": "alert",
+                    "CrossSiteScriptingXSS": "alert",
+                    "DetectInformationLeakage": "alert",
+                    "LocalFileInclusion": "alert",
+                    "MalformedHTTPRequest": "alert",
+                    "OSCommandInjetion": "alert",
+                    "SQLInjection": "ban",
+                    "Shellshock": "alert"
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### dvwa
+>|ATP|AttackToolsAndVulnScanners|CodeInjection|CrossSiteScriptingXSS|DetectInformationLeakage|LocalFileInclusion|MalformedHTTPRequest|OSCommandInjetion|SQLInjection|Shellshock|
+>|---|---|---|---|---|---|---|---|---|---|
+>| alert | alert | alert | alert | alert | alert | alert | alert | ban | alert |
+
+
+### prisma-cloud-compute-update-waas-policies
+***
+Update the Waas Policy for containers
+
+
+#### Base Command
+
+`prisma-cloud-compute-update-waas-policies`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| policy | The complete policy object.  Get it by running prisma-cloud-compute-get-waas-policies raw-response=true extend-context=PCC=. | Required | 
+| attack_type | The specific policy to update. Possible values are: sqli, xss, cmdi, codeInjection, lfi, attackTools, shellshock, malformedReq, advancedProtectionEffect, intelGathering. | Required | 
+| action | The new policy action for the attack type. Possible values are: ban, prevent, alert, allow, disable, reCAPTCHA. | Required | 
+| rule_name | The rule name for the WaaS policy settings. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+### Human Readable Output
+> Successfully updated the WaaS policy
+
+### prisma-cloud-compute-get-audit-firewall-container-alerts
+***
+Get the audits for the firewall container policies
+
+
+#### Base Command
+
+`prisma-cloud-compute-get-audit-firewall-container-alerts`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ImageName | The image name to get the alerts for. | Required | 
+| FromDays | The Number of days back to look. | Optional | 
+| audit_type | The type of audit alert to retrieve. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!prisma-cloud-compute-get-audit-firewall-container-alerts audit_type=lfi ImageName=`vulnerables/web-dvwa:latest````
+#### Human Readable Output
+
+>### Audits
+>**No entries.**
+
+
+## Known limitations:
+When fetching an incident from the Prisma Cloud Compute platform, the platform will delete the fetched incident.
+Therefore, it is recommended to configure only one instance per user to fetch incidents.

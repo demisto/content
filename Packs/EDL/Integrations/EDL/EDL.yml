@@ -540,7 +540,7 @@ script:
     deprecated: false
     description: Updates values stored in the List (only available On-Demand).
     execution: false
-  dockerimage: demisto/flask-nginx:1.0.0.43509
+  dockerimage: demisto/flask-nginx:1.0.0.49636
   feed: false
   isfetch: false
   longRunning: true

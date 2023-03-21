@@ -1,10 +1,11 @@
 
 default:
-  image: docker-io.art.code.pan.run/devdemisto/gitlab-content-ci:1.0.0.41253
+  image: docker-io.art.code.pan.run/devdemisto/gitlab-content-ci:1.0.0.49555
   artifacts:
     expire_in: 30 days
     paths:
       - /builds/xsoar/content/artifacts/*
+      - /builds/xsoar/content/pipeline_jobs_folder/*
     when: always
 
 stages:

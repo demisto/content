@@ -6,29 +6,19 @@ args:
   required: false
   secret: false
 - default: false
-  description: The field name with the label. Supports a comma-separated list, the
-    first non-empty value will be taken.
+  description: The field name with the label. Supports a comma-separated list, the first non-empty value will be taken.
   isArray: false
   name: tagField
   required: true
   secret: false
 - default: false
   defaultValue: '*'
-  description: 'A comma-separated list of email tag values and mapping. The script
-    considers only the tags specified in this field. You can map a label to another
-    value by using this format: LABEL:MAPPED_LABEL. For example, for 4 values in an email
-    tag: malicious, credentials harvesting, inner communication, external legit email,
-    unclassified. While training, we want to ignore the "unclassified" tag, and refer
-    to "credentials harvesting" as "malicious" too. Also, we want to merge "inner
-    communication" and "external legit email" to one tag called "non-malicious".
-    The input will be: malicious, credentials harvesting:malicious, inner communication:non-malicious,
-    external legit email:non-malicious.'
+  description: 'A comma-separated list of email tag values and mapping. The script considers only the tags specified in this field. You can map a label to another value by using this format: LABEL:MAPPED_LABEL. For example, for 4 values in an email tag: malicious, credentials harvesting, inner communication, external legit email, unclassified. While training, we want to ignore the "unclassified" tag, and refer to "credentials harvesting" as "malicious" too. Also, we want to merge "inner communication" and "external legit email" to one tag called "non-malicious". The input will be: malicious, credentials harvesting:malicious, inner communication:non-malicious, external legit email:non-malicious.'
   isArray: false
   name: phishingLabels
   required: false
   secret: false
-comment: 'A helper script for the DBot Create Phishing Classifier V2 playbook. This script
-  extends the query based on the phishingLabels argument.'
+comment: 'A helper script for the DBot Create Phishing Classifier V2 playbook. This script extends the query based on the phishingLabels argument.'
 commonfields:
   id: ExtendQueryBasedOnPhishingLabels
   version: -1
@@ -45,7 +35,7 @@ tags:
 - ml
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.10.1.25933
+dockerimage: demisto/python3:3.10.9.46032
 runas: DBotWeakRole
 runonce: false
 fromversion: 5.0.0

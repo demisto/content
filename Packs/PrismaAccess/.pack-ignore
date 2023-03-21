@@ -6,3 +6,6 @@ ignore=IN145
 
 [file:PrismaAccessEgressIPFeed.yml]
 ignore=IN145,IN124
+
+[known_words]
+SASE

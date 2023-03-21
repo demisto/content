@@ -1,4 +1,4 @@
-category: Identity and Access Management
+category: Authentication & Identity Management
 commonfields:
   id: AWS-ILM
   version: -1
@@ -374,7 +374,7 @@ script:
       type: Unknown
     description: Permanently removes a group.
     execution: true
-  dockerimage: demisto/python3:3.10.9.40422
+  dockerimage: demisto/python3:3.10.10.49934
   isfetch: false
   longRunning: false
   longRunningPort: false

@@ -6,6 +6,7 @@ import io
 import datetime
 import unittest
 from unittest.mock import patch
+from freezegun import freeze_time
 from CommonServerPython import arg_to_datetime
 from Flashpoint import Client, MESSAGES, MAX_PRODUCT, FILTER_DATE_VALUES, IS_FRESH_VALUES, MAX_PAGE_SIZE, \
     SORT_DATE_VALUES, SORT_ORDER_VALUES
@@ -699,6 +700,9 @@ class MyTestCase(unittest.TestCase):
     def test_prepare_args_for_compromised_credentials_when_valid_args_are_provided(self):
         """Test case scenario when the arguments provided are valid."""
         from Flashpoint import prepare_args_for_fetch_compromised_credentials
+
+        _start_freeze_time = freeze_time('2022-05-01 12:52:29')
+        _start_freeze_time.start()
 
         end_date = arg_to_datetime('now')
         end_date = datetime.datetime.timestamp(end_date)

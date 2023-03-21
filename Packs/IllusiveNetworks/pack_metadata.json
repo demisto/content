@@ -2,12 +2,12 @@
     "name": "Illusive Networks",
     "description": "Enrich SOC incident triage and investigation data with valuable Illusive information and forensics, and manage the way Illusive deploys deceptions across the network.",
     "support": "partner",
-    "currentVersion": "1.0.21",
+    "currentVersion": "1.0.24",
     "author": "Illusive Networks",
     "url": "https://www.illusivenetworks.com",
     "email": "support@illusivenetworks.com",
     "categories": [
-        "Network Security"
+        "Deception & Breach Simulation"
     ],
     "tags": [],
     "created": "2020-03-19T09:39:30Z",

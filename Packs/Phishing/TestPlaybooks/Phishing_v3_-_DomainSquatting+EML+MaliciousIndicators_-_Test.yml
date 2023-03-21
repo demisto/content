@@ -25,7 +25,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 50
+          "y": -120
         }
       }
     note: false
@@ -59,7 +59,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 175
+          "y": 5
         }
       }
     note: false
@@ -95,7 +95,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1100
+          "y": 930
         }
       }
     note: false
@@ -900,7 +900,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "38"
+      - "45"
     scriptarguments:
       complete_task:
         simple: "true"
@@ -912,7 +912,7 @@ tasks:
       max_timeout:
         simple: "1100"
       task_name:
-        simple: Manually remediate  the incident
+        simple: Manually search & delete emails
       task_states:
         simple: Waiting
     separatecontext: false
@@ -920,7 +920,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1260
+          "y": 1090
         }
       }
     note: false
@@ -1003,7 +1003,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 340
+          "y": 170
         }
       }
     note: false
@@ -1026,7 +1026,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: SearchIncidentsV2
       type: regular
       iscommand: false
@@ -1048,7 +1048,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 710
+          "y": 540
         }
       }
     note: false
@@ -1097,7 +1097,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 920
+          "y": 750
         }
       }
     note: false
@@ -1168,7 +1168,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 520
+          "y": 350
         }
       }
     note: false
@@ -1178,7 +1178,52 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-system: true
+  "45":
+    id: "45"
+    taskid: 3428bd12-1557-4c63-80f1-44f71a4665eb
+    type: regular
+    task:
+      id: 3428bd12-1557-4c63-80f1-44f71a4665eb
+      version: -1
+      name: Wait and manually remediate - Block indicators task
+      description: Wait and complete tasks by given status. Used for test playbooks.
+      scriptName: WaitAndCompleteTask
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      complete_task:
+        simple: "true"
+      incident_id:
+        complex:
+          root: CreatedIncidentID
+      interval_between_tries:
+        simple: "15"
+      max_timeout:
+        simple: "1100"
+      task_name:
+        simple: Which indicators would you like to block?
+      task_states:
+        simple: Waiting
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -1191,10 +1236,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2785,
+        "height": 2955,
         "width": 4340,
         "x": -1680,
-        "y": 50
+        "y": -120
       }
     }
   }
@@ -1206,4 +1251,6 @@ inputs:
   description: ""
   playbookInputQuery:
 outputs: []
+tests:
+- No tests (auto formatted)
 fromversion: 6.2.0

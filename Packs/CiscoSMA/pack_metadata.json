@@ -2,13 +2,13 @@
     "name": "CiscoSMA",
     "description": "The Security Management Appliance (SMA) is used to centralize services from Email Security Appliances (ESAs) and Web Security Appliances (WSAs).",
     "support": "xsoar",
-    "currentVersion": "1.1.3",
+    "currentVersion": "1.1.7",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "created": "2022-09-19T17:30:00Z",
     "categories": [
-        "Network Security"
+        "Email"
     ],
     "tags": [],
     "useCases": [],
