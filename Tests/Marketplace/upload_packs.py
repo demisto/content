@@ -1050,6 +1050,7 @@ def main():
     install_logging('Prepare_Content_Packs_For_Testing.log', logger=logging)
     option = option_handler()
     packs_artifacts_path = option.packs_artifacts_path
+    logging.info(f'{packs_artifacts_path=} MORE-INFORMATION')
     id_set = None
     try:
         with Neo4jContentGraphInterface():
@@ -1088,7 +1089,7 @@ def main():
     index_folder_path, index_blob, index_generation = download_and_extract_index(storage_bucket,
                                                                                  extract_destination_path,
                                                                                  storage_base_path)
-
+    logging.info(f'{index_folder_path=} MORE-INFORMATION')
     # content repo client initialized
     content_repo = get_content_git_client(CONTENT_ROOT_PATH)
     current_commit_hash, previous_commit_hash = get_recent_commits_data(content_repo, index_folder_path,
@@ -1321,7 +1322,7 @@ def main():
     readme_images_dict, readme_urls_data_list = replace_readme_urls(index_folder_path,
                                                                     storage_base_path=storage_base_path,
                                                                     marketplace=marketplace)
-    download_readme_images_from_url_data_list(readme_urls_data_list, storage_bucket=storage_bucket)
+    download_readme_images_from_url_data_list(readme_urls_data_list, Path(packs_artifacts_path), storage_bucket=storage_bucket)
 
     # finished iteration over content packs
     upload_index_to_storage(index_folder_path=index_folder_path,

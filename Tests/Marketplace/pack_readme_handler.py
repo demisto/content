@@ -150,7 +150,7 @@ def collect_images_from_readme_and_replace_with_storage_path(pack_readme_path, g
     return urls_list
 
 
-def download_readme_images_from_url_data_list(readme_urls_data_list: list, storage_bucket):
+def download_readme_images_from_url_data_list(readme_urls_data_list: list, packs_artifacts_path: Path, storage_bucket):
     for readme_url_data in readme_urls_data_list:
         readme_original_url = readme_url_data.get('original_read_me_url')
         gcs_storage_path = str(readme_url_data.get('new_gcs_image_path'))
@@ -161,15 +161,16 @@ def download_readme_images_from_url_data_list(readme_urls_data_list: list, stora
                                                              gcs_storage_path,
                                                              image_name, storage_bucket)
         elif readme_original_url.startswith('binary_files/'):
-            extracting_the_readme_image_from_pack_and_upload_to_gcs()
+            extracting_the_readme_image_from_pack_and_upload_to_gcs(readme_original_url, gcs_storage_path,
+                                                                    packs_artifacts_path, image_name, storage_bucket)
         else:
             logging.debug(f'The image path {readme_original_url} is invalid')
 
 
 def extracting_the_readme_image_from_pack_and_upload_to_gcs(readme_original_url: str, gcs_storage_path: str,
-                                                            image_name: str, storage_bucket):
-    readme_original_url_parsed = urllib.parse.urlparse(readme_original_url)
-    
+                                                            packs_artifacts_path: Path, image_name: str, storage_bucket):
+    logging.info(f'{readme_original_url=}\n{gcs_storage_path=}\n{packs_artifacts_path=}\n{image_name=} MORE-INFORMATION')
+    # readme_original_url_parsed = urllib.parse.urlparse(readme_original_url)
     pass
 
 
