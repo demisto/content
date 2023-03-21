@@ -433,7 +433,7 @@ def subscriptions_to_md(subscriptions: list[dict]) -> str:
     return tableToMarkdown('Subscriptions: ', list_md)
 
 
-def format_resource_group_dict(resource_group: Dict) -> Dict:
+def format_resource_group_dict(resource_group: dict) -> dict:
     """
     Formats a resource group dictionary by extracting its relevant fields.
 
