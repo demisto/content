@@ -386,9 +386,9 @@ def build_ids_params(ids: list) -> str:
         For example: ['1234', '5678'] => '?ids=1234&ids=5678'
 
         Args:
-            ids (list): List of exclusion IDs.
+            ids: List of exclusion IDs.
         Returns:
-            str: string to use as a query param in the requests of exclusion.
+            String to use as a query param in the requests of exclusion.
     """
     params = f'?ids={ids[0]}'
 
@@ -401,13 +401,13 @@ def build_ids_params(ids: list) -> str:
 
 def build_query_params(query_params: dict) -> str:
     """
-        Gets a list of IDs and return a string to use as a query param in the requests of exclusion entities.
-        For example: ['1234', '5678'] => '?ids=1234&ids=5678'
+        Gets a dict of {property: value} and return a string to use as a query param in the requests of exclusion entities.
+        For example: {'name': 'test', 'os_name': 'WINDOWS'} => '?name=test+os_name=WINDOWS'
 
         Args:
-            query_params (dict): List of exclusion IDs.
+            query_params: dict of exclusion property: value.
         Returns:
-            str: string to use as a query param in the requests of exclusion.
+            String to use as a query param in the requests of exclusion.
     """
     query = ''
 
@@ -1755,10 +1755,28 @@ def get_detections_by_behaviors(behaviors_id):
 
 
 def create_exclusion(exclusion_type: str, body: dict) -> dict:
+    """
+        Creates an exclusions based on a given json object.
+
+        Args:
+            exclusion_type: The exclusion type can be either ml (machine learning) or IOA`.
+            exclusion_ids: A dict contains the exclusion data.
+        Returns:
+            Info about the created exclusion.
+    """
     return http_request(method='POST', url_suffix=f'/policy/entities/{exclusion_type}-exclusions/v1', json=body)
 
 
 def update_exclusion(exclusion_type: str, body: dict) -> dict:
+    """
+        Updates an exclusions based on its ID and a given json object.
+
+        Args:
+            exclusion_type: The exclusion type can be either ml (machine learning) or IOA`.
+            exclusion_ids: A dict contains the exclusion data.
+        Returns:
+            Info about the updated exclusion.
+    """
     return http_request('PATCH', f'/policy/entities/{exclusion_type}-exclusions/v1', json=body)
 
 
@@ -1767,10 +1785,10 @@ def delete_exclusion(exclusion_type: str, exclusion_ids: list) -> dict:
         Deletes an exclusions based on its ID.
 
         Args:
-            exclusion_type (str): The exclusion type can be either ml (machine learning) or IOA`.
-            exclusion_ids (lsit): A list of exclusion IDs to delete.
+            exclusion_type: The exclusion type can be either ml (machine learning) or IOA`.
+            exclusion_ids: A list of exclusion IDs to delete.
         Returns:
-            dict: Info about the deleted exclusion.
+            Info about the deleted exclusion.
     """
     return http_request(method='DELETE',
                         url_suffix=f'/policy/entities/{exclusion_type}-exclusions/v1{build_ids_params(exclusion_ids)}')
@@ -1778,14 +1796,14 @@ def delete_exclusion(exclusion_type: str, exclusion_ids: list) -> dict:
 
 def get_exclusions(exclusion_type: str, filter_query: str | None, params: dict) -> dict:
     """
-        Returns IDs of exclusions that match the filter/value
+        Returns IDs of exclusions that match the filter / value
 
         Args:
-            exclusion_type (str): The exclusion type can be either ml (machine learning) or IOA`.
-            filter_query (str): Custom filter, For example `value:”<value>”`.
-            params (dict): API query params (sort, limit, offset).
+            exclusion_type: The exclusion type can be either ml (machine learning) or IOA`.
+            filter_query: Custom filter, For example `value:'<value>'`.
+            params: API query params (sort, limit, offset).
         Returns:
-            list: List of exclusion IDs.
+            List of exclusion IDs.
     """
     return http_request(method='GET', url_suffix=f'/policy/queries/{exclusion_type}-exclusions/v1',
                         params=assign_params(filter=filter_query, **params))
@@ -1793,13 +1811,13 @@ def get_exclusions(exclusion_type: str, filter_query: str | None, params: dict) 
 
 def get_exclusion_entities(exclusion_type: str, exclusion_ids: List) -> dict:
     """
-        Returns the exclusions by a list of IDs.
+        Returns the exclusions based on a list of IDs.
 
         Args:
-            exclusion_type (str): The exclusion type can be either ml (machine learning) or IOA`.
-            exclusion_ids (list): A list of exclusion IDs to retrieve.
+            exclusion_type: The exclusion type can be either ml (machine learning) or IOA`.
+            exclusion_ids: A list of exclusion IDs to retrieve.
         Returns:
-            list: List of exclusions.
+            List of exclusions.
     """
     return http_request(method='GET',
                         url_suffix=f'/policy/entities/{exclusion_type}-exclusions/v1{build_ids_params(exclusion_ids)}')
@@ -1807,12 +1825,12 @@ def get_exclusion_entities(exclusion_type: str, exclusion_ids: List) -> dict:
 
 def list_quarantined_files_id(files_filter: dict | None, query: dict, pagination: dict) -> dict:
     """
-        Returns the files by a list of IDs.
+        Returns the files ID's that match the filter / value.
 
         Args:
-            files_filter (dict): The exclusion type can be either ml (machine learning) or IOA`.
-            query (dict): The exclusion type can be either ml (machine learning) or IOA`.
-            pagination (dict): API query params for pagination (limit, offset).
+            files_filter: The exclusion type can be either ml (machine learning) or IOA`.
+            query: The exclusion type can be either ml (machine learning) or IOA`.
+            pagination: API query params for pagination (limit, offset).
         Returns:
             list: List of exclusions.
     """
@@ -1823,24 +1841,24 @@ def list_quarantined_files_id(files_filter: dict | None, query: dict, pagination
 
 def list_quarantined_files(ids: list) -> dict:
     """
-        Returns the file's metadata by a list of IDs.
+        Returns the file's metadata based a list of IDs.
 
         Args:
-            ids (list): A list of the IDs of the files.
+            ids: A list of the IDs of the files.
         Returns:
-            list: A list contains metadata about the files.
+            A list contains metadata about the files.
     """
     return http_request(method='POST', url_suffix='/quarantine/entities/quarantined-files/GET/v1', json={'ids': ids})
 
 
 def apply_quarantined_files_action(body: dict) -> dict:
     """
-        Returns the updated file's metadata.
+        Applies action to quarantined files.
 
         Args:
-            body (dict): The request body with the parameters to update.
+            body: The request body with the parameters to update.
         Returns:
-            list: A list contains metadata about the updated files.
+            A list contains metadata about the updated files.
     """
     return http_request(method='PATCH', url_suffix='/quarantine/entities/quarantined-files/v1', json=body)
 
@@ -4261,7 +4279,16 @@ def get_cve_command(args: dict) -> list[CommandResults]:
     return command_results_list
 
 
-def create_ml_exclusion_command(args):
+def create_ml_exclusion_command(args: dict) -> CommandResults:
+    """Creates a machine learning exclusion.
+
+    Args:
+        args: Arguments to create the exclusion from.
+
+    Returns:
+        The created exclusion meta data.
+
+    """    
     create_args = assign_params(
         value=args.get('value'),
         excluded_from=argToList(args.get('excluded_from')),
@@ -4281,7 +4308,16 @@ def create_ml_exclusion_command(args):
     )
 
 
-def update_ml_exclusion_command(args):
+def update_ml_exclusion_command(args: dict) -> CommandResults:
+    """Updates a machine learning exclusion by providing an ID.
+
+    Args:
+        args: Arguments for updating the exclusion.
+
+    Returns:
+        The updated exclusion meta data.
+
+    """
     update_args = assign_params(
         value=args.get('value'),
         comment=args.get('comment'),
@@ -4303,17 +4339,35 @@ def update_ml_exclusion_command(args):
     )
 
 
-def delete_ml_exclusion_command(args):
+def delete_ml_exclusion_command(args: dict) -> CommandResults:
+    """Delete a machine learning exclusion by providing an ID.
+
+    Args:
+        args: Arguments for deleting the exclusion (in particular only the id is needed).
+
+    Returns:
+        A message that the exclusion has been deleted.
+
+    """
     ids = argToList(args.get('ids'))
 
     delete_exclusion('ml', ids)
 
     return CommandResults(
-        readable_output=f'The machine learning exclusions with IDs {"".join(ids)} was successfully deleted.'
+        readable_output=f'The machine learning exclusions with IDs {" ".join(ids)} was successfully deleted.'
     )
 
 
-def search_ml_exclusion_command(args):
+def search_ml_exclusion_command(args: dict) -> CommandResults:
+    """Searches machine learning exclusions by providing an ID / value / cusotm-filter.
+
+    Args:
+        args: Arguments for searching the exclusions.
+
+    Returns:
+        The exclusions meta data.
+
+    """
     if not (ids := argToList(args.get('ids'))):
         search_args = assign_params(
             sort=args.get('sort'),
@@ -4342,7 +4396,16 @@ def search_ml_exclusion_command(args):
     )
 
 
-def create_ioa_exclusion_command(args):
+def create_ioa_exclusion_command(args: dict) -> CommandResults:
+    """Creates an IOA exclusion.
+
+    Args:
+        args: Arguments to create the exclusion from.
+
+    Returns:
+        The created exclusion meta data.
+
+    """    
     create_args = assign_params(
         name=args.get('exclusion_name'),
         pattern_id=args.get('pattern_id'),
@@ -4367,7 +4430,16 @@ def create_ioa_exclusion_command(args):
     )
 
 
-def update_ioa_exclusion_command(args):
+def update_ioa_exclusion_command(args: dict) -> CommandResults:
+    """Updates an IOA exclusion by providing an ID.
+
+    Args:
+        args: Arguments for updating the exclusion.
+
+    Returns:
+        The updated exclusion meta data.
+
+    """
     update_args = assign_params(
         name=args.get('exclusion_name'),
         pattern_id=args.get('pattern_id'),
@@ -4395,17 +4467,35 @@ def update_ioa_exclusion_command(args):
     )
 
 
-def delete_ioa_exclusion_command(args):
+def delete_ioa_exclusion_command(args: dict) -> CommandResults:
+    """Delete an IOA exclusion by providing an ID.
+
+    Args:
+        args: Arguments for deleting the exclusion (in particular only the id is needed).
+
+    Returns:
+        A message that the exclusion has been deleted.
+
+    """
     ids = argToList(args.get('ids'))
 
     delete_exclusion('ioa', ids)
 
     return CommandResults(
-        readable_output=f'The IOA exclusions with IDs {"".join(ids)} was successfully deleted.'
+        readable_output=f'The IOA exclusions with IDs {" ".join(ids)} was successfully deleted.'
     )
 
 
-def search_ioa_exclusion_command(args):
+def search_ioa_exclusion_command(args: dict) -> CommandResults:
+    """Searches IOA exclusions by providing an ID / name / cusotm-filter.
+
+    Args:
+        args: Arguments for searching the exclusions.
+
+    Returns:
+        The exclusions meta data.
+
+    """
     exclusion_name = args.get('name')
     if not (ids := argToList(args.get('ids'))):
         search_args = assign_params(
@@ -4436,7 +4526,16 @@ def search_ioa_exclusion_command(args):
     )
 
 
-def list_quarantined_file_command(args):
+def list_quarantined_file_command(args: dict) -> CommandResults:
+    """Get quarantine file metadata by specified IDs / custom-filter.
+
+    Args:
+        args: Arguments for searching the quarantine files.
+
+    Returns:
+        The quarantine files meta data.
+
+    """
     if not (ids := argToList(args.get('ids'))):
         pagination_args = assign_params(
             limit=args.get('limit', '50'),
@@ -4469,7 +4568,16 @@ def list_quarantined_file_command(args):
     )
 
 
-def apply_quarantine_file_action_command(args):
+def apply_quarantine_file_action_command(args: dict) -> CommandResults:
+    """Apply action to quarantine file.
+
+    Args:
+        args: Arguments for searching and applying action to the quarantine files.
+
+    Returns:
+        The applied quarantined files meta data.
+
+    """
     if not (ids := argToList(args.get('ids'))):
         pagination_args = assign_params(
             limit=args.get('limit', '50'),

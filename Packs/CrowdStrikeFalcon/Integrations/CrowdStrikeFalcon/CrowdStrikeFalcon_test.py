@@ -4359,9 +4359,9 @@ def test_delete_ml_exclusion_command(requests_mock):
         json=load_json('test_data/create_ml_exclusion.json')
     )
 
-    results = delete_ml_exclusion_command({'ids': '123456'})
+    results = delete_ml_exclusion_command({'ids': '123456 789456'})
 
-    assert results.readable_output == "The machine learning exclusions with IDs ['123456'] was successfully deleted."
+    assert results.readable_output == "The machine learning exclusions with IDs 123456 789456 was successfully deleted."
 
 
 def test_search_ml_exclusion_command_by_ids(requests_mock):
@@ -4474,9 +4474,9 @@ def test_delete_ioa_exclusion_command(requests_mock):
         json=load_json('test_data/create_ioa_exclusion.json')
     )
 
-    results = delete_ioa_exclusion_command({'ids': '123456'})
+    results = delete_ioa_exclusion_command({'ids': '123456, 456789'})
 
-    assert results.readable_output == "The IOA exclusions with IDs ['123456'] was successfully deleted."
+    assert results.readable_output == "The IOA exclusions with IDs 123456 456789 was successfully deleted."
 
 
 def test_search_ioa_exclusion_command_by_ids(requests_mock):
@@ -4496,7 +4496,7 @@ def test_search_ioa_exclusion_command_by_ids(requests_mock):
 def test_search_ioa_exclusion_command_by_name(requests_mock):
     from CrowdStrikeFalcon import search_ioa_exclusion_command
     requests_mock.get(
-        f'{SERVER_URL}/policy/queries/ioa-exclusions/v1?filter=name%3A%27test%27',
+        f'{SERVER_URL}/policy/queries/ioa-exclusions/v1?filter=name%3A~%27test%27',
         json={'resources': ['123456']}
     )
     requests_mock.get(
@@ -4514,7 +4514,7 @@ def test_search_ioa_exclusion_command_by_name(requests_mock):
 def test_search_ioa_exclusion_command_by_name_no_results(requests_mock):
     from CrowdStrikeFalcon import search_ioa_exclusion_command
     requests_mock.get(
-        f'{SERVER_URL}/policy/queries/ioa-exclusions/v1?filter=name%3A%27test-mock%27',
+        f'{SERVER_URL}/policy/queries/ioa-exclusions/v1?filter=name%3A~%27test-mock%27',
         json={}
     )
 
