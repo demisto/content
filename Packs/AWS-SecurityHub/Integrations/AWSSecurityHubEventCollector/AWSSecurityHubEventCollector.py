@@ -18,7 +18,7 @@ DEFAULT_MAX_RESULTS = 10  # Default maximum number of results to fetch
 
 
 def get_events(client: boto3.client, start_time: datetime | None = None,
-               end_time: datetime | None = None, limit: int = 0) -> list[dict]:
+               end_time: datetime | None = None, id_ignore_list: list[str] | None = None, limit: int = 0) -> list[dict]:
     """
     Fetch events from AWS Security Hub.
 
@@ -27,6 +27,8 @@ def get_events(client: boto3.client, start_time: datetime | None = None,
         start_time (datetime | None, optional): Start time to fetch events from. Required if end_time is set.
         end_time (datetime | None, optional): Time to fetch events until. Defaults to current time.
         limit (int): Maximum number of events to fetch. Defaults to 0 (no limit).
+        id_ignore_list (list[str] | None, optional): List of finding IDs to not include in the results.
+            Defaults to None.
 
     Returns:
         tuple[list, CommandResults]: A tuple containing the events and the CommandResults object.
@@ -45,6 +47,13 @@ def get_events(client: boto3.client, start_time: datetime | None = None,
                 end_time.strftime(DATETIME_FORMAT) if end_time else datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ')
         }]
 
+    if id_ignore_list:
+        ignore_filters = []
+        for event_id in id_ignore_list:
+            ignore_filters.append({'Value': event_id, 'Comparison': 'NOT_EQUALS'})
+
+        filters['Id'] = ignore_filters
+
     if filters:
         # We send kwargs because passing Filters=None to get_findings() tries to use a None value for filters,
         # which raises an error.
@@ -53,7 +62,7 @@ def get_events(client: boto3.client, start_time: datetime | None = None,
     events = []
 
     while True:
-        # The API only allows a maximum of 100 results per request.
+        # The API only allows a maximum of 100 results per request. Using more raises an error.
         if limit and limit - len(events) < 100:
             kwargs['MaxResults'] = limit - len(events)
 
@@ -74,7 +83,7 @@ def get_events(client: boto3.client, start_time: datetime | None = None,
 
 
 def fetch_events(client: boto3.client, last_run: dict[str, str],
-                 first_fetch_time: datetime | None, ) -> (dict[str, int], list):
+                 first_fetch_time: datetime | None) -> (dict[str, int], list):
     """
     Fetch events from AWS Security Hub.
 
@@ -88,18 +97,43 @@ def fetch_events(client: boto3.client, last_run: dict[str, str],
         dict: Next run dictionary containing the timestamp that will be used in ``last_run`` on the next fetch.
         list: List of events that will be generated in XSIAM.
     """
-    if last_run.get('lastRun'):
-        start_time = datetime.strptime(last_run['lastRun'], DATETIME_FORMAT)
+    if last_run.get('last_update_date'):
+        start_time = datetime.strptime(last_run['last_update_date'], DATETIME_FORMAT)
 
     else:
         start_time = first_fetch_time
 
-    events = get_events(client=client, start_time=start_time, limit=DEFAULT_MAX_RESULTS)
-    last_finding_update_time = events[-1].get('UpdatedAt') if events else None
+    id_ignore_list = last_run.get('last_update_date_finding_ids', [])
+
+    events = get_events(
+        client=client,
+        start_time=start_time,
+        id_ignore_list=id_ignore_list,
+        limit=DEFAULT_MAX_RESULTS
+    )
+
+    last_finding_update_time: str | None = events[-1].get('UpdatedAt') if events else None
     demisto.info(f'Fetched {len(events)} findings.\nUpdate time of last finding: {last_finding_update_time}.')
 
-    # Save the next_run as a dict with the last_fetch key to be stored
-    next_run = {'lastRun': last_finding_update_time}
+    # --- Set next_run data ---
+    # Since the 'UpdatedAt' filter seem to be equal or greater than,
+    # we add findings that are equal to 'last_finding_update_time' and filter them out in the next fetch.
+    ignore_list: list[str] = []
+
+    for event in reversed(events):
+        if event['UpdatedAt'] == last_finding_update_time:
+            ignore_list.append(event['Id'])
+
+        else:
+            break  # Since it's a sorted list, no need to check the rest.
+
+    next_run = {
+        # The timestamp of the last finding's 'UpdatedAt' field.
+        'last_update_date': last_finding_update_time,
+        # IDs of findings with UpdatedAt that are equal to 'last_update_date'.
+        'last_update_date_finding_ids': ignore_list,
+    }
+
     demisto.info(f'Setting next run to: {next_run}.')
     return next_run, events
 
@@ -209,6 +243,7 @@ def main():
 
     # Log exceptions and return errors
     except Exception as e:
+        raise e
         return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
 
