@@ -33,7 +33,7 @@ configuration:
     type: 8
 description: "BloxOne Threat Defense is a hybrid cybersecurity solution that leverages DNS as the first line of defense to detect and block cyber threats."
 display: "Infoblox BloxOne Threat Defense Event Collector"
-name: Infoblox Blox One Threat Defense Event Collector
+name: Infoblox BloxOne Threat Defense Event Collector
 script:
   commands:
     - arguments:
