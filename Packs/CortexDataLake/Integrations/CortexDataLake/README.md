@@ -1,12 +1,12 @@
 ## Overview
 ---
 
-Palo Alto Networks Cortex Data Lake provides cloud-based, centralized log storage and aggregation for your on premise, virtual (private cloud and public cloud) firewalls, for Prisma Access, and for cloud-delivered services such as Cortex XDR
-This integration was integrated and tested with version 2 of Cortex Data Lake
+Palo Alto Networks Cortex Data Lake XSOAR Connector provides cloud-based, centralized log storage and aggregation for your on premise, virtual (private cloud and public cloud) firewalls, for Prisma Access, and for cloud-delivered services such as Cortex XDR.
+This integration was integrated and tested with version 2 of Cortex Data Lake XSOAR Connector.
 
 ---
 
-## Configure Cortex Data Lake on Cortex XSOAR
+## Configure Cortex Data Lake XSOAR Connector on Cortex XSOAR
 ---
 
 1. Go to the Palo Alto Networks [HUB](https://apps.paloaltonetworks.com/apps) and select and add the **Cortex XSOAR** app as described [here](https://docs.paloaltonetworks.com/hub/hub-getting-started/get-started/accessing-applications.html).
@@ -19,7 +19,7 @@ The License ID will be used in Step 4.
 3. In Palo Alto Networks Cortex XSOAR, go to __Settings__ > __ABOUT__ > __License__ and get the value in the license field Customer name. The Customer name will be used in Step 4.
 4. In the Palo Alto Networks HUB, enter the License ID and the Customer name in the screen obtained in Step 1. The License ID and Customer name were obtained in Steps 2 and 3. Click **Start Authorization Process** to get the Authentication Token, Registration ID, and Encryption Key - these three fields will be used in the Palo Alto Networks Cortex v2 integration instance in Step 7 below.
 5. In Palo Alto Networks Cortex XSOAR, navigate to __Settings__ > __Integrations__ > __Servers & Services__.
-6. Search for Cortex Data Lake.
+6. Search for Cortex Data Lake XSOAR Connector.
 7. Click __Add instance__ to create and configure a new integration instance.
     * __Name__: a textual name for the integration instance.
     * __Authentication Token__: Retrieved in the authentication process in Step 4.
@@ -339,7 +339,7 @@ Runs a query on the Cortex logging service, according to preset queries.
 | CDL.Logging.Traffic.App | String | Application associated with the network traffic. | 
 | CDL.Logging.Traffic.Vsys | String | Virtual system associated with the network traffic. | 
 | CDL.Logging.Traffic.IsNat | String | Indicates whether the firewall is performing network address translation (NAT) for the logged traffic. If it is, this value is 1. | 
-| CDL.Logging.Traffic.LogTime | date | Time the log was received in Cortex Data Lake. | 
+| CDL.Logging.Traffic.LogTime | date | Time the log was received in Cortex Data Lake XSOAR Connector. | 
 | CDL.Logging.Traffic.SubcategoryOfApp | String | Identifies the application's subcategory. The subcategory is related to the application's category, | 
 | CDL.Logging.Traffic.Protocol | String | IP protocol associated with the session. | 
 | CDL.Logging.Traffic.NatDestinationPort | String | Post-NAT destination port. | 
@@ -650,7 +650,7 @@ Searches the Cortex firewall.traffic table. Traffic logs contain entries for the
 | CDL.Logging.Traffic.App | String | Application associated with the network traffic. | 
 | CDL.Logging.Traffic.Vsys | String | Virtual system associated with the network traffic. | 
 | CDL.Logging.Traffic.IsNat | String | Indicates whether the firewall is performing network address translation (NAT) for the logged traffic. If it is, this value is 1. | 
-| CDL.Logging.Traffic.LogTime | date | Time the log was received in Cortex Data Lake. | 
+| CDL.Logging.Traffic.LogTime | date | Time the log was received in Cortex Data Lake XSOAR Connector. | 
 | CDL.Logging.Traffic.SubcategoryOfApp | String | Identifies the application's subcategory. The subcategory is related to the application's category, | 
 | CDL.Logging.Traffic.Protocol | String | IP protocol associated with the session. | 
 | CDL.Logging.Traffic.NatDestinationPort | String | Post-NAT destination port. | 
@@ -938,7 +938,7 @@ Searches the URL table
 | CDL.Logging.URL.ThreatCategory | String | Threat category of the detected threat. | 
 | CDL.Logging.URL.ThreatName | String | Threat name of the detected threat. | 
 | CDL.Logging.URL.Subtype | String | Identifies the log subtype. | 
-| CDL.Logging.URL.LogTime | String | Time the log was received in Cortex Data Lake. | 
+| CDL.Logging.URL.LogTime | String | Time the log was received in Cortex Data Lake XSOAR Connector. | 
 | CDL.Logging.URL.LogSourceName | String | Name that uniquely identifies the source of the log. | 
 | CDL.Logging.URL.Denied | Boolean | Indicates whether the session was denied due to a URL filtering rule. | 
 | CDL.Logging.URL.Category | String | The URL category. | 
@@ -1125,8 +1125,8 @@ Searches the Cortex firewall.file_data table.
 | CDL.Logging.File.ReportID | Number | Identifies the analysis requested from the sandbox \(cloud or appliance\). | 
 | CDL.Logging.File.DestinationPort | Number | Network traffic's destination port. If this value is 0, then the app is using
 its standard port. | 
-| CDL.Logging.File.IsDupLog | Boolean | Indicates whether this log data is available in multiple locations, such as from Cortex Data Lake as well as from an on-premise log collector. | 
-| CDL.Logging.File.LogTime | Date | Time the log was received in Cortex Data Lake. | 
+| CDL.Logging.File.IsDupLog | Boolean | Indicates whether this log data is available in multiple locations, such as from Cortex Data Lake XSOAR Connector as well as from an on-premise log collector. | 
+| CDL.Logging.File.LogTime | Date | Time the log was received in Cortex Data Lake XSOAR Connector. | 
 | CDL.Logging.File.SessionID | Number | Identifies the firewall's internal identifier for a specific network session. | 
 | CDL.Logging.File.RecordSize | Number | Record size. | 
 | CDL.Logging.File.IngestionTime | Date | Ingestion time of the log. | 
@@ -1149,7 +1149,7 @@ its standard port. |
 | CDL.Logging.File.FileID | Number | Numerical identifier for the threat type. | 
 | CDL.Logging.File.IsCaptivePortal | Boolean | Indicates if user information for the session was captured through Captive Portal. | 
 | CDL.Logging.File.Protocol | String | IP protocol associated with the session. | 
-| CDL.Logging.File.CustomerID | Number | The ID that uniquely identifies the Cortex Data Lake instance which received this log record. | 
+| CDL.Logging.File.CustomerID | Number | The ID that uniquely identifies the Cortex Data Lake XSOAR Connector instance which received this log record. | 
 | CDL.Logging.File.Subtype | String | Identifies the log subtype. | 
 | CDL.Logging.File.TunneledApp | String | Tunneled app \(For internal use only\). | 
 | CDL.Logging.File.LogSourceID | String | ID that uniquely identifies the source of the log - serial number of the firewall that generated the log. | 
@@ -1298,3 +1298,4 @@ against. That is, log types must be fully qualified and the instance ID is a par
 `<instanceID>.firewall.traffic`
 However in this integration the instance ID is added automatically to the query so the name `firewall.traffic` is a valid table name
 * The SQL syntax supported for queries is `csql`
+* The provided authentication items ([configuration step 4](#configure-cortex-data-lake-on-cortex-xsoar)) can only be used once for each Cortex Data Lake XSOAR Connector tenant (but can be shared for different Cortex XSOAR instances). Trying to re-generate those items will revoke any previously generated set of authentication items.

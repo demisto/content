@@ -127,18 +127,24 @@ configuration:
       - Incoming And Outgoing
     required: false
     type: 15
+    hidden:
+      - marketplacev2
   - additionalinfo: When selected, closing the BMC Helix ITSM ticket is mirrored in Cortex XSOAR.
     defaultvalue: "false"
     display: Close Mirrored XSOAR Incident
     name: close_incident
     required: false
     type: 8
+    hidden:
+      - marketplacev2
   - additionalinfo: When selected, closing the Cortex XSOAR incident is mirrored in BMC Helix ITSM.
     defaultvalue: "false"
     display: Close Mirrored BMC Helix ITSM Ticket
     name: close_ticket
     required: false
     type: 8
+    hidden:
+      - marketplacev2
   - name: proxy
     display: Use system proxy settings
     required: false
@@ -163,7 +169,7 @@ script:
   script: ""
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.10.47713
+  dockerimage: demisto/python3:3.10.10.49934
   commands:
     - name: bmc-itsm-user-list
       description:
@@ -2864,7 +2870,7 @@ script:
     - arguments:
         - description: A date string in local time representing the last time the incident was updated. The incident is only returned if it was modified after the last update time.
           name: lastUpdate
-      description: Gets the list of incidents that were modified since the last update time. Note that this method is here for debugging purposes. The get-modified-remote-data command is used as part of a Mirroring feature, which is available from version 6.1.
+      description: Gets the list of incidents that were modified since the last update time. Note that this method is here for debugging purposes. The get-modified-remote-data command is used as part of a Mirroring feature, which is available in Cortex XSOAR from version 6.1.
       name: get-modified-remote-data
   feed: false
   isfetch: true
