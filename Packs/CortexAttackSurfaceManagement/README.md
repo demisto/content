@@ -51,6 +51,7 @@ Automated remediation is only possible when the right conditions are met.  These
   - Splunk
   - ServiceNow CMDB
   - Tenable.io Assets
+  - Qualys
 - Indicators of a non-production host:
   - "dev" or related words found in environment-related tags associated with the asset (case insensitive)
   - Has an active "DevelopmentEnvironment" classification from processing of public data
@@ -76,6 +77,7 @@ The main active response playbook is the `Cortex ASM - ASM Alert` playbook. This
   - [Cortex ASM - SNMP Check](#cortex-asm---snmp-check)
   - [Cortex ASM - Splunk Enrichment](#cortex-asm---splunk-enrichment)
   - [Cortex ASM - Tenable.io Enrichment](#cortex-asm---tenableio-enrichment)
+  - [Cortex ASM - Qualys Enrichment](#cortex-asm---qualys-enrichment)
 - Automation Scripts
   - [GenerateASMReport](#generateasmreport)
   - [RemediationPathRuleEvaluation](#remediationpathruleevaluation)
@@ -171,6 +173,12 @@ Playbook that given the IP address enriches Splunk information relevant to ASM a
 Playbook that given the IP address enriches Tenable.io information relevant to ASM alerts.
 
 ![Cortex ASM - Tenable.io Enrichment](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Tenable.io_Enrichment.png)
+
+#### Cortex ASM - Qualys Enrichment
+
+Playbook that given the IP address enriches Qualys information relevant to ASM alerts.
+
+![Cortex ASM - Qualys Enrichment]()
 
 ### Automation Scripts
 
