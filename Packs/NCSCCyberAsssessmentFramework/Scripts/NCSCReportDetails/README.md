@@ -1,5 +1,7 @@
 This script generates the report details used in the final report.
 This automation runs using the default Limited User role, unless you explicitly change the permissions.
+For more information, see the section about permissions here: 
+https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
 
 ## Permissions
 ---
