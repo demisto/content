@@ -7,11 +7,10 @@ import zipfile
 import pytest
 
 import demistomock as demisto
-from CommonServerPython import Common, tableToMarkdown, pascalToSpace
+from CommonServerPython import Common, tableToMarkdown, pascalToSpace, DemistoException
 from CoreIRApiModule import CoreClient
 from CoreIRApiModule import add_tag_to_endpoints_command, remove_tag_from_endpoints_command, quarantine_files_command, \
     isolate_endpoint_command
-from Packs.Base.Scripts.CommonServerPython.CommonServerPython import DemistoException
 
 test_client = CoreClient(
     base_url='https://test_api.com/public_api/v1', headers={}
