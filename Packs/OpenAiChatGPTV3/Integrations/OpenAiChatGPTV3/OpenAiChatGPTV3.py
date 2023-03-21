@@ -49,7 +49,7 @@ def test_module(client: Client) -> str:
     return status
 
 
-def chatgpt_send_prompt_command(client: Client, prompt: str) -> str:
+def chatgpt_send_prompt_command(client: Client, prompt: str) -> CommandResults:
     """
     Command to send prompts to OpenAI ChatGPT API
     and receive a response converted into json then
