@@ -19,10 +19,9 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Integrations
 
-* epo
-* Active Directory Query v2
-* carbonblack-v2
 * McAfee ePO v2
+* VMware Carbon Black EDR v2
+* Active Directory Query v2
 
 ### Scripts
 
@@ -31,12 +30,11 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ### Commands
 
 * endpoint
-* extrahop-device-search
-* ad-get-computer
-* cb-sensor-info
-* cs-device-search
 * epo-find-system
 * cs-device-details
+* ad-get-computer
+* extrahop-device-search
+* cs-device-search
 
 ## Playbook Inputs
 
@@ -94,6 +92,20 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | Endpoint.IsIsolated | The endpoint isolation status. | unknown |
 | Endpoint.MACAddress | The endpoint MAC address. | unknown |
 | Endpoint.Vendor | The integration name of the endpoint vendor. | unknown |
+| Endpoint.Relationships | The endpoint relationships of the endpoint that was enriched. | unknown |
+| Endpoint.Processor | The model of the processor. | unknown |
+| Endpoint.Processors | The number of processors. | unknown |
+| Endpoint.Memory | Memory on this endpoint. | unknown |
+| Endpoint.Model | The model of the machine or device. | unknown |
+| Endpoint.BIOSVersion | The endpoint's BIOS version. | unknown |
+| Endpoint.OSVersion | The endpoint's operation system version. | unknown |
+| Endpoint.DHCPServer | The DHCP server of the endpoint. | unknown |
+| McAfee.ePO.Endpoint | The endpoint that was enriched. | unknown |
+| Endpoint.Groups | Groups for which the computer is listed as a member. | unknown |
+| ActiveDirectory.ComputersPageCookie | An opaque string received in a paged search, used for requesting subsequent entries. | unknown |
+| ActiveDirectory.Computers.dn | The computer distinguished name. | unknown |
+| ActiveDirectory.Computers.memberOf | Groups for which the computer is listed. | unknown |
+| ActiveDirectory.Computers.name | The computer name. | unknown |
 
 ## Playbook Image
 
