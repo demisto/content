@@ -1,8 +1,8 @@
 {
-    "name": "KMSAT",
-    "description": "KnowBe4 KMSAT Integration",
+    "name": "KMSAT (Deprecated)",
+    "description": "Deprecated. Use KMSAT instead.",
     "support": "partner",
-    "currentVersion": "1.0.0",
+    "currentVersion": "1.0.1",
     "author": "KnowBe4",
     "url": " https://www.knowbe4.com/products/kevin-mitnick-security-awareness-training",
     "email": "support@knowbe4.com",
@@ -29,5 +29,6 @@
         "xsoar",
         "marketplacev2"
     ],
-    "githubUser": []
+    "githubUser": [],
+    "hidden": true
 }
