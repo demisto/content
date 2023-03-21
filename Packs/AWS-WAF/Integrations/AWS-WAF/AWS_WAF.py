@@ -42,6 +42,23 @@ WEB_REQUEST_COMPONENT_MAP = {"Headers": "Headers",
 ''' HELPER FUNCTIONS '''
 
 
+def convert_dict_values_bytes_to_str(input_dict):
+    output_dict = {}
+    for key, value in input_dict.items():
+        if isinstance(value, bytes):
+            output_dict[key] = value.decode()
+        elif isinstance(value, dict):
+            output_dict[key] = convert_dict_values_bytes_to_str(value)
+        elif isinstance(value, list):
+            output_dict[key] = [
+                convert_dict_values_bytes_to_str(item) if isinstance(item, dict)
+                else item.decode() if isinstance(item, bytes) else item
+                for item in value]
+        else:
+            output_dict[key] = value
+    return output_dict
+
+
 def get_tags_dict_from_args(tag_keys: list, tag_values: list) -> list:
     """
     Creates a list of dictionaries containing the tag key, and it's corresponding value
@@ -201,6 +218,13 @@ def build_string_match_statement(args: dict) -> dict:
 
 
 def update_rule_with_statement(rule: dict, statement: dict, condition_operator: str):
+    """
+    Updates an existing rule with a new statement
+    Args:
+        rule: The rule to update
+        statement: The statement to update the rule with
+        condition_operator: The condition to apply on the statements
+    """
     old_rule_statement = rule.get('Statement', {})
     if 'AndStatement' in old_rule_statement or 'OrStatement' in old_rule_statement:
         demisto.info('ignoring condition_operator argument as the statement already contains an operator.')
@@ -215,7 +239,17 @@ def update_rule_with_statement(rule: dict, statement: dict, condition_operator: 
     rule['Statement'][condition]['Statements'].append(statement)
 
 
-def add_statement_to_rule(args: dict, statement: dict, rules: list) -> list:
+def create_rules_list_with_new_rule_statement(args: dict, statement: dict, rules: list) -> list:
+    """
+    Creates a rules list with the updated rule
+    Args:
+        args: The command arguments
+        statement: The statement to add to a rule
+        rules: The original rules
+
+    Returns:
+        Updated list of rules
+    """
     new_rules = rules.copy()
     rule_name = args.get('rule_name', '')
     condition_operator = args.get('condition_operator', '')
@@ -227,6 +261,15 @@ def add_statement_to_rule(args: dict, statement: dict, rules: list) -> list:
 
 
 def build_web_component_match_object(web_request_component: str, oversize_handling: str) -> dict:
+    """
+    Creates web component object to send to the API
+    Args:
+        web_request_component: The web request component to inspect
+        oversize_handling: The oversize handling to be applied to web request contents
+
+    Returns:
+
+    """
     web_request_component_object = {}
     if web_request_component in {'Headers', 'Cookies', 'Body'}:
         if not oversize_handling:
@@ -415,6 +458,23 @@ def get_required_response_fields_from_rule_group(client: boto3.client, kwargs: d
     lock_token = response.get('LockToken')
 
     return rules, rule_group_visibility_config, lock_token
+
+
+'''CLIENT FUNCTIONS'''
+
+
+def update_rule_group_rules(client: boto3.client,
+                            kwargs: dict,
+                            lock_token: str,
+                            updated_rules: list,
+                            rule_group_visibility_config: dict) -> dict:
+    """ Updates rule group with new rules list"""
+    kwargs |= {'LockToken': lock_token,
+               'Rules': updated_rules,
+               'VisibilityConfig': rule_group_visibility_config
+               }
+
+    return client.update_rule_group(**kwargs)
 
 
 ''' COMMAND FUNCTIONS '''
@@ -714,27 +774,8 @@ def get_rule_group_command(client: boto3.client, args: dict) -> CommandResults:
     }
 
     response = client.get_rule_group(**kwargs)
-
-    def bytes_to_str_recursive(input_dict):
-        output_dict = {}
-        for key, value in input_dict.items():
-            if isinstance(value, bytes):
-                output_dict[key] = value.decode()
-            elif isinstance(value, dict):
-                output_dict[key] = bytes_to_str_recursive(value)
-            elif isinstance(value, list):
-                output_dict[key] = [
-                    bytes_to_str_recursive(item) if isinstance(item, dict) else item.decode() if isinstance(item,
-                                                                                                            bytes) else item
-                    for item in value]
-            else:
-                output_dict[key] = value
-        return output_dict
-
-    response = bytes_to_str_recursive(response)
-
+    response = convert_dict_values_bytes_to_str(response)
     outputs = response.get('RuleGroup', {})
-
     readable_output = tableToMarkdown('Rule group', outputs, headers=['Id', 'Name', 'Description'])
 
     return CommandResults(readable_output=readable_output,
@@ -762,20 +803,6 @@ def delete_rule_group_command(client: boto3.client, args: dict) -> CommandResult
 
     return CommandResults(readable_output=readable_output,
                           raw_response=response)
-
-
-def update_rule_group_rules(client: boto3.client,
-                            kwargs: dict,
-                            lock_token: str,
-                            updated_rules: list,
-                            rule_group_visibility_config: dict) -> dict:
-    """ Updates rule group with new rules list"""
-    kwargs |= {'LockToken': lock_token,
-               'Rules': updated_rules,
-               'VisibilityConfig': rule_group_visibility_config
-               }
-
-    return client.update_rule_group(**kwargs)
 
 
 def create_rule_group_command(client: boto3.client, args: dict) -> CommandResults:
@@ -902,7 +929,7 @@ def add_ip_statement_command(client: boto3.client, args: dict) -> CommandResults
     rules, rule_group_visibility_config, lock_token = get_required_response_fields_from_rule_group(client, kwargs)
     ip_set_arn = argToList(args.get('ip_set_arn')) or []
     statement = build_ip_statement(ip_set_arn)
-    updated_rules = add_statement_to_rule(args, statement, rules)  # type: ignore
+    updated_rules = create_rules_list_with_new_rule_statement(args, statement, rules)  # type: ignore
 
     response = update_rule_group_rules(client=client,
                                        kwargs=kwargs,
@@ -923,7 +950,7 @@ def add_country_statement_command(client: boto3.client, args: dict) -> CommandRe
     rules, rule_group_visibility_config, lock_token = get_required_response_fields_from_rule_group(client, kwargs)
     country_codes = argToList(args.get('country_codes')) or []
     statement = build_country_statement(country_codes)
-    updated_rules = add_statement_to_rule(args, statement, rules)
+    updated_rules = create_rules_list_with_new_rule_statement(args, statement, rules)
 
     response = update_rule_group_rules(client=client,
                                        kwargs=kwargs,
@@ -945,7 +972,7 @@ def add_string_match_statement_command(client: boto3.client, args: dict) -> Comm
     rules, rule_group_visibility_config, lock_token = get_required_response_fields_from_rule_group(client, kwargs)
 
     statement = build_string_match_statement(args)
-    updated_rules = add_statement_to_rule(args, statement, rules)
+    updated_rules = create_rules_list_with_new_rule_statement(args, statement, rules)
 
     response = update_rule_group_rules(client=client,
                                        kwargs=kwargs,
@@ -967,7 +994,7 @@ def add_json_statement_command(client: boto3.client, args: dict) -> CommandResul
     rules, rule_group_visibility_config, lock_token = get_required_response_fields_from_rule_group(client, kwargs)
 
     statement = json.loads(args.get('statement_json') or '{}')
-    updated_rules = add_statement_to_rule(args, statement, rules)
+    updated_rules = create_rules_list_with_new_rule_statement(args, statement, rules)
 
     response = update_rule_group_rules(client=client,
                                        kwargs=kwargs,

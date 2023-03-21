@@ -105,12 +105,12 @@ def test_update_rule_with_statement(rule_file, statement_condition):
     assert statement_condition in rule['Statement']
 
 
-def test_add_statement_to_rule(mocker):
-    from AWS_WAF import add_statement_to_rule
+def test_create_rules_list_with_new_rule_statement(mocker):
+    from AWS_WAF import create_rules_list_with_new_rule_statement
     rules = util_load_json('rule_group').get('RuleGroup').get('Rules')
     args = {'rule_name': 'test_1'}
     res = mocker.patch('AWS_WAF.update_rule_with_statement')
-    add_statement_to_rule(args=args, statement={}, rules=rules)
+    create_rules_list_with_new_rule_statement(args=args, statement={}, rules=rules)
     assert res.call_count == 1
 
 
