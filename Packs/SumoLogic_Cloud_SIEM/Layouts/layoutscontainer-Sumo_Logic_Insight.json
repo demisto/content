@@ -545,46 +545,11 @@
                         "i": "caseinfoid-e6a42390-a8bf-11ed-8c0d-e3589e3f08a7",
                         "items": [
                             {
-                                "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "sumologicinsightprimaryentity",
-                                "height": 53,
-                                "id": "8943cd70-a8c1-11ed-8c0d-e3589e3f08a7",
+                                "fieldId": "sumologiccloudsieminsightentity",
+                                "height": 22,
+                                "id": "1ce52330-c785-11ed-8fce-f959368d6953",
                                 "index": 0,
-                                "listId": "caseinfoid-e6a42390-a8bf-11ed-8c0d-e3589e3f08a7",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "sumologicinsightprimaryentitytype",
-                                "height": 53,
-                                "id": "a8ed9390-a8c1-11ed-8c0d-e3589e3f08a7",
-                                "index": 1,
-                                "listId": "caseinfoid-e6a42390-a8bf-11ed-8c0d-e3589e3f08a7",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "sumologicinsightprimaryentityvalue",
-                                "height": 53,
-                                "id": "b5e40ed0-a8c1-11ed-8c0d-e3589e3f08a7",
-                                "index": 2,
-                                "listId": "caseinfoid-e6a42390-a8bf-11ed-8c0d-e3589e3f08a7",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "sumologicinsightprimaryentityhostname",
-                                "height": 53,
-                                "id": "bad9bde0-a8c1-11ed-8c0d-e3589e3f08a7",
-                                "index": 3,
-                                "listId": "caseinfoid-e6a42390-a8bf-11ed-8c0d-e3589e3f08a7",
                                 "sectionItemType": "field",
                                 "startCol": 0
                             }
