@@ -1164,7 +1164,7 @@ def main():
 
         # upload author integration images and readme images
         if not pack.upload_images(index_folder_path, storage_bucket, storage_base_path, diff_files_list,
-                                  override_all_packs, marketplace):
+                                  override_all_packs):
             continue
 
         # detect if the pack is modified and return modified RN files
@@ -1307,7 +1307,7 @@ def main():
     logging.info('replacing the urls in index_V2')
 
     replace_readme_urls(index_v2_local_path, storage_base_path=storage_base_path,
-                        marketplace=marketplace, use_api=True)
+                        marketplace=marketplace, index_v2=True)
 
     logging.info('uploading new index')
 
