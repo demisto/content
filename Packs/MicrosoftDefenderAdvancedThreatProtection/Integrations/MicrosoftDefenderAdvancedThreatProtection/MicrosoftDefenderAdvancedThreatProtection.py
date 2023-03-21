@@ -3533,6 +3533,7 @@ def add_remove_machine_tag_command(client: MsClient, args: dict):
 def fetch_incidents(client: MsClient, last_run, fetch_evidence):
     first_fetch_time = dateparser.parse(client.alert_time_to_fetch,
                                         settings={'RETURN_AS_TIMEZONE_AWARE': True, 'TIMEZONE': 'UTC'})
+    demisto.debug(f'First fetch time: {first_fetch_time}')
 
     if last_run:
         last_fetch_time = last_run.get('last_alert_fetched_time')
@@ -3545,6 +3546,7 @@ def fetch_incidents(client: MsClient, last_run, fetch_evidence):
 
     latest_created_time = dateparser.parse(last_fetch_time,
                                            settings={'RETURN_AS_TIMEZONE_AWARE': True, 'TIMEZONE': 'UTC'})
+    demisto.debug(f'latest_created_time: {latest_created_time}')
 
     params = _get_incidents_query_params(client, fetch_evidence, last_fetch_time)
     demisto.debug(f'getting alerts using {params=}')
@@ -3552,6 +3554,7 @@ def fetch_incidents(client: MsClient, last_run, fetch_evidence):
     # get_alerts:
     try:
         alerts = client.list_alerts_by_params(params=params, overwrite_rate_limit_retry=True)['value']
+        demisto.debug(f'Alerts: {alerts}')
     except DemistoException as err:
         big_query_err_msg = 'Verify that the server URL parameter is correct and that you have access to the server' \
                             ' from your host.'
@@ -3569,11 +3572,12 @@ def fetch_incidents(client: MsClient, last_run, fetch_evidence):
         # to prevent duplicates, adding incidents with creation_time > last fetched incident
         if last_fetch_time:
             parsed = dateparser.parse(last_fetch_time, settings={'RETURN_AS_TIMEZONE_AWARE': True, 'TIMEZONE': 'UTC'})
+            demisto.debug(f'check alert {alert["id"]} with parsed time {parsed}. last alert time is {alert_time}')
             if alert_time <= parsed:  # type: ignore
                 demisto.debug(f"{INTEGRATION_NAME} - alert {str(alert)} was created at {alert['alertCreationTime']}."
                               f' Skipping.')
                 continue
-
+        demisto.debug(f'add alert {alert["id"]}')
         incidents.append({
             'rawJSON': json.dumps(alert),
             'name': f'{INTEGRATION_NAME} Alert {alert["id"]}',
@@ -3582,6 +3586,7 @@ def fetch_incidents(client: MsClient, last_run, fetch_evidence):
 
         # Update last run and add incident if the incident is newer than last fetch
         if alert_time > latest_created_time:  # type: ignore
+            demisto.debug(f'updated last created time to {alert_time}')
             latest_created_time = alert_time  # type: ignore
 
     # last alert is the newest as we ordered by it ascending
