@@ -4416,7 +4416,7 @@ def aggregated_list_instances_ip(args: Dict[str, Any]) -> CommandResults:
         else:
             raise ValueError("Unable to find project of the asset")
     else:
-        raise ValueError("Unable to find asset with IP address")
+        raise ValueError("Unable to find asset with IP address.  If you are using an organization service account, please make sure the default_search_scope integration parameter is set.")
 
     output = []
     data_res = []
