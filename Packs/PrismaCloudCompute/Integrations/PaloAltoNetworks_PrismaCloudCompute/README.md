@@ -2709,3 +2709,8 @@ There is no context output for this command.
 
 >### Audits
 >**No entries.**
+
+
+## Known limitations:
+When fetching an incident from the Prisma Cloud Compute platform, the platform will delete the fetched incident.
+Therefore, it is recommended to configure only one instance per user to fetch incidents.
