@@ -1,0 +1,93 @@
+category: Utilities
+commonfields:
+  id: EDL Monitor
+  version: -1
+configuration:
+- display: EDL IP or URL (e.g. http://xsoarserver.com:10009 or https://xsoarserver.com/instance/execute/instance_name)
+  name: EDL
+  required: true
+  section: Connect
+  type: 0
+- display: Incident type
+  name: incidentType
+  required: false
+  section: Connect
+  type: 13
+- display: EDL username
+  displaypassword: EDL password
+  name: credentials
+  required: false
+  type: 9
+- additionalinfo: Timeout (in seconds) for how long to wait for EDL response before detecting as down (default 3 minutes)
+  defaultvalue: "180"
+  display: 'Timeout:'
+  name: timeout
+  required: false
+  type: 0
+- advanced: true
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  section: Connect
+  type: 8
+- advanced: true
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  section: Connect
+  type: 8
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- additionalinfo: If true, this will email the contents of the EDL at the set interval to the configured emailTo user.  Set false to monitor only for EDL availability, and email the user if the EDL is found to be unavailable at the configured interval
+  defaultvalue: "true"
+  display: Monitor contents?  (Set false to monitor EDL availability only)
+  name: monitor-contents
+  required: false
+  type: 8
+- additionalinfo: Set this to the polling interval you want between checks to the EDL (in minutes, default 60 min)
+  defaultvalue: "60"
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
+- additionalinfo: Who to email the current EDL contents to (email address)
+  display: 'Email To:'
+  name: emailTo
+  required: true
+  type: 0
+- defaultvalue: smtp.gmail.com
+  display: 'Email server:'
+  name: emailServer
+  required: false
+  type: 0
+- display: Email username
+  displaypassword: Email password
+  name: emailCredentials
+  required: false
+  type: 9
+description: This integration can monitor EDLs by emailing the content of an EDL as a zipped file to a specified user at a defined interval, and/or simply monitor the EDL for availability and email the user if the EDL is not available
+display: EDL Monitor
+name: EDL Monitor
+script:
+  commands:
+  - arguments:
+    - description: The name of whom you want to say hello to.
+      name: name
+    description: Hello command - prints hello to anyone.
+    name: helloworld-say-hello
+    outputs:
+    - contextPath: hello
+      description: Should be Hello **something** here.
+      type: String
+  dockerimage: xsoar-registry.pan.dev/demisto/python3:3.10.10.48392
+  isFetchSamples: true
+  isfetch: true
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
