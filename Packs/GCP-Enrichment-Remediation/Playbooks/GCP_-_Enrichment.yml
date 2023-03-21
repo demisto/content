@@ -131,10 +131,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 2415b864-2580-4ab2-86b9-5534694b5900
+    taskid: 9af9cfa8-f75f-4def-8183-cf022a3687f9
     type: regular
     task:
-      id: 2415b864-2580-4ab2-86b9-5534694b5900
+      id: 9af9cfa8-f75f-4def-8183-cf022a3687f9
       version: -1
       name: Lookup Firewall rule names with associated network
       description: Retrieves the list of firewall rules available to the specified project.
@@ -159,6 +159,19 @@ tasks:
               suffix:
                 value:
                   simple: '"'
+      project_id:
+        complex:
+          root: GoogleCloudCompute.Instances
+          accessor: zone
+          transformers:
+          - operator: ExtractInbetween
+            args:
+              from:
+                value:
+                  simple: projects/
+              to:
+                value:
+                  simple: /zones
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -400,3 +413,5 @@ outputs:
 tests:
 - No tests (auto formatted)
 fromversion: 6.5.0
+contentitemexportablefields:
+  contentitemfields: {}
