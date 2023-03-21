@@ -1,6 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import requests
+import json
 
 
 ''' CLIENT CLASS '''
@@ -48,7 +49,7 @@ def test_module(client: Client) -> str:
     return status
 
 
-def chatgpt_send_prompt_command(client: Client, prompt: str) -> CommandResults:
+def chatgpt_send_prompt_command(client: Client, prompt: str) -> str:
     """
     Command to send prompts to OpenAI ChatGPT API
     and receive a response converted into json then
@@ -67,7 +68,7 @@ def chatgpt_send_prompt_command(client: Client, prompt: str) -> CommandResults:
     return chatgpt_output(chatgpt_response)
 
 
-def chatgpt_output(response):
+def chatgpt_output(response) -> CommandResults:
     """
     Convert response from ChatGPT to a human readable format in markdown table
 
@@ -75,20 +76,22 @@ def chatgpt_output(response):
     :rtype: ``CommandResults``
     """
     if response and isinstance(response, dict):
-        model = response.get('model')
-        createdTime = response.get('created')
-        id = response.get('id')
-        choices = response.get('choices')
-        responseUsage = response.get('usage')
-        promptTokens = responseUsage.get('prompt_tokens')
-        completionTokens = responseUsage.get('completion_tokens')
-        totalTokens = responseUsage.get('total_tokens')
+
+        rep = json.dumps(response)
+        repJSON = json.loads(rep)
+        model = repJSON['model']
+        createdTime = repJSON['created']
+        id = repJSON['id']
+        choices = repJSON['choices'][0]['message']['content'].strip('\n')
+        promptTokens = repJSON['usage']['prompt_tokens']
+        completionTokens = repJSON['usage']['completion_tokens']
+        totalTokens = repJSON['usage']['total_tokens']
         context = [{'ID': id, 'Model': model,
-                    'ChatGPT Response': choice.get('message').get('content').strip('\n'), 'Created Time': createdTime,
+                    'ChatGPT Response': choices, 'Created Time': createdTime,
                     'Number of Prompt Tokens': promptTokens,
                     'Number of Completion Tokens': completionTokens,
                     'Number of Total Tokens': totalTokens
-                    } for choice in choices]
+                    }]
 
     markdown = tableToMarkdown(
         '### ChatGPT API Response ###',
