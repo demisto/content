@@ -1,4 +1,3 @@
-import pytest
 import os
 from google.cloud.storage.blob import Blob
 from pathlib import Path
@@ -62,13 +61,6 @@ def test_collect_images_from_readme_and_replace_with_storage_path():
     replaced = Path(path_readme_to_replace_url).read_text()
     expected = Path(os.path.join(readme_images_test_folder_path, 'README_after_replace.md')).read_text()
     assert replaced == expected
-
-
-@pytest.mark.parametrize('path, expected_res', [('Packs/TestPack/README.md', True),
-                                                ('Packs/Integrations/dummyIntegration/README.md', False),
-                                                ('Packs/NotExists/README.md', False)])
-def test_is_file_readme(dummy_pack, path, expected_res):
-    assert expected_res == dummy_pack.is_raedme_file(path)
 
 
 def test_replace_readme_urls(mocker):

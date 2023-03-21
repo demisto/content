@@ -8,9 +8,7 @@ import shutil
 import stat
 import subprocess
 import urllib.parse
-import fileinput
 import warnings
-import requests
 
 from datetime import datetime, timedelta
 from distutils.util import strtobool
