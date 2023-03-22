@@ -297,21 +297,23 @@ class Client(BaseClient):
         self.password = password
         self.instance_name = instance_name
         self.domain = domain
-        # self.headers = self.generate_headers()
 
         super(Client, self).__init__(base_url=base_url, timeout=timeout, **kwargs)
 
-    def generate_headers(self):
+    def generate_headers(self, new_session: bool = False):
+        """
+        Args:
+            new_session (bool): whether to force creation of a new session
+        """
         time.sleep(random.uniform(0, 5))
         headers = REQUEST_HEADERS
         context_session_id = get_integration_context().get('session_id')
+        if new_session
         session_id = context_session_id or self.create_session()
         headers['Authorization'] = f'Archer session-id={session_id}'
         return headers
 
     def do_request(self, method, url_suffix, data=None, params=None):
-        # if not self.headers['Authorization']:
-        #     self.update_headers_with_new_session()
         headers = self.generate_headers()
         res = self._http_request(method, url_suffix, headers=headers, json_data=data, params=params,
                                  resp_type='response', ok_codes=(200, 401))
@@ -325,7 +327,7 @@ class Client(BaseClient):
 
     def update_headers_with_new_session(self):
         session_id = self.create_session()
-        merge_integration_context({'session_id': session_id})
+
         self.headers['Authorization'] = f'Archer session-id={session_id}'
         return self.headers
 
