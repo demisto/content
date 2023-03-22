@@ -162,7 +162,7 @@ def convert_to_demisto_severity(severity: int) -> int:
 def get_command_results(data: dict[str, Any]) -> CommandResults:
     return CommandResults(
         readable_output=f'## {json.dumps(data)}',
-        outputs_prefix='BaseIntegration.Output',
+        outputs_prefix='StamusIntegration.Output',
         outputs=data
     )
 

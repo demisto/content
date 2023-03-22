@@ -65,7 +65,7 @@ script:
     execution: false
     name: stamus-get-by-ioc
     outputs:
-    - contextPath: BaseIntegration.Output
+    - contextPath: StamusIntegration.Output
       description: '[Enter a description of the data returned in this output.]'
       type: String
   - arguments:
@@ -80,7 +80,7 @@ script:
     execution: false
     name: stamus-get-host-id
     outputs:
-    - contextPath: BaseIntegration.Output
+    - contextPath: StamusIntegration.Output
       description: '[Enter a description of the data returned in this output.]'
       type: String
   - arguments:
@@ -95,7 +95,7 @@ script:
     execution: false
     name: stamus-get-events
     outputs:
-    - contextPath: BaseIntegration.Output
+    - contextPath: StamusIntegration.Output
       description: '[Enter a description of the data returned in this output.]'
       type: String
   isfetch: true
