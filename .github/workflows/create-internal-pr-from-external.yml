@@ -4,6 +4,8 @@ on:
     types: [closed]
     branches:
       - contrib/**
+  pull_request:
+    types: [ opened, synchronize ]
 
 jobs:
   create_internal_pr:
