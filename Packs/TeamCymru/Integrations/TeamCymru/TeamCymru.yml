@@ -13,7 +13,7 @@ configuration:
   type: 8
   section: Connect
   advanced: true
-  defaultvalue: 'False'
+  defaultvalue: 'false'
 - display: Proxy URL
   additionalinfo: "Supports socks4/socks5/http connect proxies (e.g., socks5h://host:1080)."
   name: proxy_url
