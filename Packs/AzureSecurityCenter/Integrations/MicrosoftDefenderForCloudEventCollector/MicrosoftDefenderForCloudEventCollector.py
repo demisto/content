@@ -71,7 +71,8 @@ def filter_out_previosly_digested_events(events: list, last_run: dict) -> list:
     if not last_run:
         return events
     events = [event for event in events if event.get('properties', {}).get(
-        'startTimeUtc') >= last_run.get('last_run') and event.get('id', '') not in last_run.get('dup_digested_time_id', [])]
+        'startTimeUtc', '') >= last_run.get('last_run', '')
+        and event.get('id', '') not in last_run.get('dup_digested_time_id', [])]
     return events
 
 
