@@ -743,7 +743,7 @@ def create_body_create_rule(rule_type: str, address: List, number: int,
 
 def create_body_create_rule_for_v10(rule_type: str, address: List, number: int,
                                     from_to_list: list[dict[str, Optional[Any]]], state: str = "Enabled") -> tuple:
-    """ create part of the body for the command create/update_rule_object for v10
+    """ create part of the body for the command create_rule_object for v10
         Args:
             rule_type: str - The type of the rule.
             address: List - A list of addresses, if relevant.
@@ -757,6 +757,48 @@ def create_body_create_rule_for_v10(rule_type: str, address: List, number: int,
     list_to_send: list[dict] = [
         {"value": single_address, "state": STATE_TO_NUMBER.get(state)}
         for single_address in address]
+    # for parameters with a range, we need to add the state to the dictionary
+    if from_to_list:
+        from_to_list[0].update({"state": STATE_TO_NUMBER.get(state)})
+
+    if HOST in rule_type:
+        return f'HostIPv{number}', {
+            f'hostIPv{number}AddressList': list_to_send
+        }
+    elif ADDRESS_RANGE in rule_type:
+        return f'IPv{number}AddressRange', {
+            f'IPV{number}RangeList': from_to_list
+        }
+    else:
+        return f'Network_IPV_{number}', {
+            f'networkIPV{number}List': list_to_send
+        }
+
+
+def create_body_update_rule_for_v10(rule_type: str, address: List, number: int,
+                                    from_to_list: list[dict[str, Optional[Any]]], state: str = "Enabled") -> tuple:
+    """ create part of the body for the command update_rule_object for v10
+        Args:
+            rule_type: str - The type of the rule.
+            address: List - A list of addresses, if relevant.
+            number: int - The number of the IPV.
+            from_to_list: List - A list that contains dictionaries with from and do addresses.
+            state: str - An Enabled or Disabled state.
+        Returns:
+            Returns the body for the request.
+        """
+    # build a list of dictionaries with the state and the address and changedState for update or delete
+    list_to_send: list[dict] = []
+    for single_address in address:
+        if type(single_address) is dict:        # an existing address, the user wants delete and overwrite
+            list_to_send.append({"value": single_address.get("value"),
+                                 "state": STATE_TO_NUMBER.get(state),
+                                 "changedState": 3})
+        else:   # a new address to add
+            list_to_send.append({"value": single_address,
+                                 "state": STATE_TO_NUMBER.get(state),
+                                 "changedState": 1})
+
     # for parameters with a range, we need to add the state to the dictionary
     if from_to_list:
         from_to_list[0].update({"state": STATE_TO_NUMBER.get(state)})
@@ -1465,7 +1507,9 @@ def update_rule_object_command(client: Client, args: Dict) -> CommandResults:
     description = description if description else response_get.get('description')
     from_to_address_ip_v_6 = []
     from_to_address_ip_v_4 = []
-    if is_overwrite:
+    # in v9 if the user wants to overwrite the addresses we send only the new values,
+    # in v10 we do the same thing if the user dose not want to overwrite the addresses
+    if is_overwrite or (VERSION == V10 and not is_overwrite):
         if rule_type == 'HOST_IPV_4':
             address_ip_v_4 = address_ip_v_4 if address_ip_v_4 else response_get.get('HostIPv4', {}) \
                 .get('hostIPv4AddressList')
@@ -1492,7 +1536,9 @@ def update_rule_object_command(client: Client, args: Dict) -> CommandResults:
             }]
         elif not from_address_ip_v_6 and rule_type == 'IPV_6_ADDRESS_RANGE':
             from_to_address_ip_v_6 = response_get.get('IPv6AddressRange', {}).get('IPV6RangeList')
-    else:
+    # in v9 if the user wants to add new addresses we send the old values and the new addresses,
+    # in v10 we do the same thing if the user wants to overwrite the addresses
+    elif not is_overwrite or (VERSION == V10 and is_overwrite):
         if rule_type == 'HOST_IPV_4':
             old_address_ip_v_4 = response_get.get('HostIPv4', {}).get('hostIPv4AddressList', [])
             if address_ip_v_4:
@@ -1542,7 +1588,7 @@ def update_rule_object_command(client: Client, args: Dict) -> CommandResults:
     from_to_list = from_to_address_ip_v_4 if from_to_address_ip_v_4 else from_to_address_ip_v_6
     # create the body according to the version of the NSM
     if VERSION == V10:
-        d_name, extra_body = create_body_create_rule_for_v10(rule_type=rule_type, address=address,
+        d_name, extra_body = create_body_update_rule_for_v10(rule_type=rule_type, address=address,
                                                              number=number, from_to_list=from_to_list,
                                                              state=state)
 
