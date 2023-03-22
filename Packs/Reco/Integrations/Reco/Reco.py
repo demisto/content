@@ -387,7 +387,6 @@ class RecoClient(BaseClient):
             demisto.error(f"Validate API key ReadTimeout error: {str(e)}")
             raise e
 
-
     def set_entry_label_relations(
         self, entry_id: str, label_name: str, label_status: str, entry_type: str
     ) -> Any:
