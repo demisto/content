@@ -796,7 +796,7 @@ script:
       - 'false'
     - name: state
       required: false
-      description: "Whether to enable or disable the rule object.\nNote: This argument is only relevant to version 10x."
+      description: "Whether to enable or disable the rule object.\nNote: This argument is only relevant to version 10x, and can be used for adding a new address only."
       defaultValue: Enabled
       auto: PREDEFINED
       predefined:

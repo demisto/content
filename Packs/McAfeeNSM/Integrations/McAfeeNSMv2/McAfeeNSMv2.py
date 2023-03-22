@@ -787,14 +787,17 @@ def create_body_update_rule_for_v10(rule_type: str, address: List, number: int,
         Returns:
             Returns the body for the request.
         """
-    # build a list of dictionaries with the state and the address and changedState for update or delete
+    # build a list of dictionaries with the state, the address, and changedState for update or delete
+    # changedState: 1 = add, 3 = delete, depends on the choice of the user to overwrite or not
+    # address is a list of dictionaries or strings. The existing addresses are dictionaries and the upcoming addresses are strings
+    # if the address is a dictionary, the user wants to delete and overwrite that's the reason we kept that address in the list.
     list_to_send: list[dict] = []
     for single_address in address:
-        if type(single_address) is dict:        # an existing address, the user wants delete and overwrite
+        if type(single_address) is dict:
             list_to_send.append({"value": single_address.get("value"),
                                  "state": STATE_TO_NUMBER.get(state),
                                  "changedState": 3})
-        else:   # a new address to add
+        else:
             list_to_send.append({"value": single_address,
                                  "state": STATE_TO_NUMBER.get(state),
                                  "changedState": 1})
@@ -1509,7 +1512,7 @@ def update_rule_object_command(client: Client, args: Dict) -> CommandResults:
     from_to_address_ip_v_4 = []
     # in v9 if the user wants to overwrite the addresses we send only the new values,
     # in v10 we do the same thing if the user dose not want to overwrite the addresses
-    if is_overwrite or (VERSION == V10 and not is_overwrite):
+    if VERSION == V9 and is_overwrite or VERSION == V10 and not is_overwrite:
         if rule_type == 'HOST_IPV_4':
             address_ip_v_4 = address_ip_v_4 if address_ip_v_4 else response_get.get('HostIPv4', {}) \
                 .get('hostIPv4AddressList')
@@ -1538,7 +1541,7 @@ def update_rule_object_command(client: Client, args: Dict) -> CommandResults:
             from_to_address_ip_v_6 = response_get.get('IPv6AddressRange', {}).get('IPV6RangeList')
     # in v9 if the user wants to add new addresses we send the old values and the new addresses,
     # in v10 we do the same thing if the user wants to overwrite the addresses
-    elif not is_overwrite or (VERSION == V10 and is_overwrite):
+    elif VERSION == V9 and not is_overwrite or VERSION == V10 and is_overwrite:
         if rule_type == 'HOST_IPV_4':
             old_address_ip_v_4 = response_get.get('HostIPv4', {}).get('hostIPv4AddressList', [])
             if address_ip_v_4:
