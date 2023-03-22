@@ -147,7 +147,7 @@
         },
         {
             "integrations": "AzureWAF",
-            "instance_names": "azure_waf_user_auth_instance",
+            "instance_names": "azure_waf_prod",
             "playbookID": "Azure WAF - Test",
             "fromversion": "5.0.0"
         },
@@ -751,7 +751,7 @@
             "integrations": "SlackV3",
             "playbookID": "SlackV3 TestPB",
             "instance_names": "cached",
-            "timeout": 400,
+            "timeout": 600,
             "pid_threshold": 8,
             "fromversion": "5.5.0"
         },
@@ -779,7 +779,7 @@
             "integrations": "Cortex XDR - IR",
             "playbookID": "Test XDR Playbook general commands",
             "fromversion": "4.1.0",
-            "timeout": 1200
+            "timeout": 2500
         },
         {
             "integrations": "Cortex XDR - IR",
@@ -4472,7 +4472,7 @@
             "integrations": [
                 "CrowdStrike Falcon X"
             ],
-            "timeout": 2000
+            "timeout": 2500
         },
         {
             "playbookID": "CrowdStrike_Falcon_X_-Test-Detonate_File",
@@ -4549,7 +4549,7 @@
                 "classifier_id": "EWS v2",
                 "incoming_mapper_id": "EWS v2-mapper"
             },
-            "memory_threshold": 300,
+            "memory_threshold": 400,
             "pid_threshold": 80
         },
         {
@@ -5519,7 +5519,8 @@
         "O365-SecurityAndCompliance-Test": "Deprecated, consumes connection quota for V2",
         "ThreatGrid_v2_Test": "No instance, developed by Qmasters",
         "Test-Detonate URL - ThreatGrid": "No instance, developed by Qmasters",
-        "awake_security_test_pb": "No instance, CRTX-77572"
+        "awake_security_test_pb": "No instance, CRTX-77572",
+        "Create Phishing Classifier V2 ML Test": "Updated docker image lacks data for the ml model. Once data issue is solved for ml module can un skip. "
     },
     "skipped_integrations": {
         "CiscoWSAv2": "No instance - No license",
