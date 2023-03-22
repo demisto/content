@@ -42,7 +42,7 @@ configuration:
   required: false
   type: 0
   section: Collect
-description: '[Get alerts from Stamus Central Server and build incidents. Then get related artifacts, events and host-id informations]'
+description: '[Get alerts from Stamus Security Platform and build incidents. Then get related artifacts, events and host insight information]'
 display: 'Stamus'
 name: Stamus
 script:
@@ -66,37 +66,37 @@ script:
     name: stamus-get-by-ioc
     outputs:
     - contextPath: StamusIntegration.Output
-      description: '[Enter a description of the data returned in this output.]'
+      description: '[Fetch events matching an IOC.]'
       type: String
   - arguments:
     - default: false
-      description: '[IP to get host-id informations]'
+      description: '[IP to get Host Insights information]'
       isArray: false
       name: ip
       required: true
       secret: false
     deprecated: false
-    description: '[Get host-id informations]'
+    description: '[Get Host Insights information]'
     execution: false
     name: stamus-get-host-id
     outputs:
     - contextPath: StamusIntegration.Output
-      description: '[Enter a description of the data returned in this output.]'
+      description: '[Fetch information about a host known by Host Insight module]'
       type: String
   - arguments:
     - default: false
-      description: '[Stamus ID used to get related]'
+      description: '[Stamus ID used to get related information]'
       isArray: false
       name: id
       required: true
       secret: false
     deprecated: false
-    description: '[Enter a description of the command, including any important information users need to know, for example required permissions.]'
+    description: '[Get events for a Declaration of Compromise using the Stamus ID.]'
     execution: false
     name: stamus-get-events
     outputs:
     - contextPath: StamusIntegration.Output
-      description: '[Enter a description of the data returned in this output.]'
+      description: '[Get events for a Declaration of Compromise.]'
       type: String
   isfetch: true
   runonce: false
