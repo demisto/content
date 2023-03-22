@@ -1119,5 +1119,5 @@ User {user_id} was removed from the Group {group_id} successfully.
 
 <h2>Known Limitations</h2>
 <p>
-<a href="https://jira-hq.paloaltonetworks.local/browse/XSUP-22547">As per </a>.Microsoft also supports dynamic distribution groups which cannot be managed or retrieved through Microsoft Graph.
+<a href="https://jira-hq.paloaltonetworks.local/browse/XSUP-22547">As per</a>, Microsoft also supports dynamic distribution groups which cannot be managed or retrieved through Microsoft Graph.
 </p>
