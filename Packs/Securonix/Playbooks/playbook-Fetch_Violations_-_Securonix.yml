@@ -1,0 +1,147 @@
+id: Fetch Violations - Securonix
+version: -1
+name: Fetch Violations - Securonix
+description: Gets a list of violation data.
+starttaskid: '0'
+tasks:
+  '0':
+    id: '0'
+    taskid: 1655da69-734a-428f-8155-9d618cac9377
+    type: start
+    task:
+      id: 1655da69-734a-428f-8155-9d618cac9377
+      version: -1
+      name: ''
+      iscommand: false
+      brand: ''
+      description: ''
+    nexttasks:
+      '#none#':
+      - '1'
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '1':
+    id: '1'
+    taskid: d64f9b75-1d5b-425b-8d27-b96e2c43cbd0
+    type: regular
+    task:
+      id: d64f9b75-1d5b-425b-8d27-b96e2c43cbd0
+      version: -1
+      name: Fetch Violations
+      description: Gets a list activity data for an account name.
+      script: '|||securonix-list-violation-data'
+      type: regular
+      iscommand: true
+      brand: ''
+    nexttasks:
+      '#none#':
+      - '3'
+    scriptarguments:
+      from:
+        complex:
+          root: inputs.from
+      query:
+        complex:
+          root: inputs.query
+      query_id:
+        complex:
+          root: Securonix.Violation
+          accessor: queryId
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: ' '
+          - operator: LastArrayElement
+      to:
+        complex:
+          root: inputs.to
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '3':
+    id: '3'
+    taskid: 3190be01-2f98-4f32-8491-1ff8a12a4a5d
+    type: title
+    task:
+      id: 3190be01-2f98-4f32-8491-1ff8a12a4a5d
+      version: -1
+      name: End
+      type: title
+      iscommand: false
+      brand: ''
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 385,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: from
+  value: {}
+  required: false
+  description: Start date/time for which to retrieve activity data (in the format MM/dd/yyyy HH:mm:ss).
+  playbookInputQuery:
+- key: to
+  value: {}
+  required: false
+  description: End date/time for which to retrieve activity data (in the format MM/dd/yyyy HH:mm:ss).
+  playbookInputQuery:
+- key: query
+  value: {}
+  required: false
+  description: Free-text query. For example, query="resourcegroupname=WindowsSnare and policyname=Possible Privilege Escalation - Self Escalation".
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0

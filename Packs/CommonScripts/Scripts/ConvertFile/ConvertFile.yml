@@ -43,5 +43,5 @@ outputs:
   type: String
 scripttarget: 0
 runonce: false
-dockerimage: demisto/office-utils:2.0.0.23094
+dockerimage: demisto/office-utils:2.0.0.49835
 runas: DBotWeakRole

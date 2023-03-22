@@ -68,7 +68,7 @@ ignore=PB114
 ignore=RM104
 
 [file:playbook-Get_File_Sample_From_Path_-_Generic_README.md]
-ignore=RM106
+ignore=RM106,RM108
 
 [file:playbook-Block_Email_-_Generic_README.md]
 ignore=RM106
@@ -102,3 +102,9 @@ ignore=PA129
 
 [file:playbook-Block_Indicators_-_Generic_v2.yml]
 ignore=PB118
+
+[file:playbook-Retrieve_File_from_Endpoint_-_Generic_README.md]
+ignore=RM108
+
+[file:playbook-Get_File_Sample_By_Hash_-_Generic_v2_README.md]
+ignore=RM108
