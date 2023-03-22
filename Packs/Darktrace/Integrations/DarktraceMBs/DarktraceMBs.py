@@ -798,7 +798,7 @@ returns an error message via ``return_error()``.
 """
 
 
-def main() -> None:
+def main() -> None:     # pragma: no cover
     """main function, parses params and runs command functions
     :return:
     :rtype:
