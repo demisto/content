@@ -219,7 +219,7 @@ def main() -> None:
 
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
-            test_module(client, last_run)
+            test_module(client)
 
         elif command in ('ms-defender-for-cloud-get-events', 'fetch-events'):
 
