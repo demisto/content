@@ -42,6 +42,8 @@ def parser(date_str, date_formats=None, languages=None, locales=None, region=Non
     date_obj = dateparser.parse(
         date_str, date_formats=date_formats, languages=languages, locales=locales, region=region, settings=settings
     )
+    demisto.debug(f"the received date_obj is: {date_obj}")
+    demisto.debug(f"if we add the date_format we get: {OCCURRED_FORMAT}")
     assert isinstance(date_obj, datetime), f'Could not parse date {date_str}'  # MYPY Fix
     return date_obj.replace(tzinfo=timezone.utc)
 
@@ -1361,6 +1363,8 @@ def main():
             )
             incidents, next_fetch = fetch_incidents_command(client, params, last_run)
             demisto.debug(f'Setting next run to {next_fetch}')
+            demisto.debug(f'last fetch is: {next_fetch}')
+            demisto.debug(f'the last run with the new time key is {next_fetch.strftime(OCCURRED_FORMAT)}')
             last_run[LAST_FETCH_TIME_KEY] = next_fetch.strftime(OCCURRED_FORMAT)
             demisto.setLastRun(last_run)
             demisto.incidents(incidents)
