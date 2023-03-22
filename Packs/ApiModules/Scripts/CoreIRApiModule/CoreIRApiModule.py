@@ -1247,8 +1247,7 @@ def catch_and_exit_gracefully(e):
     Returns:
         CommandResult if the error is internal XDR error, else, the exception.
     """
-    if e.res.status_code == 500 and 'An error occurred while processing XDR public API - No endpoint was found for ' \
-                                    'creating the requested action' in str(e):
+    if e.res.status_code == 500 and 'no endpoint was found for creating the requested action' in str(e).lower():
         return CommandResults(readable_output="The operation executed is not supported on the given machine.")
     else:
         raise e
