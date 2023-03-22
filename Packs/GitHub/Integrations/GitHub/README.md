@@ -2848,3 +2848,44 @@ Deletes a comment.
 #### Context Output
 
 There is no context output for this command.
+
+### GitHub-add-assignee
+***
+Adds up to 10 assignees to an issue. Users already assigned to an issue are not replaced.
+
+
+#### Base Command
+
+`GitHub-add-assignee`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+|---|---|---|
+| assignee |Users to assign, can be a list of users | Required | 
+| pull_request_number|The number of PR/Issue to assign users to | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+|--- | --- |---|
+| GitHub.Assignees.assignees | String | assignees to the issue | 
+| GitHub.Assignees.assignees.login | String | Gists URL for user | 
+| GitHub.Assignees.assignees.gists_url | String | assignees to the issue | 
+| GitHub.Assignees.assignees.following_url | String | Following URL for user | 
+| GitHub.Assignees.assignees.followers_url | String | Followers URL for user | 
+| GitHub.Assignees.assignees.subscriptions_url | String | Subscriptions URL for user | 
+| GitHub.Assignees.assignees.received_events_url | String | Received events URL for user | 
+| GitHub.Assignees.assignees.events_url | String | Events URL for user | 
+| GitHub.Assignees.assignees.avatar_url | String | Avatar URL for user | 
+| GitHub.Assignees.assignees.url | String | URL for user for user | 
+| GitHub.Assignees.assignees.starred_url | String | Starred URL for user | 
+| GitHub.Assignees.assignees.organizations_url | String | Organizations URL for user | 
+| GitHub.Assignees.assignees.repos_url | String | Repos URL for user | 
+| GitHub.Assignees.assignees.gravatar_id | String | Gravatar_id for user | 
+| GitHub.Assignees.assignees.site_admin | String | Is user site admin | 
+| GitHub.Assignees.assignees.node_id | String | Node ID for user | 
+| GitHub.Assignees.assignees.type | String | Type of user | 
+| GitHub.Assignees.assignees.id | String | User ID | 
+| GitHub.Assignees.assignees.html_url | String | HTML URL for user | 
+

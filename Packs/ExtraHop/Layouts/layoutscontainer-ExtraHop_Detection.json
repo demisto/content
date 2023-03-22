@@ -1464,5 +1464,6 @@
    }
   ]
  },
- "description": ""
+ "description": "",
+ "marketplaces": ["xsoar"]
 }

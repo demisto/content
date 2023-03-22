@@ -32,18 +32,41 @@ configuration:
   required: false
   type: 9
   section: Connect
+  hiddenusername: true
+- display: Certificate Thumbprint
+  name: creds_certificate
+  required: false
+  type: 9
+  section: Connect
+  displaypassword: Private Key
 - additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   display: Certificate Thumbprint
   name: certificate_thumbprint
   required: false
   type: 4
   section: Connect
-- additionalinfo: Used for certificate authentication. The private key of the registered certificate.
-  display: Private Key
-  hiddenusername: true
+  hidden: true
+- display: Private Key
   name: private_key
   required: false
   type: 14
+  section: Connect
+  additionalinfo: Used for certificate authentication. The private key of the registered certificate.
+  hidden: true
+- additionalinfo: Relevant only if the integration is running on Azure VM. 
+    If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field.
+    If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity.
+    For additional information, see the Help tab.
+  display: Use Azure Managed Identities
+  name: use_managed_identities
+  required: false
+  type: 8
+- additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
+  displaypassword: Azure Managed Identities Client ID
+  name: managed_identities_client_id
+  required: false
+  hiddenusername: true
+  type: 9
   section: Connect
 - display: Fetch incidents
   name: isFetch
@@ -63,27 +86,27 @@ configuration:
   required: false
   type: 0
   section: Collect
-- defaultvalue: 15 minutes
+- additionalinfo: <number> <time unit>, for example 12 hours, 7 days.
+  defaultvalue: '15 minutes'
   display: First fetch timestamp
-  additionalinfo: <number> <time unit>, for example 12 hours, 7 days.
   name: first_fetch
   required: false
   type: 0
   section: Collect
-- additionalinfo: The timeout of the HTTP requests sent to Microsoft Graph API (in seconds).
-  defaultvalue: '10'
+- defaultvalue: '10'
   display: HTTP Timeout
   name: timeout
   required: false
   type: 0
   section: Connect
+  additionalinfo: The timeout of the HTTP requests sent to Microsoft Graph API (in seconds).
   advanced: true
-- defaultvalue: '50'
-  display: Maximum number of emails to pull per fetch
+- display: Maximum number of emails to pull per fetch
   name: fetch_limit
   required: false
   type: 0
   section: Collect
+  defaultvalue: '50'
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -134,15 +157,15 @@ configuration:
   section: Connect
   advanced: true
 - display: Token or Tenant ID - see Detailed Instructions (?) (Deprecated)
-  hidden: true
   name: tenant_id
-  required: false
   type: 4
   section: Connect
   advanced: true
+  hidden: true
+  required: false
 - additionalinfo: If not active, only a preview of the email will be fetched.
   defaultvalue: 'false'
-  display: Display full email body
+  display: 'Display full email body'
   name: display_full_email_body
   type: 8
   section: Collect
@@ -920,7 +943,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Low
-      description: 'The importance of the draft. Can be: "Low", "Normal", or "High".'
+      description: 'The importance of the draft. Can be: "Low", "Normal", or "High". The default is Normal'
       isArray: false
       name: importance
       predefined:
@@ -1083,7 +1106,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: Low
-      description: 'The importance of the email. Can be: "Low", "Normal", or "High".'
+      description: 'The importance of the email. Can be: "Low", "Normal", or "High". The default is Normal'
       isArray: false
       name: importance
       predefined:
@@ -1375,7 +1398,7 @@ script:
       - Read
       - Unread
     description: Update the status of an email to read / unread.
-  dockerimage: demisto/crypto:1.0.0.42817
+  dockerimage: demisto/crypto:1.0.0.49599
   feed: false
   isfetch: true
   longRunning: false

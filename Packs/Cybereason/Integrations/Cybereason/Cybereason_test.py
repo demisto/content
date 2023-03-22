@@ -249,6 +249,24 @@ def test_unisolate_machine_command(mocker):
     assert command_output[0].outputs_prefix == "Cybereason"
 
 
+def test_get_non_edr_malop_data(mocker):
+    from Cybereason import get_non_edr_malop_data
+    from Cybereason import Client
+    HEADERS = {'Content-Type': 'application/json', 'Connection': 'close'}
+    client = Client(
+        base_url="https://integration.cybereason.net:8443",
+        verify=False,
+        headers=HEADERS,
+        proxy=True)
+    args = {
+        "lastUpdateTime": 1672848355574
+    }
+    raw_response = json.loads(load_mock_response('malop_detection_data.json'))
+    mocker.patch("Cybereason.Client.cybereason_api_call", return_value=raw_response)
+    command_output = get_non_edr_malop_data(client, args)
+    assert command_output[0]['guid'] == 'AAAA0yUlnvXGQODT'
+
+
 def test_query_malops_command(mocker):
     from Cybereason import query_malops_command
     from Cybereason import Client
@@ -717,6 +735,11 @@ def test_fetch_incidents(mocker):
 
     raw_response = json.loads(load_mock_response('query_malop_raw_response.json'))
     mocker.patch("Cybereason.query_malops", return_value=(raw_response, {}))
+    raw_response = json.loads(load_mock_response('non_edr.json'))
+    mocker.patch("Cybereason.get_non_edr_malop_data", return_value=(raw_response, {}))
+    raw_response = json.loads(load_mock_response('malop_to_incident.json'))
+    mocker.patch("Cybereason.malop_to_incident", return_value=(raw_response, {}))
+
     command_output = fetch_incidents(client)
     command_output = str(command_output)
 

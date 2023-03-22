@@ -528,10 +528,10 @@ script:
     name: rapid7-insight-idr-query-log
     outputs:
     - contextPath: Rapid7InsightIDR.Event.log_id
-      description: Event message.
+      description: ID of the log the event appears in.
       type: String
     - contextPath: Rapid7InsightIDR.Event.message
-      description: ID of the log the event appears in.
+      description: Event message.
       type: String
     - contextPath: Rapid7InsightIDR.Event.timestamp
       description: Time when the event was triggered.
@@ -585,15 +585,15 @@ script:
     name: rapid7-insight-idr-query-log-set
     outputs:
     - contextPath: Rapid7InsightIDR.Event.log_id
-      description: Event message.
+      description: ID of the log the event appears in.
       type: String
     - contextPath: Rapid7InsightIDR.Event.message
-      description: ID of the log the event appears in.
+      description: Event message.
       type: String
     - contextPath: Rapid7InsightIDR.Event.timestamp
       description: Time when the event was triggered.
       type: Number
-  dockerimage: demisto/python3:3.10.8.37233
+  dockerimage: demisto/python3:3.10.9.45313
   feed: false
   isfetch: true
   longRunning: false

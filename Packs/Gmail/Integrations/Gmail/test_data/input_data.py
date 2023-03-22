@@ -217,7 +217,13 @@ list_mailboxes = [{'Mailbox': 'test1@gmail.com', 'q': ''},
                   {'Mailbox': 'test3@gmail.com', 'q': ''},
                   {'Mailbox': 'test4@gmail.com', 'q': ''},
                   {'Mailbox': 'test5@gmail.com', 'q': ''}]
-except_contents_test_mailboxes_to_entry = list_mailboxes
+except_contents_test_mailboxes_to_entry = [
+    'test1@gmail.com',
+    'test2@gmail.com',
+    'test3@gmail.com',
+    'test4@gmail.com',
+    'test5@gmail.com'
+]
 expected_human_readable_test_mailboxes_to_entry = '### Query: \n|Mailbox|\n|---|\n| test1@gmail.com |\n| test2@gmail.com |\n|\
  test3@gmail.com |\n| test4@gmail.com |\n| test5@gmail.com |\n'
 

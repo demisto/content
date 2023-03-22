@@ -102,7 +102,9 @@ class TriageInstance:
 
         try:
             return response.json()
-        except json.decoder.JSONDecodeError as ex:
+        # when installing simplejson the type of exception is requests.exceptions.JSONDecodeError when it is not
+        # possible to load json.
+        except (json.decoder.JSONDecodeError, requests.exceptions.JSONDecodeError) as ex:
             demisto.debug(str(ex))
             raise TriageRequestFailedError(
                 response.status_code, "Could not parse result from Cofense Triage"

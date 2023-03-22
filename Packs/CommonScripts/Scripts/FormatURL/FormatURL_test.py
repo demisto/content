@@ -56,6 +56,8 @@ BRACKETS_URL_TO_FORMAT = [
     ('https://www.test.com]', 'https://www.test.com'),
     ('[https://www.test.com', 'https://www.test.com'),
     ('[[https://www.test.com', 'https://www.test.com'),
+    ('\'https://www.test.com/test\'', 'https://www.test.com/test'),
+    ('\'https://www.test.com/?a=\'b\'\'', 'https://www.test.com/?a=\'b\''),
 ]
 
 ATP_REDIRECTS = [
@@ -137,12 +139,15 @@ FORMAT_PATH = [
     ('https://test.co.uk/test.html', 'https://test.co.uk/test.html'),  # disable-secrets-detection
     ('www.test.com/check', 'www.test.com/check'),  # disable-secrets-detection
     ('https://test.test/Test\\"', 'https://test.test/Test'),  # disable-secrets-detection
+    ('https://www.test.com/a\\', 'https://www.test.com/a'),  # disable-secrets-detection
 ]
 
 FORMAT_QUERY = [
     ('www.test.test.com/test.html?paramaters=testagain', 'www.test.test.com/test.html?paramaters=testagain'),
     ('https://www.test.test.com/test.html?paramaters=testagain',
      'https://www.test.test.com/test.html?paramaters=testagain'),
+    ('https://test.test.com/v2/test?test&test=[test]test',  # disable-secrets-detection
+     'https://test.test.com/v2/test?test&test=[test]test')  # disable-secrets-detection
 ]
 
 FORMAT_FRAGMENT = [
@@ -153,7 +158,9 @@ FORMAT_FRAGMENT = [
 ]
 
 FORMAT_REFANG = [
-    ('hxxps://www[.]cortex-xsoar[.]com', 'https://www.cortex-xsoar.com'),
+    ('hxxps://www[.]cortex-xsoar[.]com', 'https://www.cortex-xsoar.com'),  # disable-secrets-detection
+    ('https[:]//www.test.com/foo', 'https://www.test.com/foo'),  # disable-secrets-detection
+    ('https[:]//www[.]test[.]com/foo', 'https://www.test.com/foo'),  # disable-secrets-detection
 ]
 
 FORMAT_NON_ASCII = [
@@ -162,6 +169,8 @@ FORMAT_NON_ASCII = [
     ('https://testö.com/test.html', 'https://testö.com/test.html'),
     ('www.testö.com/test.aspx', 'www.testö.com/test.aspx'),
     ('https://www.teöst.com/', 'https://www.teöst.com/'),
+    ('https://www.test.se/Auth/?&rUrl=https://test.com/wp–images/amclimore@test.com',  # disable-secrets-detection
+     'https://www.test.se/Auth/?&rUrl=https://test.com/wp–images/amclimore@test.com'),  # disable-secrets-detection
 ]
 
 FORMAT_PUNYCODE = [
@@ -170,8 +179,10 @@ FORMAT_PUNYCODE = [
 ]
 
 FORMAT_HEX = [
-    ('ftps://foo.bar/baz%20%21%22%23%24%25%26', 'ftps://foo.bar/baz !"#$%&'),
-    ('foo.bar/baz%20%21%22%23%24%25%26', 'foo.bar/baz !"#$%&'),
+    ('ftps://foo.bar/baz%20%21%22%23%24%25%26', 'ftps://foo.bar/baz%20%21%22%23%24%25%26'),
+    ('foo.bar/baz%20%21%22%23%24%25%26', 'foo.bar/baz%20%21%22%23%24%25%26'),
+    ('https://foo.com/?key=foo%26bar', 'https://foo.com/?key=foo%26bar'),    # disable-secrets-detection
+    ('https%3A//foo.com/?key=foo%26bar', 'https://foo.com/?key=foo&bar'),    # disable-secrets-detection
 ]
 
 FAILS = [

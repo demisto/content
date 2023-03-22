@@ -112,93 +112,121 @@ configuration:
   required: false
   type: 15
   section: Collect
-- additionalinfo: When selected, closing the Splunk notable event is mirrored in Cortex XSOAR.
+  hidden:
+    - marketplacev2
+- additionalinfo: When selected, closing the Splunk notable event with a "Closed" status will close the Cortex XSOAR incident.
   defaultvalue: 'false'
-  display: Close Mirrored XSOAR Incident
+  display: Close Mirrored Cortex XSOAR Incidents (Incoming Mirroring)
   name: close_incident
   required: false
   type: 8
   section: Collect
   advanced: true
-- additionalinfo: When selected, closing the Cortex XSOAR incident is mirrored in Splunk.
+  hidden:
+    - marketplacev2
+- display: Additional Splunk status labels to close on mirror (Incoming Mirroring)
+  name: close_extra_labels
+  required: false
+  type: 0
+  section: Collect
+  additionalinfo: "A comma-separated list of Splunk status labels to mirror as closed Cortex XSOAR incident (Example: Resolved,False-Positive)."
+- additionalinfo: When selected, Splunk Notable Events with a status that is marked as "End Status" will close the Cortex XSOAR incident.
   defaultvalue: 'false'
-  display: Close Mirrored Splunk Notable Event
+  display: Enable Splunk statuses marked as "End Status" to close on mirror (Incoming Mirroring)
+  name: close_end_status_statuses
+  required: false
+  type: 8
+  section: Collect
+  advanced: true
+- display: Close Mirrored Splunk Notable Events (Outgoing Mirroring)
   name: close_notable
   required: false
   type: 8
   section: Collect
   advanced: true
+  hidden:
+    - marketplacev2
+  additionalinfo: When selected, closing the Cortex XSOAR incident  will close the Notable Event in Splunk.
+  defaultvalue: 'false'
 - display: Trust any certificate (not secure)
   name: unsecure
   required: false
   type: 8
   section: Connect
   advanced: true
-- display: Use system proxy settings
-  name: proxy
+- name: proxy
   required: false
   type: 8
   section: Connect
   advanced: true
-- display: The app context of the namespace
+  display: Use system proxy settings
+- display: 'The app context of the namespace'
   name: app
   required: false
   type: 0
   section: Collect
   advanced: true
-- display: HEC Token (HTTP Event Collector)
+- name: cred_hec_token
+  required: false
+  type: 9
+  section: Collect
+  advanced: true
+  displaypassword: HEC Token (HTTP Event Collector)
+  hiddenusername: true
+- display: 'HEC Token (HTTP Event Collector)'
   name: hec_token
   required: false
   type: 4
   section: Collect
   advanced: true
+  hidden: true
 - display: 'HEC BASE URL (e.g: https://localhost:8088 or https://example.splunkcloud.com/).'
   name: hec_url
   required: false
   type: 0
   section: Collect
   advanced: true
-- additionalinfo: Enrichment types to enrich each fetched notable. If none are selected, the integration will fetch notables as usual (without enrichment). For more info about enrichment types see the integration additional info.
-  display: Enrichment Types
+- display: 'Enrichment Types'
   name: enabled_enrichments
-  options:
-  - Drilldown
-  - Asset
-  - Identity
   required: false
   type: 16
   section: Collect
   advanced: true
-- additionalinfo: When the selected timeout was reached, notable events that were not enriched will be saved without the enrichment.
-  defaultvalue: '5'
-  display: Enrichment Timeout (Minutes)
+  additionalinfo: Enrichment types to enrich each fetched notable. If none are selected, the integration will fetch notables as usual (without enrichment). For more info about enrichment types see the integration additional info.
+  options:
+  - Drilldown
+  - Asset
+  - Identity
+- display: 'Enrichment Timeout (Minutes)'
   name: enrichment_timeout
   required: false
   type: 0
   section: Collect
   advanced: true
+  additionalinfo: When the selected timeout was reached, notable events that were not enriched will be saved without the enrichment.
+  defaultvalue: '5'
 - additionalinfo: The limit of how many events to retrieve per each one of the enrichment types (Drilldown, Asset, and Identity). To retrieve all events, enter "0" (not recommended).
-  defaultvalue: '20'
-  display: Number of Events Per Enrichment Type
+  display: 'Number of Events Per Enrichment Type'
   name: num_enrichment_events
   required: false
   type: 0
   section: Collect
   advanced: true
+  defaultvalue: '20'
 - display: 'Advanced: Extensive logging (for debugging purposes). Do not use this option unless advised otherwise.'
   name: extensive_logs
   required: false
   type: 8
   section: Collect
   advanced: true
-- additionalinfo: The fetch time range will be at least the size specified here. This will support events that have a gap between their occurrence time and their index time in Splunk. To decide how long the backwards window should be, you need to determine the average time between them both in your Splunk environment.
-  defaultvalue: '15'
+- defaultvalue: '15'
   display: 'Advanced: Fetch backwards window for the events occurrence time (minutes)'
   name: occurrence_look_behind
   required: false
   type: 0
   section: Collect
   advanced: true
+  additionalinfo: The fetch time range will be at least the size specified here. This will support events that have a gap between their occurrence time and their index time in Splunk. To decide how long the backwards window should be, you need to determine the average time between them both in your Splunk environment.
 - additionalinfo: A comma-separated list of fields, which together are a unique identifier for the events to fetch in order to avoid fetching duplicates incidents.
   display: 'Advanced: Unique ID fields'
   name: unique_id_fields
@@ -213,30 +241,30 @@ configuration:
   type: 8
   section: Collect
   advanced: true
-- additionalinfo: The name of the lookup table in Splunk, containing the username's mapping data.
-  defaultvalue: splunk_xsoar_users
+- defaultvalue: 'splunk_xsoar_users'
   display: Users Lookup table name
   name: user_map_lookup_name
   required: false
   type: 0
   section: Connect
   advanced: true
-- additionalinfo: The name of the lookup column containing the Cortex XSOAR username.
-  defaultvalue: xsoar_username
+  additionalinfo: The name of the lookup table in Splunk, containing the username's mapping data.
+- defaultvalue: 'xsoar_username'
   display: XSOAR user key
   name: xsoar_user_field
   required: false
   type: 0
   section: Connect
   advanced: true
-- additionalinfo: The name of the lookup table containing the Splunk username.
-  defaultvalue: splunk_username
+  additionalinfo: The name of the lookup column containing the Cortex XSOAR username.
+- defaultvalue: 'splunk_username'
   display: SPLUNK user key
   name: splunk_user_field
   required: false
   type: 0
   section: Connect
   advanced: true
+  additionalinfo: The name of the lookup table containing the Splunk username.
 - defaultvalue: '1'
   display: Incidents Fetch Interval
   name: incidentFetchInterval
@@ -293,15 +321,28 @@ script:
       name: interval_in_seconds
     - description: The job sid.
       name: sid
-    description: Searches Splunk for events.
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: The Fast mode prioritizes the performance of the search and does not return nonessential field or event data. This means that the search returns what is essential and required if fast_mode equals 'true'.
+      name: fast_mode
+      predefined:
+      - 'true'
+      - 'false'
+    description: Searches Splunk for events. For human readable output, the table command is supported in the query argument. For example, `query=" * | table field1 field2 field3"` will generate a table with field1, field2, and field3 as headers.
     name: splunk-search
     polling: true
     outputs:
     - contextPath: Splunk.Result
       description: The results of the Splunk search. The results are a JSON array, in which each item is a Splunk event.
       type: Unknown
-    - contextPath: Splunk.JobStatus
-      description: The search status.
+    - contextPath: Splunk.JobStatus.SID
+      description: ID of the job.
+      type: String
+    - contextPath: Splunk.JobStatus.Status
+      description: Status of the job.
+      type: String
+    - contextPath: Splunk.JobStatus.TotalResults
+      description: The number of events that were returned by the job.
       type: String
   - arguments:
     - description: Splunk index in which to push data. Run the splunk-get-indexes command to get all indexes.
@@ -341,6 +382,18 @@ script:
       - informational
     - description: Notable event status. 0 - Unassigned, 1 - Assigned, 2 - In Progress, 3 - Pending, 4 - Resolved, 5 - Closed.
       name: status
+    - name: disposition
+      auto: PREDEFINED
+      predefined:
+      - True Positive - Suspicious Activity
+      - Benign Positive - Suspicious But Expected
+      - False Positive - Incorrect Analytic Logic
+      - False Positive - Inaccurate Data
+      - Other
+      - Undetermined
+      description: Disposition of the notable. If the more options exist on the server,
+        specifying the disposition as `disposition:#` will work in place of choosing
+        one of the default values from the list.
     description: Updates existing notable events in Splunk ES.
     execution: true
     name: splunk-notable-event-edit
@@ -575,7 +628,7 @@ script:
     - contextPath: Splunk.UserMapping.SplunkUser
       description: Splunk user mapping.
       type: String
-  dockerimage: demisto/splunksdk-py3:1.0.0.42294
+  dockerimage: demisto/splunksdk-py3:1.0.0.48734
   isfetch: true
   ismappable: true
   isremotesyncin: true

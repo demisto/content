@@ -5,11 +5,13 @@
     "support": "xsoar",
     "author": "Palo Alto Networks Enterprise DLP",
     "url": "https://www.paloaltonetworks.com/enterprise-data-loss-prevention",
-    "currentVersion": "1.2.1",
+    "currentVersion": "1.2.4",
     "categories": [
         "Network Security"
     ],
-    "tags": ["Palo Alto Networks Products"],
+    "tags": [
+        "Palo Alto Networks Products"
+    ],
     "useCases": [],
     "keywords": [],
     "marketplaces": [

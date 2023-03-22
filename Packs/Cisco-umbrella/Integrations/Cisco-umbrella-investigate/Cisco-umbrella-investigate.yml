@@ -39,7 +39,7 @@ configuration:
   name: suspicious_threshold
   required: false
   additionalinfo: Make sure the Suspicous threshold is greater than the Malicious threshold.
-  type: 0  
+  type: 0
 - defaultvalue: '-100'
   display: DBot Score Malicious Threshold (-100 to 100)
   name: dboscore_threshold
@@ -215,7 +215,7 @@ script:
       description: The number of bits required to encode the domain name, as a score
       type: number
     - contextPath: Domain.Security.SecureRank
-      description: Suspicious rank for a domain that reviews based on the lookup behavior of client IP for the domain
+      description: Suspicious rank for a domain that reviews based on the lookup behavior of client IP for the domain. Note, this parameter is deprecated by the API, and will be equal to 0.
       type: number
     - contextPath: Domain.Security.PageRank
       description: Popularity according to Google's pagerank algorithm
@@ -269,7 +269,7 @@ script:
       description: The number of bits required to encode the domain name, as a score
       type: Unknown
     - contextPath: Domain.Security.SecureRank
-      description: Suspicious rank for a domain that reviews based on the lookup behavior of client IP for the domain
+      description: Suspicious rank for a domain that reviews based on the lookup behavior of client IP for the domain. Note, this parameter is deprecated by the API, and will be equal to 0.
       type: Unknown
     - contextPath: Domain.Security.PageRank
       description: Popularity according to Google's pagerank algorithm
@@ -733,7 +733,7 @@ script:
       description: The status will be "-1" if the domain is believed to be malicious, "1" if the domain is believed to be benign, "0" if it hasn't been classified yet.
       type: number
     - contextPath: Domain.Umbrella.SecureRank 
-      description: Suspicious rank for a domain that reviews based on the lookup behavior of client IP for the domain. Securerank is designed to identify hostnames requested by known infected clients but never requested by clean clients, assuming these domains are more likely to be bad. Scores returned range from -100 (suspicious) to 100 (benign).
+      description: Suspicious rank for a domain that reviews based on the lookup behavior of client IP for the domain. Securerank is designed to identify hostnames requested by known infected clients but never requested by clean clients, assuming these domains are more likely to be bad. Scores returned range from -100 (suspicious) to 100 (benign). Note, this parameter is deprecated by the API, and will be equal to 0.
       type: number
     - contextPath: Domain.Umbrella.FirstQueriedTime
       description: The time when the attribution for this Domain was made.
@@ -955,7 +955,7 @@ script:
       description: The number of bits required to encode the domain name, as a score. This score is to be used in conjunction with DGA and Perplexity.
       type: number
     - contextPath: Umbrella.DomainDetails.Data.SecureRank 
-      description: Suspicious rank for a domain that reviews based on the lookup behavior of client IP for the domain. Securerank is designed to identify hostnames requested by known infected clients but never requested by clean clients, assuming these domains are more likely to be bad. Scores returned range from -100 (suspicious) to 100 (benign).
+      description: Suspicious rank for a domain that reviews based on the lookup behavior of client IP for the domain. Securerank is designed to identify hostnames requested by known infected clients but never requested by clean clients, assuming these domains are more likely to be bad. Scores returned range from -100 (suspicious) to 100 (benign). Note, this parameter is deprecated by the API, and will be equal to 0.
       type: number
     - contextPath: Umbrella.DomainDetails.Data.PrefixScore
       description: Prefix ranks domains given their IP prefixes (an IP prefix is the first three octets in an IP address) and the reputation score of these prefixes. Ranges from -100 to 0, -100 being very suspicious.
@@ -1378,7 +1378,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.6.33415
+  dockerimage: demisto/python3:3.10.10.48392
 tests:
 - Cisco Umbrella Test
 fromversion: 5.0.0

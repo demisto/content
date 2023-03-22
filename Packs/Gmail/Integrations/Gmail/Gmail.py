@@ -12,6 +12,7 @@ import random
 import re
 import string
 import sys
+import copy
 from datetime import datetime, timedelta
 from email.utils import parsedate_to_datetime, format_datetime
 from distutils.util import strtobool
@@ -35,7 +36,7 @@ from googleapiclient.errors import HttpError
 
 ''' GLOBAL VARS '''
 
-ADMIN_EMAIL = None
+ADMIN_EMAIL = ''  # set from params later on
 PRIVATE_KEY_CONTENT = None
 GAPPS_ID = None
 SCOPES = ['https://www.googleapis.com/auth/admin.directory.user.readonly']
@@ -45,6 +46,10 @@ FETCH_TIME = demisto.params().get('fetch_time', '1 days')
 
 SEND_AS_SMTP_FIELDS = ['host', 'port', 'username', 'password', 'securitymode']
 DATE_FORMAT = '%Y-%m-%d'  # sample - 2020-08-23
+
+BATCH_DIVIDER = 5
+MAX_USERS = 2500
+MAX_WITHOUT_POLLING = 500
 
 ''' HELPER FUNCTIONS '''
 
@@ -404,21 +409,36 @@ def create_incident_labels(parsed_msg, headers):
     return labels
 
 
-def mailboxes_to_entry(mailboxes):
+def mailboxes_to_entry(mailboxes: list[dict]) -> list[CommandResults]:
     query = f"Query: {mailboxes[0].get('q') if mailboxes else ''}"
-    result = [{"Mailbox": user['Mailbox']} for user in mailboxes if user.get('Mailbox')]
+    found_accounts = []
+    errored_accounts = []  # accounts not searched, due to an error accessing them
 
-    return {
-        'ContentsFormat': formats['json'],
-        'Type': entryTypes['note'],
-        'Contents': mailboxes,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(query, result, headers=['Mailbox'], removeNull=True),
-        'EntryContext': {
-            'Gmail(val.ID && val.ID == obj.ID)': result,
-            'Email(val.ID && val.ID == obj.ID)': result
-        }
-    }
+    for user in mailboxes:
+        mailbox = user.get('Mailbox')
+        if (error := user.get('Error')):
+            errored_accounts.append({"Mailbox": mailbox, "Error": error})
+        elif mailbox:
+            found_accounts.append(mailbox)
+        else:
+            demisto.debug(f"unexpected value: neither user['Mailbox'] nor user['Error']: {user=}")
+
+    command_results = [CommandResults(
+        outputs_prefix='Gmail.Mailboxes',
+        readable_output=tableToMarkdown(
+            query,
+            [{'Mailbox': mailbox} for mailbox in found_accounts],
+            headers=['Mailbox'],
+            removeNull=True),
+        outputs=found_accounts
+    )]
+
+    if errored_accounts:
+        command_results.append(CommandResults(
+            outputs_prefix='Gmail.UnsearchedAcounts',
+            outputs=errored_accounts,
+        ))
+    return command_results
 
 
 def emails_to_entry(title, raw_emails, format_data, mailbox):
@@ -745,12 +765,111 @@ def get_millis_from_date(date, arg_name):
             raise ValueError(f'{arg_name} argument is not in expected format.')
 
 
+def cutting_for_batches(list_accounts: list) -> List[list]:
+
+    accounts: list = []
+    rest_accounts: list = []
+
+    batch_size = int(len(list_accounts) / BATCH_DIVIDER)
+    if rest := len(list_accounts) % BATCH_DIVIDER:
+        rest_accounts = list_accounts[-rest:]
+        list_accounts = list_accounts[:-rest]
+
+    accounts.extend(batch(list_accounts, batch_size))
+
+    # When the number of accounts is not exactly divisible by BATCH_DIVIDER,
+    # We add the remaining accounts to the first batch to avoid running another polling command.
+    if rest_accounts:
+        accounts[0].extend(rest_accounts)
+
+    return accounts
+
+
+def scheduled_commands_for_more_users(accounts: list, next_page_token: str) -> List[CommandResults]:
+
+    accounts_batches = cutting_for_batches(accounts)
+
+    command_results: list[CommandResults] = []
+    args = copy.deepcopy(demisto.args())
+    for batch in accounts_batches:
+
+        args.update({'list_accounts': batch})
+        command_results.append(
+            CommandResults(
+                readable_output='Serching mailboxes, please wait...',
+                scheduled_command=ScheduledCommand(
+                    command='gmail-search-all-mailboxes',
+                    next_run_in_seconds=10,
+                    args=copy.deepcopy(args),
+                    timeout_in_seconds=600
+                )
+            )
+        )
+        args.pop('list_accounts', None)
+    if next_page_token:
+        command_results.append(
+            CommandResults(
+                outputs_key_field='PageToken',
+                outputs={'PageToken': {'NextPageToken': next_page_token}}
+            )
+        )
+
+    return command_results
+
+
+def get_mailboxes(max_results: int, users_next_page_token: str = None):
+    '''
+    Used to fetch the list of accounts for the search-all-mailboxes command
+    '''
+    accounts: list[str] = []
+    accounts_counter = 0
+    users_next_page_token = users_next_page_token
+    service = get_service('admin', 'directory_v1')
+
+    while True:
+        command_args = {
+            'maxResults': min(max_results, 100),
+            'domain': ADMIN_EMAIL.split('@')[1],
+            'pageToken': users_next_page_token
+        }
+
+        result = service.users().list(**command_args).execute()
+        accounts_counter += len(result['users'])
+        accounts.extend([account['primaryEmail'] for account in result['users']])
+        users_next_page_token = result.get('nextPageToken')
+
+        if accounts_counter >= max_results:
+            accounts = accounts[:max_results]
+            break
+        if users_next_page_token is None:
+            break
+
+    return accounts, users_next_page_token
+
+
+def information_search_process(length_accounts: int, search_from: int | None, search_to: int | None) -> CommandResults:
+
+    if search_from is None or search_to is None:
+        readable_output = f'Searching the first {length_accounts} accounts'
+        search_from = 0
+        search_to = length_accounts
+    else:
+        search_from = search_to + 1
+        search_to = search_to + length_accounts
+        readable_output = f'Searching accounts {search_from} to {search_to}'
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs={'SearchFromAccountIndex': search_from, 'SearchToAccountIndex': search_to},
+    )
+
+
 ''' FUNCTIONS '''
 
 
 def list_users_command() -> CommandResults:
     args = demisto.args()
-    domain = args.get('domain', ADMIN_EMAIL.split('@')[1])  # type: ignore
+    domain = args.get('domain', ADMIN_EMAIL.split('@')[1])
     customer = args.get('customer')
     view_type = args.get('view-type-public-domain', 'admin_view')
     query = args.get('query')
@@ -1146,55 +1265,74 @@ def get_user_tokens(user_id):
     return result.get('items', [])
 
 
-def search_all_mailboxes(receive_only_accounts):
-    users_next_page_token = None
-    service = get_service('admin', 'directory_v1')
-    while True:
-        command_args = {
-            'maxResults': 100,
-            'domain': ADMIN_EMAIL.split('@')[1],  # type: ignore
-            'pageToken': users_next_page_token
-        }
+def search_in_mailboxes(accounts: list[str], only_return_account_names: bool) -> None:
+    '''
+    Searching for email messages within accounts based on a query,
+    Results are returned only if messages matching the query are found.
+    Returns only the names of the accounts where the messages were found
+    if the only_return_account_names argument is true,
+    Otherwise, returns all the information about the message, including its content.
+    '''
+    futures: list = []
+    entries: list = []
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        for user in accounts:
+            futures.append(executor.submit(search_command, mailbox=user,
+                                           only_return_account_names=only_return_account_names))
+        for account in concurrent.futures.as_completed(futures):
+            if found := account.result():
+                entries.append(found)
 
-        result = service.users().list(**command_args).execute()
-        users_count = len(result['users'])
-        users_next_page_token = result.get('nextPageToken')
+        if entries:
+            if only_return_account_names:
+                entries = [mailboxes_to_entry(entries)]
+            return_results(entries)
 
-        with concurrent.futures.ThreadPoolExecutor() as executor:
-            accounts_counter = 0
-            futures = []
-            entries = []
-            for user in result['users']:
-                futures.append(executor.submit(search_command, mailbox=user['primaryEmail']))
-            for future in concurrent.futures.as_completed(futures):
-                accounts_counter += 1
-                result = future.result()
-                if result is None:
-                    continue
-                entries.append(future.result())
-                if accounts_counter % 100 == 0:
-                    demisto.info(
-                        f'Still searching. Searched {int((accounts_counter / users_count) * 100)}%  \
-                        of total accounts ({accounts_counter} / {users_count}), \
-                        and found {len(entries)} results so far',
+
+def search_all_mailboxes():
+
+    args = demisto.args()
+    only_return_account_names = argToBoolean(args.get('show-only-mailboxes', 'true'))
+    list_accounts = argToList(args.get('list_accounts', ''))
+    next_page_token = args.get('page-token', '')
+
+    if list_accounts:
+        support_multithreading()
+        search_in_mailboxes(list_accounts, only_return_account_names)
+    else:
+        # check if there is next_page_token and remove it from the args (To avoid using this argument in search command)
+        if next_page_token:
+            demisto.args().pop('page-token', None)
+
+        # Get the accounts that will be searched, maximum accounts is set by MAX_USERS.
+        all_accounts, next_page_token = get_mailboxes(MAX_USERS, next_page_token)
+
+        # When the number of accounts is more than MAX_WITHOUT_POLLING the searching will make with polling commands.
+        if len(all_accounts) > MAX_WITHOUT_POLLING:
+            command_results: List[CommandResults] = scheduled_commands_for_more_users(all_accounts, next_page_token)
+            if next_page_token:
+                command_results.append(
+                    information_search_process(
+                        len(all_accounts),
+                        arg_to_number(args.get('search_from')),
+                        arg_to_number(args.get('search_to'))
                     )
+                )
+            return_results(command_results)
 
-        if receive_only_accounts:
-            entries = [mailboxes_to_entry(entries)]
-
-        # if these are the final result push - return them
-        if users_next_page_token is None:
-            if entries:
-                entries.append("Search completed")
-            else:
-                entries.append("No entries.")
-                return entries
-
-        # return midway results
-        return entries
+        # In case that the number of accounts less than MAX_WITHOUT_POLLING the searching run as usual.
+        elif all_accounts:
+            if args.get('search_from'):
+                return_results(information_search_process(
+                    len(all_accounts),
+                    arg_to_number(args.get('search_from')),
+                    arg_to_number(args.get('search_to'))
+                ))
+            args['list_accounts'] = all_accounts
+            search_all_mailboxes()
 
 
-def search_command(mailbox=None):
+def search_command(mailbox: str = None, only_return_account_names: bool = False) -> dict[str, Any] | None:
     """
     Searches for Gmail records of a specified Google user.
     """
@@ -1219,32 +1357,35 @@ def search_command(mailbox=None):
     has_attachments = args.get('has-attachments')
     has_attachments = None if has_attachments is None else bool(
         strtobool(has_attachments))
-    receive_only_accounts = argToBoolean(args.get('show-only-mailboxes', 'false'))
 
     if max_results > 500:
         raise ValueError(
             'maxResults must be lower than 500, got %s' % (max_results,))
-
-    mails, q = search(user_id, subject, _from, to,
-                      before, after, filename, _in, query,
-                      fields, label_ids, max_results, page_token,
-                      include_spam_trash, has_attachments, receive_only_accounts,
-                      )
+    try:
+        mails, q = search(user_id, subject, _from, to,
+                          before, after, filename, _in, query,
+                          fields, label_ids, max_results, page_token,
+                          include_spam_trash, has_attachments, only_return_account_names,
+                          )
+    except HttpError as err:
+        if only_return_account_names and err.status_code == 429:
+            return {'Mailbox': mailbox, 'Error': {'message': str(err.error_details), 'status_code': err.status_code}}
+        raise
 
     # In case the user wants only account list without content.
-    if receive_only_accounts:
+    if only_return_account_names:
         if mails:
             return {'Mailbox': mailbox, 'q': q}
-        return {'Mailbox': None, 'q': q}
+        return None
     if mails:
         res = emails_to_entry(f'Search in {mailbox}:\nquery: "{q}"', mails, 'full', mailbox)
         return res
-    return
+    return None
 
 
 def search(user_id, subject='', _from='', to='', before='', after='', filename='', _in='', query='',
            fields=None, label_ids=None, max_results=100, page_token=None, include_spam_trash=False,
-           has_attachments=None, receive_only_accounts=None):
+           has_attachments=None, only_return_account_names=None):
     query_values = {
         'subject': subject,
         'from': _from,
@@ -1283,7 +1424,7 @@ def search(user_id, subject='', _from='', to='', before='', after='', filename='
             raise
 
     # In case the user wants only account list without content.
-    if receive_only_accounts and result.get('sizeEstimate', 0) > 0:
+    if only_return_account_names and result.get('sizeEstimate', 0) > 0:
         return True, q
 
     entries = [get_mail(user_id=user_id,
@@ -2480,6 +2621,8 @@ def fetch_incidents():
 def main():
     global ADMIN_EMAIL, PRIVATE_KEY_CONTENT, GAPPS_ID
     ADMIN_EMAIL = demisto.params()['adminEmail'].get('identifier', '')
+    if '@' not in ADMIN_EMAIL:
+        raise ValueError(f"Admin email {ADMIN_EMAIL} must be in an email format")
     PRIVATE_KEY_CONTENT = demisto.params()['adminEmail'].get('password', '{}')
     GAPPS_ID = demisto.params().get('gappsID')
     ''' EXECUTION CODE '''
@@ -2538,8 +2681,7 @@ def main():
 
         else:
             if command == 'gmail-search-all-mailboxes':
-                receive_only_accounts = argToBoolean(demisto.args().get('show-only-mailboxes', 'false'))
-                return_results(cmd_func(receive_only_accounts))  # type: ignore
+                cmd_func()  # type: ignore[operator]
             else:
                 return_results(cmd_func())  # type: ignore
     except Exception as e:

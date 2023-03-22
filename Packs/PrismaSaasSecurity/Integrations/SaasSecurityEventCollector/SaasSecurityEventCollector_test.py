@@ -342,7 +342,7 @@ class TestFetchEvents:
         mocker.patch.object(
             SaasSecurityEventCollector, 'send_events_to_xsiam', side_effect=Exception('error')
         )
-        set_last_run_mock = mocker.patch.object(demisto, 'setLastRun')
+        set_integration_context_mock = mocker.patch.object(demisto, 'setIntegrationContext')
 
         mocker.patch.object(demisto, 'params', return_value={
             "url": "https://test.com/",
@@ -353,10 +353,51 @@ class TestFetchEvents:
             "max_fetch": max_fetch
         })
         mocker.patch.object(demisto, 'command', return_value='fetch-events')
-        with pytest.raises(Exception):
-            SaasSecurityEventCollector.main()
+        SaasSecurityEventCollector.main()
 
-        assert expected_events == set_last_run_mock.call_args.args[0]
+        assert expected_events == set_integration_context_mock.call_args.args[0]
+
+    def test_main_flow_fetch_events_with_max_iterations(self, mocker):
+        """
+        Given
+           - a queue of responses to fetch events.
+           - max fetch limit
+           - integration parameters
+           - max iterations
+
+        When
+           - executing main to fetch events.
+
+        Then
+           - make sure that only the events will stop being fetched after the number of iterations has been reached.
+        """
+        import SaasSecurityEventCollector
+
+        mocker.patch.object(
+            Client, 'http_request', side_effect=[
+                MockedResponse(status_code=200, text=create_events(start_id=1, end_id=100)),
+                MockedResponse(status_code=200, text=create_events(start_id=101, end_id=200)),
+                MockedResponse(status_code=200, text=create_events(start_id=201, end_id=300)),
+                MockedResponse(status_code=200, text=create_events(start_id=301, end_id=400)),
+                MockedResponse(status_code=200, text=create_events(start_id=401, end_id=500)),
+            ]
+        )
+        send_events_mocker = mocker.patch.object(SaasSecurityEventCollector, 'send_events_to_xsiam')
+        mocker.patch.object(demisto, 'params', return_value={
+            "url": "https://test.com/",
+            "credentials": {
+                "identifier": "1234",
+                "password": "1234",
+            },
+            "max_fetch": 10000,
+            "max_iterations": 3,
+        })
+        mocker.patch.object(demisto, 'command', return_value='fetch-events')
+        SaasSecurityEventCollector.main()
+        assert send_events_mocker.called
+        assert send_events_mocker.call_args.kwargs.get('events') == create_events(
+            start_id=1, end_id=300, should_dump=False
+        ).get('events')
 
 
 @pytest.mark.parametrize(

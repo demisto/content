@@ -1,4 +1,7 @@
 category: Utilities
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: Image OCR
   version: -1
@@ -7,6 +10,8 @@ configuration:
   name: langs
   required: false
   type: 0
+  section: Connect
+  advanced: true
 description: Extracts text from images.
 display: Image OCR
 name: Image OCR
@@ -39,7 +44,7 @@ script:
     - contextPath: File.Text
       description: Extracted text from the passed image file.
       type: String
-  dockerimage: demisto/tesseract:1.0.0.40718
+  dockerimage: demisto/tesseract:1.0.0.49383
   isfetch: false
   runonce: false
   script: '-'

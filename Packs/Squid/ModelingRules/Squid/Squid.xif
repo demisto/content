@@ -1,0 +1,19 @@
+[MODEL: dataset=squid_squid_raw]
+alter URL = arrayindex(regextract(_raw_log ,"\/\d*\s\d*\s[\S]*\s([\S]+)\s"),0),
+        User = arrayindex(regextract(_raw_log ,"\/\d*\s\d*\s[\S]*\s[\S]*\s([\S]+)\s"),0),
+        Protocol = arrayindex(regextract(_raw_log ,"\s*([^\s^_]+)_[^\/]*\/\d*\s"),0)
+| alter Protocol = if(Protocol not in ("TCP", "UDP", "ICMP"), "None", Protocol)
+| alter xdm.event.duration = to_integer(arrayindex(regextract(_raw_log ,"\.\d+\s*(\d+)\s\d{1,3}"),0)),
+        xdm.source.ipv4 = arrayindex(regextract(_raw_log ,"\s*(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),
+        xdm.source.ipv6 = arrayindex(regextract(_raw_log ,"\s*([a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5})"),0),
+        xdm.observer.action = arrayindex(regextract(_raw_log ,"\s*([^\/^\s]+)\/\d*\s"),0),
+        xdm.network.http.response_code = arrayindex(regextract(_raw_log ,"\s*[^\/^\s]*\/(\d+)\s"),0),
+        xdm.source.sent_bytes = to_integer(arrayindex(regextract(_raw_log ,"\/\d*\s(\d+)\s"),0)),
+        xdm.network.http.method = arrayindex(regextract(_raw_log ,"\/\d*\s\d*\s([\S]+)\s"),0),
+        xdm.network.http.url = replex (URL, ":\d+", ""),
+        xdm.target.port = to_number(arrayindex(regextract(URL ,":(\d+)"),0)),
+        xdm.source.user.username = if(User != "-", User, null),
+        xdm.event.operation_sub_type = arrayindex(regextract(_raw_log ,"\/\d*\s\d*\s[\S]*\s[\S]*\s[\S]*\s([^\/]+)/"),0),
+        xdm.intermediate.ipv4 = arrayindex(regextract(_raw_log ,"\/\d*\s\d*\s[\S]*\s[\S]*\s[\S]*\s[^\/]*/(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),
+        xdm.intermediate.ipv6 = arrayindex(regextract(_raw_log ,"\/\d*\s\d*\s[\S]*\s[\S]*\s[\S]*\s[^\/]*/([a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5})"),0),
+        xdm.network.ip_protocol= if(Protocol="ICMP", XDM_CONST.IP_PROTOCOL_ICMP, Protocol="TCP", XDM_CONST.IP_PROTOCOL_TCP, Protocol="UDP", XDM_CONST.IP_PROTOCOL_UDP, to_string(Protocol));

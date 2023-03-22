@@ -995,6 +995,29 @@ def test_get_assets_command(mocker, mock_client: Client, api_mock_file: str, exp
     assert [r.outputs for r in result] == expected_output_context
 
 
+@pytest.mark.parametrize("asset_mock_file, expected_output_context_file",
+                         [
+                             ("client_get_asset_tags", "get_asset_tags_command")
+                         ])
+def test_get_asset_tags_command(mocker, mock_client: Client, asset_mock_file: str, expected_output_context_file: str):
+    """
+    Given: Valid parameters for the get_asset_tags_command function.
+    When: Calling the get_asset_tags_command function.
+    Then: Ensure a valid context output is returned.
+    """
+    asset_mock_data = load_test_data("api_mock", asset_mock_file)
+    mocker.patch.object(Client, "get_asset_tags", return_value=asset_mock_data)
+
+    result = get_asset_tags_command(client=mock_client, asset_id="1")
+    expected_output_context = load_test_data("expected_context", expected_output_context_file)
+
+    if isinstance(result, CommandResults):
+        assert result.outputs == expected_output_context
+
+    elif isinstance(result, list):
+        assert result[-1].outputs == expected_output_context
+
+
 @pytest.mark.parametrize("vulnerability_id, asset_vulnerability_mock_file, vulnerability_mock_file, "
                          "asset_vulnerability_solution_mock_file, expected_output_context_file",
                          [
@@ -1611,3 +1634,30 @@ def test_update_vulnerability_exception_status_command(mocker, mock_client: Clie
     )
 
     assert result.outputs is None
+
+
+@pytest.mark.parametrize("site_id, site_assets_mock_file, expected_post_data_file",
+                         [
+                             ("1", "client_get_site_assets", "start_site_scan_command")
+                         ])
+def test_start_site_scan_command(mocker, mock_client: Client, site_id: str,
+                                 site_assets_mock_file: str, expected_post_data_file: str):
+    """
+    Given: Valid parameters for the start_site_scan_command function.
+    When: Calling the start_site_scan_command function.
+    Then: Ensure a valid API call is made and no context output is returned.
+    """
+    site_assets_data = load_test_data("api_mock", site_assets_mock_file)
+    mocker.patch.object(Client, "get_site_assets", return_value=site_assets_data)
+
+    http_request = mocker.patch.object(BaseClient, "_http_request", return_value={})
+    start_site_scan_command(client=mock_client, site_id=site_id, name="Test Scan")
+
+    expected_post_data = load_test_data("expected_post_data", expected_post_data_file)
+
+    http_request.assert_called_with(
+        url_suffix=f"/sites/{site_id}/scans",
+        method="POST",
+        resp_type="json",
+        json_data=expected_post_data,
+    )

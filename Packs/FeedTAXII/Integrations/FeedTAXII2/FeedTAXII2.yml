@@ -8,8 +8,7 @@ configuration:
   name: feed
   required: false
   type: 8
-- additionalinfo: Indicators from this integration instance will be marked with this
-    reputation
+- additionalinfo: Indicators from this integration instance will be marked with this reputation
   display: Indicator Reputation
   name: feedReputation
   options:
@@ -31,8 +30,7 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators
-    fetched from the feed
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
   display: Traffic Light Protocol Color
   name: tlp_color
   options:
@@ -42,6 +40,7 @@ configuration:
   - WHITE
   required: false
   type: 15
+  defaultvalue: 'WHITE'
 - display: ''
   name: feedExpirationPolicy
   options:
@@ -60,9 +59,7 @@ configuration:
   name: feedFetchInterval
   required: false
   type: 19
-- additionalinfo: When selected, the exclusion list is ignored for indicators from
-    this feed. This means that if an indicator from this feed is on the exclusion
-    list, the indicator might still be added to the system.
+- additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
   display: Bypass exclusion list
   name: feedBypassExclusionList
   required: false
@@ -75,41 +72,30 @@ configuration:
   name: credentials
   required: false
   type: 9
-- additionalinfo: Indicators will be fetched from this collection. Run "taxii2-get-collections"
-    command to get a valid value. If left empty, the instance will try to fetch from
-    all the collections in the given discovery service.
+- additionalinfo: Indicators will be fetched from this collection. Run "taxii2-get-collections" command to get a valid value. If left empty, the instance will try to fetch from all the collections in the given discovery service.
   display: Collection Name To Fetch Indicators From
   name: collection_to_fetch
   required: false
   type: 0
-- additionalinfo: Incremental feeds pull only new or modified indicators that have
-    been sent from the integration. As the determination if the indicator is new or
-    modified happens on the 3rd-party vendor's side, and only indicators that are
-    new or modified are sent to Cortex XSOAR, all indicators coming from these feeds
-    are labeled new or modified.
+- additionalinfo: Incremental feeds pull only new or modified indicators that have been sent from the integration. As the determination if the indicator is new or modified happens on the 3rd-party vendor's side, and only indicators that are new or modified are sent to Cortex XSOAR, all indicators coming from these feeds are labeled new or modified.
   display: Incremental Feed
   name: feedIncremental
   defaultvalue: 'false'
   required: false
   type: 8
-- additionalinfo: When enabled, fetch-indicators will try to fetch the entire feed
-    for every fetch. When disabled, fetch-indicators will try to fetch just the latest
-    entries (since the last fetch).
+- additionalinfo: When enabled, fetch-indicators will try to fetch the entire feed for every fetch. When disabled, fetch-indicators will try to fetch just the latest entries (since the last fetch).
   defaultvalue: 'true'
   display: Full Feed Fetch
   name: fetch_full_feed
   required: false
   type: 8
-- additionalinfo: The maximum number of indicators that can be fetched per fetch.
-    If this field is left empty, there will be no limit on the number of indicators
-    fetched.
+- additionalinfo: The maximum number of indicators that can be fetched per fetch. If this field is left empty, there will be no limit on the number of indicators fetched.
   display: Max Indicators Per Fetch (disabled for Full Feed Fetch)
   hidden: false
   name: limit
   required: false
   type: 0
-- additionalinfo: The time interval for the first fetch (retroactive). <number> <time
-    unit> of type minute/hour/day/year. For example, 1 minute, 12 hour
+- additionalinfo: The time interval for the first fetch (retroactive). <number> <time unit> of type minute/hour/day/year. For example, 1 minute, 12 hour
   defaultvalue: 1 year
   display: First Fetch Time
   hidden: false
@@ -145,29 +131,31 @@ configuration:
   - identity
   - location
   - vulnerability
+- display: Certificate File as Text
+  name: creds_certificate
+  required: false
+  type: 9
+  displaypassword: Key File as Text
 - additionalinfo: Add a certificate file as text to connect to the TAXII server
   display: Certificate File as Text
   name: certificate
   required: false
   type: 12
+  hidden: true
 - additionalinfo: Add a key file as text to connect to the TAXII server
   display: Key File as Text
   name: key
   required: false
   type: 4
-- additionalinfo: Set the number of stix object that will be requested with each taxii
-    poll (http request). A single fetch is made of several taxii polls. Changing this
-    setting can help speed up fetches, or fix issues on slower networks. Please note
-    server restrictions may apply, overriding and limiting the "requested limit".
+  hidden: true
+- additionalinfo: Set the number of stix object that will be requested with each taxii poll (http request). A single fetch is made of several taxii polls. Changing this setting can help speed up fetches, or fix issues on slower networks. Please note server restrictions may apply, overriding and limiting the "requested limit".
   defaultvalue: '100'
   display: Max STIX Objects Per Poll
   hidden: false
   name: limit_per_request
   required: false
   type: 0
-- additionalinfo: Choose how to handle complex observations. Two or more Observation
-    Expressions MAY be combined using a complex observation operator such as "AND",
-    "OR". e.g. `[ IP = 'b' ] AND [ URL = 'd' ]`
+- additionalinfo: Choose how to handle complex observations. Two or more Observation Expressions MAY be combined using a complex observation operator such as "AND", "OR". e.g. `[ IP = 'b' ] AND [ URL = 'd' ]`
   defaultvalue: Skip indicators with more than a single observation
   display: Complex Observation Mode
   hidden: false
@@ -220,16 +208,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: Fetch only indicators that were added to the server after the given
-        time. Please provide a <number> and <time unit> of type minute/hour/day. For
-        example, 1 minute, 12 hour, 24 days.
+      description: Fetch only indicators that were added to the server after the given time. Please provide a <number> and <time unit> of type minute/hour/day. For example, 1 minute, 12 hour, 24 days.
       isArray: false
       name: added_after
       required: false
       secret: false
     deprecated: false
-    description: Allows you to test your feed and to make sure you can fetch indicators
-      successfuly.
+    description: Allows you to test your feed and to make sure you can fetch indicators successfuly.
     execution: false
     name: taxii2-get-indicators
     outputs:
@@ -257,7 +242,7 @@ script:
     description: 'WARNING: This command will reset your fetch history.'
     execution: false
     name: taxii2-reset-fetch-indicators
-  dockerimage: demisto/taxii2:1.0.0.42974
+  dockerimage: demisto/taxii2:1.0.0.50128
   feed: true
   isfetch: false
   longRunning: false

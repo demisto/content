@@ -762,3 +762,6 @@ tests:
 - No tests (auto formatted)
 fromversion: 5.0.0
 toversion: 5.4.9
+marketplaces:
+  - xsoar
+  - marketplacev2

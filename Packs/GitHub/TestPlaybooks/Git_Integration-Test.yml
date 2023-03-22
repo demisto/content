@@ -239,7 +239,7 @@ tasks:
       {
         "position": {
           "x": 807.5,
-          "y": 5795
+          "y": 6145
         }
       }
     note: false
@@ -2050,7 +2050,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "15"
+      - "68"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -2072,6 +2072,83 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+  "68":
+    id: "68"
+    taskid: 989b659e-af97-4f63-8637-0f9d2db2c680
+    type: regular
+    task:
+      id: 989b659e-af97-4f63-8637-0f9d2db2c680
+      version: -1
+      name: Github-add-Assignee
+      script: GitHub|||GitHub-add-assignee
+      type: regular
+      iscommand: true
+      brand: GitHub
+    nexttasks:
+      '#none#':
+      - "69"
+    scriptarguments:
+      PR:
+        simple: "1"
+      assignee:
+        simple: content-bot
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 5795
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "69":
+    id: "69"
+    taskid: a0613e31-7363-43c7-87a9-9be053be403e
+    type: condition
+    task:
+      id: a0613e31-7363-43c7-87a9-9be053be403e
+      version: -1
+      name: Verify Assignee
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: GitHub.Assignees.assignees.login
+            iscontext: true
+          right:
+            value:
+              simple: content-bot
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 807.5,
+          "y": 5970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},

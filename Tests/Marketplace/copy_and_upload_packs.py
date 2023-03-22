@@ -347,10 +347,13 @@ def main():
 
     # Get the successful and failed packs file from Prepare Content step in Create Instances job if there are
     packs_results_file_path = os.path.join(os.path.dirname(packs_artifacts_path), BucketUploadFlow.PACKS_RESULTS_FILE)
-    pc_successful_packs_dict, pc_failed_packs_dict, pc_successful_private_packs_dict, \
+    pc_successful_packs_dict, pc_successful_uploaded_dependencies_zip_packs_dict, \
+        pc_failed_packs_dict, pc_successful_private_packs_dict, \
         pc_uploaded_images = get_upload_data(packs_results_file_path, BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING)
 
     logging.debug(f"Successful packs from Prepare Content: {pc_successful_packs_dict}")
+    logging.debug(f"Successful uploaded dependencies zip packs from Prepare Content: "
+                  f"{pc_successful_uploaded_dependencies_zip_packs_dict}")
     logging.debug(f"Failed packs from Prepare Content: {pc_failed_packs_dict}")
     logging.debug(f"Successful private packs from Prepare Content: {pc_successful_private_packs_dict}")
     logging.debug(f"Images from Prepare Content: {pc_uploaded_images}")
@@ -420,7 +423,8 @@ def main():
             continue
 
         task_status, skipped_pack_uploading = pack.copy_and_upload_to_storage(
-            production_bucket, build_bucket, pc_successful_packs_dict, production_base_path, build_bucket_base_path)
+            production_bucket, build_bucket, pc_successful_packs_dict, pc_successful_uploaded_dependencies_zip_packs_dict,
+            production_base_path, build_bucket_base_path)
         if skipped_pack_uploading:
             pack.status = PackStatus.PACK_ALREADY_EXISTS.name
             pack.cleanup()
@@ -431,7 +435,10 @@ def main():
             pack.cleanup()
             continue
 
-        pack.status = PackStatus.SUCCESS.name
+        if pack.name in pc_successful_packs_dict:
+            pack.status = PackStatus.SUCCESS.name
+        elif pack.name in pc_successful_uploaded_dependencies_zip_packs_dict:
+            pack.status = PackStatus.SUCCESS_CREATING_DEPENDENCIES_ZIP_UPLOADING.name
 
     # upload core packs json to bucket
     upload_core_packs_config(production_bucket, build_number, extract_destination_path, build_bucket,
@@ -445,16 +452,19 @@ def main():
     copy_id_set(production_bucket, build_bucket, production_base_path, build_bucket_base_path)
 
     # get the lists of packs divided by their status
-    successful_packs, skipped_packs, failed_packs = get_packs_summary(packs_list)
+    successful_packs, successful_uploaded_dependencies_zip_packs, skipped_packs, failed_packs = get_packs_summary(packs_list)
 
     # Store successful and failed packs list in CircleCI artifacts
     store_successful_and_failed_packs_in_ci_artifacts(
-        packs_results_file_path, BucketUploadFlow.UPLOAD_PACKS_TO_MARKETPLACE_STORAGE, successful_packs, failed_packs,
-        list(pc_successful_private_packs_dict)
+        packs_results_file_path, BucketUploadFlow.UPLOAD_PACKS_TO_MARKETPLACE_STORAGE, successful_packs,
+        successful_uploaded_dependencies_zip_packs, failed_packs, list(pc_successful_private_packs_dict)
     )
 
     # verify that the successful from Prepare content and are the ones that were copied
+    logging.warning("verify that no packs were mistakenly copied from successful_packs dict")
     verify_copy(successful_packs, pc_successful_packs_dict)
+    logging.warning("verify that no packs were mistakenly copied from successful_uploaded_dependencies dict")
+    verify_copy(successful_uploaded_dependencies_zip_packs, pc_successful_uploaded_dependencies_zip_packs_dict)
 
     # summary of packs status
     print_packs_summary(successful_packs, skipped_packs, failed_packs)

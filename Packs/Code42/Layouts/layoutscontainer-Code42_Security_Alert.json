@@ -380,5 +380,6 @@
             }
         ]
     },
-    "description": ""
+    "description": "",
+    "marketplaces": ["xsoar"]
 }

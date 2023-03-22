@@ -1,0 +1,2690 @@
+id: Trend Micro CAS - Indicators Hunting
+version: -1
+name: Trend Micro CAS - Indicators Hunting
+description: "In this playbook, the 'trendmicro-cas-email-sweep' command is used to automatically hunt for and detect IOCs within email messages protected by Cloud App Security (CAS). \n\nNote that multiple search values should be separated by commas only (without spaces or any special characters).\n\nSupported IOCs for this playbook:\n- IP Addresses\n- CIDR\n- File Name\n- File Type\n- SHA1\n- URL\n- Domain\n- Email Addresses\n\nSeparate searches are conducted for each type of indicator in the playbook."
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: a9f788cb-6d9f-4d40-824c-e3a318465a50
+    type: start
+    task:
+      id: a9f788cb-6d9f-4d40-824c-e3a318465a50
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3820,
+          "y": 270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 95435a23-0dae-4169-8812-d0e6aa2f8ec6
+    type: condition
+    task:
+      id: 95435a23-0dae-4169-8812-d0e6aa2f8ec6
+      version: -1
+      name: Is Trend Micro Cloud App Security enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "32"
+      - "34"
+      - "35"
+      - "36"
+      - "37"
+      - "39"
+      - "38"
+    scriptarguments:
+      brandname:
+        simple: Trend Micro Cloud App Security
+    results:
+    - brandInstances
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3820,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 82c435f2-265b-4810-8123-385ce20c33b4
+    type: title
+    task:
+      id: 82c435f2-265b-4810-8123-385ce20c33b4
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3820,
+          "y": 1520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 7b40ff61-e102-45e2-8af6-173df2135d57
+    type: regular
+    task:
+      id: 7b40ff61-e102-45e2-8af6-173df2135d57
+      version: -1
+      name: TrendMicro CAS Query - IP Address
+      description: Searches for email messages in mailboxes, matching search criteria.
+      script: TrendMicro Cloud App Security|||trendmicro-cas-email-sweep
+      type: regular
+      iscommand: true
+      brand: TrendMicro Cloud App Security
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      end:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.lastndays
+                iscontext: true
+          accessor: end_time
+      lastndays:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.lastndays
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          accessor: lastndays
+      limit:
+        complex:
+          root: inputs.limit
+          filters:
+          - - operator: lessThanOrEqual
+              left:
+                value:
+                  simple: inputs.limit
+                iscontext: true
+              right:
+                value:
+                  simple: "1000"
+      mailbox:
+        complex:
+          root: inputs.Mailbox
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.Mailbox
+                iscontext: true
+      next_link:
+        complex:
+          root: inputs.next_link
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.next_link
+                iscontext: true
+      source_ip:
+        complex:
+          root: inputs.IPAddress
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+      start:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.lastndays
+                iscontext: true
+          accessor: start_time
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1400,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 295a7cc5-f4dc-4c8e-8b53-42c835717362
+    type: title
+    task:
+      id: 295a7cc5-f4dc-4c8e-8b53-42c835717362
+      version: -1
+      name: IP Address Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "41"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1640,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 713d3e78-4287-4bcd-80cc-a526750e6ca7
+    type: regular
+    task:
+      id: 713d3e78-4287-4bcd-80cc-a526750e6ca7
+      version: -1
+      name: Save Matching Results - IP Address
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "50"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: TrendMicroCAS.HuntingResults
+      value:
+        complex:
+          root: TrendMicroCAS.EmailSweep
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: TrendMicroCAS.EmailSweep.value.source_ip
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1400,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 975588ac-0de3-4f60-8493-2640f8a0f042
+    type: title
+    task:
+      id: 975588ac-0de3-4f60-8493-2640f8a0f042
+      version: -1
+      name: CIDR Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "42"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2280,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 162b8961-8fb3-46b7-8860-73fb0852f9c8
+    type: title
+    task:
+      id: 162b8961-8fb3-46b7-8860-73fb0852f9c8
+      version: -1
+      name: File Name Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "43"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2930,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 479db3f8-3569-453f-8d98-6bd2f279f75f
+    type: title
+    task:
+      id: 479db3f8-3569-453f-8d98-6bd2f279f75f
+      version: -1
+      name: File Type Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "44"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3560,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: bd14969b-6506-4224-8b2a-4df4782baa7b
+    type: title
+    task:
+      id: bd14969b-6506-4224-8b2a-4df4782baa7b
+      version: -1
+      name: SHA1 Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "45"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4090,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: ca9db3dd-10a8-43c7-87ba-a0285c11a60b
+    type: title
+    task:
+      id: ca9db3dd-10a8-43c7-87ba-a0285c11a60b
+      version: -1
+      name: EmailAddress Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "80"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 5760,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 0f42593f-1a6d-4bd7-8911-eda02cb8f2c7
+    type: title
+    task:
+      id: 0f42593f-1a6d-4bd7-8911-eda02cb8f2c7
+      version: -1
+      name: URL Domain Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "46"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4740,
+          "y": 570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: 7e2e945a-f0f1-4d90-82e4-2aac930a809f
+    type: condition
+    task:
+      id: 7e2e945a-f0f1-4d90-82e4-2aac930a809f
+      version: -1
+      name: Any IP addresses to hunt for?
+      description: |
+        Checks whether any IP addresses are available for threat hunting.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "50"
+      "yes":
+      - "31"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.IPAddress
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1640,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 657b9d72-4b9a-4cf1-875b-d6e8bcc03cb6
+    type: condition
+    task:
+      id: 657b9d72-4b9a-4cf1-875b-d6e8bcc03cb6
+      version: -1
+      name: Any CIDRs to hunt for?
+      description: |
+        Checks whether any CIDRs are available for threat hunting.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "53"
+      "yes":
+      - "54"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.CIDR
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2280,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: b58065c5-f6e6-41e1-8240-55c1703af216
+    type: condition
+    task:
+      id: b58065c5-f6e6-41e1-8240-55c1703af216
+      version: -1
+      name: Any file name to hunt for?
+      description: |
+        Checks whether any file names are available for threat hunting.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "58"
+      "yes":
+      - "57"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.FileName
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2930,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: cc23af52-27f7-4388-8fd3-a65862b5c202
+    type: condition
+    task:
+      id: cc23af52-27f7-4388-8fd3-a65862b5c202
+      version: -1
+      name: Any file type to hunt for?
+      description: |
+        Checks whether any file types are available for threat hunting.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "62"
+      "yes":
+      - "61"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.FileType
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3560,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: 508a754e-c586-4053-860f-7a1e7aac02b5
+    type: condition
+    task:
+      id: 508a754e-c586-4053-860f-7a1e7aac02b5
+      version: -1
+      name: Any SHA1 to hunt for?
+      description: |
+        Checks whether any SHA1 hashes are available for threat hunting.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "66"
+      "yes":
+      - "65"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.SHA1
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4090,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: 6c56a9e7-c805-483a-8500-5c841fd653dd
+    type: condition
+    task:
+      id: 6c56a9e7-c805-483a-8500-5c841fd653dd
+      version: -1
+      name: Any URLs or domains to hunt for?
+      description: |
+        Checks whether any domains or URLs are available for threat hunting.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "70"
+      "yes":
+      - "69"
+      - "73"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.URLDomain
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4740,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: 69654647-b3b7-476c-8af6-3e39efb4d6f2
+    type: title
+    task:
+      id: 69654647-b3b7-476c-8af6-3e39efb4d6f2
+      version: -1
+      name: IP Address Hunting Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1640,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "53":
+    id: "53"
+    taskid: 53e380fc-7436-43c6-853f-0d078210f71c
+    type: title
+    task:
+      id: 53e380fc-7436-43c6-853f-0d078210f71c
+      version: -1
+      name: CIDR Hunting Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2280,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "54":
+    id: "54"
+    taskid: c3095541-ceaa-4d56-875a-55b388dc9ddb
+    type: regular
+    task:
+      id: c3095541-ceaa-4d56-875a-55b388dc9ddb
+      version: -1
+      name: TrendMicro CAS Query - CIDR
+      description: Searches for email messages in mailboxes, matching search criteria.
+      script: TrendMicro Cloud App Security|||trendmicro-cas-email-sweep
+      type: regular
+      iscommand: true
+      brand: TrendMicro Cloud App Security
+    nexttasks:
+      '#none#':
+      - "92"
+    scriptarguments:
+      end:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.lastndays
+                iscontext: true
+          accessor: end_time
+      lastndays:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.lastndays
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          accessor: lastndays
+      limit:
+        complex:
+          root: inputs.limit
+          filters:
+          - - operator: lessThanOrEqual
+              left:
+                value:
+                  simple: inputs.limit
+                iscontext: true
+              right:
+                value:
+                  simple: "1000"
+      mailbox:
+        complex:
+          root: inputs.Mailbox
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.Mailbox
+                iscontext: true
+      next_link:
+        complex:
+          root: inputs.next_link
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.next_link
+                iscontext: true
+      source_ip:
+        complex:
+          root: inputs.CIDR
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+      start:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.lastndays
+                iscontext: true
+          accessor: start_time
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2030,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: ba30b576-2fcf-4bd1-8908-baeb05c29941
+    type: regular
+    task:
+      id: ba30b576-2fcf-4bd1-8908-baeb05c29941
+      version: -1
+      name: TrendMicro CAS Query - File Name
+      description: Searches for email messages in mailboxes, matching search criteria.
+      script: TrendMicro Cloud App Security|||trendmicro-cas-email-sweep
+      type: regular
+      iscommand: true
+      brand: TrendMicro Cloud App Security
+    nexttasks:
+      '#none#':
+      - "93"
+    scriptarguments:
+      end:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.lastndays
+                iscontext: true
+          accessor: end_time
+      file_name:
+        complex:
+          root: inputs.FileName
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+      lastndays:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.lastndays
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          accessor: lastndays
+      limit:
+        complex:
+          root: inputs.limit
+          filters:
+          - - operator: lessThanOrEqual
+              left:
+                value:
+                  simple: inputs.limit
+                iscontext: true
+              right:
+                value:
+                  simple: "1000"
+      mailbox:
+        complex:
+          root: inputs.Mailbox
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.Mailbox
+                iscontext: true
+      next_link:
+        complex:
+          root: inputs.next_link
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.next_link
+                iscontext: true
+      start:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.lastndays
+                iscontext: true
+          accessor: start_time
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2680,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: 2b16f6d5-5938-475f-84ec-353b237b423f
+    type: title
+    task:
+      id: 2b16f6d5-5938-475f-84ec-353b237b423f
+      version: -1
+      name: File Name Hunting Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2930,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "61":
+    id: "61"
+    taskid: 36eb6507-959d-46b5-8b15-ed82b1b66267
+    type: regular
+    task:
+      id: 36eb6507-959d-46b5-8b15-ed82b1b66267
+      version: -1
+      name: TrendMicro CAS Query - File Type
+      description: Searches for email messages in mailboxes, matching search criteria.
+      script: TrendMicro Cloud App Security|||trendmicro-cas-email-sweep
+      type: regular
+      iscommand: true
+      brand: TrendMicro Cloud App Security
+    nexttasks:
+      '#none#':
+      - "94"
+    scriptarguments:
+      end:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.lastndays
+                iscontext: true
+          accessor: end_time
+      file_extension:
+        complex:
+          root: inputs.FileType
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+      lastndays:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.lastndays
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          accessor: lastndays
+      limit:
+        complex:
+          root: inputs.limit
+          filters:
+          - - operator: lessThanOrEqual
+              left:
+                value:
+                  simple: inputs.limit
+                iscontext: true
+              right:
+                value:
+                  simple: "1000"
+      mailbox:
+        complex:
+          root: inputs.Mailbox
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.Mailbox
+                iscontext: true
+      next_link:
+        complex:
+          root: inputs.next_link
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.next_link
+                iscontext: true
+      start:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.lastndays
+                iscontext: true
+          accessor: start_time
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3310,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "62":
+    id: "62"
+    taskid: ede744a4-4a6f-4467-802a-0ecf68448fa7
+    type: title
+    task:
+      id: ede744a4-4a6f-4467-802a-0ecf68448fa7
+      version: -1
+      name: File Type Hunting Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3560,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "65":
+    id: "65"
+    taskid: 08973b3f-376a-4aba-87c0-aeca85160c28
+    type: regular
+    task:
+      id: 08973b3f-376a-4aba-87c0-aeca85160c28
+      version: -1
+      name: TrendMicro CAS Query - SHA1
+      description: Searches for email messages in mailboxes, matching search criteria.
+      script: TrendMicro Cloud App Security|||trendmicro-cas-email-sweep
+      type: regular
+      iscommand: true
+      brand: TrendMicro Cloud App Security
+    nexttasks:
+      '#none#':
+      - "95"
+    scriptarguments:
+      end:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.lastndays
+                iscontext: true
+          accessor: end_time
+      file_sha1:
+        complex:
+          root: inputs.SHA1
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+      lastndays:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.lastndays
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          accessor: lastndays
+      limit:
+        complex:
+          root: inputs.limit
+          filters:
+          - - operator: lessThanOrEqual
+              left:
+                value:
+                  simple: inputs.limit
+                iscontext: true
+              right:
+                value:
+                  simple: "1000"
+      mailbox:
+        complex:
+          root: inputs.Mailbox
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.Mailbox
+                iscontext: true
+      next_link:
+        complex:
+          root: inputs.next_link
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.next_link
+                iscontext: true
+      start:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.lastndays
+                iscontext: true
+          accessor: start_time
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4350,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "66":
+    id: "66"
+    taskid: 026496c5-5fb3-4da9-8268-0a68670912af
+    type: title
+    task:
+      id: 026496c5-5fb3-4da9-8268-0a68670912af
+      version: -1
+      name: SHA1 Hunting Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4090,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "69":
+    id: "69"
+    taskid: d35060e2-dab3-4588-8502-c1a9ef966b9d
+    type: regular
+    task:
+      id: d35060e2-dab3-4588-8502-c1a9ef966b9d
+      version: -1
+      name: TrendMicro CAS Query - Domain
+      description: Searches for email messages in mailboxes, matching search criteria.
+      script: TrendMicro Cloud App Security|||trendmicro-cas-email-sweep
+      type: regular
+      iscommand: true
+      brand: TrendMicro Cloud App Security
+    nexttasks:
+      '#none#':
+      - "96"
+    scriptarguments:
+      end:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.lastndays
+                iscontext: true
+          accessor: end_time
+      lastndays:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.lastndays
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          accessor: lastndays
+      limit:
+        complex:
+          root: inputs.limit
+          filters:
+          - - operator: lessThanOrEqual
+              left:
+                value:
+                  simple: inputs.limit
+                iscontext: true
+              right:
+                value:
+                  simple: "1000"
+      mailbox:
+        complex:
+          root: inputs.Mailbox
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.Mailbox
+                iscontext: true
+      next_link:
+        complex:
+          root: inputs.next_link
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.next_link
+                iscontext: true
+      source_domain:
+        complex:
+          root: inputs.URLDomain
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+      start:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.lastndays
+                iscontext: true
+          accessor: start_time
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4980,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "70":
+    id: "70"
+    taskid: 068d610f-1b7c-4efd-88ee-a6e0a66a6d97
+    type: title
+    task:
+      id: 068d610f-1b7c-4efd-88ee-a6e0a66a6d97
+      version: -1
+      name: URL Domain Hunting Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4740,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "73":
+    id: "73"
+    taskid: aa5dbefa-02a7-4f74-8d86-4c8d62a18ad9
+    type: regular
+    task:
+      id: aa5dbefa-02a7-4f74-8d86-4c8d62a18ad9
+      version: -1
+      name: TrendMicro CAS Query - URL
+      description: Searches for email messages in mailboxes, matching search criteria.
+      script: TrendMicro Cloud App Security|||trendmicro-cas-email-sweep
+      type: regular
+      iscommand: true
+      brand: TrendMicro Cloud App Security
+    nexttasks:
+      '#none#':
+      - "96"
+    scriptarguments:
+      end:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.lastndays
+                iscontext: true
+          accessor: end_time
+      lastndays:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.lastndays
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          accessor: lastndays
+      limit:
+        complex:
+          root: inputs.limit
+          filters:
+          - - operator: lessThanOrEqual
+              left:
+                value:
+                  simple: inputs.limit
+                iscontext: true
+              right:
+                value:
+                  simple: "1000"
+      mailbox:
+        complex:
+          root: inputs.Mailbox
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.Mailbox
+                iscontext: true
+      next_link:
+        complex:
+          root: inputs.next_link
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.next_link
+                iscontext: true
+      start:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.lastndays
+                iscontext: true
+          accessor: start_time
+      url:
+        complex:
+          root: inputs.URLDomain
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 5380,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "78":
+    id: "78"
+    taskid: f9263e38-8041-469f-8320-d9396f47799c
+    type: regular
+    task:
+      id: f9263e38-8041-469f-8320-d9396f47799c
+      version: -1
+      name: TrendMicro CAS Query - Recipient Email Address
+      description: Searches for email messages in mailboxes, matching search criteria.
+      script: TrendMicro Cloud App Security|||trendmicro-cas-email-sweep
+      type: regular
+      iscommand: true
+      brand: TrendMicro Cloud App Security
+    nexttasks:
+      '#none#':
+      - "98"
+    scriptarguments:
+      end:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.lastndays
+                iscontext: true
+          accessor: end_time
+      lastndays:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.lastndays
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          accessor: lastndays
+      limit:
+        complex:
+          root: inputs.limit
+          filters:
+          - - operator: lessThanOrEqual
+              left:
+                value:
+                  simple: inputs.limit
+                iscontext: true
+              right:
+                value:
+                  simple: "1000"
+      mailbox:
+        complex:
+          root: inputs.Mailbox
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.Mailbox
+                iscontext: true
+      next_link:
+        complex:
+          root: inputs.next_link
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.next_link
+                iscontext: true
+      recipient:
+        complex:
+          root: inputs.EmailAddress
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+      start:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.lastndays
+                iscontext: true
+          accessor: start_time
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 6430,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "79":
+    id: "79"
+    taskid: b8a80ea4-1eb7-4986-86da-5d536a246ca1
+    type: regular
+    task:
+      id: b8a80ea4-1eb7-4986-86da-5d536a246ca1
+      version: -1
+      name: TrendMicro CAS Query - Sender Email Address
+      description: Searches for email messages in mailboxes, matching search criteria.
+      script: TrendMicro Cloud App Security|||trendmicro-cas-email-sweep
+      type: regular
+      iscommand: true
+      brand: TrendMicro Cloud App Security
+    nexttasks:
+      '#none#':
+      - "97"
+    scriptarguments:
+      end:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.lastndays
+                iscontext: true
+          accessor: end_time
+      lastndays:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.lastndays
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          accessor: lastndays
+      limit:
+        complex:
+          root: inputs.limit
+          filters:
+          - - operator: lessThanOrEqual
+              left:
+                value:
+                  simple: inputs.limit
+                iscontext: true
+              right:
+                value:
+                  simple: "1000"
+      mailbox:
+        complex:
+          root: inputs.Mailbox
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.Mailbox
+                iscontext: true
+      next_link:
+        complex:
+          root: inputs.next_link
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.next_link
+                iscontext: true
+      sender:
+        complex:
+          root: inputs.EmailAddress
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: uniq
+      start:
+        complex:
+          root: inputs
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.start_time
+                iscontext: true
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: inputs.end_time
+                iscontext: true
+          - - operator: isEmpty
+              left:
+                value:
+                  simple: inputs.lastndays
+                iscontext: true
+          accessor: start_time
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 6020,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "80":
+    id: "80"
+    taskid: 7cadf743-3ed4-4c87-8bee-2f16efdd2965
+    type: condition
+    task:
+      id: 7cadf743-3ed4-4c87-8bee-2f16efdd2965
+      version: -1
+      name: Any email addresses to hunt for?
+      description: |
+        Checks whether any email addresses are available for threat hunting.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "81"
+      "yes":
+      - "79"
+      - "78"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.EmailAddress
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 5760,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "81":
+    id: "81"
+    taskid: a051e99b-6af6-44d2-81d8-819feb622bbc
+    type: title
+    task:
+      id: a051e99b-6af6-44d2-81d8-819feb622bbc
+      version: -1
+      name: Email Address Hunting Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 5760,
+          "y": 1375
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "92":
+    id: "92"
+    taskid: b2ec3cb4-e221-4c48-80d3-81dcf899ce07
+    type: regular
+    task:
+      id: b2ec3cb4-e221-4c48-80d3-81dcf899ce07
+      version: -1
+      name: Save Matching Results - CIDR
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "53"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: TrendMicroCAS.HuntingResults
+      value:
+        complex:
+          root: TrendMicroCAS.EmailSweep
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: TrendMicroCAS.EmailSweep.value.source_ip
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2030,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "93":
+    id: "93"
+    taskid: 379a38f7-38e1-4c15-8086-b34847533571
+    type: regular
+    task:
+      id: 379a38f7-38e1-4c15-8086-b34847533571
+      version: -1
+      name: Save Matching Results - File Name
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "58"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: TrendMicroCAS.HuntingResults
+      value:
+        complex:
+          root: TrendMicroCAS.EmailSweep
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: TrendMicroCAS.EmailSweep.value.mail_attachments.file_name
+                iscontext: true
+            - operator: isNotEmpty
+              left:
+                value:
+                  simple: TrendMicroCAS.EmailSweep.value.mail_attachments.file_sha1
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2680,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "94":
+    id: "94"
+    taskid: 2ee3e568-d11c-4f2a-8349-eed34c02168c
+    type: regular
+    task:
+      id: 2ee3e568-d11c-4f2a-8349-eed34c02168c
+      version: -1
+      name: Save Matching Results - File Type
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "62"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: TrendMicroCAS.HuntingResults
+      value:
+        complex:
+          root: TrendMicroCAS.EmailSweep
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: TrendMicroCAS.EmailSweep.value.mail_attachments.file_name
+                iscontext: true
+            - operator: isNotEmpty
+              left:
+                value:
+                  simple: TrendMicroCAS.EmailSweep.value.mail_attachments.file_sha1
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3310,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "95":
+    id: "95"
+    taskid: 4fa81251-0e52-4b2f-8e68-3ac41a57915b
+    type: regular
+    task:
+      id: 4fa81251-0e52-4b2f-8e68-3ac41a57915b
+      version: -1
+      name: Save Matching Results - SHA1
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "66"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: TrendMicroCAS.HuntingResults
+      value:
+        complex:
+          root: TrendMicroCAS.EmailSweep
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: TrendMicroCAS.EmailSweep.value.mail_attachments.file_name
+                iscontext: true
+            - operator: isNotEmpty
+              left:
+                value:
+                  simple: TrendMicroCAS.EmailSweep.value.mail_attachments.file_sha1
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4350,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "96":
+    id: "96"
+    taskid: 75ba6d78-861d-47db-8251-e46f9405c090
+    type: regular
+    task:
+      id: 75ba6d78-861d-47db-8251-e46f9405c090
+      version: -1
+      name: Save Matching Results - Domain & URL
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "70"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: TrendMicroCAS.HuntingResults
+      value:
+        complex:
+          root: TrendMicroCAS.EmailSweep
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: TrendMicroCAS.EmailSweep.value.source_domain
+                iscontext: true
+            - operator: isNotEmpty
+              left:
+                value:
+                  simple: TrendMicroCAS.EmailSweep.value.mail_urls
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 5180,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "97":
+    id: "97"
+    taskid: 4dd331a4-618b-434f-8c50-3adc6cee4000
+    type: regular
+    task:
+      id: 4dd331a4-618b-434f-8c50-3adc6cee4000
+      version: -1
+      name: Save Matching Results -  Sender Email Address
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "99"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: TrendMicroCAS.HuntingResults
+      value:
+        complex:
+          root: TrendMicroCAS.EmailSweep
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: TrendMicroCAS.EmailSweep.value.mail_message_sender
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 6020,
+          "y": 1030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "98":
+    id: "98"
+    taskid: a5c55ec4-bbf5-4ff6-833f-e3b9ae967089
+    type: regular
+    task:
+      id: a5c55ec4-bbf5-4ff6-833f-e3b9ae967089
+      version: -1
+      name: Save Matching Results - Recipient Email Address
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "99"
+    scriptarguments:
+      key:
+        simple: HuntingResults2
+      value:
+        complex:
+          root: TrendMicroCAS.EmailSweep
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: TrendMicroCAS.EmailSweep.value.mail_message_recipient
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 6430,
+          "y": 1030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "99":
+    id: "99"
+    taskid: c72cf179-0c6c-4a97-8eb7-0cb58e81c5b3
+    type: regular
+    task:
+      id: c72cf179-0c6c-4a97-8eb7-0cb58e81c5b3
+      version: -1
+      name: Remove Duplications From Matching Results
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "81"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: TrendMicroCAS.HuntingResults
+      value:
+        complex:
+          root: HuntingResults2
+          filters:
+          - - operator: notInList
+              left:
+                value:
+                  simple: HuntingResults2.value.mail_unique_id
+                iscontext: true
+              right:
+                value:
+                  simple: TrendMicroCAS.HuntingResults.value.mail_unique_id
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 6230,
+          "y": 1200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1315,
+        "width": 5410,
+        "x": 1400,
+        "y": 270
+      }
+    }
+  }
+inputs:
+- key: IPAddress
+  value: {}
+  required: false
+  description: "A single or multiple IP address to search for within TrendMicro CAS logs. Used for both source and destination IP addresses \n\nSeparate multiple search values by commas only (without spaces or any special characters)."
+  playbookInputQuery:
+- key: CIDR
+  value: {}
+  required: false
+  description: |-
+    A single or multiple IP ranges to search for within TrendMicro CAS logs. Used for both source and destination IP addresses.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: URLDomain
+  value: {}
+  required: false
+  description: |-
+    Single or multiple URLs and/or domains to search for within TrendMicro CAS logs.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: FileName
+  value: {}
+  required: false
+  description: |-
+    Single or multiple file names to search for within TrendMicro CAS logs.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: FileType
+  value: {}
+  required: false
+  description: |-
+    A single or multiple file types to search for within TrendMicro CAS logs.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: SHA1
+  value: {}
+  required: false
+  description: |-
+    Single or multiple SHA1 file hashes to search for within TrendMicro CAS logs.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: EmailAddress
+  value: {}
+  required: false
+  description: |-
+    A single or multiple email addresses to search for within TrendMicro CAS logs. Used for both recipient and sender email addresses.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: subject
+  value: {}
+  required: false
+  description: |-
+    Filter messages that should be retrieved from the TrendMicro CAS based on the email subject (string).
+
+    Use double quotes to search for an exact phrase, for example, "messageA messageB"
+    otherwise, a partial match based on the phrase is performed. For example,
+    a search is performed on a subject containing messageA, or messageB, or messageA message B.
+
+    Separate multiple search values by commas only (without spaces or any special characters).
+  playbookInputQuery:
+- key: start
+  value: {}
+  required: false
+  description: "The start date and time from which you would like to retrieve messages from TrendMicro CAS. \nUse ISO 8601 time format, e.g. 2020-08-01T02:31:20Z, or 'human-readable' data, such as 1 day ago or 3 weeks ago.\n\nFor a complete time range, specify 'end' as well.\nIf 'start' is not specified messages will be retrieved from TrendMicro CAS within seven days before the end time. In the absence of 'start' and 'end' inputs, the default value is 'last seven days' is set.\n\nDo not configure 'lastndays' and 'start' or 'end' at the same time."
+  playbookInputQuery:
+- key: end
+  value: {}
+  required: false
+  description: "The end date and time specify the period of time in which messages should be retrieved from TrendMicro CAS. \nUse ISO 8601 time format, e.g. 2020-08-01T02:31:20Z, or 'human-readable' data, such as 1 day ago or 3 weeks ago.\n\nFor a complete time range, specify 'start' as well.\nIf 'end' is not specified messages will be retrieved from TrendMicro CAS within seven days after the start time. In the absence of 'start' and 'end' inputs, the default value is 'last seven days' is set.\n\nDo not configure 'lastndays' and 'start' or 'end' at the same time."
+  playbookInputQuery:
+- key: lastndays
+  value: {}
+  required: false
+  description: "The number of days (n × 24 hours) before the request is sent to be examined.\n\nAn alternative filter to the 'start' and 'end' inputs. This filter specifies a time range that will determine the period of time in which messages should be retrieved from TrendMicro CAS. \n\nDo not configure 'lastndays' and 'start' or 'end' at the same time."
+  playbookInputQuery:
+- key: limit
+  value: {}
+  required: false
+  description: The maximum number of email messages to display. The maximum number of messages is 1,000. If not specified, a default value of 20 will be used.
+  playbookInputQuery:
+- key: next_link
+  value: {}
+  required: false
+  description: "The URL for the results page if the total number of email messages in a previous request exceeds the specified limit. \n\nWhen the maximum limit has been exceeded, a URL is specified in the response. To retrieve the remaining email messages, use the URL from the response.\t"
+  playbookInputQuery:
+outputs:
+- contextPath: TrendMicroCAS.HuntingResults.value
+  description: Email message objects and fields that were retrieved from TrendMicro CAS.
+  type: string
+- contextPath: TrendMicroCAS.HuntingResults.value.mail_message_delivery_time
+  description: The time and date when the email message was sent.
+  type: number
+- contextPath: TrendMicroCAS.HuntingResults.value.mail_message_id
+  description: The Internet message ID of the email message.
+  type: string
+- contextPath: TrendMicroCAS.HuntingResults.value.mail_unique_id
+  description: The ID of the email message.
+  type: string
+- contextPath: TrendMicroCAS.HuntingResults.value.mailbox
+  description: The mailbox which contains the email message.
+  type: string
+- contextPath: TrendMicroCAS.HuntingResults.value.source_ip
+  description: The source IP address of the email message.
+  type: string
+- contextPath: TrendMicroCAS.HuntingResults.value.source_domain
+  description: The source domain of the email message.
+  type: string
+- contextPath: TrendMicroCAS.HuntingResults.value.mail_urls
+  description: The URL contained in the email body or attachment.
+  type: string
+- contextPath: TrendMicroCAS.HuntingResults.value.mail_message_subject
+  description: The subject of the email message.
+  type: string
+- contextPath: TrendMicroCAS.HuntingResults.value.mail_message_sender
+  description: The email address of the sender.
+  type: string
+- contextPath: TrendMicroCAS.HuntingResults.value.mail_message_recipient
+  description: A list of recipient email addresses of the email message.
+  type: string
+- contextPath: TrendMicroCAS.HuntingResults.value.mail_internet_headers.Value
+  description: Sender's email address as displayed in the email header.
+  type: string
+- contextPath: TrendMicroCAS.HuntingResults.value.mail_attachments
+  description: Email attachment objects that were retrieved from TrendMicro CAS.
+  type: string
+- contextPath: TrendMicroCAS.HuntingResults.value.mail_attachments.file_sha1
+  description: The SHA-1 hash value of the attachment file.
+  type: string
+- contextPath: TrendMicroCAS.HuntingResults.value.mail_attachments.file_name
+  description: The name of the attachment file.
+  type: string
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0

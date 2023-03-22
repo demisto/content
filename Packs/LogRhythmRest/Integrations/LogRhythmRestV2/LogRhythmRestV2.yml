@@ -114,7 +114,7 @@ script:
   script: ''
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.8.37233
+  dockerimage: demisto/python3:3.10.10.47713
   isfetch: true
   commands:
   - name: lr-alarms-list
@@ -794,6 +794,163 @@ script:
     - type: String
       contextPath: LogRhythm.AlarmSummary.alarmEventSummary.impactedEntityName
       description: 'The alarm summary impacted entity name.'
+  - name: lr-get-alarm-details
+    description: 'Get the details of an alarm by the specified alarm ID.'
+    arguments:
+    - name: alarm_id
+      description: 'Numeric ID of the alarm to get.'
+      required: true
+      isArray: false
+    outputs:
+    - type: Number
+      contextPath: LogRhythm.AlarmDetails.alarmId
+      description: 'The alarm ID.'
+    - type: Number
+      contextPath: LogRhythm.AlarmDetails.personId
+      description: 'The person ID.'
+    - type: Number
+      contextPath: LogRhythm.AlarmDetails.entityId
+      description: 'The entity ID.'
+    - type: String
+      contextPath: LogRhythm.AlarmDetails.entityName
+      description: 'The name of the entity.'
+    - type: String
+      contextPath: LogRhythm.AlarmDetails.alarmDate
+      description: 'The date in UTC of the alarm.'
+    - type: Number
+      contextPath: LogRhythm.AlarmDetails.alarmRuleID
+      description: 'The Rule ID of the rule which triggered the alarm'
+    - type: String
+      contextPath: LogRhythm.AlarmDetails.alarmRuleName
+      description: 'The name of the rule which triggered the alarm'
+    - type: String
+      contextPath: LogRhythm.AlarmDetails.alarmStatus
+      description: 'The status of the alarm.'
+    - type: String
+      contextPath: LogRhythm.AlarmDetails.alarmStatusName
+      description: 'The name for the status of the alarm.'
+    - type: Number
+      contextPath: LogRhythm.AlarmDetails.lastUpdatedID
+      description: 'The ID of the last person to update the alarm.'
+    - type: String
+      contextPath: LogRhythm.AlarmDetails.lastUpdatedName
+      description: 'The name of the last person to update the alarm.'
+    - type: String
+      contextPath: LogRhythm.AlarmDetails.dateInserted
+      description: 'The date in UTC, that the alarm was inserted.'
+    - type: String
+      contextPath: LogRhythm.AlarmDetails.dateUpdated
+      description: 'The date in UTC, that the alarm was updated.'
+    - type: String
+      contextPath: LogRhythm.AlarmDetails.associatedCases
+      description: 'The cases associated with this alarm.'
+    - type: Number
+      contextPath: LogRhythm.AlarmDetails.lastPersonID
+      description: 'The ID of the last person to edit this alarm.'
+    - type: Number
+      contextPath: LogRhythm.AlarmDetails.eventCount
+      description: 'The amount of events that triggered this alarm.'
+    - type: String
+      contextPath: LogRhythm.AlarmDetails.eventDateFirst
+      description: 'The date in UTC of the first event to trigger this alarm.'
+    - type: String
+      contextPath: LogRhythm.AlarmDetails.eventDateLast
+      description: 'The date in UTC of the last event to trigger this alarm.'
+    - type: Number
+      contextPath: LogRhythm.AlarmDetails.rBPMax
+      description: 'The maximum Risk Based Priority for this alarm.'
+    - type: Number
+      contextPath: LogRhythm.AlarmDetails.rBPAvg
+      description: 'The average Risk Based Priority for this alarm.'
+    - type: Number
+      contextPath: LogRhythm.AlarmDetails.executionTarget
+      description: 'The target which the alarm was executed against.'
+    - type: String
+      contextPath: LogRhythm.AlarmDetails.alarmDataCached
+      description: 'The cached alarm data.'
+  - name: lr-alarm-drilldown
+    description: 'Gets the drill-down logs per rule block for a specific alarm Id that fired associated with an AIE alarm.'
+    arguments:
+    - name: alarm_id
+      description: 'Numeric ID of the alarm to get.'
+      required: true
+      isArray: false
+    outputs:
+    - type: Number
+      contextPath: LogRhythm.AlarmDrilldown.AlarmID
+      description: 'The alarm ID.'
+    - type: Number
+      contextPath: LogRhythm.AlarmDrilldown.AIERuleID
+      description: 'The alarm AIE rule ID.'
+    - type: Number
+      contextPath: LogRhythm.AlarmDrilldown.Status.value
+      description: 'The value of the drilldown request.'
+    - type: String
+      contextPath: LogRhythm.AlarmDrilldown.Status.name
+      description: 'The name of the drilldown request.'
+    - type: String
+      contextPath: LogRhythm.AlarmDrilldown.Status.description
+      description: 'The description of the drilldown request.'
+    - type: Number
+      contextPath: LogRhythm.AlarmDrilldown.RetryCount
+      description: 'The number of times the Data Indexer is queried for the drill-down results.'
+    - type: Date
+      contextPath: LogRhythm.AlarmDrilldown.LastDxTimestamp
+      description: 'The timestamp, in UTC, at which the Data Indexer was queried to obtain the drill-down results.'
+    - type: Date
+      contextPath: LogRhythm.AlarmDrilldown.DateInserted
+      description: 'The timestamp, in UTC, when the Alarm was added to the cache.'
+    - type: String
+      contextPath: LogRhythm.AlarmDrilldown.AlarmGuid
+      description: 'The unique identification of the Alarm GUID.'
+    - type: String
+      contextPath: LogRhythm.AlarmDrilldown.WebConsoleId
+      description: 'The unique identification of the Web Console ID.'
+    - type: Boolean
+      contextPath: LogRhythm.AlarmDrilldown.NotificationSent
+      description: 'The unique identification of the Alarm GUID.'
+    - type: String
+      contextPath: LogRhythm.AlarmDrilldown.AIEMsgXml
+      description: 'The message XML associated with the event that triggered by the AI Engine.'
+    - type: Number
+      contextPath: LogRhythm.AlarmDrilldown.EventID
+      description: 'The event ID associated with the AI Engine alarm.'
+    - type: Date
+      contextPath: LogRhythm.AlarmDrilldown.NormalMessageDate
+      description: 'The date, in UTC, that specifies the time of occurrence of the log.'
+    - type: Number
+      contextPath: LogRhythm.AlarmDrilldown.RuleBlocks.RuleBlockID
+      description: 'The Rule Block Id associated with the AI Engine rule that triggered the alarm.'
+    - type: Number
+      contextPath: LogRhythm.AlarmDrilldown.RuleBlocks.RuleBlockTypeID
+      description: 'The type of rule block as specified in the Events Msg XML.'
+    - type: String
+      contextPath: LogRhythm.AlarmDrilldown.RuleBlocks.DrillDownLogs
+      description: 'Logs that triggered the AI Engine rule associated with the rule block.'
+    - type: Number
+      contextPath: LogRhythm.AlarmDrilldown.RuleBlocks.AIECount
+      description: 'The number of logs identified by the AI Engine that triggered the alarm.'
+    - type: Number
+      contextPath: LogRhythm.AlarmDrilldown.RuleBlocks.DXCount
+      description: 'The number of logs stored in the Data Indexer that matched the drill-down criteria.'
+    - type: Date
+      contextPath: LogRhythm.AlarmDrilldown.RuleBlocks.NormalMessageDate
+      description: 'The date, in UTC, that specifies the time of occurence of the log.'
+    - type: Date
+      contextPath: LogRhythm.AlarmDrilldown.RuleBlocks.NormalMessageDateUpper
+      description: 'The date, in UTC, that specifies the upper bound for the rule block triggered.'
+    - type: Date
+      contextPath: LogRhythm.AlarmDrilldown.RuleBlocks.NormalMessageDateLower
+      description: 'The date, in UTC, that specifies the lower bound for the rule block triggered.'
+    - type: Number
+      contextPath: LogRhythm.AlarmDrilldown.RuleBlocks.DDSummaries.SummaryFieldType
+      description: 'The Summary Field type selected for the rule block.'
+    - type: String
+      contextPath: LogRhythm.AlarmDrilldown.RuleBlocks.DDSummaries.DrillDownSummaries
+      description: 'The aggregate of the Summary Field type as found in the drill-down logs associated with the alarm.'
+    - type: String
+      contextPath: LogRhythm.AlarmDrilldown.RuleBlocks.DDSummaries.DefaultValue
+      description: 'The value populated from the ARM when an alarm is added to the cache.'
   - name: lr-cases-list
     description: 'Get cases details using filter criteria.'
     arguments:

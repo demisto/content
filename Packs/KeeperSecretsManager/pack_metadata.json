@@ -2,13 +2,13 @@
     "name": "Keeper Secrets Manager",
     "description": "Use Secrets Manager to manage secrets and protect sensitive data through Keeper Vault.",
     "support": "partner",
-    "currentVersion": "1.0.1",
+    "currentVersion": "1.0.6",
     "author": "Keeper Security",
     "url": "https://www.keepersecurity.com/",
     "email": "sm@keepersecurity.com",
     "created": "2022-08-15T15:04:05Z",
     "categories": [
-        "Authentication"
+        "Authentication & Identity Management"
     ],
     "tags": [],
     "useCases": [],

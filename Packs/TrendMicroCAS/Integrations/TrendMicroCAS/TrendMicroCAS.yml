@@ -1,4 +1,4 @@
-category: Authentication
+category: Authentication & Identity Management
 sectionOrder:
 - Connect
 - Collect
@@ -741,7 +741,7 @@ script:
     - contextPath: TrendMicroCAS.BlockedList.urls
       description: A list of blocked URLs.
       type: String
-  dockerimage: demisto/python3:3.10.8.37233
+  dockerimage: demisto/python3:3.10.10.48392
   feed: false
   isfetch: true
   longRunning: false

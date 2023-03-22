@@ -1,9 +1,10 @@
+import urllib3
 import demistomock as demisto
 from CommonServerPython import *
 
 from typing import Tuple
 
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 VENDOR = "slack"
 PRODUCT = "slack"

@@ -1,4 +1,7 @@
 category: Data Enrichment & Threat Intelligence
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: AbuseIPDB
   version: -1
@@ -8,14 +11,25 @@ configuration:
   name: server
   required: true
   type: 0
+  section: Connect
+- name: credentials
+  required: false
+  type: 9
+  displaypassword: API Key (v2)
+  hiddenusername: true
+  section: Connect
 - display: API Key (v2)
   name: apikey
-  required: true
+  required: false
   type: 4
-- additionalinfo: Reliability of the source providing the intelligence data.
-  defaultvalue: C - Fairly reliable
+  hidden: true
+  section: Connect
+- defaultvalue: 'C - Fairly reliable'
   display: Source Reliability
   name: integrationReliability
+  required: true
+  type: 15
+  additionalinfo: Reliability of the source providing the intelligence data.
   options:
   - A+ - 3rd party enrichment
   - A - Completely reliable
@@ -24,33 +38,40 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: true
-  type: 15
+  section: Collect
 - defaultvalue: '80'
   display: Minimum score threshold
   name: threshold
   required: false
   type: 0
-- defaultvalue: '30'
-  display: Maximum reports age (in days)
+  section: Collect
+  advanced: true
+- display: Maximum reports age (in days)
   name: days
   required: false
   type: 0
+  defaultvalue: '30'
+  section: Collect
+  advanced: true
 - display: Disregard quota errors
   name: disregard_quota
   required: false
   type: 8
+  section: Collect
+  advanced: true
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
-description: Central repository to report and identify IP addresses that have been
-  associated with malicious activity online. Check the Detailed Information section
-  for more information on how to configure the integration.
+  section: Connect
+  advanced: true
+description: Central repository to report and identify IP addresses that have been associated with malicious activity online. Check the Detailed Information section for more information on how to configure the integration.
 display: AbuseIPDB
 name: AbuseIPDB
 script:
@@ -66,15 +87,13 @@ script:
       name: days
     - auto: PREDEFINED
       defaultValue: 'true'
-      description: The length of the report. "true" returns the full report, "false"
-        does not return reported categories. Default is "true".
+      description: The length of the report. "true" returns the full report, "false" does not return reported categories. Default is "true".
       name: verbose
       predefined:
       - 'true'
       - 'false'
     - defaultValue: '80'
-      description: The minimum score from AbuseIPDB to consider whether the IP address
-        is malicious (must be greater than 20). Default is 80.
+      description: The minimum score from AbuseIPDB to consider whether the IP address is malicious (must be greater than 20). Default is 80.
       name: threshold
     description: Checks the specified IP address against the AbuseIP database.
     name: ip
@@ -150,8 +169,7 @@ script:
       description: The maximum number of IPs to check. Default is 40.
       name: limit
     - defaultValue: '80'
-      description: The minimum score from AbuseIPDB to consider whether the IP address
-        is malicious (must be greater than 20). Default is 80.
+      description: The minimum score from AbuseIPDB to consider whether the IP address is malicious (must be greater than 20). Default is 80.
       name: threshold
     description: Queries a block of IP addresses to check against the database.
     name: abuseipdb-check-cidr-block
@@ -231,8 +249,7 @@ script:
       name: limit
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: Whether to save a list of IPs on a block list in the Context Data in
-        Demisto. Default is false.
+      description: Whether to save a list of IPs on a block list in the Context Data in Demisto. Default is false.
       name: saveToContext
       predefined:
       - 'true'
@@ -257,7 +274,7 @@ script:
   script: ''
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.10.9.40422
+  dockerimage: demisto/python3:3.10.10.48392
 fromversion: 5.0.0
 tests:
 - AbuseIPDB Test

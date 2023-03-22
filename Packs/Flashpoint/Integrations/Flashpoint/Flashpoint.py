@@ -6,8 +6,8 @@ import requests
 import urllib.parse
 from typing import Dict, Tuple, List, Any
 
-# Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+import urllib3
+urllib3.disable_warnings()
 
 """ CONSTANTS """
 INTEGRATION_VERSION = "v1.3.3"

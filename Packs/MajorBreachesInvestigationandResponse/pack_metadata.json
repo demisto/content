@@ -2,12 +2,14 @@
     "name": "Rapid Breach Response",
     "description": "This content Pack helps you collect, investigate, and remediate incidents related to major breaches.",
     "support": "xsoar",
-    "currentVersion": "1.6.25",
+    "currentVersion": "1.6.29",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "created": "2020-12-16T14:11:20Z",
-    "categories": ["Forensics & Malware Analysis"],
+    "categories": [
+        "Forensics & Malware Analysis"
+    ],
     "tags": [
         "Use Case"
     ],
@@ -79,6 +81,10 @@
         "CVE-2022-41040 & CVE-2022-41082 - ProxyNotShell": {
             "mandatory": false,
             "display_name": "CVE-2022-41040 & CVE-2022-41082 - ProxyNotShell"
+        },
+        "CVE-2023-23397 - Microsoft Outlook EoP": {
+            "mandatory": false,
+            "display_name": "CVE-2023-23397 - Microsoft Outlook EoP"
         },
         "ServiceNow": {
             "mandatory": false,

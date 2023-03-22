@@ -1,15 +1,15 @@
 id: SentinelOne V2.1 - Test
-version: 4
+version: 3
 vcShouldKeepItemLegacyProdMachine: false
 name: SentinelOne V2.1 - Test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: a6b3a445-175b-43ec-8d26-e486d4b2fb52
+    taskid: 8b7c4ba2-94c6-4dbb-81d5-181a494db312
     type: start
     task:
-      id: a6b3a445-175b-43ec-8d26-e486d4b2fb52
+      id: 8b7c4ba2-94c6-4dbb-81d5-181a494db312
       version: -1
       name: ""
       iscommand: false
@@ -35,10 +35,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: f06db67d-d849-4673-81fc-048af4a2fb1f
+    taskid: dcd26db8-9ec9-43b6-82be-0a9adee7fed4
     type: regular
     task:
-      id: f06db67d-d849-4673-81fc-048af4a2fb1f
+      id: dcd26db8-9ec9-43b6-82be-0a9adee7fed4
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -70,10 +70,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 1172965f-591a-4ce0-8e08-63b2524d38cc
+    taskid: 478e8d88-ca54-407d-8a4f-5c6b10de5fb5
     type: regular
     task:
-      id: 1172965f-591a-4ce0-8e08-63b2524d38cc
+      id: 478e8d88-ca54-407d-8a4f-5c6b10de5fb5
       version: -1
       name: Get Threats
       description: Get threats using a variety of filters.
@@ -102,10 +102,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: d3a9a50b-da2e-42fc-8d88-92e99f0a35be
+    taskid: a44c2356-bfd4-444a-8a3a-8453a06037ac
     type: regular
     task:
-      id: d3a9a50b-da2e-42fc-8d88-92e99f0a35be
+      id: a44c2356-bfd4-444a-8a3a-8453a06037ac
       version: -1
       name: Get Activities
       description: Get a list of activities.
@@ -134,10 +134,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 1cfdf87e-6107-403f-83d4-08f5bc4ea37c
+    taskid: 51bd698c-7491-463a-8e1d-efb520578cc7
     type: regular
     task:
-      id: 1cfdf87e-6107-403f-83d4-08f5bc4ea37c
+      id: 51bd698c-7491-463a-8e1d-efb520578cc7
       version: -1
       name: Get All agents
       description: List all agents matching the input filter.
@@ -166,10 +166,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: eeabb28e-7a00-4225-82f3-ad36ca705c7f
+    taskid: a1b1867f-11f3-4995-87c6-a9e9e0e74f38
     type: regular
     task:
-      id: eeabb28e-7a00-4225-82f3-ad36ca705c7f
+      id: a1b1867f-11f3-4995-87c6-a9e9e0e74f38
       version: -1
       name: Get Agent
       description: Get details of an agent by its ID.
@@ -205,10 +205,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 226d7429-30ae-4784-82f9-a86dcee2e6f1
+    taskid: 6b22fa96-abf6-45da-8d65-0abcc568bc81
     type: regular
     task:
-      id: 226d7429-30ae-4784-82f9-a86dcee2e6f1
+      id: 6b22fa96-abf6-45da-8d65-0abcc568bc81
       version: -1
       name: Get all groups
       description: Gets the group data.
@@ -237,10 +237,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 248280a7-5209-4ffd-8c41-f614dfb736c9
+    taskid: 99fbed80-9a5e-44ef-8981-bd0732f9dbf7
     type: regular
     task:
-      id: 248280a7-5209-4ffd-8c41-f614dfb736c9
+      id: 99fbed80-9a5e-44ef-8981-bd0732f9dbf7
       version: -1
       name: Get threat summary
       description: Get dashboard threat summary.
@@ -272,10 +272,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 70462335-5d02-46bd-80da-eeceb818fcdf
+    taskid: 8210d690-f21b-4b89-8b52-ba2509fd9b3f
     type: regular
     task:
-      id: 70462335-5d02-46bd-80da-eeceb818fcdf
+      id: 8210d690-f21b-4b89-8b52-ba2509fd9b3f
       version: -1
       name: Disconnect agent from network
       description: Disconnect agents from network
@@ -307,10 +307,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: f037154e-bb9b-4a34-8c21-30221040a82c
+    taskid: ab60745b-c76a-445d-88e4-ef750a578d31
     type: regular
     task:
-      id: f037154e-bb9b-4a34-8c21-30221040a82c
+      id: ab60745b-c76a-445d-88e4-ef750a578d31
       version: -1
       name: Broadcast Message
       description: Broadcasts a message to all agents matching the input filter.
@@ -344,10 +344,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 6615fecd-a51c-478e-85a9-0608b452b277
+    taskid: cccd3687-f657-4484-8217-891cc26c6039
     type: regular
     task:
-      id: 6615fecd-a51c-478e-85a9-0608b452b277
+      id: cccd3687-f657-4484-8217-891cc26c6039
       version: -1
       name: Create Query ID
       description: Start a Deep Visibility Query and get the queryId, use queryId
@@ -393,10 +393,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: e1bf8a5c-f908-409c-816e-9889b8f73b02
+    taskid: b58ecb11-a2f2-4768-8e12-2bbc66fe346f
     type: regular
     task:
-      id: e1bf8a5c-f908-409c-816e-9889b8f73b02
+      id: b58ecb11-a2f2-4768-8e12-2bbc66fe346f
       version: -1
       name: Get events
       description: Get all Deep Visibility events from query
@@ -430,10 +430,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: ce4c14ef-b06c-48d4-8e88-6f8723485cf8
+    taskid: 8d853b5d-b25d-41c6-8519-ce15411fe975
     type: regular
     task:
-      id: ce4c14ef-b06c-48d4-8e88-6f8723485cf8
+      id: 8d853b5d-b25d-41c6-8519-ce15411fe975
       version: -1
       name: Get agent activities
       description: Returns a list of activities.
@@ -467,10 +467,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 47c75b6e-782c-4490-8be9-fb8fec0fec32
+    taskid: 91332bc7-41f9-440c-8f73-918920faf3d5
     type: condition
     task:
-      id: 47c75b6e-782c-4490-8be9-fb8fec0fec32
+      id: 91332bc7-41f9-440c-8f73-918920faf3d5
       version: -1
       name: Verify outputs
       type: condition
@@ -510,10 +510,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: b0eede4b-1e53-499a-8dc1-b19d3045e0e8
+    taskid: 7c1c90e1-670c-4824-8892-c9b00d82be06
     type: condition
     task:
-      id: b0eede4b-1e53-499a-8dc1-b19d3045e0e8
+      id: 7c1c90e1-670c-4824-8892-c9b00d82be06
       version: -1
       name: 'Is the agent disconnected? '
       type: condition
@@ -559,10 +559,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 6c58c1e9-6a63-4fbb-8530-dad70837a76d
+    taskid: 5bd379c7-3505-4ff8-8057-074561e5a00a
     type: regular
     task:
-      id: 6c58c1e9-6a63-4fbb-8530-dad70837a76d
+      id: 5bd379c7-3505-4ff8-8057-074561e5a00a
       version: -1
       name: Connect agent to network
       description: Connects agents to network.
@@ -594,10 +594,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 63b3c645-3693-498f-889f-cf06af54699f
+    taskid: 73963bfe-1d59-4edc-8ab5-90a4f606ea5d
     type: condition
     task:
-      id: 63b3c645-3693-498f-889f-cf06af54699f
+      id: 73963bfe-1d59-4edc-8ab5-90a4f606ea5d
       version: -1
       name: 'Is the agent reconnect? '
       type: condition
@@ -643,10 +643,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: b003aeee-0f9b-40de-846e-100331073278
+    taskid: 515a6754-6d37-405f-83e0-b4b5ea68f619
     type: condition
     task:
-      id: b003aeee-0f9b-40de-846e-100331073278
+      id: 515a6754-6d37-405f-83e0-b4b5ea68f619
       version: -1
       name: Verify Context
       type: condition
@@ -681,10 +681,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: 093d876a-e542-495d-83e2-801c84d31ce9
+    taskid: 91f05e0a-030c-4186-885b-18d7688372df
     type: regular
     task:
-      id: 093d876a-e542-495d-83e2-801c84d31ce9
+      id: 91f05e0a-030c-4186-885b-18d7688372df
       version: -1
       name: Wait
       description: Sleep for X seconds
@@ -716,10 +716,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 4e221a23-7aa5-43b0-845e-7ad1b60d4df1
+    taskid: d702569b-b9f2-4d66-8dc8-4b91463a069f
     type: regular
     task:
-      id: 4e221a23-7aa5-43b0-845e-7ad1b60d4df1
+      id: d702569b-b9f2-4d66-8dc8-4b91463a069f
       version: -1
       name: Wait
       description: Sleep for X seconds
@@ -751,10 +751,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 1e960585-6ab9-45a6-8c0a-1ac547e2222e
+    taskid: 5f4ee37f-f6f4-4bb4-8656-9368afe3d1f0
     type: regular
     task:
-      id: 1e960585-6ab9-45a6-8c0a-1ac547e2222e
+      id: 5f4ee37f-f6f4-4bb4-8656-9368afe3d1f0
       version: -1
       name: Set Date
       description: |
@@ -787,10 +787,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: 5a7fd192-a106-48fd-84cb-9ad42ebe792b
+    taskid: c3567a37-5ac7-4374-8b4b-2811d84e89b5
     type: regular
     task:
-      id: 5a7fd192-a106-48fd-84cb-9ad42ebe792b
+      id: c3567a37-5ac7-4374-8b4b-2811d84e89b5
       version: -1
       name: Get all sites
       description: Returns all sites that match the specified criteria.
@@ -819,10 +819,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: 548c35f4-cf2e-41b5-8ccc-b11b8b6ba58d
+    taskid: b454326e-04cd-46eb-80ba-65527d313896
     type: regular
     task:
-      id: 548c35f4-cf2e-41b5-8ccc-b11b8b6ba58d
+      id: b454326e-04cd-46eb-80ba-65527d313896
       version: -1
       name: Get Site
       description: Returns a site, by site ID.
@@ -858,10 +858,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: 8223ae40-72e6-4405-8fd5-0758c13a6cf5
+    taskid: 69cc903c-3e8f-439b-8b30-d63022cb673f
     type: condition
     task:
-      id: 8223ae40-72e6-4405-8fd5-0758c13a6cf5
+      id: 69cc903c-3e8f-439b-8b30-d63022cb673f
       version: -1
       name: Verify result
       type: condition
@@ -896,10 +896,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: 997449ae-c84e-4e2c-8397-dab7ff8bb0c5
+    taskid: 67aa31d3-d2fb-4882-80c0-3f0dbdd9cf28
     type: condition
     task:
-      id: 997449ae-c84e-4e2c-8397-dab7ff8bb0c5
+      id: 67aa31d3-d2fb-4882-80c0-3f0dbdd9cf28
       version: -1
       name: Verify Results
       type: condition
@@ -934,10 +934,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: 3cc8814e-0de4-4e87-8937-851a8066a1c6
+    taskid: 8cf5f85b-70c3-45d5-8289-89d4978bc422
     type: title
     task:
-      id: 3cc8814e-0de4-4e87-8937-851a8066a1c6
+      id: 8cf5f85b-70c3-45d5-8289-89d4978bc422
       version: -1
       name: Done
       type: title
@@ -961,10 +961,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: b196304e-90e1-4c2a-8fb6-7994113d0af1
+    taskid: 927be55e-a724-4e93-818e-ab44c383342a
     type: regular
     task:
-      id: b196304e-90e1-4c2a-8fb6-7994113d0af1
+      id: 927be55e-a724-4e93-818e-ab44c383342a
       version: -1
       name: Delete Threat from Context
       description: Delete field from context
@@ -996,10 +996,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: bdfc0f30-37f1-4709-8942-fb67f68b8f2e
+    taskid: 016cb1a3-e0d8-4b88-819f-364cafbabf3d
     type: regular
     task:
-      id: bdfc0f30-37f1-4709-8942-fb67f68b8f2e
+      id: 016cb1a3-e0d8-4b88-819f-364cafbabf3d
       version: -1
       name: Get Hash
       description: Get file reputation by a SHA1 hash.
@@ -1031,10 +1031,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: b90c7d1b-c201-4f9a-8548-46ea3591db02
+    taskid: 696a0a0a-1942-4b27-8d4d-1cff10f1e4a6
     type: condition
     task:
-      id: b90c7d1b-c201-4f9a-8548-46ea3591db02
+      id: 696a0a0a-1942-4b27-8d4d-1cff10f1e4a6
       version: -1
       name: Verify outputs
       type: condition
@@ -1069,10 +1069,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: fa56023a-7e7d-404b-82c4-df32984960df
+    taskid: a2924d47-20ad-47c4-839f-0fb34ab2acae
     type: regular
     task:
-      id: fa56023a-7e7d-404b-82c4-df32984960df
+      id: a2924d47-20ad-47c4-839f-0fb34ab2acae
       version: -1
       name: Get Exclusions
       description: Lists all exclusion items that match the specified input filter.
@@ -1108,10 +1108,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: 69720869-7bee-4c72-8973-64588586c522
+    taskid: 1e1df5fe-d6d8-43a5-85aa-4648404dbf7e
     type: condition
     task:
-      id: 69720869-7bee-4c72-8973-64588586c522
+      id: 1e1df5fe-d6d8-43a5-85aa-4648404dbf7e
       version: -1
       name: Verify outputs
       type: condition
@@ -1149,10 +1149,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: 02617b33-c4d2-4db6-833c-bf5614fed4ca
+    taskid: 7565e00b-9bed-402d-8437-52243ec661fc
     type: condition
     task:
-      id: 02617b33-c4d2-4db6-833c-bf5614fed4ca
+      id: 7565e00b-9bed-402d-8437-52243ec661fc
       version: -1
       name: Verify outputs
       type: condition
@@ -1190,10 +1190,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: 0cf99fd1-d864-40d3-89d5-e70e42bc4590
+    taskid: a4fa62ba-cd9a-4bb0-8cdc-970c677c80b9
     type: title
     task:
-      id: 0cf99fd1-d864-40d3-89d5-e70e42bc4590
+      id: a4fa62ba-cd9a-4bb0-8cdc-970c677c80b9
       version: -1
       name: Agents Done
       type: title
@@ -1220,10 +1220,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "46":
     id: "46"
-    taskid: 00ef95cb-8bf8-4e42-80e1-73b7315648e5
+    taskid: 5c5bcf0d-b3d1-41d6-8b9c-f2ce54979cf1
     type: title
     task:
-      id: 00ef95cb-8bf8-4e42-80e1-73b7315648e5
+      id: 5c5bcf0d-b3d1-41d6-8b9c-f2ce54979cf1
       version: -1
       name: Agents
       type: title
@@ -1250,10 +1250,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "47":
     id: "47"
-    taskid: 0136470b-2240-47ad-899e-ad21096b31fa
+    taskid: 9326ac52-bfbd-4cfd-88ab-3fbefa3acae6
     type: condition
     task:
-      id: 0136470b-2240-47ad-899e-ad21096b31fa
+      id: 9326ac52-bfbd-4cfd-88ab-3fbefa3acae6
       version: -1
       name: Verify Results
       type: condition
@@ -1288,10 +1288,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "52":
     id: "52"
-    taskid: 9b8c4eef-cd70-43c8-8366-c1d4e45ecc19
+    taskid: 70457d0f-0969-4a70-8a3e-375d79f4f9df
     type: regular
     task:
-      id: 9b8c4eef-cd70-43c8-8366-c1d4e45ecc19
+      id: 70457d0f-0969-4a70-8a3e-375d79f4f9df
       version: -1
       name: Get installed applications
       description: Get the installed applications for a specific Agent.
@@ -1327,10 +1327,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "53":
     id: "53"
-    taskid: 7dc2a1a0-4711-4e06-87e0-207d49b44687
+    taskid: 0b75a25a-e0c0-4e79-80b0-c69aea43baeb
     type: regular
     task:
-      id: 7dc2a1a0-4711-4e06-87e0-207d49b44687
+      id: 0b75a25a-e0c0-4e79-80b0-c69aea43baeb
       version: -1
       name: Initiate endpoint scan
       description: Initiate the endpoint virus scan on provided agent IDs
@@ -1366,10 +1366,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "54":
     id: "54"
-    taskid: 0fe5bb27-3f28-48f0-8866-1a78c2593226
+    taskid: ee769841-4cc7-4818-8d48-f967499c314e
     type: regular
     task:
-      id: 0fe5bb27-3f28-48f0-8866-1a78c2593226
+      id: ee769841-4cc7-4818-8d48-f967499c314e
       version: -1
       name: Update threat status
       description: Updates the incident status to a group of threats that match the
@@ -1408,10 +1408,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "55":
     id: "55"
-    taskid: 192ab9c4-0a83-418b-8013-d79e0227c631
+    taskid: b1193842-298b-4212-8dce-b1c862dcf0b9
     type: regular
     task:
-      id: 192ab9c4-0a83-418b-8013-d79e0227c631
+      id: b1193842-298b-4212-8dce-b1c862dcf0b9
       version: -1
       name: Update threats verdict
       description: Updates the analyst verdict to a group of threats that match the
@@ -1450,10 +1450,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "56":
     id: "56"
-    taskid: e8f697a8-e22c-4025-8c66-7b2f02d811e3
+    taskid: 4c4c1f02-a892-4112-85f2-512d140a2517
     type: regular
     task:
-      id: e8f697a8-e22c-4025-8c66-7b2f02d811e3
+      id: 4c4c1f02-a892-4112-85f2-512d140a2517
       version: -1
       name: Write threat note
       description: Add a threat note to one or more threats. Relevant for API version
@@ -1492,10 +1492,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "57":
     id: "57"
-    taskid: a9326a18-33d9-472e-8bea-b589862a44a4
+    taskid: 5dd0ba0d-3945-4df9-8cc4-d60617afcddc
     type: regular
     task:
-      id: a9326a18-33d9-472e-8bea-b589862a44a4
+      id: 5dd0ba0d-3945-4df9-8cc4-d60617afcddc
       version: -1
       name: Fetch threat file
       description: Fetch a file associated with the threat that matches the filter.
@@ -1533,10 +1533,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "59":
     id: "59"
-    taskid: 2996102b-8394-453d-87eb-98db33123a59
+    taskid: 878edd42-8d5f-4089-8bb2-0e4a05ea1370
     type: title
     task:
-      id: 2996102b-8394-453d-87eb-98db33123a59
+      id: 878edd42-8d5f-4089-8bb2-0e4a05ea1370
       version: -1
       name: Alerts
       type: title
@@ -1563,10 +1563,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "60":
     id: "60"
-    taskid: 540cb548-bab8-423e-8e0a-1c6f25fe359f
+    taskid: 43d833d3-52fc-4d2e-85fa-cc2115c53931
     type: regular
     task:
-      id: 540cb548-bab8-423e-8e0a-1c6f25fe359f
+      id: 43d833d3-52fc-4d2e-85fa-cc2115c53931
       version: -1
       name: Get alerts
       description: Get the list of alerts that matches the filter provided. Relevant
@@ -1587,7 +1587,7 @@ tasks:
             args:
               variation:
                 value:
-                  simple: 13 days ago
+                  simple: 1 year ago
       created_until:
         complex:
           root: TimeNow
@@ -1611,10 +1611,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "61":
     id: "61"
-    taskid: 14d9a515-0eaf-44ad-88e8-e97925073d48
+    taskid: cdbf26d9-69fe-4d92-82c5-62eefc8189d8
     type: regular
     task:
-      id: 14d9a515-0eaf-44ad-88e8-e97925073d48
+      id: cdbf26d9-69fe-4d92-82c5-62eefc8189d8
       version: -1
       name: Update alert status
       description: Updates the incident status to a group of alerts that match the
@@ -1653,10 +1653,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "62":
     id: "62"
-    taskid: 33e530ea-04e5-4a69-8c8f-2515bd422204
+    taskid: 31cb70ad-78f3-4916-84c6-21152eb05989
     type: regular
     task:
-      id: 33e530ea-04e5-4a69-8c8f-2515bd422204
+      id: 31cb70ad-78f3-4916-84c6-21152eb05989
       version: -1
       name: Update alert verdict
       description: Updates the analyst verdict to a group of alerts that match the
@@ -1695,10 +1695,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "63":
     id: "63"
-    taskid: a8e66ce5-bc60-4b20-830a-c1376c9e23b7
+    taskid: dc2ebd93-78b1-4243-838d-fb86a29af41e
     type: title
     task:
-      id: a8e66ce5-bc60-4b20-830a-c1376c9e23b7
+      id: dc2ebd93-78b1-4243-838d-fb86a29af41e
       version: -1
       name: Star rules
       type: title
@@ -1725,10 +1725,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "64":
     id: "64"
-    taskid: 5606d1cc-29f9-4c77-8ab6-9c63826a99d1
+    taskid: 5ec1a40f-ff72-4ed7-8187-e54316a0ef4f
     type: regular
     task:
-      id: 5606d1cc-29f9-4c77-8ab6-9c63826a99d1
+      id: 5ec1a40f-ff72-4ed7-8187-e54316a0ef4f
       version: -1
       name: Get star rules
       description: Get a list of Custom Detection Rules for a given scope. Relevant
@@ -1761,10 +1761,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "65":
     id: "65"
-    taskid: 166e9007-b3ec-4bc7-80fe-8d551e617469
+    taskid: d8d55807-2347-4a05-80e9-0515f3841e25
     type: regular
     task:
-      id: 166e9007-b3ec-4bc7-80fe-8d551e617469
+      id: d8d55807-2347-4a05-80e9-0515f3841e25
       version: -1
       name: Create star rule
       description: Creates a custom STAR rule. Relevant for API version 2.1
@@ -1814,10 +1814,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "66":
     id: "66"
-    taskid: 4398bb70-3e60-4fa8-8fea-a730a3f29d7d
+    taskid: 701739e9-a6d1-42c7-8aa0-b04fdaa7e185
     type: regular
     task:
-      id: 4398bb70-3e60-4fa8-8fea-a730a3f29d7d
+      id: 701739e9-a6d1-42c7-8aa0-b04fdaa7e185
       version: -1
       name: Update star rule
       description: Updates a custom STAR rule. Relevant for API version 2.1
@@ -1869,10 +1869,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "67":
     id: "67"
-    taskid: d0e531ec-8ead-4059-8906-701a22f88b38
+    taskid: fced37db-f543-44d5-841d-c1d3dec40bda
     type: regular
     task:
-      id: d0e531ec-8ead-4059-8906-701a22f88b38
+      id: fced37db-f543-44d5-841d-c1d3dec40bda
       version: -1
       name: Disable star rule
       description: Disable Custom Detection Rules that match the specified input filter.
@@ -1905,10 +1905,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "68":
     id: "68"
-    taskid: 697f94d8-5941-4793-80ce-6be55c91efc7
+    taskid: 50f8393a-4b8c-44bc-8607-81720391cd7b
     type: regular
     task:
-      id: 697f94d8-5941-4793-80ce-6be55c91efc7
+      id: 50f8393a-4b8c-44bc-8607-81720391cd7b
       version: -1
       name: Enable star rule
       description: Activate Custom Detection Rules that match the specified input
@@ -1941,10 +1941,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "69":
     id: "69"
-    taskid: eef9b8d2-331c-4030-8e93-0bc99fb8cb35
+    taskid: e6ab90d8-e953-4c18-8ab1-5b8f639c0d19
     type: regular
     task:
-      id: eef9b8d2-331c-4030-8e93-0bc99fb8cb35
+      id: e6ab90d8-e953-4c18-8ab1-5b8f639c0d19
       version: -1
       name: Delete star rule
       description: Deletes Custom Detection Rules that match the specified input filter.
@@ -1977,10 +1977,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "70":
     id: "70"
-    taskid: 907baaad-3ed2-4e9e-82d0-cff195d9db78
+    taskid: 1b345f8c-41b2-4bf8-876a-5ee660c9f6b9
     type: title
     task:
-      id: 907baaad-3ed2-4e9e-82d0-cff195d9db78
+      id: 1b345f8c-41b2-4bf8-876a-5ee660c9f6b9
       version: -1
       name: Power query
       type: title
@@ -2007,10 +2007,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "71":
     id: "71"
-    taskid: 0140a36d-9f1f-4cd6-873e-c0f41f045dad
+    taskid: fe4ef458-cdf9-42a4-854e-0abe388a015a
     type: regular
     task:
-      id: 0140a36d-9f1f-4cd6-873e-c0f41f045dad
+      id: fe4ef458-cdf9-42a4-854e-0abe388a015a
       version: -1
       name: Create power query
       description: Start a Deep Visibility Power Query, get back status and potential
@@ -2060,10 +2060,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "72":
     id: "72"
-    taskid: 3e3a64a6-2cc7-44c5-8d98-1d50137c6cf3
+    taskid: 13c357b3-59d2-4739-838a-d4265bd15735
     type: regular
     task:
-      id: 3e3a64a6-2cc7-44c5-8d98-1d50137c6cf3
+      id: 13c357b3-59d2-4739-838a-d4265bd15735
       version: -1
       name: Get Agent
       description: Get details of an agent by its ID.
@@ -2099,10 +2099,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "73":
     id: "73"
-    taskid: ec386ec7-9505-4015-8d13-1e2e5f07bb27
+    taskid: ccd96ef5-1728-4ff6-882d-e96e0b118d1f
     type: regular
     task:
-      id: ec386ec7-9505-4015-8d13-1e2e5f07bb27
+      id: ccd96ef5-1728-4ff6-882d-e96e0b118d1f
       version: -1
       name: Get Agent
       description: Get details of an agent by its ID.
@@ -2138,10 +2138,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "74":
     id: "74"
-    taskid: e947d96f-517c-4ffd-8ec3-3a17f9a830e0
+    taskid: 636a5f7c-8926-43ac-808e-0d25ae1251d8
     type: regular
     task:
-      id: e947d96f-517c-4ffd-8ec3-3a17f9a830e0
+      id: 636a5f7c-8926-43ac-808e-0d25ae1251d8
       version: -1
       name: Delete previous star rule
       description: Deletes Custom Detection Rules that match the specified input filter.
@@ -2175,10 +2175,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "75":
     id: "75"
-    taskid: 8f5dd966-f82b-4af6-8e25-5a57a7b74242
+    taskid: df67ad25-fb23-4ccf-806a-8efd616d841c
     type: regular
     task:
-      id: 8f5dd966-f82b-4af6-8e25-5a57a7b74242
+      id: df67ad25-fb23-4ccf-806a-8efd616d841c
       version: -1
       name: Delete star rules context
       description: |-
@@ -2186,7 +2186,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: DeleteContext
       type: regular
       iscommand: false

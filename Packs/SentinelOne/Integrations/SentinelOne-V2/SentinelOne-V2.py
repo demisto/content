@@ -1,13 +1,12 @@
 import io
 import json
 import traceback
-from datetime import datetime
 import zipfile
+from datetime import datetime
 from typing import Callable, List, Optional, Tuple
 
-import urllib3
-
 import demistomock as demisto  # noqa: F401
+import urllib3
 from CommonServerPython import *  # noqa: F401
 from dateutil.parser import parse
 
@@ -436,16 +435,19 @@ class Client(BaseClient):
         response = self._http_request(method='POST', url_suffix=endpoint_url, json_data=payload)
         return response.get('data', {}).get('queryId')
 
-    def get_events_request(self, query_id=None, limit=None):
+    def get_events_request(self, query_id=None, limit=None, cursor=None):
         endpoint_url = 'dv/events'
 
         params = {
             'query_id': query_id,
+            'cursor': cursor,
             'limit': limit
         }
 
         response = self._http_request(method='GET', url_suffix=endpoint_url, params=params)
-        return response.get('data', {})
+        events = response.get('data', {})
+        pagination = response.get('pagination')
+        return events, pagination
 
     def get_processes_request(self, query_id=None, limit=None):
         endpoint_url = 'dv/events/process'
@@ -2348,14 +2350,21 @@ def list_agents_command(client: Client, args: dict) -> CommandResults:
     List all agents matching the input filter
     """
     # Get arguments
-    query_params = assign_params(
+    query_params = {}
+    if args.get('params'):
+        param_list = argToList(args.get('params', ''))
+        for field_value in param_list:
+            f = field_value.split('=')[0]
+            v = field_value.split('=')[1]
+        query_params.update({f: v})
+    query_params.update(assign_params(
         active_threats=args.get('min_active_threats'),
         computer_name=args.get('computer_name'),
         scan_status=args.get('scan_status'),
         osTypes=args.get('os_type'),
         created_at=args.get('created_at'),
         limit=int(args.get('limit', 10)),
-    )
+    ))
 
     # Make request and get raw response
     agents = client.list_agents_request(query_params)
@@ -2561,8 +2570,13 @@ def get_events(client: Client, args: dict) -> Union[CommandResults, str]:
     event_standards = []
     query_id = args.get('query_id')
     limit = int(args.get('limit', 50))
+    cursor = args.get('cursor', None)
 
-    events = client.get_events_request(query_id, limit)
+    events, pagination = client.get_events_request(query_id, limit, cursor)
+    context = {}
+    if pagination and pagination.get('nextCursor') is not None:
+        demisto.results("Use the below cursor value to get the next page events \n {}". format(pagination['nextCursor']))
+        context.update({'SentinelOne.Cursor.Event': pagination['nextCursor']})
     for event in events:
         contents.append({
             'EventType': event.get('eventType'),
@@ -2574,6 +2588,8 @@ def get_events(client: Client, args: dict) -> Union[CommandResults, str]:
             'ProcessID': event.get('pid'),
             'ProcessUID': event.get('srcProcUid') if IS_VERSION_2_1 else event.get('processUniqueKey'),
             'ProcessName': event.get('processName'),
+            'FilePath': event.get('fileFullName'),
+            'IPAddress': event.get('agentIp'),
             'MD5': event.get('md5'),
             'SHA256': event.get('sha256'),
             'SourceIP': event.get('srcIp'),
@@ -2594,10 +2610,10 @@ def get_events(client: Client, args: dict) -> Union[CommandResults, str]:
             'ID': event.get('pid'),
         })
     # using the CommandResults.to_context in order to get the correct outputs key
-    context = CommandResults(
+    context.update(CommandResults(
         outputs_prefix='SentinelOne.Event',
         outputs_key_field=['ProcessID', 'EventID'],
-        outputs=contents).to_context().get('EntryContext', {})
+        outputs=contents).to_context().get('EntryContext', {}))
 
     context.update({'Event(val.ID && val.ID === obj.ID)': event_standards})
 

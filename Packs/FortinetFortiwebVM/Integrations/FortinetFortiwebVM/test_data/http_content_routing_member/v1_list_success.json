@@ -1,0 +1,24 @@
+[
+    {
+        "id": "2",
+        "_id": "2",
+        "defaultpage": "1",
+        "default": "Yes",
+        "http_content_routing_policy": "bnvb",
+        "inheritWebProtectionProfile": true,
+        "name": "",
+        "url": "#navigate/InlineProtectionProfile/",
+        "profile": ""
+    },
+    {
+        "id": "1",
+        "_id": "1",
+        "defaultpage": "0",
+        "default": "No",
+        "http_content_routing_policy": "1234",
+        "inheritWebProtectionProfile": true,
+        "name": "",
+        "url": "#navigate/InlineProtectionProfile/",
+        "profile": ""
+    }
+]

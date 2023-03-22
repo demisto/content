@@ -1,9 +1,8 @@
 import os
 import json
 import enum
-from typing import List
 
-IGNORED_FILES = ['__init__.py', 'ApiModules', 'NonSupported']  # files to ignore inside Packs folder
+IGNORED_FILES = ['__init__.py', 'ApiModules', 'NonSupported', 'index']  # files to ignore inside Packs folder
 CONTENT_ROOT_PATH = os.path.abspath(os.path.join(__file__, '../../..'))  # full path to content root repo
 PACKS_FOLDER = "Packs"  # name of base packs folder inside content repo
 PACKS_FULL_PATH = os.path.join(CONTENT_ROOT_PATH, PACKS_FOLDER)  # full path to Packs folder in content repo
@@ -19,7 +18,6 @@ BASE_PACK_DEPENDENCY_DICT = {
             'certification': ''
         }
 }
-
 
 SIEM_RULES_OBJECTS = ['ParsingRule', 'ModelingRule', 'CorrelationRule', 'XDRCTemplate']
 XSIAM_MP = "marketplacev2"
@@ -46,6 +44,7 @@ class BucketUploadFlow(object):
     PREPARE_CONTENT_FOR_TESTING = "prepare_content_for_testing"
     UPLOAD_PACKS_TO_MARKETPLACE_STORAGE = "upload_packs_to_marketplace_storage"
     SUCCESSFUL_PACKS = "successful_packs"
+    SUCCESSFUL_UPLOADED_DEPENDENCIES_ZIP_PACKS = "successful_uploaded_dependencies_zip_packs"
     SUCCESSFUL_PRIVATE_PACKS = "successful_private_packs"
     FAILED_PACKS = "failed_packs"
     STATUS = "status"
@@ -88,18 +87,21 @@ class GCPConfig(object):
     CORE_PACK_FILE_NAME = "corepacks.json"  # core packs file name
     BUILD_BUCKET_PACKS_ROOT_PATH = 'content/builds/{branch}/{build}/{marketplace}/content/packs'
 
-    with open(os.path.join(os.path.dirname(__file__), 'core_packs_list.json'), 'r') as core_packs_list_file:
-        CORE_PACKS_LIST = json.load(core_packs_list_file)
-    with open(os.path.join(os.path.dirname(__file__), 'core_packs_mpv2_list.json'), 'r') as core_packs_list_file:
-        CORE_PACKS_MPV2_LIST = json.load(core_packs_list_file)
-    with open(os.path.join(os.path.dirname(__file__), 'core_packs_xpanse_list.json'), 'r') as core_packs_list_file:
-        CORE_PACKS_XPANSE_LIST = json.load(core_packs_list_file)
+    with open(os.path.join(os.path.dirname(__file__), 'core_packs_list.json'), 'r') as core_packs_xsoar_list_file:
+        packs_list = json.load(core_packs_xsoar_list_file)
+        CORE_PACKS_LIST = packs_list.get('core_packs_list')
+        CORE_PACKS_LIST_TO_UPDATE = packs_list.get('update_core_packs_list')
 
-    with open(os.path.join(os.path.dirname(__file__), 'upgrade_core_packs_list.json'), 'r') as upgrade_core_packs_list:
-        packs_list = json.load(upgrade_core_packs_list)
-        CORE_PACKS_LIST_TO_UPDATE = packs_list.get("update_core_packs_list")
-    CORE_PACKS_MPV2_LIST_TO_UPDATE: List[str] = []
-    CORE_PACKS_XPANSE_LIST_TO_UPDATE: List[str] = []
+    with open(os.path.join(os.path.dirname(__file__), 'core_packs_mpv2_list.json'), 'r') as core_packs_xsiam_list_file:
+        packs_list_xsiam = json.load(core_packs_xsiam_list_file)
+        CORE_PACKS_MPV2_LIST = packs_list_xsiam.get('core_packs_list')
+        CORE_PACKS_MPV2_LIST_TO_UPDATE = packs_list_xsiam.get('update_core_packs_list')
+
+    with open(os.path.join(os.path.dirname(__file__), 'core_packs_xpanse_list.json'),
+              'r') as core_packs_xpanse_list_file:
+        packs_list_xpanse = json.load(core_packs_xpanse_list_file)
+        CORE_PACKS_XPANSE_LIST = packs_list_xpanse.get('core_packs_list')
+        CORE_PACKS_XPANSE_LIST_TO_UPDATE = packs_list_xpanse.get('update_core_packs_list')
 
     @classmethod
     def get_core_packs(cls, marketplace):
@@ -221,6 +223,7 @@ class PackFolders(enum.Enum):
     TRIGGERS = 'Triggers'
     WIZARDS = 'Wizards'
     XDRC_TEMPLATES = 'XDRCTemplates'
+    LAYOUT_RULES = 'LayoutRules'
 
     @classmethod
     def pack_displayed_items(cls):
@@ -232,8 +235,8 @@ class PackFolders(enum.Enum):
             PackFolders.GENERIC_DEFINITIONS.value, PackFolders.GENERIC_FIELDS.value, PackFolders.GENERIC_MODULES.value,
             PackFolders.GENERIC_TYPES.value, PackFolders.LISTS.value, PackFolders.JOBS.value,
             PackFolders.PARSING_RULES.value, PackFolders.MODELING_RULES.value, PackFolders.CORRELATION_RULES.value,
-            PackFolders.XSIAM_DASHBOARDS.value, PackFolders.XSIAM_REPORTS.value, PackFolders.TRIGGERS.value,
-            PackFolders.WIZARDS.value, PackFolders.XDRC_TEMPLATES.value,
+            PackFolders.XSIAM_DASHBOARDS.value, PackFolders.XSIAM_REPORTS.value,
+            PackFolders.WIZARDS.value, PackFolders.XDRC_TEMPLATES.value, PackFolders.LAYOUT_RULES.value
         }
 
     @classmethod
@@ -252,7 +255,7 @@ class PackFolders(enum.Enum):
             PackFolders.GENERIC_MODULES.value, PackFolders.GENERIC_TYPES.value, PackFolders.LISTS.value,
             PackFolders.PREPROCESS_RULES.value, PackFolders.JOBS.value, PackFolders.XSIAM_DASHBOARDS.value,
             PackFolders.XSIAM_REPORTS.value, PackFolders.TRIGGERS.value, PackFolders.WIZARDS.value,
-            PackFolders.XDRC_TEMPLATES.value,
+            PackFolders.XDRC_TEMPLATES.value, PackFolders.LAYOUT_RULES.value
         }
 
 
@@ -305,6 +308,7 @@ PACK_FOLDERS_TO_ID_SET_KEYS = {
     PackFolders.TRIGGERS.value: "Triggers",
     PackFolders.WIZARDS.value: "Wizards",
     PackFolders.XDRC_TEMPLATES.value: "XDRCTemplates",
+    PackFolders.LAYOUT_RULES.value: "LayoutRules"
 }
 
 
@@ -313,6 +317,7 @@ class PackStatus(enum.Enum):
 
     """
     SUCCESS = "Successfully uploaded pack data to gcs"
+    SUCCESS_CREATING_DEPENDENCIES_ZIP_UPLOADING = "Successfully uploaded pack while creating dependencies zip"
     FAILED_LOADING_USER_METADATA = "Failed in loading user-defined pack metadata"
     FAILED_IMAGES_UPLOAD = "Failed to upload pack integration images to gcs"
     FAILED_AUTHOR_IMAGE_UPLOAD = "Failed to upload pack author image to gcs"
@@ -388,8 +393,8 @@ RN_HEADER_TO_ID_SET_KEYS = {
     'Triggers Recommendations': 'Triggers',
     'Wizards': 'Wizards',
     'XDRC Templates': 'XDRCTemplates',
+    'Layout Rules': 'LayoutRules'
 }
-
 
 # the format is defined in issue #19786, may change in the future
 CONTENT_ITEM_NAME_MAPPING = {
@@ -420,6 +425,7 @@ CONTENT_ITEM_NAME_MAPPING = {
     PackFolders.TRIGGERS.value: "trigger",
     PackFolders.WIZARDS.value: "wizard",
     PackFolders.XDRC_TEMPLATES.value: "xdrctemplate",
+    PackFolders.LAYOUT_RULES.value: "layoutrule"
 }
 
 ITEMS_NAMES_TO_DISPLAY_MAPPING = {
@@ -447,7 +453,7 @@ ITEMS_NAMES_TO_DISPLAY_MAPPING = {
     CONTENT_ITEM_NAME_MAPPING[PackFolders.CORRELATION_RULES.value]: "Correlation Rule",
     CONTENT_ITEM_NAME_MAPPING[PackFolders.XSIAM_DASHBOARDS.value]: "XSIAM Dashboard",
     CONTENT_ITEM_NAME_MAPPING[PackFolders.XSIAM_REPORTS.value]: "XSIAM Report",
-    CONTENT_ITEM_NAME_MAPPING[PackFolders.TRIGGERS.value]: "Trigger",
     CONTENT_ITEM_NAME_MAPPING[PackFolders.WIZARDS.value]: "Wizard",
     CONTENT_ITEM_NAME_MAPPING[PackFolders.XDRC_TEMPLATES.value]: "XDRC Template",
+    CONTENT_ITEM_NAME_MAPPING[PackFolders.LAYOUT_RULES.value]: "Layout Rule"
 }

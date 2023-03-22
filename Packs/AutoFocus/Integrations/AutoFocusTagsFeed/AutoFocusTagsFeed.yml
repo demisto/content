@@ -2,7 +2,7 @@ category: Data Enrichment & Threat Intelligence
 commonfields:
   id: AutoFocusTagsFeed
   version: -1
-defaultEnabled: false
+defaultEnabled: true
 configuration:
 - display: AutoFocus Endpoint URL
   name: url
@@ -120,7 +120,7 @@ script:
     description: Gets indicators from the feed.
     execution: false
     name: autofocus-tags-feed-get-indicators
-  dockerimage: demisto/python3:3.10.5.31928
+  dockerimage: demisto/python3:3.10.10.48392
   feed: true
   isfetch: false
   longRunning: false

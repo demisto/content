@@ -70,13 +70,16 @@ class MsGraphClient:
     def __init__(self, self_deployed, tenant_id, auth_and_token_url, enc_key,
                  app_name, base_url, use_ssl, proxy, ok_codes, mailbox_to_fetch, folder_to_fetch, first_fetch_interval,
                  emails_fetch_limit, timeout=10, endpoint='com', certificate_thumbprint=None, private_key=None,
-                 display_full_email_body=False, mark_fetched_read=False, look_back=0):
+                 display_full_email_body=False, mark_fetched_read=False, look_back=0,
+                 managed_identities_client_id=None):
 
         self.ms_client = MicrosoftClient(self_deployed=self_deployed, tenant_id=tenant_id, auth_id=auth_and_token_url,
                                          enc_key=enc_key, app_name=app_name, base_url=base_url, verify=use_ssl,
                                          proxy=proxy, ok_codes=ok_codes, timeout=timeout, endpoint=endpoint,
                                          certificate_thumbprint=certificate_thumbprint, private_key=private_key,
-                                         retry_on_rate_limit=True)
+                                         retry_on_rate_limit=True,
+                                         managed_identities_client_id=managed_identities_client_id,
+                                         managed_identities_resource_uri=Resources.graph)
 
         self._mailbox_to_fetch = mailbox_to_fetch
         self._folder_to_fetch = folder_to_fetch
@@ -950,7 +953,7 @@ class MsGraphClient:
             'name': parsed_email.get('Subject'),
             'details': body,
             'labels': MsGraphClient._parse_email_as_labels(parsed_email),
-            'occurred': parsed_email.get('ModifiedTime'),
+            'occurred': parsed_email.get('ReceivedTime'),
             'attachment': parsed_email.get('Attachments', []),
             'rawJSON': json.dumps(parsed_email),
             'ID': parsed_email.get('ID')  # only used for look-back to identify the email in a unique way
@@ -1803,7 +1806,7 @@ def prepare_args(command, args):
             'body': email_body,
             'body_type': args.get('bodyType', 'html'),
             'flag': args.get('flag', 'notFlagged'),
-            'importance': args.get('importance', 'Low'),
+            'importance': args.get('importance', 'Normal'),
             'internet_message_headers': argToList(args.get('headers')),
             'attach_ids': argToList(args.get('attachIDs')),
             'attach_names': argToList(args.get('attachNames')),
@@ -2061,7 +2064,6 @@ def main():
     """ COMMANDS MANAGER / SWITCH PANEL """
     args: dict = demisto.args()
     params: dict = demisto.params()
-    self_deployed: bool = params.get('self_deployed', False)
     # There're several options for tenant_id & auth_and_token_url due to the recent credentials set supoort enhancment.
     tenant_id: str = params.get('tenant_id', '') or params.get('_tenant_id', '') or (params.get('creds_tenant_id')
                                                                                      or {}).get('password', '')
@@ -2075,18 +2077,23 @@ def main():
     ok_codes: tuple = (200, 201, 202, 204)
     use_ssl: bool = not argToBoolean(params.get('insecure', False))
     proxy: bool = params.get('proxy', False)
-    certificate_thumbprint: str = params.get('certificate_thumbprint', '')
-    private_key: str = params.get('private_key', '')
+    certificate_thumbprint: str = params.get('creds_certificate', {}).get(
+        'identifier', '') or params.get('certificate_thumbprint', '')
+    private_key: str = (replace_spaces_in_credential(params.get('creds_certificate', {}).get('password', ''))
+                        or params.get('private_key', ''))
+    managed_identities_client_id: Optional[str] = get_azure_managed_identities_client_id(params)
+    self_deployed: bool = params.get('self_deployed', False) or managed_identities_client_id is not None
 
-    if not self_deployed and not enc_key:
-        raise DemistoException('Key must be provided. For further information see '
-                               'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
-    elif not enc_key and not (certificate_thumbprint and private_key):
-        raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
-    if not auth_and_token_url:
-        raise Exception('ID must be provided.')
-    if not tenant_id:
-        raise Exception('Token must be provided.')
+    if not managed_identities_client_id:
+        if not self_deployed and not enc_key:
+            raise DemistoException('Key must be provided. For further information see '
+                                   'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
+        elif not enc_key and not (certificate_thumbprint and private_key):
+            raise DemistoException('Key or Certificate Thumbprint and Private Key must be provided.')
+        if not auth_and_token_url:
+            raise Exception('ID must be provided.')
+        if not tenant_id:
+            raise Exception('Token must be provided.')
 
     # params related to mailbox to fetch incidents
     mailbox_to_fetch = params.get('mailbox_to_fetch', '')
@@ -2105,7 +2112,8 @@ def main():
                                           private_key=private_key,
                                           display_full_email_body=display_full_email_body,
                                           mark_fetched_read=mark_fetched_read,
-                                          look_back=look_back
+                                          look_back=look_back,
+                                          managed_identities_client_id=managed_identities_client_id
                                           )
 
     command = demisto.command()

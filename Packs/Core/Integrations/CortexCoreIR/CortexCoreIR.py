@@ -194,6 +194,9 @@ def main():  # pragma: no cover
         elif command == 'core-get-endpoints':
             return_results(get_endpoints_command(client, args))
 
+        elif command == 'core-endpoint-alias-change':
+            return_results(endpoint_alias_change_command(client, **args))
+
         elif command == 'core-isolate-endpoint':
             polling_args = {
                 **args,
@@ -301,9 +304,6 @@ def main():  # pragma: no cover
 
         elif command == 'core-endpoint-scan-abort':
             return_results(endpoint_scan_abort_command(client, args))
-
-        elif command == 'update-remote-system':
-            return_results(update_remote_system_command(client, args))
 
         elif command == 'core-delete-endpoints':
             return_outputs(*delete_endpoints_command(client, args))

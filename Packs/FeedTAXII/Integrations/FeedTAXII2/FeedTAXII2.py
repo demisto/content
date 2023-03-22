@@ -76,7 +76,7 @@ def fetch_indicators_command(
         else None
     )
 
-    if client.collection_to_fetch is None:
+    if not client.collection_to_fetch:
         # fetch all collections
         if client.collections is None:
             raise DemistoException(ERR_NO_COLL)
@@ -141,7 +141,7 @@ def get_indicators_command(
         added_after, _ = parse_date_range(added_after, date_format=TAXII_TIME_FORMAT)
     raw = argToBoolean(raw)
 
-    if client.collection_to_fetch is None:
+    if not client.collection_to_fetch:
         # fetch all collections
         if client.collections is None:
             raise DemistoException(ERR_NO_COLL)
@@ -227,8 +227,9 @@ def main():
     is_incremental_feed = params.get('feedIncremental') or False
     limit = try_parse_integer(params.get("limit") or -1)
     limit_per_request = try_parse_integer(params.get("limit_per_request"))
-    certificate = params.get('certificate', None)
-    key = params.get('key', None)
+    certificate = (replace_spaces_in_credential(params.get('creds_certificate', {}).get('identifier'))
+                   or params.get('certificate', None))
+    key = params.get('creds_certificate', {}).get('password') or params.get('key', None)
     objects_to_fetch = argToList(params.get('objects_to_fetch') or objects_types)
     default_api_root = params.get('default_api_root')
 

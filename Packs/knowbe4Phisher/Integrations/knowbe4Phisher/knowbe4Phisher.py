@@ -320,6 +320,10 @@ class Client(BaseClient):
         self.first_fetch_time = first_fetch_time
         self.max_fetch = max_fetch
 
+        if not headers:
+            headers = dict()
+
+        headers["X-KB4-Integration"] = "Cortex XSOAR PhishER"
         super().__init__(base_url=base_url, verify=verify, headers=headers, proxy=proxy)
 
     def phisher_gql_request(self, payload: str):

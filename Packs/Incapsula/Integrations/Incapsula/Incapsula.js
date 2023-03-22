@@ -114,6 +114,7 @@ var urlDict = {
     'incap-change-logs-collector-configuration':'/api/logscollector/change/status',
     'incap-get-infra-protection-statistics': '/api/v1/infra/stats',
     'incap-get-infra-protection-events': '/api/v1/infra/events',
+    'incap-get-infra-protection-top-items-table': '/api/v1/infra/top-table',
     /*
         Login Protect
      */

@@ -1517,3 +1517,22 @@ get papi property rule json and dump into string
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Akamai.PapiProperty.DefaultRule | unknown | Papi Property default rule | 
+
+### akamai-patch-papi-property-rule-generic
+***
+Generic JSON patch command for Papi Property Default Rule
+
+
+#### Base Command
+
+`akamai-acknowledge-pre-verification-warning`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| change_path | The path that includes enrollmentId and changeId. | Required | 
+
+
+#### Context Output
+
+There is no context output for this command

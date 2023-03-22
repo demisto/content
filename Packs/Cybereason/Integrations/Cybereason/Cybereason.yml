@@ -37,6 +37,11 @@ configuration:
   name: fetch_by
   required: false
   type: 0
+- defaultvalue: "false"
+  display: Check this box to Enable Polling for Cybereason EPP Malops.
+  name: enable_epp_poll
+  required: false
+  type: 8
 description: Endpoint detection and response to manage and query malops, connections and processes.
 display: Cybereason
 name: Cybereason
@@ -940,7 +945,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.8.37233
+  dockerimage: demisto/python3:3.10.10.48392
 tests:
 - Cybereason Test
 fromversion: 5.0.0

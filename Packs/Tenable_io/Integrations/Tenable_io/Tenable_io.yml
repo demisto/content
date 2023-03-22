@@ -1,4 +1,4 @@
-category: Data Enrichment & Threat Intelligence
+category: Vulnerability Management
 commonfields:
   id: Tenable.io
   version: -1
@@ -39,7 +39,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Limit the results to those that have only changed since this time. Format: YYYY-MM-DD'
+      description: 'Limit the results to those that have only changed since this time. Date format will be YYYY-MM-DD format or relational expressions like “7 days ago”.'
       isArray: false
       name: lastModificationDate
       required: false
@@ -400,7 +400,7 @@ script:
     - description: IP Address of the asset
       name: ip
       required: true
-    description: Retrieves details for the specified asset to include custom attributes.
+    description: Retrieves details for the specified asset including custom attributes.
     name: tenable-io-get-asset-details
     outputs:
     - contextPath: TenableIO.AssetDetails.attributes
@@ -435,6 +435,773 @@ script:
     - contextPath: TenableIO.AssetDetails.updated_at
       description: Date the asset was last updated.
       type: date
+  - arguments:
+    - description: Specifies the number of assets per exported chunk. The range is 100-10000. Tenable does not recommend using a chunk size larger than 5000 as the potential for an error increases above this amount.
+      defaultValue: 100
+      name: chunkSize
+      isArray: false
+    - description: The interval in seconds between each poll.
+      defaultValue: 10
+      name: intervalInSeconds
+      required: false
+      isArray: false
+    - description: The timeout for the polling in seconds.
+      defaultValue: 600
+      name: timeOut
+      required: false
+      isArray: false
+    - description: When specified, the results returned in the list are limited to assets created later than the date specified. Date format will be epoch date format or relational expressions like “7 days ago”.'
+      name: createdAt
+      required: false
+      isArray: false
+    - description: When specified, the results returned in the list are limited to assets updated later than the date specified. Date format will be epoch date format or relational expressions like “7 days ago”.'
+      name: updatedAt
+      required: false
+      isArray: false
+    - description: When specified, the results returned in the list are limited to assets terminated later than the date specified. Date format will be epoch date format or relational expressions like “7 days ago”.'
+      name: terminatedAt
+      required: false
+      isArray: false
+    - description: When set to true, returns assets which have any value for the terminatedAt attribute.
+      name: isTerminated
+      required: false
+      isArray: false
+    - description: When specified, the results returned in the list are limited to assets deleted later than the date specified. Date format will be epoch date format or relational expressions like “7 days ago”.'
+      name: deletedAt
+      required: false
+      isArray: false
+    - auto: PREDEFINED
+      default: false
+      description: When set to true, returns assets which have any value for the deletedAt attribute.
+      isArray: false
+      name: isDeleted
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      default: false
+      description: Specifies whether the asset is included in the asset count for the Tenable.io instance. If true, returns only licensed assets. If false, returns only unlicensed assets.
+      isArray: false
+      name: isLicensed
+      predefined:
+      - 'true'
+      - 'false'
+    - description: When specified, the results returned in the list are limited to assets with a first scan time later than the date specified. Date format will be epoch date format or relational expressions like “7 days ago”.'
+      name: firstScanTime
+      required: false
+      isArray: false
+    - description: When specified, the results returned in the list are limited to assets with a last credentialed scan time later than the date specified. Date format will be epoch date format or relational expressions like “7 days ago”.'
+      name: lastAuthenticatedScanTime
+      required: false
+      isArray: false
+    - description: When specified, the results returned in the list are limited to assets with a last assessed time later than the date specified. Date format will be epoch date format or relational expressions like “7 days ago”.'
+      name: lastAssessed
+      required: false
+      isArray: false
+    - auto: PREDEFINED
+      default: false
+      description: If true, returns all assets that have a ServiceNow Sys ID, regardless of value. If false, returns all assets that do not have a ServiceNow Sys ID.
+      isArray: false
+      name: serviceNowSysId
+      predefined:
+      - 'true'
+      - 'false'
+    - description: 'A comma-separated list of sources. Commonly used values are: AWS, NESSUS_AGENT, PVS,NESSUS_SCAN, WAS. When specified, the results returned in the list are limited to assets that have the specified source.'
+      name: sources
+      required: false
+      isArray: true
+    - auto: PREDEFINED
+      default: false
+      description: If true, returns all assets that have a plugin results associated with it.
+      isArray: false
+      name: hasPluginResults
+      predefined:
+      - 'true'
+      - 'false'
+    - description: When specified, the results returned in the list are limited to assets with the specified tag category.
+      name: tagCategory
+      required: false
+      isArray: false
+    - description: When specified, the results returned in the list are limited to assets with the specified tag value.
+      name: tagValue
+      required: false
+      isArray: false
+    - name: exportUuid
+      description: The export UUID.
+      hidden: true
+    polling: true
+    description: Retrieves details for the specified asset to include custom attributes.
+    name: tenable-io-export-assets
+    outputs:
+    - contextPath: TenableIO.Asset.id
+      description: The UUID of the asset in Tenable.io. Use this value as the unique key for the asset.
+      type: String
+    - contextPath: TenableIO.Asset.has_agent
+      description: Specifies whether a Nessus agent scan identified the asset.
+      type: Boolean
+    - contextPath: TenableIO.Asset.has_plugin_results
+      description: Specifies whether the asset has plugin results associated with it.
+      type: Boolean
+    - contextPath: TenableIO.Asset.created_at
+      description: The time and date when Tenable.io created the asset record.
+      type: Date
+    - contextPath: TenableIO.Asset.terminated_at
+      description: The time and date when a user terminated the Amazon Web Service (AWS) virtual machine instance of the asset.
+      type: Date
+    - contextPath: TenableIO.Asset.terminated_by
+      description: The user who terminated the AWS instance of the asset.
+      type: String
+    - contextPath: TenableIO.Asset.updated_at
+      description: The time and date when the asset record was last updated.
+      type: Date
+    - contextPath: TenableIO.Asset.deleted_at
+      description: The time and date when a user deleted the asset record. When a user deletes an asset record, Tenable.io retains the record until the asset ages out of the license count.
+      type: Date
+    - contextPath: TenableIO.Asset.deleted_by
+      description: The user who deleted the asset record.
+      type: String
+    - contextPath: TenableIO.Asset.first_seen
+      description: The time and date when a scan first identified the asset.
+      type: Date
+    - contextPath: TenableIO.Asset.last_seen
+      description: The time and date of the scan that most recently identified the asset.
+      type: Date
+    - contextPath: TenableIO.Asset.first_scan_time
+      description: The time and date of the first scan run against the asset.
+      type: Date
+    - contextPath: TenableIO.Asset.last_scan_time
+      description: The time and date of the last scan run against the asset.
+      type: Date
+    - contextPath: TenableIO.Asset.last_authenticated_scan_date
+      description: The time and date of the last credentialed scan run on the asset.
+      type: Date
+    - contextPath: TenableIO.Asset.last_licensed_scan_date
+      description: The time and date of the last scan that identified the asset as licensed. Tenable.io categorizes an asset as licensed if a scan of that asset has returned results from a non-discovery plugin within the last 90 days.
+      type: Date
+    - contextPath: TenableIO.Asset.last_scan_id
+      description: The UUID of the scan configuration used during the last scan of the asset.
+      type: String
+    - contextPath: TenableIO.Asset.last_schedule_id
+      description: The schedule id for the last scan of the asset.
+      type: String
+    - contextPath: TenableIO.Asset.azure_vm_id
+      description: The unique identifier of the Microsoft Azure virtual machine instance. For more information, see "Accessing and Using Azure VM Unique ID" in the Microsoft Azure documentation.
+      type: String
+    - contextPath: TenableIO.Asset.azure_resource_id
+      description: The unique identifier of the resource in the Azure Resource Manager. For more information, see the Azure Resource Manager Documentation.
+      type: String
+    - contextPath: TenableIO.Asset.gcp_project_id
+      description: The unique identifier of the virtual machine instance in Google Cloud Platform (GCP).
+      type: String
+    - contextPath: TenableIO.Asset.gcp_zone
+      description: The customized name of the project to which the virtual machine instance belongs in GCP. For more information see "Creating and Managing Projects" in the GCP documentation.
+      type: String
+    - contextPath: TenableIO.Asset.gcp_instance_id
+      description: The zone where the virtual machine instance runs in GCP. For more information, see "Regions and Zones" in the GCP documentation.
+      type: String
+    - contextPath: TenableIO.Asset.aws_ec2_instance_ami_id
+      description: The unique identifier of the Linux AMI image in Amazon Elastic Compute Cloud (Amazon EC2). For more information, see the Amazon Elastic Compute Cloud Documentation.
+      type: String
+    - contextPath: TenableIO.Asset.aws_ec2_instance_id
+      description: The unique identifier of the Linux instance in Amazon EC2. For more information, see the Amazon Elastic Compute Cloud Documentation.
+      type: String
+    - contextPath: TenableIO.Asset.agent_uuid
+      description: The unique identifier of the Nessus agent that identified the asset.
+      type: String
+    - contextPath: TenableIO.Asset.bios_uuid
+      description: The BIOS UUID of the asset.
+      type: String
+    - contextPath: TenableIO.Asset.network_id
+      description: The ID of the network object associated with scanners that identified the asset.
+      type: String
+    - contextPath: TenableIO.Asset.network_name
+      description: The ID of the network object associated with scanners that identified the asset.
+      type: String
+    - contextPath: TenableIO.Asset.aws_owner_id
+      description: The canonical user identifier for the AWS account associated with the virtual machine instance.
+      type: String
+    - contextPath: TenableIO.Asset.aws_availability_zone
+      description: The availability zone where Amazon Web Services hosts the virtual machine instance.
+      type: String
+    - contextPath: TenableIO.Asset.aws_region
+      description: The region where AWS hosts the virtual machine instance.
+      type: String
+    - contextPath: TenableIO.Asset.aws_vpc_id
+      description: The unique identifier for the virtual public cloud that hosts the AWS virtual machine instance.
+      type: String
+    - contextPath: TenableIO.Asset.aws_ec2_instance_group_name
+      description: The virtual machine instance's group in AWS.
+      type: String
+    - contextPath: TenableIO.Asset.aws_ec2_instance_state_name
+      description: The state of the virtual machine instance in AWS at the time of the scan.
+      type: String
+    - contextPath: TenableIO.Asset.aws_ec2_instance_type
+      description: The type of instance in AWS EC2.
+      type: String
+    - contextPath: TenableIO.Asset.aws_subnet_id
+      description: The unique identifier of the AWS subnet where the virtual machine instance was running at the time of the scan.
+      type: String
+    - contextPath: TenableIO.Asset.aws_ec2_product_code
+      description: The product code associated with the AMI used to launch the virtual machine instance in AWS EC2.
+      type: String
+    - contextPath: TenableIO.Asset.aws_ec2_name
+      description: The name of the virtual machine instance in AWS EC2.
+      type: String
+    - contextPath: TenableIO.Asset.mcafee_epo_guid
+      description: The unique identifier of the asset in McAfee ePolicy Orchestrator (ePO).
+      type: String
+    - contextPath: TenableIO.Asset.mcafee_epo_agent_guid
+      description: The unique identifier of the McAfee ePO agent that identified the asset.
+      type: String
+    - contextPath: TenableIO.Asset.servicenow_sysid
+      description: The unique record identifier of the asset in ServiceNow.
+      type: String
+    - contextPath: TenableIO.Asset.bigfix_asset_id
+      description: The unique identifiers of the asset in HCL BigFix.
+      type: String
+    - contextPath: TenableIO.Asset.agent_names
+      description: The names of any Nessus agents that scanned and identified the asset.
+      type: String
+    - contextPath: TenableIO.Asset.installed_software
+      description: A list of Common Platform Enumeration (CPE) values that represent software applications a scan identified as present on an asset.
+      type: String
+    - contextPath: TenableIO.Asset.ipv4s
+      description: The IPv4 addresses that scans have associated with the asset record.
+      type: String
+    - contextPath: TenableIO.Asset.ipv6s
+      description: The IPv6 addresses that scans have associated with the asset record.
+      type: String
+    - contextPath: TenableIO.Asset.fqdns
+      description: The fully-qualified domain names that scans have associated with the asset record.
+      type: String
+    - contextPath: TenableIO.Asset.mac_addresses
+      description: The MAC addresses that scans have associated with the asset record.
+      type: String
+    - contextPath: TenableIO.Asset.netbios_names
+      description: The NetBIOS names that scans have associated with the asset record.
+      type: String
+    - contextPath: TenableIO.Asset.operating_systems
+      description: The operating systems that scans have associated with the asset record.
+      type: String
+    - contextPath: TenableIO.Asset.system_types
+      description: The system types as reported by Plugin ID 54615. Possible values include router, general-purpose, scan-host, and embedded.
+      type: String
+    - contextPath: TenableIO.Asset.hostnames
+      description: The hostnames that scans have associated with the asset record.
+      type: String
+    - contextPath: TenableIO.Asset.ssh_fingerprints
+      description: The SSH key fingerprints that scans have associated with the asset record.
+      type: String
+    - contextPath: TenableIO.Asset.qualys_asset_ids
+      description: The Asset ID of the asset in Qualys. For more information, see the Qualys documentation.
+      type: String
+    - contextPath: TenableIO.Asset.qualys_host_ids
+      description: The Host ID of the asset in Qualys. For more information, see the Qualys documentation.
+      type: String
+    - contextPath: TenableIO.Asset.manufacturer_tpm_ids
+      description: The manufacturer's unique identifiers of the Trusted Platform Module (TPM) associated with the asset.
+      type: String
+    - contextPath: TenableIO.Asset.symantec_ep_hardware_keys
+      description: The hardware keys for the asset in Symantec Endpoint Protection.
+      type: String
+    - contextPath: TenableIO.Asset.sources.name
+      description: The name of the entity that reported the asset details. Sources can include sensors, connectors, and API imports.
+      type: String
+    - contextPath: TenableIO.Asset.sources.first_seen
+      description: The ISO timestamp when the source first reported the asset.
+      type: Date
+    - contextPath: TenableIO.Asset.sources.last_seen
+      description: The ISO timestamp when the source last reported the asset.
+      type: Date
+    - contextPath: TenableIO.Asset.tags.uuid
+      description: The UUID of the tag.
+      type: String
+    - contextPath: TenableIO.Asset.tags.key
+      description: The tag category (the first half of the category:value pair).
+      type: String
+    - contextPath: TenableIO.Asset.tags.value
+      description: The tag value (the second half of the category:value pair).
+      type: String
+    - contextPath: TenableIO.Asset.tags.added_by
+      description: The UUID of the user who assigned the tag to the asset.
+      type: String
+    - contextPath: TenableIO.Asset.tags.added_at
+      description: The ISO timestamp when the tag was assigned to the asset.
+      type: Date
+    - contextPath: TenableIO.Asset.network_interfaces.name
+      description: The name of the interface.
+      type: String
+    - contextPath: TenableIO.Asset.network_interfaces.mac_address
+      description: The MAC addresses of the interface.
+      type: String
+    - contextPath: TenableIO.Asset.network_interfaces.ipv6
+      description: One or more IPv6 addresses belonging to the interface.
+      type: String
+    - contextPath: TenableIO.Asset.network_interfaces.fqdns
+      description: One or more FQDNs belonging to the interface.
+      type: String
+    - contextPath: TenableIO.Asset.network_interfaces.ipv4s
+      description: One or more IPv4 addresses belonging to the interface.
+      type: String
+    - contextPath: TenableIO.Asset.acr_score
+      description: The Asset Criticality Rating (ACR) for the asset.
+      type: String
+    - contextPath: TenableIO.Asset.exposure_score
+      description: The Asset Exposure Score (AES) for the asset.
+      type: String
+  - arguments:
+    - description: The number of assets used to chunk the vulnerabilities. The range for number of assets in a chunk is 50-5000.
+      defaultValue: 50
+      name: numAssets
+      isArray: false
+    - description: The interval in seconds between each poll.
+      defaultValue: 10
+      name: intervalInSeconds
+      required: false
+      isArray: false
+    - description: The timeout for the polling in seconds.
+      defaultValue: 50
+      name: timeOut
+      required: false
+      isArray: false
+    - auto: PREDEFINED
+      default: false
+      description: Specifies whether or not to include unlicensed assets.
+      isArray: false
+      name: includeUnlicensed
+      predefined:
+      - 'true'
+      - 'false'
+    - description: When specified, restricts the search for vulnerabilities to assets assigned an IP address within the specified CIDR range.
+      name: cidrRange
+      required: false
+      isArray: false
+    - description: 'When specified, the results returned in the list are limited to vulnerabilities that were first found between the specified date and now. Date format will be epoch date format or relational expressions like “7 days ago”.'
+      name: firstFound
+      required: false
+      isArray: false
+    - description: 'When specified, the results returned in the list are limited to vulnerabilities that were fixed between the specified date and now. Date format will be epoch date format or relational expressions like “7 days ago”.'
+      name: lastFixed
+      required: false
+      isArray: false
+    - description: 'When specified, the results returned in the list are limited to vulnerabilities that were last found between the specified date and now. Date format will be epoch date format or relational expressions like “7 days ago”.'
+      name: lastFound
+      required: false
+      isArray: false
+    - description: The ID of the network object associated with scanners that detected the vulnerabilities you want to export.
+      name: networkId
+      defaultValue: '00000000-0000-0000-0000-000000000000'
+      required: false
+      isArray: false
+    - description: A comma-separated list of plugin IDs for which you want to filter the vulnerabilities.
+      name: pluginId
+      required: false
+      isArray: true
+    - auto: PREDEFINED
+      default: false
+      description: The plugin type for which you want to filter the vulnerabilities. If not set, export includes all vulnerabilities regardless of plugin type.
+      isArray: false
+      name: pluginType
+      predefined:
+      - 'remote'
+      - 'local'
+      - 'combined'
+      - 'settings'
+      - 'summary'
+      - 'third-party'
+      - 'reputation'
+    - description: 'A comma-separated list of severities of the vulnerabilities to include in the export. Defaults to all severity levels. The severity of a vulnerability is defined using the Common Vulnerability Scoring System (CVSS) base score. Supported array values are: info, low, medium, high, critical'
+      name: severity
+      required: false
+      isArray: true
+    - description: 'The start date for the range of data you want to export. Date format will be epoch date format or relational expressions like “7 days ago”. Note: This filter cannot be used in conjunction with the firstFound, lastFound, or lastFixed'
+      name: since
+      required: false
+      isArray: true
+    - description: 'A comma-separated list of states of the vulnerabilities you want the export to include. Supported, case-insensitive values are: open, reopened, fixed. This parameter is required if your request includes firstFound, lastFound, or lastFixed parameters. If your request omits this parameter, the export includes default states open and reopened only.'
+      name: state
+      required: false
+      isArray: true
+    - description: When specified, the results returned in the list are limited to assets with the specified tag category.
+      name: tagCategory
+      required: false
+      isArray: false
+    - description: When specified, the results returned in the list are limited to assets with the specified tag value.
+      name: tagValue
+      required: false
+      isArray: false
+    - auto: PREDEFINED
+      default: false
+      description: 'An operator that determines the limitation on Vulnerability Priority Rating (VPR), scores value specified at vprScoreValue argument. Supported values are: equal, not equal, lt-lesser, lte-lesser than or equal , gt-greater than , gte-greater than or equal'
+      isArray: false
+      name: vprScoreOperator
+      predefined:
+      - 'gte'
+      - 'gt'
+      - 'lte'
+      - 'lt'
+      - 'equal'
+      - 'not equal'
+    - description: 'When specified, the results returned in the list are limited to vulnerabilities with the specified Vulnerability Priority Rating (VPR), score or scores according to the score operator (vprScoreOperator) argument. VPR values range are 0.1-10.0'
+      name: vprScoreValue
+      required: false
+      isArray: true
+    - description: 'When specified, the results returned in the list are limited to vulnerabilities with the specified Vulnerability Priority Rating (VPR) score range. Example value: 2.5-3.5'
+      name: vprScoreRange
+      required: false
+      isArray: false
+    - name: exportUuid
+      description: The export UUID.
+      hidden: true
+    polling: true
+    description: Retrieves details for the specified asset to include custom attributes.
+    name: tenable-io-export-vulnerabilities
+    outputs:
+    - contextPath: TenableIO.Vulnerability.asset.agent_uuid
+      description: The UUID of the agent that performed the scan where the vulnerability was found.
+      type: String
+    - contextPath: TenableIO.Vulnerability.asset.bios_uuid
+      description: The BIOS UUID of the asset where the vulnerability was found.
+      type: String
+    - contextPath: TenableIO.Vulnerability.asset.device_type
+      description: The type of asset where the vulnerability was found.
+      type: String
+    - contextPath: TenableIO.Vulnerability.asset.fqdn
+      description: The fully-qualified domain name of the asset where a scan found the vulnerability.
+      type: String
+    - contextPath: TenableIO.Vulnerability.asset.hostname
+      description: The host name of the asset where a scan found the vulnerability.
+      type: String
+    - contextPath: TenableIO.Vulnerability.asset.uuid
+      description: The UUID of the asset where a scan found the vulnerability.
+      type: String
+    - contextPath: TenableIO.Vulnerability.asset.ipv6
+      description: The IPv6 address of the asset where a scan found the vulnerability.
+      type: String
+    - contextPath: TenableIO.Vulnerability.asset.last_authenticated_results
+      description: The last date credentials that were used successfully to scan the asset.
+      type: Date
+    - contextPath: TenableIO.Vulnerability.asset.last_unauthenticated_results
+      description: The last date when the asset was scanned without using credentials
+      type: Date
+    - contextPath: TenableIO.Vulnerability.asset.mac_address
+      description: The MAC address of the asset where a scan found the vulnerability.
+      type: String
+    - contextPath: TenableIO.Vulnerability.asset.netbios_name
+      description: The NETBIOS name of the asset where a scan found the vulnerability.
+      type: String
+    - contextPath: TenableIO.Vulnerability.asset.netbios_workgroup
+      description: The NETBIOS workgroup of the asset where a scan found the vulnerability.
+      type: String
+    - contextPath: TenableIO.Vulnerability.asset.operating_system
+      description: The operating system of the asset where a scan found the vulnerability.
+      type: String
+    - contextPath: TenableIO.Vulnerability.asset.network_id
+      description: The ID of the network object associated with scanners that identified the asset.
+      type: String
+    - contextPath: TenableIO.Vulnerability.asset.tracked
+      description: A value specifying whether Tenable.io tracks the asset in the asset management system.
+      type: Boolean
+    - contextPath: TenableIO.Vulnerability.output
+      description: The text output of the Nessus scanner.
+      type: String
+    - contextPath: TenableIO.Vulnerability.plugin.bid
+      description: The Bugtraq ID for the plugin.
+      type: Number
+    - contextPath: TenableIO.Vulnerability.plugin.canvas_package
+      description: The name of the CANVAS exploit pack that includes the vulnerability.
+      type: String
+    - contextPath: TenableIO.Vulnerability.plugin.checks_for_default_account
+      description: A value specifying whether the plugin checks for default accounts.
+      type: Boolean
+    - contextPath: TenableIO.Vulnerability.plugin.checks_for_malware
+      description: A value specifying whether the plugin checks for malware.
+      type: Boolean
+    - contextPath: TenableIO.Vulnerability.plugin.cpe
+      description: The Common Platform Enumeration (CPE) number for the plugin.
+      type: String
+    - contextPath: TenableIO.Vulnerability.plugin.cve
+      description: The Common Vulnerability and Exposure (CVE) ID for the plugin.
+      type: String
+    - contextPath: TenableIO.Vulnerability.plugin.cvss3_base_score
+      description: The CVSSv3 base score (intrinsic and fundamental characteristics of a vulnerability that are constant over time and user environments).
+      type: Number
+    - contextPath: TenableIO.Vulnerability.plugin.cvss3_temporal_score
+      description: The CVSSv3 temporal score (characteristics of a vulnerability that change over time but not among user environments).
+      type: Number
+    - contextPath: TenableIO.Vulnerability.plugin.cvss3_temporal_vector.exploitability
+      description: The CVSSv3 Exploit Maturity Code (E) for the vulnerability the plugin covers.
+      type: String
+    - contextPath: TenableIO.Vulnerability.plugin.cvss3_temporal_vector.remediation_level
+      description: The CVSSv3 Remediation Level (RL) temporal metric for the vulnerability the plugin covers.
+      type: String
+    - contextPath: TenableIO.Vulnerability.plugin.cvss3_temporal_vector.report_confidence
+      description: The CVSSv3 Report Confidence (RC) temporal metric for the vulnerability the plugin covers.
+      type: String
+    - contextPath: TenableIO.Vulnerability.plugin.cvss3_temporal_vector.raw
+      description: The complete CVSSv3 temporal vector metrics and result values for the vulnerability the plugin covers in a condensed and coded format.
+      type: String
+    - contextPath: TenableIO.Vulnerability.plugin.cvss3_vector.access_vector
+      description: The CVSSv3 Attack Vector (AV) metric for the vulnerability the plugin covers.
+      type: String
+    - contextPath: TenableIO.Vulnerability.plugin.cvss3_vector.access_complexity
+      description: The CVSSv3 Access Complexity (AC) metric for the vulnerability the plugin covers.
+      type: String
+    - contextPath: TenableIO.Vulnerability.plugin.cvss3_vector.authentication
+      description: The CVSSv3 Authentication (Au) metric for the vulnerability the plugin covers.
+      type: String
+    - contextPath: TenableIO.Vulnerability.plugin.cvss3_vector.confidentiality_impact
+      description: The CVSSv3 integrity impact metric for the vulnerability the plugin covers.
+      type: String
+    - contextPath: TenableIO.Vulnerability.plugin.cvss3_vector.integrity_impact
+      description: The CVSSv3 integrity impact metric for the vulnerability the plugin covers.
+      type: String
+    - contextPath: TenableIO.Vulnerability.plugin.cvss3_vector.availability_impact
+      description: The CVSSv3 availability impact metric for the vulnerability the plugin covers.
+      type: String
+    - contextPath: TenableIO.Vulnerability.plugin.cvss3_vector.raw
+      description: The complete cvss3_vector metrics and result values for the vulnerability the plugin covers in a condensed and coded format.
+      type: String
+    - contextPath: TenableIO.Vulnerability.plugin.cvss_temporal_vector.exploitability
+      description: The CVSSv2 Exploitability (E) temporal metric for the vulnerability the plugin covers.
+      type: String
+    - contextPath: TenableIO.Vulnerability.plugin.cvss_temporal_vector.remediation_level
+      description: The CVSSv2 Remediation Level (RL) temporal metric for the vulnerability the plugin covers.
+      type: String
+    - contextPath: TenableIO.Vulnerability.plugin.cvss_temporal_vector.report_confidence
+      description: The CVSSv2 Report Confidence (RC) temporal metric for the vulnerability the plugin covers
+      type: String
+    - contextPath: TenableIO.Vulnerability.plugin.cvss_temporal_vector.raw
+      description: The complete CVSS temporal vector metrics and result values for the vulnerability the plugin covers in a condensed and coded format.
+      type: String
+    - contextPath: TenableIO.Vulnerability.plugin.cvss_vector.access_vector
+      description: The CVSSv2 Access Vector (AV) metric for the vulnerability the plugin covers.
+      type: String
+    - contextPath: TenableIO.Vulnerability.plugin.cvss_vector.access_complexity
+      description: The CVSSv2 Access Complexity (AC) metric for the vulnerability the plugin covers.
+      type: String
+    - contextPath: TenableIO.Vulnerability.plugin.cvss_vector.authentication
+      description: The CVSSv2 Authentication (Au) metric for the vulnerability the plugin covers.
+      type: String
+    - contextPath: TenableIO.Vulnerability.plugin.cvss_vector.confidentiality_impact
+      description: The CVSSv2 confidentiality impact metric for the vulnerability the plugin covers.
+      type: String
+    - contextPath: TenableIO.Vulnerability.plugin.cvss_vector.integrity_impact
+      description: The CVSSv2 integrity impact metric for the vulnerability the plugin covers.
+      type: String
+    - contextPath: TenableIO.Vulnerability.plugin.cvss_vector.availability_impact
+      description: The CVSSv2 availability impact metric for the vulnerability the plugin covers.
+      type: String
+    - contextPath: TenableIO.Vulnerability.plugin.cvss_vector.raw
+      description: The complete CVSSv2 vector metrics and result values for the vulnerability the plugin covers in a condensed and coded format.
+      type: String
+    - contextPath: TenableIO.Vulnerability.plugin.cvss_base_score
+      description: The CVSSv2 base score (intrinsic and fundamental characteristics of a vulnerability that are constant over time and user environments).
+      type: Number
+    - contextPath: TenableIO.Vulnerability.plugin.cvss_temporal_score
+      description: The CVSSv2 temporal score (characteristics of a vulnerability that change over time but not among user environments).
+      type: Number
+    - contextPath: TenableIO.Vulnerability.plugin.d2_elliot_name
+      description: The name of the exploit in the D2 Elliot Web Exploitation framework.
+      type: String
+    - contextPath: TenableIO.Vulnerability.plugin.description
+      description: Full text description of the vulnerability.
+      type: String
+    - contextPath: TenableIO.Vulnerability.plugin.exploit_available
+      description: A value specifying whether a public exploit exists for the vulnerability.
+      type: Boolean
+    - contextPath: TenableIO.Vulnerability.plugin.exploit_framework_canvas
+      description: A value specifying whether an exploit exists in the Immunity CANVAS framework.
+      type: Boolean
+    - contextPath: TenableIO.Vulnerability.plugin.exploit_framework_core
+      description: A value specifying whether an exploit exists in the CORE Impact framework.
+      type: Boolean
+    - contextPath: TenableIO.Vulnerability.plugin.exploit_framework_d2_elliot
+      description: A value specifying whether an exploit exists in the D2 Elliot Web Exploitation framework.
+      type: Boolean
+    - contextPath: TenableIO.Vulnerability.plugin.exploit_framework_exploithub
+      description: A value specifying whether an exploit exists in the ExploitHub framework.
+      type: Boolean
+    - contextPath: TenableIO.Vulnerability.plugin.exploit_framework_metasploit
+      description: A value specifying whether an exploit exists in the Metasploit framework.
+      type: Boolean
+    - contextPath: TenableIO.Vulnerability.plugin.exploitability_ease
+      description: Description of how easy it is to exploit the issue.
+      type: String
+    - contextPath: TenableIO.Vulnerability.plugin.exploited_by_malware
+      description: Whether the vulnerability discovered by this plugin is known to be exploited by malware.
+      type: Boolean
+    - contextPath: TenableIO.Vulnerability.plugin.exploited_by_nessus
+      description: A value specifying whether Nessus exploited the vulnerability during the process of identification.
+      type: Boolean
+    - contextPath: TenableIO.Vulnerability.plugin.exploithub_sku
+      description: The SKU number of the exploit in the ExploitHub framework.
+      type: String
+    - contextPath: TenableIO.Vulnerability.plugin.family
+      description: The family to which the plugin belongs.
+      type: String
+    - contextPath: TenableIO.Vulnerability.plugin.family_id
+      description: The ID of the plugin family.
+      type: Number
+    - contextPath: TenableIO.Vulnerability.plugin.has_patch
+      description: A value specifying whether the vendor has published a patch for the vulnerability.
+      type: Boolean
+    - contextPath: TenableIO.Vulnerability.plugin.id
+      description: The ID of the plugin that identified the vulnerability.
+      type: Number
+    - contextPath: TenableIO.Vulnerability.plugin.in_the_news
+      description: A value specifying whether this plugin has received media attention (for example, ShellShock, Meltdown).
+      type: Boolean
+    - contextPath: TenableIO.Vulnerability.plugin.metasploit_name
+      description: The name of the related exploit in the Metasploit framework.
+      type: String
+    - contextPath: TenableIO.Vulnerability.plugin.ms_bulletin
+      description: The Microsoft security bulletin that the plugin covers.
+      type: String
+    - contextPath: TenableIO.Vulnerability.plugin.name
+      description: The name of the plugin that identified the vulnerability.
+      type: String
+    - contextPath: TenableIO.Vulnerability.plugin.patch_publication_date
+      description: The date on which the vendor published a patch for the vulnerability.
+      type: String
+    - contextPath: TenableIO.Vulnerability.plugin.modification_date
+      description: The date on which the plugin was last modified.
+      type: Date
+    - contextPath: TenableIO.Vulnerability.plugin.publication_date
+      description: The date on which the plugin was published.
+      type: Date
+    - contextPath: TenableIO.Vulnerability.plugin.risk_factor
+      description: 'The risk factor associated with the plugin. Possible values are: Low, Medium, High, or Critical.'
+      type: String
+    - contextPath: TenableIO.Vulnerability.plugin.see_also
+      description: Links to external websites that contain helpful information about the vulnerability.
+      type: String
+    - contextPath: TenableIO.Vulnerability.plugin.solution
+      description: Remediation information for the vulnerability.
+      type: String
+    - contextPath: TenableIO.Vulnerability.plugin.stig_severity
+      description: Security Technical Implementation Guide (STIG) severity code for the vulnerability.
+      type: String
+    - contextPath: TenableIO.Vulnerability.plugin.synopsis
+      description: Brief description of the plugin or vulnerability.
+      type: String
+    - contextPath: TenableIO.Vulnerability.plugin.type
+      description: The general type of plugin check (for example, local or remote).
+      type: String
+    - contextPath: TenableIO.Vulnerability.plugin.unsupported_by_vendor
+      description: Whether software found by this plugin is unsupported by the software's vendor (for example, Windows 95 or Firefox 3).
+      type: Boolean
+    - contextPath: TenableIO.Vulnerability.plugin.usn
+      description: Ubuntu security notice that the plugin covers.
+      type: String
+    - contextPath: TenableIO.Vulnerability.plugin.version
+      description: The version of the plugin used to perform the check.
+      type: String
+    - contextPath: TenableIO.Vulnerability.plugin.vuln_publication_date
+      description: The publication date of the plugin.
+      type: Date
+    - contextPath: TenableIO.Vulnerability.plugin.xrefs.type
+      description: References to third-party information about the vulnerability, exploit, or update associated with the plugin.
+      type: String
+    - contextPath: TenableIO.Vulnerability.plugin.xrefs.id
+      description: References to third-party information about the vulnerability, exploit, or update associated with the plugin.
+      type: String
+    - contextPath: TenableIO.Vulnerability.plugin.vpr.score
+      description: The Vulnerability Priority Rating (VPR) for the vulnerability.
+      type: Number
+    - contextPath: TenableIO.Vulnerability.plugin.vpr.drivers.age_of_vuln
+      description: A range representing the number of days since the National Vulnerability Database (NVD) published the vulnerability.
+      type: Number
+    - contextPath: TenableIO.Vulnerability.plugin.vpr.drivers.age_of_vuln.lower_bound
+      description: The lower bound of the range.
+      type: Number
+    - contextPath: TenableIO.Vulnerability.plugin.vpr.drivers.age_of_vuln.upper_bound
+      description: The upper bound of the range.
+      type: Number
+    - contextPath: TenableIO.Vulnerability.plugin.vpr.drivers.exploit_code_maturity
+      description: The relative maturity of a possible exploit for the vulnerability based on the existence, sophistication, and prevalence of exploit intelligence from internal and external sources.
+      type: String
+    - contextPath: TenableIO.Vulnerability.plugin.vpr.drivers.cvss3_impact_score
+      description: The NVD-provided CVSSv3 impact score for the vulnerability.
+      type: Number
+    - contextPath: TenableIO.Vulnerability.plugin.vpr.drivers.cvss_impact_score_predicted
+      description: A value specifying whether Tenable.io predicted the CVSSv3 impact score for the vulnerability.
+      type: Boolean
+    - contextPath: TenableIO.Vulnerability.plugin.vpr.drivers.threat_intensity_last28
+      description: 'The relative intensity based on the number and frequency of recently observed threat events related to this vulnerability: Very Low, Low, Medium, High, or Very High.'
+      type: String
+    - contextPath: TenableIO.Vulnerability.plugin.vpr.drivers.threat_recency
+      description: A range representing the number of days since a threat event occurred for the vulnerability.
+      type: String
+    - contextPath: TenableIO.Vulnerability.plugin.vpr.drivers.threat_recency.lower_bound
+      description: The lower bound of the range.
+      type: String
+    - contextPath: TenableIO.Vulnerability.plugin.vpr.drivers.threat_recency.upper_bound
+      description: The upper bound of the range.
+      type: String
+    - contextPath: TenableIO.Vulnerability.plugin.vpr.drivers.threat_sources_last28
+      description: A list of all sources (for example, social media channels, the dark web, etc.) where threat events related to this vulnerability occurred.
+      type: String
+    - contextPath: TenableIO.Vulnerability.plugin.vpr.drivers.product_coverage
+      description: "The relative number of unique products affected by the vulnerability: 'Low', 'Medium', 'High', or 'Very High'."
+      type: String
+    - contextPath: TenableIO.Vulnerability.plugin.vpr.updated
+      description: The ISO timestamp when Tenable.io last imported the VPR for this vulnerability.
+      type: Date
+    - contextPath: TenableIO.Vulnerability.port.port
+      description: The port the scanner used to communicate with the asset.
+      type: Number
+    - contextPath: TenableIO.Vulnerability.port.protocol
+      description: The protocol the scanner used to communicate with the asset.
+      type: String
+    - contextPath: TenableIO.Vulnerability.port.service
+      description: The service the scanner used to communicate with the asset.
+      type: String
+    - contextPath: TenableIO.Vulnerability.recast_reason
+      description: The text that appears in the Comment field of the recast rule in the Tenable.io user interface.
+      type: String
+    - contextPath: TenableIO.Vulnerability.recast_rule_uuid
+      description: The UUID of the recast rule that applies to the plugin.
+      type: String
+    - contextPath: TenableIO.Vulnerability.scan.completed_at
+      description: The ISO timestamp when the scan completed.
+      type: Date
+    - contextPath: TenableIO.Vulnerability.scan.schedule_uuid
+      description: The schedule UUID for the scan that found the vulnerability.
+      type: String
+    - contextPath: TenableIO.Vulnerability.scan.started_at
+      description: The ISO timestamp when the scan started.
+      type: Date
+    - contextPath: TenableIO.Vulnerability.scan.uuid
+      description: The UUID of the scan that found the vulnerability.
+      type: String
+    - contextPath: TenableIO.Vulnerability.severity
+      description: The severity of the vulnerability as defined using the Common Vulnerability Scoring System (CVSS) base score.
+      type: String
+    - contextPath: TenableIO.Vulnerability.severity_id
+      description: The code for the severity assigned when a user recast the risk associated with the vulnerability.
+      type: Number
+    - contextPath: TenableIO.Vulnerability.severity_default_id
+      description: The code for the severity originally assigned to a vulnerability before a user recast the risk associated with the vulnerability.
+      type: Number
+    - contextPath: TenableIO.Vulnerability.severity_modification_type
+      description: The type of modification a user made to the vulnerability's severity.
+      type: String
+    - contextPath: TenableIO.Vulnerability.first_found
+      description: The ISO date when a scan first detected the vulnerability on the asset.
+      type: Date
+    - contextPath: TenableIO.Vulnerability.last_fixed
+      description: The ISO date when a scan no longer detects the previously detected vulnerability on the asset.
+      type: Date
+    - contextPath: TenableIO.Vulnerability.last_found
+      description: The ISO date when a scan last detected the vulnerability on the asset.
+      type: Date
+    - contextPath: TenableIO.Vulnerability.state
+      description: The state of the vulnerability as determined by the Tenable.io state service.
+      type: String
+    - contextPath: TenableIO.Vulnerability.indexed
+      description: The date and time (in Unix time) when the vulnerability was indexed into Tenable.io.
+      type: Date
   feed: false
   isfetch: false
   longRunning: false
@@ -443,7 +1210,7 @@ script:
   script: '-'
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.10.8.39276
+  dockerimage: demisto/python3:3.10.10.48392
 tests:
 - Tenable.io test
 fromversion: 5.0.0

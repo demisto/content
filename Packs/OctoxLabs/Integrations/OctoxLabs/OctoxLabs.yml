@@ -207,12 +207,153 @@ script:
         - contextPath: OctoxLabs.Device
           description: '<Dict> Octoxlabs Device'
           type: Unknown
+    - name: octoxlabs-get-queries
+      deprecated: false
+      description: 'Fetch your queries'
+      execution: false
+      arguments:
+        - default: null
+          required: false
+          isArray: false
+          name: page
+          description: 'Query list page.'
+          secret: false
+        - default: null
+          required: false
+          isArray: false
+          name: search
+          description: 'Search text.'
+          secret: false
+        - default: null
+          required: false
+          isArray: false
+          name: size
+          description: 'Query list size.'
+          secret: false
+      outputs:
+        - contextPath: OctoxLabs.Queries.count
+          description: 'Queries count'
+          type: Number
+        - contextPath: OctoxLabs.Queries.results.id
+          description: 'Query id'
+          type: Number
+        - contextPath: OctoxLabs.Queries.results.name
+          description: 'Query name'
+          type: String
+        - contextPath: OctoxLabs.Queries.results.text
+          description: 'Query text'
+          type: String
+        - contextPath: OctoxLabs.Queries.results.tags
+          description: 'List<str> Query tags'
+          type: Unknown
+        - contextPath: OctoxLabs.Queries.results.count
+          description: 'Query device count'
+          type: Number
+        - contextPath: OctoxLabs.Queries.results.is_public
+          description: 'Query is public?'
+          type: Boolean
+        - contextPath: OctoxLabs.Queries.results.created_at
+          description: 'Query created at'
+          type: String
+        - contextPath: OctoxLabs.Queries.results.updated_at
+          description: 'Query updated at'
+          type: String
+        - contextPath: OctoxLabs.Queries.results.username
+          description: 'Query creator'
+          type: String
+        - contextPath: OctoxLabs.Queries.results.is_temporary
+          description: "Query is temporary"
+          type: Boolean
+    - name: octoxlabs-get-query-by-id
+      deprecated: false
+      description: 'Fetch your queries by id'
+      execution: false
+      arguments:
+        - default: false
+          required: true
+          isArray: false
+          name: query_id
+          description: 'Query id.'
+          secret: false
+      outputs:
+        - contextPath: OctoxLabs.Queries.results.id
+          description: 'Query id'
+          type: Number
+        - contextPath: OctoxLabs.Queries.results.name
+          description: 'Query name'
+          type: String
+        - contextPath: OctoxLabs.Queries.results.text
+          description: 'Query text'
+          type: String
+        - contextPath: OctoxLabs.Queries.results.tags
+          description: 'List<str> Query tags'
+          type: Unknown
+        - contextPath: OctoxLabs.Queries.results.count
+          description: 'Query device count'
+          type: Number
+        - contextPath: OctoxLabs.Queries.results.is_public
+          description: 'Query is public?'
+          type: Boolean
+        - contextPath: OctoxLabs.Queries.results.created_at
+          description: 'Query created at'
+          type: String
+        - contextPath: OctoxLabs.Queries.results.updated_at
+          description: 'Query updated at'
+          type: String
+        - contextPath: OctoxLabs.Queries.results.username
+          description: 'Query creator'
+          type: String
+        - contextPath: OctoxLabs.Queries.results.is_temporary
+          description: "Query is temporary"
+          type: Boolean
+    - name: octoxlabs-get-query-by-name
+      deprecated: false
+      description: 'Fetch your queries by id'
+      execution: false
+      arguments:
+        - default: false
+          required: true
+          isArray: false
+          name: query_name
+          description: 'Query name.'
+          secret: false
+      outputs:
+        - contextPath: OctoxLabs.Queries.results.id
+          description: 'Query id'
+          type: Number
+        - contextPath: OctoxLabs.Queries.results.name
+          description: 'Query name'
+          type: String
+        - contextPath: OctoxLabs.Queries.results.text
+          description: 'Query text'
+          type: String
+        - contextPath: OctoxLabs.Queries.results.tags
+          description: 'List<str> Query tags'
+          type: Unknown
+        - contextPath: OctoxLabs.Queries.results.count
+          description: 'Query device count'
+          type: Number
+        - contextPath: OctoxLabs.Queries.results.is_public
+          description: 'Query is public?'
+          type: Boolean
+        - contextPath: OctoxLabs.Queries.results.created_at
+          description: 'Query created at'
+          type: String
+        - contextPath: OctoxLabs.Queries.results.updated_at
+          description: 'Query updated at'
+          type: String
+        - contextPath: OctoxLabs.Queries.results.username
+          description: 'Query creator'
+          type: String
+        - contextPath: OctoxLabs.Queries.results.is_temporary
+          description: "Query is temporary"
+          type: Boolean
   isfetch: false
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/octoxlabs:1.0.0.40770
+  dockerimage: demisto/octoxlabs:1.0.0.50149
 fromversion: 6.0.0
 tests:
 - No tests (auto formatted)

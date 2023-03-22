@@ -1,3 +1,4 @@
+# pylint: disable=E9010
 from CommonServerPython import *
 
 ''' IMPORTS '''
@@ -246,6 +247,8 @@ def fetch_indicators_command(client: Client, indicator_type: str, feedTags: list
                 item = {indicator_field: item}
 
             indicator_value = item.get(indicator_field)
+            if indicator_value is None:
+                continue
             if indicator_value not in indicators_values:
                 indicators_values_indexes[indicator_value] = len(indicators_values)
                 indicators_values.add(indicator_value)

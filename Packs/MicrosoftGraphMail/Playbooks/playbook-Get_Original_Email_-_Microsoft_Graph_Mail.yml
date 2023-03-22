@@ -149,10 +149,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: b22d3fc0-5801-4c61-8b57-87dfc491682e
+    taskid: 2775b599-4846-4049-8c4e-1e2e660f27c5
     type: condition
     task:
-      id: b22d3fc0-5801-4c61-8b57-87dfc491682e
+      id: 2775b599-4846-4049-8c4e-1e2e660f27c5
       version: -1
       name: Was a matching email found?
       description: Verifies that an email object with a message ID that matches the InReplyTo ID of the forwarded email was found.
@@ -172,7 +172,7 @@ tasks:
           left:
             value:
               complex:
-                root: MSGraphMail.InternetMessageID
+                root: MSGraphMail
                 filters:
                 - - operator: isEqualString
                     left:
@@ -183,7 +183,19 @@ tasks:
                       value:
                         simple: inputs.MessageID
                       iscontext: true
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: MSGraphMail.UserID
+                      iscontext: true
+                    right:
+                      value:
+                        simple: inputs.UserID
+                      iscontext: true
+                accessor: InternetMessageID
             iscontext: true
+          right:
+            value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -201,10 +213,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: dc114491-63e0-4dfa-84ef-6f6b7f204670
+    taskid: e2653b70-6db7-4385-8281-0c31a7b5c91c
     type: regular
     task:
-      id: dc114491-63e0-4dfa-84ef-6f6b7f204670
+      id: e2653b70-6db7-4385-8281-0c31a7b5c91c
       version: -1
       name: Get original email
       description: Retrieves an email message by message ID and uploads the content as an EML file.
@@ -228,6 +240,15 @@ tasks:
               right:
                 value:
                   simple: inputs.MessageID
+                iscontext: true
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: MSGraphMail.UserID
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.UserID
                 iscontext: true
           accessor: ID
           transformers:

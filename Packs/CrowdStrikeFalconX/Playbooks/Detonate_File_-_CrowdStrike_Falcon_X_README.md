@@ -1,4 +1,4 @@
-Detonates a File using CrowdStrike Falcon X sandbox.
+Detonates a File using CrowdStrike Falcon Intelligence Sandbox.
 Accepted file formats:
 Portable executables: .exe, .scr, .pif, .dll, .com, .cpl, etc.
 Office documents: .doc, .docx, .ppt, .pps, .pptx, .ppsx, .xls, .xlsx, .rtf, .pub
@@ -27,8 +27,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 This playbook does not use any sub-playbooks.
 
 ### Integrations
-* CrowdStrikeFalconX
-* CrowdStrike Falcon X
+* CrowdStrikeFalconIntelligenceSandbox
+* CrowdStrike Intelligence Sandbox
 
 ### Scripts
 * Set

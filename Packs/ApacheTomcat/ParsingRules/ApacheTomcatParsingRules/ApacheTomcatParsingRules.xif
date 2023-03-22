@@ -1,18 +1,12 @@
-[INGEST:vendor="apache", product="tomcat", target_dataset="apache_tomcat_raw", no_hit=drop]
+[INGEST:vendor="apache", product="tomcat", target_dataset="apache_tomcat_raw", no_hit=keep]
 alter 
 	tmp_get_date =  arrayindex(regextract(_raw_log, "\[(\d+\/\w{3}\/\d{4})\:"), 0),
     tmp_get_time = arrayindex(regextract(_raw_log, "\:(\d{2}\:\d{2}\:\d{2})\s"), 0),
-    tmp_zhrs_part = to_integer(arraystring(regextract(_raw_log, "\:\d{2}\:\d{2}\:\d{2}\s[\+|\-](\d{2})"), "")),
-    tmp_zmins_part = to_integer(arraystring(regextract(_raw_log, "\:\d{2}\:\d{2}\:\d{2}\s[\+|\-]\d{2}(\d{2})\]"), ""))
+    tmp_get_zone = arrayindex(regextract(_raw_log, "\[\d+\/\w{3}\/\d{4}\:\d{2}\:\d{2}\:\d{2}\s([\+|\-]\d{4})]"), 0)
 | alter
-    tmp_timestamp = to_epoch(parse_timestamp("%d/%b/%Y %H:%M:%S", arraystring(arraycreate(tmp_get_date, tmp_get_time), " ")), "seconds"),	
-	tmp_zhrssec_part = if(tmp_zhrs_part <= 24, multiply(tmp_zhrs_part, 3600), 0),
-    tmp_zminsec_part = if(tmp_zmins_part <= 60, multiply(tmp_zmins_part, 60), 0)
+    tmp_date_time = arraystring(arraycreate(tmp_get_date, tmp_get_time), " ")
 | alter
-	tmp_change_seconds = add(tmp_zhrssec_part, tmp_zminsec_part),
-	tmp_zone_validate_po_ne = arraystring(regextract(_raw_log, "\:\d{2}\:\d{2}\:\d{2}\s(\+|\-)\d{4}\]"), "")
+    tmp_full_time = arraystring(arraycreate(tmp_date_time, tmp_get_zone), " ")
 | alter
-    tmp_timeseconds = if(tmp_zone_validate_po_ne = "+", add(tmp_timestamp, tmp_change_seconds), subtract(tmp_timestamp, tmp_change_seconds))
-| alter
-    _time = if( tmp_timeseconds != null, to_timestamp(to_integer(tmp_timeseconds), "seconds"), _insert_time)
-| fields -tmp_get_date, tmp_get_time, tmp_zhrs_part, tmp_zmins_part, tmp_timestamp, tmp_zhrssec_part, tmp_zminsec_part, tmp_change_seconds, tmp_zone_validate_po_ne, tmp_timeseconds;
+    _time = parse_timestamp("%d/%b/%Y %H:%M:%S %z", tmp_full_time)
+| fields -tmp_get_date, tmp_get_time, tmp_get_zone, tmp_date_time, tmp_full_time;

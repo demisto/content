@@ -20,7 +20,7 @@ def test_extract_indicators(mocker):
     results = demisto.results.call_args[0][0]
 
     assert results == {'Type': 1, 'ContentsFormat': 'text', 'Contents': {'FileData': 'abcabcabc'},
-                       'HumanReadable': 'Read 9 bytes from file.', 'EntryContext': {'FileData': 'abcabcabc'}}
+                       'HumanReadable': 'Read 9 bytes from file:\nabcabcabc', 'EntryContext': {'FileData': 'abcabcabc'}}
 
 
 def test_extract_indicators_empty_file(mocker):
@@ -87,7 +87,7 @@ def test_read_binary_to_base64(mocker):
         'Contents': {
             'FileData': 'ASNFZ4k='
         },
-        'HumanReadable': 'Read 5 bytes from file.',
+        'HumanReadable': 'Read 5 bytes from file:\nASNFZ4k=',
         'EntryContext': {
             'FileData': 'ASNFZ4k='
         }
@@ -147,7 +147,7 @@ def test_read_utf8_to_json(mocker):
                 'a': 'b'
             }
         },
-        'HumanReadable': 'Read 9 bytes from file.',
+        'HumanReadable': 'Read 9 bytes from file:\n' + str({"a": "b"}),
         'EntryContext': {
             'FileData': {
                 'a': 'b'
@@ -186,7 +186,7 @@ def test_read_utf16be_to_json(mocker):
                 'a': 'b'
             }
         },
-        'HumanReadable': 'Read 10 bytes from file.',
+        'HumanReadable': 'Read 10 bytes from file:\n' + str({"a": "b"}),
         'EntryContext': {
             'FileData': {
                 'a': 'b'
@@ -225,7 +225,7 @@ def test_read_utf16le_to_json(mocker):
                 'a': 'b'
             }
         },
-        'HumanReadable': 'Read 10 bytes from file.',
+        'HumanReadable': 'Read 10 bytes from file:\n' + str({"a": "b"}),
         'EntryContext': {
             'FileData': {
                 'a': 'b'
@@ -270,7 +270,7 @@ def test_read_file_default_with_meta(mocker):
         'Type': 1,
         'ContentsFormat': 'json',
         'Contents': file_info,
-        'HumanReadable': 'Read 9 bytes from file.',
+        'HumanReadable': 'Read 9 bytes from file:\nabcabcabc',
         'EntryContext': {
             'ReadFile(obj.EntryID===val.EntryID)': file_info
         }
@@ -314,7 +314,7 @@ def test_read_file_as_binary_with_meta(mocker):
         'Type': 1,
         'ContentsFormat': 'json',
         'Contents': file_info,
-        'HumanReadable': 'Read 9 bytes from file.',
+        'HumanReadable': 'Read 9 bytes from file:\nabcabcabc',
         'EntryContext': {
             'ReadFile(obj.EntryID===val.EntryID)': file_info
         }
@@ -358,7 +358,7 @@ def test_read_file_incomplete_with_meta(mocker):
         'Type': 1,
         'ContentsFormat': 'json',
         'Contents': file_info,
-        'HumanReadable': 'Read 3 bytes from file.',
+        'HumanReadable': 'Read 3 bytes from file:\nabc',
         'EntryContext': {
             'ReadFile(obj.EntryID===val.EntryID)': file_info
         }
@@ -401,7 +401,7 @@ def test_read_empty_file_with_meta(mocker):
         'Type': 1,
         'ContentsFormat': 'json',
         'Contents': file_info,
-        'HumanReadable': 'Read 0 bytes from file.',
+        'HumanReadable': 'Read 0 bytes from file:\n',
         'EntryContext': {
             'ReadFile(obj.EntryID===val.EntryID)': file_info
         }
@@ -446,7 +446,7 @@ def test_read_binary_to_base64_with_meta(mocker):
         'Type': 1,
         'ContentsFormat': 'json',
         'Contents': file_info,
-        'HumanReadable': 'Read 5 bytes from file.',
+        'HumanReadable': 'Read 5 bytes from file:\nASNFZ4k=',
         'EntryContext': {
             'ReadFile(obj.EntryID===val.EntryID)': file_info
         }
@@ -493,7 +493,7 @@ def test_read_utf8_to_json_with_meta(mocker):
         'Type': 1,
         'ContentsFormat': 'json',
         'Contents': file_info,
-        'HumanReadable': 'Read 9 bytes from file.',
+        'HumanReadable': 'Read 9 bytes from file:\n' + str({"a": "b"}),
         'EntryContext': {
             'ReadFile(obj.EntryID===val.EntryID)': file_info
         }
@@ -540,7 +540,7 @@ def test_read_utf16be_to_json_with_meta(mocker):
         'Type': 1,
         'ContentsFormat': 'json',
         'Contents': file_info,
-        'HumanReadable': 'Read 10 bytes from file.',
+        'HumanReadable': 'Read 10 bytes from file:\n' + str({"a": "b"}),
         'EntryContext': {
             'ReadFile(obj.EntryID===val.EntryID)': file_info
         }
@@ -587,7 +587,7 @@ def test_read_utf16le_to_json_with_meta(mocker):
         'Type': 1,
         'ContentsFormat': 'json',
         'Contents': file_info,
-        'HumanReadable': 'Read 10 bytes from file.',
+        'HumanReadable': 'Read 10 bytes from file:\n' + str({"a": "b"}),
         'EntryContext': {
             'ReadFile(obj.EntryID===val.EntryID)': file_info
         }
@@ -599,3 +599,23 @@ def test_read_utf16le_to_json_with_meta(mocker):
     for k, v in expected.items():
         assert k in results
         assert v == results[k]
+
+
+def test_read_file_with_chinese_characters(mocker):
+    """
+        Given:
+            File with chinese characters.
+            'input_encoding': 'gbk'.
+        When:
+            Running script on file
+
+        Then:
+            Validate the right output returns.
+        """
+    args = {'input_encoding': 'gbk'}
+    mocker.patch("ReadFile.execute_command", return_value={'path': './test_data/file_with_chinese_characters.txt'})
+
+    mocker.patch.object(demisto, 'results')
+    read_file(args)
+    results = demisto.results.call_args[0][0]
+    assert '锟斤拷锟斤拷' in results.get('Contents').get('FileData')

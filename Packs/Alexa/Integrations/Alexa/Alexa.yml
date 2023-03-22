@@ -36,8 +36,9 @@ configuration:
   name: insecure
   required: false
   type: 8
-description: Alexa provides website ranking information that can be useful in determining if the domain in question has a strong web presence.
-display: Alexa Rank Indicator
+description: Deprecated. Vendor has declared end of life for this product. No available replacement.
+deprecated: true
+display: Alexa Rank Indicator (Deprecated)
 name: Alexa Rank Indicator
 script:
   commands:

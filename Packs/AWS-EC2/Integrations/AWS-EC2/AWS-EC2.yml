@@ -26,53 +26,72 @@ configuration:
   - us-gov-west-1
   required: false
   type: 15
+  section: Connect
+  advanced: true
 - display: Role Arn
   name: roleArn
   required: false
   type: 0
+  section: Connect
+  advanced: true
 - display: Role Session Name
   name: roleSessionName
   required: false
   type: 0
+  section: Connect
+  advanced: true
 - display: Role Session Duration
   name: sessionDuration
   required: false
   type: 0
+  section: Connect
+  advanced: true
 - display: Access Key
   name: credentials
   required: false
   type: 9
   displaypassword: Secret Key
+  section: Connect
 - display: Access Key
   name: access_key
   required: false
   type: 0
   hidden: true
+  section: Connect
 - display: Secret Key
   name: secret_key
   required: false
   type: 4
   hidden: true
+  section: Connect
 - display: Timeout
   name: timeout
   additionalinfo: The time in seconds till a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If a connect timeout is not specified, a default of 10 second will be used.
   defaultvalue: 60,10
   required: false
   type: 0
+  section: Connect
+  advanced: true
 - display: Retries
   name: retries
   defaultvalue: 5
   additionalinfo: "The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time."
   required: false
   type: 0
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
+  advanced: true
 description: Amazon Web Services Elastic Compute Cloud (EC2)
 display: AWS - EC2
 name: AWS - EC2
@@ -3475,6 +3494,8 @@ script:
       name: UserIdGroupPairsVpcPeeringConnectionId
       required: false
       secret: false
+    - description: 'Full IpPermissions argument as a string to more easily copy rules (e.x. """[{"IpProtocol": "-1", "IpRanges": [{"CidrIp": "0.0.0.0/0"}], "Ipv6Ranges": [], "PrefixListIds": [], "UserIdGroupPairs": []}]""").'
+      name: IpPermissionsFull
     deprecated: false
     description: Adds ingress rule to a security group.
     execution: true
@@ -3618,6 +3639,8 @@ script:
       name: UserIdGroupPairsVpcPeeringConnectionId
       required: false
       secret: false
+    - description: 'Full IpPermissions argument as a string to more easily copy rules (e.x. """[{"IpProtocol": "-1", "IpRanges": [{"CidrIp": "0.0.0.0/0"}], "Ipv6Ranges": [], "PrefixListIds": [], "UserIdGroupPairs": []}]""").'
+      name: IpPermissionsFull
     deprecated: false
     description: Adds egress rule to a security group.
     execution: true
@@ -3689,6 +3712,8 @@ script:
       name: roleSessionDuration
       required: false
       secret: false
+    - description: 'Full IpPermissions argument as a string to more easily target rules (e.x. """[{"IpProtocol": "-1", "IpRanges": [{"CidrIp": "0.0.0.0/0"}], "Ipv6Ranges": [], "PrefixListIds": [], "UserIdGroupPairs": []}]""").'
+      name: IpPermissionsFull
     deprecated: false
     description: Removes egress rule from a security group. To remove a rule, the values that you specify (for example, ports) must match the existing rule's values exactly.
     execution: true
@@ -6240,6 +6265,8 @@ script:
       name: roleSessionDuration
       required: false
       secret: false
+    - description: 'Full IpPermissions argument as a string to more easily target rules (e.x. """[{"IpProtocol": "-1", "IpRanges": [{"CidrIp": "0.0.0.0/0"}], "Ipv6Ranges": [], "PrefixListIds": [], "UserIdGroupPairs": []}]""").'
+      name: IpPermissionsFull
     deprecated: false
     description: Removes egress rule from a security group. To remove a rule, the values that you specify (for example, ports) must match the existing rule's values exactly.
     execution: true
@@ -6362,7 +6389,7 @@ script:
     description: Release on demand dedicated host.
     execution: false
     name: aws-ec2-release-hosts
-  dockerimage: demisto/boto3py3:1.0.0.41554
+  dockerimage: demisto/boto3py3:1.0.0.49886
   feed: false
   isfetch: false
   longRunning: false
@@ -6374,3 +6401,6 @@ script:
 tests:
 - AWS - EC2 Test Playbook
 fromversion: 5.0.0
+sectionOrder:
+- Connect
+- Collect

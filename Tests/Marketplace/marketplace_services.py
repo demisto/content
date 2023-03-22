@@ -67,7 +67,7 @@ class Pack(object):
     EXCLUDE_DIRECTORIES = [PackFolders.TEST_PLAYBOOKS.value]
     RELEASE_NOTES = "ReleaseNotes"
 
-    def __init__(self, pack_name, pack_path):
+    def __init__(self, pack_name, pack_path, is_modified=None):
         self._pack_name = pack_name
         self._pack_path = pack_path
         self._zip_path = None  # zip_path will be updated as part of zip_pack
@@ -122,7 +122,7 @@ class Pack(object):
         self._contains_transformer = False  # initialized in collect_content_items function
         self._contains_filter = False  # initialized in collect_content_items function
         self._is_missing_dependencies = False  # initialized in _load_pack_dependencies function
-        self._is_modified = None  # initialized in detect_modified function
+        self._is_modified = is_modified
         self._modified_files = {}  # initialized in detect_modified function
         self._is_siem = False  # initialized in collect_content_items function
         self._has_fetch = False
@@ -1138,7 +1138,6 @@ class Pack(object):
                 pack_was_modified = not all(self.RELEASE_NOTES in path for path in modified_rn_files_paths)
                 # Filter modifications in release notes config JSON file - they will be handled later on.
                 modified_rn_files_paths = [path_ for path_ in modified_rn_files_paths if path_.endswith('.md')]
-            self._is_modified = pack_was_modified
             return
         except Exception:
             logging.exception(f"Failed in detecting modified files of {self._pack_name} pack")
@@ -1275,8 +1274,8 @@ class Pack(object):
             logging.exception(f"Failed in uploading {self._pack_name} pack to gcs.")
             return task_status, True, None
 
-    def copy_and_upload_to_storage(self, production_bucket, build_bucket, successful_packs_dict, storage_base_path,
-                                   build_bucket_base_path):
+    def copy_and_upload_to_storage(self, production_bucket, build_bucket, successful_packs_dict,
+                                   successful_uploaded_dependencies_zip_packs_dict, storage_base_path, build_bucket_base_path):
         """ Manages the copy of pack zip artifact from the build bucket to the production bucket.
         The zip pack will be copied to following path: /content/packs/pack_name/pack_latest_version if
         the pack exists in the successful_packs_dict from Prepare content step in Create Instances job.
@@ -1285,6 +1284,8 @@ class Pack(object):
             production_bucket (google.cloud.storage.bucket.Bucket): google cloud production bucket.
             build_bucket (google.cloud.storage.bucket.Bucket): google cloud build bucket.
             successful_packs_dict (dict): the dict of all packs were uploaded in prepare content step
+            successful_uploaded_dependencies_zip_packs_dict (dict): the dict of all packs that successfully updated
+            their dependencies zip file.
             storage_base_path (str): The target destination of the upload in the target bucket.
             build_bucket_base_path (str): The path of the build bucket in gcp.
         Returns:
@@ -1293,53 +1294,55 @@ class Pack(object):
              otherwise returned False.
 
         """
-        pack_not_uploaded_in_prepare_content = self._pack_name not in successful_packs_dict
-        if pack_not_uploaded_in_prepare_content:
+        task_status = True
+        pack_was_uploaded_in_prepare_content = self._pack_name in successful_packs_dict
+        pack_dependencies_zip_was_uploaded = self._pack_name in successful_uploaded_dependencies_zip_packs_dict
+        if not pack_was_uploaded_in_prepare_content and not pack_dependencies_zip_was_uploaded:
             logging.warning("The following packs already exist at storage.")
             logging.warning(f"Skipping step of uploading {self._pack_name}.zip to storage.")
             return True, True
 
-        latest_version = successful_packs_dict[self._pack_name][BucketUploadFlow.LATEST_VERSION]
-        self._latest_version = latest_version
+        elif pack_was_uploaded_in_prepare_content:
 
-        build_version_pack_path = os.path.join(build_bucket_base_path, self._pack_name, latest_version)
+            latest_version = successful_packs_dict[self._pack_name][BucketUploadFlow.LATEST_VERSION]
+            self._latest_version = latest_version
 
-        # Verifying that the latest version of the pack has been uploaded to the build bucket
-        existing_bucket_version_files = [f.name for f in build_bucket.list_blobs(prefix=build_version_pack_path)]
-        if not existing_bucket_version_files:
-            logging.error(f"{self._pack_name} latest version ({latest_version}) was not found on build bucket at "
-                          f"path {build_version_pack_path}.")
-            return False, False
+            build_version_pack_path = os.path.join(build_bucket_base_path, self._pack_name, latest_version)
 
-        # We upload the pack zip object taken from the build bucket into the production bucket
-        prod_version_pack_path = os.path.join(storage_base_path, self._pack_name, latest_version)
-        prod_pack_zip_path = os.path.join(prod_version_pack_path, f'{self._pack_name}.zip')
-        build_pack_zip_path = os.path.join(build_version_pack_path, f'{self._pack_name}.zip')
-        build_pack_zip_blob = build_bucket.blob(build_pack_zip_path)
+            # Verifying that the latest version of the pack has been uploaded to the build bucket
+            existing_bucket_version_files = [f.name for f in build_bucket.list_blobs(prefix=build_version_pack_path)]
+            if not existing_bucket_version_files:
+                logging.error(f"{self._pack_name} latest version ({latest_version}) was not found on build bucket at "
+                              f"path {build_version_pack_path}.")
+                return False, False
 
-        try:
-            copied_blob = build_bucket.copy_blob(
-                blob=build_pack_zip_blob, destination_bucket=production_bucket, new_name=prod_pack_zip_path
-            )
-            copied_blob.cache_control = "no-cache,max-age=0"  # disabling caching for pack blob
-            self.public_storage_path = copied_blob.public_url
-            task_status = copied_blob.exists()
-        except Exception as e:
-            pack_suffix = os.path.join(self._pack_name, latest_version, f'{self._pack_name}.zip')
-            logging.exception(f"Failed copying {pack_suffix}. Additional Info: {str(e)}")
-            return False, False
+            # We upload the pack zip object taken from the build bucket into the production bucket
+            prod_version_pack_path = os.path.join(storage_base_path, self._pack_name, latest_version)
+            prod_pack_zip_path = os.path.join(prod_version_pack_path, f'{self._pack_name}.zip')
+            build_pack_zip_path = os.path.join(build_version_pack_path, f'{self._pack_name}.zip')
+            build_pack_zip_blob = build_bucket.blob(build_pack_zip_path)
 
-        if not task_status:
-            logging.error(f"Failed in uploading {self._pack_name} pack to production gcs.")
-        else:
-            # Determine if pack versions were aggregated during upload
-            pack_uploaded_in_prepare_content = not pack_not_uploaded_in_prepare_content
-            if pack_uploaded_in_prepare_content:
+            try:
+                copied_blob = build_bucket.copy_blob(
+                    blob=build_pack_zip_blob, destination_bucket=production_bucket, new_name=prod_pack_zip_path
+                )
+                copied_blob.cache_control = "no-cache,max-age=0"  # disabling caching for pack blob
+                self.public_storage_path = copied_blob.public_url
+                task_status = copied_blob.exists()
+            except Exception as e:
+                pack_suffix = os.path.join(self._pack_name, latest_version, f'{self._pack_name}.zip')
+                logging.exception(f"Failed copying {pack_suffix}. Additional Info: {str(e)}")
+                return False, False
+
+            if not task_status:
+                logging.error(f"Failed in uploading {self._pack_name} pack to production gcs.")
+            else:
+                # Determine if pack versions were aggregated during upload
                 agg_str = successful_packs_dict[self._pack_name].get('aggregated')
                 if agg_str:
                     self._aggregated = True
                     self._aggregation_str = agg_str
-            logging.success(f"Uploaded {self._pack_name} pack to {prod_pack_zip_path} path.")
+                logging.success(f"Uploaded {self._pack_name} pack to {prod_pack_zip_path} path.")
 
         # handle dependenices zip upload when found in build bucket
         self.copy_and_upload_dependencies_zip_to_storage(
@@ -1592,6 +1595,7 @@ class Pack(object):
         Returns:
             bool: whether the operation succeeded.
             bool: whether running build has not updated pack release notes.
+            list: pack versions to keep in the changelog
         """
         task_status = False
         not_updated_build = False
@@ -1599,6 +1603,7 @@ class Pack(object):
 
         modified_rn_files_paths = modified_rn_files_paths if modified_rn_files_paths else []
         id_set = id_set if id_set else {}
+        pack_versions_to_keep: List[str] = []
 
         try:
             version_to_prs = self.get_version_to_pr_numbers(release_notes_dir)
@@ -1629,7 +1634,7 @@ class Pack(object):
                                       f"pack_metadata.json: {self._current_version} and latest release notes "
                                       f"version: {latest_release_notes}.")
                         task_status = False
-                        return task_status, not_updated_build
+                        return task_status, not_updated_build, pack_versions_to_keep
                     else:
                         prs_for_version = version_to_prs[latest_release_notes]
                         logging.info(f"found prs for version {latest_release_notes} : {prs_for_version}")
@@ -1685,7 +1690,6 @@ class Pack(object):
                         logging.warning(
                             f"{self._pack_name} pack mismatch between {Pack.CHANGELOG_JSON} and {Pack.RELEASE_NOTES}")
                         task_status, not_updated_build = True, True
-                        return task_status, not_updated_build
 
                     else:
                         # allow changing the initial changelog version
@@ -1710,13 +1714,23 @@ class Pack(object):
                 logging.warning(f"Pack {self._pack_name} is deprecated. Skipping release notes handling.")
                 task_status = True
                 not_updated_build = True
-                return task_status, not_updated_build
+                return task_status, not_updated_build, pack_versions_to_keep
 
             else:
                 # if there is no changelog file for the pack, this is a new pack, and we start it's changelog at it's
                 # current version
+                first_pack_release_notes = ''
+                first_release_notes_path = os.path.join(release_notes_dir, '1_0_0.md')
+
+                # If an 1_0_0.md release notes file exist then add it to the changelog, otherwise take the pack description
+                if os.path.exists(first_release_notes_path):
+                    with open(first_release_notes_path, 'r') as rn_file:
+                        first_pack_release_notes = rn_file.read()
+                else:
+                    first_pack_release_notes = self.description
+
                 version_changelog, not_updated_build = self._create_changelog_entry(
-                    release_notes=self.description,
+                    release_notes=first_pack_release_notes,
                     version_display_name=self._current_version,
                     build_number=build_number,
                     new_version=True,
@@ -1736,6 +1750,10 @@ class Pack(object):
             # Update change log entries with BC flag.
             self.add_bc_entries_if_needed(release_notes_dir, changelog)
 
+            # Remove old entries from change log
+            pack_versions_to_keep = remove_old_versions_from_changelog(changelog)
+
+            logging.debug(f'Versions to keep for pack: {self._pack_name} = {pack_versions_to_keep}')
             # write back changelog with changes to pack folder
             with open(os.path.join(self._pack_path, Pack.CHANGELOG_JSON), "w") as pack_changelog:
                 json.dump(changelog, pack_changelog, indent=4)
@@ -1746,7 +1764,7 @@ class Pack(object):
             logging.error(f"Failed creating {Pack.CHANGELOG_JSON} file for {self._pack_name}.\n "
                           f"Additional info: {e}")
         finally:
-            return task_status, not_updated_build
+            return task_status, not_updated_build, pack_versions_to_keep
 
     def filter_changelog_entries(self, changelog_entry: dict, version: str, marketplace: str, id_set: dict):
         """
@@ -1769,7 +1787,6 @@ class Pack(object):
             (dict) The filtered changelog entry.
             (bool) Whether the pack is not updated because the entries are not relevant to the current marketplace.
         """
-
         logging.debug(f"Starting to filter changelog entries by the entities that are given from id-set for pack "
                       f"{self._pack_name}")
 
@@ -2297,14 +2314,6 @@ class Pack(object):
                             report.update({"preview": preview})
                         folder_collected_items.append(report)
 
-                    elif current_directory == PackFolders.TRIGGERS.value:
-                        folder_collected_items.append({
-                            'id': content_item.get('trigger_id', ''),
-                            'name': content_item.get('trigger_name', ''),
-                            'description': content_item.get('description', ''),
-                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
-                        })
-
                     elif current_directory == PackFolders.WIZARDS.value:
                         folder_collected_items.append({
                             'id': content_item.get('id', ''),
@@ -2326,6 +2335,20 @@ class Pack(object):
                             'profile_type': content_item.get('profile_type', ''),
                             'marketplaces': content_item.get('marketplaces', ["marketplacev2"]),
                         })
+
+                    elif current_directory == PackFolders.LAYOUT_RULES.value and pack_file_name.startswith(
+                            "external-"):
+                        self.add_pack_type_tags(content_item, 'LayoutRule')
+                        layout_rule_metadata = {
+                            'id': content_item.get('rule_id', ''),
+                            'name': content_item.get('rule_name', ''),
+                            'layout_id': content_item.get('layout_id', ''),
+                            'marketplaces': content_item.get('marketplaces', ["marketplacev2"]),
+                        }
+                        layout_rule_description = content_item.get('description')
+                        if layout_rule_description is not None:
+                            layout_rule_metadata['description'] = layout_rule_description
+                        folder_collected_items.append(layout_rule_metadata)
 
                     else:
                         logging.info(f'Failed to collect: {current_directory}')
@@ -2619,17 +2642,10 @@ class Pack(object):
         """
         pack_dependencies_mapping = packs_dependencies_mapping.get(self._pack_name, {})
         first_level_dependencies = pack_dependencies_mapping.get(Metadata.DEPENDENCIES, {})
-        all_levels_dependencies = pack_dependencies_mapping.get(Metadata.ALL_LEVELS_DEPENDENCIES, [])
+        all_levels_dependencies = list(pack_dependencies_mapping.get(Metadata.ALL_LEVELS_DEPENDENCIES, {}))
         displayed_images_dependent_on_packs = pack_dependencies_mapping.get(Metadata.DISPLAYED_IMAGES, [])
         logging.debug(f'(0) {first_level_dependencies=}')
         logging.debug(f'(0) {all_levels_dependencies=}')
-
-        # filter out packs that are not a part of the marketplace this upload is for
-        first_level_dependencies = {k: v for k, v in first_level_dependencies.items() if k in packs_dict}
-        all_levels_dependencies = [k for k in all_levels_dependencies if k in packs_dict]
-        displayed_images_dependent_on_packs = [k for k in displayed_images_dependent_on_packs if k in packs_dict]
-        logging.debug(f'(1) {first_level_dependencies=}')
-        logging.debug(f'(1) {all_levels_dependencies=}')
 
         if Metadata.DISPLAYED_IMAGES not in self._user_metadata:
             self._user_metadata[Metadata.DISPLAYED_IMAGES] = displayed_images_dependent_on_packs
@@ -2640,11 +2656,9 @@ class Pack(object):
         if self._pack_name != GCPConfig.BASE_PACK:
             # add base as a mandatory pack dependency, by design for all packs
             first_level_dependencies.update(BASE_PACK_DEPENDENCY_DICT)
-            logging.debug(f'(2) {first_level_dependencies=}')
-
-        # update the calculated dependencies with the hardcoded dependencies
-        first_level_dependencies.update(self.user_metadata[Metadata.DEPENDENCIES])
-        logging.debug(f'(3) {first_level_dependencies=}')
+            all_levels_dependencies.append(GCPConfig.BASE_PACK)
+            logging.debug(f'(1) {first_level_dependencies=}')
+            logging.debug(f'(1) {all_levels_dependencies=}')
 
         # If it is a core pack, check that no new mandatory packs (that are not core packs) were added
         # They can be overridden in the user metadata to be not mandatory so we need to check there as well
@@ -2654,6 +2668,7 @@ class Pack(object):
         if self._pack_name in core_packs:
             mandatory_dependencies = [k for k, v in first_level_dependencies.items()
                                       if v.get(Metadata.MANDATORY, False) is True
+                                      and not v.get("is_test", False)
                                       and k not in core_packs
                                       and k not in self._user_metadata[Metadata.DEPENDENCIES].keys()
                                       and k not in self._user_metadata.get(Metadata.EXCLUDED_DEPENDENCIES, [])]
@@ -3802,7 +3817,7 @@ def get_pull_request_numbers_from_file(file_path) -> List[int]:
     return re.findall(PULL_REQUEST_PATTERN, log_info)
 
 
-def get_upload_data(packs_results_file_path: str, stage: str) -> Tuple[dict, dict, dict, dict]:
+def get_upload_data(packs_results_file_path: str, stage: str) -> Tuple[dict, dict, dict, dict, dict]:
     """ Loads the packs_results.json file to get the successful and failed packs together with uploaded images dicts
 
     Args:
@@ -3813,6 +3828,7 @@ def get_upload_data(packs_results_file_path: str, stage: str) -> Tuple[dict, dic
     Returns:
         dict: The successful packs dict
         dict: The failed packs dict
+        dict: the successful uploaded dependencies zip packs
         dict : The successful private packs dict
         dict: The images data dict
 
@@ -3821,25 +3837,32 @@ def get_upload_data(packs_results_file_path: str, stage: str) -> Tuple[dict, dic
         packs_results_file = load_json(packs_results_file_path)
         stage_data: dict = packs_results_file.get(stage, {})
         successful_packs_dict = stage_data.get(BucketUploadFlow.SUCCESSFUL_PACKS, {})
+        successful_uploaded_dependencies_zip_packs_dict = \
+            stage_data.get(BucketUploadFlow.SUCCESSFUL_UPLOADED_DEPENDENCIES_ZIP_PACKS, {})
         failed_packs_dict = stage_data.get(BucketUploadFlow.FAILED_PACKS, {})
         successful_private_packs_dict = stage_data.get(BucketUploadFlow.SUCCESSFUL_PRIVATE_PACKS, {})
         images_data_dict = stage_data.get(BucketUploadFlow.IMAGES, {})
-        return successful_packs_dict, failed_packs_dict, successful_private_packs_dict, images_data_dict
+        return successful_packs_dict, successful_uploaded_dependencies_zip_packs_dict, \
+            failed_packs_dict, successful_private_packs_dict, images_data_dict
 
     logging.debug(f'{packs_results_file_path} does not exist in artifacts')
-    return {}, {}, {}, {}
+    return {}, {}, {}, {}, {}
 
 
 def store_successful_and_failed_packs_in_ci_artifacts(packs_results_file_path: str, stage: str, successful_packs: list,
-                                                      failed_packs: list, updated_private_packs: list,
-                                                      images_data: dict = None):
-    """ Write the successful and failed packs to the correct section in the packs_results.json file
+                                                      successful_uploaded_dependencies_zip_packs: list,
+                                                      failed_packs: list,
+                                                      updated_private_packs: list, images_data: dict = None):
+    """ Write the successful, successful_uploaded_dependencies_zip_packs and failed packs to the correct section in the
+        packs_results.json file
 
     Args:
         packs_results_file_path (str): The path to the pack_results.json file
         stage (str): can be BucketUploadFlow.PREPARE_CONTENT_FOR_TESTING or
         BucketUploadFlow.UPLOAD_PACKS_TO_MARKETPLACE_STORAGE
         successful_packs (list): The list of all successful packs
+        successful_uploaded_dependencies_zip_packs (list): The list of all packs that successfully updated their
+        dependencies zip file.
         failed_packs (list): The list of all failed packs
         updated_private_packs (list) : The list of all private packs that were updated
         images_data (dict): A dict containing all images that were uploaded for each pack
@@ -3874,6 +3897,19 @@ def store_successful_and_failed_packs_in_ci_artifacts(packs_results_file_path: s
         }
         packs_results[stage].update(successful_packs_dict)
         logging.debug(f"Successful packs {successful_packs_dict}")
+
+    if successful_uploaded_dependencies_zip_packs:
+        successful_uploaded_dependencies_zip_packs_dict = {
+            BucketUploadFlow.SUCCESSFUL_UPLOADED_DEPENDENCIES_ZIP_PACKS: {
+                pack.name: {
+                    BucketUploadFlow.STATUS: pack.status,
+                    BucketUploadFlow.LATEST_VERSION: pack.latest_version
+                } for pack in successful_uploaded_dependencies_zip_packs
+            }
+        }
+
+        packs_results[stage].update(successful_uploaded_dependencies_zip_packs_dict)
+        logging.debug(f"successful uploaded dependencies zip_packs {successful_uploaded_dependencies_zip_packs_dict}")
 
     if updated_private_packs:
         successful_private_packs_dict: dict = {
@@ -4291,7 +4327,7 @@ def get_id_set_entity_by_path(entity_path: Path, pack_folder: str, id_set: dict)
 
 def is_content_item_in_graph(display_name: str, content_type, marketplace) -> bool:
     with Neo4jContentGraphInterface() as interface:
-        res = interface.search(content_type=content_type, marketplace=marketplace, name=display_name)
+        res = interface.search(content_type=content_type, marketplace=marketplace, display_name=display_name)
         logging.debug(f'Content type for {display_name} is {content_type}, result is {bool(res)}')
         return bool(res)
 
@@ -4312,10 +4348,16 @@ def is_content_item_in_id_set(display_name: str, rn_header: str, id_set: dict, m
     logging.debug(f"Checking if the entity with the display name {display_name} is present in the id set")
 
     if not id_set:
+        logging.debug("id_set does not exist, searching in graph")
         content_type = rn_header.replace(' ', '')[:-1]
-        return is_content_item_in_graph(display_name=display_name,
+
+        if not is_content_item_in_graph(display_name=display_name,
                                         content_type=content_type,
-                                        marketplace=marketplace)
+                                        marketplace=marketplace):
+            logging.debug(f"Could not find the content entity of type {content_type} with display name "
+                          f"'{display_name}' in the graph")
+            return False
+        return True
 
     for id_set_entity in id_set[RN_HEADER_TO_ID_SET_KEYS[rn_header]]:
 
@@ -4324,3 +4366,53 @@ def is_content_item_in_id_set(display_name: str, rn_header: str, id_set: dict, m
 
     logging.debug(f"Could not find the entity with display name {display_name} in id_set.")
     return False
+
+
+def remove_old_versions_from_changelog(changelog: dict):
+    """
+    Removes old pack versions from changelog in order to reduce index.zip size.
+    We are keeping the maximum number of versions between the following options:
+    1.  Versions were released last year.
+    2.  Last minor version and one version before it.
+    3.  Last five versions.
+    Edits the changelog entries in place.
+
+    Args:
+        changelog (dict): The changelog of some pack.
+    Returns:
+        (list) last pack versions
+    """
+    versions_to_keep: List[str] = []
+    if not changelog:
+        return versions_to_keep
+
+    last_same_minor_versions = []
+    last_year_versions = []
+    last_five_versions = list(changelog.keys())[-5:]
+
+    year_ago_datetime_obj = datetime.utcnow() - timedelta(days=365)
+    last_version = Version(list(changelog.keys())[-1])
+    save_last_minor_versions = not (last_version.minor == 0 and last_version.major == 1)
+
+    prev_version = None
+    for version, info in changelog.items():
+        # get versions that were released in last year
+        if version_release_date := info.get(Changelog.RELEASED):
+            version_released_datetime_obj = datetime.strptime(version_release_date, Metadata.DATE_FORMAT)
+            if version_released_datetime_obj > year_ago_datetime_obj:
+                last_year_versions.append(version)
+
+        # get versions with same minor version
+        if save_last_minor_versions and Version(version).minor == last_version.minor \
+                and Version(version).major == last_version.major:
+            last_same_minor_versions.append(version)
+            if prev_version and prev_version not in last_same_minor_versions:
+                last_same_minor_versions.append(prev_version)
+
+        prev_version = version
+
+    versions_to_keep = max([last_five_versions, last_year_versions, last_same_minor_versions], key=len)
+
+    [changelog.pop(version) for version in list(changelog.keys()) if version not in versions_to_keep]
+
+    return versions_to_keep

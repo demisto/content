@@ -794,9 +794,11 @@ def get_data(client, remote_incident_id, last_update, params):
 def get_modified_remote_data_command(client, args, params):
     modified_records_ids = []
     remote_args = GetModifiedRemoteDataArgs(args)
-    last_update = parse(remote_args.last_update, settings={'TIMEZONE': 'UTC'}).isoformat().split(".")[0] + "Z"
-    demisto.debug(f'SalesforcePy : * START * Performing get-modified-remote-data command. Last update is:'
-                  f' {last_update}')
+    last_upadte_parsed = parse(remote_args.last_update, settings={'TIMEZONE': 'UTC'})
+    if last_upadte_parsed:
+        last_update = last_upadte_parsed.isoformat().split(".")[0] + "Z"
+        demisto.debug(f'SalesforcePy : * START * Performing get-modified-remote-data command. Last update is:'
+                      f' {last_update}')
 
     cases = client.queryObjects(['Id'], 'Case',
                                 f"{params.get('mirroring_condition')}".replace("AND ", "")).get('records')
@@ -816,7 +818,8 @@ def get_remote_data_command(client, args, params):
     new_incident_data = {}
     entries = []
     lastcomment_date = []
-    last_update_sfdc = parse(parsed_args.last_update, settings={'TIMEZONE': 'UTC'}).isoformat().split(".")[0] + "Z"
+    last_update_sfdc_parsed = parse(parsed_args.last_update, settings={'TIMEZONE': 'UTC'})
+    last_update_sfdc = last_update_sfdc_parsed.isoformat().split(".")[0] + "Z" if last_update_sfdc_parsed else ''
     try:
         new_incident_data, case_comments = get_data(client, parsed_args.remote_incident_id, last_update_sfdc, params)
         new_incident_data['id'] = parsed_args.remote_incident_id
@@ -877,7 +880,9 @@ def fetchIncident(client, params):
     if not lastRun.get("last_case_time"):
         lastRun = {}
         first_fetch_time = params.get('firstFetchTime', '3 days').strip()
-        lastRun['last_case_time'] = parse(f'{first_fetch_time} UTC').isoformat().split("+")[0].split(".")[0] + "Z"
+        first_fetch_time_parsed = parse(f'{first_fetch_time} UTC')
+        if first_fetch_time_parsed:
+            lastRun['last_case_time'] = first_fetch_time_parsed.isoformat().split("+")[0].split(".")[0] + "Z"
         demisto.setLastRun(lastRun)
 
     incidents = []
@@ -896,20 +901,26 @@ def fetchIncident(client, params):
         cases = client.queryObjects(list(set(properties)), "Case", condition).get("records")
 
         if len(cases) > 0:
-            lastRun['last_case_time'] = parse(cases[0].get("CreatedDate")).isoformat().split("+")[0].split(".")[0] + "Z"
+            last_case_time_parsed = parse(cases[0].get("CreatedDate"))
+            if last_case_time_parsed:
+                lastRun['last_case_time'] = last_case_time_parsed.isoformat().split("+")[0].split(".")[0] + "Z"
             demisto.setLastRun(lastRun)
             for index, item in enumerate(cases):
                 del item['attributes']  # remove attributes
                 # retrieve owner info
                 cases[index]['OwnerDetails'] = client.getObject(item.get('OwnerId'))
-                cases[index]['LastModifiedDate'] = parse(
-                    item.get('LastModifiedDate')).isoformat().split("+")[0].split(".")[0] + "Z"
-                cases[index]['CreatedDate'] = parse(item.get('CreatedDate')).isoformat().split("+")[0].split(".")[0] + "Z"
+                last_modified_date_parsed = parse(item.get('LastModifiedDate'))
+                if last_modified_date_parsed:
+                    cases[index]['LastModifiedDate'] = last_modified_date_parsed.isoformat().split("+")[0].split(".")[0] + "Z"
+                created_dated_parsed = parse(item.get('CreatedDate'))
+                if created_dated_parsed:
+                    cases[index]['CreatedDate'] = created_dated_parsed.isoformat().split("+")[0].split(".")[0] + "Z"
                 incidents.append({
                     "name": f"{item.get('Id')} {item.get('Subject')}",
                     "details": item.get('Description'),
                     "owner": cases[index]['OwnerDetails'].get("Email"),
-                    "occurred": parse(item.get('CreatedDate')).isoformat().split("+")[0].split(".")[0] + "Z",
+                    "occurred": created_dated_parsed.isoformat().split("+")[0].split(".")[0] + "Z"
+                    if created_dated_parsed else '',
                     "rawJSON": json.dumps(item),
                     'mirror_direction': MIRROR_DIRECTION.get(params.get('mirror_direction')),
                     'mirror_tags': [params.get('comment_tag'), params.get('file_tag')],
@@ -925,8 +936,9 @@ def fetchIncident(client, params):
         replies = client.queryObjects(list(set(properties)), "FeedComment", condition).get("records")
 
         if len(replies) > 0:
-
-            lastRun['last_case_time'] = parse(replies[0].get("CreatedDate")).isoformat().split("+")[0].split(".")[0] + "Z"
+            last_case_time_parsed = parse(replies[0].get("CreatedDate"))
+            if last_case_time_parsed:
+                lastRun['last_case_time'] = last_case_time_parsed.isoformat().split("+")[0].split(".")[0] + "Z"
             demisto.setLastRun(lastRun)
 
             for reply in replies:
@@ -944,11 +956,13 @@ def fetchIncident(client, params):
 
                 for ms in messageSegments:
                     if ms.get('type') == 'Text':
+                        created_date_parsed = parse(parentText.get('CreatedDate'))
                         # Found the relevant comment (there's only one), so we return it
                         incidents.append({
                             "name": f"{parentText['attributes']['type']} {parentText['Id']}",
                             "details": ms.get("text"),
-                            "occurred": parse(parentText.get('CreatedDate')).isoformat().split("+")[0].split(".")[0] + "Z",
+                            "occurred": created_date_parsed.isoformat().split("+")[0].split(".")[0] + "Z" if
+                            created_date_parsed else '',
                             "rawJSON": json.dumps(parentText)
                         })
 

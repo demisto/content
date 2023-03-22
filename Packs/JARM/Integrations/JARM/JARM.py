@@ -2,7 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 import asyncio
-import requests
+import urllib3
 import traceback
 from urllib.parse import urlparse
 from ipaddress import ip_address
@@ -10,7 +10,7 @@ from typing import Dict, Tuple, Any
 from jarm.scanner.scanner import Scanner
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+urllib3.disable_warnings()  # pylint: disable=no-member
 
 DEFAULT_PORT = 443
 
@@ -42,7 +42,7 @@ def parse_hostname(hostname: str, port: Optional[int]) -> Dict[str, Any]:
         target['port'] = DEFAULT_PORT
 
     try:
-        ip = ip_address(parsed_url.hostname)
+        ip = ip_address(parsed_url.hostname)  # type: ignore[arg-type]
         target['target_host'] = str(ip)
         target['target_type'] = 'ip'
     except ValueError:

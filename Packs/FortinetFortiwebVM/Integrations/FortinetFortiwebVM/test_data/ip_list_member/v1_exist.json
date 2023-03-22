@@ -1,0 +1,4 @@
+{
+    "msg": "The IP has already existed in the table.",
+    "status": 500
+}

@@ -34,6 +34,29 @@ script:
       name: file_hash
       required: true
       secret: false
+    - default: false
+      description: Should polling be enable for this command
+      defaultValue: false
+      isArray: false
+      name: wait_for_result
+      required: false
+      secret: false
+    - default: false
+      description: Number of seconds before polling throw timeout
+      defaultValue: 600
+      isArray: false
+      name: timeout
+      required: false
+      secret: false
+      type: number
+    - default: false
+      description: Intervals in seconds between poll requests
+      defaultValue: 30
+      isArray: false
+      name: interval
+      required: false
+      secret: false
+      type: number
     deprecated: false
     description: Checks file reputation of the given hash, supports SHA256, SHA1 and MD5
     execution: false
@@ -47,6 +70,7 @@ script:
     - contextPath: Intezer.Analysis.Type
       description: type of the analysis
       type: string
+    polling: true
   - name: intezer-analyze-url
     arguments:
     - default: false
@@ -55,6 +79,29 @@ script:
       name: url
       required: true
       secret: false
+    - default: false
+      description: Should polling be enable for this command
+      defaultValue: false
+      isArray: false
+      name: wait_for_result
+      required: false
+      secret: false
+    - default: false
+      description: Number of seconds before polling throw timeout
+      defaultValue: 600
+      isArray: false
+      name: timeout
+      required: false
+      secret: false
+      type: number
+    - default: false
+      description: Intervals in seconds between poll requests
+      defaultValue: 30
+      isArray: false
+      name: interval
+      required: false
+      secret: false
+      type: number
     deprecated: false
     description: Checks reputation of an Url
     execution: false
@@ -68,6 +115,19 @@ script:
     - contextPath: Intezer.Analysis.Type
       description: type of the analysis
       type: string
+    - contextPath: URL.Data
+      description: The submitted Url
+      type: string
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious Url, the vendor that made the decision
+      type: string
+    - contextPath: URL.Metadata
+      description: Metadata returned from Intezer analysis
+      type: Unknown
+    - contextPath: URL.ExistsInIntezer
+      description: Does the url exists on intezer
+      type: Boolean
+    polling: true
   - name: intezer-get-latest-report
     arguments:
     - default: false
@@ -75,6 +135,16 @@ script:
       isArray: false
       name: file_hash
       required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Should get only private analysis
+      isArray: false
+      name: should_get_only_private_analysis
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
       secret: false
     deprecated: false
     description: Checks file reputation of the given hash, supports SHA256, SHA1 and MD5 by looking at the latest available report
@@ -112,6 +182,59 @@ script:
       name: file_entry_id
       required: true
       secret: false
+    - default: false
+      description: Should polling be enable for this command
+      defaultValue: false
+      isArray: false
+      name: wait_for_result
+      required: false
+      secret: false
+    - default: false
+      description: Number of seconds before polling throw timeout
+      defaultValue: 600
+      isArray: false
+      name: timeout
+      required: false
+      secret: false
+    - default: false
+      description: Intervals in seconds between poll requests
+      defaultValue: 30
+      isArray: false
+      name: interval
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Should disable sandox dynamic execution
+      isArray: false
+      name: disable_dynamic_execution
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Should disable static extraction
+      isArray: false
+      name: disable_static_extraction
+      required: false
+      predefined:
+      - 'true'
+      - 'false'
+      secret: false
+    - default: false
+      description: Given sandbox command line arguments
+      isArray: false
+      name: sandbox_command_line_arguments
+      required: false
+      secret: false
+    - default: false
+      description: Zip password in case the file is protected zip
+      isArray: false
+      name: zip_password
+      required: false
+      secret: false
     deprecated: false
     description: Checks file reputation for uploaded file (up to 150MB)
     execution: false
@@ -125,6 +248,19 @@ script:
     - contextPath: Intezer.Analysis.Type
       description: type of the analysis
       type: string
+    - contextPath: File.SHA256
+      description: Hash SHA256
+      type: string
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision
+      type: string
+    - contextPath: File.Metadata
+      description: Metadata returned from Intezer analysis (analysis id, analysis url, family, family type, sha256, verdict, sub_verdict). Metadata will be returned only for supported files.
+      type: Unknown
+    - contextPath: File.ExistsInIntezer
+      description: Does the file exists on intezer genome database
+      type: Boolean
+    polling: true
   - name: intezer-get-analysis-result
     arguments:
     - default: false
@@ -327,7 +463,184 @@ script:
     - contextPath: Intezer.Analysis.IOCs
       description: The Analysis IOCs
       type: Dict
-  dockerimage: demisto/py3-tools:1.0.0.41100
+  - name: intezer-get-file-analysis-result
+    arguments:
+    - default: false
+      description: The analysis ID we want to get the analysis result for
+      isArray: false
+      name: analysis_id
+      required: true
+      secret: false
+    - default: false
+      description: Should polling be enable for this command
+      defaultValue: true
+      isArray: false
+      name: wait_for_result
+      required: false
+      secret: false
+    - default: false
+      description: Number of seconds before polling throw timeout
+      defaultValue: 600
+      isArray: false
+      name: timeout
+      required: false
+      secret: false
+      type: number
+    - default: false
+      description: Intervals in seconds between poll requests
+      defaultValue: 30
+      isArray: false
+      name: interval
+      required: false
+      secret: false
+      type: number
+    deprecated: false
+    description: Returns the analysis result
+    execution: false
+    polling: true
+    outputs:
+    - contextPath: File.SHA256
+      description: Hash SHA256
+      type: string
+    - contextPath: File.MD5
+      description: Hash MD5
+      type: string
+    - contextPath: File.SHA1
+      description: Hash SHA1
+      type: string
+    - contextPath: File.Malicious.Vendor
+      description: For malicious files, the vendor that made the decision
+      type: string
+    - contextPath: File.Metadata
+      description: Metadata returned from Intezer analysis (analysis id, analysis url, family, family type, sha256, verdict, sub_verdict). Metadata will be returned only for supported files.
+      type: Unknown
+    - contextPath: File.ExistsInIntezer
+      description: Does the file exists on intezer genome database
+      type: Boolean
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+      type: string
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+  - name: intezer-get-url-analysis-result
+    arguments:
+    - default: false
+      description: The analysis ID we want to get the analysis result for
+      isArray: false
+      name: analysis_id
+      required: true
+      secret: false
+    - default: false
+      description: Should polling be enable for this command
+      defaultValue: true
+      isArray: false
+      name: wait_for_result
+      required: false
+      secret: false
+    - default: false
+      description: Number of seconds before polling throw timeout
+      defaultValue: 600
+      isArray: false
+      name: timeout
+      required: false
+      secret: false
+      type: number
+    - default: false
+      description: Intervals in seconds between poll requests
+      defaultValue: 30
+      isArray: false
+      name: interval
+      required: false
+      secret: false
+      type: number
+    deprecated: false
+    description: Returns the analysis result
+    execution: false
+    polling: true
+    outputs:
+    - contextPath: URL.Data
+      description: The submitted Url
+      type: string
+    - contextPath: URL.Malicious.Vendor
+      description: For malicious Url, the vendor that made the decision
+      type: string
+    - contextPath: URL.Metadata
+      description: Metadata returned from Intezer analysis
+      type: Unknown
+    - contextPath: URL.ExistsInIntezer
+      description: Does the url exists on intezer
+      type: Boolean
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+      type: string
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+  - name: intezer-get-endpoint-analysis-result
+    arguments:
+    - default: false
+      description: The analysis ID we want to get the analysis result for
+      isArray: false
+      name: analysis_id
+      required: true
+      secret: false
+    - default: false
+      description: Should polling be enable for this command
+      defaultValue: true
+      isArray: false
+      name: wait_for_result
+      required: false
+      secret: false
+    - default: false
+      description: Number of seconds before polling throw timeout
+      defaultValue: 900
+      isArray: false
+      name: timeout
+      required: false
+      secret: false
+      type: number
+    - default: false
+      description: Intervals in seconds between poll requests
+      defaultValue: 30
+      isArray: false
+      name: interval
+      required: false
+      secret: false
+      type: number
+    deprecated: false
+    description: Returns the analysis result
+    execution: false
+    polling: true
+    outputs:
+    - contextPath: DBotScore.Indicator
+      description: The indicator we tested
+      type: string
+    - contextPath: DBotScore.Type
+      description: The type of the indicator
+      type: string
+    - contextPath: DBotScore.Vendor
+      description: Vendor used to calculate the score
+      type: string
+    - contextPath: DBotScore.Score
+      description: The actual score
+      type: number
+    - contextPath: Endpoint.Metadata
+      description: Metadata returned from Intezer analysis (endpoint analysis id, endpoint analysis url, families,  verdict, host_name)
+      type: Unknown
+  dockerimage: demisto/py3-tools:1.0.0.49703
   isfetch: false
   runonce: false
   script: '-'

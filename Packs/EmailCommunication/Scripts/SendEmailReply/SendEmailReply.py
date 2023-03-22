@@ -522,13 +522,15 @@ def get_incident_by_query(query):
 
     query_from_date = str(parse_date_range(query_time)[0])
 
-    res = demisto.executeCommand("GetIncidentsByQuery", {"query": query, "fromDate": query_from_date,
-                                                         "timeField": "modified", "Contents": "id,status"})[0]
-    if is_error(res):
-        return_results(ERROR_TEMPLATE.format('GetIncidentsByQuery', res['Contents']))
-        raise DemistoException(ERROR_TEMPLATE.format('GetIncidentsByQuery', res['Contents']))
+    query += f' modified:>="{query_from_date}"'
 
-    incidents_details = json.loads(res['Contents'])
+    res = demisto.executeCommand("getIncidents", {"query": query, "populateFields": "id,status"})[0]
+    if is_error(res):
+        return_results(ERROR_TEMPLATE.format('getIncidents', res['Contents']))
+        raise DemistoException(ERROR_TEMPLATE.format('getIncidents', res['Contents']))
+
+    incidents_details = res['Contents']['data']
+
     return incidents_details
 
 
@@ -544,7 +546,7 @@ def get_unique_code():
         code = f'{random.randrange(1, 10 ** 8):08}'
         query = f'emailgeneratedcode: {code}'
         incidents_details = get_incident_by_query(query)
-        if len(incidents_details) == 0:
+        if incidents_details is None or len(incidents_details) == 0:
             code_is_unique = True
     return code
 

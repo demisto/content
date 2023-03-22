@@ -73,8 +73,8 @@ knownerrors = [
     {
         "no space left on device": [
             "Error Found: `no space left on device`",
-            "Free up Disk Space with Data Archiving: https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/"
-            "cortex-xsoar-admin/manage-data/free-up-disc-space-with-data-archiving"
+            "Free up Disk Space with Data Archiving: https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/"
+            "Cortex-XSOAR-Administrator-Guide/Free-up-Disk-Space-with-Data-Archiving"
         ]
     },
     {
@@ -86,8 +86,8 @@ knownerrors = [
     {
         "(error: websocket: close 1006 (abnormal closure): unexpected EOF)": [
             " Error Found: `error: websocket: close 1006 (abnormal closure): unexpected EOF`",
-            "WebSocket Configuration: https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-1/cortex-xsoar-admin/installation/"
-            "post-installation-checklist/websocket-configuration.html#idee004eaa-34d9-41a1-a8d0-aba3bf9f91bb"
+            "WebSocket Configuration:  https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/"
+            "Cortex-XSOAR-Administrator-Guide/WebSocket-Configuration"
         ]
     },
     {
@@ -107,7 +107,8 @@ knownerrors = [
         "error Failed on ensure function for": [
             "Error Found: `error Failed on ensure function for`",
             "Reindex the Entire Database: "
-            "https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-0/cortex-xsoar-admin/manage-data/reindex-the-database"
+            "https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/"
+            "Cortex-XSOAR-Administrator-Guide/Reindex-the-Entire-Database"
         ]
     },
     {

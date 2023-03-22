@@ -2,8 +2,9 @@ from typing import Union, Dict, Optional, List
 
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 
+import urllib3
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 INTEGRATION_CONTEXT_BRAND = "DeHashed"
 BASE_URL = "https://api.dehashed.com/"

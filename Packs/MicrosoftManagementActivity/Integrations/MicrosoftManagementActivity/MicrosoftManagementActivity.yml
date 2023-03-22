@@ -60,6 +60,22 @@ configuration:
   required: false
   type: 4
   section: Connect
+- additionalinfo: Relevant only if the integration is running on Azure VM. 
+    If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field.
+    If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity.
+    For additional information, see the Help tab.
+  display: Use Azure Managed Identities
+  name: use_managed_identities
+  required: false
+  type: 8
+  section: Connect
+- additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
+  displaypassword: Azure Managed Identities Client ID
+  name: managed_identities_client_id
+  required: false
+  hiddenusername: true
+  type: 9
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -293,7 +309,11 @@ script:
     - contextPath: MicrosoftManagement.ContentRecord.UserID
       description: The ID of the record's user.
       type: string
-  dockerimage: demisto/pyjwt3:1.0.0.36533
+  - description: Generate the login url used for Authorization code flow.
+    execution: false
+    name: ms-management-activity-generate-login-url
+    arguments: []
+  dockerimage: demisto/pyjwt3:1.0.0.49643
   feed: false
   isfetch: true
   longRunning: false

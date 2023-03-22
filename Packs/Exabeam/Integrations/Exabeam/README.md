@@ -2,9 +2,11 @@ The Exabeam Security Management Platform provides end-to-end detection, User Eve
 This integration was integrated and tested with version 53.5 of Exabeam.
 
 ### Authentication Methods
-
-In addition to the User Credentials authentication method, **Exabeam Cloud** users can authenticate using a **Cluster Authentication Token**. To authenticate with a Cluster Authentication Token, insert `__token` in the "Username" parameter, and the token itself in the "Password" parameter.
-
+There are 2 authentication methods:
+ - **API Token** - API token should be entered in the “API Token” parameter. In order to use the “Fetch Incident” functionality in this integration, the username must be provided also in the “Username” parameter.
+ - **Basic Authentication** - Providing username and password in the corresponding parameters in the configuration. This method also allows fetching incidents.
+ - ***Deprecated***:
+ API Key entered in the “password” parameter and `__token` in the username parameter. This method won’t allow fetching incidents.
 
 ### Generate a Cluster Authentication Token
 
@@ -27,8 +29,9 @@ For additional information, refer to [Exabeam Administration Guide](https://docs
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
     | Server URL (e.g https://100.24.16.156:8484) |  | True |
-    | Username | In order to authenticate with a Cluster Authentication Token, insert \`__token\` in the "Username" textbox, and the token itself in the "Password" textbox. | True |
-    | Password |  | True |
+    | Username |  | False |
+    | Password |  | False |
+    | API Token | Cluster Authentication Token | False |
     | Exabeam Incident Type | Incident type to filter in Exabeam. Possible values are: generic, abnormalAuth, accountManipulation, accountTampering, ueba, bruteForce, compromisedCredentials, cryptomining, dataAccessAbuse, dataExfiltration, dlp, departedEmployee, dataDestruction, evasion, lateralMovement, alertTriage, malware, phishing, privilegeAbuse, physicalSecurity, privilegeEscalation, privilegedActivity, ransomware, workforceProtection. | False |
     | Priority | Incident priority to filter in Exabeam. Possible values are: low, medium, high, critical. | False |
     | Status | Incident status to filter in Exabeam. Possible values are: closed, closedFalsePositive, inprogress, new, pending, resolved. | False |

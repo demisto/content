@@ -1,4 +1,7 @@
 category: Endpoint
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: CrowdstrikeFalcon
   version: -1
@@ -8,21 +11,25 @@ configuration:
   name: url
   required: true
   type: 0
+  section: Connect
 - display: Client ID
   name: credentials
   required: false
   type: 9
   displaypassword: Secret
+  section: Connect
 - display: Client ID
   name: client_id
   required: false
   type: 0
   hidden: true
+  section: Connect
 - display: Secret
   name: secret
   required: false
   type: 4
   hidden: true
+  section: Connect
 - defaultvalue: 'A+ - 3rd party enrichment'
   display: Source Reliability
   name: Reliability
@@ -37,33 +44,44 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
+  section: Collect
+  advanced: true
 - display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: fetch_time
   required: false
   type: 0
   defaultvalue: '3 days'
+  section: Collect
 - display: Max incidents per fetch
   name: incidents_per_fetch
   required: false
   type: 0
   defaultvalue: '15'
+  section: Collect
+  advanced: true
 - display: Detections fetch query
   name: fetch_query
   required: false
   type: 0
+  section: Collect
+  advanced: true
 - display: Incidents fetch query
   name: incidents_fetch_query
   required: false
   type: 0
+  section: Collect
+  advanced: true
 - defaultvalue: 'true'
   display: Fetch incidents
   name: isFetch
   required: false
   type: 8
+  section: Collect
 - display: Incident type
   name: incidentType
   required: false
   type: 13
+  section: Connect
 - display: Mirroring Direction
   name: mirror_direction
   required: false
@@ -75,26 +93,35 @@ configuration:
   - Incoming
   - Outgoing
   - Incoming And Outgoing
+  section: Collect
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - additionalinfo: When selected, closes the CrowdStrike Falcon incident or detection, which is mirrored in the Cortex XSOAR incident.
   defaultvalue: 'false'
   display: Close Mirrored XSOAR Incident
   name: close_incident
   required: false
   type: 8
+  section: Collect
+  advanced: true
 - defaultvalue: 'false'
   display: Close Mirrored CrowdStrike Falcon Incident or Detection
   name: close_in_cs_falcon
   required: false
   type: 8
   additionalinfo: When selected, closes the Cortex XSOAR incident, which is mirrored in the CrowdStrike Falcon incident or detection, according to the types that were chosen to be fetched and mirrored.
+  section: Collect
+  advanced: true
 - additionalinfo: Choose what to fetch - incidents, detections, or both.
   defaultvalue: 'Detections'
   display: 'Fetch types'
@@ -104,17 +131,23 @@ configuration:
   options:
   - Detections
   - Incidents
+  section: Collect
+  advanced: true
 - defaultvalue: '1'
   display: 'Incidents Fetch Interval'
   name: incidentFetchInterval
   required: false
   type: 19
+  section: Collect
+  advanced: true
 - additionalinfo: Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created.
   defaultvalue: 1
   display: 'Advanced: Time in minutes to look back when fetching incidents and detections'
   name: look_back
   required: false
   type: 0
+  section: Collect
+  advanced: true
 description: The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API), enables fetching and resolving detections, searching devices, getting behaviors by ID, containing hosts, and lifting host containment.
 display: CrowdStrike Falcon
 name: CrowdstrikeFalcon
@@ -2307,6 +2340,10 @@ script:
       isArray: true
       name: multiple_indicators_json
       required: true
+    - name: timeout
+      description: The amount of time (in seconds) that a request will wait for a client to establish a connection to a remote machine before a timeout occurs.
+      defaultValue: "180"
+      type: unknown
     description: Uploads a batch of indicators.
     name: cs-falcon-batch-upload-custom-ioc
     outputs:
@@ -2859,7 +2896,17 @@ script:
     - contextPath: CrowdStrike.VulnerabilityHost.cve.id
       description: Unique identifier for a vulnerability as cataloged in the National Vulnerability Database (NVD).
       type: String
-  dockerimage: demisto/python3:3.10.9.42476
+  - arguments:
+    - description: A comma-separated list of incident IDs.
+      isArray: true
+      name: ids
+      required: true
+    - description: A comment added to the CrowdStrike incident.
+      name: comment
+      required: true
+    description: Updates CrowdStrike Incident with the comment.
+    name: cs-falcon-update-incident-comment
+  dockerimage: demisto/python3:3.10.10.48392
   isfetch: true
   ismappable: true
   isremotesyncin: true
