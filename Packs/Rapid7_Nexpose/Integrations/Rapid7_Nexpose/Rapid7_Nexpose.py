@@ -3152,7 +3152,7 @@ def update_site_included_targets(client: Client, site_id: str | None = None, sit
         client=client,
     )
 
-    targets = targets.split(',')
+    targets = argToList(targets)
 
     client.update_site_included_targets(
         site_id=site.id, targets=targets
