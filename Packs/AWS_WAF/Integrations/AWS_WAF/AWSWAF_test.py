@@ -2,7 +2,7 @@ import json
 import io
 from CommonServerPython import *
 import pytest
-from AWS_WAF import OPERATOR_TO_STATEMENT_OPERATOR, REGEX_MATCH_STATEMENT, BYTE_MATCH_STATEMENT
+from AWSWAF import OPERATOR_TO_STATEMENT_OPERATOR, REGEX_MATCH_STATEMENT, BYTE_MATCH_STATEMENT
 
 
 class MockedBoto3Client:
@@ -57,7 +57,7 @@ def util_load_json(path):
 
 
 def test_get_tags_dict_from_args():
-    from AWS_WAF import get_tags_dict_from_args
+    from AWSWAF import get_tags_dict_from_args
     tag_keys = ['tag1', 'tag2']
     tag_values = ['value1', 'value2']
     result = get_tags_dict_from_args(tag_keys=tag_keys, tag_values=tag_values)
@@ -65,7 +65,7 @@ def test_get_tags_dict_from_args():
 
 
 def test_convert_dict_values_bytes_to_str():
-    from AWS_WAF import convert_dict_values_bytes_to_str
+    from AWSWAF import convert_dict_values_bytes_to_str
     input_dict = {'some_key': b'some_value',
                   'some_key1': [b'some_value'],
                   'some_key2': {'some_key': [b'some_value'],
@@ -81,7 +81,7 @@ def test_convert_dict_values_bytes_to_str():
 
 
 def test_get_tags_dict_from_args_raise_exception():
-    from AWS_WAF import get_tags_dict_from_args
+    from AWSWAF import get_tags_dict_from_args
     tag_keys = ['tag1']
     tag_values = ['value1', 'value2']
     with pytest.raises(DemistoException):
@@ -89,7 +89,7 @@ def test_get_tags_dict_from_args_raise_exception():
 
 
 def test_build_regex_pattern_object():
-    from AWS_WAF import build_regex_pattern_object
+    from AWSWAF import build_regex_pattern_object
     regex_patterns = ["pattern1", "pattern2"]
     result = build_regex_pattern_object(regex_patterns=regex_patterns)
     assert len(result) == 2
@@ -106,18 +106,9 @@ OR_CONDITION_OPERATOR = 'Or'
                           ({'ip_set_arn': IP_ARN_LIST, 'condition_operator': AND_CONDITION_OPERATOR},
                            OPERATOR_TO_STATEMENT_OPERATOR[AND_CONDITION_OPERATOR])])
 def test_build_ip_rule_object(args, expected_result):
-    from AWS_WAF import build_ip_rule_object
+    from AWSWAF import build_ip_rule_object
     ip_rule = build_ip_rule_object(args=args)
     assert expected_result in ip_rule['Statement']
-
-
-# @pytest.mark.parametrize('ip_set_arn, expected_type',
-#                          [(IP_ARN_LIST[:1], dict),
-#                           (IP_ARN_LIST, list)])
-# def test_build_ip_statement(ip_set_arn, expected_type):
-#     from AWS_WAF import build_ip_statement
-#     statement = build_ip_statement(ip_set_arn=ip_set_arn)
-#     assert statement == expected_type
 
 
 @pytest.mark.parametrize('rule_file, statement_condition, statements',
@@ -134,17 +125,17 @@ def test_build_ip_rule_object(args, expected_result):
                                "ARN": "ip_arn1"
                            }}])])
 def test_update_rule_with_statement(rule_file, statement_condition, statements):
-    from AWS_WAF import update_rule_with_statement
+    from AWSWAF import update_rule_with_statement
     rule = util_load_json(rule_file)
     update_rule_with_statement(rule=rule, statements=statements, condition_operator=AND_CONDITION_OPERATOR)
     assert statement_condition in rule['Statement']
 
 
 def test_create_rules_list_with_new_rule_statement(mocker):
-    from AWS_WAF import create_rules_list_with_new_rule_statement
+    from AWSWAF import create_rules_list_with_new_rule_statement
     rules = util_load_json('rule_group').get('RuleGroup').get('Rules')
     args = {'rule_name': 'test_1'}
-    res = mocker.patch('AWS_WAF.update_rule_with_statement')
+    res = mocker.patch('AWSWAF.update_rule_with_statement')
     create_rules_list_with_new_rule_statement(args=args, statements=[{}], rules=rules)
     assert res.call_count == 1
 
@@ -153,7 +144,7 @@ def test_create_rules_list_with_new_rule_statement(mocker):
                          [('Exactly Matches String', 'regex_arn', None, 'string_to_match must be provided'),
                           ('Matches Regex Pattern Set', None, 'str_to_match', 'regex_set_arn must be provided')])
 def test_build_string_match_statement_raise_exception(match_type, regex_set_arn, string_to_match, expected_exception):
-    from AWS_WAF import build_string_match_statement
+    from AWSWAF import build_string_match_statement
     with pytest.raises(DemistoException) as e:
         build_string_match_statement(match_type=match_type)
         assert expected_exception in str(e)
@@ -173,7 +164,7 @@ def test_build_string_match_statement(match_type,
                                       web_request_component,
                                       expected_result,
                                       match_statement):
-    from AWS_WAF import build_string_match_statement
+    from AWSWAF import build_string_match_statement
     statement = build_string_match_statement(match_type,
                                              string_to_match,
                                              regex_set_arn,
@@ -190,20 +181,20 @@ def test_build_string_match_statement(match_type,
                            {}),
                           ('Body', 'CONTINUE', {'OversizeHandling': 'CONTINUE'})])
 def test_build_web_component_match_object(web_request_component, oversize_handling, expected_result):
-    from AWS_WAF import build_web_component_match_object
+    from AWSWAF import build_web_component_match_object
     web_request_component_object = build_web_component_match_object(web_request_component, oversize_handling)
     assert web_request_component_object == expected_result
 
 
 def test_delete_rule():
-    from AWS_WAF import delete_rule
+    from AWSWAF import delete_rule
     original_rules = util_load_json('rule_group').get('RuleGroup').get('Rules')
     deleted_rules = delete_rule(rule_name='test_1', rules=original_rules)
     assert len(original_rules) == len(deleted_rules) + 1
 
 
 def test_append_new_rule():
-    from AWS_WAF import append_new_rule
+    from AWSWAF import append_new_rule
     original_rules = util_load_json('rule_group').get('RuleGroup').get('Rules')
     rule = util_load_json('rule_one_statement')
     updated_rules = append_new_rule(rule=rule, rules=original_rules)
@@ -214,7 +205,7 @@ def test_append_new_rule():
 
 
 def test_create_ip_set_command(mocker):
-    from AWS_WAF import create_ip_set_command
+    from AWSWAF import create_ip_set_command
     client = MockedBoto3Client()
     create_ip_set_args = {'name': 'name', 'scope': 'Regional', 'ip_version': 'IPV4', 'addresses': []}
     create_ip_set_mock = mocker.patch.object(client, 'create_ip_set')
@@ -223,7 +214,7 @@ def test_create_ip_set_command(mocker):
 
 
 def test_get_ip_set_command(mocker):
-    from AWS_WAF import get_ip_set_command
+    from AWSWAF import get_ip_set_command
     client = MockedBoto3Client()
     get_ip_set_args = {'name': 'name', 'scope': 'Regional', 'id': 'id'}
     get_ip_set_mock = mocker.patch.object(client, 'get_ip_set')
@@ -234,7 +225,7 @@ def test_get_ip_set_command(mocker):
 @pytest.mark.parametrize('is_overwrite, updated_addresses',
                          [(True, ['1.1.1.2/32']), (False, ['1.1.1.2/32', '1.1.2.2/32'])])
 def test_update_ip_set_command(mocker, is_overwrite, updated_addresses):
-    from AWS_WAF import update_ip_set_command
+    from AWSWAF import update_ip_set_command
     client = MockedBoto3Client()
     update_ip_set_args = {'name': 'name', 'scope': 'Regional', 'ip_version': 'IPV4',
                           'addresses': '1.1.1.2/32', 'is_overwrite': is_overwrite, 'id': 'id'}
@@ -250,7 +241,7 @@ def test_update_ip_set_command(mocker, is_overwrite, updated_addresses):
 
 
 def test_list_ip_set_command(mocker):
-    from AWS_WAF import list_ip_set_command
+    from AWSWAF import list_ip_set_command
     client = MockedBoto3Client()
     list_ip_set_args = {'scope': 'Regional'}
     list_ip_sets_mock = mocker.patch.object(client, 'list_ip_sets')
@@ -259,7 +250,7 @@ def test_list_ip_set_command(mocker):
 
 
 def test_delete_ip_set_command(mocker):
-    from AWS_WAF import delete_ip_set_command
+    from AWSWAF import delete_ip_set_command
     client = MockedBoto3Client()
     delete_ip_set_args = {'name': 'name', 'scope': 'Regional', 'id': 'id'}
     get_ip_set_response = util_load_json('get_ip_set_response')
@@ -273,7 +264,7 @@ def test_delete_ip_set_command(mocker):
 
 
 def test_create_regex_set_command(mocker):
-    from AWS_WAF import create_regex_set_command
+    from AWSWAF import create_regex_set_command
     client = MockedBoto3Client()
     create_regex_set_args = {'name': 'name', 'scope': 'Regional', 'regex_pattern': 'regex_pattern'}
     create_regex_set_mock = mocker.patch.object(client, 'create_regex_pattern_set')
@@ -284,7 +275,7 @@ def test_create_regex_set_command(mocker):
 
 
 def test_get_regex_set_command(mocker):
-    from AWS_WAF import get_regex_set_command
+    from AWSWAF import get_regex_set_command
     client = MockedBoto3Client()
     get_regex_set_args = {'name': 'name', 'scope': 'Regional', 'id': 'id'}
     get_regex_set_mock = mocker.patch.object(client, 'get_regex_pattern_set')
@@ -296,7 +287,7 @@ def test_get_regex_set_command(mocker):
                          [(True, [{"RegexString": "regex_pattern1"}]),
                           (False, [{"RegexString": "regex_pattern1"}, {"RegexString": "regex_pattern"}])])
 def test_update_regex_set_command(mocker, is_overwrite, updated_regex_list):
-    from AWS_WAF import update_regex_set_command
+    from AWSWAF import update_regex_set_command
     client = MockedBoto3Client()
     update_regex_set_args = {'name': 'name', 'scope': 'Regional', 'regex_pattern': 'regex_pattern1',
                              'is_overwrite': is_overwrite, 'id': 'id'}
@@ -312,7 +303,7 @@ def test_update_regex_set_command(mocker, is_overwrite, updated_regex_list):
 
 
 def test_list_regex_set_command(mocker):
-    from AWS_WAF import list_regex_set_command
+    from AWSWAF import list_regex_set_command
     client = MockedBoto3Client()
     list_regex_set_args = {'scope': 'Regional'}
     list_regex_sets_mock = mocker.patch.object(client, 'list_regex_pattern_sets')
@@ -321,7 +312,7 @@ def test_list_regex_set_command(mocker):
 
 
 def test_delete_regex_set_command(mocker):
-    from AWS_WAF import delete_regex_set_command
+    from AWSWAF import delete_regex_set_command
     client = MockedBoto3Client()
     delete_regex_set_args = {'name': 'name', 'scope': 'Regional', 'id': 'id'}
     get_regex_set_response = util_load_json('get_regex_set_response')
@@ -335,7 +326,7 @@ def test_delete_regex_set_command(mocker):
 
 
 def test_list_rule_group_command(mocker):
-    from AWS_WAF import list_rule_group_command
+    from AWSWAF import list_rule_group_command
     client = MockedBoto3Client()
     list_rule_group_args = {'scope': 'Regional'}
     list_rule_group_mock = mocker.patch.object(client, 'list_rule_groups')
@@ -344,7 +335,7 @@ def test_list_rule_group_command(mocker):
 
 
 def test_get_rule_group_command(mocker):
-    from AWS_WAF import get_rule_group_command
+    from AWSWAF import get_rule_group_command
     client = MockedBoto3Client()
     get_rule_group_args = {'name': 'name', 'scope': 'Regional', 'id': 'id'}
     get_rule_group_mock = mocker.patch.object(client, 'get_rule_group')
@@ -353,7 +344,7 @@ def test_get_rule_group_command(mocker):
 
 
 def test_create_rule_group_command(mocker):
-    from AWS_WAF import create_rule_group_command
+    from AWSWAF import create_rule_group_command
     client = MockedBoto3Client()
     create_rule_group_args = {'name': 'name',
                               'scope': 'Regional',
@@ -374,7 +365,7 @@ def test_create_rule_group_command(mocker):
 
 
 def test_delete_rule_group_command(mocker):
-    from AWS_WAF import delete_rule_group_command
+    from AWSWAF import delete_rule_group_command
     client = MockedBoto3Client()
     delete_rule_group_args = {'name': 'name', 'scope': 'Regional', 'id': 'id'}
     get_rule_group_response = util_load_json('rule_group')
