@@ -1,10 +1,10 @@
 Enrich an endpoint by hostname using one or more integrations.
 Supported integrations:
 - Active Directory Query v2
-- McAfee ePolicy Orchestrator
-- Carbon Black Enterprise Response v2
+- McAfee ePO v2
+- VMware Carbon Black EDR v2
 - Cylance Protect v2
-- CrowdStrike Falcon Host
+- CrowdStrike Falcon
 - ExtraHop Reveal(x)
 
 - Endpoint reputation using !endpoint command
@@ -19,9 +19,10 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Integrations
 
-* McAfee ePO v2
-* VMware Carbon Black EDR v2
+* CrowdstrikeFalcon
 * Active Directory Query v2
+* VMware Carbon Black EDR v2
+* McAfee ePO v2
 
 ### Scripts
 
@@ -29,12 +30,11 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Commands
 
-* endpoint
+* cs-falcon-search-device
 * epo-find-system
-* cs-device-details
+* endpoint
 * ad-get-computer
 * extrahop-device-search
-* cs-device-search
 
 ## Playbook Inputs
 
@@ -106,6 +106,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | ActiveDirectory.Computers.dn | The computer distinguished name. | unknown |
 | ActiveDirectory.Computers.memberOf | Groups for which the computer is listed. | unknown |
 | ActiveDirectory.Computers.name | The computer name. | unknown |
+| CrowdStrike.Device | The information about  the endpoint. | unknown |
 
 ## Playbook Image
 
