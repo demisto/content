@@ -12,7 +12,7 @@ Follow the below steps to configure CEF log integration:
 5. In the **Log file properties** section, accept the default log file location and name:
    - Path: C:\Program File\ObserveIT\NotificationService\LogFiles\ArcSight
    - Name: Observeit_activity_log.cef
-6. In the **Log file cleanup** section schedule the frequency for clearing the log file.
+6. In the **Log file cleanup** section, schedule the frequency for clearing the log file.
 7. Click **Save**.
 
 More information can be found [here](https://documentation.observeit.com/configuration_guide/configuring_cef_log_integratio)
