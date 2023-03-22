@@ -14,18 +14,18 @@ configuration:
   type: 0
   section: Connect
 - display: API Key Fingerprint
-  defaultvalue: https://some_url.com
   name: key_fingerprint
   required: true
   type: 0
 - display: Private Key
-  additionalinfo: privateKey RSA key pair in PEM format, add 
+  additionalinfo: May also be known as 'key file' or 'key content'.
   name: private_key
   required: true
   type: 4
   section: Connect
 - display: Region
   name: region
+  additionalinfo: Must be one the available regions for Oracle Cloud Infrastructure. For more information see the integration's description.
   required: true
   type: 0
   section: Connect
@@ -51,7 +51,7 @@ configuration:
   type: 8
 description: This is the Oracle Cloud Infrastructure event collector integration for XSIAM.
 display: Oracle Cloud Infrastructure 
-name: OracleCloudInfrastructure
+name: OracleCloudInfrastructureEventCollector
 script:
   commands:
   - arguments:

@@ -34,17 +34,17 @@ class Client(BaseClient):
         """Build an OCI config object
 
         Args:
-            user_ocid (str): user OCID.
-            private_key (str): RSA key pair in PEM format.
-            key_fingerprint (str): key fingerprint.
-            tenancy_ocid (str): tenancy OCID.
-            region (str): region.
+            user_ocid (str): User OCID parameter.
+            private_key (str): private key parameter.
+            key_fingerprint (str): API Key Fingerprint parameter.
+            tenancy_ocid (str): Tenancy OCID parameter.
+            region (str): Region parameter.
 
         Raises:
-            DemistoException: If the config object is invalid.
+            DemistoException: if the config object is invalid.
 
         Returns:
-            (dict): A config dict that can be used to create clients.
+            (dict): a config dict that can be used to create clients.
         """
         config = {
             'user': user_ocid,
@@ -122,24 +122,23 @@ class OCIEventHandler:
         except Exception as e:
             raise DemistoException(f'Error while fetching events: {e}') from e
 
-        demisto.debug(f'{len(events)} Events fetched successfully from start time: {self.first_fetch_time}. {events=}')
+        demisto.debug(f'{len(events)} Events fetched from start time: {self.first_fetch_time}. {events=}')
         return events[:self.max_fetch]
-
-    def set_next_run(self, last_run):
-        demisto.debug(f'Set last run to {last_run}')
-        demisto.setLastRun({"last_run": {last_run}})
 
     def remove_duplicates(self):
         ...
 
     def get_last_event_time(self, events: List[Dict[str, Any]]) -> Optional[datetime]:
         """Get the last event time from the events list.
+        - Given a non empty list of events,
+          the function will return the time of the last event (most recent) + 1 millisecond for next run.
+        - If the event list is empty, the function will return the current first fetch time.
 
         Args:
             events (List[Dict[str, Any]]): list of events.
 
         Returns:
-            datetime: last event time in datetime format.
+            Optional[datetime]: last event time in datetime format.
         """
         if not events:
             return arg_to_datetime(arg=self.first_fetch_time)
