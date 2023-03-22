@@ -15,7 +15,7 @@ Follow the below steps to configure CEF log integration:
 6. In the **Log file cleanup** section, schedule the frequency for clearing the log file.
 7. Click **Save**.
 
-More information can be found [here](https://documentation.observeit.com/configuration_guide/configuring_cef_log_integratio)
+More information can be found [here](https://documentation.observeit.com/configuration_guide/configuring_cef_log_integration.htm)
 
 ## Collect Events from Vendor
 
