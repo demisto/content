@@ -2,6 +2,8 @@ name: Handle New External PRs
 on:
   pull_request_target:
     types: [opened]
+  pull_request:
+    types: [ opened, synchronize, labeled, unlabeled ]
 
 permissions:
   contents: read
