@@ -1581,6 +1581,13 @@ def delete_items(item_ids, delete_type, target_mailbox=None):     # pragma: no c
     items = get_items_from_mailbox(account, item_ids)
     delete_type = delete_type.lower()
 
+    demisto.debug('items: {items}'.format(items=items))
+
+    if items and isinstance(items[0], ErrorInvalidIdMalformed):
+        raise Exception(
+            'could not delete item-ids {item_ids}, Error: {error}'.format(item_ids=item_ids, error=items[0])
+        )
+
     for item in items:
         item_id = item.item_id
         if delete_type == 'trash':
