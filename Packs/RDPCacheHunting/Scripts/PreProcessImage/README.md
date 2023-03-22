@@ -7,7 +7,7 @@ This script pre-process an image file from context.
 | **Name** | **Description** |
 | --- | --- |
 | Script Type | python3 |
-| Cortex XSOAR Version | 6.0.0 |
+| Cortex XSOAR Version | 6.8.0 |
 
 ## Inputs
 

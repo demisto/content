@@ -1,6 +1,6 @@
 {
     "name": "RDPCacheHunting",
-    "description": "temp",
+    "description": "Investigates the RDP bitmap Cache files",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
