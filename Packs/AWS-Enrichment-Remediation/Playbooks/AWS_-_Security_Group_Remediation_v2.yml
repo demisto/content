@@ -1,0 +1,240 @@
+id: AWS - Security Group Remediation v2
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: AWS - Security Group Remediation v2
+description: |-
+  This playbook takes in some information about an EC2 instance (ID and public_ip) and with provided port and protocol, determines what security groups on the primary interface of an EC2 instance are over-permissive.  It uses an automation to determine what interface on an EC2 instance has an over-permissive security group on, determine which security groups have over-permissive rules and to replace them with a copy of the security group that has only the over-permissive portion removed.  Over-permissive is defined as sensitive ports (SSH, RDP, etc) being exposed to the internet via IPv4.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 887ec5b3-a4d7-47fc-82b0-701e072c0deb
+    type: start
+    task:
+      id: 887ec5b3-a4d7-47fc-82b0-701e072c0deb
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "31"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": -470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 978b630a-7e00-443b-83f3-5e683144863a
+    type: title
+    task:
+      id: 978b630a-7e00-443b-83f3-5e683144863a
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 130,
+          "y": 140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: e71350f2-0f75-41e1-841d-ee3c938fc23f
+    type: condition
+    task:
+      id: e71350f2-0f75-41e1-841d-ee3c938fc23f
+      version: -1
+      name: Is AWS - EC2 enabled and are input values defined?
+      description: Determines if the AWS - EC2 integration instance is configured and input values are defined in order to continue with remediating security groups.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "32"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: AWS - EC2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.InstanceID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.Port
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.Protocol
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: inputs.PublicIP
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": -290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 66b0bfa5-11ed-42c6-87a9-a61a26444ec4
+    type: regular
+    task:
+      id: 66b0bfa5-11ed-42c6-87a9-a61a26444ec4
+      version: -1
+      name: Create Security Group automation
+      description: Automation to determine what interface on an EC2 instance has an over-permissive security group on, determine which security groups have over-permissive rules and to replace them with a copy of the security group that has only the over-permissive portion removed.  Over-permissive is defined as sensitive ports (SSH, RDP, etc) being exposed to the internet via IPv4.
+      scriptName: AWSRecreateSG
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      instance_id:
+        complex:
+          root: inputs.InstanceID
+      port:
+        complex:
+          root: inputs.Port
+      protocol:
+        complex:
+          root: inputs.Protocol
+      public_ip:
+        complex:
+          root: inputs.PublicIP
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 420,
+          "y": -70
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 675,
+        "width": 670,
+        "x": 130,
+        "y": -470
+      }
+    }
+  }
+inputs:
+- key: InstanceID
+  value: {}
+  required: true
+  description: ID of the AWS EC2 instance.
+  playbookInputQuery:
+- key: Port
+  value:
+    complex:
+      root: alert
+      accessor: remoteport
+  required: true
+  description: TCP/UDP port to be restricted.
+  playbookInputQuery:
+- key: Protocol
+  value: {}
+  required: true
+  description: Protocol of the port to be restricted.
+  playbookInputQuery:
+- key: PublicIP
+  value:
+    complex:
+      root: alert
+      accessor: remoteip
+  required: false
+  description: Public IP address of the EC2 instance.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.5.0
