@@ -13,7 +13,7 @@
     "useCases": [],
     "keywords": [],
     "dependencies": {
-        "MicrosoftCommon": {
+        "MicrosoftCore": {
             "mandatory": true,
             "display_name": "Microsoft Events Core"
         },
