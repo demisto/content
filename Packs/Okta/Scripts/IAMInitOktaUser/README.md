@@ -20,7 +20,7 @@ This script is running the `send-mail` command, make sure there is a mail sender
 | pwdGenerationScript | The password generator script. |
 | username | The Okta username of the user. |
 | displayname | The display name of the employee. |
-| one_time_password | The display name of the employee. |
+| one_time_password | Whether to create a one-time password or not. |
 | to_email | The email address that the password will be sent to. |
 | inc_id | The incident ID. |
 | email_subject | The subject of the email sent to IT. |
