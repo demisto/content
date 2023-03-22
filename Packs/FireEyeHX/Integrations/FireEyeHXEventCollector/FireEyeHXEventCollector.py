@@ -138,7 +138,7 @@ def fetch_events(
 
     filter_query_str = None
     if not min_id:
-        to_date = (datetime.now() + timedelta(days=1)).strftime(DATE_FORMAT)
+        to_date = datetime.now().strftime(DATE_FORMAT)
         filter_query = {'operator': 'between', 'arg': [first_fetch, to_date], 'field': 'reported_at'}
         filter_query_str = json.dumps(filter_query)
 
