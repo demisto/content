@@ -252,6 +252,7 @@ def main():  # pragma: no cover
     retries = params.get('retries') or 5
 
     try:
+        command = demisto.command()
         validate_params(aws_default_region, aws_role_arn, aws_role_session_name, aws_access_key_id,
                         aws_secret_access_key)
 
@@ -259,7 +260,6 @@ def main():  # pragma: no cover
                                aws_role_policy, aws_access_key_id, aws_secret_access_key, verify_certificate, timeout,
                                retries)
 
-        command = demisto.command()
         args = demisto.args()
 
         demisto.info(f'Command being called is {demisto.command()}')
