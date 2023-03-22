@@ -34,6 +34,11 @@ configuration:
   name: insecure
   required: false
   type: 8
+- display: Retry requests when API is rate limited
+  name: retry_on_rate_limit
+  required: false
+  type: 8
+  defaultvalue: 'true'
 - display: API Key (Deprecated)
   additionalinfo: Use the "API Key (Recommended)" parameter instead.
   name: api_key
@@ -94,9 +99,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Deprecated. Analyze even if analyses already exist. To control
-        analysis caching, use the API Key settings instead, which are available via
-        the Analysis Settings page, in the VMRay Web Interface.
+      description: Deprecated. Analyze even if analyses already exist. To control analysis caching, use the API Key settings instead, which are available via the Analysis Settings page, in the VMRay Web Interface.
       isArray: false
       name: reanalyze
       predefined:
@@ -238,8 +241,7 @@ script:
       description: Description of the Verdict Reason.
       type: String
     - contextPath: VMRay.Analysis.Severity
-      description: Severity of the sample in the submission (Malicious, Suspicious,
-        Good, Blacklisted, Whitelisted, Unknown). Deprecated.
+      description: Severity of the sample in the submission (Malicious, Suspicious, Good, Blacklisted, Whitelisted, Unknown). Deprecated.
       type: String
     - contextPath: VMRay.Analysis.JobCreated
       description: Date when the analysis job started.
@@ -300,8 +302,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: ID of the submission. Can be obtained by running the 'vmray-upload-sample'
-        or 'vmray-upload-url' command.
+      description: ID of the submission. Can be obtained by running the 'vmray-upload-sample' or 'vmray-upload-url' command.
       isArray: false
       name: submission_id
       required: true
@@ -342,8 +343,7 @@ script:
       description: Description of the Verdict Reason.
       type: String
     - contextPath: VMRay.Submission.Severity
-      description: Severity of the sample in the submission (Malicious, Suspicious,
-        Good, Blacklisted, Whitelisted, Unknown). Deprecated.
+      description: Severity of the sample in the submission (Malicious, Suspicious, Good, Blacklisted, Whitelisted, Unknown). Deprecated.
       type: String
     - contextPath: VMRay.Submission.SampleID
       description: ID of the sample in the submission.
@@ -388,8 +388,7 @@ script:
       description: Description of the Verdict Reason.
       type: String
     - contextPath: VMRay.Sample.Severity
-      description: Severity of the sample in the submission (Malicious, Suspicious,
-        Good, Blacklisted, Whitelisted, Unknown). Deprecated.
+      description: Severity of the sample in the submission (Malicious, Suspicious, Good, Blacklisted, Whitelisted, Unknown). Deprecated.
       type: String
     - contextPath: VMRay.Sample.Type
       description: File type.
@@ -476,8 +475,7 @@ script:
       description: Description of the Verdict Reason.
       type: String
     - contextPath: VMRay.Sample.Severity
-      description: Severity of the sample in the submission (Malicious, Suspicious,
-        Good, Blacklisted, Whitelisted, Unknown). Deprecated.
+      description: Severity of the sample in the submission (Malicious, Suspicious, Good, Blacklisted, Whitelisted, Unknown). Deprecated.
       type: String
     - contextPath: VMRay.Sample.Type
       description: File type.
@@ -577,8 +575,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: Whether all artifacts should be returned or only Indicators of
-        Compromise.
+      description: Whether all artifacts should be returned or only Indicators of Compromise.
       isArray: false
       name: all_artifacts
       predefined:
@@ -790,8 +787,7 @@ script:
       description: Type of IOC.
       type: String
     - contextPath: VMRay.Sample.IOC.Filename.Operations
-      description: The filename operations that were performed, e.g., access, create,
-        read, write, and delete.
+      description: The filename operations that were performed, e.g., access, create, read, write, and delete.
       type: String
     - contextPath: VMRay.Sample.IOC.Filename.ThreatNames
       description: The threat names of the filename.
@@ -857,8 +853,7 @@ script:
       description: Same as Operations, left in for backwards compatibility.
       type: String
     - contextPath: VMRay.Sample.IOC.File.Operations
-      description: The file operations which were performed, e.g., access, create,
-        read, write, and delete.
+      description: The file operations which were performed, e.g., access, create, read, write, and delete.
       type: String
     - contextPath: VMRay.Sample.IOC.File.ParentFiles
       description: Files where this file was contained in.
@@ -954,8 +949,7 @@ script:
       description: Same as Operations, left in for backwards compatibility.
       type: String
     - contextPath: VMRay.Sample.IOC.Mutex.Operation
-      description: The mutex operations that were performed, e.g., access, create,
-        read, write, and delete.
+      description: The mutex operations that were performed, e.g., access, create, read, write, and delete.
       type: String
     - contextPath: VMRay.Sample.IOC.Mutex.ParentProcesses
       description: Full commandline of processes where the mutex was used.
@@ -1036,8 +1030,7 @@ script:
       description: Same as Operations, left in for backwards compatibility.
       type: String
     - contextPath: VMRay.Sample.IOC.Registry.Operation
-      description: The registry operations that were performed, e.g., access, create,
-        read, write, and delete.
+      description: The registry operations that were performed, e.g., access, create, read, write, and delete.
       type: String
     - contextPath: VMRay.Sample.IOC.Registry.ParentProcesses
       description: Full commandline of processes where the registry key was referenced.
@@ -1164,8 +1157,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: ID of the analysis from which to retrieve the Summary JSON v2 from
-        (analysis ID is returned e.g. from vmray-get-analysis-by-sample).
+      description: ID of the analysis from which to retrieve the Summary JSON v2 from (analysis ID is returned e.g. from vmray-get-analysis-by-sample).
       isArray: false
       name: analysis_id
       required: true
@@ -1195,8 +1187,7 @@ script:
       required: true
       secret: false
     deprecated: true
-    description: This command performs a function similiar to the 'vmray-get-job-by-sample'
-      command.
+    description: This command performs a function similiar to the 'vmray-get-job-by-sample' command.
     execution: false
     name: get_job_sample
   - arguments:
@@ -1214,7 +1205,7 @@ script:
     description: Retrieves a sample using the sample ID. (Deprecated)
     execution: false
     name: upload_sample
-  dockerimage: demisto/python3:3.10.6.33415
+  dockerimage: demisto/python3:3.10.10.49934
   feed: false
   isfetch: false
   longRunning: false
