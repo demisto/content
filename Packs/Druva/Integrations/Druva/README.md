@@ -1,5 +1,4 @@
 Druva Ransomware Response Integration provides ransomware protection for endpoints, SaaS applications and data center workloads for Druva Ransomware Recovery customers.
-This integration was integrated and tested with version xx of Druva Ransomware Response
 
 ## Configure Druva Ransomware Response on Cortex XSOAR
 

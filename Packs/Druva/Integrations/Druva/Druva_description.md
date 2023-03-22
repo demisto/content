@@ -1,8 +1,3 @@
-### Partner Contributed Integration
-#### Integration Author: Druva
-Support and maintenance for this integration are provided by the author. Please use the following contact details:
-- **Email**: [techpartners@druva.com](mailto:techpartners@druva.com)
-***
 Important: The integration is applicable to customers using Realize Ransomware Recovery module with inSync and Phoenix on Druva Public Cloud
 
 We recommend familiarizing yourself with the content before you begin to use the APIs.
@@ -25,5 +20,3 @@ API credentials can be created and managed from Druva Cloud Platform Console. Re
 Please connect to our [Developer portal](https://developer.druva.com/docs) to learn more about our APIs
 
 Important: The API Credentials which is a combination of the Client ID and Secret Key are equivalent to user name and password. One can access all the Druva APIs and in turn, access the data stored within Druva products. It is strongly recommended not to share the Client ID and Secret Key with unauthorized sources.
-
-
