@@ -167,8 +167,8 @@ script:
       secret: false
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: Whether to create a one-time password or not.
-      name: one_time_password
+      description: When true, you'll need to change the password in the next login.
+      name: temporary_password
       predefined:
       - 'true'
       - 'false'

@@ -24,8 +24,8 @@ args:
 - name: displayname
   description: The display name of the employee.
 - auto: PREDEFINED
-  name: one_time_password
-  description: Whether to create a one-time password or not.
+  name: temporary_password
+  description: When true, you'll need to change the password in the next login.
   defaultValue: 'false'
   predefined:
     - 'true'

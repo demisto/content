@@ -28,7 +28,7 @@ def main():
     max_symbols = args.get("max_symbols", 10)
     password = None
     zip_protect_with_password = args.get("ZipProtectWithPassword", '')
-    one_time_password = argToBoolean(args.get('one_time_password', False))
+    temporary_password = argToBoolean(args.get('temporary_password', False))
 
     try:
         # Generate a random password
@@ -61,7 +61,7 @@ def main():
             okta_set_pwd_args = {
                 'username': username,
                 'password': password,
-                'one_time_password': one_time_password
+                'temporary_password': temporary_password
             }
 
             # Set args for activating the user
@@ -79,8 +79,6 @@ def main():
                 raise Exception(f"An error occurred while trying to set a new password for the user. "
                                 f"Error is:\n{err}")
             else:
-                if one_time_password:
-                    password = set_password_outputs[0].get('Contents').get('tempPassword')
                 enable_outputs = demisto.executeCommand("okta-activate-user", okta_activate_user_args)
                 if is_error(enable_outputs):
                     err = get_error(enable_outputs)
