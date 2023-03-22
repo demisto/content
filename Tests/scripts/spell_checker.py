@@ -5,8 +5,6 @@ import argparse
 
 from spellchecker import SpellChecker
 
-from demisto_sdk.commands.common.tools import print_error
-
 DISPLAYABLE_LINES = [
     "description",
     "name",
@@ -58,7 +56,7 @@ def spell_checker(path, is_md=False):
         check_yaml(spellchecker, yml_info, unknown_words)
 
     if unknown_words:
-        print_error(u"Found the problematic words:\n{}".format('\n'.join(unknown_words)))
+        print(u"Found the problematic words:\n{}".format('\n'.join(unknown_words)))
         return 1
 
     print("No problematic words found")
