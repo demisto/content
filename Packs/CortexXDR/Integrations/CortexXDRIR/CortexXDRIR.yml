@@ -518,6 +518,9 @@ script:
     - contextPath: Endpoint.Hostname
       description: The hostname that is mapped to this endpoint.
       type: String
+    - contextPath: Endpoint.ID
+      description: The agent ID of the endpoint.
+      type: String
     - contextPath: File.Path
       description: The path where the file is located.
       type: String
