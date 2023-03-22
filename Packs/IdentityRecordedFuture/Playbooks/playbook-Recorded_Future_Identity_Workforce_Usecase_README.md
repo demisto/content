@@ -1,22 +1,28 @@
 Workforce use case for Identity search and lookup using Recorded Future Identity
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+
 This playbook does not use any sub-playbooks.
 
 ### Integrations
+
 * Recorded Future Identity
 
 ### Scripts
+
 This playbook does not use any scripts.
 
 ### Commands
+
 * recordedfuture-identity-search
 * recordedfuture-identity-lookup
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
@@ -27,6 +33,7 @@ This playbook does not use any scripts.
 | first-downloaded  | Time frame for the leaked identities          | Last Year     | Optional |
 
 ## Playbook Outputs
+
 ---
 
 | **Path** | **Type** | **Description** |
@@ -57,5 +64,6 @@ This playbook does not use any scripts.
 
 
 ## Playbook Image
+
 ---
 ![Recorded Future Workforce Usecase Playbook](../doc_files/workforce_playbook.png)

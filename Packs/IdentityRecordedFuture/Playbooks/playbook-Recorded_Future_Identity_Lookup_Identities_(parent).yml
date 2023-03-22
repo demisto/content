@@ -1,7 +1,6 @@
-id: 0c61da28-56dc-47f5-8d0e-fc3afa98a89f
-version: 19
-vcShouldKeepItemLegacyProdMachine: false
-name: Identity - Lookup Identities (parent playbook)
+id: Identity - Lookup Identities (parent)
+version: -1
+name: Identity - Lookup Identities (parent)
 starttaskid: "0"
 tasks:
   "0":
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -75,6 +75,7 @@ tasks:
     task:
       id: 29d6a27f-b41a-4e25-80ae-feab9e3390c7
       version: -1
+      description: ''
       name: If Identity Exist
       type: condition
       iscommand: false
@@ -153,6 +154,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -175,11 +177,12 @@ tasks:
     task:
       id: 9cd9ea0f-883c-426c-8c3f-5c886165b85a
       version: -1
-      name: Identity Create Incident
+      name: Identity - Create Incident (subplaybook)
       playbookName: Identity - Create Incident (subplaybook)
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "18"
@@ -256,3 +259,7 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 6.8.0
+tests:
+- No tests (auto formatted)
+description: ''

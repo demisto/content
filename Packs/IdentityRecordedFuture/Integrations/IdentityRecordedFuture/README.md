@@ -1,8 +1,16 @@
 Unique threat intel technology that automatically serves up relevant insights in real time.
 Recorded Future Identity
+
+
+
+
 ## Configure Recorded Future Identity on Cortex XSOAR
 
 ## Information
+
+
+
+
 A valid API Token for Recorded Future Identity Intelligence needed to fetch information.
 [Get help with Recorded Future for Cortex XSOAR](https://www.recordedfuture.com/integrations/).
 
@@ -13,6 +21,10 @@ A valid API Token for Recorded Future Identity Intelligence needed to fetch info
 ---
 
 ## Configuration
+
+
+
+
 | Parameter                        | Description                                                       |
 |----------------------------------|-------------------------------------------------------------------|
 | Server URL                       | The URL to the Recorded Future ConnectAPI                         |
@@ -30,9 +42,21 @@ A valid API Token for Recorded Future Identity Intelligence needed to fetch info
 Several of the outputs below have been reduced in size to improve readability.
 
 ## Commands
+
+
+
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
+
+
+
 ### recordedfuture-identity-search
+
+
+
+
 ***
 Get a list of identities for the specified period of time.
 
@@ -40,6 +64,10 @@ Get a list of identities for the specified period of time.
 #### Base Command
 
 `recordedfuture-identity-search`
+
+
+
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -59,9 +87,17 @@ Get a list of identities for the specified period of time.
 
 
 #### Command Example
+
+
+
+
 ```!recordedfuture-identity-search latest-downloaded="All time" domain-type=Authorization```
 
 #### Context Example
+
+
+
+
 ```
 {
     "RecordedFuture": {
@@ -86,12 +122,20 @@ Get a list of identities for the specified period of time.
 #### Human Readable Output
 
 >##### This is search results for fakeyahoo.com, fake.com :
+>
+>
+>
+>
 >- **30fake**  in domain  fakeyahoo.com
 >- **3072882fake**  in domain  fakeyahoo.com
 >- **fake3@fake.com**
 >- **test@fakeyahoo.com**
 
 ### recordedfuture-identity-lookup
+
+
+
+
 ***
 Get a detailed info regarding identities.
 
@@ -99,6 +143,10 @@ Get a detailed info regarding identities.
 #### Base Command
 
 `recordedfuture-identity-lookup`
+
+
+
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -138,9 +186,17 @@ Get a detailed info regarding identities.
 
 
 #### Command Example
+
+
+
+
 ```!recordedfuture-identity-lookup identities="fake@fakeyahoo.com,real@notfake.com" first-downloaded="3 Months ago"```
 
 #### Context Example
+
+
+
+
 ```
 {
     "RecordedFuture": {
@@ -308,12 +364,40 @@ Get a detailed info regarding identities.
 #### Human Readable Output
 
 >## Credentials Lookup
+
+
+
+
 >*****
+
+>## Results for **fake1@fake.com**:
+
+
+>## Results for **fake1@fake.com**:
+
 >## Results for __fake1@fake.com__:
+
+>## Results for **fake1@fake.com**:
+
+
+>## Results for **fake1@fake.com**:
+
 >## We found 1 passwords that were leaked for this identity:
+
+
+
+
 >*****
 >*****
+
+
+
+
 >## Password 1:
+
+
+
+
 >Rank: TopMillionCommonPasswords
 >
 >Properties: Letter, Number, LowerCase, AtLeast8Characters
@@ -332,7 +416,11 @@ Get a detailed info regarding identities.
 >
 >Algorithm: MD5 	 Hash:a0b1c21221b29780fc5e3373e626ab9b
 >
+>Authorization service url: <https://signup.norsegods.online/signup>
+>Authorization service url: <https://signup.norsegods.online/signup>
 >Authorization service url: https://signup.norsegods.online/signup
+>Authorization service url: <https://signup.norsegods.online/signup>
+>Authorization service url: <https://signup.norsegods.online/signup>
 >
 >Domain: norsegods.online
 >
@@ -345,10 +433,14 @@ Get a detailed info regarding identities.
 >Malware Family: RedLine Stealer
 >
 >## Information about dumps where we found for Password 1:
+
+
+
+
 >*****
 > Stealer Malware Logs 2022-11-03, Nov 2022
 >
->Description: This credential data was derived from stealer malware logs. These logs are legally obtained through proprietary methods from multiple underground sources. Most data is available within 48 hours after the infection. Refer to exfiltration date for each specific exposure.
+>Description: This credential data was derived from stealer malware logs.
 >Dump type: N/A
 >
 >Compromised Host
@@ -373,6 +465,10 @@ Get a detailed info regarding identities.
 >Postal Code: 11403
 
 `recordedfuture-password-lookup`
+
+
+
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -392,6 +488,10 @@ Get a detailed info regarding identities.
 
 
 #### Command Example
+
+
+
+
 ```!recordedfuture-password-lookup password-hash="0e44ce7308af2b3de5232e4616403ce7d49ba2aec83f79c196409556422a4927" hash-algorithm="SHA256"```
 
 exposure_status:NeverExposed
@@ -399,6 +499,10 @@ algorithm:SHA256
 hash:da6a0f1c706df7e864f9d6f9431de9950450880e
 
 #### Context Example
+
+
+
+
 ```
 {
     "RecordedFuture": {
@@ -427,6 +531,10 @@ hash:da6a0f1c706df7e864f9d6f9431de9950450880e
 #### Human Readable Output
 
 >## This is search results for password you provided:
+
+
+
+
 >Password hash: 0e44ce7308af2b3de5232e4616403ce7d49ba2aec83f79c196409556422a4927
 >
 >Password hash algorithm: SHA256

@@ -1,7 +1,7 @@
-id: fc548af8-8df1-4704-8707-1664f8c2730c
-version: 17
-vcShouldKeepItemLegacyProdMachine: false
-name: 'Identity - Identity Found (incident playbook) '
+id: 'Identity - Identity Found (incident)'
+version: -1
+name: 'Identity - Identity Found (incident)'
+description: 'Identity playbook for Incident when the Identity has been found in Recorded Future Identity Dataset.'
 starttaskid: "0"
 tasks:
   "0":
@@ -14,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"
@@ -74,9 +75,7 @@ tasks:
       id: 82c3346d-2257-461a-8ff6-f0565df4e215
       version: -1
       name: Check AD if account is Active
-      description: Retrieves detailed information about a user account. The user can
-        be specified by name, email address, or as an Active Directory Distinguished
-        Name (DN). If no filter is specified, all users are returned.
+      description: Retrieves detailed information about a user account. The user can be specified by name, email address, or as an Active Directory Distinguished Name (DN). If no filter is specified, all users are returned.
       script: Active Directory Query v2|||ad-get-user
       type: regular
       iscommand: true
@@ -109,6 +108,7 @@ tasks:
     task:
       id: 0b2cb2a5-242f-4266-8d0c-cb3c3403cb20
       version: -1
+      description: ''
       name: Analyst Prompt | Review Identity Information
       type: collection
       iscommand: false
@@ -128,13 +128,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
-      body: null
+      to:
+      subject:
+      body:
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -174,6 +174,7 @@ tasks:
     task:
       id: 43452802-6eb5-48cb-8f7b-0cfbe963b8d7
       version: -1
+      description: ''
       name: True Positive?
       type: condition
       iscommand: false
@@ -281,6 +282,7 @@ tasks:
     task:
       id: 9bbdd40b-43fe-40a0-864b-4d224a334fba
       version: -1
+      description: ''
       name: Create Ticket in IM System & Contact User
       type: regular
       iscommand: false
@@ -310,6 +312,7 @@ tasks:
     task:
       id: bd2cc77f-1b20-4505-810d-61361cfb9f25
       version: -1
+      description: ''
       name: Analyst Prompt | Take Automated Action?
       type: collection
       iscommand: false
@@ -329,13 +332,13 @@ tasks:
     timertriggers: []
     ignoreworker: false
     message:
-      to: null
-      subject: null
-      body: null
+      to:
+      subject:
+      body:
       methods: []
       format: ""
-      bcc: null
-      cc: null
+      bcc:
+      cc:
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -375,6 +378,7 @@ tasks:
     task:
       id: e7dbaa42-f76a-447f-8fe8-52e4c278bf12
       version: -1
+      description: ''
       name: Automate IR?
       type: condition
       iscommand: false
@@ -418,6 +422,7 @@ tasks:
       id: 1684e045-2103-46b4-8b33-5f73c6a2dae7
       version: -1
       name: Manual Response
+      description: ''
       type: regular
       iscommand: false
       brand: ""
@@ -484,6 +489,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -516,5 +522,8 @@ inputs:
   value: {}
   required: false
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
+fromversion: 6.8.0
+tests:
+- No tests (auto formatted)

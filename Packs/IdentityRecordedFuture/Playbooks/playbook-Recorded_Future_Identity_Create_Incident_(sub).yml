@@ -1,14 +1,8 @@
-id: 946f785e-3e57-41f1-84e3-5633cf010954
-version: 4
+id: Identity - Create Incident (sub)
+version: -1
 contentitemexportablefields:
-  contentitemfields:
-    packID: IdentityRecordedFuture
-    itemVersion: 1.1.0
-    fromServerVersion: ""
-    toServerVersion: ""
-    definitionid: ""
-vcShouldKeepItemLegacyProdMachine: false
-name: Identity - Create Incident (subplaybook)
+  contentitemfields: {}
+name: Identity - Create Incident (sub)
 starttaskid: "0"
 tasks:
   "0":
@@ -21,6 +15,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"
@@ -59,8 +54,7 @@ tasks:
       accountname:
         simple: ${inputs.ExposedIdentity}
       name:
-        simple: 'Recorded Future Exposed Identity Found: ${inputs.ExposedIdentity}
-          in domain ${inputs.Domain}'
+        simple: 'Recorded Future Exposed Identity Found: ${inputs.ExposedIdentity} in domain ${inputs.Domain}'
       severity:
         simple: "2"
       type:
@@ -88,13 +82,7 @@ tasks:
       id: 8d5981be-68b3-44d9-8572-d5d6b0142d43
       version: -1
       name: Search Incidents
-      description: "Searches Cortex XSOAR Incidents and returnrs the most relevant
-        fields. Default search range is the last 30 days, if you want to change this,
-        use the fromDate argument. \n\nReturns the id, name, type, severity, status,
-        owner, and created/closed times to context.  You can add additional fields
-        using the add_field_to_context argument.\n\nThis automation runs using the
-        default Limited User role, unless you explicitly change the permissions.  Based
-        on the SearchIncidentsV2 from the Common Scripts pack, but more efficient."
+      description: "Searches Cortex XSOAR Incidents and returnrs the most relevant fields. Default search range is the last 30 days, if you want to change this, use the fromDate argument. \n\nReturns the id, name, type, severity, status, owner, and created/closed times to context.  You can add additional fields using the add_field_to_context argument.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.  Based on the SearchIncidentsV2 from the Common Scripts pack, but more efficient."
       scriptName: SearchIncidentsSummary
       type: regular
       iscommand: false
@@ -106,8 +94,7 @@ tasks:
       fromdate:
         simple: 3 days ago
       name:
-        simple: 'Recorded Future Exposed Identity Found: ${inputs.ExposedIdentity}
-          in domain ${inputs.Domain}'
+        simple: 'Recorded Future Exposed Identity Found: ${inputs.ExposedIdentity} in domain ${inputs.Domain}'
     separatecontext: false
     view: |-
       {
@@ -130,6 +117,7 @@ tasks:
     task:
       id: aadae0cf-c941-431a-8a60-98cc6939dcf4
       version: -1
+      description: ''
       name: Does an Incident Already Exist?
       type: condition
       iscommand: false
@@ -173,6 +161,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -210,8 +199,6 @@ tasks:
       '#none#':
       - "4"
     scriptarguments:
-      all:
-        simple: "yes"
       subplaybook:
         simple: "yes"
     separatecontext: false
@@ -247,10 +234,14 @@ inputs:
   value: {}
   required: true
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Domain
   value: {}
   required: false
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
+fromversion: 6.8.0
+tests:
+- No tests (auto formatted)
+description: ''
