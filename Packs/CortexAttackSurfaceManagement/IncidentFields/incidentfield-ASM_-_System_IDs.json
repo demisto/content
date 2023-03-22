@@ -53,7 +53,7 @@
     "description": "Related system identifiers",
     "editForm": true,
     "group": 0,
-    "hidden": true,
+    "hidden": false,
     "id": "incident_asmsystemids",
     "isReadOnly": false,
     "locked": false,

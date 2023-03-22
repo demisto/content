@@ -140,7 +140,88 @@ inputs:
   value:
     simple: 'True'
 name: Cortex XDR - Endpoint Investigation
-outputs: []
+outputs:
+- contextPath: PaloAltoNetworksXDR.Alert
+  description: Alerts retrieved from Cortex XDR
+  type: string
+- contextPath: PaloAltoNetworksXDR.Alert.internal_id
+  description: The unique ID of the alert.
+  type: string
+- contextPath: PaloAltoNetworksXDR.Alert.source_insert_ts
+  description: The detection timestamp
+  type: date
+- contextPath: PaloAltoNetworksXDR.Alert.alert_name
+  description: The name of the alert.
+  type: string
+- contextPath: PaloAltoNetworksXDR.Alert.severity
+  description: The severity of the alert.
+  type: string
+- contextPath: PaloAltoNetworksXDR.Alert.alert_category
+  description: The category of the alert.
+  type: string
+- contextPath: PaloAltoNetworksXDR.Alert.alert_action_status
+  description: |
+    The alert action. Possible values.
+
+    DETECTED: detected
+    DETECTED_0: detected (allowed the session)
+    DOWNLOAD: detected (download)
+    DETECTED_19: detected (forward)
+    POST_DETECTED: detected (post detected)
+    PROMPT_ALLOW: detected (prompt allow)
+    DETECTED_4: detected (raised an alert)
+    REPORTED: detected (reported)
+    REPORTED_TRIGGER_4: detected (on write)
+    SCANNED: detected (scanned)
+    DETECTED_23: detected (sinkhole)
+    DETECTED_18: detected (syncookie sent)
+    DETECTED_21: detected (wildfire upload failure)
+    DETECTED_20: detected (wildfire upload success)
+    DETECTED_22: detected (wildfire upload skip)
+    DETECTED_MTH: detected (xdr managed threat hunting)
+    BLOCKED_25: prevented (block)
+    BLOCKED: prevented (blocked)
+    BLOCKED_14: prevented (block-override)
+    BLOCKED_5: prevented (blocked the url)
+    BLOCKED_6: prevented (blocked the ip)
+    BLOCKED_13: prevented (continue)
+    BLOCKED_1: prevented (denied the session)
+    BLOCKED_8: prevented (dropped all packets)
+    BLOCKED_2: prevented (dropped the session)
+    BLOCKED_3: prevented (dropped the session and sent a tcp reset)
+    BLOCKED_7: prevented (dropped the packet)
+    BLOCKED_16: prevented (override)
+    BLOCKED_15: prevented (override-lockout)
+    BLOCKED_26: prevented (post detected)
+    PROMPT_BLOCK: prevented (prompt block)
+    BLOCKED_17: prevented (random-drop)
+    BLOCKED_24: prevented (silently dropped the session with an icmp unreachable message to the host or application)
+    BLOCKED_9: prevented (terminated the session and sent a tcp reset to both sides of the connection)
+    BLOCKED_10: prevented (terminated the session and sent a tcp reset to the client)
+    BLOCKED_11: prevented (terminated the session and sent a tcp reset to the server)
+    BLOCKED_TRIGGER_4: prevented (on write)
+  type: string
+- contextPath: PaloAltoNetworksXDR.Alert.alert_action_status_readable
+  description: The alert action.
+  type: string
+- contextPath: PaloAltoNetworksXDR.Alert.alert_description
+  description: The alert description.
+  type: string
+- contextPath: PaloAltoNetworksXDR.Alert.agent_ip_addresses
+  description: The host IP.
+  type: string
+- contextPath: PaloAltoNetworksXDR.Alert.agent_hostname
+  description: The host name.
+  type: string
+- contextPath: PaloAltoNetworksXDR.Alert.mitre_tactic_id_and_name
+  description: The MITRE attack tactic.
+  type: string
+- contextPath: PaloAltoNetworksXDR.Alert.mitre_technique_id_and_name
+  description: The MITRE attack technique.
+  type: string
+- contextPath: PaloAltoNetworksXDR.Alert.starred
+  description: Whether the alert is starred or not.
+  type: string
 starttaskid: '0'
 tasks:
   '0':
@@ -573,7 +654,7 @@ tasks:
     isoversize: false
     nexttasks:
       '#default#':
-      - '11'
+      - "12"
       yes:
       - '43'
     note: false
@@ -595,7 +676,7 @@ tasks:
       {
         "position": {
           "x": 1310,
-          "y": -290
+          "y": 140
         }
       }
     continueonerrortype: ""
@@ -624,7 +705,7 @@ tasks:
     isoversize: false
     nexttasks:
       '#default#':
-      - '9'
+      - "11"
       yes:
       - '39'
     note: false
@@ -646,7 +727,7 @@ tasks:
       {
         "position": {
           "x": 1310,
-          "y": -770
+          "y": -810
         }
       }
     continueonerrortype: ""
@@ -676,7 +757,7 @@ tasks:
     isoversize: false
     nexttasks:
       '#default#':
-      - '12'
+      - "9"
       yes:
       - '46'
     note: false
@@ -698,7 +779,7 @@ tasks:
       {
         "position": {
           "x": 1310,
-          "y": 180
+          "y": -330
         }
       }
     continueonerrortype: ""
@@ -750,7 +831,7 @@ tasks:
       {
         "position": {
           "x": 1310,
-          "y": 660
+          "y": 630
         }
       }
     continueonerrortype: ""
@@ -778,7 +859,7 @@ tasks:
       {
         "position": {
           "x": 1310,
-          "y": 1145
+          "y": 1115
         }
       }
     continueonerrortype: ""
@@ -915,7 +996,7 @@ tasks:
                   ]
                 }
       extend-context:
-        simple: Persistence
+        simple: Persistence=
       time_frame:
         simple: ${inputs.timeRange}
     separatecontext: false
@@ -923,13 +1004,13 @@ tasks:
     task:
       brand: ''
       description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
-      id: 9cf749bf-95d5-4971-8110-0aa0a502ba3f
+      id: 1764462d-b2a4-4e17-8d93-330d55b3a7b3
       iscommand: true
       name: Hunt Persistence techniques
       script: '|||xdr-get-alerts'
       type: regular
       version: -1
-    taskid: 9cf749bf-95d5-4971-8110-0aa0a502ba3f
+    taskid: 1764462d-b2a4-4e17-8d93-330d55b3a7b3
     timertriggers: []
     type: regular
     view: |-
@@ -1422,7 +1503,7 @@ tasks:
                   ]
                }
       extend-context:
-        simple: Reconnaissance
+        simple: Reconnaissance=
       time_frame:
         simple: ${inputs.timeRange}
     separatecontext: false
@@ -1430,13 +1511,13 @@ tasks:
     task:
       brand: ''
       description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
-      id: ef461110-a55a-434b-857a-f4c0fdff7fbe
+      id: 21664fb3-d3af-4647-8da7-5c5b6f5beef6
       iscommand: true
       name: Hunt Reconnaissance techniques
       script: '|||xdr-get-alerts'
       type: regular
       version: -1
-    taskid: ef461110-a55a-434b-857a-f4c0fdff7fbe
+    taskid: 21664fb3-d3af-4647-8da7-5c5b6f5beef6
     timertriggers: []
     type: regular
     view: |-
@@ -1481,7 +1562,7 @@ tasks:
                   ]
              }
       extend-context:
-        simple: Initial_Access
+        simple: Initial_Access=
       time_frame:
         simple: ${inputs.timeRange}
     separatecontext: false
@@ -1489,13 +1570,13 @@ tasks:
     task:
       brand: ''
       description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
-      id: 1a884666-28cb-421e-8b89-2588bbaf02b9
+      id: a3f29cde-2827-4352-8785-9b4aed734c18
       iscommand: true
       name: Hunt Initial Access techniques
       script: '|||xdr-get-alerts'
       type: regular
       version: -1
-    taskid: 1a884666-28cb-421e-8b89-2588bbaf02b9
+    taskid: a3f29cde-2827-4352-8785-9b4aed734c18
     timertriggers: []
     type: regular
     view: |-
@@ -1573,7 +1654,7 @@ tasks:
                   ]
                 }
       extend-context:
-        simple: Execution
+        simple: Execution=
       time_frame:
         simple: ${inputs.timeRange}
     separatecontext: false
@@ -1581,13 +1662,13 @@ tasks:
     task:
       brand: ''
       description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
-      id: a5a7102d-5fb6-482b-8c91-92402f628776
+      id: 7f31ad4b-2da6-49b4-87c0-98dc2a1054d3
       iscommand: true
       name: Hunt Execution techniques
       script: '|||xdr-get-alerts'
       type: regular
       version: -1
-    taskid: a5a7102d-5fb6-482b-8c91-92402f628776
+    taskid: 7f31ad4b-2da6-49b4-87c0-98dc2a1054d3
     timertriggers: []
     type: regular
     view: |-
@@ -1645,7 +1726,7 @@ tasks:
                   ]
                 }
       extend-context:
-        simple: Privilege_Escalation
+        simple: Privilege_Escalation=
       time_frame:
         simple: ${inputs.timeRange}
     separatecontext: false
@@ -1653,13 +1734,13 @@ tasks:
     task:
       brand: ''
       description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
-      id: c77258bd-28c1-4e81-80aa-dd76e55cef2a
+      id: 69880c9b-c722-4f68-8517-69abb04884c2
       iscommand: true
       name: Hunt Privilege Escalation techniques
       script: '|||xdr-get-alerts'
       type: regular
       version: -1
-    taskid: c77258bd-28c1-4e81-80aa-dd76e55cef2a
+    taskid: 69880c9b-c722-4f68-8517-69abb04884c2
     timertriggers: []
     type: regular
     view: |-
@@ -1747,7 +1828,7 @@ tasks:
                   ]
                 }
       extend-context:
-        simple: Defense_Evasion
+        simple: Defense_Evasion=
       time_frame:
         simple: ${inputs.timeRange}
     separatecontext: false
@@ -1755,13 +1836,13 @@ tasks:
     task:
       brand: ''
       description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
-      id: df72255d-43d7-4a64-8fde-cbc6771b33d4
+      id: 2510fdcc-364d-4001-839f-74dd0fdde6e8
       iscommand: true
       name: Hunt Defense Evasion techniques
       script: '|||xdr-get-alerts'
       type: regular
       version: -1
-    taskid: df72255d-43d7-4a64-8fde-cbc6771b33d4
+    taskid: 2510fdcc-364d-4001-839f-74dd0fdde6e8
     timertriggers: []
     type: regular
     view: |-
@@ -1834,7 +1915,7 @@ tasks:
                   ]
                 }
       extend-context:
-        simple: Discovery
+        simple: Discovery=
       time_frame:
         simple: ${inputs.timeRange}
     separatecontext: false
@@ -1842,13 +1923,13 @@ tasks:
     task:
       brand: ''
       description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
-      id: cd469df0-05d0-4934-89f1-5310259b51db
+      id: 60ea11f7-c4bd-4a13-8978-ffa69cfa36f8
       iscommand: true
       name: Hunt Discovery techniques
       script: '|||xdr-get-alerts'
       type: regular
       version: -1
-    taskid: cd469df0-05d0-4934-89f1-5310259b51db
+    taskid: 60ea11f7-c4bd-4a13-8978-ffa69cfa36f8
     timertriggers: []
     type: regular
     view: |-
@@ -1926,7 +2007,7 @@ tasks:
                   ]
                 }
       extend-context:
-        simple: Lateral_Movement
+        simple: Lateral_Movement=
       time_frame:
         simple: ${inputs.timeRange}
     separatecontext: false
@@ -1934,13 +2015,13 @@ tasks:
     task:
       brand: ''
       description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
-      id: 4491cd2c-169c-4e03-8428-4762c959e431
+      id: bbb964f1-5429-46da-8fff-3a7d98234123
       iscommand: true
       name: Hunt Lateral Movement techniques
       script: '|||xdr-get-alerts'
       type: regular
       version: -1
-    taskid: 4491cd2c-169c-4e03-8428-4762c959e431
+    taskid: bbb964f1-5429-46da-8fff-3a7d98234123
     timertriggers: []
     type: regular
     view: |-
@@ -2001,7 +2082,7 @@ tasks:
                   ]
                 }
       extend-context:
-        simple: Collection
+        simple: Collection=
       time_frame:
         simple: ${inputs.timeRange}
     separatecontext: false
@@ -2009,13 +2090,13 @@ tasks:
     task:
       brand: ''
       description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
-      id: 0cf1722b-ff9c-40f5-8d4b-5f7e15c35e3a
+      id: cbef5576-565a-4e69-836c-25a13c51a30d
       iscommand: true
       name: Hunt Collection techniques
       script: '|||xdr-get-alerts'
       type: regular
       version: -1
-    taskid: 0cf1722b-ff9c-40f5-8d4b-5f7e15c35e3a
+    taskid: cbef5576-565a-4e69-836c-25a13c51a30d
     timertriggers: []
     type: regular
     view: |-
@@ -2078,7 +2159,7 @@ tasks:
                   ]
                 }
       extend-context:
-        simple: Command_And_Control
+        simple: Command_And_Control=
       time_frame:
         simple: ${inputs.timeRange}
     separatecontext: false
@@ -2086,13 +2167,13 @@ tasks:
     task:
       brand: ''
       description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
-      id: cc6666ba-88c7-4b42-8ed3-7bbfebbf594a
+      id: 53ca333b-5ff3-414e-8215-af585c443c11
       iscommand: true
       name: Hunt Command and Control techniques
       script: '|||xdr-get-alerts'
       type: regular
       version: -1
-    taskid: cc6666ba-88c7-4b42-8ed3-7bbfebbf594a
+    taskid: 53ca333b-5ff3-414e-8215-af585c443c11
     timertriggers: []
     type: regular
     view: |-
@@ -2161,7 +2242,7 @@ tasks:
                   ]
                 }
       extend-context:
-        simple: Impact_techniques
+        simple: Impact_techniques=
       time_frame:
         simple: ${inputs.timeRange}
     separatecontext: false
@@ -2169,13 +2250,13 @@ tasks:
     task:
       brand: ''
       description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
-      id: f3446402-e971-4d1c-87b8-dec659f43e96
+      id: a931c95f-fd40-435c-8170-e642c6ff96a5
       iscommand: true
       name: Hunt Impact techniques
       script: '|||xdr-get-alerts'
       type: regular
       version: -1
-    taskid: f3446402-e971-4d1c-87b8-dec659f43e96
+    taskid: a931c95f-fd40-435c-8170-e642c6ff96a5
     timertriggers: []
     type: regular
     view: |-
@@ -2213,7 +2294,7 @@ tasks:
       {
         "position": {
           "x": 1710,
-          "y": -600
+          "y": -640
         }
       }
     continueonerrortype: ""
@@ -2225,6 +2306,9 @@ tasks:
     nexttasks:
       '#none#':
       - '44'
+      - "61"
+      - "62"
+      - "63"
     note: false
     quietmode: 0
     separatecontext: false
@@ -2244,7 +2328,7 @@ tasks:
       {
         "position": {
           "x": 1710,
-          "y": -110
+          "y": 310
         }
       }
     continueonerrortype: ""
@@ -2252,7 +2336,7 @@ tasks:
     evidencedata:
       customfields: {}
       description:
-        simple: Hunt by attacker source IP or external host - Cortex XDR - Endpoint Investigation
+        simple: Hunt by attacker external host - Cortex XDR - Endpoint Investigation
       tags:
         simple: Attacker network activity
     id: '44'
@@ -2261,21 +2345,15 @@ tasks:
     isoversize: false
     nexttasks:
       '#none#':
-      - '11'
+      - "12"
     note: false
     quietmode: 0
     scriptarguments:
       action_external_hostname:
         complex:
           root: inputs.attackerExternalHost
-      action_local_ip:
-        complex:
-          root: inputs.attackerRemoteIP
-      action_remote_ip:
-        complex:
-          root: inputs.attackerRemoteIP
       extend-context:
-        simple: Attacker_Network_Activity
+        simple: Attacker_Network_Activity=
       time_frame:
         complex:
           root: inputs.timeRange
@@ -2284,20 +2362,20 @@ tasks:
     task:
       brand: ''
       description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
-      id: 206b9474-f208-4cd2-8969-06542cd62a6b
+      id: b6348ed0-5203-44d4-8053-cd4dedd128d3
       iscommand: true
-      name: Hunt by attacker source IP or external host
+      name: Hunt by attacker external host
       script: '|||xdr-get-alerts'
       type: regular
       version: -1
-    taskid: 206b9474-f208-4cd2-8969-06542cd62a6b
+    taskid: b6348ed0-5203-44d4-8053-cd4dedd128d3
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 1710,
-          "y": 10
+          "x": 1540,
+          "y": 450
         }
       }
     continueonerrortype: ""
@@ -2328,7 +2406,7 @@ tasks:
       {
         "position": {
           "x": 1710,
-          "y": 350
+          "y": -160
         }
       }
     continueonerrortype: ""
@@ -2345,33 +2423,34 @@ tasks:
     isoversize: false
     nexttasks:
       '#none#':
-      - '12'
+      - "9"
     note: false
     quietmode: 0
     scriptarguments:
       mitre_technique_id_and_name:
-        simple: ${inputs.mitreTechniqueID}
+        complex:
+          root: inputs.mitreTechniqueID
       extend-context:
-        simple: MITRE_Techniques_Specific_ID
+        simple: MITRE_Techniques_Specific_ID=
     separatecontext: false
     skipunavailable: false
     task:
       brand: ''
       description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
-      id: d6d3940a-49fb-4f52-8ba8-a653cb97543a
+      id: 90bb5ad2-478d-46a1-8f15-f93adbede014
       iscommand: true
       name: Hunt by technique ID
       script: '|||xdr-get-alerts'
       type: regular
       version: -1
-    taskid: d6d3940a-49fb-4f52-8ba8-a653cb97543a
+    taskid: 90bb5ad2-478d-46a1-8f15-f93adbede014
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
           "x": 1710,
-          "y": 485
+          "y": -30
         }
       }
     continueonerrortype: ""
@@ -2383,6 +2462,9 @@ tasks:
     nexttasks:
       '#none#':
       - '49'
+      - "64"
+      - "65"
+      - "66"
     note: false
     quietmode: 0
     separatecontext: false
@@ -2402,7 +2484,7 @@ tasks:
       {
         "position": {
           "x": 1710,
-          "y": 830
+          "y": 800
         }
       }
     continueonerrortype: ""
@@ -2423,20 +2505,11 @@ tasks:
     note: false
     quietmode: 0
     scriptarguments:
-      action_file_image_sha256:
-        complex:
-          root: inputs.FileSHA256
-      action_process_image_sha256:
-        complex:
-          root: inputs.FileSHA256
-      actor_process_image_sha256:
-        complex:
-          root: inputs.FileSHA256
       causality_actor_process_image_sha256:
         complex:
           root: inputs.FileSHA256
       extend-context:
-        simple: Hunt_File_Hash
+        simple: Hunt_File_Hash=
       time_frame:
         complex:
           root: inputs.timeRange
@@ -2445,20 +2518,20 @@ tasks:
     task:
       brand: ''
       description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
-      id: 58ba3eff-0d34-4d4c-8b40-958050da9a0f
+      id: 9fb2d268-4b70-4b63-8d2d-339fd3e97d7f
       iscommand: true
-      name: Hunt by file hash
+      name: Hunt by causality actor process image hash
       script: '|||xdr-get-alerts'
       type: regular
       version: -1
-    taskid: 58ba3eff-0d34-4d4c-8b40-958050da9a0f
+    taskid: 9fb2d268-4b70-4b63-8d2d-339fd3e97d7f
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
-          "x": 1710,
-          "y": 960
+          "x": 1540,
+          "y": 940
         }
       }
     continueonerrortype: ""
@@ -2565,14 +2638,15 @@ tasks:
     isoversize: false
     nexttasks:
       '#none#':
-      - '9'
+      - "11"
     note: false
     quietmode: 0
     scriptarguments:
       agent_id:
-        simple: ${inputs.agentID}
+        complex:
+          root: inputs.agentID
       extend-context:
-        simple: Host_Activity
+        simple: Host_Activity=
       time_frame:
         simple: ${inputs.timeRange}
     separatecontext: false
@@ -2580,20 +2654,20 @@ tasks:
     task:
       brand: ''
       description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
-      id: 93b29a9b-c1b2-4d8e-8c71-84594b9a744b
+      id: 66bb161b-2117-47fa-8c76-1610850ef00a
       iscommand: true
       name: Hunt by host ID
       script: '|||xdr-get-alerts'
       type: regular
       version: -1
-    taskid: 93b29a9b-c1b2-4d8e-8c71-84594b9a744b
+    taskid: 66bb161b-2117-47fa-8c76-1610850ef00a
     timertriggers: []
     type: regular
     view: |-
       {
         "position": {
           "x": 1710,
-          "y": -465
+          "y": -505
         }
       }
     continueonerrortype: ""
@@ -2652,6 +2726,288 @@ tasks:
         }
       }
     continueonerrortype: ""
+  "61":
+    id: "61"
+    taskid: e1787cb1-4196-4b29-83ad-931394a1b966
+    type: regular
+    task:
+      id: e1787cb1-4196-4b29-83ad-931394a1b966
+      version: -1
+      name: Hunt by destination attacker external host
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
+      script: '|||xdr-get-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      dst_action_external_hostname:
+        complex:
+          root: inputs.attackerExternalHost
+      extend-context:
+        simple: Attacker_Network_Activity=
+      time_frame:
+        complex:
+          root: inputs.timeRange
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1940,
+          "y": 450
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: Hunt by attacker external host - Cortex XDR - Endpoint Investigation
+      tags:
+        simple: Attacker network activity
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "62":
+    id: "62"
+    taskid: 0523c3c6-e3ea-4387-82c1-e55259817a76
+    type: regular
+    task:
+      id: 0523c3c6-e3ea-4387-82c1-e55259817a76
+      version: -1
+      name: Hunt by remote attacker IP
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
+      script: '|||xdr-get-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      action_remote_ip:
+        complex:
+          root: inputs.attackerRemoteIP
+      extend-context:
+        simple: Attacker_Network_Activity=
+      time_frame:
+        complex:
+          root: inputs.timeRange
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2340,
+          "y": 450
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: Hunt by attacker source IP - Cortex XDR - Endpoint Investigation
+      tags:
+        simple: Attacker network activity
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "63":
+    id: "63"
+    taskid: b7616afc-fe9e-465d-86f7-c894460a5ce3
+    type: regular
+    task:
+      id: b7616afc-fe9e-465d-86f7-c894460a5ce3
+      version: -1
+      name: Hunt by local attacker IP
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
+      script: '|||xdr-get-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      action_local_ip:
+        complex:
+          root: inputs.attackerRemoteIP
+      extend-context:
+        simple: Attacker_Network_Activity=
+      time_frame:
+        complex:
+          root: inputs.timeRange
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2740,
+          "y": 450
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: Hunt by attacker source IP - Cortex XDR - Endpoint Investigation
+      tags:
+        simple: Attacker network activity
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "64":
+    id: "64"
+    taskid: 3efc6491-c0c1-4ff4-89ec-0c3effb89d45
+    type: regular
+    task:
+      id: 3efc6491-c0c1-4ff4-89ec-0c3effb89d45
+      version: -1
+      name: Hunt by action file image hash
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
+      script: '|||xdr-get-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      action_file_image_sha256:
+        complex:
+          root: inputs.FileSHA256
+      extend-context:
+        simple: Hunt_File_Hash=
+      time_frame:
+        complex:
+          root: inputs.timeRange
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1940,
+          "y": 940
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: Hunt by file hash - Cortex XDR - Endpoint Investigation
+      tags:
+        simple: Hunt File Hash
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "65":
+    id: "65"
+    taskid: 57c5d822-e856-4185-8959-de0211ed39b4
+    type: regular
+    task:
+      id: 57c5d822-e856-4185-8959-de0211ed39b4
+      version: -1
+      name: Hunt by action process image hash
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
+      script: '|||xdr-get-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      action_process_image_sha256:
+        complex:
+          root: inputs.FileSHA256
+      extend-context:
+        simple: Hunt_File_Hash=
+      time_frame:
+        complex:
+          root: inputs.timeRange
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2340,
+          "y": 940
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: Hunt by file hash - Cortex XDR - Endpoint Investigation
+      tags:
+        simple: Hunt File Hash
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "66":
+    id: "66"
+    taskid: cc9184d2-b417-4672-85e2-380b064bce14
+    type: regular
+    task:
+      id: cc9184d2-b417-4672-85e2-380b064bce14
+      version: -1
+      name: Hunt by actor process image hash
+      description: "Returns a list of alerts and their metadata, which you can filter by built-in arguments or use the custom_filter to input a JSON filter object. \n Multiple filter arguments will be concatenated using AND operator, while arguments that support a comma-separated list of values will use an OR operator between each value."
+      script: '|||xdr-get-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      actor_process_image_sha256:
+        complex:
+          root: inputs.FileSHA256
+      extend-context:
+        simple: Hunt_File_Hash=
+      time_frame:
+        complex:
+          root: inputs.timeRange
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2740,
+          "y": 940
+        }
+      }
+    note: false
+    evidencedata:
+      description:
+        simple: Hunt by file hash - Cortex XDR - Endpoint Investigation
+      tags:
+        simple: Hunt File Hash
+      customfields: {}
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 version: -1
 view: |-
   {
@@ -2659,7 +3015,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 5785,
-        "width": 2280,
+        "width": 3310,
         "x": -190,
         "y": -1090
       }
@@ -2668,3 +3024,5 @@ view: |-
 tests:
 - No tests (auto formatted)
 fromversion: 6.5.0
+contentitemexportablefields:
+  contentitemfields: {}
