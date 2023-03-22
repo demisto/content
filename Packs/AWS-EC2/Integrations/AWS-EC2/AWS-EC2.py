@@ -1,6 +1,7 @@
 from datetime import date
 
 import demistomock as demisto  # noqa: F401
+import json
 import urllib3.util
 from CommonServerPython import *  # noqa: F401
 
@@ -1476,17 +1477,20 @@ def authorize_security_group_ingress_command(args, aws_client):
         role_session_duration=args.get('roleSessionDuration'),
     )
     kwargs = {'GroupId': args.get('groupId')}
-    IpPermissions = []
-    UserIdGroupPairs = []
-    IpPermissions_dict = create_ip_permissions_dict(args)
-    UserIdGroupPairs_dict = create_user_id_group_pairs_dict(args)
+    if IpPermissionsFull := args.get('IpPermissionsFull', None):
+        IpPermissions = json.loads(IpPermissionsFull)
+    else:
+        IpPermissions = []
+        UserIdGroupPairs = []
+        IpPermissions_dict = create_ip_permissions_dict(args)
+        UserIdGroupPairs_dict = create_user_id_group_pairs_dict(args)
 
-    kwargs.update(create_policy_kwargs_dict(args))
+        kwargs.update(create_policy_kwargs_dict(args))
 
-    UserIdGroupPairs.append(UserIdGroupPairs_dict)
-    IpPermissions_dict.update({'UserIdGroupPairs': UserIdGroupPairs})  # type: ignore
+        UserIdGroupPairs.append(UserIdGroupPairs_dict)
+        IpPermissions_dict.update({'UserIdGroupPairs': UserIdGroupPairs})  # type: ignore
 
-    IpPermissions.append(IpPermissions_dict)
+        IpPermissions.append(IpPermissions_dict)
     kwargs.update({'IpPermissions': IpPermissions})
 
     response = client.authorize_security_group_ingress(**kwargs)
@@ -1503,14 +1507,17 @@ def authorize_security_group_egress_command(args, aws_client):
         role_session_duration=args.get('roleSessionDuration'),
     )
     kwargs = {'GroupId': args.get('groupId')}
-    IpPermissions = []
-    UserIdGroupPairs = []
-    IpPermissions_dict = create_ip_permissions_dict(args)
-    UserIdGroupPairs_dict = create_user_id_group_pairs_dict(args)
+    if IpPermissionsFull := args.get('IpPermissionsFull', None):
+        IpPermissions = json.loads(IpPermissionsFull)
+    else:
+        IpPermissions = []
+        UserIdGroupPairs = []
+        IpPermissions_dict = create_ip_permissions_dict(args)
+        UserIdGroupPairs_dict = create_user_id_group_pairs_dict(args)
 
-    UserIdGroupPairs.append(UserIdGroupPairs_dict)
-    IpPermissions_dict.update({'UserIdGroupPairs': UserIdGroupPairs})  # type: ignore
-    IpPermissions.append(IpPermissions_dict)
+        UserIdGroupPairs.append(UserIdGroupPairs_dict)
+        IpPermissions_dict.update({'UserIdGroupPairs': UserIdGroupPairs})  # type: ignore
+        IpPermissions.append(IpPermissions_dict)
     kwargs.update({'IpPermissions': IpPermissions})
 
     response = client.authorize_security_group_egress(**kwargs)
@@ -1587,8 +1594,11 @@ def revoke_security_group_ingress_command(args, aws_client):
         role_session_duration=args.get('roleSessionDuration'),
     )
     kwargs = {'GroupId': args.get('groupId')}
-
-    kwargs.update(create_policy_kwargs_dict(args))
+    if IpPermissionsFull := args.get('IpPermissionsFull', None):
+        IpPermissions = json.loads(IpPermissionsFull)
+        kwargs['IpPermissions'] = IpPermissions
+    else:
+        kwargs.update(create_policy_kwargs_dict(args))
 
     response = client.revoke_security_group_ingress(**kwargs)
     if response['ResponseMetadata']['HTTPStatusCode'] == 200 and response['Return']:
@@ -1609,12 +1619,15 @@ def revoke_security_group_egress_command(args, aws_client):
     kwargs = {
         'GroupId': args.get('groupId')
     }
+    if IpPermissionsFull := args.get('IpPermissionsFull'):
+        IpPermissions = json.loads(IpPermissionsFull)
+        kwargs['IpPermissions'] = IpPermissions
+    else:
+        IpPermissions_dict = create_ip_permissions_dict(args)
+        UserIdGroupPairs_dict = create_user_id_group_pairs_dict(args)
 
-    IpPermissions_dict = create_ip_permissions_dict(args)
-    UserIdGroupPairs_dict = create_user_id_group_pairs_dict(args)
-
-    IpPermissions_dict['UserIdGroupPairs'] = [UserIdGroupPairs_dict]
-    kwargs['IpPermissions'] = [IpPermissions_dict]
+        IpPermissions_dict['UserIdGroupPairs'] = [UserIdGroupPairs_dict]
+        kwargs['IpPermissions'] = [IpPermissions_dict]
 
     response = client.revoke_security_group_egress(**kwargs)
     if response['ResponseMetadata']['HTTPStatusCode'] == 200 and response['Return']:

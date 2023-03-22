@@ -104,3 +104,25 @@ Tag a user as risky in Reco
 #### Context Output
 
 There is no context output for this command.
+
+
+### reco-get-assets-user-has-access-to
+
+***
+Get assets user has access to (optional to get only sensitive assets)
+
+#### Base Command
+
+`reco-get-assets-user-has-access-to`
+
+#### Input
+
+| **Argument Name** | **Description**                                   | **Required** |
+|-------------------|---------------------------------------------------|--------------|
+| asset_owner       | Email address of the user who owns all the assets | Required     | 
+| only_sensitive    | Get only sensitive files                          | Optional     |
+
+
+#### Context Output
+
+There is no context output for this command.
