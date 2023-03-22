@@ -1,2 +1,9 @@
 [file:README.md]
 ignore=RM104
+
+[file:integration-Skyformation_README.md]
+ignore=BA120
+
+[file:integration-Skyformation.yml]
+ignore=BA120
+

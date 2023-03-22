@@ -14,4 +14,11 @@ ignore=IM111
 ignore=IM111
 
 [known_words]
-MISP
+misp
+
+[file:script-misp_upload_sample.yml]
+ignore=BA120
+
+[file:script-misp_download_sample.yml]
+ignore=BA120
+

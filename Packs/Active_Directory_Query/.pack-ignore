@@ -14,7 +14,14 @@ ignore=BA101
 ignore=CJ105
 
 [known_words]
-LDAP
-TLS
-userAccountControl
-ZipProtectWithPassword
+ldap
+tls
+useraccountcontrol
+zipprotectwithpassword
+
+[file:script-ADGetUser.yml]
+ignore=BA120
+
+[file:script-ADGetUser_README.md]
+ignore=BA120
+

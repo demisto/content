@@ -1,5 +1,6 @@
 [file:MimecastV2.yml]
 ignore=IN126,IN145,IN124
+
 [file:README.md]
 ignore=RM104
 
@@ -8,3 +9,10 @@ ignore=IM111
 
 [file:MimecastEventCollector_image.png]
 ignore=IM111
+
+[file:script-MimecastQuery.yml]
+ignore=BA120
+
+[file:script-MimecastQuery_README.md]
+ignore=BA120
+
