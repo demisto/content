@@ -11,7 +11,6 @@ requests-mock = "*"
 pytest-asyncio = "*"
 
 [packages]
-devo-sdk=="5.1.1"
 
 [requires]
 python_version = "3.7"
