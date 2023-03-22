@@ -697,7 +697,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "61"
+      - "49"
     separatecontext: false
     view: |-
       {
@@ -733,14 +733,25 @@ tasks:
     scriptarguments:
       user-profile:
         complex:
-          root: inputs.Username
-          transformers:
-          - operator: concat
-            args:
-              prefix: {}
-              suffix:
+          root: inputs.Domain
+          filters:
+          - - operator: isNotEmpty
+              left:
                 value:
                   simple: inputs.Domain
+                iscontext: true
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: inputs.Username
+                iscontext: true
+              suffix:
                 iscontext: true
           - operator: uniq
           - operator: concat
@@ -759,7 +770,7 @@ tasks:
       {
         "position": {
           "x": -820,
-          "y": 430
+          "y": 235
         }
       }
     note: false
@@ -1200,49 +1211,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "61":
-    id: "61"
-    taskid: f1f484af-b258-4553-8d63-0073edb84bfc
-    type: condition
-    task:
-      id: f1f484af-b258-4553-8d63-0073edb84bfc
-      version: -1
-      name: Is Domain defined?
-      description: Checks whether the 'inputs.Domain' is defined.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "3"
-      "yes":
-      - "49"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isExists
-          left:
-            value:
-              simple: inputs.Domain
-            iscontext: true
-          right:
-            value: {}
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -820,
-          "y": 235
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -1254,8 +1222,7 @@ view: |-
       "4_3_#default#": 0.1,
       "51_3_#default#": 0.1,
       "56_3_#default#": 0.1,
-      "58_3_#default#": 0.1,
-      "61_3_#default#": 0.16
+      "58_3_#default#": 0.1
     },
     "paper": {
       "dimensions": {
