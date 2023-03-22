@@ -34,7 +34,7 @@ def test_Druva_FindUser_Command(requests_mock):
     mock_response = {"users": [{
         "userID": "100",
         "userName": "test",
-        "emailID": "test@druva.org"
+        "emailID": "test@test.com"
     }]}
     requests_mock.get('https://apis.druva.com/realize/ransomwarerecovery/v1/users?users=test',
                       json=mock_response)
@@ -50,7 +50,7 @@ def test_Druva_FindUser_Command(requests_mock):
     assert response.outputs["Druva.User(val.userID == obj.userID)"] == [{
         "userID": "100",
         "userName": "test",
-        "emailID": "test@druva.org"
+        "emailID": "test@test.com"
     }]
 
 

@@ -985,14 +985,14 @@ Finds user information for a specific username.
     "Druva": {
         "User": [
             {
-                "emailID": "r@d.org",
+                "emailID": "test@test.com",
                 "userID": 10000135,
-                "userName": "rit1"
+                "userName": "test"
             },
             {
-                "emailID": "rit123@druva.org",
+                "emailID": "test123@test.com",
                 "userID": 10000154,
-                "userName": "rit123"
+                "userName": "test123"
             }
         ]
     }
@@ -1004,8 +1004,8 @@ Finds user information for a specific username.
 >### Found Druva users
 >|emailID|userID|userName|
 >|---|---|---|
->| r@d.org | 10000135 | rit1 |
->| rit123@druva.org | 10000154 | rit123 |
+>| test@test.com | 10000135 | test |
+>| test123@test.com | 10000154 | test123 |
 
 
 ### druva-find-userDevice
