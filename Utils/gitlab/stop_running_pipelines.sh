@@ -40,7 +40,7 @@ if [ "$RESP" != "[]" ]; then
     source=$(echo $pipeline | jq -r ".source")
     status=$(echo $pipeline | jq -r ".status")
     id=$(echo $pipeline | jq -r ".id")
-    if [ "$status" = "running" ] && [ "$source" = "push" ] && [ "$id" != $CI_PIPELINE_ID ]; then
+    if [ "$status" = "running" ] && [ "$source" = "push" ] && [ "$id" -gt $CI_PIPELINE_ID ]; then
       echo "Found running pipeline with id $id, and status $status. Stopping it."
       stop_pipeline_by_id "$id"
     fi
