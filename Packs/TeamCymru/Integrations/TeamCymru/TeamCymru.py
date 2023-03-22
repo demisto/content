@@ -248,7 +248,6 @@ def setup_proxy():  # pragma: no coverage
         'socks4a': [socks.PROXY_TYPE_SOCKS4, True],
         'http': [socks.PROXY_TYPE_HTTP, True]
     }
-    demisto.log("params =  {}".format(demisto.params()))
     proxy_url = demisto.params().get('proxy_url')
     def_scheme = 'socks5h'
     if proxy_url == 'system_http' or not proxy_url and demisto.params().get('proxy'):
