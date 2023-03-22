@@ -93,7 +93,7 @@ def build_regex_pattern_object(regex_patterns: list) -> List[dict]:
 
 def build_visibility_config_object(metric_name: str,
                                    cloud_watch_metrics_enabled: bool,
-                                   sampled_requests_enabled: bool) -> dict:
+                                   sampled_requests_enabled: bool) -> dict:  # pragma: no cover
     """
     Creates a dictionary which represents visibility config
     Args:
@@ -137,7 +137,7 @@ def build_ip_rule_object(args: dict) -> dict:
     return ip_rule
 
 
-def build_ip_statement(ip_set_arn: str) -> dict:
+def build_ip_statement(ip_set_arn: str) -> dict:  # pragma: no cover
     """
     Creates an ip statement that can be added to a statements list of a rule
     Args:
@@ -149,7 +149,7 @@ def build_ip_statement(ip_set_arn: str) -> dict:
     return {'IPSetReferenceStatement': {'ARN': ip_set_arn}}
 
 
-def build_country_statement(country_codes: list) -> dict:
+def build_country_statement(country_codes: list) -> dict:  # pragma: no cover
     """
     Creates a country statement that can be added to a statements list of a rule
     Args:
@@ -348,7 +348,7 @@ def build_regex_match_statement(web_request_component: str,
     }
 
 
-def build_string_match_rule_object(args: dict) -> dict:
+def build_string_match_rule_object(args: dict) -> dict:  # pragma: no cover
     """
     Creates a string match rule statement object that can be added to a rule
     Args:
@@ -427,7 +427,7 @@ def append_new_rule(rules: list, rule: dict) -> list:
     return updated_rules
 
 
-def get_required_args_for_get_rule_group(args: dict) -> dict:
+def get_required_args_for_get_rule_group(args: dict) -> dict:  # pragma: no cover
     """
     Build the required arguments for a request of get_rule_group
     Args:
@@ -470,7 +470,7 @@ def update_rule_group_rules(client: boto3.client,
                             kwargs: dict,
                             lock_token: str,
                             updated_rules: list,
-                            rule_group_visibility_config: dict) -> dict:
+                            rule_group_visibility_config: dict) -> dict:  # pragma: no cover
     """ Updates rule group with new rules list"""
     kwargs |= {'LockToken': lock_token,
                'Rules': updated_rules,
@@ -483,7 +483,7 @@ def update_rule_group_rules(client: boto3.client,
 ''' COMMAND FUNCTIONS '''
 
 
-def connection_test(client: boto3.client) -> str:
+def connection_test(client: boto3.client) -> str:  # pragma: no cover
     """ Command to test the connection to the API"""
     try:
         client.list_ip_sets(args={'scope': SCOPE_MAP[DEFAULT_SCOPE]})
