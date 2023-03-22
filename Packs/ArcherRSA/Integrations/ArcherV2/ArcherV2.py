@@ -43,7 +43,7 @@ def parser(date_str, date_formats=None, languages=None, locales=None, region=Non
         date_str, date_formats=date_formats, languages=languages, locales=locales, region=region, settings=settings
     )
     demisto.debug(f"the received date_obj is: {date_obj}")
-    demisto.debug(f"if we add the date_format we get: {OCCURRED_FORMAT}")
+    demisto.debug(f"if we add the date_format we get: {dateparser.parse(date_str, date_formats=[OCCURRED_FORMAT])}")
     assert isinstance(date_obj, datetime), f'Could not parse date {date_str}'  # MYPY Fix
     return date_obj.replace(tzinfo=timezone.utc)
 
@@ -487,6 +487,7 @@ class Client(BaseClient):
             'labels': labels,
             'rawJSON': json.dumps(raw_record)
         }
+        demisto.debug(f"Got the following occurred_time: {occurred_time=}")
         return incident, parser(occurred_time)
 
     def search_records(
@@ -1237,12 +1238,17 @@ def fetch_incidents(
     # Build incidents
     incidents = list()
     # Encountered that sometimes, somehow, on of next_fetch is not UTC.
+    demisto.debug(f"got the following from_time: {from_time}")
     last_fetch_time = from_time.replace(tzinfo=timezone.utc)
+    demisto.debug(f"got the following last_fetch_time: {last_fetch_time}")
     next_fetch = last_fetch_time
     for record in records:
         incident, incident_created_time = client.record_to_incident(record, app_id, fetch_param_id)
         # Encountered that sometimes, somehow, incident_created_time is not UTC.
+        demisto.debug(f"got the following incident_created_time: {incident_created_time=}")
         incident_created_time = incident_created_time.replace(tzinfo=timezone.utc)
+        demisto.debug(f"After the replacement, got the following incident_created_time: {incident_created_time=}")
+        demisto.debug(f"approaching the condition with {last_fetch_time=}\n{incident_created_time=}\n{next_fetch=}")
         if last_fetch_time < incident_created_time:
             incidents.append(incident)
             if next_fetch < incident_created_time:
@@ -1363,7 +1369,6 @@ def main():
             )
             incidents, next_fetch = fetch_incidents_command(client, params, last_run)
             demisto.debug(f'Setting next run to {next_fetch}')
-            demisto.debug(f'last fetch is: {next_fetch}')
             demisto.debug(f'the last run with the new time key is {next_fetch.strftime(OCCURRED_FORMAT)}')
             last_run[LAST_FETCH_TIME_KEY] = next_fetch.strftime(OCCURRED_FORMAT)
             demisto.setLastRun(last_run)
