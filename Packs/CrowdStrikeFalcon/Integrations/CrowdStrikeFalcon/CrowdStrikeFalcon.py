@@ -4288,7 +4288,7 @@ def create_ml_exclusion_command(args: dict) -> CommandResults:
     Returns:
         The created exclusion meta data.
 
-    """    
+    """
     create_args = assign_params(
         value=args.get('value'),
         excluded_from=argToList(args.get('excluded_from')),
@@ -4405,7 +4405,7 @@ def create_ioa_exclusion_command(args: dict) -> CommandResults:
     Returns:
         The created exclusion meta data.
 
-    """    
+    """
     create_args = assign_params(
         name=args.get('exclusion_name'),
         pattern_id=args.get('pattern_id'),
@@ -4512,8 +4512,8 @@ def search_ioa_exclusion_command(args: dict) -> CommandResults:
             readable_output='The arguments/filters you provided did not match any exclusion.'
         )
 
-    exclusions = get_exclusion_entities('ioa', ids).get('resources')
-    if exclusion_name:
+    exclusions = get_exclusion_entities('ioa', ids).get('resources', [])
+    if exclusion_name and exclusions:
         exclusions = list(filter(lambda x: x.get('name') == exclusion_name, exclusions))
     human_readable = tableToMarkdown('CrowdStrike Falcon IOA exclusions', exclusions, is_auto_json_transform=True,
                                      headerTransform=underscoreToCamelCase, removeNull=True, sort_headers=False)
