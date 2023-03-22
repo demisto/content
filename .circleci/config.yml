@@ -320,7 +320,7 @@ jobs:
 
   Run Unit Testing And Lint:
     <<: *container_config
-    resource_class: medium
+    resource_class: large
     <<: *environment
     parameters:
       dockerimageflag:
