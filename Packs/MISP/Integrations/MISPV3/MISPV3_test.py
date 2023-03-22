@@ -773,7 +773,7 @@ def test_add_tag(demisto_args: dict, is_attribute: bool, expected_result: dict, 
     mocker.patch('MISPV3.build_events_search_response', return_value={'test': 'test'})
     result = add_tag(demisto_args, is_attribute=is_attribute)
 
-    assert bool(mocked_search.call_count) == (is_attribute and not demisto_args['disable_output']) or not is_attribute
+    assert bool(mocked_search.call_count) == ((is_attribute and not demisto_args['disable_output']) or not is_attribute)
     assert result.readable_output == expected_result['readable_output']
     assert result.outputs == expected_result['outputs']
     assert result.outputs_prefix == expected_result['outputs_prefix']
