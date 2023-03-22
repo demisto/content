@@ -42,13 +42,13 @@ WEB_REQUEST_COMPONENT_MAP = {"Headers": "Headers",
 ''' HELPER FUNCTIONS '''
 
 
-def convert_dict_values_bytes_to_str(input_dict):
+def convert_dict_values_bytes_to_str(input_dict: dict):  # type: ignore
     output_dict = {}
     for key, value in input_dict.items():
-        if isinstance(value, bytes):
-            output_dict[key] = value.decode()
-        elif isinstance(value, dict):
+        if isinstance(value, dict):
             output_dict[key] = convert_dict_values_bytes_to_str(value)
+        elif isinstance(value, bytes):
+            output_dict[key] = value.decode()
         elif isinstance(value, list):
             output_dict[key] = [
                 convert_dict_values_bytes_to_str(item) if isinstance(item, dict)
@@ -121,35 +121,32 @@ def build_ip_rule_object(args: dict) -> dict:
         Ip rule statement object
     """
     ip_rule = {}
-    ip_set_arn = argToList(args.get('ip_set_arn'))
+    ip_set_arns = argToList(args.get('ip_set_arn'))
     condition_operator = args.get('condition_operator', '')
-    if len(ip_set_arn) > 1 and not condition_operator:
+    if len(ip_set_arns) > 1 and not condition_operator:
         raise DemistoException('The condition_operator argument must be specified when '
                                'ip_set_arn contains more than one value.')
 
-    if len(ip_set_arn) == 1:
-        ip_rule['Statement'] = build_ip_statement(ip_set_arn)
-    elif len(ip_set_arn) > 1:
+    if len(ip_set_arns) == 1:
+        ip_rule['Statement'] = build_ip_statement(ip_set_arns[0])
+    elif len(ip_set_arns) > 1:
         statement_operator = OPERATOR_TO_STATEMENT_OPERATOR[condition_operator]
         ip_rule.setdefault('Statement', {})[statement_operator] = {
-            'Statements': build_ip_statement(ip_set_arn)
+            'Statements': [build_ip_statement(ip_set_arn) for ip_set_arn in ip_set_arns]
         }
     return ip_rule
 
 
-def build_ip_statement(ip_set_arn: list) -> list | dict:
+def build_ip_statement(ip_set_arn: str) -> dict:
     """
     Creates an ip statement that can be added to a statements list of a rule
     Args:
         ip_set_arn: The ip set ARN representation
 
     Returns:
-        An ip statement object if ip_set_arn contains only one value, a list of statements otherwise
+        An ip statement object
     """
-    ip_statements = [
-        {'IPSetReferenceStatement': {'ARN': ip_set}} for ip_set in ip_set_arn
-    ]
-    return ip_statements[0] if len(ip_statements) == 1 else ip_statements
+    return {'IPSetReferenceStatement': {'ARN': ip_set_arn}}
 
 
 def build_country_statement(country_codes: list) -> dict:
@@ -222,12 +219,12 @@ def build_string_match_statement(match_type: str = '',
     return {match_statement: statement}
 
 
-def update_rule_with_statement(rule: dict, statement: dict, condition_operator: str):
+def update_rule_with_statement(rule: dict, statements: list, condition_operator: str):
     """
     Updates an existing rule with a new statement
     Args:
         rule: The rule to update
-        statement: The statement to update the rule with
+        statements: The statement to update the rule with
         condition_operator: The condition to apply on the statements
     """
     old_rule_statement = rule.get('Statement', {})
@@ -241,15 +238,15 @@ def update_rule_with_statement(rule: dict, statement: dict, condition_operator: 
 
     else:
         raise DemistoException('Rule contains only one statement. Please provide condition operator.')
-    rule['Statement'][condition]['Statements'].append(statement)
+    rule['Statement'][condition]['Statements'].extend(statements)
 
 
-def create_rules_list_with_new_rule_statement(args: dict, statement: dict, rules: list) -> list:
+def create_rules_list_with_new_rule_statement(args: dict, statements: list, rules: list) -> list:
     """
     Creates a rules list with the updated rule
     Args:
         args: The command arguments
-        statement: The statement to add to a rule
+        statements: The statements to add to a rule
         rules: The original rules
 
     Returns:
@@ -260,7 +257,7 @@ def create_rules_list_with_new_rule_statement(args: dict, statement: dict, rules
     condition_operator = args.get('condition_operator', '')
     for rule in new_rules:
         if rule.get('Name') == rule_name:
-            update_rule_with_statement(rule, statement, condition_operator)
+            update_rule_with_statement(rule, statements, condition_operator)
             return rules
     raise DemistoException(f'Did not find any rule with name {rule_name}')
 
@@ -933,9 +930,9 @@ def add_ip_statement_command(client: boto3.client, args: dict) -> CommandResults
     """ Command to add an ip statement to a rule"""
     kwargs = get_required_args_for_get_rule_group(args)
     rules, rule_group_visibility_config, lock_token = get_required_response_fields_from_rule_group(client, kwargs)
-    ip_set_arn = argToList(args.get('ip_set_arn')) or []
-    statement = build_ip_statement(ip_set_arn)
-    updated_rules = create_rules_list_with_new_rule_statement(args, statement, rules)  # type: ignore
+    ip_set_arns = argToList(args.get('ip_set_arn'))
+    statements = [build_ip_statement(ip_set_arn) for ip_set_arn in ip_set_arns]
+    updated_rules = create_rules_list_with_new_rule_statement(args, statements, rules)
 
     response = update_rule_group_rules(client=client,
                                        kwargs=kwargs,
@@ -955,7 +952,7 @@ def add_country_statement_command(client: boto3.client, args: dict) -> CommandRe
 
     rules, rule_group_visibility_config, lock_token = get_required_response_fields_from_rule_group(client, kwargs)
     country_codes = argToList(args.get('country_codes')) or []
-    statement = build_country_statement(country_codes)
+    statement = [build_country_statement(country_codes)]
     updated_rules = create_rules_list_with_new_rule_statement(args, statement, rules)
 
     response = update_rule_group_rules(client=client,
@@ -977,7 +974,7 @@ def add_string_match_statement_command(client: boto3.client, args: dict) -> Comm
 
     rules, rule_group_visibility_config, lock_token = get_required_response_fields_from_rule_group(client, kwargs)
 
-    statement = build_string_match_statement(**args)
+    statement = [build_string_match_statement(**args)]
     updated_rules = create_rules_list_with_new_rule_statement(args, statement, rules)
 
     response = update_rule_group_rules(client=client,
@@ -1019,7 +1016,7 @@ def template_json_command(args: dict) -> CommandResults:
     statement_type = args.get('statement_type', '')
     web_request_component = args.get('web_request_component', '')
     if statement_type == 'Ip Set':
-        readable_output = json.dumps(build_ip_statement(ip_set_arn=['The Ip Set ARN']))
+        readable_output = json.dumps(build_ip_statement(ip_set_arn='The Ip Set ARN'))
 
     elif statement_type == 'Country':
         readable_output = json.dumps(build_country_statement(country_codes=['country code1, country code2...']))

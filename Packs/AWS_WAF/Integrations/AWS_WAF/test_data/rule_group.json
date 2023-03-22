@@ -1,8 +1,8 @@
 {
     "RuleGroup": {
-        "Name": "string",
-        "Id": "string",
-        "Capacity": 123,
+        "Name": "nme",
+        "Id": "id",
+        "Capacity": 100,
         "ARN": "string",
         "Description": "string",
         "Rules": [
@@ -46,5 +46,5 @@
         }
 
     },
-    "LockToken": "string"
+    "LockToken": "lockToken"
 }

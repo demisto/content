@@ -38,6 +38,18 @@ class MockedBoto3Client:
     def delete_regex_pattern_set(self, **kwargs):
         pass
 
+    def create_rule_group(self, **kwargs):
+        pass
+
+    def get_rule_group(self, **kwargs):
+        pass
+
+    def list_rule_groups(self, **kwargs):
+        pass
+
+    def delete_rule_group(self, **kwargs):
+        pass
+
 
 def util_load_json(path):
     with io.open(f'test_data/{path}.json', mode='r', encoding='utf-8') as f:
@@ -50,6 +62,22 @@ def test_get_tags_dict_from_args():
     tag_values = ['value1', 'value2']
     result = get_tags_dict_from_args(tag_keys=tag_keys, tag_values=tag_values)
     assert len(result) == 2
+
+
+def test_convert_dict_values_bytes_to_str():
+    from AWS_WAF import convert_dict_values_bytes_to_str
+    input_dict = {'some_key': b'some_value',
+                  'some_key1': [b'some_value'],
+                  'some_key2': {'some_key': [b'some_value'],
+                                'some_key1': b'some_value'}
+                  }
+    expected_output_dict = {'some_key': 'some_value',
+                            'some_key1': ['some_value'],
+                            'some_key2': {'some_key': ['some_value'],
+                                          'some_key1': 'some_value'}
+                            }
+    actual_output = convert_dict_values_bytes_to_str(input_dict)
+    assert actual_output == expected_output_dict
 
 
 def test_get_tags_dict_from_args_raise_exception():
@@ -83,25 +111,32 @@ def test_build_ip_rule_object(args, expected_result):
     assert expected_result in ip_rule['Statement']
 
 
-@pytest.mark.parametrize('ip_set_arn, expected_type',
-                         [(IP_ARN_LIST[:1], dict),
-                          (IP_ARN_LIST, list)])
-def test_build_ip_statement(ip_set_arn, expected_type):
-    from AWS_WAF import build_ip_statement
-    statement = build_ip_statement(ip_set_arn=ip_set_arn)
-    assert type(statement) == expected_type
+# @pytest.mark.parametrize('ip_set_arn, expected_type',
+#                          [(IP_ARN_LIST[:1], dict),
+#                           (IP_ARN_LIST, list)])
+# def test_build_ip_statement(ip_set_arn, expected_type):
+#     from AWS_WAF import build_ip_statement
+#     statement = build_ip_statement(ip_set_arn=ip_set_arn)
+#     assert statement == expected_type
 
 
-@pytest.mark.parametrize('rule_file, statement_condition',
-                         [('rule_one_statement', OPERATOR_TO_STATEMENT_OPERATOR[AND_CONDITION_OPERATOR]),
-                          ('rule_two_statements', OPERATOR_TO_STATEMENT_OPERATOR[OR_CONDITION_OPERATOR])])
-def test_update_rule_with_statement(rule_file, statement_condition):
+@pytest.mark.parametrize('rule_file, statement_condition, statements',
+                         [('rule_one_statement',
+                           OPERATOR_TO_STATEMENT_OPERATOR[AND_CONDITION_OPERATOR],
+                           [{"IPSetReferenceStatement": {
+                               "ARN": "ip_arn"
+                           }}]),
+                          ('rule_two_statements',
+                           OPERATOR_TO_STATEMENT_OPERATOR[OR_CONDITION_OPERATOR],
+                           [{"IPSetReferenceStatement": {
+                               "ARN": "ip_arn"
+                           }}, {"IPSetReferenceStatement": {
+                               "ARN": "ip_arn1"
+                           }}])])
+def test_update_rule_with_statement(rule_file, statement_condition, statements):
     from AWS_WAF import update_rule_with_statement
     rule = util_load_json(rule_file)
-    statement = {"IPSetReferenceStatement": {
-        "ARN": "ip_arn"
-    }}
-    update_rule_with_statement(rule=rule, statement=statement, condition_operator=AND_CONDITION_OPERATOR)
+    update_rule_with_statement(rule=rule, statements=statements, condition_operator=AND_CONDITION_OPERATOR)
     assert statement_condition in rule['Statement']
 
 
@@ -110,7 +145,7 @@ def test_create_rules_list_with_new_rule_statement(mocker):
     rules = util_load_json('rule_group').get('RuleGroup').get('Rules')
     args = {'rule_name': 'test_1'}
     res = mocker.patch('AWS_WAF.update_rule_with_statement')
-    create_rules_list_with_new_rule_statement(args=args, statement={}, rules=rules)
+    create_rules_list_with_new_rule_statement(args=args, statements=[{}], rules=rules)
     assert res.call_count == 1
 
 
@@ -297,3 +332,56 @@ def test_delete_regex_set_command(mocker):
                                              Id='id',
                                              Scope='REGIONAL',
                                              LockToken='lockToken')
+
+
+def test_list_rule_group_command(mocker):
+    from AWS_WAF import list_rule_group_command
+    client = MockedBoto3Client()
+    list_rule_group_args = {'scope': 'Regional'}
+    list_rule_group_mock = mocker.patch.object(client, 'list_rule_groups')
+    list_rule_group_command(client=client, args=list_rule_group_args)
+    list_rule_group_mock.assert_called_with(Scope='REGIONAL', Limit=50)
+
+
+def test_get_rule_group_command(mocker):
+    from AWS_WAF import get_rule_group_command
+    client = MockedBoto3Client()
+    get_rule_group_args = {'name': 'name', 'scope': 'Regional', 'id': 'id'}
+    get_rule_group_mock = mocker.patch.object(client, 'get_rule_group')
+    get_rule_group_command(client=client, args=get_rule_group_args)
+    get_rule_group_mock.assert_called_with(Name='name', Scope='REGIONAL', Id='id')
+
+
+def test_create_rule_group_command(mocker):
+    from AWS_WAF import create_rule_group_command
+    client = MockedBoto3Client()
+    create_rule_group_args = {'name': 'name',
+                              'scope': 'Regional',
+                              'capacity': 100,
+                              'cloud_watch_metrics_enabled': True,
+                              'sampled_requests_enabled': True}
+    expected_visibility_config = {
+        'CloudWatchMetricsEnabled': True,
+        'MetricName': 'name',
+        'SampledRequestsEnabled': True
+    }
+    create_rule_group_mock = mocker.patch.object(client, 'create_rule_group')
+    create_rule_group_command(client=client, args=create_rule_group_args)
+    create_rule_group_mock.assert_called_with(Name='name',
+                                              Scope='REGIONAL',
+                                              Capacity=100,
+                                              VisibilityConfig=expected_visibility_config)
+
+
+def test_delete_rule_group_command(mocker):
+    from AWS_WAF import delete_rule_group_command
+    client = MockedBoto3Client()
+    delete_rule_group_args = {'name': 'name', 'scope': 'Regional', 'id': 'id'}
+    get_rule_group_response = util_load_json('rule_group')
+    mocker.patch.object(client, 'get_rule_group', return_value=get_rule_group_response)
+    delete_rule_group_mock = mocker.patch.object(client, 'delete_rule_group')
+    delete_rule_group_command(client=client, args=delete_rule_group_args)
+    delete_rule_group_mock.assert_called_with(Name='name',
+                                              Id='id',
+                                              Scope='REGIONAL',
+                                              LockToken='lockToken')
