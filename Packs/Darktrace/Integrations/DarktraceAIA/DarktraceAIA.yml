@@ -114,7 +114,7 @@ script:
       description: Associated model breaches with event Id
       type: Unknown
   - name: darktrace-get-comments-for-ai-analyst-incident-event
-    description: Fetch all comments from an AI Analyst incident vent
+    description: Fetch all comments from an AI Analyst incident Event
     arguments:
     - default: false
       description: Unique identified of an AI Analyst incident event
@@ -229,9 +229,6 @@ script:
     - contextPath: Darktrace.AIAnalyst.groupCategory
       description: Group category
       type: String
-    - contextPath: Darktrace.AIAnalyst.acknowledged
-      description: Group category
-      type: Boolean
   dockerimage: demisto/python3:3.10.10.49934
   feed: false
   isfetch: true

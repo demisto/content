@@ -4,12 +4,14 @@
    "time":"2020-08-17T18:18:24.000Z",
    "score": "72.9 %",
    "device": {
-      "did":"823",
-      "macaddress":"00:00:00:00:00:00",
-      "vendor":"",
-      "ip":"10.0.0.1",
-      "hostname":"ip-10-0-0-1",
-      "devicelabel": "N/A"
+      "credentials": "N/A",
+      "deviceType": "server",
+      "devicelabel": "N/A",
+      "did": "823",
+      "hostname": "ip-10-0-0-1",
+      "ip": "10.0.0.1",
+      "macaddress": "00:00:00:00:00:00",
+      "vendor": ""
    },
    "link": "/#modelbreach/95",
    "model": {

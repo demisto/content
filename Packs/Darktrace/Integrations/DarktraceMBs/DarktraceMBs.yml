@@ -177,9 +177,9 @@ script:
     - contextPath: Darktrace.ModelBreach.pbid
       description: Model breach ID
       type: Number
-    - contextPath: Darktrace.ModelBreach.acknowledged.message
+    - contextPath: Darktrace.ModelBreach.acknowledged.response
       description: Message response from acknowledge action
-      type: Number
+      type: String
   - name: darktrace-post-comment-to-model-breach
     arguments:
     - default: false
@@ -228,7 +228,7 @@ script:
     - contextPath: Darktrace.ModelBreach.pbid
       description: Model breach ID
       type: Number
-    - contextPath: Darktrace.ModelBreach.acknowledged.message
+    - contextPath: Darktrace.ModelBreach.acknowledged.response
       description: Message response from acknowledge action
       type: Number
   - name: darktrace-get-model-breach-connections
