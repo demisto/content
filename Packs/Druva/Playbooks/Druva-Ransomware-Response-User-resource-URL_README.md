@@ -40,9 +40,3 @@ This playbook does not use any sub-playbooks.
 
 ---
 There are no outputs for this playbook.
-
-## Playbook Image
-
----
-
-![Druva-Ransomware-Response-User-resource-URL](../doc_files/Druva-Ransomware-Response-User-resource-URL.png)
