@@ -23,7 +23,7 @@ MAPPING = {'ip': 'IP', 'asn': 'ASN', 'owner': 'Organization', 'cc': 'Country', '
 
 class CymruClient(Client):
 
-    def _connect(self):
+    def _connect(self):  # pragma: no coverage
         demisto.debug("Start connecting...")
         self.socket = socks.socksocket()
         self.socket.settimeout(30.0)
@@ -237,7 +237,7 @@ def cymru_bulk_whois_command(client: CymruClient, args: dict[str, Any]) -> list[
     return parse_ips_list(client, ips_list)
 
 
-def setup_proxy():
+def setup_proxy():  # pragma: no coverage
     """
     The function is based on setup_proxy() from 'Whois' pack
     """
