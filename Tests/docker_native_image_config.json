@@ -189,6 +189,6 @@
       "native:dev" : "native:dev",
       "native:ga" : "native:8.2",
       "native:maintenance" : "native:8.1",
-      "native:candidate": "native:candidate"
+      "native:candidate": ""
    }
 }
