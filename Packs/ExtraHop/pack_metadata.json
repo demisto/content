@@ -20,5 +20,34 @@
     "marketplaces": [
         "xsoar",
         "marketplacev2"
+    ],
+    "dependencies": {
+        "CommonScripts": {
+            "mandatory": true,
+            "display_name": "Common Scripts"
+        },
+        "CoreAlertFields": {
+            "mandatory": true,
+            "display_name": "Core Alert Fields"
+        },
+        "CommonTypes": {
+            "mandatory": true,
+            "display_name": "Common Types"
+        },
+        "CVESearch": {
+            "mandatory": true,
+            "display_name": "CVE Search"
+        },
+        "CommonPlaybooks": {
+            "mandatory": true,
+            "display_name": "Common Playbooks"
+        }
+    },
+    "displayedImages": [
+        "CommonScripts",
+        "CoreAlertFields",
+        "CommonTypes",
+        "CVESearch",
+        "CommonPlaybooks"
     ]
 }
