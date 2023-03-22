@@ -1,8 +1,9 @@
 [file:integration-ThreatQ.yml]
-ignore=IN110,IN109
+ignore=IN110,IN109,BA120
 
 [file:ThreatQ_v2.yml]
 ignore=BA108,BA109,IN154
 
 [known_words]
-ThreatQ
+threatq
+

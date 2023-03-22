@@ -8,16 +8,17 @@ ignore=SC105
 ignore=SC105
 
 [file:script-DemistoUploadFileToIncident.yml]
-ignore=SC105
+ignore=SC105,BA120
 
 [file:README.md]
 ignore=RM106
 
 [file:script-DemistoUploadFileToIncident_README.md]
-ignore=RM106
+ignore=RM106,BA120
 
 [file:SetIRProceduresMarkdown.yml]
 ignore=SC106
 
 [file:CoreRESTAPI.yml]
 ignore=IN139
+

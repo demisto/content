@@ -1,2 +1,6 @@
 [file:script-AquatoneDiscover.yml]
-ignore=SC101
+ignore=SC101,BA120
+
+[file:script-AquatoneDiscover_README.md]
+ignore=BA120
+

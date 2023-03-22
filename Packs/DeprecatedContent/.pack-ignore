@@ -20,19 +20,19 @@ ignore=BA101,PB104
 ignore=BA101,PB104
 
 [file:script-OktaSearch.yml]
-ignore=BA101,SC101
+ignore=BA101,SC101,BA120
 
 [file:script-VMRay.yml]
-ignore=BA101,SC101
+ignore=BA101,SC101,BA120
 
 [file:script-VMRayGetResults.yml]
-ignore=BA101,SC101
+ignore=BA101,SC101,BA120
 
 [file:script-OktaGetGroups.yml]
-ignore=BA101,SC101
+ignore=BA101,SC101,BA120
 
 [file:script-OktaGetUser.yml]
-ignore=BA101,SC101
+ignore=BA101,SC101,BA120
 
 [file:playbook-URL_Enrichment_-_Generic.yml]
 ignore=BA101
@@ -41,16 +41,16 @@ ignore=BA101
 ignore=BA101
 
 [file:script-VirustotalIsMalicious.yml]
-ignore=BA101,SC101
+ignore=BA101,SC101,BA120
 
 [file:script-WhoisLookup.yml]
-ignore=BA101,SC101
+ignore=BA101,SC101,BA120
 
 [file:playbook-Endpoint_Enrichment_-_Generic.yml]
 ignore=BA101
 
 [file:script-OktaCreateUser.yml]
-ignore=BA101,SC101
+ignore=BA101,SC101,BA120
 
 [file:playbook-Block_File_-_Generic.yml]
 ignore=BA101
@@ -59,7 +59,7 @@ ignore=BA101
 ignore=BA101,PB104
 
 [file:script-ParseEmailHeaders.yml]
-ignore=BA101,SC101
+ignore=BA101,SC101,BA120
 
 [file:playbook-Calculate_Severity_-_Critical_assets.yml]
 ignore=BA101
@@ -68,10 +68,10 @@ ignore=BA101
 ignore=BA101,PB104
 
 [file:script-WhileNotMdLoop.yml]
-ignore=BA101,SC101
+ignore=BA101,SC101,BA120
 
 [file:script-OktaUpdateUser.yml]
-ignore=BA101,SC101
+ignore=BA101,SC101,BA120
 
 [file:playbook-IP_Enrichment_-_Generic.yml]
 ignore=BA101,PB104
@@ -92,7 +92,7 @@ ignore=BA101,PB104
 ignore=BA101
 
 [file:script-OktaSetPassword.yml]
-ignore=BA101,SC101
+ignore=BA101,SC101,BA120
 
 [file:playbook-Malware_Investigation_-_Generic_-_Setup.yml]
 ignore=BA101,PB104
@@ -101,7 +101,7 @@ ignore=BA101,PB104
 ignore=BA101,PB104
 
 [file:script-SEPScan.yml]
-ignore=BA101,SC101
+ignore=BA101,SC101,BA120
 
 [file:playbook-Entity_Enrichment_-_Generic.yml]
 ignore=BA101
@@ -110,13 +110,13 @@ ignore=BA101
 ignore=BA101
 
 [file:script-OktaDeactivateUser.yml]
-ignore=BA101,SC101
+ignore=BA101,SC101,BA120
 
 [file:script-OktaActivateUser.yml]
-ignore=BA101,SC101
+ignore=BA101,SC101,BA120
 
 [file:script-WhileNotExistLoop.yml]
-ignore=BA101,SC101
+ignore=BA101,SC101,BA120
 
 [file:playbook-Dedup_-_Generic.yml]
 ignore=BA101
@@ -164,25 +164,25 @@ ignore=BA101
 ignore=BA101
 
 [file:integration-Mimecast-Auth.yml]
-ignore=IN128
+ignore=IN128,BA120
 
 [file:integration-aws.yml]
-ignore=IN128
+ignore=IN128,BA120
 
 [file:integration-jira.yml]
-ignore=IN128
+ignore=IN128,BA120
 
 [file:PaloAltoNetworksCortex.yml]
 ignore=IN128
 
 [file:integration-Wildfire.yml]
-ignore=IN128
+ignore=IN128,BA120
 
 [file:integration-opswat-metadefender.yml]
-ignore=IN128
+ignore=IN128,BA120
 
 [file:integration-KeyLight.yml]
-ignore=IN128
+ignore=IN128,BA120
 
 [file:AzureCompute.yml]
 ignore=IN128
@@ -191,61 +191,61 @@ ignore=IN128
 ignore=IN128
 
 [file:integration-AlienVaultOTX.yml]
-ignore=IN128
+ignore=IN128,BA120
 
 [file:integration-Cylance_Protect.yml]
-ignore=IN128
+ignore=IN128,BA120
 
 [file:integration-Kenna.yml]
-ignore=IN128
+ignore=IN128,BA120
 
 [file:integration-Mimecast.yml]
-ignore=IN128
+ignore=IN128,BA120
 
 [file:integration-LightCyberMagna.yml]
-ignore=IN128
+ignore=IN128,BA120
 
 [file:integration-ProofpointTAP.yml]
-ignore=IN128
+ignore=IN128,BA120
 
 [file:ExtraHop.yml]
 ignore=IN128
 
 [file:integration-Lastline.yml]
-ignore=IN128
+ignore=IN128,BA120
 
 [file:AzureSecurityCenter.yml]
 ignore=IN128
 
 [file:integration-MISP.yml]
-ignore=IN128
+ignore=IN128,BA120
 
 [file:integration-Shodan.yml]
-ignore=IN128
+ignore=IN128,BA120
 
 [file:PaloAlto_MineMeld.yml]
 ignore=IN128
 
 [file:integration-SymantecEndpointProtectionDeprecated.yml]
-ignore=IN128
+ignore=IN128,BA120
 
 [file:integration-Intezer.yml]
-ignore=IN128
+ignore=IN128,BA120
 
 [file:integration-Office_EWS.yml]
-ignore=IN128
+ignore=IN128,BA120
 
 [file:integration-CveInfo.yml]
-ignore=IN128
+ignore=IN128,BA120
 
 [file:integration-SafeBreach.yml]
-ignore=IN128
+ignore=IN128,BA120
 
 [file:integration-ArcSightESM.yml]
-ignore=IN128
+ignore=IN128,BA120
 
 [file:integration-secdo.yml]
-ignore=IN128
+ignore=IN128,BA120
 
 [file:DeprecatedContent]
 ignore=PA116
@@ -254,7 +254,7 @@ ignore=PA116
 ignore=RM104,RM106
 
 [file:integration-SafeBreach_README.md]
-ignore=RM106
+ignore=RM106,BA120
 
 [file:Palo_Alto_Networks_-_Endpoint_Malware_Investigation_v2_README.md]
 ignore=RM106
@@ -275,523 +275,523 @@ ignore=SC101
 ignore=SC101
 
 [file:script-ADExpirePassword.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-ADGetAllUsersEmail.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-ADGetCommonGroups.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-ADGetComputerGroups.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-ADGetEmailForAllUsers.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-ADGetEmailForUser.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-ADGetGroupComputers.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-ADGetGroupMembers.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-ADGetGroupUsers.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-ADGetUserGroups.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-ADGetUsersByEmail.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-ADIsUserMember.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-ADListComputers.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-ADListUsers.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-ADListUsersEx.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-ADSetNewPassword.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-ADUserLogonInfo.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-AdSearch.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-AggregateIOCs.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-AwsGetInstanceInfo.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-BinaryReputationPy.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-BlockIP.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-CBFindHash.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-CBSearch.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-CPBlockIP.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-CPCreateBackup.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-CPDeleteRule.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-CPSetRule.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-CPShowAccessRulebase.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-CPShowBackupStatus.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-CPShowHosts.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-CPTaskStatus.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-CSActors.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-CSCountDevicesForIOC.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-CSHuntByIOC.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-CSIndicators.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-CheckFiles.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-CheckFilesWildfirePy.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-CheckIPs.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-CheckURLs.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-CheckWhitelist.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-ClassifierNotifyAdmin.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-CloseInvestigation.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-CommonIntegration.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-CommonIntegrationPython.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-ConferIncidentDetails.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-ConferSetSeverity.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-DBotPredictPhishingEvaluation.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-DBotPredictTextLabel.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-DBotPreparePhishingData.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-DBotTrainTextClassifier.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-DataDomainReputation.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-DataHashReputation.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-DataIPReputation.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-DataURLReputation.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-DefaultIncidentClassifier.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-DemistoDeleteIncident.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-EPOCheckLatestDAT.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-EPODetermineRepository.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-EPORepoList.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-EPORepositoryComplianceCheck.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-EPORetrieveCurrentDATVersion.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-EPOUpdateEndpoints.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-EPOUpdateRepository.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-EsmExample.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-ExchangeAssignRole.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-ExchangeDeleteIDsFromContext.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-ExchangeDeleteMail.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-ExchangeSearch.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-ExchangeSearchMailbox.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-ExposeList.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-ExposeModules.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-ExposeUsers.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-ExtractDomain.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-ExtractDomainFromURL.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-ExtractEmail.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-ExtractHash.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-ExtractIP.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-ExtractURL.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-GetContextValue.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-GetDuplicatesMl.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-GoogleAuthURL.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-GoogleappsGetUser.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-GoogleappsGetUserRoles.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-GoogleappsGmailGetMail.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-GoogleappsGmailSearch.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-GoogleappsListUsers.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-GoogleappsRevokeUserRole.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-IPExtract.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-IPInfoQuery.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-IncidentSet.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-IncidentToContext.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-IngestCSV.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-InviteUser.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-IsContextSet.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-IsIPInSubnet.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-JiraCreateIssue.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-JiraGetIssue.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-JiraIssueAddComment.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-JiraIssueAddLink.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-JiraIssueQuery.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-JiraIssueUploadFile.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-LCMAcknowledgeHost.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-LCMDetectedEntities.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-LCMDetectedIndicators.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-LCMHosts.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-LCMIndicatorsForEntity.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-LCMPathFinderScanHost.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-LCMResolveHost.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-LCMSetHostComment.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-LocateAttachment.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-MD5Extract.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-NessusCreateScan.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-NessusGetReport.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-NessusHostDetails.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-NessusLaunchScan.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-NessusListScans.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-NessusScanDetails.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-NessusScanStatus.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-NessusShowEditorTemplates.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-NetwitnessSAUpdateIncident.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-PWEventDetails.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-PWEventPcapInfo.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-PWEvents.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-PWFindEvents.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-PWObservationDetails.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-PWObservationPcapInfo.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-PWObservations.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-PWSensors.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-PanoramaBlockIP.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-PanoramaCommit.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-PanoramaConfig.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-PanoramaDynamicAddressGroup.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-ParseEmailFile.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-QrFullSearch.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-QrGetSearch.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-QrGetSearchResults.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-QrOffenses.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-QrSearches.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-ReadPDFFile.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-RunSqlQuery.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-SNListTickets.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-SNOpenTicket.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-SNUpdateTicket.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-SearchIncidents.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-SendEmail.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-SetIncidentCustomFields.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-SetSeverityByScore.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-SlackMirror.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-SlackSend.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-SplunkEmailParser.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-SplunkSearch.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-SplunkSearchJsonPy.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-TaniumApprovePendingActions.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-TaniumAskQuestion.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-TaniumAskQuestionComplex.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-TaniumDeployAction.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-TaniumFindRunningProcesses.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-TaniumShowPendingActions.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-TriagePhishing.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-URLExtract.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-VectraClassifier.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-VectraDetections.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-VectraGetDetetctionsById.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-VectraGetHostById.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-VectraHealth.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-VectraHosts.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-VectraSensors.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-VectraSettings.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-VectraSummary.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-VectraTriage.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-WhoisSummary.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:script-getMlFeatures.yml]
-ignore=SC101
+ignore=SC101,BA120
 
 [file:playbook-Endpoint_data_collection.yml]
 ignore=PB104
@@ -813,3 +813,196 @@ ignore=PB104
 
 [file:AzureSecurityCenter_image.png]
 ignore=IM111
+
+[file:script-Elasticsearch.yml]
+ignore=BA120
+
+[file:script-DataDomainReputation_README.md]
+ignore=BA120
+
+[file:script-XBLockouts_README.md]
+ignore=BA120
+
+[file:script-DBotPreparePhishingData_README.md]
+ignore=BA120
+
+[file:script-ExchangeSearchMailbox_README.md]
+ignore=BA120
+
+[file:script-XBInfo_README.md]
+ignore=BA120
+
+[file:script-GoogleappsRevokeUserRole_README.md]
+ignore=BA120
+
+[file:script-XBUser_README.md]
+ignore=BA120
+
+[file:script-ExchangeDeleteMail_README.md]
+ignore=BA120
+
+[file:script-WildfireReport.yml]
+ignore=BA120
+
+[file:script-DefaultIncidentClassifier_README.md]
+ignore=BA120
+
+[file:script-XBTimeline_README.md]
+ignore=BA120
+
+[file:integration-PostgreSQL.yml]
+ignore=BA120
+
+[file:script-EsmExample_README.md]
+ignore=BA120
+
+[file:script-LCMSetHostComment_README.md]
+ignore=BA120
+
+[file:script-AwsStopInstance.yml]
+ignore=BA120
+
+[file:script-ClassifierNotifyAdmin_README.md]
+ignore=BA120
+
+[file:script-XBUser.yml]
+ignore=BA120
+
+[file:script-GoogleAuthURL_README.md]
+ignore=BA120
+
+[file:script-ConferSetSeverity_README.md]
+ignore=BA120
+
+[file:script-LCMResolveHost_README.md]
+ignore=BA120
+
+[file:script-WildfireUpload.yml]
+ignore=BA120
+
+[file:script-LCMAcknowledgeHost_README.md]
+ignore=BA120
+
+[file:script-AwsCreateImage.yml]
+ignore=BA120
+
+[file:script-LCMIndicatorsForEntity_README.md]
+ignore=BA120
+
+[file:script-XBNotable.yml]
+ignore=BA120
+
+[file:script-SplunkEmailParser_README.md]
+ignore=BA120
+
+[file:script-LCMPathFinderScanHost_README.md]
+ignore=BA120
+
+[file:script-AwsCreateVolumeSnapshot_README.md]
+ignore=BA120
+
+[file:script-AwsStopInstance_README.md]
+ignore=BA120
+
+[file:script-PanoramaPcaps.yml]
+ignore=BA120
+
+[file:script-AwsGetInstanceInfo_README.md]
+ignore=BA120
+
+[file:script-XBTimeline.yml]
+ignore=BA120
+
+[file:integration-Pwned.yml]
+ignore=BA120
+
+[file:script-SandboxDetonateFile.yml]
+ignore=BA120
+
+[file:script-AwsCreateImage_README.md]
+ignore=BA120
+
+[file:script-XBLockouts.yml]
+ignore=BA120
+
+[file:script-XBNotable_README.md]
+ignore=BA120
+
+[file:script-AwsCreateVolumeSnapshot.yml]
+ignore=BA120
+
+[file:script-AwsRunInstance.yml]
+ignore=BA120
+
+[file:script-LCMHosts_README.md]
+ignore=BA120
+
+[file:script-ElasticSearchDisplay.yml]
+ignore=BA120
+
+[file:script-SandboxDetonateFile_README.md]
+ignore=BA120
+
+[file:script-CYFileRep_README.md]
+ignore=BA120
+
+[file:script-LCMDetectedIndicators_README.md]
+ignore=BA120
+
+[file:script-XBTriggeredRules_README.md]
+ignore=BA120
+
+[file:script-AwsStartInstance_README.md]
+ignore=BA120
+
+[file:script-XBInfo.yml]
+ignore=BA120
+
+[file:script-PanoramaMove.yml]
+ignore=BA120
+
+[file:script-SetSeverityByScore_README.md]
+ignore=BA120
+
+[file:integration-PhishMe.yml]
+ignore=BA120
+
+[file:script-ADGetComputer.yml]
+ignore=BA120
+
+[file:script-AwsStartInstance.yml]
+ignore=BA120
+
+[file:script-AwsRunInstance_README.md]
+ignore=BA120
+
+[file:script-BlockIP_README.md]
+ignore=BA120
+
+[file:script-ExchangeAssignRole_README.md]
+ignore=BA120
+
+[file:script-ConferIncidentDetails_README.md]
+ignore=BA120
+
+[file:script-getMlFeatures_README.md]
+ignore=BA120
+
+[file:script-DBotPredictPhishingEvaluation_README.md]
+ignore=BA120
+
+[file:script-DBotPredictTextLabel_README.md]
+ignore=BA120
+
+[file:script-XBTriggeredRules.yml]
+ignore=BA120
+
+[file:script-DBotTrainTextClassifier_README.md]
+ignore=BA120
+
+[file:script-LCMDetectedEntities_README.md]
+ignore=BA120
+
+[file:script-CYFileRep.yml]
+ignore=BA120
+

@@ -9,3 +9,10 @@ ignore=RM104
 
 [file:FalconHost_image.png]
 ignore=IM111
+
+[file:script-CrowdStrikeUrlParse_README.md]
+ignore=BA120
+
+[file:script-CrowdStrikeUrlParse.yml]
+ignore=BA120
+

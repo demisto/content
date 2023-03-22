@@ -1,2 +1,6 @@
 [file:integration-ArcSightXML.yml]
-ignore=IN126
+ignore=IN126,BA120
+
+[file:README.md]
+ignore=BA120
+
