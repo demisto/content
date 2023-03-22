@@ -14,7 +14,7 @@ ignore=IM111
 ignore=IM111
 
 [known_words]
-misp
+MISP
 
 [file:script-misp_upload_sample.yml]
 ignore=BA120

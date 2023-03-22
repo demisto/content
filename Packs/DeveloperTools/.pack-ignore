@@ -35,7 +35,7 @@ ignore=auto-test
 ignore=auto-test
 
 [known_words]
-powershell
+PowerShell
 
 [file:script-SetContext.yml]
 ignore=BA120

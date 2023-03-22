@@ -11,7 +11,7 @@ ignore=BA110
 ignore=IM111
 
 [known_words]
-trendmicrodeepsecurity
+TrendMicroDeepSecurity
 
 [file:script-TrendMicroClassifier.yml]
 ignore=BA120

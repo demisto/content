@@ -17,8 +17,8 @@ ignore=PA116
 ignore=BA108,BA109,IN135
 
 [known_words]
-insightvm
-nexpose
+InsightVM
+Nexpose
 
 [file:script-NexposeCreateIncidentsFromAssets_README.md]
 ignore=BA120
