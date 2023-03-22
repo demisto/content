@@ -14,7 +14,7 @@ urllib3.disable_warnings()
 VENDOR = 'AWS'
 PRODUCT = 'Security Hub'
 DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
-DEFAULT_MAX_RESULTS = 10  # Default maximum number of results to fetch
+DEFAULT_MAX_RESULTS = 1000  # Default maximum number of results to fetch
 
 
 def get_events(client: boto3.client, start_time: datetime | None = None,
@@ -98,7 +98,7 @@ def fetch_events(client: boto3.client, last_run: dict[str, str],
         list: List of events that will be generated in XSIAM.
     """
     if last_run.get('last_update_date'):
-        start_time = datetime.strptime(last_run['last_update_date'], DATETIME_FORMAT)
+        start_time = parse_date_string(last_run['last_update_date'])
 
     else:
         start_time = first_fetch_time
