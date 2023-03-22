@@ -7,7 +7,7 @@ You need to configure Proofpoint ObserveIT CEF log integration.
 Follow the below steps to configure CEF log integration:
 1. Go to **Configuration** > **Integrations** > **Integrated SIEM**.
 2. Click the **SIEM Log Integration** tab.
-3. Select the **Enable export to ARCSight format** check box.
+3. Select the **Enable export to ARCSight format** checkbox.
 4. In the **Log data** section select **Activity Alerts** (should be selected by default).
 5. In the **Log file properties** section, accept the default log file location and name:
    - Path: C:\Program File\ObserveIT\NotificationService\LogFiles\ArcSight
