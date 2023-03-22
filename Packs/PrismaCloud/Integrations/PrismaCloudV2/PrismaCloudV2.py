@@ -46,6 +46,8 @@ MIRROR_DIRECTION_MAPPING = {
     "Outgoing": "Out",
     "Incoming And Outgoing": "Both",
 }
+MIRROR_DIRECTION = MIRROR_DIRECTION_MAPPING.get(demisto.params().get('mirror_direction'))
+INTEGRATION_INSTANCE = demisto.integrationInstance()
 
 PAGE_NUMBER_DEFAULT_VALUE = 1
 PAGE_SIZE_DEFAULT_VALUE = 50
@@ -551,7 +553,8 @@ def fetch_request(client: Client, fetched_ids: Dict[str, int], filters: List[str
 
     # there is a 'nextPageToken' value even if we already got all the results
     while len(incidents) < limit and response.get('nextPageToken') and response.get('items'):
-        # only page_token is being used, also sending other arguments because it is not stated clearly in the API documentation
+        # only page_token is being used, also sending other arguments because it is not stated clearly in the
+        # API documentation
         response = client.alert_search_request(time_range=time_range,
                                                filters=filters,
                                                detailed='true',
@@ -560,7 +563,8 @@ def fetch_request(client: Client, fetched_ids: Dict[str, int], filters: List[str
                                                page_token=response.get('nextPageToken'),
                                                )
         response_items = response.get('items', [])
-        updated_last_run_time_epoch = response_items[-1].get('alertTime') if response_items else updated_last_run_time_epoch
+        updated_last_run_time_epoch = \
+            response_items[-1].get('alertTime') if response_items else updated_last_run_time_epoch
         incidents.extend(filter_alerts(fetched_ids, response_items, limit, len(incidents)))
 
     return incidents, fetched_ids, updated_last_run_time_epoch
@@ -576,6 +580,7 @@ def filter_alerts(fetched_ids: Dict[str, int], response_items: List[Dict[str, An
             continue
 
         demisto.debug(f'Processing new fetched alert {alert.get("id")}.')
+        add_mirroring_fields(alert)
         incidents.append(alert_to_incident_context(alert))
         fetched_ids[str(alert['id'])] = int(alert['alertTime'])
 
@@ -583,6 +588,14 @@ def filter_alerts(fetched_ids: Dict[str, int], response_items: List[Dict[str, An
             break
 
     return incidents
+
+
+def add_mirroring_fields(alert: Dict):
+    """
+    Updates the given Prisma Cloud fetched alert to hold the needed mirroring fields.
+    """
+    alert['mirror_direction'] = MIRROR_DIRECTION
+    alert['mirror_instance'] = INTEGRATION_INSTANCE
 
 
 def alert_to_incident_context(alert: Dict[str, Any]) -> Dict[str, Any]:
@@ -1551,6 +1564,9 @@ def fetch_incidents(client: Client, last_run: Dict[str, Any], params: Dict[str, 
     return incidents, ids_to_insert, updated_last_run_time
 
 
+''' MIRRORING COMMANDS '''
+
+
 def get_modified_remote_data_command(client: Client,
                                      args: Dict[str, str],
                                      params: Dict[str, Any]) -> GetModifiedRemoteDataResponse:
@@ -1558,10 +1574,10 @@ def get_modified_remote_data_command(client: Client,
     Gets the modified remote incidents IDs.
 
     Args:
-        client: demisto client.
+        client: Demisto client.
         args:
-            last_update: the last time we retrieved modified incidents.
-        params: demisto params.
+            last_update: The last time we retrieved modified incidents.
+        params: Demisto params.
 
     Returns:
         GetModifiedRemoteDataResponse object, which contains a list of the retrieved incidents IDs.
@@ -1575,7 +1591,7 @@ def get_modified_remote_data_command(client: Client,
     demisto.debug(f'Remote arguments last_update in UTC is {last_update_timestamp}')
 
     # TODO: do we have a limit for the mirroring? if yes - need to add it to alert_search_request()
-    detailed = 'false' # took false from the thread example - not sure
+    detailed = 'false'  # took false from the thread example - not sure
     sort_by = ['alertTime:asc']
     time_filter = handle_time_filter(base_case=ALERT_SEARCH_BASE_TIME_FILTER,
                                      time_from=last_update_timestamp, # not sure about the time format I need to send here, and if I need to use handle_time_filter at all.
@@ -1590,6 +1606,9 @@ def get_modified_remote_data_command(client: Client,
     modified_records_ids = [str(item.get('id')) for item in response_items]
 
     return GetModifiedRemoteDataResponse(modified_records_ids)
+
+
+''' TEST MODULE '''
 
 
 def test_module(client: Client, params: Dict[str, Any]) -> str:
