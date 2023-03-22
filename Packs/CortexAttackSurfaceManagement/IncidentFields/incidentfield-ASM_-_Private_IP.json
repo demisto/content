@@ -40,7 +40,7 @@
     "description": "Private IP addresses found",
     "editForm": true,
     "group": 0,
-    "hidden": true,
+    "hidden": false,
     "id": "incident_asmprivateip",
     "isReadOnly": false,
     "locked": false,
