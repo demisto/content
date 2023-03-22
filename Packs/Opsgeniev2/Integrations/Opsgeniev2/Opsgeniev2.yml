@@ -1,4 +1,4 @@
-category: Case Management
+category: Messaging and Conferencing
 commonfields:
   id: Opsgeniev2
   version: -1
@@ -570,7 +570,7 @@ script:
         description: Bool, whether the request was a success
         type: Boolean
 
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.10.10.48392
   feed: false
   isfetch: false
   longRunning: false

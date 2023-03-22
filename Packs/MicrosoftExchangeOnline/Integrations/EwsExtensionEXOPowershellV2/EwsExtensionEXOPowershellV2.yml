@@ -1,4 +1,4 @@
-category: Utilities
+category: Email
 sectionorder:
 - Connect
 - Collect
@@ -569,7 +569,7 @@ script:
   runonce: false
   script: ''
   type: powershell
-  dockerimage: demisto/pwsh-exchange:1.0.0.34118
+  dockerimage: demisto/pwsh-exchange:1.0.0.49040
 fromversion: 5.5.0
 tests:
-- 'EWS Extension: Powershell Online V2 Test'
+- playbook-O365-EWS-Extension-Powershell-Online-V2-Test

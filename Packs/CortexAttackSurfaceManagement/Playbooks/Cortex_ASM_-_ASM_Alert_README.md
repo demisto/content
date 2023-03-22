@@ -1,29 +1,35 @@
 This playbook handles ASM alerts by enriching asset information and providing a means of remediating the issue directly or through contacting service owners.
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Cortex ASM - Detect Service
-* Cortex ASM - Enrichment
-* Cortex ASM - Remediation Path Rules
+
 * Cortex ASM - Remediation
 * Cortex ASM - Remediation Guidance
+* Cortex ASM - Remediation Path Rules
+* Cortex ASM - Detect Service
+* Cortex ASM - Enrichment
 
 ### Integrations
+
 * ServiceNow v2
 
 ### Scripts
-* GridFieldSetup
+
 * GenerateASMReport
 * GetTime
+* GridFieldSetup
 
 ### Commands
-* closeInvestigation
+
 * send-mail
 * servicenow-create-ticket
+* closeInvestigation
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
@@ -33,9 +39,12 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | RemediationRule | The firewall rule that will be used for remediating internet exposures.  | Remediation-Security-Group | Required |
 
 ## Playbook Outputs
+
 ---
 There are no outputs for this playbook.
 
 ## Playbook Image
+
 ---
+
 ![Cortex ASM - ASM Alert](../doc_files/Cortex_ASM_-_ASM_Alert.png)

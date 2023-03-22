@@ -2161,63 +2161,6 @@ class TestSetDependencies:
 
         return pack_metadata
 
-    def test_set_dependencies_new_dependencies(self):
-        """
-           Given:
-               - Pack with user dependencies
-               - New generated dependencies
-           When:
-               - Formatting metadata
-           Then:
-               - The dependencies in the metadata file should be merged with the generated ones
-       """
-        from Tests.Marketplace.marketplace_services import Pack
-
-        metadata = self.get_pack_metadata()
-        generated_dependencies = {
-            'ImpossibleTraveler': {
-                'dependencies': {
-                    'HelloWorld': {
-                        'mandatory': False,
-                        'minVersion': '1.0.0',
-                        'author': 'Cortex XSOAR',
-                        'name': 'HelloWorld',
-                        'certification': 'certified'
-                    },
-                    'ServiceNow': {
-                        'mandatory': True,
-                        'minVersion': '1.0.0',
-                        'author': 'Cortex XSOAR',
-                        'name': 'ServiceNow',
-                        'certification': 'certified'
-                    },
-                    'Ipstack': {
-                        'mandatory': False,
-                        'minVersion': '1.0.0',
-                        'author': 'Cortex XSOAR',
-                        'name': 'Ipstack',
-                        'certification': 'certified'
-                    },
-                    'Active_Directory_Query': {
-                        'mandatory': True,
-                        'minVersion': '1.0.0',
-                        'author': 'Cortex XSOAR',
-                        'name': 'Active Directory Query v2',
-                        'certification': 'certified'
-                    }
-                }
-            }
-        }
-        generated_dependencies['ImpossibleTraveler']['dependencies'].update(BASE_PACK_DEPENDENCY_DICT)
-        p = Pack('ImpossibleTraveler', 'dummy_path')
-        dependencies = json.dumps(metadata['dependencies'])
-        dependencies = json.loads(dependencies)
-        dependencies.update(generated_dependencies['ImpossibleTraveler']['dependencies'])
-        p._user_metadata = metadata
-        p.set_pack_dependencies(generated_dependencies, DUMMY_PACKS_DICT)
-
-        assert p.user_metadata['dependencies'] == dependencies
-
     def test_set_dependencies_no_user_dependencies(self):
         """
            Given:
@@ -2273,25 +2216,6 @@ class TestSetDependencies:
         p.set_pack_dependencies(generated_dependencies, DUMMY_PACKS_DICT)
 
         assert p.user_metadata['dependencies'] == generated_dependencies['ImpossibleTraveler']['dependencies']
-
-    def test_set_dependencies_no_generated_dependencies(self):
-        """
-           Given:
-               - Pack with user dependencies
-               - No generated dependencies
-           When:
-               - Formatting metadata
-           Then:
-               - The dependencies in the metadata file should be the user ones
-       """
-        from Tests.Marketplace.marketplace_services import Pack
-
-        metadata = self.get_pack_metadata()
-        dependencies = metadata['dependencies']
-        p = Pack('ImpossibleTraveler', 'dummy_path')
-        p._user_metadata = metadata
-        p.set_pack_dependencies({}, {})
-        assert p.user_metadata['dependencies'] == dependencies
 
     def test_set_dependencies_core_pack(self):
         """
@@ -2378,53 +2302,6 @@ class TestSetDependencies:
             p.set_pack_dependencies(generated_dependencies, DUMMY_PACKS_DICT)
 
         assert str(e.value) == "New mandatory dependencies ['SlackV2'] were found in the core pack HelloWorld"
-
-    def test_set_dependencies_core_pack_mandatory_dependency_override(self):
-        """
-           Given:
-               - Core pack with new dependencies
-               - Mandatory dependencies that are not core packs that were overridden in the user metadata
-           When:
-               - Formatting metadata
-           Then:
-               - Metadata should be formatted correctly
-       """
-        from Tests.Marketplace.marketplace_services import Pack
-
-        metadata = self.get_pack_metadata()
-
-        generated_dependencies = {
-            'HelloWorld': {
-                'dependencies': {
-                    'CommonPlaybooks': {
-                        'mandatory': True,
-                        'minVersion': '1.0.0',
-                        'author': 'Cortex XSOAR',
-                        'name': 'ServiceNow',
-                        'certification': 'certified'
-                    },
-                    'Ipstack': {
-                        'mandatory': True,
-                        'minVersion': '1.0.0',
-                        'author': 'Cortex XSOAR',
-                        'name': 'Ipstack',
-                        'certification': 'certified'
-                    }
-                }
-            }
-        }
-
-        generated_dependencies.update(BASE_PACK_DEPENDENCY_DICT)
-        p = Pack('HelloWorld', 'dummy_path')
-        user_dependencies = metadata['dependencies']
-        dependencies = json.dumps(generated_dependencies['HelloWorld']['dependencies'])
-        dependencies = json.loads(dependencies)
-        dependencies.update(user_dependencies)
-        p._user_metadata = metadata
-
-        p.set_pack_dependencies(generated_dependencies, DUMMY_PACKS_DICT)
-
-        assert p.user_metadata['dependencies'] == dependencies
 
 
 class TestReleaseNotes:

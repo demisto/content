@@ -93,12 +93,12 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: PrismaCloud v2
       description: Search Route53 hosted zones in Prisma Cloud
       id: 42c46d62-d2a6-42e2-83b9-0e87dc352e3b
       iscommand: true
       name: Search FQDN in Route53 HostedZone Entries
-      script: '|||redlock-search-config'
+      script: PrismaCloud v2|||redlock-search-config
       type: regular
       version: -1
     taskid: 42c46d62-d2a6-42e2-83b9-0e87dc352e3b
@@ -182,12 +182,12 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: PrismaCloud v2
       description: Search AWS Elastic Load Balancers in Prisma Cloud
       id: 1b59f137-fb46-4639-8904-00bb5f021d86
       iscommand: true
       name: Search in Load Balancers (dnsname)
-      script: '|||redlock-search-config'
+      script: PrismaCloud v2|||redlock-search-config
       type: regular
       version: -1
     taskid: 1b59f137-fb46-4639-8904-00bb5f021d86
@@ -243,12 +243,12 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: PrismaCloud v2
       description: Search AWS CloudFront in Prisma Cloud
       id: 2580bc20-bcf2-467b-87cd-0c5ea9c1bafd
       iscommand: true
       name: Search in CloudFront
-      script: '|||redlock-search-config'
+      script: PrismaCloud v2|||redlock-search-config
       type: regular
       version: -1
     taskid: 2580bc20-bcf2-467b-87cd-0c5ea9c1bafd
@@ -358,12 +358,12 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: PrismaCloud v2
       description: Search Route53 Hosted Zones in Prisma Cloud
       id: ea2fd6b3-2dc3-4d03-8917-78779c2c8b18
       iscommand: true
       name: Search Domain in Route53 HostedZone Name
-      script: '|||redlock-search-config'
+      script: PrismaCloud v2|||redlock-search-config
       type: regular
       version: -1
     taskid: ea2fd6b3-2dc3-4d03-8917-78779c2c8b18
@@ -383,8 +383,8 @@ tasks:
             iscontext: true
             value:
               complex:
-                accessor: Asset
-                root: Redlock
+                accessor: Config
+                root: PrismaCloud
           operator: isNotEmpty
       label: "yes"
     id: "12"
@@ -427,8 +427,8 @@ tasks:
     scriptarguments:
       assets:
         complex:
-          accessor: Asset
-          root: Redlock
+          accessor: Config
+          root: PrismaCloud
       fields: {}
     separatecontext: false
     skipunavailable: false
@@ -491,7 +491,7 @@ tasks:
                     operator: isEqualString
                     right:
                       value:
-                        simple: RedLock
+                        simple: PrismaCloud v2
                 - - left:
                       iscontext: true
                       value:
@@ -643,12 +643,12 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: PrismaCloud v2
       description: Search Route53 Hosted Zones in Prisma Cloud
       id: 0f5c499c-6d23-4d7a-8904-025bc365040a
       iscommand: true
       name: Search FQDN in S3
-      script: '|||redlock-search-config'
+      script: PrismaCloud v2|||redlock-search-config
       type: regular
       version: -1
     taskid: 0f5c499c-6d23-4d7a-8904-025bc365040a
@@ -1141,12 +1141,12 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: PrismaCloud v2
       description: Search AWS Elastic Load Balancers in Prisma Cloud
       id: 7aab8faf-31eb-4938-803a-38c0cc0a53ea
       iscommand: true
       name: Search in Load Balancers (description.dnsname)
-      script: '|||redlock-search-config'
+      script: PrismaCloud v2|||redlock-search-config
       type: regular
       version: -1
     taskid: 7aab8faf-31eb-4938-803a-38c0cc0a53ea
@@ -1202,12 +1202,12 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: PrismaCloud v2
       description: Search AWS CloudFront in Prisma Cloud
       id: 80fc8d82-c52a-4f58-8b82-cd53c9fe9c06
       iscommand: true
       name: Search FQDN in EKS Endpoint
-      script: '|||redlock-search-config'
+      script: PrismaCloud v2|||redlock-search-config
       type: regular
       version: -1
     taskid: 80fc8d82-c52a-4f58-8b82-cd53c9fe9c06
@@ -1433,12 +1433,12 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: PrismaCloud v2
       description: Search Route53 Hosted Zones in Prisma Cloud
       id: 32822336-a548-45da-8285-90b091caecd9
       iscommand: true
       name: Search FQDN in EC2
-      script: '|||redlock-search-config'
+      script: PrismaCloud v2|||redlock-search-config
       type: regular
       version: -1
     taskid: 32822336-a548-45da-8285-90b091caecd9
@@ -1494,12 +1494,12 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: PrismaCloud v2
       description: Search Route53 Hosted Zones in Prisma Cloud
       id: c405e3d8-6a9e-421f-8b8a-499d31c8541a
       iscommand: true
       name: Search FQDN in API Gateway
-      script: '|||redlock-search-config'
+      script: PrismaCloud v2|||redlock-search-config
       type: regular
       version: -1
     taskid: c405e3d8-6a9e-421f-8b8a-499d31c8541a

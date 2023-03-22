@@ -1,8 +1,8 @@
 {
     "name": "Security Intelligence Services Feed",
     "description": "A PassiveTotal with Security Intelligence Services Feed can provide you newly observed Domain, Malware, Phishing, Content and Scam Blacklist.",
-    "support": "partner",
-    "currentVersion": "1.0.7",
+    "support": "community",
+    "currentVersion": "1.0.9",
     "author": "RiskIQ",
     "url": "https://www.riskiq.com/resources/support/",
     "email": "paloaltonetworks@riskiq.net",

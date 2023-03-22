@@ -139,6 +139,7 @@ FORMAT_PATH = [
     ('https://test.co.uk/test.html', 'https://test.co.uk/test.html'),  # disable-secrets-detection
     ('www.test.com/check', 'www.test.com/check'),  # disable-secrets-detection
     ('https://test.test/Test\\"', 'https://test.test/Test'),  # disable-secrets-detection
+    ('https://www.test.com/a\\', 'https://www.test.com/a'),  # disable-secrets-detection
 ]
 
 FORMAT_QUERY = [
@@ -168,6 +169,8 @@ FORMAT_NON_ASCII = [
     ('https://testö.com/test.html', 'https://testö.com/test.html'),
     ('www.testö.com/test.aspx', 'www.testö.com/test.aspx'),
     ('https://www.teöst.com/', 'https://www.teöst.com/'),
+    ('https://www.test.se/Auth/?&rUrl=https://test.com/wp–images/amclimore@test.com',  # disable-secrets-detection
+     'https://www.test.se/Auth/?&rUrl=https://test.com/wp–images/amclimore@test.com'),  # disable-secrets-detection
 ]
 
 FORMAT_PUNYCODE = [
@@ -176,8 +179,10 @@ FORMAT_PUNYCODE = [
 ]
 
 FORMAT_HEX = [
-    ('ftps://foo.bar/baz%20%21%22%23%24%25%26', 'ftps://foo.bar/baz !"#$%&'),
-    ('foo.bar/baz%20%21%22%23%24%25%26', 'foo.bar/baz !"#$%&'),
+    ('ftps://foo.bar/baz%20%21%22%23%24%25%26', 'ftps://foo.bar/baz%20%21%22%23%24%25%26'),
+    ('foo.bar/baz%20%21%22%23%24%25%26', 'foo.bar/baz%20%21%22%23%24%25%26'),
+    ('https://foo.com/?key=foo%26bar', 'https://foo.com/?key=foo%26bar'),    # disable-secrets-detection
+    ('https%3A//foo.com/?key=foo%26bar', 'https://foo.com/?key=foo&bar'),    # disable-secrets-detection
 ]
 
 FAILS = [

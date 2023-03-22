@@ -3,6 +3,7 @@ from pathlib import Path
 from demisto_sdk.commands.content_graph.interface.neo4j.neo4j_graph import Neo4jContentGraphInterface
 from demisto_sdk.commands.common.constants import MarketplaceVersions
 from demisto_sdk.commands.content_graph.objects.repository import ContentDTO
+from demisto_sdk.commands.content_graph.objects.pack import Pack
 from Tests.scripts.utils.log_util import install_logging
 import logging as logger
 from demisto_sdk.commands.common.logger import logging_setup
@@ -25,7 +26,8 @@ def create_dependencies(content_dto: ContentDTO, is_bucket_upload: bool, output:
         first_level_dependencies = {}
         all_level_dependencies = {}
         for dependency in dependencies:
-            if is_bucket_upload and dependency.is_test:
+            dependency_content_item_to: Pack = dependency.content_item_to
+            if (is_bucket_upload and dependency.is_test) or dependency_content_item_to.hidden:
                 continue
             if dependency.mandatorily:
                 all_level_dependencies[dependency.content_item_to.object_id] = {

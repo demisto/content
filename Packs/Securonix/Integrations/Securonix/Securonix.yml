@@ -19,11 +19,31 @@ configuration:
   name: password
   required: true
   type: 4
+- additionalinfo: The type of Securonix entity to fetch. Supported entities are "Incident"
+    and "Threat".
+  defaultvalue: Incident
+  display: Type of entity to fetch
+  name: entity_type_to_fetch
+  options:
+  - Incident
+  - Threat
+  required: false
+  type: 15
+- additionalinfo: Name of the tenant to fetch threats from. This parameter is optional
+    for Non MSSP users.
+  display: Tenant Name
+  name: tenant_name
+  required: false
+  type: 0
 - display: Fetch incidents
   name: isFetch
   required: false
   type: 8
-- defaultvalue: opened
+- additionalinfo: |-
+    Selecting "all" will fetch incidents updated in the given time range.
+    Selecting "opened" will fetch incidents opened in the given time range.
+    Selecting "closed" will fetch incidents closed in the given time range.
+  defaultvalue: opened
   display: Incidents to fetch
   name: incident_status
   options:
@@ -44,16 +64,117 @@ configuration:
   name: incidentType
   required: false
   type: 13
-- defaultvalue: 1 hour
-  display: First fetch time range (<number> <time unit>, e.g., 1 hour, 30 minutes)
+- additionalinfo: |-
+    The date or relative timestamp from where to start fetching incidents.
+
+    Supported formats: <number> <time unit>, e.g., 1 hour, 30 minutes, 7 days, 3 months, 1 year.
+  defaultvalue: 1 hour
+  display: First fetch time range
   name: fetch_time
   required: false
   type: 0
-- defaultvalue: '50'
-  display: The maximum number of incidents to fetch each time. Maximum is 50.
+- defaultvalue: '200'
+  additionalinfo: If the value is greater than 200, it will be considered as 200. The maximum is 200.
+  display: The maximum number of incidents to fetch each time.
   name: max_fetch
   required: false
   type: 0
+- additionalinfo: The mirroring direction in which to mirror the incidents. You can
+    mirror "Incoming" (from Securonix to XSOAR), "Outgoing" (from XSOAR to Securonix),
+    or in both directions.
+  defaultvalue: None
+  display: Incident Mirroring Direction
+  hidden: false
+  name: mirror_direction
+  options:
+  - None
+  - Incoming
+  - Outgoing
+  - Incoming And Outgoing
+  required: false
+  type: 15
+- additionalinfo: |-
+    If enabled, the integration will close the respective Securonix
+    incident after fetching it in XSOAR. Following fields will be required for 
+    this functionality:
+    
+    1. Securonix action name to map with XSOAR's active state for Outgoing mirroring
+    2. Securonix status to map with XSOAR's active state for Outgoing mirroring
+    3. Securonix action name to map with XSOAR's closed state for Outgoing mirroring
+    4. Securonix status to map with XSOAR's closed state for Outgoing mirroring
+  display: Close respective Securonix incident after fetching
+  name: close_incident
+  required: false
+  type: 8
+- additionalinfo: If the Securonix incident is in any one of the state mentioned here,
+    then the incident will be Closed on XSOAR. Supports comma-separated values.
+  display: Securonix workflow state(s) that can be considered as Close state in XSOAR
+    for Incoming mirroring
+  name: close_states_of_securonix
+  required: false
+  type: 0
+- additionalinfo: Provide an action name to map with XSOAR's active state. E.g. IN
+    PROGRESS
+  display: Securonix action name to map with XSOAR's active state for Outgoing mirroring
+  name: active_state_action_mapping
+  required: false
+  type: 0
+- additionalinfo: Provide a workflow status to map with XSOAR's active state. E.g.
+    In Progress
+  display: Securonix status to map with XSOAR's active state for Outgoing mirroring
+  name: active_state_status_mapping
+  required: false
+  type: 0
+- additionalinfo: Provide an action name to map with XSOAR's Closed state. E.g. CLOSED
+  display: Securonix action name to map with XSOAR's closed state for Outgoing mirroring
+  name: closed_state_action_mapping
+  required: false
+  type: 0
+- additionalinfo: Provide a workflow status to map with XSOAR's closed state. E.g.
+    Completed
+  display: Securonix status to map with XSOAR's closed state for Outgoing mirroring
+  name: closed_state_status_mapping
+  required: false
+  type: 0
+- additionalinfo: Choose the tag to add to an entry to mirror it as a comment in Securonix.
+  defaultvalue: comment
+  display: Comment Entry Tag
+  name: comment_tag
+  required: false
+  type: 0
+- additionalinfo: Numbers of retries to be performed. (Recommended is 3)
+  defaultvalue: '3'
+  display: Securonix Retry Count
+  hidden: false
+  name: securonix_retry_count
+  options:
+  - '0'
+  - '1'
+  - '2'
+  - '3'
+  - '4'
+  - '5'
+  required: false
+  type: 15
+- additionalinfo: The delay between two retries. Range in 30 to 300 Seconds (5 minutes).
+    Anything less than 30 seconds is considered 30 seconds, and anything more than
+    300 seconds is considered 300 seconds. (Recommended is 30 seconds)
+  defaultvalue: '30'
+  display: Securonix Retry Delay
+  hidden: false
+  name: securonix_retry_delay
+  required: false
+  type: 0
+- additionalinfo: Delay type of retry mechanism. (Recommended is Exponential)
+  defaultvalue: Exponential
+  display: Securonix Retry Delay Type
+  hidden: false
+  name: securonix_retry_delay_type
+  options:
+  - Exponential
+  - Fixed
+  required: false
+  type: 15
 - display: Trust any certificate (not secure)
   name: unsecure
   required: false
@@ -67,8 +188,9 @@ display: Securonix
 name: Securonix
 script:
   commands:
-  - arguments: []
+  - deprecated: false
     description: Gets a list of all available workflows.
+    execution: false
     name: securonix-list-workflows
     outputs:
     - contextPath: Securonix.Workflows.Workflow
@@ -81,10 +203,15 @@ script:
       description: Workflow value.
       type: String
   - arguments:
-    - description: Workflow name.
+    - default: false
+      description: Workflow name.
+      isArray: false
       name: workflow
       required: true
+      secret: false
+    deprecated: false
     description: Gets the default assignee for the specified workflow.
+    execution: false
     name: securonix-get-default-assignee-for-workflow
     outputs:
     - contextPath: Securonix.Workflows.Workflow
@@ -96,15 +223,17 @@ script:
     - contextPath: Securonix.Workflows.Value
       description: Workflow value.
       type: String
-  - arguments: []
+  - deprecated: false
     description: Gets a list available threat actions.
+    execution: false
     name: securonix-list-possible-threat-actions
     outputs:
     - contextPath: Securonix.ThreatActions
       description: A list of threat actions.
       type: String
-  - arguments: []
+  - deprecated: false
     description: Gets a list of all policies.
+    execution: false
     name: securonix-list-policies
     outputs:
     - contextPath: Securonix.Policies.CreatedBy
@@ -128,8 +257,9 @@ script:
     - contextPath: Securonix.Policies.Name
       description: Policy name.
       type: String
-  - arguments: []
+  - deprecated: false
     description: Gets a list of resource groups.
+    execution: false
     name: securonix-list-resource-groups
     outputs:
     - contextPath: Securonix.ResourceGroups.Name
@@ -138,8 +268,9 @@ script:
     - contextPath: Securonix.ResourceGroups.Type
       description: Resource group type.
       type: String
-  - arguments: []
+  - deprecated: false
     description: Gets a list of users.
+    execution: false
     name: securonix-list-users
     outputs:
     - contextPath: Securonix.Users.LastName
@@ -179,18 +310,30 @@ script:
       description: User email address.
       type: String
   - arguments:
-    - description: Start date/time for which to retrieve activity data (in the format
+    - default: false
+      description: Start date/time for which to retrieve activity data (in the format
         MM/dd/yyyy HH:mm:ss).
+      isArray: false
       name: from
       required: true
-    - description: End date/time for which to retrieve activity data (in the format
+      secret: false
+    - default: false
+      description: End date/time for which to retrieve activity data (in the format
         MM/dd/yyyy HH:mm:ss).
+      isArray: false
       name: to
       required: true
-    - description: Free-text query. For example, query=“resourcegroupname=WindowsSnare
-        and policyname=Possible Privilege Escalation - Self Escalation”.
+      secret: false
+    - default: false
+      description: Free-text query. For example, query=?resourcegroupname=WindowsSnare
+        and policyname=Possible Privilege Escalation - Self Escalation?.
+      isArray: false
       name: query
+      required: false
+      secret: false
+    deprecated: false
     description: Gets a list of activity data for the specified resource group.
+    execution: false
     name: securonix-list-activity-data
     outputs:
     - contextPath: Securonix.ActivityData.Accountname
@@ -296,19 +439,38 @@ script:
       description: Time when the activity occurred, in Epoch time.
       type: String
   - arguments:
-    - description: Start date/time for which to retrieve activity data (in the format
+    - default: false
+      description: Start date/time for which to retrieve activity data (in the format
         MM/dd/yyyy HH:mm:ss).
+      isArray: false
       name: from
       required: true
-    - description: End date/time for which to retrieve activity data (in the format
+      secret: false
+    - default: false
+      description: End date/time for which to retrieve activity data (in the format
         MM/dd/yyyy HH:mm:ss).
+      isArray: false
       name: to
       required: true
-    - description: Free-text query. For example, query="resourcegroupname=WindowsSnare
+      secret: false
+    - default: false
+      description: Free-text query. For example, query="resourcegroupname=WindowsSnare
         and policyname=Possible Privilege Escalation - Self Escalation"."
+      isArray: false
       name: query
+      required: false
+      secret: false
+    - default: false
+      description: Paginate next set of results.
+      isArray: false
+      name: query_id
+      required: false
+      secret: false
+    deprecated: false
     description: Gets a list activity data for an account name.
+    execution: false
     name: securonix-list-violation-data
+    polling: true
     outputs:
     - contextPath: Securonix.ViolationData.Accountname
       description: Account name.
@@ -490,21 +652,47 @@ script:
     - contextPath: Securonix.ViolationData.Violator
       description: Violator.
       type: String
+    - contextPath: Securonix.Violation.totalDocuments
+      description: Total number of events.
+      type: Number
+    - contextPath: Securonix.Violation.message
+      description: Message from the API.
+      type: String
+    - contextPath: Securonix.Violation.queryId
+      description: Query Id for the pagination.
+      type: String
   - arguments:
-    - description: ' Start time range for which to return incidents (<number> <time
+    - default: false
+      description: ' Start time range for which to return incidents (<number> <time
         unit>, e.g., 1 hour, 30 minutes)'
+      isArray: false
       name: from
       required: true
-    - description: End date/time for which to retrieve incidents (in the format MM/dd/yyyy
+      secret: false
+    - default: false
+      description: End date/time for which to retrieve incidents (in the format MM/dd/yyyy
         HH:mm:ss) Default is current time.
+      isArray: false
       name: to
-    - description: The incident type. Can be "updated", "opened", or "closed". Supports
+      required: false
+      secret: false
+    - default: false
+      description: The incident type. Can be "updated", "opened", or "closed". Supports
         multiple selections.
+      isArray: false
       name: incident_types
-    - defaultValue: '50'
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
       description: Maximum number of incidents to retrieve.
+      isArray: false
       name: max
+      required: false
+      secret: false
+    deprecated: false
     description: Gets a list of incidents.
+    execution: false
     name: securonix-list-incidents
     outputs:
     - contextPath: Securonix.Incidents.ViolatorID
@@ -554,10 +742,15 @@ script:
       description: Whether the incident is added to allow list.
       type: Boolean
   - arguments:
-    - description: Incident ID.
+    - default: false
+      description: Incident ID.
+      isArray: false
       name: incident_id
       required: true
+      secret: false
+    deprecated: false
     description: Gets details of the specified incident.
+    execution: false
     name: securonix-get-incident
     outputs:
     - contextPath: Securonix.Incidents.ViolatorID
@@ -607,10 +800,15 @@ script:
       description: Whether the incident is added to allow list.
       type: Boolean
   - arguments:
-    - description: Incident ID.
+    - default: false
+      description: Incident ID.
+      isArray: false
       name: incident_id
       required: true
+      secret: false
+    deprecated: false
     description: Gets the status of the specified incident.
+    execution: false
     name: securonix-get-incident-status
     outputs:
     - contextPath: Securonix.Incidents.IncidentStatus
@@ -620,10 +818,15 @@ script:
       description: Incident ID.
       type: String
   - arguments:
-    - description: Incident ID.
+    - default: false
+      description: Incident ID.
+      isArray: false
       name: incident_id
       required: true
+      secret: false
+    deprecated: false
     description: Gets the workflow of the specified incident.
+    execution: false
     name: securonix-get-incident-workflow
     outputs:
     - contextPath: Securonix.Incidents.Workflow
@@ -633,49 +836,79 @@ script:
       description: Incident ID.
       type: String
   - arguments:
-    - description: Incident ID.
+    - default: false
+      description: Incident ID.
+      isArray: false
       name: incident_id
       required: true
+      secret: false
+    deprecated: false
     description: Gets a list of available actions for the specified incident.
+    execution: false
     name: securonix-get-incident-available-actions
   - arguments:
-    - description: Incident ID.
+    - default: false
+      description: Incident ID.
+      isArray: false
       name: incident_id
       required: true
+      secret: false
     - auto: PREDEFINED
+      default: false
       description: 'Action to perform on the incident. You can see them using securonix-get-incident-available-actions.
         e.g: "CLAIM", "ASSIGN TO SECOPS", "ASSIGN TO ANALYST", "RELEASE", or "COMMENT".'
+      isArray: false
       name: action
       predefined:
       - ''
       required: true
-    - description: 'The parameters, if needed, to perform the action. For example,
+      secret: false
+    - default: false
+      description: 'The parameters, if needed, to perform the action. For example,
         for the ASSIGN TO ANALYST action: assigntouserid={user_id},assignedTo=USER.'
+      isArray: false
       name: action_parameters
+      required: false
+      secret: false
+    deprecated: false
     description: Performs an action on the specified incident.
+    execution: false
     name: securonix-perform-action-on-incident
   - arguments:
-    - description: Incident ID.
+    - default: false
+      description: Incident ID.
+      isArray: false
       name: incident_id
       required: true
-    - description: Comment to add to the incident.
+      secret: false
+    - default: false
+      description: Comment to add to the incident.
+      isArray: false
       name: comment
       required: true
+      secret: false
+    deprecated: false
     description: Adds a comment to the specified incident.
     execution: true
     name: securonix-add-comment-to-incident
-  - arguments: []
+  - deprecated: false
     description: Gets a list of watchlists.
+    execution: false
     name: securonix-list-watchlists
     outputs:
     - contextPath: Securonix.WatchlistsNames
       description: Watchlist names.
       type: String
   - arguments:
-    - description: Watchlist name.
+    - default: false
+      description: Watchlist name.
+      isArray: false
       name: watchlist_name
       required: true
+      secret: false
+    deprecated: false
     description: Gets information for the specified watchlist.
+    execution: false
     name: securonix-get-watchlist
     outputs:
     - contextPath: Securonix.Watchlists.TenantID
@@ -733,19 +966,48 @@ script:
       description: Status of the entity in the watchlist.
       type: String
   - arguments:
-    - description: The name of the watchlist.
+    - default: false
+      description: The name of the watchlist.
+      isArray: false
       name: watchlist_name
       required: true
+      secret: false
+    - default: false
+      description: |-
+        Name of the tenant the watchlist belongs to.
+
+        The tenant name parameter is required for MSSP users.
+      isArray: false
+      name: tenant_name
+      required: false
+      secret: false
+    deprecated: false
     description: Creates a watchlist in Securonix.
+    execution: false
     name: securonix-create-watchlist
+    outputs:
+    - contextPath: Securonix.Watchlists.Watchlistname
+      description: Name of the Watchlist.
+      type: String
+    - contextPath: Securonix.Watchlists.TenantName
+      description: Tenant Name.
+      type: String
   - arguments:
-    - description: 'The name of the entity to check. For example: 1002.'
+    - default: false
+      description: 'The name of the entity to check. For example: 1002.'
+      isArray: false
       name: entity_name
       required: true
-    - description: The name of the watchlist in which to check the entity.
+      secret: false
+    - default: false
+      description: The name of the watchlist in which to check the entity.
+      isArray: false
       name: watchlist_name
       required: true
+      secret: false
+    deprecated: false
     description: Checks if the specified entity is in a watchlist.
+    execution: false
     name: securonix-check-entity-in-watchlist
     outputs:
     - contextPath: Securonix.EntityInWatchlist.Watchlistnames
@@ -755,12 +1017,17 @@ script:
       description: The entity ID.
       type: String
   - arguments:
-    - description: The name of the watchlist to which to add the entity.
+    - default: false
+      description: The name of the watchlist to which to add the entity.
+      isArray: false
       name: watchlist_name
       required: true
+      secret: false
     - auto: PREDEFINED
+      default: false
       description: The entity type. Can be "Users", "Activityaccount", "RGActivityaccount",
         "Resources", or "Activityip".
+      isArray: false
       name: entity_type
       predefined:
       - Users
@@ -769,26 +1036,44 @@ script:
       - Resources
       - Activityip
       required: true
-    - description: 'The name of the entity to add to the watchlist. For example: 1022.'
+      secret: false
+    - default: false
+      description: 'The name of the entity to add to the watchlist. For example: 1022.'
+      isArray: false
       name: entity_name
       required: true
-    - defaultValue: '30'
+      secret: false
+    - default: false
+      defaultValue: '30'
       description: The number of days after which the entity will be removed from
         the watchlist. The default value is "30".
+      isArray: false
       name: expiry_days
+      required: false
+      secret: false
+    deprecated: false
     description: Adds an entity to a watchlist.
+    execution: false
     name: securonix-add-entity-to-watchlist
   - arguments:
-    - description: 'The violation name or policy name. For example: "Uploads to personal
+    - default: false
+      description: 'The violation name or policy name. For example: "Uploads to personal
         Websites".'
+      isArray: false
       name: violation_name
       required: true
-    - description: 'The resource group name. For example: "BLUECOAT", "Palo Alto Firewall".'
+      secret: false
+    - default: false
+      description: 'The resource group name. For example: "BLUECOAT", "Palo Alto Firewall".'
+      isArray: false
       name: resource_group
       required: true
+      secret: false
     - auto: PREDEFINED
+      default: false
       description: The entity type. Can be "Users", "Activityaccount", "RGActivityaccount",
         "Resources", or "Activityip".
+      isArray: false
       name: entity_type
       predefined:
       - Users
@@ -797,43 +1082,67 @@ script:
       - Resources
       - Activityip
       required: true
-    - description: The entity name associated with the violation. Can be "LanID" or
+      secret: false
+    - default: false
+      description: The entity name associated with the violation. Can be "LanID" or
         "Workemail". For more information, see the Securonix documentation.
+      isArray: false
       name: entity_name
       required: true
+      secret: false
     - auto: PREDEFINED
+      default: false
       description: The action name. Can be "Mark as concern and create incident",
         "Non-Concern", or "Mark in progress (still investigating)".
+      isArray: false
       name: action_name
       predefined:
       - Mark as concern and create incident
       - Non-Concern
       - Mark in progress (still investigating)
       required: true
-    - description: 'The resource name. For example: "BLUECOAT", "Palo Alto Firewall".'
+      secret: false
+    - default: false
+      description: 'The resource name. For example: "BLUECOAT", "Palo Alto Firewall".'
+      isArray: false
       name: resource_name
       required: true
+      secret: false
     - auto: PREDEFINED
+      default: false
       description: The incident severity (criticality) for the new incident. Can be
         "Low", "High", or "Critical".
+      isArray: false
       name: criticality
       predefined:
       - Low
       - High
       - Critical
-    - description: A comment for the new incident.
+      required: false
+      secret: false
+    - default: false
+      description: A comment for the new incident.
+      isArray: false
       name: comment
+      required: false
+      secret: false
     - auto: PREDEFINED
+      default: false
       description: The workflow name. This argument is optional, but required when
         the action_name argument is set to "Mark as concern and create incident".
         Can be "SOCTeamReview", "ActivityOutlierWorkflow", or "AccessCertificationWorkflow".
+      isArray: false
       name: workflow
       predefined:
       - SOCTeamReview
       - ActivityOutlierWorkflow
       - AccessCertificationWorkflow
+      required: false
+      secret: false
+    deprecated: false
     description: Creates an incident. For more information about the required arguments,
       see the Securonix documentation.
+    execution: false
     name: securonix-create-incident
     outputs:
     - contextPath: Securonix.Incidents.ViolatorID
@@ -882,12 +1191,799 @@ script:
     - contextPath: Securonix.Incidents.IsWhitelisted
       description: Whether the incident is added to allow list.
       type: Boolean
-  dockerimage: demisto/python3:3.10.4.30607
+  - arguments:
+    - default: false
+      description: |-
+        Start time range for which to return threats (Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ
+        For example: 01 Jan 2023, 01 Feb 2023 04:45:33, 2023-01-26T14:05:44Z)
+      isArray: false
+      name: date_from
+      required: true
+      secret: false
+    - default: false
+      description: |-
+        End date/time for which to retrieve threats (Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ
+        For example: 01 Jan 2023, 01 Feb 2023 04:45:33, 2023-01-26T14:05:44Z) Default is current time.
+      isArray: false
+      name: date_to
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '10'
+      description: The number of results to retrieve.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    - default: false
+      description: Name of the tenant to fetch threats from. This parameter is optional
+        for Non MSSP users.
+      isArray: false
+      name: tenant_name
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: Sets the starting index for the returned results.
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieve a list of threats violated within a specified time range
+      and get details about the threat models and policies violated.
+    execution: false
+    name: securonix-threats-list
+    outputs:
+    - contextPath: Securonix.Threat.TenantID
+      description: Tenant ID.
+      type: Number
+    - contextPath: Securonix.Threat.Tenantname
+      description: Tenant Name.
+      type: String
+    - contextPath: Securonix.Threat.Violator
+      description: Violator of threat.
+      type: String
+    - contextPath: Securonix.Threat.EntityID
+      description: Threat entity ID.
+      type: String
+    - contextPath: Securonix.Threat.Resourcegroupname
+      description: Name of the resource group.
+      type: String
+    - contextPath: Securonix.Threat.ThreatName
+      description: Threat Name.
+      type: String
+    - contextPath: Securonix.Threat.Category
+      description: Category of threat.
+      type: String
+    - contextPath: Securonix.Threat.Resourcename
+      description: Name of the resource.
+      type: String
+    - contextPath: Securonix.Threat.Resourcetype
+      description: Type of the resource.
+      type: String
+    - contextPath: Securonix.Threat.GenerationTime
+      description: Date and Time when the threat is generated.
+      type: Date
+    - contextPath: Securonix.Threat.GenerationTime_Epoch
+      description: Epoch time when the threat is generated.
+      type: Number
+    - contextPath: Securonix.Threat.Policies
+      description: List of policies violated.
+      type: Unknown
+    - contextPath: Securonix.Threat.Policystarttime
+      description: Epoch time when the policy is first violated.
+      type: Number
+    - contextPath: Securonix.Threat.Policyendtime
+      description: Epoch time when the policy is last violated.
+      type: Number
+    - contextPath: Securonix.Threat.Solrquery
+      description: Spotter query to fetch the related violations.
+      type: String
+  - arguments:
+    - default: false
+      description: Incident ID for which to retrieve the activity history.
+      isArray: false
+      name: incident_id
+      required: true
+      secret: false
+    deprecated: false
+    description: Retrieves incident activity history for a specified incident.
+    execution: false
+    name: securonix-incident-activity-history-get
+    outputs:
+    - contextPath: Securonix.IncidentHistory.caseid
+      description: Incident ID.
+      type: Number
+    - contextPath: Securonix.IncidentHistory.actiontaken
+      description: The type of action taken.
+      type: String
+    - contextPath: Securonix.IncidentHistory.status
+      description: The status of the incident.
+      type: String
+    - contextPath: Securonix.IncidentHistory.comment.Comments
+      description: Comment text.
+      type: String
+    - contextPath: Securonix.IncidentHistory.eventTime
+      description: Timestamp in epoch when the action is taken.
+      type: Number
+    - contextPath: Securonix.IncidentHistory.username
+      description: Username of the person who carried out the action.
+      type: String
+    - contextPath: Securonix.IncidentHistory.currentassignee
+      description: The current assignee of the incident.
+      type: String
+    - contextPath: Securonix.IncidentHistory.commentType
+      description: The type of the comment.
+      type: String
+    - contextPath: Securonix.IncidentHistory.currWorkflow
+      description: The current workflow of the incident.
+      type: String
+    - contextPath: Securonix.IncidentHistory.isPlayBookOutAvailable
+      description: Whether or not the playbook is available.
+      type: Boolean
+    - contextPath: Securonix.IncidentHistory.creator
+      description: The creator of the activity.
+      type: String
+    - contextPath: Securonix.IncidentHistory.lastStatus
+      description: The previous status of the incident.
+      type: String
+    - contextPath: Securonix.IncidentHistory.pastassignee
+      description: The previous assignee of the incident.
+      type: String
+    - contextPath: Securonix.IncidentHistory.prevWorkflow
+      description: The previous workflow of the incident.
+      type: String
+    - contextPath: Securonix.IncidentHistory.attachment
+      description: The name of the attached file.
+      type: String
+    - contextPath: Securonix.IncidentHistory.attachmentType
+      description: The type of the attachment.
+      type: String
+    - contextPath: Securonix.IncidentHistory.playBookOutput.playBookId
+      description: The ID of the playbook.
+      type: Number
+    - contextPath: Securonix.IncidentHistory.playBookOutput.playBookName
+      description: The name of the playbook.
+      type: String
+    - contextPath: Securonix.IncidentHistory.playBookOutput.playRunId
+      description: The playbook run ID.
+      type: String
+    - contextPath: Securonix.IncidentHistory.playBookOutput.executorId
+      description: The ID of the executor.
+      type: Number
+    - contextPath: Securonix.IncidentHistory.playBookOutput.executor
+      description: The name of the executor.
+      type: String
+    - contextPath: Securonix.IncidentHistory.playBookOutput.tasksForParticularRun.taskName
+      description: The name of the playbook task.
+      type: String
+    - contextPath: Securonix.IncidentHistory.playBookOutput.tasksForParticularRun.description
+      description: The description of the playbook task.
+      type: String
+    - contextPath: Securonix.IncidentHistory.playBookOutput.tasksForParticularRun.icon
+      description: Playbook icon.
+      type: String
+    - contextPath: Securonix.IncidentHistory.playBookOutput.tasksForParticularRun.taskId
+      description: The ID of the playbook task.
+      type: Number
+    - contextPath: Securonix.IncidentHistory.playBookOutput.tasksForParticularRun.lastExecutedTime
+      description: The last execution time in epoch.
+      type: Date
+    - contextPath: Securonix.IncidentHistory.playBookOutput.tasksForParticularRun.lastStatus
+      description: The last status of the playbook.
+      type: String
+    - contextPath: Securonix.IncidentHistory.playBookOutput.tasksForParticularRun.executedTask.executionId
+      description: The execution ID of the playbook.
+      type: String
+    - contextPath: Securonix.IncidentHistory.playBookOutput.tasksForParticularRun.executedTask.taskStartTime
+      description: The start time of the task.
+      type: Date
+    - contextPath: Securonix.IncidentHistory.playBookOutput.tasksForParticularRun.executedTask.taskEndTime
+      description: The end time of the task.
+      type: Date
+    - contextPath: Securonix.IncidentHistory.playBookOutput.tasksForParticularRun.executedTask.status
+      description: The status of the task.
+      type: String
+    - contextPath: Securonix.IncidentHistory.playBookOutput.tasksForParticularRun.connectionMetadata
+      description: Connection metadata.
+      type: String
+  - arguments:
+    - default: false
+      description: Incident ID for which to retrieve the attachments.
+      isArray: false
+      name: incident_id
+      required: true
+      secret: false
+    - default: false
+      description: The type of attachment to retrieve. Supported options are csv,
+        pdf, and txt. Comma-separated values are supported.
+      isArray: false
+      name: attachment_type
+      required: false
+      secret: false
+    - default: false
+      description: 'Start time for which to retrieve attachments.(Supported formats:
+        2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ,
+        yyyy-MM-ddTHH:mm:ss.SSSZ. For example: 01 Jan 2023, 01 Feb 2023 04:45:33,
+        2023-01-26T14:05:44Z, 2023-01-26T14:05:44.000Z)'
+      isArray: false
+      name: from
+      required: false
+      secret: false
+    - default: false
+      description: 'End time for which to retrieve attachments.(Supported formats:
+        2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ,
+        yyyy-MM-ddTHH:mm:ss.SSSZ. For example: 01 Jan 2023, 01 Feb 2023 04:45:33,
+        2023-01-26T14:05:44Z, 2023-01-26T14:05:44.000Z)'
+      isArray: false
+      name: to
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves the attachments available on the Securonix platform.
+    execution: false
+    name: securonix-incident-attachment-get
+    outputs:
+    - contextPath: File.Size
+      description: The size of the file in bytes.
+      type: Number
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.SHA512
+      description: The SHA512 hash of the file.
+      type: String
+    - contextPath: File.Name
+      description: The name of the file.
+      type: String
+    - contextPath: File.SSDeep
+      description: The SSDeep hash of the file.
+      type: String
+    - contextPath: File.EntryID
+      description: The entry ID of the file.
+      type: String
+    - contextPath: File.Info
+      description: File information.
+      type: String
+    - contextPath: File.Type
+      description: The file type.
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.Extension
+      description: The file extension.
+      type: String
+    - contextPath: Securonix.Incidents.Attachments.IncidentID
+      description: Attachment Incident ID.
+      type: String
+    - contextPath: Securonix.Incidents.Attachments.Files
+      description: Attachment File names.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: |-
+        Name of the tenant the whitelist belongs to.
+
+        The tenant name parameter is required for MSSP users.
+      isArray: false
+      name: tenant_name
+      required: false
+      secret: false
+    deprecated: false
+    description: Gets a list of whitelists.
+    execution: false
+    name: securonix-whitelists-get
+    outputs:
+    - contextPath: Securonix.Whitelist.WhitelistName
+      description: Name of the Whitelist.
+      type: String
+    - contextPath: Securonix.Whitelist.TenantName
+      description: Tenant Name.
+      type: String
+    - contextPath: Securonix.Whitelist.WhitelistType
+      description: Type of the Whitelist.
+      type: String
+  - arguments:
+    - default: false
+      description: |-
+        Name of the tenant the whitelist belongs to.
+
+        The tenant name parameter is required for MSSP users.
+      isArray: false
+      name: tenant_name
+      required: false
+      secret: false
+    - default: false
+      description: Name of the whitelist that the user wants to list.
+      isArray: false
+      name: whitelist_name
+      required: true
+      secret: false
+    deprecated: false
+    description: Gets information for the specified whitelist.
+    execution: false
+    name: securonix-whitelist-entry-list
+    outputs:
+    - contextPath: Securonix.Whitelist.WhitelistName
+      description: Name of the Whitelist.
+      type: String
+    - contextPath: Securonix.Whitelist.TenantName
+      description: Tenant Name.
+      type: String
+    - contextPath: Securonix.Whitelist.Entries.Entity/Attribute
+      description: Entity/Attribute which is whitelisted.
+      type: String
+    - contextPath: Securonix.Whitelist.Entries.ExpiryDate
+      description: The date when the entity will be removed from the whitelist.
+      type: Date
+  - arguments:
+    - default: false
+      description: |-
+        Name of the tenant the whitelist belongs to.
+
+        The tenant name parameter is required for MSSP users.
+      isArray: false
+      name: tenant_name
+      required: false
+      secret: false
+    - default: false
+      description: Name of the whitelist that the user wants to create.
+      isArray: false
+      name: whitelist_name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Type of entity that the whitelist is intended to hold.
+      isArray: false
+      name: entity_type
+      predefined:
+      - Users
+      - Activityaccount
+      - Resources
+      - Activityip
+      required: true
+      secret: false
+    deprecated: false
+    description: Creates a whitelist in Securonix.
+    execution: false
+    name: securonix-whitelist-create
+  - deprecated: false
+    description: Returns the state mapping of XSOAR with Securonix.
+    execution: false
+    name: securonix-xsoar-state-mapping-get
+    outputs:
+    - contextPath: Securonix.StateMapping.ACTIVE.action
+      description: Securonix action name to map with XSOAR's active state.
+      type: String
+    - contextPath: Securonix.StateMapping.ACTIVE.status
+      description: Securonix status to map with XSOAR's active state.
+      type: String
+    - contextPath: Securonix.StateMapping.DONE.action
+      description: Securonix action name to map with XSOAR's closed state.
+      type: String
+    - contextPath: Securonix.StateMapping.DONE.status
+      description: Securonix status to map with XSOAR's closed state.
+      type: String
+  - arguments:
+    - default: false
+      description: |-
+        The Name of the tenant the whitelist belongs to.
+
+        The tenant name parameter is required for MSSP user.
+      isArray: false
+      name: tenant_name
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        The name of the whitelist to which data is being added.
+
+        If whitelist_type is Attribute, then whitelist_name and violation_name should be the same.
+      isArray: false
+      name: whitelist_name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The type of the whitelist to which data is being added. (Supported
+        Values are Global and Attribute.)
+      isArray: false
+      name: whitelist_type
+      predefined:
+      - Global
+      - Attribute
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: |-
+        The type of entity being added. (Supported values are Users, Activityaccount, Activityip, Resources).
+
+        This parameter is required if whitelist_type is Global.
+      isArray: false
+      name: entity_type
+      predefined:
+      - Users
+      - Activityaccount
+      - Resources
+      - Activityip
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        ID of the entity being added.
+
+        This parameter is required if whitelist_type is Global.
+      isArray: false
+      name: entity_id
+      required: false
+      secret: false
+    - default: false
+      description: The date when the entity will be removed from the whitelist.(In
+        MM/DD/YYYY format)
+      isArray: false
+      name: expiry_date
+      required: false
+      secret: false
+    - default: false
+      description: "The resource name to which the account belongs. \n\nThis parameter\
+        \ is required if whitelist_type is Global and entity_type is Activityaccount."
+      isArray: false
+      name: resource_name
+      required: false
+      secret: false
+    - default: false
+      description: "The resource group id to which the account belongs. \n\nThis parameter\
+        \ is required if whitelist_type is Global and entity_type is Activityaccount."
+      isArray: false
+      name: resource_group_id
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: |-
+        Name of the attribute being added. (Supported values are source ip, resourcetype,
+        transactionstring)
+
+        This parameter is required if whitelist_type is Attribute.
+      isArray: false
+      name: attribute_name
+      predefined:
+      - source ip
+      - resourcetype
+      - transactionstring
+      required: false
+      secret: false
+    - default: false
+      description: "The attribute value being added. \n\nThis parameter is required\
+        \ if whitelist_type is set to Attribute."
+      isArray: false
+      name: attribute_value
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: "Type of the violation. (Supported Values are Policy,ThreatModel,\n\
+        Functionality.) \n\nThis parameter is required if whitelist_type is set to\
+        \ Attribute."
+      isArray: false
+      name: violation_type
+      predefined:
+      - Policy
+      - ThreatModel
+      - Functionality
+      required: false
+      secret: false
+    - default: false
+      description: "Name of the violations. (Supported values are Policy names, ThreatModel\
+        \ names, Functionality names)\n\nThis parameter is required if whitelist_type\
+        \ is set to Attribute, and is the same as the whitelist name parameter. "
+      isArray: false
+      name: violation_name
+      required: false
+      secret: false
+    deprecated: false
+    description: Add entity or attribute to the specified whitelist entry.
+    execution: false
+    name: securonix-whitelist-entry-add
+  - arguments:
+    - default: false
+      description: Name of the lookup table to delete.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    deprecated: false
+    description: Deletes a lookup table with its data and configuration.
+    execution: false
+    name: securonix-lookup-table-config-and-data-delete
+    outputs:
+    - contextPath: Securonix.LookupTable.lookupTableName
+      description: Name of the lookup table.
+      type: String
+    - contextPath: Securonix.LookupTable.isDeleted
+      description: True, if the lookup table data and configuration deleted successfully.
+      type: Boolean
+  - arguments:
+    - default: false
+      description: Name of the tenant the whitelist belongs to.
+      isArray: false
+      name: tenant_name
+      required: true
+      secret: false
+    - default: false
+      description: Name of the whitelist the user wants to delete the value from.
+      isArray: false
+      name: whitelist_name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Type of whitelist that user wants to delete from.
+      isArray: false
+      name: whitelist_type
+      predefined:
+      - Global
+      - Attribute
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Entity ID value that needs to be removed from the whitelist.
+
+        This parameter is required if whitelist_type is set to "Global".
+
+        Example:
+        - employeeId for type User
+        - accountname for type ActivityAccount
+        - resourcename for type Resources
+        - ipadress for type IpAddress
+      isArray: false
+      name: entity_id
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Name of the attribute being removed.
+
+        This parameter is required if whitelist_type is set to "Attribute".
+
+        Example:
+        - accountname
+        - transactionstring
+        - sourcetype
+      isArray: false
+      name: attribute_name
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        The value of the attribute being removed.
+
+        This parameter is required if whitelist_type is "Attribute".
+      isArray: false
+      name: attribute_value
+      required: false
+      secret: false
+    deprecated: false
+    description: Remove entity or attribute from the specified whitelist entry.
+    execution: false
+    name: securonix-whitelist-entry-delete
+  - arguments:
+    - default: false
+      defaultValue: '50'
+      description: Number of records to return.
+      isArray: false
+      name: max
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '0'
+      description: Specify from which record the data should be returned.
+      isArray: false
+      name: offset
+      required: false
+      secret: false
+    deprecated: false
+    description: Retrieves a list of lookup tables available within the Securonix
+      platform.
+    execution: false
+    name: securonix-lookup-tables-list
+    outputs:
+    - contextPath: Securonix.LookupTable.tenantName
+      description: Name of the tenant.
+      type: String
+    - contextPath: Securonix.LookupTable.lookupTableName
+      description: Name of the lookup table.
+      type: String
+    - contextPath: Securonix.LookupTable.totalRecords
+      description: Number of records in the lookup table.
+      type: Number
+    - contextPath: Securonix.LookupTable.scope
+      description: Scope of the lookup table.
+      type: String
+    - contextPath: Securonix.LookupTable.type
+      description: Type of the lookup table.
+      type: String
+  - arguments:
+    - default: false
+      description: Lookup Table name to which the data needs to be added.
+      name: name
+      required: true
+    - default: false
+      description: Name of the tenant to which the lookup table belongs. This argument is required for MSSP users and if the scope of the lookup table is "Meta".
+      name: tenant_name
+      required: false
+    - default: false
+      description: |-
+        JSON formatted string containing the field names and values in the below format. To specify an expiration date for an entry, add "expiryDate" key (in the format of "MM/DD/YYYY") in the respective JSON object.
+
+        E.g. [{"field1": "Value1", "field2": "Value2"}, {"field1": "Value3", "field2": "Value4"}]
+      name: json_data
+      required: false
+    - default: false
+      description: War room entry of the file. To specify an expiration date for an entry, add "expiryDate" key (in the format of "MM/DD/YYYY") in the respective JSON object.
+      name: file_entry_id
+      required: false
+    description: Add entries to the provided lookup table.
+    execution: false
+    name: securonix-lookup-table-entry-add
+  - arguments:
+    - default: false
+      description: Lookup Table name.
+      name: name
+      required: True
+    - default: false
+      description: Use to filter the records. By default it will filter the records on key. To filter on other column use attribute argument.
+      name: query
+      required: false
+    - default: false
+      description: Column name on which to filter the data.
+      name: attribute
+      defaultValue: 'key'
+      required: false
+    - default: false
+      defaultValue: '15'
+      description: Number of records to retrieve.
+      name: max
+      required: false
+    - default: false
+      description: Specify from which record the data should be returned.
+      defaultValue: '0'
+      name: offset
+      required: false
+    - default: false
+      description: Specify a value to retrieve records from a specific page.
+      name: page_num
+      defaultValue: '1'
+      required: false
+    - default: false
+      description: Name of the column on which to sort the data. By default the data will be sorted on the key.
+      name: sort
+      required: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: asc
+      description: The order in which to sort the data. By default the data will be sorted in ascending order.
+      isArray: false
+      name: order
+      predefined:
+        - asc
+        - desc
+      required: false
+      secret: false
+    description: Retrieves the entries stored in a specified lookup table.
+    execution: false
+    name: securonix-lookup-table-entries-list
+    outputs:
+    - contextPath: Securonix.LookupTableEntries.lookupname
+      description: Name of the lookup table.
+      type: String
+    - contextPath: Securonix.LookupTableEntries.tenantid
+      description: ID of the tenant.
+      type: Number
+    - contextPath: Securonix.LookupTableEntries.lookupuniquekey
+      description: Unique key of the entry.
+      type: String
+    - contextPath: Securonix.LookupTableEntries.timestamp
+      description: The UTC timestamp indicates when the entry was added.
+      type: String
+    - contextPath: Securonix.LookupTableEntries.key
+      description: The value of the key field.
+      type: String
+    - contextPath: Securonix.LookupTableEntries.defaultenrichedevent
+      description: Entry data.
+      type: Unknown
+    - contextPath: Securonix.LookupTableEntries.tenantname
+      description: Name of the tenant.
+      type: String
+    - contextPath: Securonix.LookupTableEntries.entry.key
+      description: Key of the entry.
+      type: String
+    - contextPath: Securonix.LookupTableEntries.entry.value
+      description: Value of the entry.
+      type: String
+  - arguments:
+    - default: false
+      description: Name of the lookup table to create.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Scope of the lookup table. This argument is mandatory for MSSP
+        users.
+      isArray: false
+      name: scope
+      predefined:
+      - Global
+      - Local
+      - Meta
+      required: false
+      secret: false
+    - default: false
+      description: Name of the tenant in which to create a lookup table. This argument
+        is mandatory for MSSP users.
+      isArray: false
+      name: tenant_name
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated string of column names.
+      isArray: false
+      name: field_names
+      required: true
+      secret: false
+    - default: false
+      description: A comma-separated string of column names for which data needs to
+        be encrypted.
+      isArray: false
+      name: encrypt
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated string of column names to be used as key.
+      isArray: false
+      name: key
+      required: true
+      secret: false
+    deprecated: false
+    description: Creates a lookup table.
+    execution: false
+    name: securonix-lookup-table-create
+  - arguments:
+    - default: false
+      description: Comma-separated list of lookup unique keys to delete.
+      isArray: false
+      name: lookup_unique_keys
+      required: true
+      secret: false
+    - default: false
+      description: Name of the lookup table from which to delete the entries.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    deprecated: false
+    description: Deletes the entries from the lookup table.
+    execution: false
+    name: securonix-lookup-table-entries-delete
+  dockerimage: demisto/python3:3.10.10.49934
+  feed: false
   isfetch: true
+  longRunning: false
+  longRunningPort: false
   runonce: false
-  script: ''
+  script: '-'
   subtype: python3
   type: python
-fromversion: 5.0.0
 tests:
 - No test - no instance
+fromversion: 5.0.0
