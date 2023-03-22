@@ -1,6 +1,6 @@
 {
     "name": "OpenAi ChatGPT v3",
-    "description": "This integration for OpenAi ChatGPT API v3"
+    "description": "This integration for OpenAi ChatGPT API v3",
     "support": "community",
     "currentVersion": "1.0.0",
     "author": "Sameh El-Hakim",
