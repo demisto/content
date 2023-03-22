@@ -55,8 +55,8 @@
             "mandatory": false,
             "display_name": "Tenable.io"
         },
-        "Qualys": {
-            "mandatory": false,
+        "qualys": {
+            "mandatory": true,
             "display_name": "Qualys"
         }
     },
@@ -77,6 +77,6 @@
         "SplunkPy",
         "ServiceNow",
         "Tenable_io",
-        "Qualys"
+        "qualys"
     ]
 }
