@@ -9556,13 +9556,15 @@ class IndicatorsSearcher:
             # use paging as fallback when cannot use search_after
             page=self.page if not self._can_use_search_after else None,
         )
+        demisto.debug('IndicatorsSearcher: page {}, search_args: {}'.format(self._page, search_args))
         if is_demisto_version_ge('6.6.0'):
             search_args['sort'] = self._sort
         res = demisto.searchIndicators(**search_args)
+        self._total = res.get('total')
+        demisto.debug('IndicatorsSearcher: page {}, result size: {}'.format(self._page, self._total))
         if isinstance(self._page, int):
             self._page += 1  # advance pages
         self._search_after_param = res.get(self.SEARCH_AFTER_TITLE)
-        self._total = res.get('total')
         return res
 
 
@@ -9849,7 +9851,7 @@ def get_size_of_object(input_object):
     :type input_object: ``Any``
     :param input_object: The object to calculate its memory footprint
 
-    :return: Size of input_object in bytes.
+    :return: Size of input_object in bytes, or -1 if cannot determine the size.
     :rtype: ``int``
     """
     if IS_PY3 and PY_VER_MINOR >= 10:
@@ -9872,7 +9874,7 @@ def get_size_of_object(input_object):
         :type level: ``int``
         :param level: Current level of the recursion (object)
 
-        :return: Size of obj in bytes.
+        :return: Size of obj in bytes, or -1 if cannot determine the size.
         :rtype: ``int``
         """
         if level == MAX_LEVEL:
@@ -9896,7 +9898,15 @@ def get_size_of_object(input_object):
         if hasattr(obj, '__dict__'):
             size += inner(vars(obj), level + 1)
         return size
-    return inner(input_object, 0)
+
+    try:
+        return inner(input_object, 0)
+    except RuntimeError:
+        # A RuntimeError can occur, for example, in flask apps: it's forbidden to perform
+        # some functionality outside the flask app context, which is unreachable from the
+        # signal handler. Therefore, we just skip calculating the size in this case.
+        demisto.debug('Skipping flask app internal objects in size calculation')
+        return -1
 
 
 excluded_globals = ['__name__', '__doc__', '__package__', '__loader__',
