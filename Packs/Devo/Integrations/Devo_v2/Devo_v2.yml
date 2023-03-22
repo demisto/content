@@ -27,7 +27,7 @@ configuration:
   - display: Writer JSON credentials
     name: writer_credentials
     type: 4
-    required: true
+    required: false
   - display: Devo base domain
     name: linq_link_base
     defaultvalue: https://us.devo.com
