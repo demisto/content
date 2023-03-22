@@ -40,7 +40,8 @@ def get_image_details(path: str, width: int | None, height: int | None) -> tuple
         return img_format, img_sizes
 
 
-def get_file_details(entry_id: Optional[str], width: Optional[int], height: Optional[int]) -> tuple[Any, Any, Optional[tuple[int, int]], str]:
+def get_file_details(entry_id: Optional[str], width: Optional[int], height: Optional[int]
+                     ) -> tuple[Any, Any, Optional[tuple[int, int]], str]:
     """
     Gets the file details.
     Args:
