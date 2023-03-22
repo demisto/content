@@ -2248,7 +2248,7 @@ def test_generate_login_url(mocker):
 def test_is_bot_in_chat_parameters(mocker, requests_mock):
     """
     Given: some chat ID and bot ID
-    When: calling is_bot_in_chat() to check of the bit is already a member of the chat
+    When: calling is_bot_in_chat() to check if the bot is already a member of the chat
     Then: validate that the request is sent correctly and specifically that the BOT_ID is part of the query
     """
     request_mock = requests_mock.get(f'{GRAPH_BASE_URL}/v1.0/chats/{GROUP_CHAT_ID}/installedApps', json={})
