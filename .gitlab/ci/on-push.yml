@@ -71,7 +71,8 @@ run-unittests-and-lint:
       when: never
     - if: '$DEMISTO_SDK_NIGHTLY != "true"'
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
-    - if: '$DEMISTO_TEST_NATIVE_CANDIDATE != "true"'
+    - if: '$DEMISTO_TEST_NATIVE_CANDIDATE == "true"'
+      when: never
 
 
 # runs in gitlab for the on-push flow (except for contributors)
