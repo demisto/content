@@ -1,7 +1,7 @@
-id: Fetch Threat Violations - Securonix
+id: Fetch Violations - Securonix
 version: -1
-name: Fetch Threat Violations - Securonix
-description: Fetch violations related to threat.
+name: Fetch Violations - Securonix
+description: Gets a list of violation data.
 starttaskid: '0'
 tasks:
   '0':
@@ -17,7 +17,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - '6'
+      - '1'
     separatecontext: false
     view: |-
       {
@@ -35,10 +35,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '1':
     id: '1'
-    taskid: 44de8430-4a19-4a0c-8450-fe434b0becd6
+    taskid: d64f9b75-1d5b-425b-8d27-b96e2c43cbd0
     type: regular
     task:
-      id: 44de8430-4a19-4a0c-8450-fe434b0becd6
+      id: d64f9b75-1d5b-425b-8d27-b96e2c43cbd0
       version: -1
       name: Fetch Violations
       description: Gets a list activity data for an account name.
@@ -48,53 +48,35 @@ tasks:
       brand: ''
     nexttasks:
       '#none#':
-      - '5'
+      - '3'
     scriptarguments:
       from:
         complex:
           root: inputs.from
-          transformers:
-          - operator: SetIfEmpty
-            args:
-              applyIfEmpty: {}
-              defaultValue:
-                value:
-                  simple: 00/00/00 00:00:00
       query:
         complex:
           root: inputs.query
+      query_id:
+        complex:
+          root: Securonix.Violation
+          accessor: queryId
           transformers:
           - operator: SetIfEmpty
             args:
               applyIfEmpty: {}
               defaultValue:
                 value:
-                  simple: incident.securonixviolationspotterquery
-                iscontext: true
+                  simple: ' '
+          - operator: LastArrayElement
       to:
         complex:
           root: inputs.to
-          transformers:
-          - operator: SetIfEmpty
-            args:
-              applyIfEmpty: {}
-              defaultValue:
-                value:
-                  simple: TimeNowUnix
-                iscontext: true
-          - operator: TimeStampToDate
-          - operator: toString
-            args:
-              format:
-                value:
-                  simple: 02/01/2006 15:04:00
-          - operator: LastArrayElement
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 370
+          "y": 195
         }
       }
     note: false
@@ -121,77 +103,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  '5':
-    id: '5'
-    taskid: f8d80540-c848-4bec-8f46-2f654fc76588
-    type: regular
-    task:
-      id: f8d80540-c848-4bec-8f46-2f654fc76588
-      version: -1
-      name: Set Violation Count
-      description: Update Incident field `Securonix Violation Count`.
-      script: Builtin|||setIncident
-      type: regular
-      iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - '3'
-    scriptarguments:
-      securonixviolationcount:
-        complex:
-          root: Securonix
-          accessor: ViolationData
-          transformers:
-          - operator: count
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  '6':
-    id: '6'
-    taskid: 21867b28-6db8-46f1-899c-51b9f21a9b4d
-    type: regular
-    task:
-      id: 21867b28-6db8-46f1-899c-51b9f21a9b4d
-      version: -1
-      name: Get Current Time
-      description: |
-        Retrieves the current date and time.
-      scriptName: GetTime
-      type: regular
-      iscommand: false
-      brand: ''
-    nexttasks:
-      '#none#':
-      - '1'
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 195
+          "y": 370
         }
       }
     note: false
@@ -206,7 +118,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 735,
+        "height": 385,
         "width": 380,
         "x": 50,
         "y": 50

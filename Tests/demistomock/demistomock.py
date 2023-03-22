@@ -802,6 +802,10 @@ def incident():
     The incident custom fields will be populated as a `dict` under the CustomFields attribute
     (for example the `filename` custom field can be retrieved using `demisto.incident()['CustomFields'].get('filename')`).
 
+    demisto.incident gets the data from the script on the beginning of the execution,
+    hence if updating the incident context during script execution,
+    it won't be reflected when calling demisto.incident, which will return stale context data.
+
     Returns:
       dict: dict representing an incident object
 
