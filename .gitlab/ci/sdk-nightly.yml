@@ -119,13 +119,13 @@ demisto-sdk-nightly:run-commands-against-instance:
     DOCKER_DRIVER: overlay2
     DOCKER_TLS_CERTDIR: ""
     INSTANCE_ROLE: "Server Master"
+  needs: ["demisto-sdk-nightly:xsoar-prepare-testing-bucket"]
   stage: run-instances
   script:
     - !reference [.open-ssh-tunnel]
     - python3 ./Tests/scripts/wait_until_server_ready.py "$INSTANCE_ROLE"
     - !reference [.download-demisto-conf]
     - |
-      export DEMISTO_API_KEY=$(cat $SECRET_CONF_PATH | jq -r '.temp_apikey')
       export DEMISTO_BASE_URL="https://localhost:$(cat $ARTIFACTS_FOLDER/env_results.json | jq -r '.[0].TunnelPort')"
       echo "Server URL: $DEMISTO_BASE_URL"
     - section_start "Unlock HelloWorld Integration and Playbook" --collapsed
@@ -184,6 +184,7 @@ demisto-sdk-nightly:run-end-to-end-tests:
       TUNNEL_PORT=$(cat $ARTIFACTS_FOLDER/env_results.json | jq "map(select(.Role == \"$INSTANCE_ROLE\")) | .[].TunnelPort")
       export DEMISTO_BASE_URL="https://localhost:$TUNNEL_PORT"
       echo "Server URL: $DEMISTO_BASE_URL"
+      unset DEMISTO_API_KEY # a temporary fix 
       python3 -m pytest $ARTIFACTS_FOLDER/demisto-sdk/tests_end_to_end/ || EXIT_CODE=$?
     - job-done
     - exit $EXIT_CODE
