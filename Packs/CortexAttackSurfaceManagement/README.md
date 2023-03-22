@@ -71,6 +71,7 @@ The main active response playbook is the `Cortex ASM - ASM Alert` playbook. This
   - [Cortex ASM - Detect Service](#cortex-asm---detect-service)
   - [Cortex ASM - Enrichment](#cortex-asm---enrichment)
   - [Cortex ASM - GCP Enrichment](#cortex-asm---gcp-enrichment)
+  - [Cortex ASM - Qualys Enrichment](#cortex-asm---qualys-enrichment)
   - [Cortex ASM - Rapid7 Enrichment](#cortex-asm---rapid7-enrichment)
   - [Cortex ASM - Remediation Guidance](#cortex-asm---remediation-guidance)
   - [Cortex ASM - Remediation Path Rules](#cortex-asm---remediation-path-rules)
@@ -79,7 +80,6 @@ The main active response playbook is the `Cortex ASM - ASM Alert` playbook. This
   - [Cortex ASM - SNMP Check](#cortex-asm---snmp-check)
   - [Cortex ASM - Splunk Enrichment](#cortex-asm---splunk-enrichment)
   - [Cortex ASM - Tenable.io Enrichment](#cortex-asm---tenableio-enrichment)
-  - [Cortex ASM - Qualys Enrichment](#cortex-asm---qualys-enrichment)
 - Automation Scripts
   - [GenerateASMReport](#generateasmreport)
   - [RemediationPathRuleEvaluation](#remediationpathruleevaluation)
@@ -129,6 +129,12 @@ Playbook that given the IP address enriches GCP information relevant to ASM aler
 
 ![Cortex ASM - GCP Enrichment](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_GCP_Enrichment.png)
 
+#### Cortex ASM - Qualys Enrichment
+
+Playbook that given the IP address enriches Qualys information relevant to ASM alerts.
+
+![Cortex ASM - Qualys Enrichment](https://raw.githubusercontent.com/demisto/content/4a11ae583d49014d5326a74dfde7a998c4ebca70/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Qualys_Enrichment.png)
+
 #### Cortex ASM - Rapid7 Enrichment
 
 Playbook that given the IP address enriches Rapid7 information relevant to ASM alerts.
@@ -176,12 +182,6 @@ Playbook that given the IP address enriches Splunk information relevant to ASM a
 Playbook that given the IP address enriches Tenable.io information relevant to ASM alerts.
 
 ![Cortex ASM - Tenable.io Enrichment](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Tenable.io_Enrichment.png)
-
-#### Cortex ASM - Qualys Enrichment
-
-Playbook that given the IP address enriches Qualys information relevant to ASM alerts.
-
-![Cortex ASM - Qualys Enrichment](https://raw.githubusercontent.com/demisto/content/4a11ae583d49014d5326a74dfde7a998c4ebca70/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Qualys_Enrichment.png)
 
 ### Automation Scripts
 
