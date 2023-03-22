@@ -171,7 +171,6 @@ class Client(BaseClient):
         return self._http_request(
             method="POST",
             url_suffix=uri,
-            params={"tempPassword": True}
         )
 
     def add_user_to_group(self, user_id, group_id):
@@ -792,12 +791,11 @@ def set_password_command(client, args):
     user_id = client.get_user_id(args.get('username'))
     password = args.get('password')
 
+    raw_response = client.set_password(user_id, password)
+    readable_output = f"{args.get('username')} password was last changed on {raw_response.get('passwordChanged')}"
+
     if argToBoolean(args.get('one_time_password', False)):
-        raw_response = client.set_temp_password(user_id)
-        readable_output = f"{args.get('username')} password was last changed on {datetime.now()}"
-    else:
-        raw_response = client.set_password(user_id, password)
-        readable_output = f"{args.get('username')} password was last changed on {raw_response.get('passwordChanged')}"
+        client.set_temp_password(user_id)
 
     return (
         readable_output,
