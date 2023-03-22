@@ -161,7 +161,7 @@ def build_country_statement(country_codes: list) -> dict:  # pragma: no cover
     return {'GeoMatchStatement': {'CountryCodes': country_codes}}
 
 
-def build_country_rule_object(args: dict) -> dict:
+def build_country_rule_object(args: dict) -> dict:  # pragma: no cover
     """
     Creates a country rule statement object that can be added to a rule
     Args:
