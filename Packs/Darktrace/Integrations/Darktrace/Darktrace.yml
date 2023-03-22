@@ -522,7 +522,7 @@ script:
   script: '-'
   subtype: python3
   type: python
-deprecated: true
 fromversion: 6.0.0
+deprecated: true
 tests:
 - No tests (auto formatted)

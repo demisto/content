@@ -2,7 +2,7 @@
     "definitionId": "Maps model breach fields to mappings for use in Integration Playbooks.",
     "description": "",
     "feed": false,
-    "id": "5210c6a1-685a-4ad7-87a0-a9278b71b85f",
+    "id": "Darktrace Model Breach",
     "mapping": {
         "Darktrace Model Breach": {
             "dontMapEventToLabels": false,

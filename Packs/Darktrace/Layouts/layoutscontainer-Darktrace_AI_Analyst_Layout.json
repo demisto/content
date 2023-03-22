@@ -349,9 +349,9 @@
         ]
     },
     "group": "incident",
-    "id": "b71b333c-358a-43eb-85dc-d10051e63a3b",
-    "name": "b71b333c-358a-43eb-85dc-d10051e63a3b",
+    "id": "Darktrace AI Analyst Incident Layout",
+    "name": "Darktrace AI Analyst Incident Layout",
     "system": false,
     "version": -1,
-    "fromVersion": "6.0.0"
+    "fromVersion": "6.8.0"
 }

@@ -1,5 +1,5 @@
 category: Network Security
-fromversion: 5.0.0
+fromversion: 6.8.0
 sectionOrder:
 - Connect
 - Collect
