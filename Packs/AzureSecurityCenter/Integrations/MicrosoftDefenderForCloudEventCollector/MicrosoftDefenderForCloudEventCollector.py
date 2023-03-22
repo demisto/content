@@ -241,7 +241,7 @@ def main() -> None:
 
             if should_push_events:
                 # saves next_run for the time fetch-events is invoked
-                demisto.setLastRun({'last_run': find_next_run(events, last_run)})
+                demisto.setLastRun(find_next_run(events, last_run))
                 send_events_to_xsiam(
                     events,
                     vendor=VENDOR,
