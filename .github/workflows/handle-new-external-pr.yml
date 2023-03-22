@@ -3,7 +3,7 @@ on:
   pull_request_target:
     types: [opened]
   pull_request:
-    types: [ opened, synchronize, labeled, unlabeled ]
+    types: [ opened, synchronize ]
 
 permissions:
   contents: read
@@ -48,4 +48,5 @@ jobs:
         run: |
           echo "Sending notification about External PR ${{ github.event.pull_request.html_url }}"
           cd Utils/github_workflow_scripts
+          exit
           pipenv run ./send_slack_message.py
