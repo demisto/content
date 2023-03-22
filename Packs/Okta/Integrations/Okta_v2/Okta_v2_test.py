@@ -922,9 +922,9 @@ def test_set_temp_password_command():
     client = Client('https://demisto.com')
     with requests_mock.Mocker() as m:
         m.get('https://demisto.com/users?filter=profile.login eq "test"', json=[{'id': '1234'}])
-        mock_request = m.post('https://demisto.com/users/1234/lifecycle/expire_password', json={'tempPassword': 'abcd'})
+        mock_request = m.post('https://demisto.com/users/1234', json={'passwordChanged': '2023-03-22T10:15:26.000Z'})
+        mock_request = m.post('https://demisto.com/users/1234/lifecycle/expire_password', json={})
 
         result = set_password_command(client, {'username': 'test', 'password': 'a1b2c3', 'one_time_password': 'true'})
 
-    assert result[0] == 'The temporary password for test is: abcd'
-    assert mock_request.last_request.query == 'temppassword=true'
+    assert result[0] == 'test password was last changed on 2023-03-22T10:15:26.000Z'
