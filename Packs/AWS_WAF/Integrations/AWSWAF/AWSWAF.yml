@@ -19,7 +19,7 @@ configuration:
 - display: AWS Default Region
   name: defaultRegion
   required: true
-  type: 0
+  type: 15
   options:
     - us-east-1
     - us-east-2
