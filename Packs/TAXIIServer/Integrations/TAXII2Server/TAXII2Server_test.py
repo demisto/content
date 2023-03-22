@@ -591,3 +591,40 @@ def test_convert_sco_to_indicator_sdo_with_type_file(mocker):
     assert 'file:hashes.' in output.get('pattern', '')
     assert 'MD5' in output.get('pattern', '')
     assert 'pattern_type' in output.keys()
+
+
+def test_taxii21_objects_with_relationships(mocker, taxii2_server_v21):
+    """
+        Given
+            TAXII Server v2.1, collection_id, no_extension
+        When
+            Calling get objects api request for given collection
+        Then
+            Validate that right objects are returned.
+            Ensure that searchRelationships is called with the expected arguments.
+
+    """
+    from CommonServerPython import get_demisto_version
+
+    get_demisto_version._version = None  # clear cache between runs of the test
+    mocker.patch.object(demisto, 'demistoVersion', return_value={'version': '6.6.0'})
+
+    mocker.patch('TAXII2Server.SERVER', taxii2_server_v21)
+    mocker.patch('TAXII2Server.SERVER.has_extension', False)
+    mock_search_relationships_response = util_load_json('test_data/searchRelationships-response.json')
+    mocker.patch.object(demisto, 'searchRelationships', return_value=mock_search_relationships_response)
+
+    objects = util_load_json('test_data/objects21_ip_with_relationships.json')
+    mock_iocs = util_load_json('test_data/sort_ip_iocs.json')
+    mock_entity_b_iocs = util_load_json('test_data/entity_b_iocs.json')
+    mocker.patch.object(demisto, 'searchIndicators', side_effect=[mock_iocs,
+                                                                  mock_entity_b_iocs])
+
+    mocker.patch.object(demisto, 'params', return_value={'res_size': '4'})
+    with APP.test_client() as test_client:
+        response = test_client.get('/threatintel/collections/4c649e16-2bb7-50f5-8826-2a2d0a0b9631/objects/',
+                                   headers=HEADERS)
+        assert response.status_code == 200
+        assert response.content_type == 'application/taxii+json;version=2.1'
+        demisto.searchRelationships.assert_called_once_with({'entities': ["1.1.1.1", "8.8.8.8", "3.3.3.3", "1.2.3.4"]})
+        assert response.json == objects
