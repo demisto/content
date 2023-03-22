@@ -1098,6 +1098,10 @@ def main():
     # detect packs to upload
     pack_names_to_upload = get_packs_names(modified_packs_to_upload)
     extract_packs_artifacts(packs_artifacts_path, extract_destination_path)
+    logging.info(f'THE ALL PACKS THAT FOUND IN ARTIFACT - {extract_destination_path=}')
+    all_packs = os.listdir(extract_destination_path)
+    logging.info(f'{all_packs=} MORE-INFORMATION')
+    sys.exit(1)
     # list of all packs from `content_packs.zip` given from create artifacts
     all_content_packs = [Pack(pack_name, os.path.join(extract_destination_path, pack_name),
                               is_modified=pack_name in pack_names_to_upload)
