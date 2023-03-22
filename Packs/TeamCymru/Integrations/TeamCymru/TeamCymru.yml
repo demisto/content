@@ -14,7 +14,7 @@ configuration:
   section: Connect
   advanced: true
 - display: Proxy URL
-  additionalinfo: "Supports socks4/socks5/http connect proxies (e.g. socks5h://host:1080)."
+  additionalinfo: "Supports socks4/socks5/http connect proxies (e.g., socks5h://host:1080)."
   name: proxy_url
   required: false
   type: 0
