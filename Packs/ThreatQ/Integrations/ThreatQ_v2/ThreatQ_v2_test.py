@@ -1,7 +1,6 @@
 from unittest.mock import Mock
 import demistomock as demisto
 
-import json
 
 MOCK_URL = "http://123-fake-api.com"
 MOCK_API_URL = MOCK_URL + "/api"
@@ -441,14 +440,11 @@ def test_second_attempt_for_reputation_requests(mocker):
     ):
         if url.endswith('/token'):
             return MockResponse(status_code=200, data=MOCK_ACCESS_TOKEN)
-        data = json.loads(data)
-        if isinstance(data.get('criteria', {}).get('value', {}), dict):
-            return MockResponse(status_code=500)
         return MockResponse(status_code=200, data=MOCK_SEARCH_BY_EMAIL_RESPONSE)
 
     mocker.patch.object(requests, "request", side_effect=get_response)
 
-    results = tq_request('post', '', params={"criteria": {"value": {"+equals": "foo@demisto.com"}}},
+    results = tq_request('post', '', params={"criteria": {"value": "foo@demisto.com"}},
                          retrieve_entire_response=True)
     assert results.status_code == 200
     assert results.json()['data'][0]['value'] == 'foo@demisto.com'

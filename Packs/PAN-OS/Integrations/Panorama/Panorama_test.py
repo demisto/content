@@ -6215,6 +6215,28 @@ class TestFetchIncidentsHelperFunctions:
         mocker.patch('Panorama.parse_incident_entries', return_value=fetch_incidents_input.one_incident_result)
         assert get_parsed_incident_entries(incident_entries_dict, last_fetch_dict, last_id_dict) == expected_result
 
+    @patch("Panorama.GET_LOG_JOB_ID_MAX_RETRIES", 1)
+    @pytest.mark.parametrize('response, debug_msg, expected_result',
+                             fetch_incidents_input.get_query_entries_by_id_request_args)
+    def test_get_query_entries_by_id_request(self, mocker, response, debug_msg, expected_result):
+        """
+        Given:
+            - A valid Panorama job id.
+
+        When:
+            1. The Panorama job has already finished.
+            2. The Panorama job is still running (not finished).
+
+        Then:
+            1. Verify the command output is the returned response, and the debug message is called with 'FIN' status.
+            2. Retry to query the job status in 1 second, and return empty dict if max retries exceeded.
+         """
+        from Panorama import get_query_entries_by_id_request
+        mocker.patch('Panorama.http_request', return_value=response)
+        debug = mocker.patch('demistomock.debug')
+        assert get_query_entries_by_id_request('000') == expected_result
+        assert debug.called_with(debug_msg)
+
 
 class TestFetchIncidentsFlows:
     def test_first_fetch_with_no_incidents_flow(self, mocker):
