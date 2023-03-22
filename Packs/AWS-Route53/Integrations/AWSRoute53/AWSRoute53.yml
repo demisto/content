@@ -97,6 +97,7 @@ configuration:
     section: Connect
     type: 8
 description: Amazon Web Services Managed Cloud DNS Service.
+detaileddescription: Amazon Web Services Managed Cloud DNS Service.
 display: AWS - Route53
 fromversion: 5.0.0
 name: AWS - Route53
@@ -477,7 +478,7 @@ script:
           description: A complex type that describes change information about changes
             made to your hosted zone.
           type: string
-  dockerimage: demisto/boto3py3:1.0.0.50207
+  dockerimage: demisto/boto3py3:1.0.0.50645
   runonce: false
   script: ''
   subtype: python3
