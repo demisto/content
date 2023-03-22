@@ -259,11 +259,11 @@ def get_time_range(timestamp_from, timestamp_to):
             else:
                 t_to = float(timestamp_to)
         else:
-            t_from = date_to_timestamp(timestamp_from)/1000
+            t_from = date_to_timestamp(timestamp_from) / 1000
             if timestamp_to is None:
                 t_to = time.time()
             else:
-                t_to = date_to_timestamp(timestamp_to)/1000
+                t_to = date_to_timestamp(timestamp_to) / 1000
     elif isinstance(timestamp_from, datetime):
         t_from = timestamp_from.timestamp()
         if timestamp_to is None:
@@ -328,13 +328,11 @@ def fetch_incidents():
         table_name=user_alert_table, user_prefix=user_prefix)
     to_time = time.time()
     from_time = 0.0
-    dedupe_config = None
     alert_id = f'{user_prefix}alertId'
     last_events: List = []
     cur_events: List = []
     final_events: List = []
 
-    alerts_list: Dict = {}
     new_last_run: Dict = {}
 
     if int(FETCH_INCIDENTS_LIMIT) < 10 or int(FETCH_INCIDENTS_LIMIT) > 100:
@@ -370,7 +368,6 @@ def fetch_incidents():
                   .query(alert_query, start=float(from_time), stop=float(to_time),
                          output='dict', ts_format='timestamp'))
 
-    context = f'{user_prefix}context'
     extra_data = f'{user_prefix}extraData'
     event_date = 'eventdate'
 
@@ -486,7 +483,6 @@ def get_alerts_command(offset, items):
 
     query = alert_query + " offset " + str(offset) + " limit " + str(items)
     time_range = get_time_range(timestamp_from, timestamp_to)
-    print(query)
 
     if alert_filters:
         alert_filters = check_type(alert_filters, dict)
@@ -516,10 +512,8 @@ def get_alerts_command(offset, items):
     for res in results:
         if not isinstance(res[extra_data], dict):
             res[extra_data] = json.loads(res[extra_data])
-        print(res[extra_data])
 
         for ed in res[extra_data]:
-            print(ed)
             res[extra_data][ed] = urllib.parse.unquote_plus(
                 res[extra_data][ed])
 
@@ -559,8 +553,6 @@ def get_alerts_command(offset, items):
             'Devo.QueryLink': createContext(querylink)
         }
 
-    print(entry)
-    print(entry_linq)
     # raise Exception("on line 530")
     return [entry, entry_linq]
 
@@ -586,10 +578,10 @@ def multi_table_query_command(offset, items):
     for table in tables_to_query:
         fields = ds_read.get_types(
             f'from {table} select *', 'now', 'iso').keys()
-        clauses = [f"( isnotnull({field}) and str({field})->\"" +
-                   search_token + "\")" for field in fields]
-        sub_queries.append("from " + table + " where" + " or ".join(clauses) +
-                           " select *" + " offset " + str(offset) + " limit " + str(items))
+        clauses = [f"( isnotnull({field}) and str({field})->\""
+                   + search_token + "\")" for field in fields]
+        sub_queries.append("from " + table + " where" + " or ".join(clauses)
+                           + " select *" + " offset " + str(offset) + " limit " + str(items))
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
         for q in sub_queries:
