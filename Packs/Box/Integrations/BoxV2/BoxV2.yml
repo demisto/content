@@ -3,6 +3,12 @@ commonfields:
   id: Box v2
   version: -1
 configuration:
+- name: url
+  display: Server URL
+  required: true
+  defaultvalue: 'https://api.box.com'
+  type: 0
+  additionalinfo: "The url of the box api"
 - display: Trust any certificate (not secure)
   hidden: false
   name: insecure

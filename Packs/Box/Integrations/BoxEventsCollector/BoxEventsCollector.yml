@@ -3,6 +3,12 @@ commonfields:
   id: BoxEventsCollector
   version: -1
 configuration:
+- name: url
+  display: Server URL
+  required: true
+  defaultvalue: 'https://api.box.com'
+  type: 0
+  additionalinfo: "The url of the box api"
 - display: ""
   displaypassword: Credentials JSON
   name: credentials_json
