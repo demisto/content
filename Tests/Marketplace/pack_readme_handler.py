@@ -193,10 +193,9 @@ def extracting_the_readme_image_from_pack_and_upload_to_gcs(artifacts_path: str,
 
     logging.info(f'Image was copied successfully: {image_name}')
 
-    if len(img_path.parent) == 0:
+    if len(os.listdir(img_path.parent)) == 0:
         shutil.rmtree(img_path.parent)
         logging.info(f'The {img_path.parent} folder is removing successfully')
-    pass
 
 
 def copy_readme_images(production_bucket, build_bucket, images_data: dict, storage_base_path,
