@@ -136,7 +136,7 @@ class ExtraHopClient(BaseClient):
         else:
             self._headers = {
                 "Accept": "application/json",
-                "Authorization": "ExtraHop apikey={key}".format(key=api_key),
+                "Authorization": f"ExtraHop apikey={api_key}",
                 "ExtraHop-Integration": "XSOAR-6.5.0-ExtraHop-2.0.0"
             }
 
@@ -508,9 +508,7 @@ class InvalidValueError(Exception):
 
     def __init__(self, arg_name="", arg_value="", arg_list=[], message=""):
         if not message:
-            message = "{} is an invalid value for {}. Possible values are: {}".format(
-                arg_value, arg_name, arg_list
-            )
+            message = f"{arg_value} is an invalid value for {arg_name}. Possible values are: {arg_list}"
         super().__init__(message)
 
 
@@ -527,7 +525,7 @@ def modify_description(base_url, description):
     Returns:
         Updated description.
     """
-    new_link = "{}/extrahop/#".format(base_url)
+    new_link = f"{base_url}/extrahop/#"
 
     markdown_data = re.findall(EXTRAHOP_MARKDOWN_REGEX, description)
 
@@ -819,16 +817,14 @@ def validate_detections_list_arguments(body: Dict) -> None:
             if key not in VALID_FILTER_KEYS:
                 raise InvalidValueError("key", key, VALID_FILTER_KEYS)
 
-    if body.get("from") and body.get("until"):
-        if body["from"] > body["until"]:
-            raise DemistoException("Input for \"from\" should always be less than that of \"until\".")
+    if body.get("from") and body.get("until") and body["from"] > body["until"]:
+        raise DemistoException("Input for \"from\" should always be less than that of \"until\".")
 
     if isinstance(body.get("limit"), int):
         if body["limit"] <= 0:
             raise DemistoException("Invalid input for field limit. It should have numeric value greater than zero.")
 
-        if body["limit"] > 200:
-            body["limit"] = 200
+        body["limit"] = min(body["limit"], 200)
     else:
         body["limit"] = 200
 
@@ -889,7 +885,7 @@ def get_device_by_ip(client: ExtraHopClient, ip, active_from: str = None, active
     if devices:
         return devices[0]
     else:
-        raise DemistoException("Error the IP Address {} was not found in ExtraHop.".format(ip))
+        raise DemistoException(f"Error the IP Address {ip} was not found in ExtraHop.")
 
 
 def get_devices_by_ip_or_id(client: ExtraHopClient, devices_str, active_from: str = None, active_until: str = None,
@@ -919,7 +915,7 @@ def get_devices_by_ip_or_id(client: ExtraHopClient, devices_str, active_from: st
             try:
                 ip_address(item)
             except ValueError:
-                raise DemistoException("Error parsing IP Address {}".format(item))
+                raise DemistoException(f"Error parsing IP Address {item}")
             device = get_device_by_ip(client, item, active_from, active_until, limit)
 
             if id_only:
@@ -949,11 +945,10 @@ def get_protocols(client: ExtraHopClient, ip_or_id, query_from, query_until) -> 
         demisto.results({
             "Type": entryTypes["note"],
             "ContentsFormat": formats["markdown"],
-            "Contents": ("This Device is in Discovery Mode. "
-                         "Configure your [Analysis Priorities](https://docs.extrahop.com/current/analysis_priorities/) "
-                         "or add this device to the "
-                         "[Watchlist](https://docs.extrahop.com/current/analysis-priorities-faq/#what-is-the-watchlist) "
-                         "manually with: `!extrahop-edit-watchlist add={}`".format(api_id))
+            "Contents": (f"This Device is in Discovery Mode. Configure your [Analysis Priorities]"
+                         f"(https://docs.extrahop.com/current/analysis_priorities/) or add this device to the "
+                         f"[Watchlist](https://docs.extrahop.com/current/analysis-priorities-faq/"
+                         f"#what-is-the-watchlist) manually with: `!extrahop-edit-watchlist add={api_id}`")
         })
 
     body = {
@@ -1011,12 +1006,10 @@ def peers_get(client: ExtraHopClient, ip_or_id: Optional[Any], query_from: Optio
         demisto.results({
             "Type": entryTypes["note"],
             "ContentsFormat": formats["markdown"],
-            "Contents": ("This Device is in Discovery Mode. "
-                         "Configure your [Analysis Priorities](https://docs.extrahop.com/current/analysis_priorities/) "
-                         "or add this device to the "
-                         "[Watchlist](https://docs.extrahop.com/current/analysis-priorities-faq/#what-is-the-watchlist) "
-                         "manually with: `!extrahop-edit-watchlist add={}`".format(api_id))
-        })
+            "Contents": (f"This Device is in Discovery Mode. Configure your [Analysis Priorities]"
+                         f"(https://docs.extrahop.com/current/analysis_priorities/) or add this device to the "
+                         f"[Watchlist](https://docs.extrahop.com/current/analysis-priorities-faq/"
+                         f"#what-is-the-watchlist) manually with: `!extrahop-edit-watchlist add={api_id}`")})
 
     body = {
         "edge_annotations": ["protocols"],
@@ -1135,9 +1128,7 @@ def get_activity_map(client: ExtraHopClient, ip_or_id: Optional[str], time_inter
                                 "&role={role}"
                                 "&until={end}")
 
-    activity_map_link = activity_map_link_format.format(**activity_map_params)
-
-    return activity_map_link
+    return activity_map_link_format.format(**activity_map_params)
 
 
 def prepare_devices_get_output(response: List, appliance_uuids: List, server_url: str) -> str:
@@ -1162,9 +1153,9 @@ def prepare_devices_get_output(response: List, appliance_uuids: List, server_url
             "Vendor": device.get("vendor")
         }
 
-        device_url = "{}/extrahop/#/metrics/devices/{}.{}/overview/".format(
-            server_url, appliance_uuids[device.get("node_id")], device.get("discovery_id"))
-        hr["URL"] = "[{}]({})".format("View Device in ExtraHop", device_url)
+        device_url = f'{server_url}/extrahop/#/metrics/devices/{appliance_uuids[device.get("node_id")]}.' \
+                     f'{device.get("discovery_id")}/overview/'
+        hr["URL"] = f"[View Device in ExtraHop]({device_url})"
         device["url"] = device_url
 
         if "client_protocols" in device or "server_protocols" in device:
@@ -1196,25 +1187,24 @@ def prepare_protocol_get_output(device, appliance_uuids, server_url) -> str:
     """
     if not device.get("client_protocols") and not device.get("server_protocols"):
         return "No Protocol activity found"
-    else:
-        device_url = "{}/extrahop/#/metrics/devices/{}.{}/overview/".format(
-            server_url, appliance_uuids[device.get("node_id")], device.get("discovery_id"))
-        hr_outputs = {
-            "Display Name": device.get("display_name"),
-            "IP Address": device.get("ipaddr4", device.get("ipaddr6")),
-            "MAC Address": device.get("macaddr"),
-            "Protocols (Client)": ", ".join(device.get("client_protocols", [])),
-            "Protocols (Server)": ", ".join(device.get("server_protocols", [])),
-            "Role": device.get("role"),
-            "Vendor": device.get("vendor"),
-            "URL": "[{}]({})".format("View Device in ExtraHop", device_url)
-        }
-        device["url"] = device_url
+    device_url = f'{server_url}/extrahop/#/metrics/devices/{appliance_uuids[device.get("node_id")]}.' \
+                 f'{device.get("discovery_id")}/overview/'
+    hr_outputs = {
+        "Display Name": device.get("display_name"),
+        "IP Address": device.get("ipaddr4", device.get("ipaddr6")),
+        "MAC Address": device.get("macaddr"),
+        "Protocols (Client)": ", ".join(device.get("client_protocols", [])),
+        "Protocols (Server)": ", ".join(device.get("server_protocols", [])),
+        "Role": device.get("role"),
+        "Vendor": device.get("vendor"),
+        "URL": f"[View Device in ExtraHop]({device_url})"
+    }
+    device["url"] = device_url
 
-        headers = ["Display Name", "IP Address", "MAC Address",
-                   "Protocols (Client)", "Protocols (Server)", "Role", "Vendor", "URL"]
+    headers = ["Display Name", "IP Address", "MAC Address",
+               "Protocols (Client)", "Protocols (Server)", "Role", "Vendor", "URL"]
 
-        return tableToMarkdown("Device Activity Found:\n", hr_outputs, headers=headers, removeNull=True)
+    return tableToMarkdown("Device Activity Found:\n", hr_outputs, headers=headers, removeNull=True)
 
 
 def prepare_activity_map_link_output(activity_map_link: str) -> str:
@@ -1241,7 +1231,7 @@ def prepare_alert_rules_get_output(alerts: Dict) -> str:
     if len(alerts) == 0:
         return "No Alerts were found."
 
-    return tableToMarkdown("Found {} Alert(s)".format(len(alerts)), alerts, headerTransform=string_to_table_header,
+    return tableToMarkdown(f"Found {len(alerts)} Alert(s)", alerts, headerTransform=string_to_table_header,
                            removeNull=True)
 
 
@@ -1308,7 +1298,7 @@ def devices_tag(client: ExtraHopClient, tag: str, add: str, remove: str) -> None
             break
     else:
         if remove and not add:
-            raise DemistoException("The tag {} does not exist, nothing to remove.".format(tag))
+            raise DemistoException(f"The tag {tag} does not exist, nothing to remove.")
 
         tag_create_res = client.create_new_tag(data={"name": tag})
         tag_location = tag_create_res.headers.get('location')
@@ -1386,12 +1376,16 @@ def append_participant_device_data(client: ExtraHopClient, detections: CommandRe
     """
     for detection in detections.outputs:  # type: ignore
         detection["device_data"] = []
-        for participant in detection.get("participants"):
+        for participant in detection.get("participants", []):
             if participant.get("object_type") == "device":
+                if not participant.get("object_id"):
+                    continue
                 object_id = participant.get("object_id")
                 device_data = client.get_device_by_id(object_id, (404, 200, 204, 201))
 
             else:
+                if not participant.get("object_value"):
+                    continue
                 ip = participant.get("object_value")
                 device_data = client.device_search(name=None, ip=ip, mac=None, role=None, software=None, vendor=None,
                                                    tag=None, discover_time=None, vlan=None, activity=None, operator="=",
@@ -1430,7 +1424,7 @@ def fetch_extrahop_detections(client: ExtraHopClient, advanced_filter: Dict, las
                 if detection_id not in already_fetched:
                     detection.update(get_mirroring())
                     incident = {
-                        'name': str(detection["type"]),
+                        'name': str(detection.get("type", "")),
                         'occurred': datetime.utcfromtimestamp(detection['start_time'] / 1000).strftime(
                             DATE_FORMAT),
                         'rawJSON': json.dumps(detection)
@@ -1738,16 +1732,15 @@ def packets_search_command(client: ExtraHopClient, args: Dict[str, Any]) -> Unio
 
     if response.status_code == 204:
         return "Search matched no packets."
+    filename_header = response.headers.get("content-disposition")
+    f_attr = "filename="
+    if filename_header and f_attr in filename_header:
+        quoted_filename = filename_header[filename_header.index(f_attr) + len(f_attr):]
+        filename = quoted_filename.replace('"', "")
     else:
-        filename_header = response.headers.get("content-disposition")
-        f_attr = "filename="
-        if filename_header and f_attr in filename_header:
-            quoted_filename = filename_header[filename_header.index(f_attr) + len(f_attr):]
-            filename = quoted_filename.replace('"', "")
-        else:
-            raise DemistoException("Error filename could not be found in response header.")
+        raise DemistoException("Error filename could not be found in response header.")
 
-        return fileResult(filename, response.content)
+    return fileResult(filename, response.content)
 
 
 def ticket_track_command(client: ExtraHopClient, args: Dict[str, Any]) -> CommandResults:
@@ -1770,7 +1763,7 @@ def ticket_track_command(client: ExtraHopClient, args: Dict[str, Any]) -> Comman
     detection_status = {
         "ticket_id": incident_id,
         "status": TICKET_STATUS_MAP.get(incident_status),
-        "assignee": incident_owner if incident_owner else None
+        "assignee": incident_owner or None
     }
 
     # Only set Resolution if the incident is closed
@@ -1782,7 +1775,7 @@ def ticket_track_command(client: ExtraHopClient, args: Dict[str, Any]) -> Comman
 
     client.patch_detections(detection_id, detection_status)
 
-    readable_output = "Successfully linked detection({}) with incident({})".format(detection_id, incident_id)
+    readable_output = f"Successfully linked detection({detection_id}) with incident({incident_id})"
     output = {
         "TicketId": incident_id
     }  # type: dict
@@ -1882,13 +1875,11 @@ def create_or_edit_alert_rule_command(client: ExtraHopClient, args: Dict[str, An
             data["stat_name"] = stat_name
 
     elif alert_type == "detection":
-        object_type = args.get("object_type")
-        if object_type:
+        if object_type := args.get("object_type"):
             if object_type not in VALID_ALERT_RULE_OBJECT_TYPES:
                 raise InvalidValueError("object_type", object_type, VALID_ALERT_RULE_OBJECT_TYPES)
             data["object_type"] = object_type
-        protocols = argToList(args.get("protocols"))
-        if protocols:
+        if protocols := argToList(args.get("protocols")):
             data["protocols"] = protocols
 
     if alert_id:
@@ -1920,9 +1911,9 @@ def watchlist_edit_command(client: ExtraHopClient, args: Dict[str, Any]) -> Comm
 
     if add:
         body["assign"] = get_devices_by_ip_or_id(client, add, id_only=True)
-        hr_outputs += "Successfully added new devices({}) in the watchlist \n".format(add)
+        hr_outputs += f"Successfully added new devices({add}) in the watchlist \n"
     if remove:
-        hr_outputs += "Successfully removed devices({}) from the watchlist".format(remove)
+        hr_outputs += f"Successfully removed devices({remove}) from the watchlist"
         body['unassign'] = get_devices_by_ip_or_id(client, remove, id_only=True)
 
     client.edit_watchlist(body)
@@ -1932,8 +1923,7 @@ def watchlist_edit_command(client: ExtraHopClient, args: Dict[str, Any]) -> Comm
     )
 
 
-def metrics_list_command(client: ExtraHopClient, args: Dict = {},
-                         advanced_filter: str = None) -> CommandResults:
+def metrics_list_command(client: ExtraHopClient, args=None, advanced_filter: str = None) -> CommandResults:
     """Retrieve metric information collected about every object from the Reveal(X).
 
     Args:
@@ -1946,6 +1936,8 @@ def metrics_list_command(client: ExtraHopClient, args: Dict = {},
     """
 
     # This snipper will work in case of the fetch incidents for metrics, when user provides advance filter.
+    if args is None:
+        args = {}
     if advanced_filter:
         try:
             body = json.loads(advanced_filter)  # type: ignore
@@ -2070,7 +2062,8 @@ def detections_list_command(client: ExtraHopClient, args: Dict[str, Any], on_clo
     if on_cloud:
         base_url = remove_api_from_base_url(base_url)
     for detection in detections:
-        detection["description"] = modify_description(base_url, detection.get("description"))
+        if detection.get("description"):
+            detection["description"] = modify_description(base_url, detection.get("description"))
     readable_output = prepare_list_detections_output(detections)
 
     return CommandResults(
@@ -2107,7 +2100,6 @@ def get_modified_remote_data_command(client, args: Dict[str, Any],
     Returns:
         GetModifiedRemoteDataResponse: List of incidents IDs which are modified since the last update.
     """
-    body = {}
     # Retrieve the arguments passed with the command.
     command_args = GetModifiedRemoteDataArgs(args)
 
@@ -2117,13 +2109,14 @@ def get_modified_remote_data_command(client, args: Dict[str, Any],
     demisto.debug(f'Last update date of get-modified-remote-data command is {command_last_run_date}.')
 
     # Convert the datetime object to epoch as the API requires the time in epoch format.
-    body["mod_time"] = date_to_timestamp(command_last_run_date)
-
-    # End time for the API call will be current time.
-    body["until"] = 0
-    body["offset"] = 0
-    body["sort"] = [{"direction": "asc", "field": "mod_time"}]
-    body["limit"] = MAX_FETCH
+    body = {
+        "mod_time": date_to_timestamp(command_last_run_date),
+        # End time for the API call will be current time.
+        "until": 0,
+        "offset": 0,
+        "sort": [{"direction": "asc", "field": "mod_time"}],
+        "limit": MAX_FETCH,
+    }
 
     advanced_filter = params.get("advanced_filter")
     try:
@@ -2253,7 +2246,10 @@ def query_records_command(client: ExtraHopClient, args: Dict[str, Any]) -> Comma
     data: Dict = {}
     if specific_types:
         try:
-            data["types"] = ['~' + rec_type.strip() for rec_type in specific_types.split(",")]
+            data["types"] = [
+                f'~{rec_type.strip()}'
+                for rec_type in specific_types.split(",")
+            ]
         except Exception:
             raise DemistoException('Error parsing the types argument, expected a comma separated list of types.')
     if query_from:
@@ -2305,11 +2301,10 @@ def query_records_command(client: ExtraHopClient, args: Dict[str, Any]) -> Comma
 
 def main():
     """Parse params and runs command functions."""
+    command = demisto.command()
+    params = demisto.params()
+    args = demisto.args()
     try:
-        command = demisto.command()
-        params = demisto.params()
-        args = demisto.args()
-
         on_cloud = params.get("on_cloud", False)
         api_key = params.get("apikey")
         base_url = params.get("url").strip("/")
@@ -2358,27 +2353,22 @@ def main():
         elif command == 'extrahop-devices-tag':
             return_results(devices_tag_command(client, args))
         elif command in ("extrahop-alert-rule-create", "extrahop-alert-rule-edit"):
-            remove_nulls_from_dictionary(trim_spaces_from_args(args))
             return_results(create_or_edit_alert_rule_command(client, args))
         elif command == "extrahop-watchlist-edit":
             return_results(watchlist_edit_command(client, args))
         elif command == "extrahop-metrics-list":
             return_results(metrics_list_command(client, args))
         elif command == "extrahop-detections-list":
-            remove_nulls_from_dictionary(trim_spaces_from_args(args))
             return_results(detections_list_command(client, args, on_cloud))
         elif command == "get-remote-data":
-            remove_nulls_from_dictionary(trim_spaces_from_args(args))
             return_results(get_remote_data_command(client, args))
         elif command == "get-modified-remote-data":
-            remove_nulls_from_dictionary(trim_spaces_from_args(args))
             return_results(get_modified_remote_data_command(client, args, params))
 
         # Deprecated commands.
         elif demisto.command() in ('extrahop-get-alert-rules', 'extrahop-get-alerts'):
             return_results(alerts_rules_get_command(client))
         elif demisto.command() == 'extrahop-query-records':  # Removed this command.
-            remove_nulls_from_dictionary(trim_spaces_from_args(args))
             return_results(query_records_command(client, args))
         elif demisto.command() == 'extrahop-device-search':
             return_results(devices_search_command(client, args, on_cloud))
@@ -2387,10 +2377,8 @@ def main():
         elif demisto.command() == 'extrahop-get-watchlist':
             return_results(watchlist_get_command(client, on_cloud))
         elif demisto.command() in ('extrahop-create-alert-rule', 'extrahop-create-alert'):
-            remove_nulls_from_dictionary(trim_spaces_from_args(args))
             return_results(create_or_edit_alert_rule_command(client, args))
         elif demisto.command() in ('extrahop-edit-alert-rule', 'extrahop-edit-alert'):
-            remove_nulls_from_dictionary(trim_spaces_from_args(args))
             return_results(create_or_edit_alert_rule_command(client, args))
         elif demisto.command() == 'extrahop-track-ticket':
             return_results(ticket_track_command(client, args))

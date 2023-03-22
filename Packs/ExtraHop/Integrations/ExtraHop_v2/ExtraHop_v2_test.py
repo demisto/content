@@ -2435,6 +2435,48 @@ def test_fetch_detection_success_with_last_run(requests_mock):
     assert actual_incidents[0]["rawJSON"] == json.dumps(incidents[0]["rawJSON"])
 
 
+def test_fetch_detection_participants_is_empty(requests_mock):
+    """Test case scenario for execution of fetch_detections when participant is empty list.
+
+    Given:
+        - command arguments for fetch_incident
+    When:
+        - Calling `fetch_incidents` function
+    Then:
+        - Returns a valid output
+    """
+    incidents = load_mock_response("mock_incidents_no_participants.json")
+
+    requests_mock.get(
+        f"{BASE_URL}/api/v1/extrahop/version", json={"version": "9.1.2.64150"}
+    )
+
+    mock_response = load_mock_response("fetch_detections_empty_participants.json")
+    requests_mock.post(f"{BASE_URL}/api/v1/detections/search", json=mock_response)
+
+    mock_time = datetime.datetime.now()
+    mock_time = int(
+        (mock_time.timestamp() + 10) * 1000
+    )  # adding 10 seconds to time and then convert to milliseconds
+    client = init_mock_client(requests_mock, on_cloud=False)
+    last_run = {
+        "detection_start_time": 1676896891452,
+        "offset": 0,
+        "version_recheck_time": mock_time,
+    }
+    actual_incidents, next_run = ExtraHop_v2.fetch_incidents(client, {}, last_run, False)
+
+    assert next_run == {
+        "detection_start_time": 1673518450001,
+        "offset": 0,
+        "version_recheck_time": mock_time,
+        'already_fetched': [997222]
+    }
+    assert actual_incidents[0]["name"] == incidents[0]["name"]
+    assert actual_incidents[0]["occurred"] == incidents[0]["occurred"]
+    assert actual_incidents[0]["rawJSON"] == json.dumps(incidents[0]["rawJSON"])
+
+
 @mock.patch("ExtraHop_v2.MAX_FETCH", 1)
 def test_fetch_detections_success_when_detections_equal_to_max_fetch(requests_mock):
     """Test case scenario for execution of fetch_detections when no of records are equal or greater than max_fetch.

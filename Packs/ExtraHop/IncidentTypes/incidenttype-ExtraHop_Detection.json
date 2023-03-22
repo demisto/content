@@ -23,8 +23,59 @@
     "layout": "ExtraHop Detection",
     "detached": false,
     "extractSettings": {
-        "mode": "All",
-        "fieldCliNameToExtractSettings": {}
-    },
+			"mode": "Specific",
+			"fieldCliNameToExtractSettings": {
+				"assigneduser": {
+					"extractAsIsIndicatorTypeId": "",
+					"isExtractingAllIndicatorTypes": true,
+					"extractIndicatorTypesIDs": []
+				},
+				"categories": {
+					"extractAsIsIndicatorTypeId": "",
+					"isExtractingAllIndicatorTypes": true,
+					"extractIndicatorTypesIDs": []
+				},
+				"extrahoprevealxdetectiondevices": {
+					"extractAsIsIndicatorTypeId": "",
+					"isExtractingAllIndicatorTypes": true,
+					"extractIndicatorTypesIDs": []
+				},
+				"extrahoprevealxdetectionparticipants": {
+					"extractAsIsIndicatorTypeId": "",
+					"isExtractingAllIndicatorTypes": true,
+					"extractIndicatorTypesIDs": []
+				},
+				"extrahoprevealxdetectionstatus": {
+					"extractAsIsIndicatorTypeId": "",
+					"isExtractingAllIndicatorTypes": true,
+					"extractIndicatorTypesIDs": []
+				},
+				"extrahoprevealxdetectiontype": {
+					"extractAsIsIndicatorTypeId": "",
+					"isExtractingAllIndicatorTypes": true,
+					"extractIndicatorTypesIDs": []
+				},
+				"extrahoprevealxmitretactics": {
+					"extractAsIsIndicatorTypeId": "",
+					"isExtractingAllIndicatorTypes": true,
+					"extractIndicatorTypesIDs": []
+				},
+				"extrahoprevealxmitretechniques": {
+					"extractAsIsIndicatorTypeId": "",
+					"isExtractingAllIndicatorTypes": true,
+					"extractIndicatorTypesIDs": []
+				},
+				"extrahoprevealxproperties": {
+					"extractAsIsIndicatorTypeId": "",
+					"isExtractingAllIndicatorTypes": true,
+					"extractIndicatorTypesIDs": []
+				},
+				"extrahoprevealxresolution": {
+					"extractAsIsIndicatorTypeId": "",
+					"isExtractingAllIndicatorTypes": true,
+					"extractIndicatorTypesIDs": []
+				}
+			}
+		},
     "fromVersion": "5.0.0"
 }
