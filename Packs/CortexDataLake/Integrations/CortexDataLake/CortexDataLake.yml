@@ -130,11 +130,11 @@ configuration:
   name: insecure
   required: false
   type: 8
-description: Palo Alto Networks Cortex Data Lake provides cloud-based, centralized
+description: Palo Alto Networks Cortex Data Lake XSOAR Connector provides cloud-based, centralized
   log storage and aggregation for your organization on premise, virtual (private cloud
   and public cloud) firewalls, for Prisma Access, and for cloud-delivered services
   such as Cortex XDR.
-display: Cortex Data Lake
+display: Cortex Data Lake XSOAR Connector
 name: Cortex Data Lake
 script:
   commands:
@@ -401,7 +401,7 @@ script:
       description: Severity associated with the event.
       type: String
     - contextPath: CDL.Logging.Threat.LogTime
-      description: Time the log was received in Cortex Data Lake.
+      description: Time the log was received in Cortex Data Lake XSOAR Connector.
       type: String
     - contextPath: CDL.Logging.Threat.LogSourceID
       description: ID that uniquely identifies the source of the log. If the source
@@ -487,7 +487,7 @@ script:
         (NAT) for the logged traffic. If it is, this value is 1, otherwise it is 0.
       type: Boolean
     - contextPath: CDL.Logging.Traffic.LogTime
-      description: Time the log was received in Cortex Data Lake.
+      description: Time the log was received in Cortex Data Lake XSOAR Connector.
       type: date
     - contextPath: CDL.Logging.Traffic.SubcategoryOfApp
       description: Identifies the application's subcategory. The subcategory is related
@@ -748,7 +748,7 @@ script:
       description: Severity associated with the event.
       type: String
     - contextPath: CDL.Logging.Threat.LogTime
-      description: Time the log was received in Cortex Data Lake.
+      description: Time the log was received in Cortex Data Lake XSOAR Connector.
       type: String
     - contextPath: CDL.Logging.Threat.LogSourceID
       description: ID that uniquely identifies the source of the log. If the source
@@ -1057,7 +1057,7 @@ script:
         (NAT) for the logged traffic. If it is, this value is 1, otherwise it is 0.
       type: Boolean
     - contextPath: CDL.Logging.Traffic.LogTime
-      description: Time the log was received in Cortex Data Lake.
+      description: Time the log was received in Cortex Data Lake XSOAR Connector.
       type: date
     - contextPath: CDL.Logging.Traffic.SubcategoryOfApp
       description: Identifies the application's subcategory. The subcategory is related
@@ -1571,7 +1571,7 @@ script:
       description: Severity associated with the event.
       type: String
     - contextPath: CDL.Logging.Threat.LogTime
-      description: Time the log was received in Cortex Data Lake.
+      description: Time the log was received in Cortex Data Lake XSOAR Connector.
       type: String
     - contextPath: CDL.Logging.Threat.LogSourceID
       description: ID that uniquely identifies the source of the log. If the source
@@ -1936,7 +1936,7 @@ script:
       description: Identifies the log subtype.
       type: String
     - contextPath: CDL.Logging.URL.LogTime
-      description: The time the log was received in Cortex Data Lake.
+      description: The time the log was received in Cortex Data Lake XSOAR Connector.
       type: String
     - contextPath: CDL.Logging.URL.LogSourceName
       description: The name of the source of the log.
@@ -2470,10 +2470,10 @@ script:
       type: Number
     - contextPath: CDL.Logging.File.IsDupLog
       description: Indicates whether this log data is available in multiple locations,
-        such as from Cortex Data Lake as well as from an on-premise log collector.
+        such as from Cortex Data Lake XSOAR Connector as well as from an on-premise log collector.
       type: Boolean
     - contextPath: CDL.Logging.File.LogTime
-      description: Time the log was received in Cortex Data Lake.
+      description: Time the log was received in Cortex Data Lake XSOAR Connector.
       type: Date
     - contextPath: CDL.Logging.File.SessionID
       description: Identifies the firewall's internal identifier for a specific network
@@ -2550,7 +2550,7 @@ script:
       description: IP protocol associated with the session.
       type: String
     - contextPath: CDL.Logging.File.CustomerID
-      description: The ID that uniquely identifies the Cortex Data Lake instance which
+      description: The ID that uniquely identifies the Cortex Data Lake XSOAR Connector instance which
         received this log record.
       type: Number
     - contextPath: CDL.Logging.File.Subtype
@@ -2608,7 +2608,7 @@ script:
       call-limit, the command will reset the limit cache.
     execution: false
     name: cdl-reset-authentication-timeout
-  dockerimage: demisto/python_pancloud_v2:1.0.0.23674
+  dockerimage: demisto/python_pancloud_v2:1.0.0.49648
   feed: false
   isfetch: true
   longRunning: false
