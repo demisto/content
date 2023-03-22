@@ -9,7 +9,7 @@ configuration:
   required: false
   type: 0
   section: Connect
-- display: ID 
+- display: ID
   required: true
   additionalinfo: received from the admin consent - see Detailed Instructions
   type: 4
@@ -44,12 +44,6 @@ configuration:
   type: 4
   required: true
   section: Connect
-- defaultvalue: 3 days
-  display: First fetch time
-  name: first_fetch
-  required: false
-  type: 0
-  section: Collect
 - display: Trust any certificate (not secure)
   name: unsecure
   required: false
@@ -60,7 +54,7 @@ configuration:
   required: false
   type: 8
   section: Collect
-description: XSIAM collector for Microsoft Defender for Cloud alerts. 
+description: XSIAM collector for Microsoft Defender for Cloud alerts.
 display: Microsoft Defender for Cloud Event Collector
 name: Microsoft Defender for Cloud Event Collector
 script:

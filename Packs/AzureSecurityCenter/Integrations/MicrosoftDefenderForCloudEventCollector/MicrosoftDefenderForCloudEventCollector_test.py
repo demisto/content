@@ -3,6 +3,7 @@ from MicrosoftDefenderForCloudEventCollector import *
 from datetime import datetime
 import json
 import pytest
+from unittest.mock import patch, MagicMock
 
 ALERTS_API_RAW = 'test_data/ListAlerts.json'
 ALERTS_TO_SORT = 'test_data/AlertsToSort.json'
@@ -161,3 +162,27 @@ def test_filter_out_previosly_digested_events_no_last_run():
               {'id': '4', 'properties': {'startTimeUtc': '2023-01-01T15:35:50.6288854Z'}},
               {'id': '5', 'properties': {'startTimeUtc': '2023-01-01T15:33:50.6281114Z'}}]
     filter_out_previosly_digested_events(events, {}) == events
+
+
+@pytest.mark.parametrize('events, filtered_events, res', [([1, 2, 3], [1, 2], True),
+                                                          ([], [], False),
+                                                          ([1, 2, 3], [1, 2, 3, 4], False)])
+def test_check_events_were_filtered_out(events, filtered_events, res):
+    assert check_events_were_filtered_out(events, filtered_events) == res
+
+
+@pytest.mark.parametrize('http_response, get_events_response', [({'value': []}, []),
+                                                                ({'value': [{'id': '1', 'properties':
+                                                                             {'startTimeUtc': '2023-01-01T15:38:50.6222254Z'}},
+                                                                            {'id': '2', 'properties':
+                                                                             {'startTimeUtc': '2023-01-01T15:37:50.62866664Z'}}]},
+                                                                 [])
+                                                                ])
+def test_get_event_list(http_response, get_events_response):
+    class MockHttpRequest:
+        def http_request(self, **kwargs):
+            return http_response
+
+    client.ms_client = MockHttpRequest()
+    last_run = {'last_run': '2023-01-01T15:40:50.6222254Z', 'dup_digested_time_id': [1, 2, 3]}
+    assert client.get_event_list(last_run) == get_events_response

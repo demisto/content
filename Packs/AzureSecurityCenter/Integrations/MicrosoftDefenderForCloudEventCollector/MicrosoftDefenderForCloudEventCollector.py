@@ -31,7 +31,7 @@ class MsClient:
         self.server = server
         self.subscription_id = subscription_id
 
-    def get_event_list_test(self):
+    def get_event_list_basic(self):
         cmd_url = "/providers/Microsoft.Security/alerts"
         params = {'api-version': API_VERSION}
         return self.ms_client.http_request(method="GET", url_suffix=cmd_url, params=params)
@@ -84,7 +84,7 @@ def test_module(client: MsClient, last_run: str):
        Performs basic GET request to check if the API is reachable and authentication is successful.
        Returns ok if successful.
        """
-    evetns_res = client.get_event_list_test()
+    evetns_res = client.get_event_list_basic()
     if 'value' in evetns_res:
         demisto.results('ok')
 
@@ -158,11 +158,8 @@ def fetch_events(client: MsClient, last_run: str) -> list:
     Args:
         client (MsClient): The microsoft client.
         last_run (str): The last run.
-        first_fetch_time(int): The first_fetch_time If last_run is None (first time we are fetching)
-        alert_status (str): status of the alert to search for. Options are: 'ACTIVE' or 'CLOSED'.
     Returns:
-        next_run: A time for the next run.
-        list: List of events that will be created in XSIAM.
+        events: The list of fetched events.
     """
     events = client.get_event_list(last_run)
     demisto.info(f'Fetched {len(events)} events.')
