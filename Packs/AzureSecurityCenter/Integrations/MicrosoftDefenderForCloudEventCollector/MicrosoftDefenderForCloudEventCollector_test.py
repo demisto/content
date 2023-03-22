@@ -21,7 +21,17 @@ def read_json_util(path: str):
     return json_file
 
 
-def test_find_next_run_with_no_new_events():
+@pytest.mark.parametrize('events, last_run, expected_res',
+                         [([], {}, {}),
+                          ([], {'last_run': '2023-01-01T15:36:50.6288854Z', 'dup_digested_time_id': [1, 2, 3]},
+                           {'last_run': '2023-01-01T15:36:50.6288854Z', 'dup_digested_time_id': [1, 2, 3]}),
+                          ([{'id': 6, 'properties': {'startTimeUtc': '2023-01-01T15:38:50.6222254Z'}}],
+                           {},
+                           {'last_run': '2023-01-01T15:38:50.6222254Z', 'dup_digested_time_id': [6]}),
+                          ([{'id': 6, 'properties': {'startTimeUtc': '2023-01-01T15:38:50.6222254Z'}}],
+                           {'last_run': '2023-01-01T15:34:50.6288854Z', 'dup_digested_time_id': []},
+                           {'last_run': '2023-01-01T15:38:50.6222254Z', 'dup_digested_time_id': [6]})])
+def test_find_next_run_with_no_new_events(events, last_run, expected_res):
     """
         Given:
         - The events list from the api call and the last run
@@ -32,9 +42,8 @@ def test_find_next_run_with_no_new_events():
         Then:
         - Check that the last_run reamains as before
     """
-    events = []
-    last_run = {'last_run': '2023-01-01T15:36:50.6288854Z', 'dup_digested_time_id': [1, 2, 3]}
-    assert find_next_run(events, last_run=last_run) == last_run
+    next_time = find_next_run(events, last_run=last_run)
+    assert next_time == expected_res
 
 
 def test_find_next_run_with_new_events():
@@ -166,6 +175,10 @@ def test_filter_out_previosly_digested_events_no_last_run():
               {'id': '4', 'properties': {'startTimeUtc': '2023-01-01T15:35:50.6288854Z'}},
               {'id': '5', 'properties': {'startTimeUtc': '2023-01-01T15:33:50.6281114Z'}}]
     filter_out_previosly_digested_events(events, {}) == events
+
+
+def test_filter_out_previosly_digested_events_no_events():
+    filter_out_previosly_digested_events([], {'fake': 'fake'}) == {'fake': 'fake'}
 
 
 @pytest.mark.parametrize('events, filtered_events, res', [([1, 2, 3], [1, 2], True),

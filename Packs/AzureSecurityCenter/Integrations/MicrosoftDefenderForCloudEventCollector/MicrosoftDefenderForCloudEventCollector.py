@@ -144,10 +144,10 @@ def find_next_run(events_list: list, last_run: dict) -> dict:
     Returns:
         The next run for the next fetch-event command.
     """
-    if not events_list or not last_run:
+    if not events_list:
         return last_run
 
-    next_run = events_list[0].get('properties').get('startTimeUtc')
+    next_run = events_list[0].get('properties', {}).get('startTimeUtc', '')
     id_same_next_run_list = [event.get('id') for event in events_list if event.get('properties', {}).get(
         'startTimeUtc') == next_run]
     demisto.info(f'Setting next run time to {next_run}, events with same time are {id_same_next_run_list}.')
