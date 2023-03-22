@@ -182,20 +182,16 @@ def extracting_the_readme_image_from_pack_and_upload_to_gcs(artifacts_path: str,
                                                             readme_original_url: str,
                                                             pack_name: str,
                                                             image_name: str,
-                                                            storage_bucket):
+                                                            storage_bucket) -> str:
     img_path = Path(os.path.join(artifacts_path, pack_name, readme_original_url))
 
     readme_image = storage_bucket.blob(gcs_storage_path)
     with open(img_path, 'rb') as image_file:
         readme_image.upload_from_file(image_file)
 
-    os.remove(img_path)
-
     logging.info(f'Image was copied successfully: {image_name}')
 
-    if len(os.listdir(img_path.parent)) == 0:
-        shutil.rmtree(img_path.parent)
-        logging.info(f'The {img_path.parent} folder is removing successfully')
+    return img_path.parent
 
 
 def copy_readme_images(production_bucket, build_bucket, images_data: dict, storage_base_path,

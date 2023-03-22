@@ -197,8 +197,4 @@ This automation attempts to find a matching remediation path rule based on crite
 #### SnmpDetection
 
 This automation checks if SNMP is enabled or not and gets the running version on the remote server.
-<<<<<<< HEAD
 ![SnmpDetection](binary_files/GenerateASMReport.png)
-=======
-![SnmpDetection](https://raw.githubusercontent.com/demisto/content/master/Packs/CortexAttackSurfaceManagement/doc_files/GenerateASMReport.png)
->>>>>>> origin
