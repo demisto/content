@@ -71,7 +71,7 @@ def filter_out_previosly_digested_events(events: list, last_run: dict) -> list:
     if not last_run:
         return events
     events = [event for event in events if event.get('properties', {}).get(
-        'startTimeUtc') >= last_run.get('last_run') and event not in last_run.get('dup_digested_time_id', [])]
+        'startTimeUtc') >= last_run.get('last_run') and event.get('id', '') not in last_run.get('dup_digested_time_id', [])]
     return events
 
 
@@ -79,7 +79,7 @@ def check_events_were_filtered_out(events, filtered_events):
     return len(events) > len(filtered_events)
 
 
-def test_module(client: MsClient, last_run: str):
+def test_module(client: MsClient):
     """
        Performs basic GET request to check if the API is reachable and authentication is successful.
        Returns ok if successful.
@@ -143,7 +143,7 @@ def find_next_run(events_list: list, last_run: dict) -> dict:
     Returns:
         The next run for the next fetch-event command.
     """
-    if not events_list:
+    if not events_list or not last_run:
         return last_run
 
     next_run = events_list[0].get('properties').get('startTimeUtc')
@@ -215,7 +215,7 @@ def main() -> None:
                           server=server, verify=use_ssl, self_deployed=False, subscription_id=subscription_id,
                           ok_codes=ok_codes, certificate_thumbprint=certificate_thumbprint, private_key=private_key)
 
-        last_run = demisto.getLastRun().get('last_run', '')
+        last_run = demisto.getLastRun()
 
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.

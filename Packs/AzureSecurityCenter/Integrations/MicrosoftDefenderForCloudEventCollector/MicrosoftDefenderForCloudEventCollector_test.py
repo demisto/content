@@ -121,7 +121,10 @@ def test_add_time_key_to_events(mocker):
                                    {'id': '4', 'properties': {'startTimeUtc': '2023-01-01T15:35:50.6288854Z'}}
                                    ]
                               ),
-                             ([4, 5, 6, 7], [])
+                             ([4, 5, 6, 7], [{'id': '1', 'properties': {'startTimeUtc': '2023-01-01T15:38:50.6222254Z'}},
+                                             {'id': '2', 'properties': {'startTimeUtc': '2023-01-01T15:37:50.62866664Z'}},
+                                             {'id': '3', 'properties': {'startTimeUtc': '2023-01-01T15:35:50.6288854Z'}},
+                                             {'id': '4', 'properties': {'startTimeUtc': '2023-01-01T15:35:50.6288854Z'}}])
                          ]
                          )
 def test_filter_out_previosly_digested_events(dup_digested_time_id, list_after_filter):
@@ -141,8 +144,9 @@ def test_filter_out_previosly_digested_events(dup_digested_time_id, list_after_f
               {'id': '3', 'properties': {'startTimeUtc': '2023-01-01T15:35:50.6288854Z'}},
               {'id': '4', 'properties': {'startTimeUtc': '2023-01-01T15:35:50.6288854Z'}},
               {'id': '5', 'properties': {'startTimeUtc': '2023-01-01T15:31:50.6281114Z'}}]
-    filter_out_previosly_digested_events(
-        events, {'last_run': '2023-01-01T15:35:50.6288854Z', 'dup_digested_time_id': dup_digested_time_id}) == list_after_filter
+    filtered_events = filter_out_previosly_digested_events(
+        events, {'last_run': '2023-01-01T15:35:50.6288854Z', 'dup_digested_time_id': dup_digested_time_id})
+    assert filtered_events == list_after_filter
 
 
 def test_filter_out_previosly_digested_events_no_last_run():
