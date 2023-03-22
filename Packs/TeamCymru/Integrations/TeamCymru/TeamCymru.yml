@@ -154,7 +154,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/cymruwhois:1.0.0.48655
+  dockerimage: demisto/cymruwhois:1.0.0.50395
 fromversion: 6.5.0
 tests:
 - TeamCymruTest
