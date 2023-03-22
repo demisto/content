@@ -1104,7 +1104,10 @@ def main():
         if os.path.exists(f'{extract_destination_path}/{pack}'):
             if os.path.exists(f'{extract_destination_path}/{pack}/binary_files'):
                 imgs = os.listdir(f'{extract_destination_path}/{pack}/binary_files')
-                logging.info(f'images in pack: {imgs}')
+                logging.info(f'images in {pack}: {imgs}')
+                with open(f'{extract_destination_path}/{pack}/binary_files/{imgs[0]}', 'rb') as f:
+                    logging.info(f'{extract_destination_path}/{pack}/binary_files/{imgs[0]} is exists')
+                    pass
             else:
                 logging.info(f'{extract_destination_path}/{pack}/binary_files does not exists in artifact - MORE-INFORMATION')
         else:
