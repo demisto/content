@@ -61,6 +61,9 @@ script:
     - name: computer
       required: true
       description: Computer name to logout.
+    - name: tenant_name
+      required: false
+      description: The tenant name.
     outputs:
     - contextPath: PrismaAccess.LogoutUser
       description: LogoutUser command results
@@ -92,7 +95,7 @@ script:
       description: Active Users on Prisma Access
     description: Query currently active users.
     deprecated: true
-  dockerimage: demisto/netmiko:1.0.0.47037
+  dockerimage: demisto/netmiko:1.0.0.49353
   runonce: false
   subtype: python3
 fromversion: 5.0.0
