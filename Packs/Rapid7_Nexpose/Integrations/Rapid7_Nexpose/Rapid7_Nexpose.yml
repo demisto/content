@@ -12,11 +12,11 @@ configuration:
   required: true
   type: 9
 - display: 2FA Token
-  displaypassword: 2FA Token
-  hiddenusername: true
   name: token
   required: false
   type: 9
+  hiddenusername: true
+  displaypassword: 2FA Token
 - display: Trust any certificate (not secure)
   name: unsecure
   required: false
@@ -25,16 +25,6 @@ configuration:
   name: proxy
   required: false
   type: 8
-contentitemexportablefields:
-  contentitemfields:
-    definitionid: ''
-    fromServerVersion: ''
-    itemVersion: ''
-    packID: 87d86b46-f151-4db6-8019-ed89bec80eb2
-    packName: Rapid7 Nexpose_Modified Contribution Pack
-    propagationLabels:
-    - all
-    toServerVersion: ''
 description: Vulnerability management solution to help reduce threat exposure.
 display: Rapid7 InsightVM
 name: Rapid7 Nexpose
@@ -236,9 +226,9 @@ script:
       name: page_size
     - description: A specific page to retrieve when pagination is used. Page indexing starts at 0.
       name: page
-    - defaultValue: '10'
-      description: A number of records to limit the response to.
+    - description: A number of records to limit the response to.
       name: limit
+      defaultValue: '10'
     - description: 'Criteria to sort the records by, in the format: property[,ASC|DESC]. If not specified, default sort order is ascending. Multiple sort criteria can be specified, separated by a ";" separator. For example: "riskScore,DESC;hostName,ASC".'
       name: sort
     - description: A specific IP address to search.
@@ -355,7 +345,7 @@ script:
     - description: ID of an asset to search for the vulnerability.
       name: id
       required: true
-    - description: 'ID of a vulnerability to search for. Example: 7-zip-cve-2008-6536'
+    - description: "ID of a vulnerability to search for. Example: 7-zip-cve-2008-6536"
       name: vulnerabilityId
       required: true
     description: Returns details and possible remediations for an asset's vulnerability.
@@ -440,16 +430,17 @@ script:
     - description: Name of the credential.
       name: name
       required: true
-    - auto: PREDEFINED
-      description: Site assignment configuration for the credential. Assign the shared scan credential either to be available to all sites, or a specific list of sites.
+    - description: Site assignment configuration for the credential. Assign the shared scan credential either to be available to all sites, or a specific list of sites.
       name: site_assignment
+      required: true
+      auto: PREDEFINED
       predefined:
       - All-Sites
       - Specific-Sites
-      required: true
-    - auto: PREDEFINED
-      description: Credential service type.
+    - description: Credential service type.
       name: service
+      required: true
+      auto: PREDEFINED
       predefined:
       - AS400
       - CIFS
@@ -471,7 +462,6 @@ script:
       - SSH-Key
       - Sybase
       - Telnet
-      required: true
     - description: Database name.
       name: database
     - description: Description for the credential.
@@ -551,7 +541,7 @@ script:
       - 'false'
     - description: Username for the credential.
       name: username
-    description: 'Create a new shared credential. For detailed explanation of all parameters of this command, see: https://help.rapid7.com/insightvm/en-us/api/index.html#operation/createSharedCredential'
+    description: "Create a new shared credential. For detailed explanation of all parameters of this command, see: https://help.rapid7.com/insightvm/en-us/api/index.html#operation/createSharedCredential"
     name: nexpose-create-shared-credential
     outputs:
     - contextPath: Nexpose.SharedCredential.id
@@ -587,7 +577,7 @@ script:
   - arguments:
     - description: The date and time the vulnerability exception is set to expire in ISO 8601 date format.
       name: expires
-    - description: 'ID of the vulnerability to create the exception for. Example: 7-zip-cve-2008-6536'
+    - description: "ID of the vulnerability to create the exception for. Example: 7-zip-cve-2008-6536"
       name: vulnerability_id
       required: true
     - auto: PREDEFINED
@@ -598,6 +588,7 @@ script:
       - Site
       - Asset
       - Asset Group
+#          - Instance  # We had issues with this option, so it's not currently supported
       required: true
     - auto: PREDEFINED
       description: State of the vulnerability exception.
@@ -628,12 +619,12 @@ script:
     - contextPath: Nexpose.VulnerabilityException.id
       description: ID of the generated vulnerability exception.
       type: number
-  - arguments:
+  - description: Delete an asset.
+    name: nexpose-delete-asset
+    arguments:
     - description: ID of the asset to delete.
       name: id
       required: true
-    description: Delete an asset.
-    name: nexpose-delete-asset
   - arguments:
     - description: ID of the site to delete
       name: site_id
@@ -648,10 +639,7 @@ script:
     - description: ID of the shared credential to delete.
       name: id
       required: true
-    description: |-
-      Beta Command
-
-      Delete a shared credential.
+    description: "Beta Command\n\nDelete a shared credential."
     name: nexpose-delete-shared-credential
   - arguments:
     - description: ID of the site.
@@ -661,10 +649,7 @@ script:
     - description: ID of the site scan credential to delete.
       name: credential_id
       required: true
-    description: |-
-      Beta Command
-
-      Delete a site scan credential.
+    description: "Beta Command\n\nDelete a site scan credential."
     name: nexpose-delete-site-scan-credential
   - arguments:
     - description: ID of a site to delete
@@ -713,8 +698,7 @@ script:
     - contextPath: Nexpose.Site.LastScan
       description: The date and time of the site's last scan.
       type: date
-  - arguments: []
-    description: Returns all available report templates.
+  - description: Returns all available report templates.
     name: nexpose-get-report-templates
     outputs:
     - contextPath: Nexpose.Template.Id
@@ -729,6 +713,7 @@ script:
     - contextPath: Nexpose.Template.Type
       description: The type of the report template. document is a templatized, typically printable, report that has various sections of content. export is data-oriented output, typically CSV. file is a printable report template using a report template file.
       type: string
+    arguments: []
   - arguments:
     - description: ID of the site.
       name: site_id
@@ -818,17 +803,18 @@ script:
     - contextPath: Nexpose.Report.Format
       description: The report format.
       type: string
-  - arguments:
-    - description: Site IDs to create the report on. Can be a comma-separated list.
+  - name: nexpose-create-sites-report
+    arguments:
+    - name: sites
+      description: Site IDs to create the report on. Can be a comma-separated list.
       isArray: true
-      name: sites
-    - description: Names of sites to create the report on. Can be a comma-separated list.
+    - name: site_names
+      description: Names of sites to create the report on. Can be a comma-separated list.
       isArray: true
-      name: site_names
-    - description: Report template ID to use for report's creation. If not provided, the first available template will be used.
-      name: template
-    - description: Report name
-      name: name
+    - name: template
+      description: Report template ID to use for report's creation. If not provided, the first available template will be used.
+    - name: name
+      description: Report name
     - auto: PREDEFINED
       description: Report format (uses PDF by default).
       name: format
@@ -845,8 +831,6 @@ script:
       predefined:
       - 'true'
       - 'false'
-    description: Generates a new report on given sites according to a template and arguments.
-    name: nexpose-create-sites-report
     outputs:
     - contextPath: InfoFile.EntryId
       description: Entry ID of the report file.
@@ -878,11 +862,13 @@ script:
     - contextPath: Nexpose.Report.Format
       description: The report format.
       type: string
-  - arguments:
-    - description: ID of the site.
-      name: site_id
-    - description: Name of the site (can be used instead of `site_id`)
-      name: site_name
+    description: Generates a new report on given sites according to a template and arguments.
+  - name: nexpose-create-site-scan-credential
+    arguments:
+    - name: site_id
+      description: ID of the site.
+    - name: site_name
+      description: Name of the site (can be used instead of `site_id`)
     - description: Name of the credential.
       name: name
       required: true
@@ -987,15 +973,11 @@ script:
       - 'false'
     - description: Username for the credential.
       name: username
-    description: |-
-      Beta Command
-
-      Create a new site scan credential. For detailed explanation of all parameters of this command, see: https://help.rapid7.com/insightvm/en-us/api/index.html#operation/createSiteCredential
-    name: nexpose-create-site-scan-credential
     outputs:
     - contextPath: Nexpose.SiteScanCredential.id
       description: ID of the generated credential.
       type: number
+    description: "Beta Command\n\nCreate a new site scan credential. For detailed explanation of all parameters of this command, see: https://help.rapid7.com/insightvm/en-us/api/index.html#operation/createSiteCredential"
   - arguments:
     - description: ID of the scan to create a report about.
       name: scan
@@ -1109,10 +1091,7 @@ script:
       name: scan_name
     - description: ID of the scan template to use.
       name: scan_template
-    description: |-
-      Beta Command
-
-      Create a new site scan schedule.
+    description: "Beta Command\n\nCreate a new site scan schedule."
     name: nexpose-create-scan-schedule
     outputs:
     - contextPath: Nexpose.ScanSchedule.id
@@ -1292,10 +1271,7 @@ script:
     - defaultValue: '10'
       description: A number of records to limit the response to.
       name: limit
-    description: |-
-      BetaCommand
-
-      Retrieve information about scan schedules for a specific site or a specific scan schedule.
+    description: "BetaCommand\n\nRetrieve information about scan schedules for a specific site or a specific scan schedule."
     name: nexpose-list-scan-schedule
     outputs:
     - contextPath: Nexpose.ScanSchedule.assets.excludedAssetGroups.assetGroupIDs
@@ -1445,10 +1421,7 @@ script:
       defaultValue: '10'
       description: A number of records to limit the response to.
       name: limit
-    description: |-
-      Beta Command
-
-      Retrieve information about all or a specific sca credential.
+    description: "Beta Command\n\nRetrieve information about all or a specific sca credential."
     name: nexpose-list-site-scan-credential
     outputs:
     - contextPath: Nexpose.SiteScanCredential.account.authenticationType
@@ -1556,10 +1529,10 @@ script:
       description: The identifier of the vulnerability to which the exception applies.
       type: int
     - contextPath: Nexpose.VulnerabilityException.scope.key
-      description: If the scope type is "Instance", an optional key to discriminate the instance the exception applies to.
+      description: 'If the scope type is "Instance", an optional key to discriminate the instance the exception applies to.'
       type: string
     - contextPath: Nexpose.VulnerabilityException.scope.port
-      description: If the scope type is "Instance" and the vulnerability is detected on a service, the port on which the exception applies.
+      description: 'If the scope type is "Instance" and the vulnerability is detected on a service, the port on which the exception applies.'
       type: int
     - contextPath: Nexpose.VulnerabilityException.scope.type
       description: 'The type of the exception scope. One of: "Global", "Site", "Asset", "Asset Group", "Instance".'
@@ -1743,24 +1716,19 @@ script:
     - description: ID of the scan schedule to update.
       name: credential_id
       required: true
-    description: |-
-      Beta Command
-
-      Disable an assigned shared credential.
     name: nexpose-disable-shared-credential
+    description: "Beta Command\n\nDisable an assigned shared credential."
   - arguments:
-    - description: ID of the report.
-      name: report_id
+    - name: report_id
       required: true
-    - description: ID of the report instance. Supports a "latest" value.
-      name: instance_id
+      description: ID of the report.
+    - name: instance_id
       required: true
-    - description: Report name.
-      name: name
-    - auto: PREDEFINED
-      defaultValue: pdf
-      description: Report format (uses PDF by default).
-      name: format
+      description: ID of the report instance. Supports a "latest" value.
+    - name: name
+      description: Report name.
+    - name: format
+      auto: PREDEFINED
       predefined:
       - pdf
       - rtf
@@ -1768,7 +1736,8 @@ script:
       - html
       - text
       - nexpose-simple-xml
-    description: Returns the generated report.
+      description: Report format (uses PDF by default).
+      defaultValue: pdf
     name: nexpose-download-report
     outputs:
     - contextPath: InfoFile.EntryId
@@ -1789,6 +1758,7 @@ script:
     - contextPath: InfoFile.Type
       description: Type of the report file.
       type: string
+    description: Returns the generated report.
   - arguments:
     - description: ID of the site.
       name: site_id
@@ -1797,19 +1767,15 @@ script:
     - description: ID of the scan schedule to update.
       name: credential_id
       required: true
-    description: |-
-      Beta Command
-
-      Enable an assigned shared credential.
     name: nexpose-enable-shared-credential
+    description: "Beta Command\n\nEnable an assigned shared credential."
   - arguments:
-    - description: ID of the report.
-      name: report_id
+    - name: report_id
       required: true
-    - description: ID of the report instance. Supports a "latest" value.
-      name: instance_id
+      description: ID of the report.
+    - name: instance_id
       required: true
-    description: Returns the status of a report generation process.
+      description: ID of the report instance. Supports a "latest" value.
     name: nexpose-get-report-status
     outputs:
     - contextPath: Nexpose.Report.ID
@@ -1821,6 +1787,7 @@ script:
     - contextPath: Nexpose.Report.Status
       description: 'The status of the report generation process. Valid values: "aborted", "failed", "complete", "running", "unknown".'
       type: string
+    description: Returns the status of a report generation process.
   - arguments:
     - description: ID of the site.
       name: site_id
@@ -1879,10 +1846,7 @@ script:
       name: scan_name
     - description: ID of the scan template to use.
       name: scan_template
-    description: |-
-      Beta Command
-
-      Update an existing site scan schedule.
+    description: "Beta Command\n\nUpdate an existing site scan schedule."
     name: nexpose-update-scan-schedule
   - arguments:
     - description: ID of the site.
@@ -1996,10 +1960,7 @@ script:
       - 'false'
     - description: Username for the credential.
       name: username
-    description: |-
-      Beta Command
-
-      Update an existing site scan credential. For detailed explanation of all parameters of this command, see: https://help.rapid7.com/insightvm/en-us/api/index.html#operation/setSiteCredentials.
+    description: "Beta Command\n\nUpdate an existing site scan credential. For detailed explanation of all parameters of this command, see: https://help.rapid7.com/insightvm/en-us/api/index.html#operation/setSiteCredentials."
     name: nexpose-update-site-scan-credential
   - arguments:
     - description: ID of the vulnerability exception to update.
@@ -2017,11 +1978,11 @@ script:
     - auto: PREDEFINED
       description: A status to update the vulnerability exception to.
       name: status
+      required: true
       predefined:
       - Recall
       - Approve
       - Reject
-      required: true
     description: Update an existing vulnerability exception.
     name: nexpose-update-vulnerability-exception-status
   - arguments:
@@ -2166,8 +2127,11 @@ script:
     outputs:
     - contextPath: IncludedTargets
       description: List of addresses. Each address is a string that can represent either a hostname, ipv4 address, ipv4 address range, ipv6 address, or CIDR notation.
-  dockerimage: demisto/python3:3.10.9.46807
   runonce: false
   script: ''
-  subtype: python3
   type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.10.10.49934
+fromversion: 5.0.0
+tests:
+- nexpose_test
