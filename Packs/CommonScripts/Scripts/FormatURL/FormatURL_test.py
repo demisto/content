@@ -171,6 +171,7 @@ FORMAT_NON_ASCII = [
     ('https://www.teöst.com/', 'https://www.teöst.com/'),
     ('https://www.test.se/Auth/?&rUrl=https://test.com/wp–images/amclimore@test.com',  # disable-secrets-detection
      'https://www.test.se/Auth/?&rUrl=https://test.com/wp–images/amclimore@test.com'),  # disable-secrets-detection
+    ('test.com/#/?q=(1,2)', "test.com/#/?q=(1,2)"),  # disable-secrets-detection
 ]
 
 FORMAT_PUNYCODE = [
