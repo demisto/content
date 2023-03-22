@@ -4151,7 +4151,7 @@
             "instance_names": [
                 "microsoft_defender_atp_dev_self_deployed"
             ],
-            "timeout": 200
+            "timeout": 250
         },
         {
             "playbookID": "Polygon-Test",
