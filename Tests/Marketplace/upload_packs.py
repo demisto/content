@@ -1098,20 +1098,22 @@ def main():
     # detect packs to upload
     pack_names_to_upload = get_packs_names(modified_packs_to_upload)
     extract_packs_artifacts(packs_artifacts_path, extract_destination_path)
-    logging.info(f'THE ALL PACKS THAT FOUND IN ARTIFACT - {extract_destination_path=}')
-    all_packs = os.listdir(extract_destination_path)
+    artifact_path = 'tmp/tmp/artifact_path'
+    shutil.copytree(extract_destination_path, artifact_path)
+    logging.info(f'THE ALL PACKS THAT FOUND IN ARTIFACT - {artifact_path=}')
+    all_packs = os.listdir(artifact_path)
     for pack in all_packs:
-        if os.path.exists(f'{extract_destination_path}/{pack}'):
-            if os.path.exists(f'{extract_destination_path}/{pack}/binary_files'):
-                imgs = os.listdir(f'{extract_destination_path}/{pack}/binary_files')
+        if os.path.exists(f'{artifact_path}/{pack}'):
+            if os.path.exists(f'{artifact_path}/{pack}/binary_files'):
+                imgs = os.listdir(f'{artifact_path}/{pack}/binary_files')
                 logging.info(f'images in {pack}: {imgs}')
-                with open(f'{extract_destination_path}/{pack}/binary_files/{imgs[0]}', 'rb') as f:
-                    logging.info(f'{extract_destination_path}/{pack}/binary_files/{imgs[0]} is exists')
+                with open(f'{artifact_path}/{pack}/binary_files/{imgs[0]}', 'rb') as f:
+                    logging.info(f'{artifact_path}/{pack}/binary_files/{imgs[0]} is exists')
                     pass
             else:
-                logging.info(f'{extract_destination_path}/{pack}/binary_files does not exists in artifact - MORE-INFORMATION')
+                logging.info(f'{artifact_path}/{pack}/binary_files does not exists in artifact - MORE-INFORMATION')
         else:
-            logging.info(f'{extract_destination_path}/{pack} does not exists in artifact - MORE-INFORMATION')
+            logging.info(f'{artifact_path}/{pack} does not exists in artifact - MORE-INFORMATION')
     # sys.exit(1)
     # list of all packs from `content_packs.zip` given from create artifacts
     all_content_packs = [Pack(pack_name, os.path.join(extract_destination_path, pack_name),
@@ -1337,7 +1339,7 @@ def main():
     readme_images_dict, readme_urls_data_list = replace_readme_urls(index_folder_path,
                                                                     storage_base_path=storage_base_path,
                                                                     marketplace=marketplace)
-    download_readme_images_from_url_data_list(readme_urls_data_list, extract_destination_path, storage_bucket=storage_bucket)
+    download_readme_images_from_url_data_list(readme_urls_data_list, artifact_path, storage_bucket=storage_bucket)
 
     # finished iteration over content packs
     upload_index_to_storage(index_folder_path=index_folder_path,
