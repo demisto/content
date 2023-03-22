@@ -45,6 +45,7 @@ class Client(BaseClient):
     It inherits from BaseClient defined in CommonServer Python.
     Most calls use _http_request() that handles proxy, SSL verification, etc.
     """
+
     def get(self, query_uri: str, params: Dict[str, str] = None):
         """Handles Darktrace GET API calls"""
         return self._darktrace_api_call(query_uri, method="GET", params=params)

@@ -78,13 +78,13 @@ script:
   commands:
   - name: darktrace-get-ai-analyst-incident-event
     description: Fetch the details of an AI Analyst event
-    arguments: 
-      - default: false
-        description: Unique identified of an AI Analyst incident event
-        isArray: false
-        name: eventId
-        required: true
-        secret: false
+    arguments:
+    - default: false
+      description: Unique identified of an AI Analyst incident event
+      isArray: false
+      name: eventId
+      required: true
+      secret: false
     outputs:
     - contextPath: Darktrace.AIAnalyst.eventId
       description: AIAnalyst unique identifier
@@ -96,32 +96,32 @@ script:
       description: AIAnalyst mitre tactics seen on event
       type: Unknown
     - contextPath: Darktrace.AIAnalyst.score
-      description: group score for ai analyst incident 
+      description: group score for ai analyst incident
       type: Unknown
     - contextPath: Darktrace.AIAnalyst.category
-      description: group category for ai analyst incident 
+      description: group category for ai analyst incident
       type: String
     - contextPath: Darktrace.AIAnalyst.summary
       description: AIAnalyst event summary
       type: String
     - contextPath: Darktrace.AIAnalyst.groupId
-      description: unique identifier for event Id 
+      description: unique identifier for event Id
       type: Unknown
     - contextPath: Darktrace.AIAnalyst.devices
-      description: Associated devices with incident event 
+      description: Associated devices with incident event
       type: Unknown
     - contextPath: Darktrace.AIAnalyst.modelBreaches
       description: Associated model breaches with event Id
       type: Unknown
   - name: darktrace-get-comments-for-ai-analyst-incident-event
-    description: Fetch all comments from an AI Analyst incident vent
-    arguments: 
-      - default: false
-        description: Unique identified of an AI Analyst incident event
-        isArray: false
-        name: eventId
-        required: true
-        secret: false
+    description: Fetch all comments from an AI Analyst incident Event
+    arguments:
+    - default: false
+      description: Unique identified of an AI Analyst incident event
+      isArray: false
+      name: eventId
+      required: true
+      secret: false
     outputs:
     - contextPath: Darktrace.AIAnalyst.incidet_id
       description: Incident event unique identifier
@@ -136,23 +136,23 @@ script:
       description: Message post timestamp
       type: String
     - contextPath: Darktrace.AIAnalyst.username
-      description: Darktrace username of posting user 
+      description: Darktrace username of posting user
       type: String
   - name: darktrace-post-comment-to-ai-analyst-incident-event
     description: Post a comment to an AI Analyst incident Event
-    arguments: 
-      - default: false
-        description: Unique identified of an AI Analyst incident event
-        isArray: false
-        name: eventId
-        required: true
-        secret: false
-      - default: false
-        description: Enter a message to comment
-        isArray: false
-        name: comment
-        required: true
-        secret: false
+    arguments:
+    - default: false
+      description: Unique identified of an AI Analyst incident event
+      isArray: false
+      name: eventId
+      required: true
+      secret: false
+    - default: false
+      description: Enter a message to comment
+      isArray: false
+      name: comment
+      required: true
+      secret: false
     outputs:
     - contextPath: Darktrace.AIAnalyst.commented
       description: Whether the incident is commented in Darktrace
@@ -168,13 +168,13 @@ script:
       type: String
   - name: darktrace-acknowledge-ai-analyst-incident-event
     description: Acknowledge an AI Analyst Incident Event
-    arguments: 
-      - default: false
-        description: Unique identified of an AI Analyst incident event
-        isArray: false
-        name: eventId
-        required: true
-        secret: false
+    arguments:
+    - default: false
+      description: Unique identified of an AI Analyst incident event
+      isArray: false
+      name: eventId
+      required: true
+      secret: false
     outputs:
     - contextPath: Darktrace.AIAnalyst.acknowledged
       description: Whether the incident is acknowledge in Darktrace
@@ -187,13 +187,13 @@ script:
       type: String
   - name: darktrace-unacknowledge-ai-analyst-incident-event
     description: Unacknowledge an AI Analyst Incident Event
-    arguments: 
-      - default: false
-        description: Unique identified of an AI Analyst incident event
-        isArray: false
-        name: eventId
-        required: true
-        secret: false
+    arguments:
+    - default: false
+      description: Unique identified of an AI Analyst incident event
+      isArray: false
+      name: eventId
+      required: true
+      secret: false
     outputs:
     - contextPath: Darktrace.AIAnalyst.unacknowledged
       description: Whether the incident is unacknowledge in Darktrace
@@ -206,13 +206,13 @@ script:
       type: String
   - name: darktrace-get-ai-analyst-incident-group-from-eventId
     description: Pulls all linked events for a given event. Over time, events can become merged with one another. This happens when two sets of disparate activity are suddenly linked by shared factors.
-    arguments: 
-      - default: false
-        description: Unique identified of an AI Analyst incident event
-        isArray: false
-        name: eventId
-        required: true
-        secret: false
+    arguments:
+    - default: false
+      description: Unique identified of an AI Analyst incident event
+      isArray: false
+      name: eventId
+      required: true
+      secret: false
     outputs:
     - contextPath: Darktrace.AIAnalyst.groupId
       description: Investigation Group Unique Identifier
@@ -227,12 +227,9 @@ script:
       description: Group score
       type: Number
     - contextPath: Darktrace.AIAnalyst.groupCategory
-      description: Group category 
+      description: Group category
       type: String
-    - contextPath: Darktrace.AIAnalyst.acknowledged
-      description: Group category 
-      type: Boolean
-  dockerimage: demisto/python3:3.10.10.47713
+  dockerimage: demisto/python3:3.10.10.49934
   feed: false
   isfetch: true
   longRunning: false

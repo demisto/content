@@ -72,7 +72,7 @@ configuration:
   section: Collect
 description: Rapid detection of malicious behaviour can make all the difference in the response to a security event. This pack includes configurations to combine the world-class threat detection of Darktrace with the synchrony and automation abilities of XSOAR, allowing security teams to investigate model breaches and all model breach related actions (such as commenting, acknowledging and model logic info).
 display: Darktrace Model Breaches
-name:  DarktraceMBs
+name: DarktraceMBs
 script:
   commands:
   - name: darktrace-get-model-breach
@@ -177,9 +177,9 @@ script:
     - contextPath: Darktrace.ModelBreach.pbid
       description: Model breach ID
       type: Number
-    - contextPath: Darktrace.ModelBreach.acknowledged.message
+    - contextPath: Darktrace.ModelBreach.acknowledged.response
       description: Message response from acknowledge action
-      type: Number
+      type: String
   - name: darktrace-post-comment-to-model-breach
     arguments:
     - default: false
@@ -208,29 +208,29 @@ script:
       description: Comment content
       type: String
     - contextPath: Darktrace.ModelBreach.response
-      description: Message response from comment action 
+      description: Message response from comment action
       type: String
-  - name: darktrace-unacknowledge-model-breach 
+  - name: darktrace-unacknowledge-model-breach
     arguments:
-      - default: false
-        description: Darktrace model breach unique identifier
-        isArray: false
-        name: pbid
-        required: true
-        secret: false
+    - default: false
+      description: Darktrace model breach unique identifier
+      isArray: false
+      name: pbid
+      required: true
+      secret: false
     deprecated: false
     description: Unacknowledge a given model breach
     execution: false
     outputs:
-      - contextPath: Darktrace.ModelBreach.acknowledged
-        description: Whether the model breach is acknowledged in Darktrace
-        type: String
-      - contextPath: Darktrace.ModelBreach.pbid
-        description: Model breach ID
-        type: Number
-      - contextPath: Darktrace.ModelBreach.acknowledged.message
-        description: Message response from acknowledge action
-        type: Number
+    - contextPath: Darktrace.ModelBreach.acknowledged
+      description: Whether the model breach is acknowledged in Darktrace
+      type: String
+    - contextPath: Darktrace.ModelBreach.pbid
+      description: Model breach ID
+      type: Number
+    - contextPath: Darktrace.ModelBreach.acknowledged.response
+      description: Message response from acknowledge action
+      type: Number
   - name: darktrace-get-model-breach-connections
     arguments:
     - name: pbid
@@ -269,7 +269,7 @@ script:
     - contextPath: Darktrace.Model.Component
       description: A dictionary of the details of the model. Each model might have different keys. It is recommended to run the command once to check the relevant outputs in context
       type: Unknown
-  dockerimage: demisto/python3:3.10.10.47713
+  dockerimage: demisto/python3:3.10.10.49934
   feed: false
   isfetch: true
   longRunning: false

@@ -28,39 +28,7 @@
     "userTriggered": false,
     "externalTriggered": false,
     "aiaScore": 94,
-    "summary": {
-    "valueType": "formatString",
-    "value": "{}\n\nThough this behaviour could be the result of legitimate service usage or administration, it could also be a sign of this actor's account being hijacked by a malicious actor.\n\nConsequently, the security team may wish to confirm that this activity was legitimate and expected.",
-    "replacements": [
-    {
-    "valueType": "formatString",
-    "value": "{}\n\nThis included requests made from unusual locations compared to the previous access locations observed from this actor and from the configured service in general.",
-    "replacements": [
-    {
-    "valueType": "formatString",
-    "value": "The SaaS actor {} was observed making suspicious requests over a configured {} service from the IP {}.",
-    "replacements": [
-    {
-    "valueType": "username",
-    "value": "example.foo@storosta.com"
-    },
-    {
-    "valueType": "string",
-    "value": "AzureActiveDirectory"
-    },
-    {
-    "valueType": "externalHost",
-    "value": {
-    "identifier": "0.0.0.0",
-    "ip": null
-    }
-    }
-    ]
-    }
-    ]
-    }
-    ]
-    },
+    "summary": "\n\nThough this behaviour could be the result of legitimate service usage or administration, it could also be a sign of this actor's account being hijacked by a malicious actor.\n\nConsequently, the security team may wish to confirm that this activity was legitimate and expected.",
     "periods": [
     {
     "start": 1658853532289,

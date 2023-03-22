@@ -524,3 +524,5 @@ script:
   type: python
 deprecated: true
 fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

@@ -5,11 +5,7 @@
     "score": "94%",
     "createdAt": "2022-07-26T16:45:09.000Z", 
     "category": "critical", 
-    "summary": {"valueType": "formatString", 
-    "value": "{}\n\nThough this behaviour could be the result of legitimate service usage or administration, it could also be a sign of this actor's account being hijacked by a malicious actor.\n\nConsequently, the security team may wish to confirm that this activity was legitimate and expected.", 
-    "replacements": [{"valueType": "formatString", "value": "{}\n\nThis included requests made from unusual locations compared to the previous access locations observed from this actor and from the configured service in general.", 
-    "replacements": [{"valueType": "formatString", "value": "The SaaS actor {} was observed making suspicious requests over a configured {} service from the IP {}.", "replacements": [{"valueType": "username", "value": "example.foo@storosta.com"}, {"valueType": "string", "value": "AzureActiveDirectory"}, 
-    {"valueType": "externalHost", "value": {"identifier": "0.0.0.0", "ip": null}}]}]}]}, "groupId": "g750d9a5e-8df9-43fb-b3a3-1d1915dbc5fc", "devices": [{"identifier": "SaaS::AzureActiveDirectory: example.foo@storosta.com", 
+    "summary": "\n\nThough this behaviour could be the result of legitimate service usage or administration, it could also be a sign of this actor's account being hijacked by a malicious actor.\n\nConsequently, the security team may wish to confirm that this activity was legitimate and expected.", "groupId": "g750d9a5e-8df9-43fb-b3a3-1d1915dbc5fc", "devices": [{"identifier": "SaaS::AzureActiveDirectory: example.foo@storosta.com", 
     "hostname": "SaaS::AzureActiveDirectory: example.foo@storosta.com", "ip": null, "mac": null, "subnet": null, "did": 1975, "sid": -9}], 
     "modelBreaches": 
     {"0": {"modelName": "SaaS / Admin / User Added To Admin Group", 

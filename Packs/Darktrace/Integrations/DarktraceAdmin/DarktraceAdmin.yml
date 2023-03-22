@@ -74,7 +74,7 @@ script:
       predefined:
       - score
       - trend
-      - terms 
+      - terms
       - mean
       required: true
       secret: false
@@ -85,9 +85,9 @@ script:
       defaultValue: "0"
       description: analyses 10k connections at a time, use this parameter to analyse further results
     outputs:
-      - contextPath: Darktrace.AdvancedSearch
-        description: Advanced Search Results
-        type: Unknown
+    - contextPath: Darktrace.AdvancedSearch
+      description: Advanced Search Results
+      type: Unknown
   - name: darktrace-get-device-connection-info
     arguments:
     - default: false
@@ -247,7 +247,7 @@ script:
       required: true
       secret: false
     - default: true
-      defaultValue: null
+      defaultValue:
       description: Provide an optional description for added entries(max length of 256 characters)
       isArray: false
       name: description
@@ -339,9 +339,9 @@ script:
       description: Device unique identifier
       type: Number
     - contextPath: Darktrace.Device.response
-      description: POST action message response 
+      description: POST action message response
       type: String
-  dockerimage: demisto/python3:3.10.10.47713
+  dockerimage: demisto/python3:3.10.10.49934
   feed: false
   isfetch: false
   longRunning: false
