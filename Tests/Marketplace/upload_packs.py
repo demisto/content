@@ -1100,7 +1100,15 @@ def main():
     extract_packs_artifacts(packs_artifacts_path, extract_destination_path)
     logging.info(f'THE ALL PACKS THAT FOUND IN ARTIFACT - {extract_destination_path=}')
     all_packs = os.listdir(extract_destination_path)
-    logging.info(f'{all_packs=} MORE-INFORMATION')
+    for pack in all_packs:
+        if os.path.exists(f'{extract_destination_path}/{pack}'):
+            if os.path.exists(f'{extract_destination_path}/{pack}/binary_files'):
+                imgs = os.listdir(f'{extract_destination_path}/{pack}/binary_files')
+                logging.info(f'images in pack: {imgs}')
+            else:
+                logging.info(f'{extract_destination_path}/{pack}/binary_files does not exists in artifact - MORE-INFORMATION')
+        else:
+            logging.info(f'{extract_destination_path}/{pack} does not exists in artifact - MORE-INFORMATION')
     # sys.exit(1)
     # list of all packs from `content_packs.zip` given from create artifacts
     all_content_packs = [Pack(pack_name, os.path.join(extract_destination_path, pack_name),
