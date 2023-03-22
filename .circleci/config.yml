@@ -397,10 +397,9 @@ workflows:
   version: 2
   commit:
     when:
-      matches:
-        # matching the environment variable << pipeline.git.branch >> to contributions branch pattern.
-        pattern: pull/[0-9]+
-        value: << pipeline.git.branch >>
+      not:
+        or:
+          - << pipeline.parameters.nightly >>
     jobs:
       - Setup Environment
       - Run Unit Testing And Lint:
