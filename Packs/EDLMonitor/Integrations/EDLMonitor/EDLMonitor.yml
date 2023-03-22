@@ -18,8 +18,8 @@ configuration:
   name: credentials
   required: false
   type: 9
-- additionalinfo: Timeout (in seconds) for how long to wait for EDL response before detecting as down (default 3 minutes)
-  defaultvalue: "180"
+- additionalinfo: Timeout (in seconds) for how long to wait for EDL response before detecting as down (default 2 minutes)
+  defaultvalue: "120"
   display: 'Timeout:'
   name: timeout
   required: false

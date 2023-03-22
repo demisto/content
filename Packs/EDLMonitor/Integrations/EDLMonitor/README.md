@@ -11,7 +11,7 @@ This integration can monitor EDLs by emailing the content of an EDL as a zipped 
     | Incident type |  | False |
     | EDL username |  | False |
     | EDL password |  | False |
-    | Timeout: | Timeout \(in seconds\) for how long to wait for EDL response before detecting as down \(default 3 minutes\) | False |
+    | Timeout: | Timeout \(in seconds\) for how long to wait for EDL response before detecting as down \(default 2 minutes\) | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
     | Fetch incidents |  | False |
