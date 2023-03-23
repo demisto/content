@@ -1,5 +1,5 @@
 Strips, unquotes and unescapes URLs. If the URL is a Proofpoint or ATP URL, extracts its redirect URL.
-If more than one URL is passed to the formatter the separator must be a pipe ("|")
+If more than one URL is passed to the formatter, the separator must be a pipe ("|").
 
 ## Script Data
 ---
