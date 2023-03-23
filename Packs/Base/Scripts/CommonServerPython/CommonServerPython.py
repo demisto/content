@@ -586,6 +586,7 @@ class FeedIndicatorType(object):
 
 
 # -------------------------------- Threat Intel Objects ----------------------------------- #
+# comment
 
 class ThreatIntel:
     """
