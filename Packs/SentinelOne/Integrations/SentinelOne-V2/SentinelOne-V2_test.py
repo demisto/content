@@ -234,8 +234,12 @@ def test_remove_hash_from_blocklist(mocker, requests_mock):
     assert outputs['status'] == 'Removed 1 entries from blocklist'
 
 
-@pytest.mark.parametrize('block_site_ids', ['site1,site2', None])
-def test_add_hash_to_blocklist(mocker, requests_mock, block_site_ids):
+@pytest.mark.parametrize(
+    'block_site_ids, expected_status', [
+        ('site1,site2', 'Added to scoped blocklist'), (None, 'Added to global blocklist')
+    ]
+)
+def test_add_hash_to_blocklist(mocker, requests_mock, block_site_ids, expected_status):
     """
     Given:
        - Case A: A hash is added to the blocklist with sites
@@ -245,8 +249,8 @@ def test_add_hash_to_blocklist(mocker, requests_mock, block_site_ids):
        - running the sentinelone-add-hash-to-blocklist command
 
     Then:
-       - Case A: make sure the sites are added to the request
-       - Case B: make sure there are no site IDs added to the request
+       - Case A: make sure the sites are added to the request and output is valid
+       - Case B: make sure there are no site IDs added to the request and output is valid
 
     """
     blocked_sha_requests_mock = requests_mock.post(
@@ -267,13 +271,18 @@ def test_add_hash_to_blocklist(mocker, requests_mock, block_site_ids):
 
     main()
 
-    assert blocked_sha_requests_mock.last_request.json().get('filter').get('siteIds') != ['None']
+    site_ids_body_request = blocked_sha_requests_mock.last_request.json().get('filter').get('siteIds')
+    
+    if block_site_ids:
+        assert site_ids_body_request
+    else:
+        assert not site_ids_body_request
 
     call = sentinelone_v2.return_results.call_args_list
     outputs = call[0].args[0].outputs
 
     assert outputs['hash'] == 'f2ca1bb6c7e907d06dafe4687e579fce76b37e4e93b7605022da52e6ccc26fd2'
-    assert outputs['status'] == 'Added to scoped blocklist'
+    assert outputs['status'] == expected_status
 
 
 def test_remove_item_from_whitelist(mocker, requests_mock):
