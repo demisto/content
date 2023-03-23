@@ -34,7 +34,8 @@ class URLCheck(object):
     This class will build and validate a URL based on "URL Living Standard" (https://url.spec.whatwg.org)
     """
     sub_delims = ("!", "$", "&", "'", "(", ")", "*", "+", ",", ";", "=")
-    brackets = ("\"", "'", "[", "]", "{", "}", "(", ")", ",")
+    brackets = ("\"", "'", "[", "]", "{", "}", "(", ")")
+
     bracket_pairs = {
         '{': '}',
         '(': ')',
@@ -734,8 +735,7 @@ def _is_valid_cidr(cidr: str) -> bool:
 def main():
     raw_urls = demisto.args().get('input')
 
-    if isinstance(raw_urls, str):
-        raw_urls = raw_urls.split(",")
+    raw_urls = argToList(raw_urls, separator='|')
 
     formatted_urls: List[str] = []
 
