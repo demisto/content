@@ -2298,7 +2298,7 @@ script:
         - contextPath: SentinelOne.RemoveItemFromWhitelist.item
           description: Item removed fom whitelist.
           type: String
-  dockerimage: demisto/python3:3.10.10.49934
+  dockerimage: demisto/python3:3.10.10.50695
   isfetch: true
   runonce: false
   script: ""
