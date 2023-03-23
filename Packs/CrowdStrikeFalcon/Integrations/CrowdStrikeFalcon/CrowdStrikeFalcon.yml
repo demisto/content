@@ -2055,6 +2055,12 @@ script:
     - description: The endpoint hostname.
       name: hostname
       secret: false
+    - default: true
+      description: ''
+      isArray: true
+      name: endpoint
+      required: true
+      secret: false
     description: Returns information about an endpoint.
     name: endpoint
     outputs:
@@ -2794,6 +2800,12 @@ script:
       name: cve_id
       isArray: true
       required: true
+    - default: true
+      description: ''
+      isArray: true
+      name: cve
+      required: true
+      secret: false
     description: Retrieve vulnerability details according to the selected filter. Each request requires at least one filter parameter. Supported with the CrowdStrike Spotlight license.
     name: cve
     outputs:
@@ -2906,7 +2918,7 @@ script:
       required: true
     description: Updates CrowdStrike Incident with the comment.
     name: cs-falcon-update-incident-comment
-  dockerimage: demisto/python3:3.10.10.48392
+  dockerimage: demisto/python3:3.10.10.49934
   isfetch: true
   ismappable: true
   isremotesyncin: true
