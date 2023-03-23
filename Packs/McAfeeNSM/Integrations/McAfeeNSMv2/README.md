@@ -559,6 +559,7 @@ Adds a new rule object.
 | address_ip_v.6 | List of IPv6 host addresses, separated by a comma.                                                                                                                                                                                                                                                                                                                                                                              | Optional | 
 | from_address_ip_v.6 | Start of the IPv6 range.                                                                                                                                                                                                                                                                                                                                                                                                        | Optional | 
 | to_address_ip_v.6 | End of the IPv6 range.                                                                                                                                                                                                                                                                                                                                                                                                          | Optional | 
+|state|Whether to enable or disable the rule object. Note: This argument is only relevant to version 10x. Default value is 'Enabled'|Optional|
 
 
 #### Context Output
@@ -610,6 +611,7 @@ Updates a Rule object. In case of address rule update:
 | from_address_ip_v.6 | Start of the IPv6 range. | Optional | 
 | to_address_ip_v.6 | End of the IPv6 range. | Optional | 
 | is_overwrite | Whether the new addresses that were provided in the update processes will override the current ones or will be added to them. The default is false, and the addresses will be added. Possible values are: true, false. | Optional | 
+|state|Whether to enable or disable the rule object. Note: This argument is only relevant to version 10x. Default value is 'Enabled'|Optional|
 
 
 #### Context Output
@@ -1989,7 +1991,7 @@ Exports the captured PCAP file.
 | InfoFile.Info | string | Basic information about the file. | 
 
 #### Command example
-```!nsm-export-pcap-file sensor_id=1003 file_name=Virtual_NSP_01-PacketCapture-2022-12-21_16-25-52.pcap```
+```!nsm-export-pcap-file sensor_id=1003 file_name=Dummy Device Name-PacketCapture-2022-12-21_16-25-52.pcap```
 
 #### Human Readable Output
 There isn't a human readable.
@@ -2046,7 +2048,7 @@ There is no context output for this command.
             {
                 "ContactInformation": null,
                 "DeviceId": 1003,
-                "DeviceName": "Virtual_NSP_01",
+                "DeviceName": "Dummy Device Name",
                 "DeviceType": "IPS_NAC_SENSOR",
                 "Location": null,
                 "UpdatingMode": "ONLINE"
@@ -2061,7 +2063,7 @@ There is no context output for this command.
 >### Domain devices List
 >|DeviceId|DeviceName|DeviceType|UpdatingMode|
 >|---|---|---|---|
->| 1003 | Virtual_NSP_01 | IPS_NAC_SENSOR | ONLINE |
+>| 1003 | Dummy Device Name | IPS_NAC_SENSOR | ONLINE |
 
 ### nsm-list-device-interface
 
@@ -2155,7 +2157,7 @@ There is no context output for this command.
                 "AtdUserForOutboundATDAnalysis": null,
                 "ConnectionLimitingPolicy": null,
                 "DeviceId": 1003,
-                "DeviceName": "Virtual_NSP_01",
+                "DeviceName": "Dummy Device Name",
                 "FirewallPolicy": null,
                 "FirewallPolicyFirst": "Test",
                 "FirewallPolicyLast": null,
@@ -2181,7 +2183,7 @@ There is no context output for this command.
 >### Device policy List
 >|DeviceId|DeviceName|FirewallPolicyFirst|InterfaceId|
 >|---|---|---|---|
->| 1003 | Virtual_NSP_01 | Test | 0 |
+>| 1003 | Dummy Device Name | Test | 0 |
 
 ### nsm-list-interface-policy
 
@@ -2218,7 +2220,7 @@ There is no context output for this command.
                 "AtdUserForOutboundATDAnalysis": null,
                 "ConnectionLimitingPolicy": null,
                 "DeviceId": 1003,
-                "DeviceName": "Virtual_NSP_01",
+                "DeviceName": "Dummy Device Name",
                 "FirewallPolicy": "a policy",
                 "FirewallPolicyFirst": null,
                 "FirewallPolicyLast": null,
@@ -2241,7 +2243,7 @@ There is no context output for this command.
                 "AtdUserForOutboundATDAnalysis": null,
                 "ConnectionLimitingPolicy": null,
                 "DeviceId": 1003,
-                "DeviceName": "Virtual_NSP_01",
+                "DeviceName": "Dummy Device Name",
                 "FirewallPolicy": null,
                 "FirewallPolicyFirst": null,
                 "FirewallPolicyLast": null,
@@ -2264,7 +2266,7 @@ There is no context output for this command.
                 "AtdUserForOutboundATDAnalysis": null,
                 "ConnectionLimitingPolicy": null,
                 "DeviceId": 1003,
-                "DeviceName": "Virtual_NSP_01",
+                "DeviceName": "Dummy Device Name",
                 "FirewallPolicy": null,
                 "FirewallPolicyFirst": null,
                 "FirewallPolicyLast": null,
@@ -2290,9 +2292,9 @@ There is no context output for this command.
 >### Interface policy List
 >|DeviceId|DeviceName|FirewallPolicy|InterfaceId|InterfaceName|IpsPolicy|
 >|---|---|---|---|---|---|
->| 1003 | Virtual_NSP_01 | a policy | 104 | 1-2 | Default Prevention |
->| 1003 | Virtual_NSP_01 |  | 103 | 3-4 | testing |
->| 1003 | Virtual_NSP_01 |  | 102 | 5-6 | testing |
+>| 1003 | Dummy Device Name | a policy | 104 | 1-2 | Default Prevention |
+>| 1003 | Dummy Device Name |  | 103 | 3-4 | testing |
+>| 1003 | Dummy Device Name |  | 102 | 5-6 | testing |
 
 ### nsm-assign-device-policy
 
@@ -2373,7 +2375,7 @@ There is no context output for this command.
 {
     "NSM": {
         "DeviceConfiguration": {
-            "DeviceName": "Virtual_NSP_01",
+            "DeviceName": "Dummy Device Name",
             "IsBotnetConfigurationChanged": false,
             "IsBotnetPushRequired": false,
             "IsConfigurationChanged": true,
@@ -2396,7 +2398,7 @@ There is no context output for this command.
 >### Device Configuration
 >|DeviceName|IsBotnetConfigurationChanged|IsBotnetPushRequired|IsConfigurationChanged|IsGAMUpdateRequired|IsGloablPolicyConfigurationChanged|IsMalwareConfigurationChanged|IsPolicyConfigurationChanged|IsSSLConfigurationChanged|IsSSLPushRequired|IsSignatureSetConfigurationChanged|IsSigsetConfigPushRequired|LastUpdateTime|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| Virtual_NSP_01 | false | false | true | false | false | false | false | false | false | false | true | 2023-03-19 15:18:27.590 UTC |
+>| Dummy Device Name | false | false | true | false | false | false | false | false | false | false | true | 2023-03-19 15:18:27.590 UTC |
 
 ### nsm-deploy-device-configuration
 
