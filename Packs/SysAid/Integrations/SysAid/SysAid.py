@@ -1,7 +1,8 @@
 register_module_line('SysAid', 'start', __line__())
 import urllib3
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
-import re
 import os
 import mimetypes
 from datetime import datetime
@@ -441,7 +442,7 @@ def set_returned_fields(fields: str = None) -> Optional[str]:
 
 
 def fetch_request(client: Client, fetch_types: str = None, include_archived: bool = False, included_statuses: str = None,
-                  first_fetch: str = None, filter_times: str = None):
+                  filter_times: str = None):
     fetch_types = 'all' if not fetch_types or 'all' in fetch_types else fetch_types
     filters = {'status': included_statuses} if included_statuses else {}
     if filter_times is not None:
@@ -726,7 +727,7 @@ def service_record_list_command(client: Client, args: Dict[str, Any]) -> Command
 
     # SysAid expects the timestamp to be provided as `timestamp,timestamp`, but we are splitting on ,
     # This breaks the inputs. Instead we are asking for `timestamp-timestamp` as input, then convert the - to ,
-    custom_fields_values = [re.sub(r"-", ",", value, 0, re.MULTILINE) for value in custom_fields_values]
+    custom_fields_values = [value.replace("-", ",") for value in custom_fields_values]
     filters = extract_filters(custom_fields_keys, custom_fields_values)
 
     response = client.service_record_list_request(str(record_type), fields, offset, limit, ids, archive, filters)
@@ -889,7 +890,7 @@ def service_record_attach_file_command(client: Client, args: Dict[str, Any]) -> 
     if response.status_code == 200:
         msg = f'File uploaded to Service Record {sr_id} successfully.'
     else:
-        msg = f'Error {response.status_code} occurred while uploading file to service record {id}.'
+        msg = f'Error {response.status_code} occurred while uploading file to service record {sr_id}.'
 
     command_results = CommandResults(
         outputs_prefix='SysAid.ServiceRecord',
@@ -907,7 +908,7 @@ def service_record_delete_file_command(client: Client, args: Dict[str, Any]) -> 
     if response.status_code == 200:
         msg = f'File deleted from Service Record {sr_id} successfully.'
     else:
-        msg = f'Error {response.status_code} occurred while deleting file from service record {id}.'
+        msg = f'Error {response.status_code} occurred while deleting file from service record {sr_id}.'
 
     command_results = CommandResults(
         outputs_prefix='SysAid.ServiceRecord',
@@ -964,7 +965,7 @@ def fetch_incidents(client: Client, first_fetch: str, limit: Optional[int] = MAX
                   f'time to fetch from is: {fetch_start_datetime}.')
     filter_times = None
 
-    responses = fetch_request(client, fetch_types, include_archived, included_statuses, first_fetch, filter_times)
+    responses = fetch_request(client, fetch_types, include_archived, included_statuses, filter_times)
 
     limit = limit or MAX_INCIDENTS_TO_FETCH
     last_fetch, last_id_fetched, incidents = parse_service_records(responses, limit, fetch_start_datetime, last_id_fetched)
@@ -1039,7 +1040,6 @@ def main() -> None:
             'sysaid-service-record-attach-file': service_record_attach_file_command,
             'sysaid-service-record-delete-file': service_record_delete_file_command,
             'sysaid-service-record-get': service_record_get_command,
-            'sysaid-service-record-add-note': service_record_add_note_command,
         }
         if command == 'fetch-incidents':
             first_fetch = params.get('first_fetch', FETCH_DEFAULT_TIME)
@@ -1053,8 +1053,10 @@ def main() -> None:
 
         elif command == 'test-module':
             test_module(client, params)
-        elif command in commands:
+        elif command == 'sysaid-service-record-add-note':
             args['username'] = username
+            return_results(service_record_add_note_command(client, args))
+        elif command in commands:
             return_results(commands[command](client, args))
         else:
             raise NotImplementedError(f'{command} command is not implemented.')
