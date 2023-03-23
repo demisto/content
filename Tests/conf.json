@@ -5348,6 +5348,10 @@
         {
             "integrations": "Microsoft Teams via Webhook",
             "playbookID": "Microsoft Teams Webhook - Test"
+        },
+        {
+            "integrations": "AWS-Route53",
+            "playbookID": "playbook-create_delete_record_Test"
         }
     ],
     "skipped_tests": {
