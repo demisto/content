@@ -165,6 +165,13 @@ script:
       default: false
       isArray: false
       secret: false
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: When true, you'll need to change the password in the next login.
+      name: temporary_password
+      predefined:
+      - 'true'
+      - 'false'
     description: Sets passwords without validating existing user credentials.
     execution: true
     name: okta-set-password
@@ -2024,7 +2031,7 @@ script:
     name: okta-assign-group-to-app
     deprecated: false
     execution: false
-  dockerimage: demisto/python3:3.10.10.48392
+  dockerimage: demisto/python3:3.10.10.49934
   runonce: false
   script: '-'
   subtype: python3
