@@ -38,6 +38,7 @@
                     "description": "Suspicious executable detected",
                     "host_ip": "1.1.1.1, 2.2.2.2",
                     "host_name": "AAAAAA",
+                    "endpoint_id": "1234",
                     "user_name": "Administrator",
                     "event_type": "Process Execution",
                     "actor_process_image_name": "wildfire-test-pe-file.exe",
