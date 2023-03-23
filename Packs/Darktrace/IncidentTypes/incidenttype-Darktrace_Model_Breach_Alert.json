@@ -1,10 +1,10 @@
 {
-    "id": "Darktrace_AI_Analyst_Event",
+    "id": "Darktrace_Model_Breach_Alert",
     "version": -1,
     "vcShouldIgnore": false,
     "locked": false,
-    "name": "Darktrace_AI_Analyst_Event",
-    "prevName": "Darktrace_AI_Analyst_Event",
+    "name": "Darktrace_Model_Breach_Alert",
+    "prevName": "Darktrace_Model_Breach_Alert",
     "color": "#D6EB8D",
     "playbookId": "5cfcd8f7-3c1f-47c1-863d-9be3f5830832",
     "hours": 0,
