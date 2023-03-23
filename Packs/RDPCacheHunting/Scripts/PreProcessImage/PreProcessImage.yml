@@ -8,13 +8,13 @@ args:
   - original
   required: true
 - default: false
-  description: The desired width for resizing the image to. For example':' image_resize_width=500
+  description: The desired width for resizing the image to. For example, image_resize_width=500
   isArray: false
   name: image_resize_width
   required: false
   secret: false
 - default: false
-  description: The desired height for resizing the image to. For example':' image_resize_height=1000
+  description: The desired height for resizing the image to. For example, image_resize_height=1000
   isArray: false
   name: image_resize_height
   required: false
