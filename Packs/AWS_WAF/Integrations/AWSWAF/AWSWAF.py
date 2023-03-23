@@ -470,7 +470,7 @@ def connection_test(client: boto3.client) -> str:  # pragma: no cover
     try:
         client.list_ip_sets(args={'scope': SCOPE_MAP[DEFAULT_SCOPE]})
     except Exception as e:
-        f'Failed to execute test module. Error: {e}'
+        raise DemistoException(f'Failed to execute test module. Error: {str(e)}')
 
     return 'ok'
 
@@ -993,7 +993,7 @@ def add_json_statement_command(client: boto3.client, args: dict) -> CommandResul
                           raw_response=response)
 
 
-def template_json_command(args: dict) -> CommandResults:
+def template_json_command(args: dict) -> CommandResults:  # pragma: no cover
     """ Command to get a json template represents a statement"""
     statement_type = args.get('statement_type', '')
     web_request_component = args.get('web_request_component', '')
