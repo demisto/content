@@ -1316,7 +1316,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-  dockerimage: demisto/pwsh-exchangev3:1.0.0.49044
+  dockerimage: demisto/pwsh-exchangev3:1.0.0.40040
   isfetch: false
   longRunning: false
   longRunningPort: false
