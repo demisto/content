@@ -397,8 +397,8 @@ def fetch_alerts_command(client: Client, env: str, args=None):
 
 
 def fetch_assets_command(client: Client, env: str, args=None):
-    page = int(args.get("page", 0))
-    page_size = int(args.get("page_size", 10))
+    page = arg_to_number(args.get("page", 0))
+    page_size = arg_to_number(args.get("page_size", 10))
 
     variables: Dict[str, Any] = {
         "input": {},
@@ -410,9 +410,8 @@ def fetch_assets_command(client: Client, env: str, args=None):
 
     # Loop over allowed search fields and add valid search options to the query variables
     for field in ASSET_SEARCH_FIELDS:
-        if not args.get(field):
-            continue
-        variables["input"][field] = args.get(field).strip()
+        if args.get(field):
+            variables["input"][field] = args.get(field).strip()
 
     query = """
     query searchAssetsV2($input: SearchAssetsInput!, $pagination_input: SearchAssetsPaginationInput!) {
