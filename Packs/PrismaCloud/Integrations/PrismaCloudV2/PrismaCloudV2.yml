@@ -2557,6 +2557,25 @@ script:
       is used as part of the Mirroring feature that was introduced in Cortex XSOAR version 6.1.
     execution: false
     name: get-modified-remote-data
+  - arguments:
+      - default: false
+        description: The remote incident ID.
+        isArray: false
+        name: id
+        required: true
+        secret: false
+      - default: false
+        defaultValue: '0'
+        description: The UTC timestamp in seconds of the last update. The incident is only updated if it was modified after the last update time.
+        isArray: false
+        name: lastUpdate
+        required: false
+        secret: false
+    deprecated: false
+    description: Get remote data from a remote incident. This method does not update
+      the current incident, and should be used for debugging purposes only.
+    execution: false
+    name: get-remote-data
 tests:
 - Prisma Cloud V2 Test
 defaultmapperin: RedLock-mapper

@@ -49,6 +49,8 @@ MIRROR_DIRECTION_MAPPING = {
 MIRROR_DIRECTION = MIRROR_DIRECTION_MAPPING.get(demisto.params().get('mirror_direction'))
 INTEGRATION_INSTANCE = demisto.integrationInstance()
 
+INCIDENT_INCOMING_MIRROR_ARGS = ['status', 'dismissalNote']
+
 PAGE_NUMBER_DEFAULT_VALUE = 1
 PAGE_SIZE_DEFAULT_VALUE = 50
 PAGE_SIZE_MAX_VALUE = 10000
@@ -484,7 +486,7 @@ def calculate_offset(page_size: int, page_number: int) -> tuple[int, int]:
     return page_size, page_size * (page_number - 1)
 
 
-''' FETCH HELPER FUNCTIONS '''
+''' FETCH AND MIRRORING HELPER FUNCTIONS '''
 
 
 def translate_severity(alert: Dict[str, Any]) -> float:
@@ -608,6 +610,23 @@ def alert_to_incident_context(alert: Dict[str, Any]) -> Dict[str, Any]:
     demisto.debug(f'New PrismaCloud incident is: name: {incident_context["name"]}, occurred: '
                   f'{incident_context["occurred"]}, severity: {incident_context["severity"]}.')
     return incident_context
+
+
+def get_remote_incident_data(client: Client, remote_incident_id: str):
+    """
+    Called every time get-remote-data command runs on an alert.
+    Gets the details of the relevant alert entity from the remote system (Prisma Cloud).
+    Takes from the entity only the relevant incoming mirroring fields, and returns the updated_object for the incident
+    we want to mirror in, from the mirrored data, according to the mirroring fields.
+    """
+    alert_details = client.alert_get_details_request(alert_id=remote_incident_id, detailed='true')
+
+    updated_object: Dict[str, Any] = {'incident_type': 'incident'}
+    for field in INCIDENT_INCOMING_MIRROR_ARGS:
+        if mirrored_field_value := alert_details.get(field):
+            updated_object[field] = mirrored_field_value
+    # TODO: need to check whether the keys of the updated opject should be according to the field name defined in the mapper or according to the field name got from the API
+    return alert_details, updated_object
 
 
 ''' V1 DEPRECATED COMMAND FUNCTIONS to support backwards compatibility '''
@@ -1596,7 +1615,7 @@ def get_modified_remote_data_command(client: Client,
     time_filter = handle_time_filter(base_case=ALERT_SEARCH_BASE_TIME_FILTER,
                                      time_from=last_update_timestamp, # not sure about the time format I need to send here, and if I need to use handle_time_filter at all.
                                      time_to='now')
-    filters = argToList(params.get('filters'))
+    filters = argToList(params.get('filters')) # TODO: there is a chance we need to remove the alert.status=open filter, or alternatively add all the other optional statuses - resolved, dismissed, snoozed.
     filters.append('timeRange.type=ALERT_STATUS_UPDATED')
     # TODO: verify with Adi the above args
 
@@ -1606,6 +1625,49 @@ def get_modified_remote_data_command(client: Client,
     modified_records_ids = [str(item.get('id')) for item in response_items]
 
     return GetModifiedRemoteDataResponse(modified_records_ids)
+
+
+def get_remote_data_command(client: Client, args: Dict[str, Any]) -> GetRemoteDataResponse:
+    """
+    Returns an updated remote incident.
+
+    Args:
+        client: Demisto client.
+        args:
+            id: incident id to retrieve.
+            lastUpdate: when was the last time we retrieved data.
+
+    Returns:
+        GetRemoteDataResponse object, which contain the incident data to update.
+    """
+    remote_args = GetRemoteDataArgs(args)
+    remote_incident_id = remote_args.remote_incident_id
+
+    mirrored_data = {}
+    entries: List = []
+    # TODO: ask Adi why those args was passed into function and edited in place? instead of returned new objucts from the helper functions.
+    try:
+        demisto.debug(f'Performing get-remote-data command with incident id: {remote_incident_id} '
+                      f'and last_update: {remote_args.last_update}')
+        mirrored_data, updated_object = get_remote_incident_data(client, remote_incident_id)
+        if updated_object:
+            demisto.debug(f'Update incident {remote_incident_id} with fields: {updated_object}')
+            set_xsoar_incident_entries(updated_object, entries, remote_incident_id)  # sets in place
+
+        if not updated_object:
+            demisto.debug(f'No delta was found for incident id: {remote_incident_id}.')
+
+        return GetRemoteDataResponse(mirrored_object=updated_object, entries=entries)
+
+    except Exception as e:
+        demisto.debug(f"Error in Prisma Cloud v2 incoming mirror for incident: {remote_incident_id}\n"
+                      f"Error message: {str(e)}")
+
+        if not mirrored_data:
+            mirrored_data = {'id': remote_incident_id}
+        mirrored_data['in_mirror_error'] = str(e)
+
+        return GetRemoteDataResponse(mirrored_object=mirrored_data, entries=[])
 
 
 ''' TEST MODULE '''
@@ -1658,8 +1720,6 @@ def main() -> None:
     password = params['credentials']['password']
 
     return_v1_output = params.get('output_old_format', False)
-
-    mirror_direction = MIRROR_DIRECTION_MAPPING[params.get('mirror_direction')]
 
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
