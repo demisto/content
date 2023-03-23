@@ -53,7 +53,25 @@ class TestPDFUnlocker:
 
         """
         from PDFUnlocker import main
-        self.mock_demisto(mocker, file_obj=self.create_file_object("./TestData/sample.pdf"))
+        self.mock_demisto(mocker, file_obj=self.create_file_object("./TestData/Testpdf_.pdf"), args_value={"entryID": "entry_id", "password": '"12345"'})
         main()
         result = self.get_demisto_results()
-        assert result.get('File') == 'UNLOCKED_sample.pdf'
+        assert result.get('File') == 'UNLOCKED_Testpdf_.pdf'
+
+    def test_unlock_encrypted_with_quotation_mark(self, mocker):
+        """
+        Given:
+            - A PDF file encrypted by a password that contains quotation mark.
+
+        When:
+            - Run the PDFUnlocker script.
+
+        Then:
+            - Verify that the pdf file was unlocked.
+
+        """
+        from PDFUnlocker import main
+        self.mock_demisto(mocker, file_obj=self.create_file_object("./TestData/Testpdf_.pdf"), args_value={"entryID": "entry_id", "password": '"12345"'})
+        main()
+        result = self.get_demisto_results()
+        assert result.get('File') == 'UNLOCKED_Testpdf_.pdf'
