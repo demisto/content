@@ -50,7 +50,8 @@ def test_collect_images_from_readme_and_replace_with_storage_path():
                                 '4f707f8922d7ef1fe234a194dcc6fa73f96a4a87/Packs/Lansweeper/doc_files/'
                                 'Retrieve_Asset_Details_-_Lansweeper.png',
         'new_gcs_image_path': Path('gcs_test_path/readme_images/Retrieve_Asset_Details_-_Lansweeper.png'),
-        'image_name': 'Retrieve_Asset_Details_-_Lansweeper.png'
+        'image_name': 'Retrieve_Asset_Details_-_Lansweeper.png',
+        'pack_name': 'TestPack'
     }
     ret = collect_images_from_readme_and_replace_with_storage_path(pack_readme_path=path_readme_to_replace_url,
                                                                    gcs_pack_path='gcs_test_path',

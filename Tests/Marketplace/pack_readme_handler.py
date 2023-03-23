@@ -119,13 +119,13 @@ def download_readme_images_from_url_data_list(readme_urls_data_list: list, artif
         elif readme_original_url.startswith('binary_files'):
             logging.info(f'{readme_original_url=} (BINARY_FILES) MORE-INFORMATION')
             extracting_readme_image_from_pack_and_upload_to_gcs(artifacts_path,
-                                                                    gcs_storage_path,
-                                                                    readme_original_url,
-                                                                    pack_name, image_name,
-                                                                    storage_bucket)
+                                                                gcs_storage_path,
+                                                                readme_original_url,
+                                                                pack_name, image_name,
+                                                                storage_bucket)
         else:
             logging.info(f'The image path {readme_original_url}'
-                         f' that exists in the Packs/{pack_name}/README.md file is invalid')
+                         f' in the Packs/{pack_name}/README.md file is invalid')
 
 
 def download_readme_image_from_url_and_upload_to_gcs(readme_original_url: str, gcs_storage_path: str,
