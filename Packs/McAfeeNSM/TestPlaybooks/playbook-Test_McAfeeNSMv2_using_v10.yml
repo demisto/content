@@ -1,6 +1,5 @@
-id: Test_McAfeeNSMv2
+id: Test_McAfeeNSMv2_using_v10
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: Test_McAfeeNSMv2_using_v10
 description: |-
   A test playbook for McAfee NSM v2
@@ -17,9 +16,10 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "#none#":
-        - "1"
+      - "1"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -56,7 +56,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "54"
+      - "54"
     scriptarguments:
       all:
         simple: "yes"
@@ -87,6 +87,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -118,7 +119,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "55"
+      - "55"
     scriptarguments:
       device_id:
         simple: "1003"
@@ -153,20 +154,20 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-        - "56"
+      - "56"
     separatecontext: false
     conditions:
-      - label: "yes"
-        condition:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  complex:
-                    root: NSM
-                    accessor: Interface
-                iscontext: true
-              right:
-                value: {}
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: NSM
+                accessor: Interface
+            iscontext: true
+          right:
+            value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -197,7 +198,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "57"
+      - "57"
     scriptarguments:
       domain_id:
         simple: "0"
@@ -230,18 +231,18 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-        - "58"
+      - "58"
     separatecontext: false
     conditions:
-      - label: "yes"
-        condition:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  complex:
-                    root: NSM
-                    accessor: Device
-                iscontext: true
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: NSM
+                accessor: Device
+            iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -272,7 +273,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "59"
+      - "59"
     scriptarguments:
       domain_id:
         simple: "0"
@@ -305,18 +306,18 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-        - "60"
+      - "60"
     separatecontext: false
     conditions:
-      - label: "yes"
-        condition:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  complex:
-                    root: NSM
-                    accessor: DevicePolicy
-                iscontext: true
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: NSM
+                accessor: DevicePolicy
+            iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -340,16 +341,14 @@ tasks:
       id: 17ff4cda-1894-4cd9-8165-4876034efec6
       version: -1
       name: List interface policy
-      description:
-        List all the policies assigned to all interfaces or a specific
-        interface.
+      description: List all the policies assigned to all interfaces or a specific interface.
       script: "|||nsm-list-interface-policy"
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
       "#none#":
-        - "61"
+      - "61"
     scriptarguments:
       domain_id:
         simple: "0"
@@ -382,18 +381,18 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-        - "62"
+      - "62"
     separatecontext: false
     conditions:
-      - label: "yes"
-        condition:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  complex:
-                    root: NSM
-                    accessor: InterfacePolicy
-                iscontext: true
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: NSM
+                accessor: InterfacePolicy
+            iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -424,7 +423,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "72"
+      - "72"
     scriptarguments:
       device_id:
         simple: "1003"
@@ -463,7 +462,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "75"
+      - "75"
     scriptarguments:
       device_id:
         simple: "1003"
@@ -501,7 +500,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "73"
+      - "73"
     scriptarguments:
       device_id:
         simple: "1003"
@@ -540,7 +539,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "74"
+      - "74"
     scriptarguments:
       domain_id:
         simple: "0"
@@ -579,7 +578,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "65"
+      - "65"
     scriptarguments:
       humanReadableEntryId:
         simple: ${lastCompletedTaskEntries}
@@ -616,7 +615,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "68"
+      - "68"
     scriptarguments:
       humanReadableEntryId:
         simple: ${lastCompletedTaskEntries}
@@ -653,7 +652,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "63"
+      - "63"
     scriptarguments:
       humanReadableEntryId:
         simple: ${lastCompletedTaskEntries}
@@ -688,18 +687,18 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-        - "76"
+      - "76"
     separatecontext: false
     conditions:
-      - label: "yes"
-        condition:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  complex:
-                    root: NSM
-                    accessor: DeviceConfiguration
-                iscontext: true
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: NSM
+                accessor: DeviceConfiguration
+            iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -730,7 +729,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "77"
+      - "77"
     scriptarguments:
       domain_id:
         simple: "0"
@@ -763,30 +762,30 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-        - "83"
+      - "83"
     separatecontext: false
     conditions:
-      - label: "yes"
-        condition:
-          - - operator: isEqualString
-              left:
-                value:
-                  complex:
-                    root: NSM.Rule.Network_IPV_4.networkIPV4List
-                    filters:
-                      - - operator: containsGeneral
-                          left:
-                            value:
-                              simple: NSM.Rule.Network_IPV_4.networkIPV4List
-                            iscontext: true
-                          right:
-                            value:
-                              simple: 192.168.0.0/16
-                    accessor: "[0]"
-                iscontext: true
-              right:
-                value:
-                  simple: 192.168.0.0/16
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: NSM.Rule.Network_IPV_4.networkIPV4List
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: NSM.Rule.Network_IPV_4.networkIPV4List
+                      iscontext: true
+                    right:
+                      value:
+                        simple: 192.168.0.0/16
+                accessor: "[0]"
+            iscontext: true
+          right:
+            value:
+              simple: 192.168.0.0/16
     continueonerrortype: ""
     view: |-
       {
@@ -817,7 +816,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "79"
+      - "79"
     scriptarguments:
       rule_id:
         simple: "13"
@@ -850,30 +849,30 @@ tasks:
       brand: ""
     nexttasks:
       condition-1:
-        - "80"
+      - "80"
     separatecontext: false
     conditions:
-      - label: condition-1
-        condition:
-          - - operator: isEqualString
-              left:
-                value:
-                  complex:
-                    root: NSM.Rule
-                    filters:
-                      - - operator: containsGeneral
-                          left:
-                            value:
-                              simple: NSM.Rule.Network_IPV_4.networkIPV4List
-                            iscontext: true
-                          right:
-                            value:
-                              simple: 192.168.0.0/16
-                    accessor: "[0].Network_IPV_4.networkIPV4List.[0]"
-                iscontext: true
-              right:
-                value:
-                  simple: 192.168.0.0/16
+    - label: condition-1
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: NSM.Rule
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: NSM.Rule.Network_IPV_4.networkIPV4List
+                      iscontext: true
+                    right:
+                      value:
+                        simple: 192.168.0.0/16
+                accessor: "[0].Network_IPV_4.networkIPV4List.[0]"
+            iscontext: true
+          right:
+            value:
+              simple: 192.168.0.0/16
     continueonerrortype: ""
     view: |-
       {
@@ -897,18 +896,14 @@ tasks:
       id: d4b0b469-9523-4bb8-8ab3-560d6e31d557
       version: -1
       name: create rule object
-      description:
-        Adds a new rule object. If the type is “Endpoint IP V.X” or “Network
-        IP V.X”, only the argument “address_ip_v.X” must contain a value. If the type
-        is “Range IP V.X”, only the arguments “from_address_ip_v.X”, “to_address_ip_v.X”
-        must contain a value. Where X is 4 or 6 respectively.
+      description: Adds a new rule object. If the type is “Endpoint IP V.X” or “Network IP V.X”, only the argument “address_ip_v.X” must contain a value. If the type is “Range IP V.X”, only the arguments “from_address_ip_v.X”, “to_address_ip_v.X” must contain a value. Where X is 4 or 6 respectively.
       script: "|||nsm-create-rule-object"
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
       "#none#":
-        - "85"
+      - "85"
     scriptarguments:
       address_ip_v.4:
         simple: 1.1.1.1
@@ -949,7 +944,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "14"
+      - "14"
     scriptarguments:
       rule_id:
         complex:
@@ -990,7 +985,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "78"
+      - "78"
     scriptarguments:
       all:
         simple: "yes"
@@ -1025,7 +1020,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "86"
+      - "86"
     scriptarguments:
       domain_id:
         simple: "0"
@@ -1060,7 +1055,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "87"
+      - "87"
     scriptarguments:
       key:
         simple: aaa
@@ -1068,14 +1063,14 @@ tasks:
         complex:
           root: NSM.Rule
           filters:
-            - - operator: containsGeneral
-                left:
-                  value:
-                    simple: NSM.Rule.name
-                  iscontext: true
-                right:
-                  value:
-                    simple: test_playbook
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: NSM.Rule.name
+                iscontext: true
+              right:
+                value:
+                  simple: test_playbook
           accessor: ruleobjId
     separatecontext: false
     continueonerrortype: ""
@@ -1101,19 +1096,14 @@ tasks:
       id: 28543d9f-dae2-4b0d-801d-da8d2ad3f933
       version: -1
       name: Update rule object
-      description:
-        Updates a Rule object. In case of address rule update, if the rule
-        type is “Endpoint IP V.X” or “Network IP V.X”, only the argument “address_ip_v.X”
-        should contain a value. If the type is “Range IP V.X”, only the arguments
-        “from_address_ip_v.X”, “to_address_ip_v.X” should contain a value, where X
-        is 4 or 6 respectively.
+      description: Updates a Rule object. In case of address rule update, if the rule type is “Endpoint IP V.X” or “Network IP V.X”, only the argument “address_ip_v.X” should contain a value. If the type is “Range IP V.X”, only the arguments “from_address_ip_v.X”, “to_address_ip_v.X” should contain a value, where X is 4 or 6 respectively.
       script: "|||nsm-update-rule-object"
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
       "#none#":
-        - "88"
+      - "88"
     scriptarguments:
       address_ip_v.4:
         simple: 3.3.3.3
@@ -1157,7 +1147,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "89"
+      - "89"
     scriptarguments:
       rule_id:
         complex:
@@ -1191,29 +1181,29 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-        - "90"
+      - "90"
     separatecontext: false
     conditions:
-      - label: "yes"
-        condition:
-          - - operator: isEqualString
-              left:
-                value:
-                  complex:
-                    root: NSM.Rule.name
-                    filters:
-                      - - operator: containsGeneral
-                          left:
-                            value:
-                              simple: NSM.Rule.name
-                            iscontext: true
-                          right:
-                            value:
-                              simple: test_playbook_change
-                iscontext: true
-              right:
-                value:
-                  simple: test_playbook_change
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: NSM.Rule.name
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: NSM.Rule.name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: test_playbook_change
+            iscontext: true
+          right:
+            value:
+              simple: test_playbook_change
     continueonerrortype: ""
     view: |-
       {
@@ -1242,30 +1232,30 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-        - "81"
+      - "81"
     separatecontext: false
     conditions:
-      - label: "yes"
-        condition:
-          - - operator: isEqualString
-              left:
-                value:
-                  complex:
-                    root: NSM.Rule
-                    filters:
-                      - - operator: isEqualString
-                          left:
-                            value:
-                              simple: NSM.Rule.name
-                            iscontext: true
-                          right:
-                            value:
-                              simple: test_playbook_change
-                    accessor: HostIPv4.hostIPv4AddressList.[0]
-                iscontext: true
-              right:
-                value:
-                  simple: 3.3.3.3
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: NSM.Rule
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: NSM.Rule.name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: test_playbook_change
+                accessor: HostIPv4.hostIPv4AddressList.[0]
+            iscontext: true
+          right:
+            value:
+              simple: 3.3.3.3
     continueonerrortype: ""
     view: |-
       {
@@ -1295,3 +1285,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 6.5.0
