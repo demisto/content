@@ -1101,21 +1101,6 @@ def main():
     artifact_path = 'tmp/tmp/artifact_path'
     shutil.copytree(extract_destination_path, artifact_path)
     logging.info(f'THE ALL PACKS THAT FOUND IN ARTIFACT - {artifact_path=}')
-    all_packs = os.listdir(artifact_path)
-    pack_exists = ''
-    for pack in all_packs:
-        if os.path.exists(f'{artifact_path}/{pack}'):
-            if os.path.exists(f'{artifact_path}/{pack}/binary_files'):
-                imgs = os.listdir(f'{artifact_path}/{pack}/binary_files')
-                logging.info(f'images in {pack}: {imgs}')
-                with open(f'{artifact_path}/{pack}/binary_files/{imgs[0]}', 'rb') as f:
-                    logging.info(f'{artifact_path}/{pack}/binary_files/{imgs[0]} is exists')
-                    pass
-                pack_exists = f'{extract_destination_path}/{pack}/binary_files/{imgs[0]}'
-            else:
-                logging.info(f'{artifact_path}/{pack}/binary_files does not exists in artifact - MORE-INFORMATION')
-        else:
-            logging.info(f'{artifact_path}/{pack} does not exists in artifact - MORE-INFORMATION')
     # sys.exit(1)
     # list of all packs from `content_packs.zip` given from create artifacts
     all_content_packs = [Pack(pack_name, os.path.join(extract_destination_path, pack_name),
@@ -1128,27 +1113,17 @@ def main():
         list(filter(lambda x: x.name in pack_names_to_upload, all_content_packs))
 
     diff_files_list = content_repo.commit(current_commit_hash).diff(content_repo.commit(previous_commit_hash))
-    if not os.path.exists(pack_exists):
-        logging.info("THE ARTIFACT REMOVED 0")
     # taking care of private packs
     is_private_content_updated, private_packs, updated_private_packs_ids = handle_private_content(
         index_folder_path, private_bucket_name, extract_destination_path, storage_client, pack_names_to_upload, storage_base_path
     )
-    if not os.path.exists(pack_exists):
-        logging.info("THE ARTIFACT REMOVED 1")
     if not override_all_packs:
         check_if_index_is_updated(index_folder_path, content_repo, current_commit_hash, previous_commit_hash,
                                   storage_bucket, is_private_content_updated)
-    if not os.path.exists(pack_exists):
-        logging.info("THE ARTIFACT REMOVED 2")
     # initiate the statistics handler for marketplace packs
     statistics_handler = StatisticsHandler(service_account, index_folder_path)
-    if not os.path.exists(pack_exists):
-        logging.info("THE ARTIFACT REMOVED 3")
     # clean index and gcs from non existing or invalid packs
     clean_non_existing_packs(index_folder_path, private_packs, storage_bucket, storage_base_path, all_content_packs, marketplace)
-    if not os.path.exists(pack_exists):
-        logging.info("THE ARTIFACT REMOVED 4")
     # packs that depends on new packs that are not in the previous index.zip
     packs_with_missing_dependencies = []
 
@@ -1172,8 +1147,6 @@ def main():
             continue
         else:
             packs_for_current_marketplace_dict[pack.name] = pack
-    if not os.path.exists(pack_exists):
-        logging.info("THE ARTIFACT REMOVED 5")
     # iterating over packs that are for this current marketplace
     # we iterate over all packs (and not just for modified packs) for several reasons -
     # 1. we might need the info about this pack if a modified pack is dependent on it.
@@ -1185,11 +1158,15 @@ def main():
         if not task_status:
             pack.status = PackStatus.FAILED_COLLECT_ITEMS.name
             pack.cleanup()
+            if not os.path.exists(f'{pack._pack_path}/binary_files'):
+                logging.info(f'THE {pack._pack_path} REMOVED FROM extract_destination_path 1')
             continue
 
         # upload author integration images and readme images
         if not pack.upload_images(index_folder_path, storage_bucket, storage_base_path, diff_files_list,
                                   override_all_packs):
+            if not os.path.exists(f'{pack._pack_path}/binary_files'):
+                logging.info(f'THE {pack._pack_path} REMOVED FROM extract_destination_path 2')
             continue
 
         # detect if the pack is modified and return modified RN files
@@ -1199,6 +1176,8 @@ def main():
         if not task_status:
             pack.status = PackStatus.FAILED_DETECTING_MODIFIED_FILES.name
             pack.cleanup()
+            if not os.path.exists(f'{pack._pack_path}/binary_files'):
+                logging.info(f'THE {pack._pack_path} REMOVED FROM extract_destination_path 1')
             continue
 
         # This is commented out because we are not using the returned modified files and not skipping the
@@ -1224,6 +1203,8 @@ def main():
         if not task_status:
             pack.status = PackStatus.FAILED_METADATA_PARSING.name
             pack.cleanup()
+            if not os.path.exists(f'{pack._pack_path}/binary_files'):
+                logging.info(f'THE {pack._pack_path} REMOVED FROM extract_destination_path 3')
             continue
 
         task_status, not_updated_build, pack_versions_to_keep = pack.prepare_release_notes(
@@ -1236,6 +1217,8 @@ def main():
         if not task_status:
             pack.status = PackStatus.FAILED_RELEASE_NOTES.name
             pack.cleanup()
+            if not os.path.exists(f'{pack._pack_path}/binary_files'):
+                logging.info(f'THE {pack._pack_path} REMOVED FROM extract_destination_path 4')
             continue
 
         if not_updated_build:
@@ -1251,6 +1234,8 @@ def main():
         if not task_status:
             pack.status = PackStatus.FAILED_UPLOADING_PACK.name
             pack.cleanup()
+            if not os.path.exists(f'{pack._pack_path}/binary_files'):
+                logging.info(f'THE {pack._pack_path} REMOVED FROM extract_destination_path 5')
             continue
 
         # uploading preview images. The path contains pack version
@@ -1258,18 +1243,24 @@ def main():
         if not task_status:
             pack._status = PackStatus.FAILED_PREVIEW_IMAGES_UPLOAD.name
             pack.cleanup()
+            if not os.path.exists(f'{pack._pack_path}/binary_files'):
+                logging.info(f'THE {pack._pack_path} REMOVED FROM extract_destination_path 6')
             continue
 
         task_status, exists_in_index = pack.check_if_exists_in_index(index_folder_path)
         if not task_status:
             pack.status = PackStatus.FAILED_SEARCHING_PACK_IN_INDEX.name
             pack.cleanup()
+            if not os.path.exists(f'{pack._pack_path}/binary_files'):
+                logging.info(f'THE {pack._pack_path} REMOVED FROM extract_destination_path 7')
             continue
 
         task_status = pack.prepare_for_index_upload()
         if not task_status:
             pack.status = PackStatus.FAILED_PREPARING_INDEX_FOLDER.name
             pack.cleanup()
+            if not os.path.exists(f'{pack._pack_path}/binary_files'):
+                logging.info(f'THE {pack._pack_path} REMOVED FROM extract_destination_path 8')
             continue
         task_status = update_index_folder(index_folder_path=index_folder_path, pack_name=pack.name, pack_path=pack.path,
                                           pack_version=pack.latest_version, hidden_pack=pack.hidden,
@@ -1277,21 +1268,20 @@ def main():
         if not task_status:
             pack.status = PackStatus.FAILED_UPDATING_INDEX_FOLDER.name
             pack.cleanup()
+            if not os.path.exists(f'{pack._pack_path}/binary_files'):
+                logging.info(f'THE {pack._pack_path} REMOVED FROM extract_destination_path 9')
             continue
 
         # in case that pack already exist at cloud storage path and in index, don't show that the pack was changed
         if skipped_upload and exists_in_index and pack not in packs_with_missing_dependencies:
             pack.status = PackStatus.PACK_ALREADY_EXISTS.name
             pack.cleanup()
+            if not os.path.exists(f'{pack._pack_path}/binary_files'):
+                logging.info(f'THE {pack._pack_path} REMOVED FROM extract_destination_path 10')
             continue
 
         pack.status = PackStatus.SUCCESS.name
-    if os.path.exists(extract_destination_path):
-        for pack in os.listdir(extract_destination_path):
-            logging.info(f'{pack} MORE INFORMATION FOR STATE OF extract_destination_path')
     logging.info(f"packs_with_missing_dependencies: {[pack.name for pack in packs_with_missing_dependencies]}")
-    if not os.path.exists(pack_exists):
-        logging.info("THE ARTIFACT REMOVED 6")
     # Going over all packs that were marked as missing dependencies,
     # updating them with the new data for the new packs that were added to the index.zip
     for pack in packs_with_missing_dependencies:
@@ -1314,13 +1304,9 @@ def main():
 
         pack.status = PackStatus.SUCCESS.name
 
-    if not os.path.exists(pack_exists):
-        logging.info("THE ARTIFACT REMOVED 7")
     # upload core packs json to bucket
     create_corepacks_config(storage_bucket, build_number, index_folder_path,
                             os.path.dirname(packs_artifacts_path), storage_base_path, marketplace)
-    if not os.path.exists(pack_exists):
-        logging.info("THE ARTIFACT REMOVED 8")
     prepare_index_json(index_folder_path=index_folder_path,
                        build_number=build_number,
                        private_packs=private_packs,
