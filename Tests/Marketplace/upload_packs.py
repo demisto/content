@@ -1286,7 +1286,9 @@ def main():
             continue
 
         pack.status = PackStatus.SUCCESS.name
-
+    if os.path.exists(extract_destination_path):
+        for pack in os.listdir(extract_destination_path):
+            logging.info(f'{pack} MORE INFORMATION FOR STATE OF extract_destination_path')
     logging.info(f"packs_with_missing_dependencies: {[pack.name for pack in packs_with_missing_dependencies]}")
     if not os.path.exists(pack_exists):
         logging.info("THE ARTIFACT REMOVED 6")
