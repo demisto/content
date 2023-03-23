@@ -148,3 +148,24 @@ Get sensitive assets by name (optional to search by regex)
 #### Context Output
 
 There is no context output for this command.
+
+
+### reco-add-leaving-org-user-label
+
+***
+Tag a user as leaving employee in Reco
+
+#### Base Command
+
+`reco-add-leaving-org-user-label`
+
+#### Input
+
+| **Argument Name** | **Description**                                                         | **Required** |
+| --- |-------------------------------------------------------------------------| --- |
+| email_address | Email address of the user to add to the leaving org users list in Reco. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+
