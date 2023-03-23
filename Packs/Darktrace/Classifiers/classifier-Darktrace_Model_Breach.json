@@ -1,6 +1,5 @@
 {
-    "definitionId": "Maps model breach fields to mappings for use in Integration Playbooks.",
-    "description": "",
+    "description": "Maps model breach fields to mappings for use in Integration Playbooks",
     "feed": false,
     "id": "Darktrace Model Breach",
     "mapping": {
