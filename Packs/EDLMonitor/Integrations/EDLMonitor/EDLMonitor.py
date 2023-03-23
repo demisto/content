@@ -56,7 +56,10 @@ def sendemail(reason, create_ts, email, email_server, email_user, email_pwd, txt
 
         # Create the message
         themsg = MIMEMultipart()
-        themsg['Subject'] = f'EDL down at {create_ts}! Instance- {instance_name}'
+        if reason == "timeout":
+            themsg['Subject'] = f'EDL timeout at {create_ts}! Instance- {instance_name}'
+        else:
+            themsg['Subject'] = f'EDL down at {create_ts}! Instance- {instance_name}'
         themsg['To'] = email
         sender = "noreply@demisto.com"
         themsg['From'] = sender
@@ -137,6 +140,8 @@ def fetch_incidents(start_time, EDL, edl_user, edl_pwd, verify_certificate, emai
 
         demisto.debug(f'Start time {start_time}')
         demisto.debug(f'Cur time {datetime.now()}')
+        demisto.debug(
+            f'Parameters: {start_time}, {EDL}, {edl_user}, {verify_certificate}, {email}, {email_server}, {email_user}, {timeout}, {mon_contents}')
 
         if edl_pwd is None:
             # No auth on EDL
@@ -147,7 +152,9 @@ def fetch_incidents(start_time, EDL, edl_user, edl_pwd, verify_certificate, emai
             except ConnectTimeout:
                 # Timeout!
                 pull_time = datetime.now().strftime('%m-%d-%Y %H:%M:%S')
-                sendemail("regular", pull_time, email, email_server, email_user, email_pwd)
+                sendemail("timeout", pull_time, email, email_server, email_user, email_pwd)
+                #demisto.debug('EDL monitor auth to EDL')
+                raise ValueError(f"EDL timeout after {timeout} seconds")
         else:
             # Auth on EDL
             demisto.debug('EDL monitor auth to EDL')
@@ -157,7 +164,8 @@ def fetch_incidents(start_time, EDL, edl_user, edl_pwd, verify_certificate, emai
             except ConnectTimeout:
                 # Timeout!
                 pull_time = datetime.now().strftime('%m-%d-%Y %H:%M:%S')
-                sendemail("regular", pull_time, email, email_server, email_user, email_pwd)
+                sendemail("timeout", pull_time, email, email_server, email_user, email_pwd)
+                raise ValueError(f"EDL timeout after {timeout} seconds")
 
         #demisto.debug(f'EDL monitor EDL text contents:\n{response.text}')
 
@@ -256,10 +264,12 @@ def main() -> None:
 
     EDL = params.get('EDL')
     demisto.debug(f'EDL monitor checking EDL {EDL}')
-    if timeout_str := params.get('timeout') is not None:
+    if (timeout_str := params.get('timeout')) is not None:
+        # if params.get('timeout') is not None:
+        #timeout = int(params.get('timeout'))
         timeout = int(timeout_str)
     else:
-        timeout = 180
+        timeout = 120
     start_time = datetime.now()
 
     #headers = {"Content-Type": "application/json"}
