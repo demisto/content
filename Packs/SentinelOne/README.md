@@ -12,4 +12,5 @@ The pack includes the **SentinelOne v2** integration and the **Sentinel One - En
 ## How does this pack work?
 Create an instance of the **SentinelOne v2** integration and start fetching information from the SentinelOne database.
 
-Note: Support for this Pack will be moved to the Partner on Feb 15, 2023.
+Note: Support for this Pack moved to the partner on May, 23, 2023.
+Please contact the partner directly via the support link on the right.
