@@ -70,8 +70,8 @@ def get_events(client: boto3.client, start_time: datetime | None = None,
             kwargs['MaxResults'] = 100
 
         demisto.debug(f'Fetching events with kwargs:\n{kwargs}.')
-        response = client.get_findings(**kwargs)
-        events.extend(response.get('Findings', []))
+        if response := client.get_findings(**kwargs):
+              events.extend(response.get('Findings', []))
 
         if 'NextToken' in response and (limit == 0 or len(events) < limit):
             kwargs['NextToken'] = response['NextToken']
@@ -89,10 +89,8 @@ def fetch_events(client: boto3.client, last_run: dict[str, str],
 
     Args:
         client (boto3.client): Boto3 client to use.
-        last_run (dict): A dict with a key containing the latest event created time we got from last fetch.
-        first_fetch_time (datetime | None, optional): If last_run is None (first time we are fetching),
-            it contains datetime of when to start fetching events.
-
+        last_run (dict): Dict containing the last fetched event creation time.
+        first_fetch_time (datetime | None, optional): In case of first fetch, fetch events from this datetime.
     Returns:
         dict: Next run dictionary containing the timestamp that will be used in ``last_run`` on the next fetch.
         list: List of events that will be generated in XSIAM.
@@ -179,7 +177,7 @@ def main():
     timeout = params.get('timeout')
     retries = params.get('retries', 5)
 
-    limit: int = arg_to_number(params.get('max_fetch', DEFAULT_MAX_RESULTS))
+    limit = arg_to_number(params.get('max_fetch')) or DEFAULT_MAX_RESULTS
 
     # How much time before the first fetch to retrieve events
     first_fetch_time: datetime.datetime = arg_to_datetime(
