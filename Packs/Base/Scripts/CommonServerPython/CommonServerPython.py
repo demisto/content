@@ -7255,7 +7255,7 @@ def append_metrics(execution_metrics, results):
     return results
 
 
-def convert_dict_values_bytes_to_str(input_dict: dict):  # type: ignore
+def convert_dict_values_bytes_to_str(input_dict):  # type: ignore
     """
     Converts byte dict values to str
     :type input_dict: ``dict``
