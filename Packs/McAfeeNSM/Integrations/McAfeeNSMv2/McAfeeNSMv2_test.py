@@ -1101,9 +1101,11 @@ def test_list_device_policy_request__with_and_without_device_id(mocker, mcafeens
     When:
         - nsm-list-device-policy command is executed.
     Then:
-        - The http request is called with the right arguments.
+        - The http request is called with the right arguments:
+            1. The url suffix is /domain/{domain_id}/policyassignments/device/{device_id}
+            2. The url suffix is /domain/{domain_id}/policyassignments/device}
+
     """
-    from McAfeeNSMv2 import Client
     http_request = mocker.patch.object(mcafeensmv2_client, '_http_request')
     Client.list_device_policy_request(mcafeensmv2_client, domain_id=9, device_id=input)
     assert http_request.call_args[1] == output
@@ -1122,7 +1124,6 @@ def test_assign_interface_policy_request__with_and_without_custom_json(mocker, m
     Then:
         - The http request is called with the right arguments.
     """
-    from McAfeeNSMv2 import Client
     http_request = mocker.patch.object(mcafeensmv2_client, '_http_request')
     Client.assign_interface_policy_request(mcafeensmv2_client, domain_id=9, interface_id=9, custom_policy_json=input,
                                            firewall_policy="mock", firewall_port_policy="mock",
@@ -1142,7 +1143,6 @@ def test_list_interface_policy_request__with_and_without_intereface_id(mocker, m
     Then:
         - The http request is called with the right arguments.
     """
-    from McAfeeNSMv2 import Client
     http_request = mocker.patch.object(mcafeensmv2_client, '_http_request')
     Client.list_interface_policy_request(mcafeensmv2_client, domain_id=9, interface_id=input)
     assert http_request.call_args[1].get('url_suffix') == output
@@ -1203,7 +1203,7 @@ def test_modify_v10_results_to_v9_format():
 def test_capitalize_key_first_letter(input, output):
     """
     Given:
-        - A dictionary contaning dictionaries.
+        - A dictionary containing dictionaries.
             - 1. A list of keys to check.
             - 2. A list of keys to check is not given.
     When:
@@ -1318,7 +1318,7 @@ def test_list_domain_device_command_with_diffrent_arguments(mocker, mcafeensmv2_
     When:
         - nsm-list_domain_device_command command is executed.
     Then:
-        - Confirm the output is as expected(number of results, and ID = 0 dose not raise an error).
+        - Confirm the output is as expected (number of results, and ID = 0 dose not raise an error).
     """
     from McAfeeNSMv2 import list_domain_device_command
     mocker.patch.object(mcafeensmv2_client, 'list_domain_device_request',
@@ -1347,11 +1347,11 @@ def test_list_domain_device_command__without_domain_id(mcafeensmv2_client):
                                             "Please provide at least one policy to assign."),
                                             ({"domain_id": 777}, "Please provide a interface_id."),
                                             ({"interface_id": 777, }, "Please provide a domain_id.")])
-def test_assign_interface_policy_command__with_missing_arguments(mocker, mcafeensmv2_client, input, output):
+def test_assign_interface_policy_command__with_missing_arguments(mcafeensmv2_client, input, output):
     """
     Given:
         - 1. A domain id and interface id with no policy.
-        - 2. A domain id with no policy. 
+        - 2. A domain id with no policy.
         - 3. A interface id with no policy.
     When:
         - nsm-assign_interface_policy_command command is executed.
@@ -1459,7 +1459,7 @@ def test_get_device_configuration_command__without_device_id(mcafeensmv2_client)
 
 
 @pytest.mark.parametrize('input, output', [({}, "Please provide a device_id."),
-                                           ({"device_id": 777}, "Please provide at least one argument to deploy")])
+                                           ({"device_id": 777}, "Please provide at least one argument to deploy.")])
 def test_deploy_device_configuration_command__missing_arguments(mocker, mcafeensmv2_client, input, output):
     """
     Given:
@@ -1491,8 +1491,7 @@ def test_deploy_device_configuration_command(mocker, mcafeensmv2_client, input, 
     When:
         - deploy_device_configuration_command command is executed.
     Then:
-        - Confirm the readable output is as expected. (only the first 12 characters are being compared
-        because of the use of \n in the output, it is not easy to compare the whole output.)
+        - Confirm the readable output is as expected.
     """
     from McAfeeNSMv2 import deploy_device_configuration_command
     mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported', return_value=None)
@@ -1507,4 +1506,4 @@ def test_deploy_device_configuration_command(mocker, mcafeensmv2_client, input, 
                                                     "push_gam_updates": False,
                                                     "push_ssl_key": False
                                                     }, client=mcafeensmv2_client)
-    assert res.readable_output[:12] == output
+    assert output in res.readable_output
