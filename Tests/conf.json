@@ -167,6 +167,11 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "AWS-WAF",
+            "playbookID": "TEST_AWS_WAF",
+            "fromversion": "6.5.0"
+        },
+        {
             "integrations": "GoogleDrive",
             "playbookID": "GoogleDrive-Test",
             "fromversion": "5.0.0"
