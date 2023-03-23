@@ -272,7 +272,6 @@ def test_add_hash_to_blocklist(mocker, requests_mock, block_site_ids, expected_s
     main()
 
     site_ids_body_request = blocked_sha_requests_mock.last_request.json().get('filter').get('siteIds')
-    
     if block_site_ids:
         assert site_ids_body_request
     else:
