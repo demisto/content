@@ -42,6 +42,95 @@ WEB_REQUEST_COMPONENT_MAP = {"Headers": "Headers",
 ''' HELPER FUNCTIONS '''
 
 
+def build_string_match_rule_object(args: dict) -> dict:  # pragma: no cover
+    """
+    Creates a string match rule statement object that can be added to a rule
+    Args:
+        args: The command arguments
+
+    Returns:
+        String match rule statement object
+    """
+    return {
+        'Statement': build_string_match_statement(**args)
+    }
+
+
+def get_required_args_for_get_rule_group(args: dict) -> dict:  # pragma: no cover
+    """
+    Build the required arguments for a request of get_rule_group
+    Args:
+        args: The command arguments
+
+    Returns:
+       The required arguments for a request of get_rule_group
+    """
+    return {
+        'Name': args.get('group_name', ''),
+        'Scope': SCOPE_MAP[args.get('scope') or DEFAULT_SCOPE],
+        'Id': args.get('group_id', '')
+    }
+
+
+def build_ip_statement(ip_set_arn: str) -> dict:  # pragma: no cover
+    """
+    Creates an ip statement that can be added to a statements list of a rule
+    Args:
+        ip_set_arn: The ip set ARN representation
+
+    Returns:
+        An ip statement object
+    """
+    return {'IPSetReferenceStatement': {'ARN': ip_set_arn}}
+
+
+def build_country_statement(country_codes: list) -> dict:  # pragma: no cover
+    """
+    Creates a country statement that can be added to a statements list of a rule
+    Args:
+        country_codes: The country codes
+
+    Returns:
+        A country statement object
+    """
+    return {'GeoMatchStatement': {'CountryCodes': country_codes}}
+
+
+def build_country_rule_object(args: dict) -> dict:  # pragma: no cover
+    """
+    Creates a country rule statement object that can be added to a rule
+    Args:
+        args: The command arguments
+
+    Returns:
+        Country rule statement object
+    """
+    country_codes = argToList(args.get('country_codes'))
+    return {
+        'Statement': build_country_statement(country_codes)
+    }
+
+
+def build_visibility_config_object(metric_name: str,
+                                   cloud_watch_metrics_enabled: bool,
+                                   sampled_requests_enabled: bool) -> dict:  # pragma: no cover
+    """
+    Creates a dictionary which represents visibility config
+    Args:
+        metric_name: The metric name
+        cloud_watch_metrics_enabled: whether to enable cloud metrics
+        sampled_requests_enabled: whether to enable sample requests
+
+    Returns:
+        Visibility config object
+    """
+    return {
+        'CloudWatchMetricsEnabled': cloud_watch_metrics_enabled,
+        'MetricName': metric_name,
+        'SampledRequestsEnabled': sampled_requests_enabled
+    }
+
+
 def convert_dict_values_bytes_to_str(input_dict: dict):  # type: ignore
     output_dict = {}
     for key, value in input_dict.items():
@@ -85,30 +174,9 @@ def build_regex_pattern_object(regex_patterns: list) -> List[dict]:
     Returns:
         List of regex patterns objects
     """
-    regex_patterns_objects: list = [
+    return [
         {'RegexString': regex_pattern} for regex_pattern in regex_patterns
     ]
-    return regex_patterns_objects
-
-
-def build_visibility_config_object(metric_name: str,
-                                   cloud_watch_metrics_enabled: bool,
-                                   sampled_requests_enabled: bool) -> dict:  # pragma: no cover
-    """
-    Creates a dictionary which represents visibility config
-    Args:
-        metric_name: The metric name
-        cloud_watch_metrics_enabled: whether to enable cloud metrics
-        sampled_requests_enabled: whether to enable sample requests
-
-    Returns:
-        Visibility config object
-    """
-    return {
-        'CloudWatchMetricsEnabled': cloud_watch_metrics_enabled,
-        'MetricName': metric_name,
-        'SampledRequestsEnabled': sampled_requests_enabled
-    }
 
 
 def build_ip_rule_object(args: dict) -> dict:
@@ -135,45 +203,6 @@ def build_ip_rule_object(args: dict) -> dict:
             'Statements': [build_ip_statement(ip_set_arn) for ip_set_arn in ip_set_arns]
         }
     return ip_rule
-
-
-def build_ip_statement(ip_set_arn: str) -> dict:  # pragma: no cover
-    """
-    Creates an ip statement that can be added to a statements list of a rule
-    Args:
-        ip_set_arn: The ip set ARN representation
-
-    Returns:
-        An ip statement object
-    """
-    return {'IPSetReferenceStatement': {'ARN': ip_set_arn}}
-
-
-def build_country_statement(country_codes: list) -> dict:  # pragma: no cover
-    """
-    Creates a country statement that can be added to a statements list of a rule
-    Args:
-        country_codes: The country codes
-
-    Returns:
-        A country statement object
-    """
-    return {'GeoMatchStatement': {'CountryCodes': country_codes}}
-
-
-def build_country_rule_object(args: dict) -> dict:  # pragma: no cover
-    """
-    Creates a country rule statement object that can be added to a rule
-    Args:
-        args: The command arguments
-
-    Returns:
-        Country rule statement object
-    """
-    country_codes = argToList(args.get('country_codes'))
-    return {
-        'Statement': build_country_statement(country_codes)
-    }
 
 
 def build_string_match_statement(match_type: str = '',
@@ -348,20 +377,6 @@ def build_regex_match_statement(web_request_component: str,
     }
 
 
-def build_string_match_rule_object(args: dict) -> dict:  # pragma: no cover
-    """
-    Creates a string match rule statement object that can be added to a rule
-    Args:
-        args: The command arguments
-
-    Returns:
-        String match rule statement object
-    """
-    return {
-        'Statement': build_string_match_statement(**args)
-    }
-
-
 def build_new_rule_object(args: dict, rule_group_visibility_config: dict,
                           build_rule_func: Callable[[dict], dict]) -> dict:
     """
@@ -425,22 +440,6 @@ def append_new_rule(rules: list, rule: dict) -> list:
     updated_rules = rules.copy()
     updated_rules.append(rule)
     return updated_rules
-
-
-def get_required_args_for_get_rule_group(args: dict) -> dict:  # pragma: no cover
-    """
-    Build the required arguments for a request of get_rule_group
-    Args:
-        args: The command arguments
-
-    Returns:
-       The required arguments for a request of get_rule_group
-    """
-    return {
-        'Name': args.get('group_name', ''),
-        'Scope': SCOPE_MAP[args.get('scope') or DEFAULT_SCOPE],
-        'Id': args.get('group_id', '')
-    }
 
 
 def get_required_response_fields_from_rule_group(client: boto3.client, kwargs: dict) -> Tuple[list, dict, str]:

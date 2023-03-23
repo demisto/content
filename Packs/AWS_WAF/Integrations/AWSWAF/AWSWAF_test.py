@@ -4,6 +4,10 @@ from CommonServerPython import *
 import pytest
 from AWSWAF import OPERATOR_TO_STATEMENT_OPERATOR, REGEX_MATCH_STATEMENT, BYTE_MATCH_STATEMENT
 
+IP_ARN_LIST = ['ip_arn', 'ip_arn1']
+AND_CONDITION_OPERATOR = 'And'
+OR_CONDITION_OPERATOR = 'Or'
+
 
 class MockedBoto3Client:
     """Mocked AWSClient session for easier expectation settings."""
@@ -57,6 +61,16 @@ def util_load_json(path):
 
 
 def test_get_tags_dict_from_args():
+    """
+    Given:
+        tags keys and tags values lists of same length
+
+    When:
+        Creating tags for create commands
+
+    Then:
+        assert tags list has same length as the tags and values lists
+    """
     from AWSWAF import get_tags_dict_from_args
     tag_keys = ['tag1', 'tag2']
     tag_values = ['value1', 'value2']
@@ -65,6 +79,16 @@ def test_get_tags_dict_from_args():
 
 
 def test_convert_dict_values_bytes_to_str():
+    """
+    Given:
+        Dictionary contains bytes objects
+
+    When:
+        Creating outputs for commands
+
+    Then:
+        assert all bytes objects have been converted to strings
+    """
     from AWSWAF import convert_dict_values_bytes_to_str
     input_dict = {'some_key': b'some_value',
                   'some_key1': [b'some_value'],
@@ -81,6 +105,16 @@ def test_convert_dict_values_bytes_to_str():
 
 
 def test_get_tags_dict_from_args_raise_exception():
+    """
+    Given:
+        tags keys and tags values lists  of different lengths
+
+    When:
+        Creating tags for create commands
+
+    Then:
+        assert exception wis raised
+    """
     from AWSWAF import get_tags_dict_from_args
     tag_keys = ['tag1']
     tag_values = ['value1', 'value2']
@@ -89,15 +123,20 @@ def test_get_tags_dict_from_args_raise_exception():
 
 
 def test_build_regex_pattern_object():
+    """
+    Given:
+        Regex patterns list
+
+    When:
+        Creating regex pattern object
+
+    Then:
+        assert object was being created correctly
+    """
     from AWSWAF import build_regex_pattern_object
     regex_patterns = ["pattern1", "pattern2"]
     result = build_regex_pattern_object(regex_patterns=regex_patterns)
     assert len(result) == 2
-
-
-IP_ARN_LIST = ['ip_arn', 'ip_arn1']
-AND_CONDITION_OPERATOR = 'And'
-OR_CONDITION_OPERATOR = 'Or'
 
 
 @pytest.mark.parametrize('args, expected_result',
@@ -106,6 +145,17 @@ OR_CONDITION_OPERATOR = 'Or'
                           ({'ip_set_arn': IP_ARN_LIST, 'condition_operator': AND_CONDITION_OPERATOR},
                            OPERATOR_TO_STATEMENT_OPERATOR[AND_CONDITION_OPERATOR])])
 def test_build_ip_rule_object(args, expected_result):
+    """
+    Given:
+        IP sets arns
+
+    When:
+        Creating a new rule object
+
+    Then:
+        assert object['Statement'] contains one statement object
+        assert object['Statement'] contains statement operator
+    """
     from AWSWAF import build_ip_rule_object
     ip_rule = build_ip_rule_object(args=args)
     assert expected_result in ip_rule['Statement']
@@ -125,6 +175,17 @@ def test_build_ip_rule_object(args, expected_result):
                                "ARN": "ip_arn1"
                            }}])])
 def test_update_rule_with_statement(rule_file, statement_condition, statements):
+    """
+    Given:
+        Rule statements
+
+    When:
+        Updating an existing rule with a statement
+
+    Then:
+        assert object['Statement'] contains the given condition operator
+        assert object['Statement'] contains the existing condition operator
+    """
     from AWSWAF import update_rule_with_statement
     rule = util_load_json(rule_file)
     update_rule_with_statement(rule=rule, statements=statements, condition_operator=AND_CONDITION_OPERATOR)
@@ -132,6 +193,16 @@ def test_update_rule_with_statement(rule_file, statement_condition, statements):
 
 
 def test_create_rules_list_with_new_rule_statement(mocker):
+    """
+    Given:
+        Rule name to update
+
+    When:
+        Updating an existing rule with a statement
+
+    Then:
+        assert updating happens to the correct rule
+    """
     from AWSWAF import create_rules_list_with_new_rule_statement
     rules = util_load_json('rule_group').get('RuleGroup').get('Rules')
     args = {'rule_name': 'test_1'}
@@ -144,6 +215,16 @@ def test_create_rules_list_with_new_rule_statement(mocker):
                          [('Exactly Matches String', 'regex_arn', None, 'string_to_match must be provided'),
                           ('Matches Regex Pattern Set', None, 'str_to_match', 'regex_set_arn must be provided')])
 def test_build_string_match_statement_raise_exception(match_type, regex_set_arn, string_to_match, expected_exception):
+    """
+    Given:
+        String match statement related parameters
+
+    When:
+        Creating a string match statement
+
+    Then:
+        assert exception is raised when wrong parameters are provided
+    """
     from AWSWAF import build_string_match_statement
     with pytest.raises(DemistoException) as e:
         build_string_match_statement(match_type=match_type)
@@ -164,6 +245,16 @@ def test_build_string_match_statement(match_type,
                                       web_request_component,
                                       expected_result,
                                       match_statement):
+    """
+    Given:
+        String match statement related parameters
+
+    When:
+        Creating a string match statement
+
+    Then:
+        assert the created object matches the match type
+    """
     from AWSWAF import build_string_match_statement
     statement = build_string_match_statement(match_type,
                                              string_to_match,
@@ -181,12 +272,33 @@ def test_build_string_match_statement(match_type,
                            {}),
                           ('Body', 'CONTINUE', {'OversizeHandling': 'CONTINUE'})])
 def test_build_web_component_match_object(web_request_component, oversize_handling, expected_result):
+    """
+    Given:
+        web_request_component, oversize_handling
+
+    When:
+        Creating a web component object
+
+    Then:
+        assert that oversize_handling exists for the relevant web components
+        assert that match pattern exists for the relevant web components
+    """
     from AWSWAF import build_web_component_match_object
     web_request_component_object = build_web_component_match_object(web_request_component, oversize_handling)
     assert web_request_component_object == expected_result
 
 
 def test_delete_rule():
+    """
+    Given:
+        Rules list and rule to delete
+
+    When:
+        Deleting a rule
+
+    Then:
+        assert rule has been deleted
+    """
     from AWSWAF import delete_rule
     original_rules = util_load_json('rule_group').get('RuleGroup').get('Rules')
     deleted_rules = delete_rule(rule_name='test_1', rules=original_rules)
@@ -194,6 +306,16 @@ def test_delete_rule():
 
 
 def test_append_new_rule():
+    """
+    Given:
+        Rules list and rule to add
+
+    When:
+        Creating a rule
+
+    Then:
+        assert rule has been created and appended
+    """
     from AWSWAF import append_new_rule
     original_rules = util_load_json('rule_group').get('RuleGroup').get('Rules')
     rule = util_load_json('rule_one_statement')
@@ -205,6 +327,16 @@ def test_append_new_rule():
 
 
 def test_create_ip_set_command(mocker):
+    """
+    Given:
+        Command arguments
+
+    When:
+        Creating ip set
+
+    Then:
+        assert api request was called with the required parameters
+    """
     from AWSWAF import create_ip_set_command
     client = MockedBoto3Client()
     create_ip_set_args = {'name': 'name', 'scope': 'Regional', 'ip_version': 'IPV4', 'addresses': []}
@@ -214,6 +346,16 @@ def test_create_ip_set_command(mocker):
 
 
 def test_get_ip_set_command(mocker):
+    """
+    Given:
+        Command arguments
+
+    When:
+        Getting ip set
+
+    Then:
+        assert api request was called with the required parameters
+    """
     from AWSWAF import get_ip_set_command
     client = MockedBoto3Client()
     get_ip_set_args = {'name': 'name', 'scope': 'Regional', 'id': 'id'}
@@ -225,6 +367,17 @@ def test_get_ip_set_command(mocker):
 @pytest.mark.parametrize('is_overwrite, updated_addresses',
                          [(True, ['1.1.1.2/32']), (False, ['1.1.1.2/32', '1.1.2.2/32'])])
 def test_update_ip_set_command(mocker, is_overwrite, updated_addresses):
+    """
+    Given:
+        Command arguments
+
+    When:
+        Updating ip set
+
+    Then:
+        assert api request was called with the required parameters
+        assert the addresses list is updated according to overwrite argument
+    """
     from AWSWAF import update_ip_set_command
     client = MockedBoto3Client()
     update_ip_set_args = {'name': 'name', 'scope': 'Regional', 'ip_version': 'IPV4',
@@ -241,6 +394,16 @@ def test_update_ip_set_command(mocker, is_overwrite, updated_addresses):
 
 
 def test_list_ip_set_command(mocker):
+    """
+    Given:
+        Command arguments
+
+    When:
+        Listing ip sets
+
+    Then:
+        assert api request was called with the required parameters
+    """
     from AWSWAF import list_ip_set_command
     client = MockedBoto3Client()
     list_ip_set_args = {'scope': 'Regional'}
@@ -250,6 +413,16 @@ def test_list_ip_set_command(mocker):
 
 
 def test_delete_ip_set_command(mocker):
+    """
+    Given:
+        Command arguments
+
+    When:
+        Deleting ip set
+
+    Then:
+        assert api request was called with the required parameters
+    """
     from AWSWAF import delete_ip_set_command
     client = MockedBoto3Client()
     delete_ip_set_args = {'name': 'name', 'scope': 'Regional', 'id': 'id'}
@@ -264,6 +437,16 @@ def test_delete_ip_set_command(mocker):
 
 
 def test_create_regex_set_command(mocker):
+    """
+    Given:
+        Command arguments
+
+    When:
+        Creating regex patterns set
+
+    Then:
+        assert api request was called with the required parameters
+    """
     from AWSWAF import create_regex_set_command
     client = MockedBoto3Client()
     create_regex_set_args = {'name': 'name', 'scope': 'Regional', 'regex_pattern': 'regex_pattern'}
@@ -275,6 +458,16 @@ def test_create_regex_set_command(mocker):
 
 
 def test_get_regex_set_command(mocker):
+    """
+    Given:
+        Command arguments
+
+    When:
+        Getting regex patterns set
+
+    Then:
+        assert api request was called with the required parameters
+    """
     from AWSWAF import get_regex_set_command
     client = MockedBoto3Client()
     get_regex_set_args = {'name': 'name', 'scope': 'Regional', 'id': 'id'}
@@ -287,6 +480,17 @@ def test_get_regex_set_command(mocker):
                          [(True, [{"RegexString": "regex_pattern1"}]),
                           (False, [{"RegexString": "regex_pattern1"}, {"RegexString": "regex_pattern"}])])
 def test_update_regex_set_command(mocker, is_overwrite, updated_regex_list):
+    """
+    Given:
+        Command arguments
+
+    When:
+        Updating regex patterns set
+
+    Then:
+        assert api request was called with the required parameters
+        assert regex patterns list was updated according to the overwrite parameter
+    """
     from AWSWAF import update_regex_set_command
     client = MockedBoto3Client()
     update_regex_set_args = {'name': 'name', 'scope': 'Regional', 'regex_pattern': 'regex_pattern1',
@@ -303,6 +507,16 @@ def test_update_regex_set_command(mocker, is_overwrite, updated_regex_list):
 
 
 def test_list_regex_set_command(mocker):
+    """
+    Given:
+        Command arguments
+
+    When:
+        Listing regex patterns set
+
+    Then:
+        assert api request was called with the required parameters
+    """
     from AWSWAF import list_regex_set_command
     client = MockedBoto3Client()
     list_regex_set_args = {'scope': 'Regional'}
@@ -312,6 +526,16 @@ def test_list_regex_set_command(mocker):
 
 
 def test_delete_regex_set_command(mocker):
+    """
+    Given:
+        Command arguments
+
+    When:
+        Deleting regex patterns set
+
+    Then:
+        assert api request was called with the required parameters
+    """
     from AWSWAF import delete_regex_set_command
     client = MockedBoto3Client()
     delete_regex_set_args = {'name': 'name', 'scope': 'Regional', 'id': 'id'}
@@ -326,6 +550,16 @@ def test_delete_regex_set_command(mocker):
 
 
 def test_list_rule_group_command(mocker):
+    """
+    Given:
+        Command arguments
+
+    When:
+        Listing rule group
+
+    Then:
+        assert api request was called with the required parameters
+    """
     from AWSWAF import list_rule_group_command
     client = MockedBoto3Client()
     list_rule_group_args = {'scope': 'Regional'}
@@ -335,6 +569,16 @@ def test_list_rule_group_command(mocker):
 
 
 def test_get_rule_group_command(mocker):
+    """
+    Given:
+        Command arguments
+
+    When:
+        Getting rule group
+
+    Then:
+        assert api request was called with the required parameters
+    """
     from AWSWAF import get_rule_group_command
     client = MockedBoto3Client()
     get_rule_group_args = {'name': 'name', 'scope': 'Regional', 'id': 'id'}
@@ -344,6 +588,16 @@ def test_get_rule_group_command(mocker):
 
 
 def test_create_rule_group_command(mocker):
+    """
+    Given:
+        Command arguments
+
+    When:
+        Creating rule group
+
+    Then:
+        assert api request was called with the required parameters
+    """
     from AWSWAF import create_rule_group_command
     client = MockedBoto3Client()
     create_rule_group_args = {'name': 'name',
@@ -365,6 +619,16 @@ def test_create_rule_group_command(mocker):
 
 
 def test_delete_rule_group_command(mocker):
+    """
+    Given:
+        Command arguments
+
+    When:
+        Deleting rule group
+
+    Then:
+        assert api request was called with the required parameters
+    """
     from AWSWAF import delete_rule_group_command
     client = MockedBoto3Client()
     delete_rule_group_args = {'name': 'name', 'scope': 'Regional', 'id': 'id'}
