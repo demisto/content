@@ -26,6 +26,7 @@
     ],
     "certification": "certified",
     "marketplaces": [
-        "xsoar"
+        "xsoar",
+        "marketplacev2"
     ]
 }
