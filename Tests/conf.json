@@ -5813,7 +5813,8 @@
         "Anomali ThreatStream v3": "recording is not working",
         "LogRhythmRest V2": "Submits a file - tests that send files shouldn't be mocked.",
         "Cortex XDR - IR": "internal product, no need to mock",
-        "Microsoft Teams via Webhook": "message sent contains random hostname of server"
+        "Microsoft Teams via Webhook": "message sent contains random hostname of server",
+        "TeamCymru": "Mocks does not support sockets",
     },
     "parallel_integrations": [
         "AWS - ACM",
