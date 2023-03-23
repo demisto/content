@@ -1,0 +1,144 @@
+{
+    "sonicwall_nsv_270_raw": {
+      "cn1": {
+        "type": "int",
+        "is_array": false
+      },
+      "cn2": {
+        "type": "int",
+        "is_array": false
+      },
+      "dpt": {
+        "type": "int",
+        "is_array": false
+      },
+      "dnpt": {
+        "type": "string",
+        "is_array": false
+      },
+      "spt": {
+        "type": "int",
+        "is_array": false
+      },
+      "snpt": {
+        "type": "string",
+        "is_array": false
+      },
+      "in": {
+        "type": "string",
+        "is_array": false
+      },
+      "cat": {
+        "type": "string",
+        "is_array": false
+      },
+      "cs6": {
+        "type": "string",
+        "is_array": false
+      },
+      "dst": {
+        "type": "string",
+        "is_array": false
+      },
+      "cs2Label": {
+        "type": "string",
+        "is_array": false
+      },
+      "msg": {
+        "type": "string",
+        "is_array": false
+      },
+      "out": {
+        "type": "string",
+        "is_array": false
+      },
+      "src": {
+        "type": "string",
+        "is_array": false
+      },
+      "cs1Label": {
+        "type": "string",
+        "is_array": false
+      },
+      "dmac": {
+        "type": "string",
+        "is_array": false
+      },
+      "smac": {
+        "type": "string",
+        "is_array": false
+      },
+      "susr": {
+        "type": "string",
+        "is_array": false
+      },
+      "dstV6": {
+        "type": "string",
+        "is_array": false
+      },
+      "proto": {
+        "type": "string",
+        "is_array": false
+      },
+       "srcV6": {
+        "type": "string",
+        "is_array": false
+      },
+       "cefName": {
+        "type": "string",
+        "is_array": false
+      },
+       "cn1Label": {
+        "type": "string",
+        "is_array": false
+      },
+       "cn2Label": {
+        "type": "string",
+        "is_array": false
+      },
+       "cs3Label": {
+        "type": "string",
+        "is_array": false
+      },
+       "cs4Label": {
+        "type": "string",
+        "is_array": false
+      },
+       "cs5Label": {
+        "type": "string",
+        "is_array": false
+      },
+       "cn3Label": {
+        "type": "string",
+        "is_array": false
+      },
+      "cs6Label": {
+        "type": "string",
+        "is_array": false
+      },
+      "oldValue": {
+        "type": "string",
+        "is_array": false
+      },
+      "fw_action": {
+        "type": "string",
+        "is_array": false
+      },
+      "cefSeverity": {
+        "type": "string",
+        "is_array": false
+      },
+      "cefDeviceVersion": {
+        "type": "string",
+        "is_array": false
+      },
+      "deviceInboundInterface": {
+        "type": "string",
+        "is_array": false
+      },  
+      "deviceOutboundInterface": {
+        "type": "string",
+        "is_array": false
+      }                
+    }
+  }
