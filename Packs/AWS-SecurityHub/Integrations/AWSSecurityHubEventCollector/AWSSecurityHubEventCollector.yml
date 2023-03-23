@@ -1,4 +1,7 @@
 category: Analytics & SIEM
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: AWS Security Hub Event Collector
   version: -1
@@ -34,7 +37,7 @@ configuration:
   section: Connect
 - display: Access Key
   name: credentials
-  required: true
+  required: false
   type: 9
   displaypassword: Secret Key
 - defaultvalue: 3 days

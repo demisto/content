@@ -1,6 +1,6 @@
 {
     "name": "AWS - Security Hub",
-    "description": "Amazon Web Services Security Hub Service .",
+    "description": "Amazon Web Services Security Hub Service.",
     "support": "xsoar",
     "currentVersion": "1.2.0",
     "author": "Cortex XSOAR",
