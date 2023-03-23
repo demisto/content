@@ -2188,7 +2188,7 @@ script:
     - contextPath: TC.Group.ID
       description: The ID of the group.
       type: string
-  dockerimage: demisto/python3:3.10.7.33922
+  dockerimage: demisto/python3:3.10.10.49934
   runonce: false
   isfetch: true
   script: ''
