@@ -1356,6 +1356,23 @@ def safe_load_json(json_object):
     return safe_json
 
 
+def convert_dict_values_bytes_to_str(input_dict: dict):  # type: ignore
+    output_dict = {}
+    for key, value in input_dict.items():
+        if isinstance(value, dict):
+            output_dict[key] = convert_dict_values_bytes_to_str(value)
+        elif isinstance(value, bytes):
+            output_dict[key] = value.decode()
+        elif isinstance(value, list):
+            output_dict[key] = [
+                convert_dict_values_bytes_to_str(item) if isinstance(item, dict)
+                else item.decode() if isinstance(item, bytes) else item
+                for item in value]
+        else:
+            output_dict[key] = value
+    return output_dict
+
+
 def datetime_to_string(datetime_obj):
     """
     Converts a datetime object into a string. When used with `json.dumps()` for the `default` parameter,

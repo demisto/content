@@ -78,32 +78,6 @@ def test_get_tags_dict_from_args():
     assert len(result) == 2
 
 
-def test_convert_dict_values_bytes_to_str():
-    """
-    Given:
-        Dictionary contains bytes objects
-
-    When:
-        Creating outputs for commands
-
-    Then:
-        assert all bytes objects have been converted to strings
-    """
-    from AWSWAF import convert_dict_values_bytes_to_str
-    input_dict = {'some_key': b'some_value',
-                  'some_key1': [b'some_value'],
-                  'some_key2': {'some_key': [b'some_value'],
-                                'some_key1': b'some_value'}
-                  }
-    expected_output_dict = {'some_key': 'some_value',
-                            'some_key1': ['some_value'],
-                            'some_key2': {'some_key': ['some_value'],
-                                          'some_key1': 'some_value'}
-                            }
-    actual_output = convert_dict_values_bytes_to_str(input_dict)
-    assert actual_output == expected_output_dict
-
-
 def test_get_tags_dict_from_args_raise_exception():
     """
     Given:
