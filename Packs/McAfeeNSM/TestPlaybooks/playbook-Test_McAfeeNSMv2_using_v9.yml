@@ -1,6 +1,5 @@
-id: Test_McAfeeNSMv2_v9
+id: Test_McAfeeNSMv2_using_v9
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: Test_McAfeeNSMv2_using_v9
 description: |-
   A test playbook for McAfee NSM v2.
@@ -17,9 +16,10 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       "#none#":
-        - "1"
+      - "1"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -56,7 +56,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "2"
+      - "2"
     scriptarguments:
       all:
         simple: "yes"
@@ -91,7 +91,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "35"
+      - "35"
     scriptarguments:
       domain_id:
         simple: "0"
@@ -132,7 +132,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "4"
+      - "4"
     scriptarguments:
       attack_id:
         simple: "0x00000100"
@@ -165,16 +165,16 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-        - "5"
+      - "5"
     separatecontext: false
     conditions:
-      - label: "yes"
-        condition:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: NSM.Attacks.ID
-                iscontext: true
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: NSM.Attacks.ID
+            iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -205,7 +205,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "6"
+      - "6"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -235,16 +235,16 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-        - "7"
+      - "7"
     separatecontext: false
     conditions:
-      - label: "yes"
-        condition:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: NSM.Domains.ID
-                iscontext: true
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: NSM.Domains.ID
+            iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -275,7 +275,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "8"
+      - "8"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -305,16 +305,16 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-        - "9"
+      - "9"
     separatecontext: false
     conditions:
-      - label: "yes"
-        condition:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: NSM.Sensors.ID
-                iscontext: true
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: NSM.Sensors.ID
+            iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -345,7 +345,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "10"
+      - "10"
     scriptarguments:
       domain_id:
         simple: "0"
@@ -378,16 +378,16 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-        - "36"
+      - "36"
     separatecontext: false
     conditions:
-      - label: "yes"
-        condition:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: NSM.IPSPolicies.ID
-                iscontext: true
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: NSM.IPSPolicies.ID
+            iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -418,7 +418,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "12"
+      - "12"
     scriptarguments:
       policy_id:
         simple: ${ips_policy_id}
@@ -451,19 +451,19 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-        - "13"
+      - "13"
     separatecontext: false
     conditions:
-      - label: "yes"
-        condition:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: NSM.IPSPolicies.ID
-                iscontext: true
-              right:
-                value:
-                  simple: ${ips_policy_id}
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: NSM.IPSPolicies.ID
+            iscontext: true
+          right:
+            value:
+              simple: ${ips_policy_id}
     continueonerrortype: ""
     view: |-
       {
@@ -494,7 +494,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "50"
+      - "50"
     scriptarguments:
       end_time:
         simple: 12/12/2022 00:00
@@ -533,6 +533,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -564,7 +565,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "16"
+      - "16"
     scriptarguments:
       domain_id:
         simple: "0"
@@ -597,16 +598,16 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-        - "38"
+      - "38"
     separatecontext: false
     conditions:
-      - label: "yes"
-        condition:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: NSM.Policy.policyId
-                iscontext: true
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: NSM.Policy.policyId
+            iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -637,7 +638,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "18"
+      - "18"
     scriptarguments:
       policy_id:
         simple: ${firewall_policy_id}
@@ -670,19 +671,19 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-        - "51"
+      - "51"
     separatecontext: false
     conditions:
-      - label: "yes"
-        condition:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: NSM.Policy.FirewallPolicyId
-                iscontext: true
-              right:
-                value:
-                  simple: ${firewall_policy_id}
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: NSM.Policy.FirewallPolicyId
+            iscontext: true
+          right:
+            value:
+              simple: ${firewall_policy_id}
     continueonerrortype: ""
     view: |-
       {
@@ -706,17 +707,14 @@ tasks:
       id: 7772eff7-92fe-4455-8d32-c80738c152e9
       version: -1
       name: Create firewall policy
-      description:
-        Adds a new Firewall Policy and Access Rules. You have to provide
-        at lease one of the source/destination object. If you provide one of the source/destination
-        fields, you must provide the other one as well.
+      description: Adds a new Firewall Policy and Access Rules. You have to provide at lease one of the source/destination object. If you provide one of the source/destination fields, you must provide the other one as well.
       script: "|||nsm-create-firewall-policy"
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
       "#none#":
-        - "29"
+      - "29"
     scriptarguments:
       description:
         simple: test
@@ -739,13 +737,13 @@ tasks:
           root: NSM.Rule
           accessor: ruleobjId
           transformers:
-            - operator: FirstArrayElement
+          - operator: FirstArrayElement
       source_rule_object_type:
         complex:
           root: NSM.Rule
           accessor: ruleobjType
           transformers:
-            - operator: FirstArrayElement
+          - operator: FirstArrayElement
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -770,21 +768,14 @@ tasks:
       id: de715926-3cb3-4c41-8415-cdd70decfebe
       version: -1
       name: Update Firewall policy
-      description:
-        Updates the Firewall Policy details. If the argument is_overwrite=true
-        than the new values of the provided addresses will replace the existing values
-        else the addresses will be added to them. If you want to delete a rule than
-        enter is_overwrite=true and the relevant rule_object_id=-1. If is_overwrite=true
-        and there is no value in one of the rules (source or destination) their value
-        will be as before. If is_overwrite=true than at least one of the rules (source
-        or destination) must be provided.
+      description: Updates the Firewall Policy details. If the argument is_overwrite=true than the new values of the provided addresses will replace the existing values else the addresses will be added to them. If you want to delete a rule than enter is_overwrite=true and the relevant rule_object_id=-1. If is_overwrite=true and there is no value in one of the rules (source or destination) their value will be as before. If is_overwrite=true than at least one of the rules (source or destination) must be provided.
       script: "|||nsm-update-firewall-policy"
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
       "#none#":
-        - "22"
+      - "22"
     scriptarguments:
       description:
         simple: hello updatingg
@@ -793,13 +784,13 @@ tasks:
           root: NSM.Rule
           accessor: ruleobjId
           transformers:
-            - operator: FirstArrayElement
+          - operator: FirstArrayElement
       destination_rule_object_type:
         complex:
           root: NSM.Rule
           accessor: ruleobjType
           transformers:
-            - operator: FirstArrayElement
+          - operator: FirstArrayElement
       is_overwrite:
         simple: "true"
       policy_id:
@@ -835,7 +826,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "23"
+      - "23"
     scriptarguments:
       include_rule_objects:
         simple: "true"
@@ -870,31 +861,31 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-        - "24"
+      - "24"
     separatecontext: false
     conditions:
-      - label: "yes"
-        condition:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: NSM.Policy.Description
-                iscontext: true
-              right:
-                value:
-                  simple: hello updatingg
-          - - operator: isEqualString
-              left:
-                value:
-                  complex:
-                    root: NSM.Policy.MemberDetails.MemberRuleList.DestinationAddressObjectList
-                    accessor: RuleObjectId
-                    transformers:
-                      - operator: FirstArrayElement
-                iscontext: true
-              right:
-                value:
-                  simple: ${rule_object_id}
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: NSM.Policy.Description
+            iscontext: true
+          right:
+            value:
+              simple: hello updatingg
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: NSM.Policy.MemberDetails.MemberRuleList.DestinationAddressObjectList
+                accessor: RuleObjectId
+                transformers:
+                - operator: FirstArrayElement
+            iscontext: true
+          right:
+            value:
+              simple: ${rule_object_id}
     continueonerrortype: ""
     view: |-
       {
@@ -925,7 +916,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "40"
+      - "40"
     scriptarguments:
       policy_id:
         simple: ${NSM.Policy.FirewallPolicyId}
@@ -958,16 +949,16 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-        - "39"
+      - "39"
     separatecontext: false
     conditions:
-      - label: "yes"
-        condition:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: NSM.Rule.ruleobjId
-                iscontext: true
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: NSM.Rule.ruleobjId
+            iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -998,7 +989,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "28"
+      - "28"
     scriptarguments:
       domain:
         simple: "0"
@@ -1039,18 +1030,18 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-        - "30"
+      - "30"
     separatecontext: false
     conditions:
-      - label: "yes"
-        condition:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: NSM.Rule.ruleobjId
-                iscontext: true
-              right:
-                value: {}
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: NSM.Rule.ruleobjId
+            iscontext: true
+          right:
+            value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -1079,18 +1070,18 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-        - "20"
+      - "20"
     separatecontext: false
     conditions:
-      - label: "yes"
-        condition:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: NSM.Policy.FirewallPolicyId
-                iscontext: true
-              right:
-                value: {}
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: NSM.Policy.FirewallPolicyId
+            iscontext: true
+          right:
+            value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -1121,7 +1112,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "31"
+      - "31"
     scriptarguments:
       rule_id:
         simple: ${NSM.Rule.ruleobjId}
@@ -1156,7 +1147,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "32"
+      - "32"
     scriptarguments:
       description:
         simple: updated
@@ -1200,7 +1191,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "33"
+      - "33"
     scriptarguments:
       key:
         simple: NSM.Rule
@@ -1235,7 +1226,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "34"
+      - "34"
     scriptarguments:
       rule_id:
         simple: ${rule_object_id}
@@ -1268,27 +1259,27 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-        - "54"
+      - "54"
     separatecontext: false
     conditions:
-      - label: "yes"
-        condition:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: NSM.Rule.ruleobjId
-                iscontext: true
-              right:
-                value:
-                  simple: ${rule_object_id}
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: NSM.Rule.description
-                iscontext: true
-              right:
-                value:
-                  simple: updated
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: NSM.Rule.ruleobjId
+            iscontext: true
+          right:
+            value:
+              simple: ${rule_object_id}
+      - - operator: isEqualString
+          left:
+            value:
+              simple: NSM.Rule.description
+            iscontext: true
+          right:
+            value:
+              simple: updated
     continueonerrortype: ""
     view: |-
       {
@@ -1317,16 +1308,16 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-        - "3"
+      - "3"
     separatecontext: false
     conditions:
-      - label: "yes"
-        condition:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: NSM.Alerts.ID
-                iscontext: true
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: NSM.Alerts.ID
+            iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -1357,7 +1348,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "11"
+      - "11"
     scriptarguments:
       key:
         simple: ips_policy_id
@@ -1366,7 +1357,7 @@ tasks:
           root: NSM.IPSPolicies
           accessor: ID
           transformers:
-            - operator: FirstArrayElement
+          - operator: FirstArrayElement
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1398,7 +1389,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "17"
+      - "17"
     scriptarguments:
       key:
         simple: firewall_policy_id
@@ -1407,7 +1398,7 @@ tasks:
           root: NSM.Policy
           accessor: policyId
           transformers:
-            - operator: FirstArrayElement
+          - operator: FirstArrayElement
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1439,7 +1430,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "15"
+      - "15"
     scriptarguments:
       key:
         simple: rule_object_id
@@ -1448,7 +1439,7 @@ tasks:
           root: NSM.Rule
           accessor: ruleobjId
           transformers:
-            - operator: FirstArrayElement
+          - operator: FirstArrayElement
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1478,21 +1469,21 @@ tasks:
       brand: ""
     nexttasks:
       "#default#":
-        - "49"
+      - "49"
       "yes":
-        - "42"
+      - "42"
     separatecontext: false
     conditions:
-      - label: "yes"
-        condition:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: NSM.Rule.name
-                iscontext: true
-              right:
-                value:
-                  simple: hello rule hello
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: NSM.Rule.name
+            iscontext: true
+          right:
+            value:
+              simple: hello rule hello
     continueonerrortype: ""
     view: |-
       {
@@ -1523,20 +1514,20 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "40"
+      - "40"
     scriptarguments:
       policy_id:
         complex:
           root: NSM.Policy
           filters:
-            - - operator: isEqualString
-                left:
-                  value:
-                    simple: NSM.Policy.policyName
-                  iscontext: true
-                right:
-                  value:
-                    simple: demisto-policy
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: NSM.Policy.policyName
+                iscontext: true
+              right:
+                value:
+                  simple: demisto-policy
           accessor: policyId
     separatecontext: false
     continueonerrortype: ""
@@ -1569,20 +1560,20 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "53"
+      - "53"
     scriptarguments:
       rule_id:
         complex:
           root: NSM.Rule
           filters:
-            - - operator: isEqualString
-                left:
-                  value:
-                    simple: NSM.Rule.name
-                  iscontext: true
-                right:
-                  value:
-                    simple: hello rule hello
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: NSM.Rule.name
+                iscontext: true
+              right:
+                value:
+                  simple: hello rule hello
           accessor: ruleobjId
     separatecontext: false
     continueonerror: true
@@ -1616,7 +1607,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "47"
+      - "47"
     scriptarguments:
       domain_id:
         simple: "0"
@@ -1651,7 +1642,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "31"
+      - "31"
     scriptarguments:
       key:
         simple: rule_object_id
@@ -1660,7 +1651,7 @@ tasks:
           root: NSM.Rule
           accessor: ruleobjId
           transformers:
-            - operator: FirstArrayElement
+          - operator: FirstArrayElement
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1697,7 +1688,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "19"
+      - "19"
     scriptarguments:
       key:
         simple: NSM.Policy
@@ -1737,7 +1728,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "27"
+      - "27"
     scriptarguments:
       key:
         simple: NSM.Rule
@@ -1772,7 +1763,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "26"
+      - "26"
     scriptarguments:
       domain_id:
         simple: "0"
@@ -1805,21 +1796,21 @@ tasks:
       brand: ""
     nexttasks:
       "#default#":
-        - "48"
+      - "48"
       "yes":
-        - "41"
+      - "41"
     separatecontext: false
     conditions:
-      - label: "yes"
-        condition:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: NSM.Policy.Name
-                iscontext: true
-              right:
-                value:
-                  simple: demisto-policy
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: NSM.Policy.Name
+            iscontext: true
+          right:
+            value:
+              simple: demisto-policy
     continueonerrortype: ""
     view: |-
       {
@@ -1855,7 +1846,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "46"
+      - "46"
     scriptarguments:
       key:
         simple: NSM.Rule
@@ -1890,7 +1881,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "55"
+      - "55"
     scriptarguments:
       device_id:
         simple: "1001"
@@ -1925,20 +1916,20 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-        - "56"
+      - "56"
     separatecontext: false
     conditions:
-      - label: "yes"
-        condition:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  complex:
-                    root: NSM
-                    accessor: Interface
-                iscontext: true
-              right:
-                value: {}
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: NSM
+                accessor: Interface
+            iscontext: true
+          right:
+            value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -1969,7 +1960,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "57"
+      - "57"
     scriptarguments:
       domain_id:
         simple: "0"
@@ -2002,18 +1993,18 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-        - "58"
+      - "58"
     separatecontext: false
     conditions:
-      - label: "yes"
-        condition:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  complex:
-                    root: NSM
-                    accessor: Device
-                iscontext: true
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: NSM
+                accessor: Device
+            iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -2044,7 +2035,7 @@ tasks:
       brand: ""
     nexttasks:
       "#none#":
-        - "59"
+      - "59"
     scriptarguments:
       domain_id:
         simple: "0"
@@ -2077,18 +2068,18 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-        - "60"
+      - "60"
     separatecontext: false
     conditions:
-      - label: "yes"
-        condition:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  complex:
-                    root: NSM
-                    accessor: DevicePolicy
-                iscontext: true
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: NSM
+                accessor: DevicePolicy
+            iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -2112,16 +2103,14 @@ tasks:
       id: 8b7d0522-0d84-46d9-8405-66309572cc99
       version: -1
       name: List interface policy
-      description:
-        List all the policies assigned to all interfaces or a specific
-        interface.
+      description: List all the policies assigned to all interfaces or a specific interface.
       script: "|||nsm-list-interface-policy"
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
       "#none#":
-        - "61"
+      - "61"
     scriptarguments:
       domain_id:
         simple: "0"
@@ -2154,18 +2143,18 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-        - "14"
+      - "14"
     separatecontext: false
     conditions:
-      - label: "yes"
-        condition:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  complex:
-                    root: NSM
-                    accessor: InterfacePolicy
-                iscontext: true
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: NSM
+                accessor: InterfacePolicy
+            iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -2195,3 +2184,4 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 6.5.0
