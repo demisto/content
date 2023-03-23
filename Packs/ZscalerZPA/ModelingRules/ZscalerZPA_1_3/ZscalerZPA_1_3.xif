@@ -7,8 +7,6 @@ filter
     xdm.target.ipv4 = if(cat="ZPA User Status", srcPreNAT, dst),
     xdm.target.port=if(cat="ZPA User Status", to_integer(0), to_integer(dstPort)),
     xdm.source.ipv4 = src,
-    xdm.observer.vendor = _vendor,
-    xdm.observer.product = _product,
     xdm.source.user.username = usrName,
     xdm.observer.name = Connector,
     xdm.network.application_protocol_category = AppGroup,
@@ -42,7 +40,6 @@ filter
 
 filter cat in ("Connector Status")
 | alter
-    xdm.event.id = _id,
     xdm.event.type = cat,
     xdm.source.agent.version = Version,
     xdm.target.resource_before.name = Connector,

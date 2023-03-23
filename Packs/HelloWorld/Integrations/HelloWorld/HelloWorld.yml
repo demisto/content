@@ -42,12 +42,12 @@ configuration:
   required: false
   type: 0
   section: Collect
-- name: apikey
+- displaypassword: API Key
+  name: credentials
   required: true
   type: 9
   hiddenusername: true
   section: Connect
-  display: API Key
 - defaultvalue: '65'
   display: Score threshold for IP reputation command
   additionalinfo: Set this to determine the HelloWorld score that will determine if an IP is malicious (0-100)
@@ -258,7 +258,6 @@ script:
       default: true
       description: List of IPs.
       isArray: true
-      required: true
     - name: threshold
       description: If the IP has reputation above the threshold then the IP defined as malicious. If threshold not set, then threshold from instance configuration is used.
       defaultValue: 65
@@ -399,7 +398,6 @@ script:
       default: true
       description: List of Domains.
       isArray: true
-      required: true
     - name: threshold
       description: If the domain has reputation above the threshold then the domain defined as malicious. If threshold not set, then threshold from instance configuration is used.
       defaultValue: 65
@@ -629,7 +627,7 @@ script:
     - contextPath: CVE.ID
       description: The ID of the CVE.
       type: string
-  dockerimage: demisto/python3:3.10.9.45313
+  dockerimage: demisto/python3:3.10.9.42476
   isfetch: true
   longRunning: false
   longRunningPort: false
@@ -640,5 +638,3 @@ script:
 defaultclassifier: HelloWorld
 defaultmapperin: HelloWorld-mapper
 fromversion: 5.0.0
-tests:
-- No tests (auto formatted)

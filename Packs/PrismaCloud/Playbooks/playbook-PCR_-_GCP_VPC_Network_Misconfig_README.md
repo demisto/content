@@ -29,7 +29,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Integrations
 * Builtin
-* RedLock
+* PrismaCloud v2
 
 ### Scripts
 This playbook does not use any scripts.
@@ -44,7 +44,7 @@ This playbook does not use any scripts.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | AutoRemediateVPCNetwork | Execute GCP Compute Engine remediation automatically? | no | Optional |
-| policyId | Grab the Prima Cloud policy Id. | incident.labels.policy | Optional |
+| policyId | Grab the Prisma Cloud policy ID. | incident.labels.policy | Optional |
 
 ## Playbook Outputs
 ---

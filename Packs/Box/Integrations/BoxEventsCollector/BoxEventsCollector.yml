@@ -64,7 +64,7 @@ script:
     description: Get events.
     execution: false
     name: box-get-events
-  dockerimage: demisto/pydantic-jwt3:1.0.0.48217
+  dockerimage: demisto/pydantic-jwt3:1.0.0.49786
   feed: false
   isfetch: false
   longRunning: false

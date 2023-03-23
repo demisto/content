@@ -4,9 +4,8 @@ Requirements - Create an XSOAR List called IncidentTypesFromList a list of comma
 
 Incident Type 1,Incident Type 2, Incident Type 3 
 
-Apply the script as the field display script for the Types field.
-
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -16,9 +15,11 @@ Apply the script as the field display script for the Types field.
 | Cortex XSOAR Version | 6.2.0 |
 
 ## Inputs
+
 ---
 There are no inputs for this script.
 
 ## Outputs
+
 ---
 There are no outputs for this script.

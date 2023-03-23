@@ -1,4 +1,4 @@
-category: Deception
+category: Deception & Breach Simulation
 commonfields:
   id: Acalvio ShadowPlex
   version: -1
@@ -21,8 +21,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Acalvio ShadowPlex is a comprehensive Autonomous Deception Platform that
-  offers Advanced Threat Detection, Investigation and Response capabilities.
+description: Acalvio ShadowPlex is a comprehensive Autonomous Deception Platform that offers Advanced Threat Detection, Investigation and Response capabilities.
 display: Acalvio ShadowPlex
 name: Acalvio ShadowPlex
 script:
@@ -192,7 +191,7 @@ script:
     - contextPath: Acalvio.UnmuteDeceptionEndpoint.DateTime
       description: Date including Time
       type: String
-  dockerimage: demisto/python3:3.10.10.48392
+  dockerimage: demisto/python3:3.10.10.49934
   feed: false
   isfetch: false
   longRunning: false

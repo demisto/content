@@ -7,7 +7,6 @@ import coloredlogs
 from demisto_sdk.commands.test_content.ParallelLoggingManager import LOGGING_FORMAT, LEVEL_STYLES, ARTIFACTS_PATH
 
 
-
 def _add_logging_level(level_name: str, level_num: int, method_name: str = None, logger=logging) -> None:
     """
     Comprehensively adds a new logging level to the passed `logger` and the

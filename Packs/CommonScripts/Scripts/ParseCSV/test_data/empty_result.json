@@ -1,0 +1,14 @@
+{
+  "ContentsFormat": "json",
+  "HumanReadable": "### empty.csv\n|CSV list|\n|---|\n|  |\n",
+  "EntryContext": {
+    "ParseCSV.ParsedCSV": [
+      ""
+    ]
+  },
+  "ReadableContentsFormat": "markdown",
+  "Type": 1,
+  "Contents": [
+    ""
+  ]
+}
