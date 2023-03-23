@@ -52,7 +52,16 @@ Search for Code42 Incydr File Events
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Code42.FileEvents | unknown | List of file events returned from searches. | 
+| Code42.FileEvents.timestamp | date | The timestamp when the event occurred. | 
+| Code42.FileEvents.event | unknown | Summary information about the event, including date observed, event type, and event source. | 
+| Code42.FileEvents.user | unknown | Details about the user associated with the event \(if any\). | 
+| Code42.FileEvents.destination | unknown | Details about the destination target of the event \(if any\). | 
+| Code42.FileEvents.process | unknown | Details about the CPU process involved in the event \(if any\). | 
+| Code42.FileEvents.risk | unknown | Details overall risk severity for the event and lists all associated risk indicators. | 
+| Code42.FileEvents.git | unknown | Details about git repository involved in event \(if any\). | 
+| Code42.FileEvents.report | unknown | Details about Salesforce reports involved in the event \(if any\). | 
+| Code42.FileEvents.file | unknown | Details about file metadata for file involved in the event \(if any\). | 
+| Code42.FileEvents.source | unknown | Info about the origin of a file involved in the event \(if any\). | 
 
 ### code42-alert-get
 
