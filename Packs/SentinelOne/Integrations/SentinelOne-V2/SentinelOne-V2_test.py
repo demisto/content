@@ -234,19 +234,30 @@ def test_remove_hash_from_blocklist(mocker, requests_mock):
     assert outputs['status'] == 'Removed 1 entries from blocklist'
 
 
-def test_add_hash_to_blocklist(mocker, requests_mock):
+@pytest.mark.parametrize('block_site_ids', ['site1,site2', None])
+def test_add_hash_to_blocklist(mocker, requests_mock, block_site_ids):
     """
+    Given:
+       - Case A: A hash is added to the blocklist with sites
+       - Case B: A hash is added to the blocklist without sites
+
     When:
-        A hash is added to the blocklist
-    Return:
-        CommandResults with outputs set to a dict that has the hash and a response message
+       - running the sentinelone-add-hash-to-blocklist command
+
+    Then:
+       - Case A: make sure the sites are added to the request
+       - Case B: make sure there are no site IDs added to the request
+
     """
-    requests_mock.post("https://usea1.sentinelone.net/web/api/v2.1/restrictions", json={"data": []})
+    blocked_sha_requests_mock = requests_mock.post(
+        "https://usea1.sentinelone.net/web/api/v2.1/restrictions", json={"data": []}
+    )
 
     mocker.patch.object(demisto, 'params', return_value={'token': 'token',
                                                          'url': 'https://usea1.sentinelone.net',
                                                          'api_version': '2.1',
-                                                         'fetch_threat_rank': '4'})
+                                                         'fetch_threat_rank': '4',
+                                                         'block_site_ids': block_site_ids})
     mocker.patch.object(demisto, 'command', return_value='sentinelone-add-hash-to-blocklist')
     mocker.patch.object(demisto, 'args', return_value={
         'sha1': 'f2ca1bb6c7e907d06dafe4687e579fce76b37e4e93b7605022da52e6ccc26fd2'
@@ -255,6 +266,8 @@ def test_add_hash_to_blocklist(mocker, requests_mock):
     mocker.patch.object(sentinelone_v2, "return_results")
 
     main()
+
+    assert blocked_sha_requests_mock.last_request.json().get('filter').get('siteIds') != ['None']
 
     call = sentinelone_v2.return_results.call_args_list
     outputs = call[0].args[0].outputs
