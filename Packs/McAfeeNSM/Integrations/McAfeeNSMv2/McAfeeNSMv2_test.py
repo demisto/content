@@ -1270,6 +1270,9 @@ def test_list_device_policy_command__with_different_arguments(mocker, input, out
     """
     Given:
         - A domain_id.
+            - 1. A limit was not given.
+            - 2. A limit was given.
+            - 3. A limit and all results == True, were given.
     When:
         - nsm-list_device_policy_command command is executed.
     Then:
@@ -1309,8 +1312,11 @@ def test_list_domain_device_command_with_diffrent_arguments(mocker, mcafeensmv2_
     """
     Given:
         - A domain id.
+            - 1. A limit was not given.
+            - 2. A limit was given.
+            - 3. A limit and all results == True, were given.
     When:
-        - nsm-list_domain_device_command command is executed, with and without limit and with and without all_results.
+        - nsm-list_domain_device_command command is executed.
     Then:
         - Confirm the output is as expected(number of results, and ID = 0 dose not raise an error).
     """
@@ -1344,7 +1350,9 @@ def test_list_domain_device_command__without_domain_id(mcafeensmv2_client):
 def test_assign_interface_policy_command__with_missing_arguments(mocker, mcafeensmv2_client, input, output):
     """
     Given:
-        - A domain id and interface id with no policy.
+        - 1. A domain id and interface id with no policy.
+        - 2. A domain id with no policy. 
+        - 3. A interface id with no policy.
     When:
         - nsm-assign_interface_policy_command command is executed.
     Then:
@@ -1366,8 +1374,11 @@ def test_list_interface_policy_command__with_multiple_different_arguments(mocker
     """
     Given:
         - A domain id.
+            - 1. A limit was not given.
+            - 2. A limit was given.
+            - 3. A limit and all results == True, were given.
     When:
-        - nsm-list_interface_policy_command command is executed with and without limit, with and without all_results.
+        - nsm-list_interface_policy_command command is executed.
     Then:
         - Confirm the output is as expected(number of results, and ID = 0 dose not raise an error ).
     """
@@ -1401,7 +1412,8 @@ def test_list_interface_policy_command__without_domain_id(mcafeensmv2_client):
 def test_assign_device_policy_command__with_missing_arguments(mocker, mcafeensmv2_client, input, output):
     """
     Given:
-        - A domain id or a device id.
+        - 1. A domain id.
+        - 2. A device id.
     When:
         - assign_device_policy command command is executed, with missing arguments.
     Then:
@@ -1451,7 +1463,8 @@ def test_get_device_configuration_command__without_device_id(mcafeensmv2_client)
 def test_deploy_device_configuration_command__missing_arguments(mocker, mcafeensmv2_client, input, output):
     """
     Given:
-        - No device id or no arguments to deploy.
+        - 1. An empty json
+        - 2. A device id withot arguments to deploy.
     When:
         - deploy_device_configuration_command command is executed.
     Then:
@@ -1472,7 +1485,9 @@ def test_deploy_device_configuration_command(mocker, mcafeensmv2_client, input, 
     """
 
     Given:
-        - A device id, a arguments to deploy, a request id, and a success or pending status message.
+        - A device id, a arguments to deploy, a request id.
+            - 1. A pending status message.
+            - 2. A success status message.
     When:
         - deploy_device_configuration_command command is executed.
     Then:
