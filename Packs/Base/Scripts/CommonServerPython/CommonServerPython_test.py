@@ -7,7 +7,7 @@ import re
 import sys
 import warnings
 
-import dateparser
+# import dateparser
 from freezegun import freeze_time
 import pytest
 import pytz
@@ -7743,7 +7743,7 @@ class TestFetchWithLookBack:
 
         self.LAST_RUN = {}
 
-        mocker.patch.object(dateparser, 'parse', side_effect=self.mock_dateparser)
+        # mocker.patch.object(dateparser, 'parse', side_effect=self.mock_dateparser)
         mocker.patch.object(demisto, 'params', return_value=params)
         mocker.patch.object(demisto, 'getLastRun', return_value=self.LAST_RUN)
         mocker.patch.object(demisto, 'setLastRun', side_effect=self.set_last_run)
@@ -7855,7 +7855,7 @@ class TestFetchWithLookBack:
         incidents = self.INCIDENTS_TIME_AWARE[:] if time_aware else self.INCIDENTS[:]
 
         mocker.patch.object(CommonServerPython, 'get_current_time', return_value=datetime(2022, 4, 1, 11, 0, 0))
-        mocker.patch.object(dateparser, 'parse', side_effect=self.mock_dateparser)
+        # mocker.patch.object(dateparser, 'parse', side_effect=self.mock_dateparser)
         mocker.patch.object(demisto, 'params', return_value=params)
         mocker.patch.object(demisto, 'getLastRun', return_value=self.LAST_RUN)
         mocker.patch.object(demisto, 'setLastRun', side_effect=self.set_last_run)
@@ -8415,6 +8415,7 @@ class TestSendEventsToXSIAMTest:
     from test_data.send_events_to_xsiam_data import events_dict, log_error
     test_data = events_dict
     test_log_data = log_error
+    orig_xsiam_file_size = 2 ** 20  # 1Mib
 
     @staticmethod
     def get_license_custom_field_mock(arg):
@@ -8423,10 +8424,15 @@ class TestSendEventsToXSIAMTest:
         elif 'url' in arg:
             return "url"
 
+    @pytest.fixture
+    def teardown_for_send_events_to_xsiam_positive(self):
+        yield
+        CommonServerPython.XSIAM_EVENT_CHUNK_SIZE = self.orig_xsiam_file_size
+
     @pytest.mark.parametrize('events_use_case', [
-        'json_events', 'text_list_events', 'text_events', 'cef_events', 'json_zero_events'
+        'json_events', 'text_list_events', 'text_events', 'cef_events', 'json_zero_events', 'big_event'
     ])
-    def test_send_events_to_xsiam_positive(self, mocker, events_use_case):
+    def test_send_events_to_xsiam_positive(self, mocker, events_use_case, teardown_for_send_events_to_xsiam_positive):
         """
         Test for the fetch events function
         Given:
@@ -8435,6 +8441,8 @@ class TestSendEventsToXSIAMTest:
             Case c: a string representing events (separated by a new line).
             Case d: a string representing events (separated by a new line).
             Case e: an empty list of events.
+            Case f: a "big" event. a big event is bigger than XSIAM EVENT SIZE declared.
+            ( currently the Ideal event size is 1 Mib)
 
         When:
             Case a: Calling the send_events_to_xsiam function with no explicit data format specified.
@@ -8442,6 +8450,7 @@ class TestSendEventsToXSIAMTest:
             Case c: Calling the send_events_to_xsiam function with no explicit data format specified.
             Case d: Calling the send_events_to_xsiam function with a cef data format specification.
             Case e: Calling the send_events_to_xsiam function with no explicit data format specified.
+            Case f: Calling the send_events_to_xsiam function with no explicit data format specified.
 
         Then ensure that:
             Case a:
@@ -8463,6 +8472,10 @@ class TestSendEventsToXSIAMTest:
             Case e:
                 - No request to XSIAM API was made.
                 - The number of events reported to the module health - 0.
+            Case f:
+                - The events data was compressed correctly. Expecting to see that last chunk sent.
+                - The data format remained as json.
+                - The number of events reported to the module health - 2. For the last chunk.
         """
         if not IS_PY3:
             return
@@ -8479,9 +8492,10 @@ class TestSendEventsToXSIAMTest:
         _http_request_mock = mocker.patch.object(BaseClient, '_http_request', return_value=api_response)
 
         events = self.test_data[events_use_case]['events']
-        number_of_events = self.test_data[events_use_case]['number_of_events']
+        number_of_events = self.test_data[events_use_case]['number_of_events']  # pushed in each chunk.
+        CommonServerPython.XSIAM_EVENT_CHUNK_SIZE = self.test_data[events_use_case].get('XSIAM_FILE_SIZE',
+                                                                                        self.orig_xsiam_file_size)
         data_format = self.test_data[events_use_case].get('format')
-
         send_events_to_xsiam(events=events, vendor='some vendor', product='some product', data_format=data_format)
 
         if number_of_events:
