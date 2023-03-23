@@ -90,6 +90,7 @@ def collect_images_from_readme_and_replace_with_storage_path(pack_readme_path: s
 
             image_gcp_path = Path(gcs_pack_path, BucketUploadFlow.README_IMAGES, image_name)
             urls_list.append({
+                'pack_name': pack_name,
                 'original_read_me_url': url,
                 'new_gcs_image_path': image_gcp_path,
                 'image_name': image_name
@@ -100,18 +101,28 @@ def collect_images_from_readme_and_replace_with_storage_path(pack_readme_path: s
     return urls_list
 
 
-def download_readme_images_from_url_data_list(readme_urls_data_list: list, storage_bucket):
+def download_readme_images_from_url_data_list(readme_urls_data_list: list, artifacts_path: str, storage_bucket):
     """
     Iterates over the readme_url_data_list and calls the download_readme_image_from_url_and_upload_to_gcs
     """
     for readme_url_data in readme_urls_data_list:
-        readme_original_url = readme_url_data.get('original_read_me_url')
+        readme_original_url = str(readme_url_data.get('original_read_me_url'))
         gcs_storage_path = str(readme_url_data.get('new_gcs_image_path'))
         image_name = str(readme_url_data.get('image_name'))
-
-        download_readme_image_from_url_and_upload_to_gcs(readme_original_url,
-                                                         gcs_storage_path,
-                                                         image_name, storage_bucket)
+        pack_name = readme_url_data.get('pack_name')
+        if readme_original_url.startswith('https'):
+            download_readme_image_from_url_and_upload_to_gcs(readme_original_url,
+                                                             gcs_storage_path,
+                                                             image_name, storage_bucket)
+        elif readme_original_url.startswith('binary_files'):
+            extracting_readme_image_from_pack_and_upload_to_gcs(artifacts_path,
+                                                                gcs_storage_path,
+                                                                readme_original_url,
+                                                                pack_name, image_name,
+                                                                storage_bucket)
+        else:
+            logging.info(f'The image path {readme_original_url}'
+                         f' in the Packs/{pack_name}/README.md file is invalid')
 
 
 def download_readme_image_from_url_and_upload_to_gcs(readme_original_url: str, gcs_storage_path: str,
@@ -161,6 +172,43 @@ def download_readme_image_from_url_and_upload_to_gcs(readme_original_url: str, g
             f'Failed downloading the image in url {readme_original_url_parsed}. '
             f'or failed uploading it to GCP error message {e}')
         return False
+
+
+def extracting_readme_image_from_pack_and_upload_to_gcs(artifacts_path: str,
+                                                        gcs_storage_path: str,
+                                                        readme_original_url: str,
+                                                        pack_name: str,
+                                                        image_name: str,
+                                                        storage_bucket):
+    """
+        Extracting the image from `readme_images` folder of the relevant pack.
+        Upload The image to gcs.
+
+        Args:
+            artifacts_path (str): The path of the artifact from which the image is extracted
+            gcs_storage_path (str): The path to save the image on gcp (was calculated in collect_images_from_readme_
+             and_replace_with_storage_path)
+            readme_original_url (str): The original url that was in the readme file
+            pack_name (str): The name of the pack we want to extract the image
+            image_name (str): The name of the image we want to save
+            storage_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where images will be uploaded.
+
+    """
+    # Building the absolute path of the image
+    img_path = Path(os.path.join(artifacts_path, pack_name, readme_original_url))
+
+    # init the blob with the correct path to save the image on gcs
+    readme_image = storage_bucket.blob(gcs_storage_path)
+
+    try:
+        # load the file from local memo to the gcs
+        with open(img_path, 'rb') as image_file:
+            readme_image.upload_from_file(image_file)
+
+        logging.info(f'Image was copied successfully: {image_name}')
+    except Exception as e:
+        logging.error(f'The process of extracting and uploading the [{img_path}] image failed'
+                      f'with the error: {e}')
 
 
 def copy_readme_images(production_bucket, build_bucket, images_data: dict, storage_base_path,
