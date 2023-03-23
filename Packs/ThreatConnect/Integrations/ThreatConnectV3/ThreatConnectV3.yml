@@ -1510,8 +1510,8 @@ script:
       - False Positive
       - No Further Action
       - Escalated
-    - description: The description of the event.
-      name: description
+    - description: The name of the owner to which the Group belongs. By default, Events will be created in the Organization in which the API user account resides.
+      name: owner_name
     - description: A comma-separated list of the tags of the event.
       name: tag
     description: Creates a group based on the Event type.

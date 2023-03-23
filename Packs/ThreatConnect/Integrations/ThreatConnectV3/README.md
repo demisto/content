@@ -800,9 +800,10 @@ Creates a group based on the Event type.
 | --- | --- | --- |
 | name | The name of the event group. | Required | 
 | eventDate | The date the event occurred. If the date is not specified, the current date is used. | Optional | 
-| status | The status of the event. Possible values are: Needs Review, False Positive, No Further Action, Escalated. | Optional | 
-| description | The description of the event. | Optional | 
+| status | The status of the event. Possible values are: Needs Review, False Positive, No Further Action, Escalated. | Optional |
 | tag | A comma-separated list of the tags of the event. | Optional | 
+| owner_name | The name of the owner to which the Group belongs. By default, Events will be created in the Organization in which the API user account resides. | Optional | 
+
 
 
 #### Context Output
