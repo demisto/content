@@ -93,6 +93,7 @@ IGNORED_FILE_TYPES: set[FileType] = {
     FileType.PACK,
     FileType.CONTRIBUTORS,
     FileType.DOC_FILE,
+    FileType.README_IMAGE,
     FileType.OLD_CLASSIFIER,
     FileType.WHITE_LIST,
     FileType.TEST_SCRIPT,
