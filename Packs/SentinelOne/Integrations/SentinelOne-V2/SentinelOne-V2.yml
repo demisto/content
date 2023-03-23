@@ -2328,7 +2328,7 @@ script:
           - Local
           - None
           - SentinelCloud
-          description: 'Output Destination: DataSetCloud/Local/None/SentinelCloud.'
+          description: 'Output destination. Possible values: DataSetCloud/Local/None/SentinelCloud.'
         - name: task_description
           required: true
           description: Task description.
@@ -2344,10 +2344,10 @@ script:
           isArray: true
       outputs:
         - contextPath: SentinelOne.RunRemoteScript.pendingExecutionId
-          description: ID of created pending execution. Present only if pending flag is true.
+          description: ID of the created pending execution. Present only if pending flag is true.
           type: string
         - contextPath: SentinelOne.RunRemoteScript.pending
-          description: Flag indicating if requested script execution requires approval and is created as pending execution.
+          description: Flag indicating if the requested script execution requires approval and is created as a pending execution.
           type: boolean
         - contextPath: SentinelOne.RunRemoteScript.affected
           description: Number of entities affected by the requested operation.
