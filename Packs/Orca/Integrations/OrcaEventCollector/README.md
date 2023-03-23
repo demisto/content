@@ -1,5 +1,5 @@
 Agentless, Workload-Deep, Context-Aware Security and Compliance for AWS, Azure, and GCP.
-This integration was integrated and tested with version xx of Orca Event Collector
+This integration was integrated and tested with version 0.1.0 of Orca Event Collector
 
 ## Configure Orca Event Collector on Cortex XSOAR
 

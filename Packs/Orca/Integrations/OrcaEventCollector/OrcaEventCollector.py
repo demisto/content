@@ -34,9 +34,9 @@ class Client(BaseClient):
         """
         params = {
             'limit': max_fetch,
-            'dsl_filter': "{\n\"filter\":\n[\n{\n\"field\": \"state.last_updated\",\n\"range\": {\n\"gt\": "
+            'dsl_filter': "{\n\"filter\":\n[\n{\n\"field\": \"state.created_at\",\n\"range\": {\n\"gte\": "
                           "\"" + last_fetch + "\"\n}\n}\n],\n"
-                                              "\"sort\":\n[\n{\"field\":\"state.last_updated\",\n\"order\":\"asc\"\n}\n]}"
+                                              "\"sort\":\n[\n{\"field\":\"state.created_at\",\n\"order\":\"asc\"\n}\n]}"
         }
         if next_page_token:
             params['next_page_token'] = next_page_token
@@ -62,12 +62,13 @@ def test_module(client: Client, last_fetch: str) -> str:
         raise Exception(e.message)
 
 
-def get_alerts(client: Client, max_fetch: int, last_fetch: str, next_page_token: str = None) -> tuple:
+def get_alerts(client: Client, max_fetch: int, last_fetch: str, last_alert_id: str, next_page_token: str = None) -> tuple:
     """ Retrieve information about alerts.
     Args:
         client: client - An Orca client.
         max_fetch: int - The maximum number of events per fetch
         last_fetch: int - The time and date of the last fetch alert
+        last_alert_id: str - The alert_id of the last fetched alert
         next_page_token: str - The token to the next page.
     Returns:
         - list of alerts
@@ -77,6 +78,11 @@ def get_alerts(client: Client, max_fetch: int, last_fetch: str, next_page_token:
     next_page_token = response.get('next_page_token')
     alerts = response.get('data', [])
     demisto.debug(f'Get Alerts Response {next_page_token=} , {len(alerts)=}\n {alerts=}')
+    if alerts:
+        first_alert_id = alerts[0].get('state', {}).get('alert_id')
+        if first_alert_id == last_alert_id:
+            demisto.debug(f'Removing alert duplication {first_alert_id=}')
+            alerts = alerts[1:]
     return alerts, next_page_token
 
 
@@ -122,20 +128,25 @@ def main() -> None:
             last_fetch = last_run.get('lastRun')
             demisto.debug(f"Isn't the first run {last_fetch}")
         next_page_token = last_run.get('next_page_token')
+        last_alert_id = last_run.get('last_alert_id', '-1')
 
         if command == 'test-module':
             return_results(test_module(client, last_fetch))
         elif command in ('fetch-events', 'orca-security-get-events'):
-            alerts, next_page_token = get_alerts(client, max_fetch, last_fetch, next_page_token)
+            alerts, next_page_token = get_alerts(client, max_fetch, last_fetch, last_alert_id, next_page_token)
 
             if command == 'fetch-events':
                 should_push_events = True
-                last_updated = arg_to_datetime(arg=alerts[-1].get('state', {}).get('last_updated')) if alerts else None
                 current_last_run = {
-                    'next_page_token': next_page_token,
-                    'lastRun': last_updated.strftime(DATE_FORMAT) if last_updated else None
-                    if alerts else last_fetch
+                    'next_page_token': next_page_token
                 }
+                if next_page_token:
+                    current_last_run['lastRun'] = last_fetch
+                    current_last_run['last_alert_id'] = '-1'
+                else:
+                    last_updated = arg_to_datetime(arg=alerts[-1].get('state', {}).get('created_at')) if alerts else None
+                    current_last_run['lastRun'] = last_updated.strftime(DATE_FORMAT) if last_updated else last_fetch
+                    current_last_run['last_alert_id'] = alerts[-1].get('state', {}).get('alert_id') if alerts else last_alert_id
                 demisto.setLastRun(current_last_run)
                 demisto.debug(f'{current_last_run=}')
 
