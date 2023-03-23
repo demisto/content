@@ -11,7 +11,7 @@ from Tests.Marketplace.marketplace_services import init_storage_client, Pack, lo
 from Tests.Marketplace.marketplace_statistics import StatisticsHandler
 from Tests.Marketplace.upload_packs import get_packs_names, extract_packs_artifacts, download_and_extract_index, \
     update_index_folder, clean_non_existing_packs, upload_index_to_storage, create_corepacks_config, \
-    check_if_index_is_updated, print_packs_summary, get_packs_summary
+    check_if_index_is_updated, print_packs_summary, get_packs_summary, prepare_index_json
 from Tests.Marketplace.marketplace_constants import PackStatus, GCPConfig, CONTENT_ROOT_PATH
 from demisto_sdk.commands.common.tools import str2bool
 
@@ -545,13 +545,36 @@ def main():
     # finished iteration over content packs
     if is_private_build:
         delete_public_packs_from_index(index_folder_path)
-        upload_index_to_storage(index_folder_path, extract_destination_path, private_index_blob, build_number,
-                                private_packs, current_commit_hash, index_generation, is_private_build,
-                                landing_page_sections=landing_page_sections)
+        '''
+        index_folder_path: str, build_number: str, private_packs: list,
+                       current_commit_hash: str, force_upload: bool = False, previous_commit_hash: str = None,
+                       landing_page_sections: dict = None
+        '''
+
+        prepare_index_json(index_folder_path=index_folder_path,
+                           build_number=build_number,
+                           private_packs=private_packs,
+                           current_commit_hash=current_commit_hash,
+                           landing_page_sections=landing_page_sections
+                           )
+
+        upload_index_to_storage(index_folder_path=index_folder_path,
+                                extract_destination_path=extract_destination_path,
+                                index_blob=private_index_blob,
+                                index_generation=index_generation,
+                                is_private=is_private_build)
 
     else:
-        upload_index_to_storage(index_folder_path, extract_destination_path, index_blob, build_number, private_packs,
-                                current_commit_hash, index_generation, landing_page_sections=landing_page_sections)
+        prepare_index_json(index_folder_path=index_folder_path,
+                           build_number=build_number,
+                           private_packs=private_packs,
+                           current_commit_hash=current_commit_hash,
+                           landing_page_sections=landing_page_sections)
+
+        upload_index_to_storage(index_folder_path=index_folder_path,
+                                extract_destination_path=extract_destination_path,
+                                index_blob=index_blob,
+                                index_generation=index_generation)
 
     # get the lists of packs divided by their status
     successful_packs, _, skipped_packs, failed_packs = get_packs_summary(packs_list)
