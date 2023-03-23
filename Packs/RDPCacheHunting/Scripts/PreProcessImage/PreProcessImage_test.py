@@ -38,8 +38,8 @@ def test_get_image_details(path, width, height, expected_results):
         - Validate image details returned as expected
     """
     from PreProcessImage import get_image_details
-    format, sizes = get_image_details(path, width, height)
-    assert format == expected_results['format']
+    format_, sizes = get_image_details(path, width, height)
+    assert format_ == expected_results['format']
     assert sizes == expected_results['sizes']
 
 
@@ -188,6 +188,56 @@ def test_sharpened(mocker, image_path, image_name, format_img):
     assert cv2.filter2D.call_args[0][1] == -1
     assert cv2.filter2D.call_args[0][2].tolist()
     assert Image.fromarray.call_args[0][0].any()
+    assert Image.Image.resize.call_count == 0
+
+
+@pytest.mark.parametrize('image_path, image_name, format_img', ACTION_WRAP_CASES)
+def test_original(mocker, image_path, image_name, format_img):
+    """
+    Given:
+    - An image in np.ndarray format.
+    - An action to return the original image.
+    When:
+    - Calling the action_wrap function.
+    Then:
+    - Ensure the function successfully returns the original image (and not preforms sharpening or grayscale).
+    """
+    import PreProcessImage
+    from unittest import mock
+    # Arrange
+    args = {
+        'action': 'original',
+        'file_entry_id': '1',
+        'image_resize_width': 50,
+        'image_resize_height': 50
+    }
+    mocker.patch.object(demisto, 'getFilePath', return_value={'path': image_path, 'name': image_name})
+    mocker.patch.object(Image, 'fromarray')
+    mocker.patch.object(Image.Image, 'resize')
+    mocker.patch.object(Image.Image, 'save')
+    mocker.patch.object(io, 'BytesIO')
+    # Create a mock for image_resize()
+    mock_image_sharpened = mocker.patch("PreProcessImage.sharpened")
+    mock_sharpened_orig_image = mock.MagicMock()
+    mock_image_sharpened.return_value = mock_sharpened_orig_image
+
+    def mock_file(filename, data, file_type=None):
+        return {
+            'Contents': '',
+            'ContentsFormat': formats['text'],
+            'Type': entryTypes['file'],
+            'File': f'original_{image_name}',
+            'FileID': '1'
+        }
+
+    mocker.patch.object(PreProcessImage, 'fileResult', side_effect=mock_file)
+    # Act
+    result = PreProcessImage.action_wrap(args)
+    # Assert
+    assert result['Type'] == entryTypes['file']
+    assert result['File'].startswith('original_')
+    assert Image.fromarray.call_args[0][0].any()
+    assert mock_image_sharpened.call_count == 0
     assert Image.Image.resize.call_count == 0
 
 
