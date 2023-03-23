@@ -364,3 +364,13 @@ def test_send_mail_with_trailing_comma(mocker):
     assert result.get('Contents') == {
         'from': 'test@gmail.com', 'to': ['test@gmail.com'], 'subject': 'test', 'attachments': []
     }
+
+
+def test_delete_items_malformed_item_id(mocker):
+    """
+
+    """
+    from EWSv2 import delete_items
+    mocker.patch.object(EWSv2, 'Account', return_value=MockAccount(primary_smtp_address="test@gmail.com"))
+
+    result = delete_items(["1"], delete_type='soft', target_mailbox="test@gmail.com")
