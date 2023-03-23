@@ -1054,6 +1054,225 @@ Gets compliance search action from the Security & Compliance Center.
     * For all the available search properties see: [Keyword queries and search conditions for eDiscovery.](https://docs.microsoft.com/en-us/microsoft-365/compliance/keyword-queries-and-search-conditions?view=o365-worldwide)
 * Preview the search results to verify that the search returned only the message (or messages) that you want to delete.
 * Use the search estimate statistics (displayed by using the `o365-sc-get-search` command) to get a count of the total number of emails.
+
+### o365-sc-compliance-case-create
+
+***
+Create eDiscovery cases in the Microsoft Purview compliance portal.
+
+#### Base Command
+
+`o365-sc-compliance-case-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| case_name | Case name create. | Required | 
+| case_type | "AdvancedEdiscovery: Used to manage legal or other types of investigations.<br/> ComplianceClassifier: This type of case corresponds to a trainable classifier.<br/> DataInvestigation: Data investigation cases are used to investigate data spillage incidents.<br/> DSR: Data Subject Request (DSR) cases are used to manage General Data Protection Regulation (GDPR) DSR investigations.<br/> eDiscovery: eDiscovery (also called eDiscovery Standard) cases are used to manage legal or other types of investigations.<br/> This is the default value.<br/> InsiderRisk: Insider risk cases are used to manage insider risk management cases.<br/> Typically, insider risk management cases are manually created in the Microsoft Purview<br/> compliance portal to further investigate activity based on a risk alert.<br/> SupervisionPolicy: This type of case corresponds to communication compliance policy."<br/>. Possible values are: AdvancedEdiscovery, ComplianceClassifier, DataInvestigation, DSR, eDiscovery, InsiderRisk, SupervisionPolicy. Default is eDiscovery. | Optional | 
+| description | Case description. | Optional | 
+| external_id | Case external ID. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| O365.SecurityAndCompliance.ComplianceCase.Name | String | Case name. | 
+| O365.SecurityAndCompliance.ComplianceCase.Status | String | Case status. | 
+| O365.SecurityAndCompliance.ComplianceCase.CreatedDateTime | String | Case created date time. | 
+
+### o365-sc-compliance-case-list
+
+***
+List different types of compliance cases in the Microsoft Purview compliance portal.
+
+#### Base Command
+
+`o365-sc-compliance-case-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| identity | List cases by identity. | Optional | 
+| case_type | List cases by type. Possible values are: AdvancedEdiscovery, ComplianceClassifier, DataInvestigation, DSR, eDiscovery, InsiderRisk, SupervisionPolicy. | Optional | 
+| limit | Limit returned cases list size. Default is 50. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| O365.SecurityAndCompliance.ComplianceCase.Name | String | Case name. | 
+| O365.SecurityAndCompliance.ComplianceCase.Status | String | Case status. | 
+| O365.SecurityAndCompliance.ComplianceCase.GUID | UUID | Case GUID. | 
+| O365.SecurityAndCompliance.ComplianceCase.CreatedDateTime | String | Case created date time. | 
+
+### o365-sc-compliance-case-delete
+
+***
+Removes compliance cases from the Microsoft Purview compliance portal.
+#### Base Command
+
+`o365-sc-compliance-case-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| identity | Delete case by identity. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+### o365-sc-case-hold-policy-create
+
+***
+Creates new case hold policies in the Microsoft Purview compliance portal.
+
+#### Base Command
+
+`o365-sc-case-hold-policy-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| policy_name | Name of the policy to create. | Required | 
+| case | eDiscovery case, Case Name, Case Identity (GUID value). | Required | 
+| comment | Attach a comment to the case. | Optional | 
+| exchange_location | Mailbox or distribution group. | Optional | 
+| public_folder_location | Comma-separated list of public folders to include, or you can use the value "All" to include all. | Optional | 
+| share_point_location | SharePoint Online and OneDrive for Business sites to include. | Optional | 
+| enabled | Set hold policy as enabled or not. Possible values are: true, false. Default is true. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| O365.SecurityAndCompliance.CaseHoldPolicy.Name | String | Case hold policy name. | 
+| O365.SecurityAndCompliance.CaseHoldPolicy.Workload | String | Case hold policy workload. | 
+| O365.SecurityAndCompliance.CaseHoldPolicy.Enabled | String | Is case hold policy enabled. | 
+| O365.SecurityAndCompliance.CaseHoldPolicy.Mode | String | Case hold policy mode. | 
+
+### o365-sc-case-hold-policy-get
+
+***
+View existing case hold policies in the Microsoft Purview compliance portal.
+
+#### Base Command
+
+`o365-sc-case-hold-policy-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| identity | Identify of the case hold policy to get. | Optional | 
+| case | Case of policy to get. Case name or case GUID. | Optional | 
+| distribution_detail | Whether to include distribution details or not. Possible values are: true, false. Default is true. | Optional | 
+| include_bindings | Whether to include bindings or not. Possible values are: true, false. Default is true. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| O365.SecurityAndCompliance.CaseHoldPolicy.Name | String | Case hold policy name. | 
+| O365.SecurityAndCompliance.CaseHoldPolicy.GUID | String | Case hold policy GUID. | 
+| O365.SecurityAndCompliance.CaseHoldPolicy.Workload | String | Case hold policy workload. | 
+| O365.SecurityAndCompliance.CaseHoldPolicy.Status | String | Case hold policy status. | 
+| O365.SecurityAndCompliance.CaseHoldPolicy.Mode | String | Case hold policy mode. | 
+
+### o365-sc-case-hold-policy-delete
+
+***
+Removes case hold policies from the Microsoft Purview compliance portal.
+
+#### Base Command
+
+`o365-sc-case-hold-policy-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| identity | Identify of the case hold policy to delete. | Required | 
+| force_delete | Whether to use force delete or not. Possible values are: true, false. Default is false. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+### o365-sc-case-hold-rule-create
+
+***
+Creates new case hold rules in the Microsoft Purview compliance portal.
+
+#### Base Command
+
+`o365-sc-case-hold-rule-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| rule_name | Create rule with the specified name. | Required | 
+| policy_name | Create rule for the specified policy. | Required | 
+| query | Query using Keyword Query Language (KQL). | Optional | 
+| comment | Attach a comment to the created rule. | Optional | 
+| is_disabled | Whether the rule is disabled or not. Possible values are: true, false. Default is false. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| O365.SecurityAndCompliance.CaseHoldRule.Name | String | Case hold policy name. | 
+| O365.SecurityAndCompliance.CaseHoldRule.Status | String | Case hold policy status. | 
+| O365.SecurityAndCompliance.CaseHoldRule.Mode | String | Case hold policy mode. | 
+
+### o365-sc-case-hold-rule-list
+
+***
+View case hold rules in the Microsoft Purview compliance portal.
+
+#### Base Command
+
+`o365-sc-case-hold-rule-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| identify | Get hold rule list by identity. | Optional | 
+| policy | Get hold rule list by policy. | Optional | 
+| limit | Limit the returned items list size. Default is 50. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| O365.SecurityAndCompliance.CaseHoldRule.Name | String | Case hold policy name. | 
+| O365.SecurityAndCompliance.CaseHoldRule.GUID | UUID | Case hold policy GUID. | 
+| O365.SecurityAndCompliance.CaseHoldRule.Enabled | String | Whether case hold policy is enabled. | 
+| O365.SecurityAndCompliance.CaseHoldRule.Mode | String | Case hold policy mode. | 
+
+### o365-sc-case-hold-rule-delete
+
+***
+Removes case hold rules from the Microsoft Purview compliance portal.
+
+#### Base Command
+
+`o365-sc-case-hold-rule-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| identity | Delete rule by identity. | Optional | 
+| force_delete | Whether to use force delete or not. Possible values are: true, false. Default is false. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
 ## Known Limitations
 
 * Security and compliance integrations do not support Security and compliance on-premise.

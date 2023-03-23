@@ -1,8 +1,8 @@
 [MODEL: dataset = microsoft_windows_raw]
-alter raw_data = to_string(json_extract_scalar(event_data , "$.param2"))
 // xml part
-| alter audit_type = arrayindex(regextract(event_data , "<AuditType>([^<]+)"),0),
-    audit_result = arrayindex(regextract(event_data ,"<AuditResult>([^<]+)"),0),
+alter audit_type = arrayindex(regextract(event_data , "<AuditType>([^<]+)"),0),
+    accountName = arrayindex(regextract(message ,"Account\sName\:\s+(\S+)"),0),
+    userName = to_string(json_extract_scalar(user, "$.name")),
     user_id = arrayindex(regextract(event_data ,"\<UserId\>([^\<]*)"),0),
     mfa_method = arrayindex(regextract(event_data ,"\<MfaMethod\>([^\<]*)"),0),
     device_id = arrayindex(regextract(event_data ,"\<DeviceId\>([^\<]*)"),0),
@@ -55,8 +55,7 @@ alter raw_data = to_string(json_extract_scalar(event_data , "$.param2"))
     xdm.event.id = to_string(event_id),
     xdm.event.type = event_type_connection,
     xdm.session_context_id = to_string(record_id),
-    xdm.source.user.username = to_string(json_extract_scalar(user, "$.name")),
-    xdm.source.user.user_type =  to_string(json_extract_scalar(user, "$.type")),
+    xdm.source.user.username = coalesce(userName ,accountName),
     xdm.source.host.hostname = host_name,
     xdm.alert.severity = coalesce(opcode, log_level),
-    xdm.event.outcome = event_result;
+    xdm.event.outcome = if(event_result = "failure", XDM_CONST.OUTCOME_FAILED, event_result = "success", XDM_CONST.OUTCOME_SUCCESS, event_result = null, null, to_string(event_result));

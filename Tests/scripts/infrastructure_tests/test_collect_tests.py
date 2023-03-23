@@ -12,7 +12,7 @@ from Tests.scripts.collect_tests.collect_tests import (
     XSOARNightlyTestCollector, UploadAllCollector)
 from Tests.scripts.collect_tests.constants import (
     ALWAYS_INSTALLED_PACKS_MARKETPLACE_V2, MODELING_RULE_COMPONENT_FILES,
-    XSOAR_SANITY_TEST_NAMES, ONLY_INSTALL_PACK_FILE_TYPES)
+    XSOAR_SANITY_TEST_NAMES, ONLY_INSTALL_PACK_FILE_TYPES, XSIAM_COMPONENT_FILES)
 from Tests.scripts.collect_tests.path_manager import PathManager
 from Tests.scripts.collect_tests.utils import FilesToCollect, PackManager
 
@@ -45,6 +45,8 @@ Test Collection Unit-Test cases
 - `S` has 2 packs with support level == xsoar, each pack has its own integration and both of these integrations have
       "myOtherTestPlaybook" TPB that is not skipped in conf.json. The conf.json contains 2 records with the same
       playbook ID "myOtherTestPlaybook".
+- `T` Reputation test collection test. one indicator type of reputation, and 3 test playbooks defined in the conf.json file
+      under the "reputation_tests" list. Should collect all 3 tests.
 """
 
 
@@ -104,6 +106,7 @@ class MockerCases:
     Q = CollectTestsMocker(TEST_DATA / 'Q')
     R = CollectTestsMocker(TEST_DATA / 'R')
     S = CollectTestsMocker(TEST_DATA / 'S')
+    T = CollectTestsMocker(TEST_DATA / 'T')
     limited_nightly_packs = CollectTestsMocker(TEST_DATA / 'limited_nightly_packs')
     non_api_test = CollectTestsMocker(TEST_DATA / 'non_api_test')
     script_non_api_test = CollectTestsMocker(TEST_DATA / 'script_non_api_test')
@@ -421,6 +424,11 @@ XSIAM_BRANCH_ARGS = ('master', MarketplaceVersions.MarketplaceV2, None)
         (MockerCases.S, ('myOtherTestPlaybook',), ('myXSOAROnlyPack', 'myXSOAROnlyPack2',), None, None,
          XSOAR_BRANCH_ARGS, ('Packs/myXSOAROnlyPack/Integrations/myIntegration/myIntegration.yml',), (),
          ('myXSOAROnlyPack',)),
+
+        # (35) see T definition at the top of this file - reputation indicator type test
+        (MockerCases.T, ("FormattingPerformance - Test", "Email extraction test", "Domain extraction test"),
+         ('Base', 'DeveloperTools', 'CommonTypes'), None, None, XSOAR_BRANCH_ARGS,
+         ('Packs/CommonTypes/IndicatorTypes/reputation-domain.json',), (), ('CommonTypes',)),
     )
 )
 def test_branch(
@@ -565,8 +573,8 @@ def test_only_collect_pack(mocker, monkeypatch, file_type: collect_tests.FileTyp
                         return_value=FilesToCollect(('Packs/myPack/some_file',), ()))
     mocker.patch('Tests.scripts.collect_tests.collect_tests.find_type', return_value=file_type)
 
-    # packs of modeling rules aren't expected to be collected when collecting for an XSOAR marketplace build
-    expected_packs = ('myPack',) if file_type not in MODELING_RULE_COMPONENT_FILES else ()
+    # packs of xsiam component files aren't expected to be collected when collecting for an XSOAR marketplace build
+    expected_packs = ('myPack',) if file_type not in (MODELING_RULE_COMPONENT_FILES | XSIAM_COMPONENT_FILES) else ()
 
     # noinspection PyTypeChecker
     _test(monkeypatch, case_mocker=MockerCases.H, collector_class=BranchTestCollector,

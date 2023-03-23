@@ -591,7 +591,7 @@ def EclecticIQ_create_observable(client: Client, args: Any) -> CommandResults:
 
 def main() -> None:
     params = demisto.params()
-    api_key = params.get('apikey')
+    api_key = params.get('apikey', {}).get('password')
     base_url = params.get('url')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)

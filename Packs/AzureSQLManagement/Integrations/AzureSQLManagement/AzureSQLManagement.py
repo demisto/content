@@ -535,6 +535,9 @@ def main() -> None:
         elif command == 'azure-sql-auth-test':
             return_results(test_connection(client))
 
+        elif command == 'azure-sql-generate-login-url':
+            return_results(generate_login_url(client.ms_client))
+
     # Log exceptions and return errors
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')

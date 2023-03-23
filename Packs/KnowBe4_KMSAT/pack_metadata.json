@@ -1,18 +1,33 @@
 {
-    "name": "KnowBe4 KMSAT",
-    "description": "KnowBe4\u2019s Event APIs are REST APIs that allow you to push and pull your external data to and from the KnowBe4 console. Data is returned in a JSON structure by default--no additional parameter is needed.",
-    "support": "xsoar",
-    "currentVersion": "1.0.5",
-    "author": "Cortex XSOAR",
-    "url": "https://www.paloaltonetworks.com/cortex",
-    "email": "",
+    "name": "KMSAT",
+    "description": "KnowBe4 KMSAT Integration",
+    "support": "partner",
+    "currentVersion": "1.0.7",
+    "author": "KnowBe4",
+    "url": "https://www.knowbe4.com/products/kevin-mitnick-security-awareness-training",
+    "email": "support@knowbe4.com",
     "categories": [
-        "Analytics & SIEM"
+        "Network Security"
     ],
-    "tags": [],
+    "tags": [
+        "Breach Simulation",
+        "Compliance",
+        "Security",
+        "Simulation"
+    ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "KnowBe4",
+        "KMSAT",
+        "security awareness",
+        "Kevin Mitnick",
+        "security training",
+        "training",
+        "LMS"
+    ],
     "marketplaces": [
+        "xsoar",
         "marketplacev2"
-    ]
+    ],
+    "githubUser": []
 }

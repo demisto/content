@@ -8,43 +8,54 @@ configuration:
   required: true
   defaultvalue: https://example.com/
   type: 0
+  section: Connect
 - display: User Name
   name: userName
   required: true
   type: 9
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   defaultvalue: 'false'
   type: 8
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   required: false
   defaultvalue: 'false'
   type: 8
+  section: Connect
+  advanced: true
 - display: Fetch incidents
   name: isFetch
   required: false
   type: 8
+  section: Collect
 - display: Incident type
   name: incidentType
   required: false
   type: 13
+  section: Connect
 - defaultvalue: '50'
   display: Fetch limit
   name: max_fetch
   required: false
   type: 0
+  section: Collect
 - defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 3 days)
   name: first_fetch
   required: false
   type: 0
+  section: Collect
 - defaultvalue: '60'
   display: Incidents Fetch Interval
   name: incidentFetchInterval
   required: false
   type: 19
+  section: Collect
 description: FireEye Endpoint Security is an integrated solution that detects and protects endpoints against known and unknown threats. This integration provides access to information about endpoints, acquisitions, alerts, indicators, and containment. You can extract critical data and effectively operate the security operations automated playbook.
 display: FireEye Endpoint Security (HX) v2
 name: FireEyeHX v2
@@ -2402,7 +2413,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.9.40422
+  dockerimage: demisto/python3:3.10.10.48392
   feed: false
   longRunning: false
   longRunningPort: false

@@ -1,0 +1,2992 @@
+id: ThreatGrid_v2_Test
+version: -1
+name: ThreatGrid_v2_Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: d66c40e2-dbd5-4b38-8a33-0b373644099f
+    type: start
+    task:
+      id: d66c40e2-dbd5-4b38-8a33-0b373644099f
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: f420116c-b8a1-4221-844b-7403d56476ff
+    type: regular
+    task:
+      id: f420116c-b8a1-4221-844b-7403d56476ff
+      version: -1
+      name: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+      script: DeleteContext
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 6175cf4e-8083-452b-87f7-4fab0cb8e554
+    type: regular
+    task:
+      id: 6175cf4e-8083-452b-87f7-4fab0cb8e554
+      version: -1
+      name: threat-grid-who-am-i
+      script: Threat Grid|||threat-grid-who-am-i
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 7c7a7925-18bd-4827-8a08-dbb5f94ad2c0
+    type: condition
+    task:
+      id: 7c7a7925-18bd-4827-8a08-dbb5f94ad2c0
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 600
+        }
+      }
+    note: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.User.email
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.User.login
+            iscontext: true
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: aeb166bd-588d-4865-8757-5719a12dc864
+    type: regular
+    task:
+      id: aeb166bd-588d-4865-8757-5719a12dc864
+      version: -1
+      name: threat-grid-rate-limit-get
+      script: Threat Grid|||threat-grid-rate-limit-get
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      login:
+        simple: ${ThreatGrid.User.login}
+      entity_type:
+        simple: user
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 800
+        }
+      }
+    note: false
+    nexttasks:
+      '#none#':
+      - "5"
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 07966fe0-ebe5-4769-801f-5692d7a57a4e
+    type: condition
+    task:
+      id: 07966fe0-ebe5-4769-801f-5692d7a57a4e
+      version: -1
+      name: 'Verify Outputs'
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "8"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1400
+        }
+      }
+    note: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.Sample.sample
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.Sample.filename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.Sample.state
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.Sample.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.Sample.md5
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.Sample.sha1
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.Sample.sha256
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.Sample.submitted_at
+            iscontext: true
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: ad3e9d74-e136-4541-8399-fd2b9ff14976
+    type: regular
+    task:
+      id: ad3e9d74-e136-4541-8399-fd2b9ff14976
+      version: -1
+      name: threat-grid-domain-samples-list
+      script: Threat Grid|||threat-grid-domain-samples-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      domain:
+        simple: google.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: b13df3b4-dce4-4181-8f97-b4b66df083cc
+    type: regular
+    task:
+      id: b13df3b4-dce4-4181-8f97-b4b66df083cc
+      version: -1
+      name: threat-grid-ip-samples-list
+      script: Threat Grid|||threat-grid-ip-samples-list
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      ip:
+        simple: 8.8.8.8
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2000
+        }
+      }
+    note: false
+    nexttasks:
+      '#none#':
+      - "11"
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 87cd7cbd-8ca0-49fc-866c-51cb21e493af
+    type: condition
+    task:
+      id: 87cd7cbd-8ca0-49fc-866c-51cb21e493af
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "12"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2200
+        }
+      }
+    note: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.IpAssociatedSample.ip
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.IpAssociatedSample.samples
+            iscontext: true
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 0a7bf3d6-7f54-44fc-8e62-a19446ebb9a7
+    type: regular
+    task:
+      id: 0a7bf3d6-7f54-44fc-8e62-a19446ebb9a7
+      version: -1
+      name: threat-grid-path-samples-list
+      type: regular
+      iscommand: true
+      brand: ""
+      script: Threat Grid|||threat-grid-path-samples-list
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      path:
+        simple: user
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 6a5ea1bd-6bd2-47c7-85fd-506f6f0e3c9f
+    type: regular
+    task:
+      id: 6a5ea1bd-6bd2-47c7-85fd-506f6f0e3c9f
+      version: -1
+      name: threat-grid-ip-associated-domains
+      type: regular
+      iscommand: true
+      brand: ""
+      script: Threat Grid|||threat-grid-ip-associated-domains
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      ip:
+        simple: 8.8.8.8
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 2fffe086-e11d-4ffa-8628-6ff9a0ccfd8b
+    type: condition
+    task:
+      id: 2fffe086-e11d-4ffa-8628-6ff9a0ccfd8b
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3800
+        }
+      }
+    note: false
+    nexttasks:
+      "true":
+      - "20"
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.IpAssociatedDomain.ip
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.IpAssociatedDomain.domains
+            iscontext: true
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 55d7d72e-4590-43f3-8d71-880139e3d2df
+    type: regular
+    task:
+      id: 55d7d72e-4590-43f3-8d71-880139e3d2df
+      version: -1
+      name: threat-grid-ip-associated-urls
+      script: Threat Grid|||threat-grid-ip-associated-urls
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      ip:
+        simple: 8.8.8.8
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 7e052d70-8e5c-460a-84ac-219e601d20cf
+    type: condition
+    task:
+      id: 7e052d70-8e5c-460a-84ac-219e601d20cf
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.RateLimit.submission-wait-seconds
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: ea4eba9f-486e-4fee-834b-7902ed4a5e78
+    type: regular
+    task:
+      id: ea4eba9f-486e-4fee-834b-7902ed4a5e78
+      version: -1
+      name: threat-grid-submissions-search
+      script: Threat Grid|||threat-grid-submissions-search
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 9f7c641d-4e59-4b5a-83b5-3259bd60b4ad
+    type: condition
+    task:
+      id: 9f7c641d-4e59-4b5a-83b5-3259bd60b4ad
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.DomainAssociatedSample.domain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.DomainAssociatedSample.samples
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 57148339-e332-412a-8ed0-24d1b186d4ef
+    type: condition
+    task:
+      id: 57148339-e332-412a-8ed0-24d1b186d4ef
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.PathAssociatedSample.path
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.PathAssociatedSample.samples
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: eaa01a13-cc8d-4731-8c6f-edf97a5d154c
+    type: regular
+    task:
+      id: eaa01a13-cc8d-4731-8c6f-edf97a5d154c
+      version: -1
+      name: threat-grid-sample-list
+      script: Threat Grid|||threat-grid-sample-list
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: a177ee73-0002-4c8f-87ea-c8a7d7c047c5
+    type: condition
+    task:
+      id: a177ee73-0002-4c8f-87ea-c8a7d7c047c5
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.Sample.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.Sample.filename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.Sample.state
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.Sample.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.Sample.md5
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.Sample.sha1
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.Sample.sha256
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.Sample.os
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.Sample.submitted_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.Sample.started_at
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.Sample.completed_at
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 64cadd03-e6a3-4edd-86e9-3151d570af5b
+    type: regular
+    task:
+      id: 64cadd03-e6a3-4edd-86e9-3151d570af5b
+      version: -1
+      name: threat-grid-sample-summary-get
+      script: Threat Grid|||threat-grid-sample-summary-get
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      sample_id:
+        simple: ${ThreatGrid.Sample.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: fcf235df-cfe8-4457-8fff-b45baa146adb
+    type: condition
+    task:
+      id: fcf235df-cfe8-4457-8fff-b45baa146adb
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.SampleAnalysisSummary.sample
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.SampleAnalysisSummary.registry_count
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.SampleAnalysisSummary.filename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.SampleAnalysisSummary.sha256
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.SampleAnalysisSummary.magic_type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.SampleAnalysisSummary.first_seen
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.SampleAnalysisSummary.last_seen
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: d2ed093b-972c-42c2-89bd-81ed26a69e9e
+    type: condition
+    task:
+      id: d2ed093b-972c-42c2-89bd-81ed26a69e9e
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.IpAssociatedUrl.ip
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.IpAssociatedUrl.urls
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 381b994c-1776-4431-8157-ac302bf25713
+    type: regular
+    task:
+      id: 381b994c-1776-4431-8157-ac302bf25713
+      version: -1
+      name: threat-grid-domain-associated-urls
+      script: Threat Grid|||threat-grid-domain-associated-urls
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      domain:
+        simple: google.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 91b6a97f-bb6f-492c-8bb8-ee3442a60166
+    type: condition
+    task:
+      id: 91b6a97f-bb6f-492c-8bb8-ee3442a60166
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.DomainAssociatedUrl.domain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.DomainAssociatedUrl.urls
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 00b82b65-208c-4baf-8eb4-59a8e2bdd9fc
+    type: regular
+    task:
+      id: 00b82b65-208c-4baf-8eb4-59a8e2bdd9fc
+      version: -1
+      name: threat-grid-domain-associated-ips
+      script: Threat Grid|||threat-grid-domain-associated-ips
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      domain:
+        simple: google.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: c2dbd77b-e637-4cba-83c5-6041f8122a7d
+    type: condition
+    task:
+      id: c2dbd77b-e637-4cba-83c5-6041f8122a7d
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.DomainAssociatedIp.domain
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.DomainAssociatedIp.ips
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: dce3e590-c552-4951-8cc3-22bb4226087a
+    type: regular
+    task:
+      id: dce3e590-c552-4951-8cc3-22bb4226087a
+      version: -1
+      name: threat-grid-feeds-artifact
+      script: Threat Grid|||threat-grid-feeds-artifact
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 651fd81d-0b5f-4160-8765-7c977e945490
+    type: condition
+    task:
+      id: 651fd81d-0b5f-4160-8765-7c977e945490
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.Artifact.confidence
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.Artifact.severity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.Artifact.ioc
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.Artifact.artifact_sha256
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.Artifact.artifact_md5
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.Artifact.sample_id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 1be394ab-0c49-49b5-8c9f-d2efa0d8bd15
+    type: regular
+    task:
+      id: 1be394ab-0c49-49b5-8c9f-d2efa0d8bd15
+      version: -1
+      name: threat-grid-feeds-domain
+      script: Threat Grid|||threat-grid-feeds-domain
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 317ee60b-f9ae-4288-8879-f9c73bb5aff7
+    type: condition
+    task:
+      id: 317ee60b-f9ae-4288-8879-f9c73bb5aff7
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.Domain.confidence
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.Domain.severity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.Domain.ioc
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.Domain.sample_sha256
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.Domain.sample_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.Domain.domain
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: d6a50f43-02eb-4982-8735-02700f860408
+    type: regular
+    task:
+      id: d6a50f43-02eb-4982-8735-02700f860408
+      version: -1
+      name: threat-grid-feeds-ip
+      script: Threat Grid|||threat-grid-feeds-ip
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: f5c397ae-bb21-4950-8d4c-62ab0a148ff8
+    type: condition
+    task:
+      id: f5c397ae-bb21-4950-8d4c-62ab0a148ff8
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "32"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.Ip.confidence
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.Ip.severity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.Ip.ioc
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.Ip.sample_sha256
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.Ip.sample_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.Ip.ip
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.Ip.port
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 617ed54f-631b-457b-8a7c-c55257fba4c1
+    type: regular
+    task:
+      id: 617ed54f-631b-457b-8a7c-c55257fba4c1
+      version: -1
+      name: threat-grid-feeds-network-stream
+      script: Threat Grid|||threat-grid-feeds-network-stream
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 14c32549-3716-4681-8916-fa9bae35f906
+    type: condition
+    task:
+      id: 14c32549-3716-4681-8916-fa9bae35f906
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "34"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.NetworkStreams.confidence
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.NetworkStreams.severity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.NetworkStreams.ioc
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.NetworkStreams.sample_sha256
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.NetworkStreams.sample_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.NetworkStreams.src
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.NetworkStreams.src_port
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.NetworkStreams.dst
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.NetworkStreams.dst_port
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 9694fdf6-c5ea-48fd-8b9e-4e4e4be2c96b
+    type: regular
+    task:
+      id: 9694fdf6-c5ea-48fd-8b9e-4e4e4be2c96b
+      version: -1
+      name: threat-grid-feeds-url
+      script: Threat Grid|||threat-grid-feeds-url
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 948f618b-4911-4da6-857a-eeafe8de954e
+    type: condition
+    task:
+      id: 948f618b-4911-4da6-857a-eeafe8de954e
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "36"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.Url.confidence
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.Url.severity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.Url.ioc
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.Url.sample_sha256
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.Url.sample_id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.Url.url
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: e5582e24-aafb-490a-8cf4-93744ff6e2fd
+    type: regular
+    task:
+      id: e5582e24-aafb-490a-8cf4-93744ff6e2fd
+      version: -1
+      name: threat-grid-feeds-path
+      script: Threat Grid|||threat-grid-feeds-path
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 5ff36065-d606-454e-836b-e6f1e1468f1d
+    type: condition
+    task:
+      id: 5ff36065-d606-454e-836b-e6f1e1468f1d
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "38"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.Path.confidence
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.Path.severity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.Path.ioc
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.Path.sample_sha256
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.Path.sample_id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: e3b9a40c-2caf-4056-8c8f-367678e232ca
+    type: regular
+    task:
+      id: e3b9a40c-2caf-4056-8c8f-367678e232ca
+      version: -1
+      name: threat-grid-feed-specific-get
+      script: Threat Grid|||threat-grid-feed-specific-get
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      feed_name:
+        simple: doc-net-com-dns
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 2ef4f0ae-fcd1-4d8e-8f33-5be16db66684
+    type: condition
+    task:
+      id: 2ef4f0ae-fcd1-4d8e-8f33-5be16db66684
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "40"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.Feed.sample
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.Feed.description
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 0cf99490-2bc8-4842-8aca-6e337a905563
+    type: regular
+    task:
+      id: 0cf99490-2bc8-4842-8aca-6e337a905563
+      version: -1
+      name: threat-grid-ip-search
+      script: Threat Grid|||threat-grid-ip-search
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      ip:
+        simple: 8.8.8.8
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: 13a6ff5e-fc7b-43e2-8d57-b36bc7881158
+    type: condition
+    task:
+      id: 13a6ff5e-fc7b-43e2-8d57-b36bc7881158
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "42"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.search.ip
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.search.asn
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.search.location
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: c65be679-ada2-4def-88da-1755f7d6f529
+    type: regular
+    task:
+      id: c65be679-ada2-4def-88da-1755f7d6f529
+      version: -1
+      name: threat-grid-analysis-artifacts-get
+      script: Threat Grid|||threat-grid-analysis-artifacts-get
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      sample_id:
+        simple: ${ThreatGrid.Sample.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: da397981-41c6-4449-8e36-694132416818
+    type: condition
+    task:
+      id: da397981-41c6-4449-8e36-694132416818
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "44"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.ArtifactAnalysis.items
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: a4f48e49-9c36-4306-8693-088e5345c090
+    type: regular
+    task:
+      id: a4f48e49-9c36-4306-8693-088e5345c090
+      version: -1
+      name: threat-grid-analysis-iocs-get
+      script: Threat Grid|||threat-grid-analysis-iocs-get
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "45"
+    scriptarguments:
+      sample_id:
+        simple: ${ThreatGrid.Sample.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: 86727647-e84e-4a3a-8377-94941a2836eb
+    type: condition
+    task:
+      id: 86727647-e84e-4a3a-8377-94941a2836eb
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "46"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.IOCAnalysis.title
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.IOCAnalysis.confidence
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.IOCAnalysis.severity
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.IOCAnalysis.ioc
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.IOCAnalysis.category
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.IOCAnalysis.sha256
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.IOCAnalysis.tags
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: ea0bbf2c-7159-424e-86c2-6e9170e716dd
+    type: regular
+    task:
+      id: ea0bbf2c-7159-424e-86c2-6e9170e716dd
+      version: -1
+      name: threat-grid-analysis-metadata-get
+      script: Threat Grid|||threat-grid-analysis-metadata-get
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      sample_id:
+        simple: ${ThreatGrid.Sample.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: 5c6f0a12-2d71-4240-8391-516e3c700128
+    type: condition
+    task:
+      id: 5c6f0a12-2d71-4240-8391-516e3c700128
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "48"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.AnalysisMetadata.general_details
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.AnalysisMetadata.malware_desc
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.AnalysisMetadata.sandcastle_env
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: d5000f76-c642-41b5-89db-679b0c46c33e
+    type: regular
+    task:
+      id: d5000f76-c642-41b5-89db-679b0c46c33e
+      version: -1
+      name: threat-grid-analysis-network-streams-get
+      script: Threat Grid|||threat-grid-analysis-network-streams-get
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "49"
+    scriptarguments:
+      sample_id:
+        simple: ${ThreatGrid.Sample.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: 267d50c8-5963-42db-8a4e-4ace0fab97cc
+    type: condition
+    task:
+      id: 267d50c8-5963-42db-8a4e-4ace0fab97cc
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "50"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.NetworkAnalysis.protocol
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.NetworkAnalysis.transport
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.NetworkAnalysis.service
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.NetworkAnalysis.client_ip
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.NetworkAnalysis.server_ip
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: 2c8d2f99-4966-4998-8cbf-aba5940d133d
+    type: regular
+    task:
+      id: 2c8d2f99-4966-4998-8cbf-aba5940d133d
+      version: -1
+      name: threat-grid-analysis-processes-get
+      script: Threat Grid|||threat-grid-analysis-processes-get
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "51"
+    scriptarguments:
+      sample_id:
+        simple: ${ThreatGrid.Sample.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: c36fc80a-c97d-4d28-8be0-5cd57b4bd3ec
+    type: condition
+    task:
+      id: c36fc80a-c97d-4d28-8be0-5cd57b4bd3ec
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "52"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.ProcessAnalysis.process_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.ProcessAnalysis.process_id
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "52":
+    id: "52"
+    taskid: 80049596-37f6-4a61-8093-e7bfd801c0a8
+    type: regular
+    task:
+      id: 80049596-37f6-4a61-8093-e7bfd801c0a8
+      version: -1
+      name: threat-grid-analysis-annotations-get
+      script: Threat Grid|||threat-grid-analysis-annotations-get
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "53"
+    scriptarguments:
+      sample_id:
+        simple: ${ThreatGrid.Sample.id}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "53":
+    id: "53"
+    taskid: 060565cd-0ec7-450c-8d2a-93bb6555e287
+    type: condition
+    task:
+      id: 060565cd-0ec7-450c-8d2a-93bb6555e287
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "54"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.SampleAnnotations.network
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "54":
+    id: "54"
+    taskid: bac0b2a0-687a-461e-8a1a-a170f2e3a378
+    type: regular
+    task:
+      id: bac0b2a0-687a-461e-8a1a-a170f2e3a378
+      version: -1
+      name: threat-grid-url-search
+      script: Threat Grid|||threat-grid-url-search
+      type: regular
+      iscommand: true
+      brand: Threat Grid
+    nexttasks:
+      '#none#':
+      - "55"
+    scriptarguments:
+      url:
+        simple: http://google.com:80/
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "55":
+    id: "55"
+    taskid: 5d12d647-a7fa-4544-8128-5fe6f95f854b
+    type: condition
+    task:
+      id: 5d12d647-a7fa-4544-8128-5fe6f95f854b
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "56"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.search.url
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 11000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: 471b834a-7b5d-4532-8650-587aac30c958
+    type: regular
+    task:
+      id: 471b834a-7b5d-4532-8650-587aac30c958
+      version: -1
+      name: threat-grid-url-samples-list
+      script: Threat Grid|||threat-grid-url-samples-list
+      type: regular
+      iscommand: true
+      brand: Threat Grid
+    nexttasks:
+      '#none#':
+      - "57"
+    scriptarguments:
+      url:
+        simple: http://google.com:80/
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 11200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: bc60ff70-9ec2-4ae7-8cb3-ca09f0ddaff7
+    type: condition
+    task:
+      id: bc60ff70-9ec2-4ae7-8cb3-ca09f0ddaff7
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "58"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.UrlAssociatedSample.url
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.UrlAssociatedSample.samples
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 11400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: eb01e3bf-32eb-44f7-8ac8-bec9b164c0e1
+    type: regular
+    task:
+      id: eb01e3bf-32eb-44f7-8ac8-bec9b164c0e1
+      version: -1
+      name: threat-grid-registry-key-samples-list
+      script: Threat Grid|||threat-grid-registry-key-samples-list
+      type: regular
+      iscommand: true
+      brand: Threat Grid
+    nexttasks:
+      '#none#':
+      - "59"
+    scriptarguments:
+      registry_key:
+        simple: ChangeNotice
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 11600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "59":
+    id: "59"
+    taskid: 6f9f48e3-9420-4b44-8919-e085dab183c6
+    type: condition
+    task:
+      id: 6f9f48e3-9420-4b44-8919-e085dab183c6
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "60"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.RegistryKeyAssociatedSample.key
+            iscontext: true
+          right:
+            value: {}
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 11800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: 93a932ca-e2bd-4e2d-88d7-f40f7be18d87
+    type: regular
+    task:
+      id: 93a932ca-e2bd-4e2d-88d7-f40f7be18d87
+      version: -1
+      name: threat-grid-sample-upload
+      script: Threat Grid|||threat-grid-sample-upload
+      type: regular
+      iscommand: true
+      brand: Threat Grid
+    nexttasks:
+      '#none#':
+      - "61"
+    scriptarguments:
+      url:
+        simple: http://google.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 12000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "61":
+    id: "61"
+    taskid: 078ee368-949e-4cdd-8603-7b11d4db512c
+    type: condition
+    task:
+      id: 078ee368-949e-4cdd-8603-7b11d4db512c
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "62"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.Sample.id
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.Sample.filename
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.Sample.state
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.Sample.status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.Sample.md5
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.Sample.sha1
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.Sample.sha256
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.Sample.os
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ThreatGrid.Sample.submitted_at
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 12200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "62":
+    id: "62"
+    taskid: 189bdfb9-f1cd-4310-8afe-4ce3385febb7
+    type: regular
+    task:
+      id: 189bdfb9-f1cd-4310-8afe-4ce3385febb7
+      version: -1
+      name: file
+      script: Threat Grid|||file
+      type: regular
+      iscommand: true
+      brand: Threat Grid
+    nexttasks:
+      '#none#':
+      - "63"
+    scriptarguments:
+      file:
+        simple: 65eddaa2cd3276918725f89697823c91ae20291bb2dc95360d9988511f334fd7
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 12400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "63":
+    id: "63"
+    taskid: 2f692f3d-582b-48be-8272-2f8ed1d07758
+    type: condition
+    task:
+      id: 2f692f3d-582b-48be-8272-2f8ed1d07758
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "64"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Vendor
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Reliability
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 12600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "64":
+    id: "64"
+    taskid: 5d02eda6-8ecf-497d-82be-437e90d2fb81
+    type: regular
+    task:
+      id: 5d02eda6-8ecf-497d-82be-437e90d2fb81
+      version: -1
+      name: ip
+      script: Threat Grid|||ip
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "65"
+    scriptarguments:
+      ip:
+        simple: 8.8.8.8
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 12800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "65":
+    id: "65"
+    taskid: 24715c77-a679-44b0-8d6b-0937e65202a5
+    type: condition
+    task:
+      id: 24715c77-a679-44b0-8d6b-0937e65202a5
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "66"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Vendor
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Reliability
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 13000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "66":
+    id: "66"
+    taskid: 27b87acb-cff8-4d04-8c9a-d5b10ec413a6
+    type: regular
+    task:
+      id: 27b87acb-cff8-4d04-8c9a-d5b10ec413a6
+      version: -1
+      name: url
+      script: Threat Grid|||url
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "67"
+    scriptarguments:
+      url:
+        simple: http://google.com:80/
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 13200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "67":
+    id: "67"
+    taskid: 783cd759-bdce-4453-860b-30222e8cfd0d
+    type: condition
+    task:
+      id: 783cd759-bdce-4453-860b-30222e8cfd0d
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "68"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Vendor
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Reliability
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 13400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "68":
+    id: "68"
+    taskid: 94b31c62-e49b-443f-87d6-d65ab79e0778
+    type: regular
+    task:
+      id: 94b31c62-e49b-443f-87d6-d65ab79e0778
+      version: -1
+      name: domain
+      script: Threat Grid|||domain
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "69"
+    scriptarguments:
+      domain:
+        simple: google.com
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 13600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "69":
+    id: "69"
+    taskid: 63bb08d5-362d-480b-842a-e4d6f94bf6ac
+    type: condition
+    task:
+      id: 63bb08d5-362d-480b-842a-e4d6f94bf6ac
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "true":
+      - "70"
+    separatecontext: false
+    conditions:
+    - label: "true"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Vendor
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Reliability
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 13800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "70":
+    id: "70"
+    taskid: 1522f3b1-d26c-4271-81de-04c42833055f
+    type: title
+    task:
+      id: 1522f3b1-d26c-4271-81de-04c42833055f
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 14000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 14015,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 5.0.0
+description: ''

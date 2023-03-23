@@ -1,7 +1,7 @@
 import pytest
 import demistomock as demisto
 import json
-from MicrosoftGraphListener import MsGraphClient, is_only_ascii
+from MicrosoftGraphListener import MsGraphClient, is_only_ascii, item_result_creator
 from MicrosoftGraphListener import add_second_to_str_date
 import requests_mock
 from unittest.mock import mock_open
@@ -10,6 +10,7 @@ from CommonServerPython import *
 
 def oproxy_client():
     refresh_token = "dummy_refresh_token"
+    refresh_token_param = "dummy_refresh_token_param"
     auth_id = "dummy_auth_id"
     enc_key = "dummy_enc_key"
     token_retrieval_url = "url_to_retrieval"
@@ -28,7 +29,8 @@ def oproxy_client():
                          enc_key=enc_key, app_name=app_name, base_url=base_url, use_ssl=True, proxy=False,
                          ok_codes=ok_codes, refresh_token=refresh_token, mailbox_to_fetch=mailbox_to_fetch,
                          folder_to_fetch=folder_to_fetch, first_fetch_interval=first_fetch_interval,
-                         emails_fetch_limit=emails_fetch_limit, auth_code=auth_code, redirect_uri=redirect_uri)
+                         emails_fetch_limit=emails_fetch_limit, auth_code=auth_code, redirect_uri=redirect_uri,
+                         refresh_token_param=refresh_token_param)
 
 
 def self_deployed_client():
@@ -615,6 +617,80 @@ def test_test_module_command_with_managed_identities(mocker, requests_mock, clie
     assert client_id and qs['client_id'] == [client_id] or 'client_id' not in qs
 
 
+@pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
+def test_get_attachment(client):
+    """
+    Given:
+        - raw response returned from get_attachment_command
+
+    When:
+        - response type is itemAttachment and 'item_result_creator' is called
+
+    Then:
+        - Validate that the message object created successfully
+
+    """
+    output_prefix = 'MSGraphMail(val.ID && val.ID == obj.ID)'
+    with open('test_data/mail_with_attachment') as mail_json:
+        user_id = 'ex@example.com'
+        raw_response = json.load(mail_json)
+        res = item_result_creator(raw_response, user_id)
+        assert isinstance(res, CommandResults)
+        output = res.to_context().get('EntryContext', {})
+        assert output.get(output_prefix).get('ID') == 'exampleID'
+        assert output.get(output_prefix).get('Subject') == 'Test it'
+
+
+@pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
+def test_get_attachments_without_attachment_id(mocker, client):
+    """
+    Given:
+        - A user ID 'ex@example.com'
+
+    When:
+        - Calling 'get_attachment_command' method.
+
+    Then:
+        - Validate that the message object created successfully and all the attachment where downloaded.
+
+    """
+    from MicrosoftGraphListener import get_attachment_command
+    output_prefix = 'MSGraphMail(val.ID && val.ID == obj.ID)'
+    with open('test_data/mail_with_attachments') as mail_json:
+        test_args = {}
+        raw_response = json.load(mail_json)
+        mocker.patch.object(client, 'get_attachment', return_value=raw_response)
+        res = get_attachment_command(client, test_args)
+        assert isinstance(res, List)
+        assert len(res) == len(raw_response)
+        for i, attachment in enumerate(res):
+            output = attachment.to_context().get('EntryContext', {})
+            assert output.get(output_prefix).get('ID') == f'exampleID{i}'
+            assert output.get(output_prefix).get('Subject') == f'Test it{i}'
+
+
+@pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
+def test_get_attachment_unsupported_type(client):
+    """
+    Given:
+        - raw response returned from get_attachment_command
+
+    When:
+        - response type is itemAttachment with attachment that is not supported
+
+    Then:
+        - Validate the human readable which explain we do not support the type
+
+    """
+    with open('test_data/mail_with_unsupported_attachment') as mail_json:
+        user_id = 'ex@example.com'
+        raw_response = json.load(mail_json)
+        res = item_result_creator(raw_response, user_id)
+        assert isinstance(res, CommandResults)
+        output = res.to_context().get('HumanReadable', '')
+        assert 'Integration does not support attachments from type #microsoft.graph.contact' in output
+
+
 class MockedResponse:
 
     def __init__(self, status_code):
@@ -1071,3 +1147,46 @@ def test_is_only_ascii(str_to_check, expected_result):
     """
     result = is_only_ascii(str_to_check)
     assert expected_result == result
+
+
+def test_generate_login_url(mocker):
+    """
+    Given:
+        - Self-deployed are true and auth code are the auth flow
+    When:
+        - Calling function msgraph-mail-generate-login-url
+        - Ensure the generated url are as expected.
+    """
+    # prepare
+    import demistomock as demisto
+    from MicrosoftGraphListener import main, Scopes
+    import MicrosoftGraphListener
+
+    redirect_uri = 'redirect_uri'
+    tenant_id = 'tenant_id'
+    client_id = 'client_id'
+    mocked_params = {
+        'redirect_uri': redirect_uri,
+        'auth_type': 'Authorization Code',
+        'self_deployed': 'True',
+        'creds_refresh_token': {'password': tenant_id},
+        'creds_auth_id': {
+            'password': client_id
+        },
+        'creds_enc_key': {
+            'password': 'client_secret'
+        }
+    }
+    mocker.patch.object(demisto, 'params', return_value=mocked_params)
+    mocker.patch.object(demisto, 'command', return_value='msgraph-mail-generate-login-url')
+    mocker.patch.object(MicrosoftGraphListener, 'return_results')
+
+    # call
+    main()
+
+    # assert
+    expected_url = f'[login URL](https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/authorize?' \
+                   f'response_type=code&scope=offline_access%20{Scopes.graph}' \
+                   f'&client_id={client_id}&redirect_uri={redirect_uri})'
+    res = MicrosoftGraphListener.return_results.call_args[0][0].readable_output
+    assert expected_url in res

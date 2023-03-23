@@ -117,7 +117,7 @@ script:
     - contextPath: AlphaVantage.StockHistory.Time Series
       description: 'List of all stock data samples'
       type: Unknown
-  dockerimage: demisto/python3:3.10.9.40422
+  dockerimage: demisto/python3:3.10.10.48392
   feed: false
   isfetch: false
   longRunning: false

@@ -2314,14 +2314,6 @@ class Pack(object):
                             report.update({"preview": preview})
                         folder_collected_items.append(report)
 
-                    elif current_directory == PackFolders.TRIGGERS.value:
-                        folder_collected_items.append({
-                            'id': content_item.get('trigger_id', ''),
-                            'name': content_item.get('trigger_name', ''),
-                            'description': content_item.get('description', ''),
-                            'marketplaces': content_item.get('marketplaces', ["xsoar", "marketplacev2"]),
-                        })
-
                     elif current_directory == PackFolders.WIZARDS.value:
                         folder_collected_items.append({
                             'id': content_item.get('id', ''),
@@ -2343,6 +2335,20 @@ class Pack(object):
                             'profile_type': content_item.get('profile_type', ''),
                             'marketplaces': content_item.get('marketplaces', ["marketplacev2"]),
                         })
+
+                    elif current_directory == PackFolders.LAYOUT_RULES.value and pack_file_name.startswith(
+                            "external-"):
+                        self.add_pack_type_tags(content_item, 'LayoutRule')
+                        layout_rule_metadata = {
+                            'id': content_item.get('rule_id', ''),
+                            'name': content_item.get('rule_name', ''),
+                            'layout_id': content_item.get('layout_id', ''),
+                            'marketplaces': content_item.get('marketplaces', ["marketplacev2"]),
+                        }
+                        layout_rule_description = content_item.get('description')
+                        if layout_rule_description is not None:
+                            layout_rule_metadata['description'] = layout_rule_description
+                        folder_collected_items.append(layout_rule_metadata)
 
                     else:
                         logging.info(f'Failed to collect: {current_directory}')
@@ -2653,10 +2659,6 @@ class Pack(object):
             all_levels_dependencies.append(GCPConfig.BASE_PACK)
             logging.debug(f'(1) {first_level_dependencies=}')
             logging.debug(f'(1) {all_levels_dependencies=}')
-
-        # update the calculated dependencies with the hardcoded dependencies
-        first_level_dependencies.update(self.user_metadata[Metadata.DEPENDENCIES])
-        logging.debug(f'(3) {first_level_dependencies=}')
 
         # If it is a core pack, check that no new mandatory packs (that are not core packs) were added
         # They can be overridden in the user metadata to be not mandatory so we need to check there as well

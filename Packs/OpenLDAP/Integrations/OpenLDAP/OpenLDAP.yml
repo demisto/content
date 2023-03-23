@@ -2,7 +2,7 @@ beta: false
 sectionOrder:
 - Connect
 - Collect
-category: Authentication
+category: Authentication & Identity Management
 commonfields:
   id: OpenLDAP
   version: -1
@@ -240,7 +240,7 @@ script:
     description: Performs a simple bind operation on the LDAP server and returns the authenticated user's groups.
     execution: false
     name: ad-authenticate-and-roles
-  dockerimage: demisto/py3-tools:1.0.0.45685
+  dockerimage: demisto/py3-tools:1.0.0.49159
   feed: false
   isfetch: false
   longRunning: false

@@ -1,0 +1,65 @@
+{
+	"defaultIncidentType": "Lumu",
+	"description": "Classifies Lumu incidents",
+	"feed": false,
+	"id": "Lumu",
+	"keyTypeMap": {
+		"lumu": "Lumu"
+	},
+	"name": "Lumu",
+	"transformer": {
+		"complex": {
+			"filters": [
+				[
+					{
+						"left": {
+							"isContext": true,
+							"value": {
+								"simple": "lumu_source_name"
+							}
+						},
+						"operator": "isEqualString",
+						"right": {
+							"value": {
+								"simple": "lumu"
+							}
+						}
+					},
+					{
+						"left": {
+							"isContext": true,
+							"value": {
+								"simple": "lumu_source_name"
+							}
+						},
+						"operator": "isEqualString",
+						"right": {
+							"value": {
+								"simple": "Lumu"
+							}
+						}
+					},
+					{
+						"left": {
+							"isContext": true,
+							"value": {
+								"simple": "lumu_source_name"
+							}
+						},
+						"operator": "isEqualString",
+						"right": {
+							"value": {
+								"simple": "LUMU"
+							}
+						}
+					}
+				]
+			],
+			"root": "lumu_source_name",
+			"transformers": []
+		}
+	},
+	"type": "classification",
+	"version": -1,
+	"fromVersion": "6.0.0"
+}

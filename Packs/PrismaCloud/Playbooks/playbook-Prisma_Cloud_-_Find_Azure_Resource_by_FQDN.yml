@@ -133,8 +133,8 @@ tasks:
             iscontext: true
             value:
               complex:
-                accessor: Asset
-                root: Redlock
+                accessor: Config
+                root: PrismaCloud
           operator: isNotEmpty
       label: "yes"
     id: "12"
@@ -177,8 +177,8 @@ tasks:
     scriptarguments:
       assets:
         complex:
-          accessor: Asset
-          root: Redlock
+          accessor: Config
+          root: PrismaCloud
       fields: {}
     separatecontext: false
     skipunavailable: false
@@ -241,7 +241,7 @@ tasks:
                     operator: isEqualString
                     right:
                       value:
-                        simple: RedLock
+                        simple: PrismaCloud v2
                 - - left:
                       iscontext: true
                       value:
@@ -817,13 +817,15 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
-      description: Search configuration inventory on the Prisma Cloud (RedLock) platform
-        using RQL language
+      brand: PrismaCloud v2
+      description: Search configuration inventory on the Prisma Cloud platform using
+        RQL language. Use this command for all queries that start with "config". When
+        no absolute time nor relative time arguments are provided, the default time range
+        is all times.
       id: 3107b94b-2010-48eb-85c0-ebaed826a7ec
       iscommand: true
       name: Search FQDNs in App Service
-      script: '|||redlock-search-config'
+      script: PrismaCloud v2|||redlock-search-config
       type: regular
       version: -1
     taskid: 3107b94b-2010-48eb-85c0-ebaed826a7ec
@@ -966,13 +968,15 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
-      description: Search configuration inventory on the Prisma Cloud (RedLock) platform
-        using RQL language
+      brand: PrismaCloud v2
+      description: Search configuration inventory on the Prisma Cloud platform using
+        RQL language. Use this command for all queries that start with "config". When
+        no absolute time nor relative time arguments are provided, the default time range
+        is all times.
       id: 80352352-4b39-4b7a-86d4-c07bf3a61b9d
       iscommand: true
       name: Search FQDNs in Public IPs
-      script: '|||redlock-search-config'
+      script: PrismaCloud v2|||redlock-search-config
       type: regular
       version: -1
     taskid: 80352352-4b39-4b7a-86d4-c07bf3a61b9d
@@ -1027,13 +1031,15 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
-      description: Search configuration inventory on the Prisma Cloud (RedLock) platform
-        using RQL language
+      brand: PrismaCloud v2
+      description: Search configuration inventory on the Prisma Cloud platform using
+        RQL language. Use this command for all queries that start with "config". When
+        no absolute time nor relative time arguments are provided, the default time range
+        is all times.
       id: c91a738c-b191-4725-894b-8deeef6ef3a2
       iscommand: true
       name: Search FQDNs in Azure Application Gateway
-      script: '|||redlock-search-config'
+      script: PrismaCloud v2|||redlock-search-config
       type: regular
       version: -1
     taskid: c91a738c-b191-4725-894b-8deeef6ef3a2
@@ -1188,13 +1194,15 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
-      description: Search configuration inventory on the Prisma Cloud (RedLock) platform
-        using RQL language
+      brand: PrismaCloud v2
+      description: Search configuration inventory on the Prisma Cloud platform using
+        RQL language. Use this command for all queries that start with "config". When
+        no absolute time nor relative time arguments are provided, the default time range
+        is all times.
       id: 49476811-2e58-4291-8f00-305c666af44b
       iscommand: true
       name: Search FQDNs in Azure Storage
-      script: '|||redlock-search-config'
+      script: PrismaCloud v2|||redlock-search-config
       type: regular
       version: -1
     taskid: 49476811-2e58-4291-8f00-305c666af44b
@@ -1337,13 +1345,15 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
-      description: Search configuration inventory on the Prisma Cloud (RedLock) platform
-        using RQL language
+      brand: PrismaCloud v2
+      description: Search configuration inventory on the Prisma Cloud platform using
+        RQL language. Use this command for all queries that start with "config". When
+        no absolute time nor relative time arguments are provided, the default time range
+        is all times.
       id: 8ddbb096-d42c-49a5-846e-30995677f78c
       iscommand: true
       name: Search FQDNs in AKS
-      script: '|||redlock-search-config'
+      script: PrismaCloud v2|||redlock-search-config
       type: regular
       version: -1
     taskid: 8ddbb096-d42c-49a5-846e-30995677f78c

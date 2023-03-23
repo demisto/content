@@ -14,6 +14,7 @@ class TestTimeComponents:
         now = datetime(2022, 1, 23, 12, 34, 56, tzinfo=timezone.utc)
         assert now == TimeComponents.parse_date_time_value('now').astimezone(timezone.utc)
 
+    @freezegun.freeze_time('2022-01-23 12:34:56')
     def test_main(self, mocker, monkeypatch):
         with open('./test_data/test.json', 'r') as f:
             test_list = json.load(f)

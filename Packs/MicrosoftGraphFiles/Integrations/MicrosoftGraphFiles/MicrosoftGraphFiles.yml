@@ -1,4 +1,4 @@
-category: IT Services
+category: Email
 commonfields:
   id: Microsoft_Graph_Files
   version: -1
@@ -31,10 +31,7 @@ configuration:
   name: private_key
   required: false
   type: 14
-- additionalinfo: Relevant only if the integration is running on Azure VM. 
-    If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field.
-    If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity.
-    For additional information, see the Help tab.
+- additionalinfo: Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab.
   display: Use Azure Managed Identities
   name: use_managed_identities
   required: false
@@ -613,7 +610,7 @@ script:
     - contextPath: File.MD5
       description: The MD5 hash of the file.
       type: String
-  dockerimage: demisto/python_pancloud:1.0.0.47272
+  dockerimage: demisto/python_pancloud:1.0.0.49449
   runonce: false
   script: ''
   subtype: python3

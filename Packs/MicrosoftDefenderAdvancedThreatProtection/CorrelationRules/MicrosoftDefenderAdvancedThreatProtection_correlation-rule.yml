@@ -3,7 +3,7 @@ alert_description: This alert will trigger in an event where Malware was detecte
 alert_fields:
   actor_image:
   actor_path: xdm.target.file.path
-  cmd:
+  cmd: xdm.target.process.command_line
   domain: xdm.source.user.domain
   hash: xdm.target.file.sha256
   hostname: xdm.target.host.fqdn

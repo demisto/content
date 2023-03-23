@@ -160,6 +160,26 @@
             "type": "string",
             "is_array": false
         },
+        "_system_name": {
+            "type": "string",
+            "is_array": false
+        },
+        "named_pipe": {
+            "type": "string",
+            "is_array": false
+        },
+        "endpoint": {
+            "type": "string",
+            "is_array": false
+        },
+        "operation": {
+            "type": "string",
+            "is_array": false
+        },
+        "version": {
+            "type": "string",
+            "is_array": false
+        },        
         "cipher": {
             "type": "string",
             "is_array": false

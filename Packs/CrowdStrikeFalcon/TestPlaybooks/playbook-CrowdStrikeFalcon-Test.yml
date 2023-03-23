@@ -241,7 +241,7 @@ tasks:
       - "7"
     scriptarguments:
       ids:
-        simple: c1a4575cd124419db5ed3c1e8ddc2c04,15dbb9d8f06b45fe9f61eb46e829d986
+        simple: c1a4575cd124419db5ed3c1e8ddc2c04,046761c46ec84f40b27b6f79ce7cd32c
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -833,7 +833,7 @@ tasks:
       execution-timeout:
         simple: "400"
       host_ids:
-        simple: 15dbb9d8f06b45fe9f61eb46e829d986
+        simple: 046761c46ec84f40b27b6f79ce7cd32c
       script_name:
         simple: 10Seconds
       timeout:
@@ -2502,7 +2502,7 @@ tasks:
       - "65"
     scriptarguments:
       host_id:
-        simple: 15dbb9d8f06b45fe9f61eb46e829d986
+        simple: 046761c46ec84f40b27b6f79ce7cd32c
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2538,7 +2538,7 @@ tasks:
       - "66"
     scriptarguments:
       host_id:
-        simple: 15dbb9d8f06b45fe9f61eb46e829d986
+        simple: 046761c46ec84f40b27b6f79ce7cd32c
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2574,7 +2574,7 @@ tasks:
       - "67"
     scriptarguments:
       host_ids:
-        simple: 15dbb9d8f06b45fe9f61eb46e829d986
+        simple: 046761c46ec84f40b27b6f79ce7cd32c
       registry_keys:
         simple: HKEY_USERS
     separatecontext: false
@@ -2613,7 +2613,7 @@ tasks:
       - "42"
     scriptarguments:
       host_ids:
-        simple: 15dbb9d8f06b45fe9f61eb46e829d986
+        simple: 046761c46ec84f40b27b6f79ce7cd32c
     separatecontext: false
     continueonerrortype: ""
     view: |-

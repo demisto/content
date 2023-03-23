@@ -6,6 +6,7 @@ from CommonServerPython import *
 
 import sys
 import requests
+import urllib3
 import json
 import time
 import re
@@ -18,7 +19,7 @@ from datetime import datetime, timedelta
 from requests.exceptions import HTTPError
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' GLOBALS/PARAMS '''
 

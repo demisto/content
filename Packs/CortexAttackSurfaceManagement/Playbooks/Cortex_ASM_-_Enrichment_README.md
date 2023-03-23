@@ -5,9 +5,12 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 * Cortex ASM - GCP Enrichment
+* Cortex ASM - Azure Enrichment
 * Cortex ASM - ServiceNow CMDB Enrichment
-* Cortex ASM - Tenable.io Enrichment
 * Cortex ASM - AWS Enrichment
+* Cortex ASM - Tenable.io Enrichment
+* Cortex ASM - Splunk Enrichment
+* Cortex ASM - Rapid7 Enrichment
 
 ### Integrations
 * Cortex Attack Surface Management

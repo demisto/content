@@ -53,10 +53,7 @@ configuration:
   hidden: true
   section: Connect
   advanced: true
-- additionalinfo: Relevant only if the integration is running on Azure VM. 
-    If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field.
-    If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity.
-    For additional information, see the Help tab.
+- additionalinfo: Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab.
   display: Use Azure Managed Identities
   name: use_managed_identities
   required: false
@@ -71,14 +68,16 @@ configuration:
   type: 9
   section: Connect
   advanced: true
-- display: Subscription ID
+- display: Default Subscription ID
   name: subscriptionID
   required: true
+  additionalinfo: The parameter can be saved as 000-000 and added as an argument to each command, but Test button will fail.
   type: 0
   section: Connect
-- display: Resource Group Name
+- display: Default Resource Group Name
   name: resourceGroupName
   required: true
+  additionalinfo: The parameter can be saved as 000-000 and added as an argument to each command, but the Test button will fail.
   type: 0
   section: Connect
 - display: Workspace Name
@@ -126,7 +125,54 @@ configuration:
   type: 8
   section: Connect
   advanced: true
-description: Use the Azure Sentinel integration to get and manage incidents and get related entity information for incidents.
+- display: Additional info to fetch
+  name: fetch_additional_info
+  required: false
+  type: 16
+  additionalinfo: |
+    Choose what additional info to fetch for each incident.
+    Note that this will increase the number of API calls.
+  options:
+  - Alerts
+  - Entities
+  - Comments
+  - Relations
+  section: Collect
+  advanced: true
+- display: Mirroring Direction
+  name: mirror_direction
+  required: false
+  type: 15
+  defaultvalue: None
+  options:
+  - None
+  - Incoming
+  - Outgoing
+  - Incoming And Outgoing
+  hidden:
+    - marketplacev2
+  section: Collect
+- additionalinfo: When selected, closing the Microsoft Sentinel ticket is mirrored in Cortex XSOAR.
+  defaultvalue: 'false'
+  display: Close Mirrored XSOAR Incident
+  name: close_incident
+  required: false
+  type: 8
+  hidden:
+    - marketplacev2
+  section: Collect
+  advanced: true
+- additionalinfo: When selected, closing the Cortex XSOAR incident is mirrored in Microsoft Sentinel.
+  defaultvalue: 'false'
+  display: Close Mirrored Microsoft Sentinel Ticket
+  name: close_ticket
+  required: false
+  type: 8
+  hidden:
+    - marketplacev2
+  section: Collect
+  advanced: true
+description: "Microsoft Sentinel is a scalable, cloud-native solution that provides: Security information and event management (SIEM) Security orchestration, automation, and response (SOAR)."
 display: Microsoft Sentinel
 name: Azure Sentinel
 script:
@@ -137,6 +183,18 @@ script:
       isArray: false
       name: incident_id
       required: true
+      secret: false
+    - default: false
+      description: The subscription ID.
+      isArray: false
+      name: subscription_id
+      required: false
+      secret: false
+    - default: false
+      description: The resource group name.
+      isArray: false
+      name: resource_group_name
+      required: false
       secret: false
     deprecated: false
     description: Gets a single incident from Azure Sentinel.
@@ -232,6 +290,18 @@ script:
       name: next_link
       required: false
       secret: false
+    - default: false
+      description: The subscription ID.
+      isArray: false
+      name: subscription_id
+      required: false
+      secret: false
+    - default: false
+      description: The resource group name.
+      isArray: false
+      name: resource_group_name
+      required: false
+      secret: false
     deprecated: false
     description: Gets a list of incidents from Azure Sentinel.
     execution: false
@@ -316,6 +386,18 @@ script:
       name: watchlist_alias
       required: false
       secret: false
+    - default: false
+      description: The subscription ID.
+      isArray: false
+      name: subscription_id
+      required: false
+      secret: false
+    - default: false
+      description: The resource group name.
+      isArray: false
+      name: resource_group_name
+      required: false
+      secret: false
     deprecated: false
     description: Gets a list of watchlists from Azure Sentinel.
     execution: false
@@ -369,6 +451,18 @@ script:
       isArray: false
       name: watchlist_alias
       required: true
+      secret: false
+    - default: false
+      description: The subscription ID.
+      isArray: false
+      name: subscription_id
+      required: false
+      secret: false
+    - default: false
+      description: The resource group name.
+      isArray: false
+      name: resource_group_name
+      required: false
       secret: false
     deprecated: false
     description: Delete a watchlist from Azure Sentinel.
@@ -430,6 +524,18 @@ script:
       description: The content type of the raw content. For now, only text/csv is valid.
       isArray: false
       name: content_type
+      required: false
+      secret: false
+    - default: false
+      description: The subscription ID.
+      isArray: false
+      name: subscription_id
+      required: false
+      secret: false
+    - default: false
+      description: The resource group name.
+      isArray: false
+      name: resource_group_name
       required: false
       secret: false
     deprecated: false
@@ -563,6 +669,18 @@ script:
       name: labels
       required: false
       secret: false
+    - default: false
+      description: The subscription ID.
+      isArray: false
+      name: subscription_id
+      required: false
+      secret: false
+    - default: false
+      description: The resource group name.
+      isArray: false
+      name: resource_group_name
+      required: false
+      secret: false
     deprecated: false
     description: Updates a single incident in Azure Sentinel.
     execution: false
@@ -641,6 +759,18 @@ script:
       name: incident_id
       required: true
       secret: false
+    - default: false
+      description: The subscription ID.
+      isArray: false
+      name: subscription_id
+      required: false
+      secret: false
+    - default: false
+      description: The resource group name.
+      isArray: false
+      name: resource_group_name
+      required: false
+      secret: false
     deprecated: false
     description: Deletes a single incident in Azure Sentinel.
     execution: false
@@ -663,6 +793,18 @@ script:
       description: A link that specifies a starting point to use for subsequent calls. Using this argument overrides all of the other command arguments.
       isArray: false
       name: next_link
+      required: false
+      secret: false
+    - default: false
+      description: The subscription ID.
+      isArray: false
+      name: subscription_id
+      required: false
+      secret: false
+    - default: false
+      description: The resource group name.
+      isArray: false
+      name: resource_group_name
       required: false
       secret: false
     deprecated: false
@@ -707,6 +849,18 @@ script:
       name: message
       required: true
       secret: false
+    - default: false
+      description: The subscription ID.
+      isArray: false
+      name: subscription_id
+      required: false
+      secret: false
+    - default: false
+      description: The resource group name.
+      isArray: false
+      name: resource_group_name
+      required: false
+      secret: false
     deprecated: false
     description: Adds a comment to an incident in Azure Sentinel.
     execution: false
@@ -742,6 +896,18 @@ script:
       isArray: false
       name: comment_id
       required: true
+      secret: false
+    - default: false
+      description: The subscription ID.
+      isArray: false
+      name: subscription_id
+      required: false
+      secret: false
+    - default: false
+      description: The resource group name.
+      isArray: false
+      name: resource_group_name
+      required: false
       secret: false
     deprecated: false
     description: Deletes a comment from incident in Azure Sentinel.
@@ -783,6 +949,18 @@ script:
       name: filter
       required: false
       secret: false
+    - default: false
+      description: The subscription ID.
+      isArray: false
+      name: subscription_id
+      required: false
+      secret: false
+    - default: false
+      description: The resource group name.
+      isArray: false
+      name: resource_group_name
+      required: false
+      secret: false
     deprecated: false
     description: Gets a list of an incident's related entities from Azure Sentinel.
     execution: false
@@ -810,6 +988,18 @@ script:
       name: incident_id
       required: true
       secret: false
+    - default: false
+      description: The subscription ID.
+      isArray: false
+      name: subscription_id
+      required: false
+      secret: false
+    - default: false
+      description: The resource group name.
+      isArray: false
+      name: resource_group_name
+      required: false
+      secret: false
     deprecated: false
     description: Gets a list of an incident's entities from Azure Sentinel.
     execution: false
@@ -833,6 +1023,18 @@ script:
       isArray: false
       name: incident_id
       required: true
+      secret: false
+    - default: false
+      description: The subscription ID.
+      isArray: false
+      name: subscription_id
+      required: false
+      secret: false
+    - default: false
+      description: The resource group name.
+      isArray: false
+      name: resource_group_name
+      required: false
       secret: false
     deprecated: false
     description: Gets a list of an incident's alerts from Azure Sentinel.
@@ -885,6 +1087,18 @@ script:
       name: watchlist_item_id
       required: false
       secret: false
+    - default: false
+      description: The subscription ID.
+      isArray: false
+      name: subscription_id
+      required: false
+      secret: false
+    - default: false
+      description: The resource group name.
+      isArray: false
+      name: resource_group_name
+      required: false
+      secret: false
     deprecated: false
     description: Get a single watchlist item or list of watchlist items.
     execution: false
@@ -924,6 +1138,18 @@ script:
       name: watchlist_item_id
       required: true
       secret: false
+    - default: false
+      description: The subscription ID.
+      isArray: false
+      name: subscription_id
+      required: false
+      secret: false
+    - default: false
+      description: The resource group name.
+      isArray: false
+      name: resource_group_name
+      required: false
+      secret: false
     deprecated: false
     description: Delete a watchlist item.
     execution: false
@@ -946,6 +1172,18 @@ script:
       isArray: false
       name: item_key_value
       required: true
+      secret: false
+    - default: false
+      description: The subscription ID.
+      isArray: false
+      name: subscription_id
+      required: false
+      secret: false
+    - default: false
+      description: The resource group name.
+      isArray: false
+      name: resource_group_name
+      required: false
       secret: false
     deprecated: false
     description: Create or update a watchlist item.
@@ -994,6 +1232,18 @@ script:
         There may be no support for pagination.
       isArray: false
       name: next_link
+      required: false
+      secret: false
+    - default: false
+      description: The subscription ID.
+      isArray: false
+      name: subscription_id
+      required: false
+      secret: false
+    - default: false
+      description: The resource group name.
+      isArray: false
+      name: resource_group_name
       required: false
       secret: false
     deprecated: false
@@ -1172,6 +1422,18 @@ script:
       description: A comma-separated list of keywords.
       isArray: true
       name: keywords
+      required: false
+      secret: false
+    - default: false
+      description: The subscription ID.
+      isArray: false
+      name: subscription_id
+      required: false
+      secret: false
+    - default: false
+      description: The resource group name.
+      isArray: false
+      name: resource_group_name
       required: false
       secret: false
     deprecated: false
@@ -1366,6 +1628,18 @@ script:
       - 'false'
       required: false
       secret: false
+    - default: false
+      description: The subscription ID.
+      isArray: false
+      name: subscription_id
+      required: false
+      secret: false
+    - default: false
+      description: The resource group name.
+      isArray: false
+      name: resource_group_name
+      required: false
+      secret: false
     deprecated: false
     description: Creates a new threat indicator.
     execution: false
@@ -1553,6 +1827,18 @@ script:
       name: created_by
       required: false
       secret: false
+    - default: false
+      description: The subscription ID.
+      isArray: false
+      name: subscription_id
+      required: false
+      secret: false
+    - default: false
+      description: The resource group name.
+      isArray: false
+      name: resource_group_name
+      required: false
+      secret: false
     deprecated: false
     description: Updates an existing threat indicator.
     execution: false
@@ -1646,6 +1932,18 @@ script:
       name: indicator_names
       required: true
       secret: false
+    - default: false
+      description: The subscription ID.
+      isArray: false
+      name: subscription_id
+      required: false
+      secret: false
+    - default: false
+      description: The resource group name.
+      isArray: false
+      name: resource_group_name
+      required: false
+      secret: false
     deprecated: false
     description: Deletes an existing threat indicator.
     execution: false
@@ -1662,6 +1960,18 @@ script:
       isArray: true
       name: tags
       required: true
+      secret: false
+    - default: false
+      description: The subscription ID.
+      isArray: false
+      name: subscription_id
+      required: false
+      secret: false
+    - default: false
+      description: The resource group name.
+      isArray: false
+      name: resource_group_name
+      required: false
       secret: false
     deprecated: false
     description: Appends new tags to an existing indicator.
@@ -1762,6 +2072,18 @@ script:
       name: tags
       required: true
       secret: false
+    - default: false
+      description: The subscription ID.
+      isArray: false
+      name: subscription_id
+      required: false
+      secret: false
+    - default: false
+      description: The resource group name.
+      isArray: false
+      name: resource_group_name
+      required: false
+      secret: false
     deprecated: false
     description: Replaces the tags of a given indicator.
     execution: false
@@ -1848,7 +2170,843 @@ script:
     - contextPath: AzureSentinel.ThreatIndicator.Types
       description: The threat types of the indicator.
       type: Unknown
-  dockerimage: demisto/crypto:1.0.0.47103
+  - arguments:
+    - default: false
+      description: Date string representing the local time. The incident is only returned if it was modified after the last update time.
+      name: lastUpdate
+      required: true
+    description: Gets the list of incidents and detections that were modified since the last update time. This method is used for debugging purposes.
+    name: get-modified-remote-data
+  - arguments:
+    - description: The remote incident ID.
+      name: id
+      required: true
+    - defaultValue: '0'
+      description: The UTC timestamp in seconds of the last update. The incident is only updated if it was modified after the last update time.
+      name: lastUpdate
+    description: Gets data from a remote incident. This method does not update the current incident, and should be used for debugging purposes only.
+    name: get-remote-data
+  - description: Returns the list of fields to map in outgoing mirroring. This command is only used for debugging purposes.
+    name: get-mapping-fields
+  - description: Updates the remote incident with local incident changes. This method is only used for debugging purposes and will not update the current incident.
+    name: update-remote-system
+  - arguments:
+    - default: false
+      description: The rule ID. If not given, will return all rules.
+      isArray: false
+      name: rule_id
+      required: false
+    - default: false
+      defaultValue: '50'
+      description: The maximum number of rules to return.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: The subscription ID.
+      isArray: false
+      name: subscription_id
+      required: false
+      secret: false
+    - default: false
+      description: The resource group name.
+      isArray: false
+      name: resource_group_name
+      required: false
+      secret: false
+    description: Gets a list of all alert rules.
+    name: azure-sentinel-list-alert-rule
+    outputs:
+    - contextPath: AzureSentinel.AlertRule.id
+      description: Fully qualified resource ID for the resource.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.name
+      description: The name of the resource.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.type
+      description: The type of the resource.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.kind
+      description: The alert rule kind.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.etag
+      description: ETag of the Azure resource.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.properties.alertRuleTemplateName
+      description: The name of the alert rule template used to create this rule.
+      type: Unknown
+    - contextPath: AzureSentinel.AlertRule.properties.displayName
+      description: The display name for alerts created by this alert rule.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.properties.description
+      description: The description of the alert rule.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.properties.severity
+      description: The severity for alerts created by this alert rule.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.properties.enabled
+      description: Determines whether this alert rule is enabled or disabled.
+      type: Boolean
+    - contextPath: AzureSentinel.AlertRule.properties.tactics
+      description: The tactics of the alert rule.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.properties.query
+      description: The query that creates alerts for this rule.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.properties.queryFrequency
+      description: The frequency (in ISO 8601 duration format) for this alert rule to run.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.properties.queryPeriod
+      description: The period (in ISO 8601 duration format) that this alert rule looks at.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.properties.triggerOperator
+      description: The operation against the threshold that triggers the alert rule.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.properties.triggerThreshold
+      description: The threshold that triggers this alert rule.
+      type: Number
+    - contextPath: AzureSentinel.AlertRule.properties.suppressionDuration
+      description: The suppression (in ISO 8601 duration format) to wait since the last time this alert rule was triggered.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.properties.suppressionEnabled
+      description: Determines whether the suppression for this alert rule is enabled or disabled.
+      type: Boolean
+    - contextPath: AzureSentinel.AlertRule.properties.lastModifiedUtc
+      description: The last time this alert rule was modified.
+      type: Date
+    - contextPath: AzureSentinel.AlertRule.properties.eventGroupingSettings.aggregationKind
+      description: The event grouping aggregation kinds.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.properties.entityMappings.entityType
+      description: The V3 type of the mapped entity.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.properties.entityMappings.fieldMappings.identifier
+      description: The V3 identifier of the entity.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.properties.entityMappings.fieldMappings.columnName
+      description: The column name to be mapped to the identifier.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.properties.alertDetailsOverride.alertDisplayNameFormat
+      description: The format containing the columns' name(s) used to override the alert name.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.properties.alertDetailsOverride.alertDescriptionFormat
+      description: The format containing columns' name(s) used to override the alert description.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.properties.alertDetailsOverride.alertTacticsColumnName
+      description: The column name to take the alert tactics from.
+      type: Unknown
+    - contextPath: AzureSentinel.AlertRule.properties.alertDetailsOverride.alertSeverityColumnName
+      description: The column name to take the alert severity from.
+      type: Unknown
+    - contextPath: AzureSentinel.AlertRule.properties.incidentConfiguration.createIncident
+      description: Create incidents from alerts triggered by this analytics rule.
+      type: Boolean
+    - contextPath: AzureSentinel.AlertRule.properties.incidentConfiguration.groupingConfiguration.enabled
+      description: Whether grouping is enabled.
+      type: Boolean
+    - contextPath: AzureSentinel.AlertRule.properties.incidentConfiguration.groupingConfiguration.reopenClosedIncident
+      description: Re-open closed matching incidents.
+      type: Boolean
+    - contextPath: AzureSentinel.AlertRule.properties.incidentConfiguration.groupingConfiguration.lookbackDuration
+      description: Limit the group to alerts created within the lookback duration (in ISO 8601 duration format).
+      type: String
+    - contextPath: AzureSentinel.AlertRule.properties.incidentConfiguration.groupingConfiguration.matchingMethod
+      description: Grouping matching method. When method is Selected at least one of groupByEntities, groupByAlertDetails, groupByCustomDetails must be provided and not empty.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.properties.incidentConfiguration.groupingConfiguration.groupByEntities
+      description: A list of entity types to group by (when matchingMethod is Selected). Only entities defined in the current alert rule may be used.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.properties.incidentConfiguration.groupingConfiguration.groupByAlertDetails
+      description: A list of alert details to group by (when matchingMethod is Selected).
+      type: String
+    - contextPath: AzureSentinel.AlertRule.properties.incidentConfiguration.groupingConfiguration.groupByCustomDetails
+      description: A list of custom details keys to group by (when matchingMethod is Selected). Only keys defined in the current alert rule may be used.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.properties.productFilter
+      description: The alerts' productName on which the cases will be generated.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.properties.severitiesFilter
+      description: The alerts' severities on which the cases will be generated.
+      type: Unknown
+    - contextPath: AzureSentinel.AlertRule.properties.displayNamesFilter
+      description: The alerts' displayNames on which the cases will be generated
+      type: Unknown
+  - arguments:
+    - default: false
+      description: The alert rule template ID. If not given, will return all alert rule templates.
+      isArray: false
+      name: template_id
+      required: false
+    - default: false
+      defaultValue: '50'
+      description: The maximum number of templates to return.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: The subscription ID.
+      isArray: false
+      name: subscription_id
+      required: false
+      secret: false
+    - default: false
+      description: The resource group name.
+      isArray: false
+      name: resource_group_name
+      required: false
+      secret: false
+    description: Gets a list of all alert rule templates.
+    name: azure-sentinel-list-alert-rule-template
+    outputs:
+    - contextPath: AzureSentinel.AlertRuleTemplate.id
+      description: Fully qualified resource ID for the resource.
+      type: String
+    - contextPath: AzureSentinel.AlertRuleTemplate.name
+      description: The name of the resource.
+      type: String
+    - contextPath: AzureSentinel.AlertRuleTemplate.type
+      description: The type of the resource.
+      type: String
+    - contextPath: AzureSentinel.AlertRuleTemplate.kind
+      description: The alert rule kind.
+      type: String
+    - contextPath: AzureSentinel.AlertRuleTemplate.properties.severity
+      description: The severity for alerts created by this alert rule.
+      type: String
+    - contextPath: AzureSentinel.AlertRuleTemplate.properties.query
+      description: The query that creates alerts for this rule.
+      type: String
+    - contextPath: AzureSentinel.AlertRuleTemplate.properties.queryFrequency
+      description: The frequency (in ISO 8601 duration format) for this alert rule to run.
+      type: String
+    - contextPath: AzureSentinel.AlertRuleTemplate.properties.queryPeriod
+      description: The period (in ISO 8601 duration format) that this alert rule looks at.
+      type: String
+    - contextPath: AzureSentinel.AlertRuleTemplate.properties.triggerOperator
+      description: The operation against the threshold that triggers alert rule.
+      type: String
+    - contextPath: AzureSentinel.AlertRuleTemplate.properties.triggerThreshold
+      description: The threshold that triggers this alert rule.
+      type: Number
+    - contextPath: AzureSentinel.AlertRuleTemplate.properties.displayName
+      description: The display name for the alert rule template.
+      type: String
+    - contextPath: AzureSentinel.AlertRuleTemplate.properties.description
+      description: The description of the alert rule template.
+      type: String
+    - contextPath: AzureSentinel.AlertRuleTemplate.properties.tactics
+      description: The tactics of the alert rule template.
+      type: String
+    - contextPath: AzureSentinel.AlertRuleTemplate.properties.lastUpdatedDateUTC
+      description: The time this alert rule template was last updated.
+      type: Date
+    - contextPath: AzureSentinel.AlertRuleTemplate.properties.createdDateUTC
+      description: The time this alert rule template was added.
+      type: Date
+    - contextPath: AzureSentinel.AlertRuleTemplate.properties.status
+      description: The alert rule template status.
+      type: String
+    - contextPath: AzureSentinel.AlertRuleTemplate.properties.version
+      description: The version of this template in the format <a.b.c>, where all are numbers. For example <1.0.2>.
+      type: String
+    - contextPath: AzureSentinel.AlertRuleTemplate.properties.requiredDataConnectors.connectorId
+      description: The connector ID that provides the following data types
+      type: String
+    - contextPath: AzureSentinel.AlertRuleTemplate.properties.requiredDataConnectors.dataTypes
+      description: The data types used by the alert rule template.
+      type: String
+    - contextPath: AzureSentinel.AlertRuleTemplate.properties.alertRulesCreatedByTemplateCount
+      description: The number of alert rules that were created by this template.
+      type: Number
+    - contextPath: AzureSentinel.AlertRuleTemplate.properties.productFilter
+      description: The alerts' productName on which the cases will be generated.
+      type: String
+  - arguments:
+    - default: false
+      description: The alert rule ID to delete.
+      isArray: false
+      name: rule_id
+      required: true
+    - default: false
+      description: The subscription ID.
+      isArray: false
+      name: subscription_id
+      required: false
+      secret: false
+    - default: false
+      description: The resource group name.
+      isArray: false
+      name: resource_group_name
+      required: false
+      secret: false
+    description: Deletes the specified alert rule.
+    name: azure-sentinel-delete-alert-rule
+    outputs:
+    - contextPath: AzureSentinel.AlertRule.ID
+      description: The alert rule ID.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.Deleted
+      description: Whether the alert rule was deleted.
+      type: Boolean
+  - arguments:
+    - default: false
+      description: The alert rule name to create.
+      isArray: false
+      name: rule_name
+      required: true
+    - auto: PREDEFINED
+      default: false
+      description: |
+        The alert rule kind to create.
+        Required for all types.
+      isArray: false
+      name: kind
+      required: false
+      predefined:
+      - fusion
+      - microsoft_security_incident_creation
+      - scheduled
+    - default: false
+      description: |
+        The name of the alert rule template used to create this rule.
+        Required for Fusion, optional for Scheduled rules.
+      isArray: false
+      name: template_name
+      required: false
+    - auto: PREDEFINED
+      default: false
+      description: |
+        Determines whether this alert rule is enabled or disabled.
+        Required for all types.
+      isArray: false
+      name: enabled
+      required: false
+      predefined:
+      - yes
+      - no
+    - default: false
+      description: ETag of the Azure resource.
+      isArray: false
+      name: etag
+      required: false
+    - default: false
+      description: |
+        The display name for alerts created by this alert rule.
+        Required for MicrosoftSecurityIncidentCreation and scheduled rules.
+      isArray: false
+      name: displayName
+      required: false
+    - auto: PREDEFINED
+      default: false
+      description: |
+        The alerts' productName on which the cases will be generated.
+        Required for MicrosoftSecurityIncidentCreation rules.
+      isArray: false
+      name: product_filter
+      required: false
+      predefined:
+      - azure_active_directory_identity_protection
+      - azure_advanced_threat_protection
+      - azure_security_center
+      - azure_security_center_for_iot
+      - microsoft_cloud_app_security
+    - default: false
+      description: |
+        The description of the alert rule.
+        Relevant for MicrosoftSecurityIncidentCreation and scheduled rules.
+      isArray: false
+      name: description
+      required: false
+    - default: false
+      description: |
+        Alerts' displayNames on which the cases will not be generated.
+        Relevant for MicrosoftSecurityIncidentCreation rules.
+      isArray: true
+      name: name_exclude_filter
+      required: false
+    - default: false
+      description: |
+        Alerts' displayNames on which the cases will be generated.
+        Relevant for MicrosoftSecurityIncidentCreation rules.
+      isArray: true
+      name: name_include_filter
+      required: false
+    - default: false
+      description: |
+        Alerts' severities on which the cases will be generated.
+        Relevant for MicrosoftSecurityIncidentCreation rules.
+      isArray: true
+      name: severity_filter
+      required: false
+    - default: false
+      description: |
+        The query that creates alerts for this rule.
+        Required for scheduled rules.
+      isArray: false
+      name: query
+      required: false
+    - default: false
+      description: |
+        The frequency (in ISO 8601 duration format: PnYnMnDTnHnMnS or PnW) for this alert rule to run.
+        Required for scheduled rules.
+      isArray: false
+      name: query_frequency
+      required: false
+    - default: false
+      description: |
+        The period (in ISO 8601 duration format: PnYnMnDTnHnMnS or PnW) that this alert rule looks at.
+        Required for scheduled rules.
+      isArray: false
+      name: query_period
+      required: false
+    - auto: PREDEFINED
+      default: false
+      description: |
+        The severity for alerts created by this alert rule.
+        Required for scheduled rules.
+      isArray: false
+      name: severity
+      required: false
+      predefined:
+        - informational
+        - low
+        - medium
+        - high
+    - default: false
+      description: |
+        The suppression (in ISO 8601 duration format: PnYnMnDTnHnMnS or PnW) to wait since the last time this alert rule was triggered.
+        Required for scheduled rules.
+      isArray: false
+      name: suppression_duration
+      required: false
+    - auto: PREDEFINED
+      default: false
+      description: |
+        Determines whether the suppression for this alert rule is enabled or disabled.
+        Required for scheduled rules.
+      isArray: false
+      name: suppression_enabled
+      required: false
+      predefined:
+        - yes
+        - no
+    - auto: PREDEFINED
+      default: false
+      description: |
+        The operation against the threshold that triggers the alert rule.
+        Required for scheduled rules.
+      isArray: false
+      name: trigger_operator
+      required: false
+      predefined:
+        - equal
+        - greater_than
+        - less_than
+        - not_equal
+    - default: false
+      description: |
+        The threshold that triggers this alert rule.
+        Required for scheduled rules.
+      isArray: false
+      name: trigger_threshold
+      required: false
+    - default: false
+      description: |
+        The tactics of the alert rule.
+        Relevant for scheduled rules.
+      isArray: true
+      name: tactics
+      required: false
+    - default: false
+      description: |
+        The techniques of the alert rule.
+        Relevant for scheduled rules.
+      isArray: true
+      name: techniques
+      required: false
+    - default: false
+      description: |
+        Option to insert a configured rule JSON instead of using the arguments.
+      isArray: false
+      name: rule_json
+      required: false
+    - default: false
+      description: The subscription ID.
+      isArray: false
+      name: subscription_id
+      required: false
+      secret: false
+    - default: false
+      description: The resource group name.
+      isArray: false
+      name: resource_group_name
+      required: false
+      secret: false
+    description: Creates a new alert rule.
+    name: azure-sentinel-create-alert-rule
+    outputs:
+    - contextPath: AzureSentinel.AlertRule.id
+      description: Fully qualified resource ID for the resource.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.name
+      description: The name of the resource.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.etag
+      description: ETag of the Azure resource.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.type
+      description: The type of the resource. E.g., "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts"
+      type: String
+    - contextPath: AzureSentinel.AlertRule.kind
+      description: The alert rule kind.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.properties.displayName
+      description: The display name for alerts created by this alert rule.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.properties.description
+      description: The description of the alert rule.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.properties.alertRuleTemplateName
+      description: The name of the alert rule template used to create this rule.
+      type: Unknown
+    - contextPath: AzureSentinel.AlertRule.properties.tactics
+      description: The tactics of the alert rule.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.properties.severity
+      description: The severity for alerts created by this alert rule.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.properties.enabled
+      description: Determines whether this alert rule is enabled or disabled.
+      type: Boolean
+    - contextPath: AzureSentinel.AlertRule.properties.lastModifiedUtc
+      description: The last time that this alert was modified.
+      type: Date
+    - contextPath: AzureSentinel.AlertRule.properties.productFilter
+      description: The alerts' productName on which the cases will be generated.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.properties.severitiesFilter
+      description: The alerts' severities on which the cases will be generated.
+      type: Unknown
+    - contextPath: AzureSentinel.AlertRule.properties.displayNamesFilter
+      description: The alerts' displayNames on which the cases will be generated.
+      type: Unknown
+    - contextPath: AzureSentinel.AlertRule.properties.query
+      description: The query that creates alerts for this rule.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.properties.queryFrequency
+      description: The frequency (in ISO 8601 duration format) for this alert rule to run.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.properties.queryPeriod
+      description: The period (in ISO 8601 duration format) that this alert rule looks at.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.properties.triggerOperator
+      description: The operation against the threshold that triggers the alert rule.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.properties.triggerThreshold
+      description: The threshold that triggers this alert rule.
+      type: Number
+    - contextPath: AzureSentinel.AlertRule.properties.suppressionDuration
+      description: The suppression (in ISO 8601 duration format) to wait since the last time this alert rule was triggered.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.properties.suppressionEnabled
+      description: Determines whether the suppression for this alert rule is enabled or disabled.
+      type: Boolean
+    - contextPath: AzureSentinel.AlertRule.properties.eventGroupingSettings
+      description: The event grouping settings.
+      type: Unknown
+    - contextPath: AzureSentinel.AlertRule.properties.customDetails
+      description: Dictionary of string key-value pairs of columns to be attached to the alert.
+      type: Unknown
+    - contextPath: AzureSentinel.AlertRule.properties.entityMappings
+      description: Array of the entity mappings of the alert rule.
+      type: Unknown
+    - contextPath: AzureSentinel.AlertRule.properties.alertDetailsOverride
+      description: The alert details override settings.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.properties.incidentConfiguration
+      description: The settings of the incidents that were created from alerts triggered by this analytics rule.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: The alert rule name to update.
+      isArray: false
+      name: rule_name
+      required: true
+    - auto: PREDEFINED
+      default: false
+      description: |
+        The alert rule kind to update.
+        Required for all types.
+      isArray: false
+      name: kind
+      required: false
+      predefined:
+      - fusion
+      - microsoft_security_incident_creation
+      - scheduled
+    - default: false
+      description: |
+        The name of the alert rule template used to update this rule.
+        Required for Fusion, optional for Scheduled rules.
+      isArray: false
+      name: template_name
+      required: false
+    - auto: PREDEFINED
+      default: false
+      description: |
+        Determines whether this alert rule is enabled or disabled.
+        Required for all types.
+      isArray: false
+      name: enabled
+      required: false
+      predefined:
+      - yes
+      - no
+    - default: false
+      description: ETag of the Azure resource.
+      isArray: false
+      name: etag
+      required: false
+    - default: false
+      description: |
+        The display name for alerts created by this alert rule.
+        Required for MicrosoftSecurityIncidentCreation and scheduled rules.
+      isArray: false
+      name: displayName
+      required: false
+    - auto: PREDEFINED
+      default: false
+      description: |
+        The alerts' productName on which the cases will be generated.
+        Required for MicrosoftSecurityIncidentCreation rules.
+      isArray: false
+      name: product_filter
+      required: false
+      predefined:
+      - azure_active_directory_identity_protection
+      - azure_advanced_threat_protection
+      - azure_security_center
+      - azure_security_center_for_iot
+      - microsoft_cloud_app_security
+    - default: false
+      description: |
+        The description of the alert rule.
+        Relevant for MicrosoftSecurityIncidentCreation and scheduled rules.
+      isArray: false
+      name: description
+      required: false
+    - default: false
+      description: |
+        Alerts' displayNames on which the cases will not be generated.
+        Relevant for MicrosoftSecurityIncidentCreation rules.
+      isArray: true
+      name: name_exclude_filter
+      required: false
+    - default: false
+      description: |
+        Alerts' displayNames on which the cases will be generated.
+        Relevant for MicrosoftSecurityIncidentCreation rules.
+      isArray: true
+      name: name_include_filter
+      required: false
+    - default: false
+      description: |
+        Alerts' severities on which the cases will be generated.
+        Relevant for MicrosoftSecurityIncidentCreation rules.
+      isArray: true
+      name: severity_filter
+      required: false
+    - default: false
+      description: |
+        The query that creates alerts for this rule.
+        Required for scheduled rules.
+      isArray: false
+      name: query
+      required: false
+    - default: false
+      description: |
+        The frequency (in ISO 8601 duration format: PnYnMnDTnHnMnS or PnW) for this alert rule to run.
+        Required for scheduled rules.
+      isArray: false
+      name: query_frequency
+      required: false
+    - default: false
+      description: |
+        The period (in ISO 8601 duration format: PnYnMnDTnHnMnS or PnW) that this alert rule looks at.
+        Required for scheduled rules.
+      isArray: false
+      name: query_period
+      required: false
+    - auto: PREDEFINED
+      default: false
+      description: |
+        The severity for alerts created by this alert rule.
+        Required for scheduled rules.
+      isArray: false
+      name: severity
+      required: false
+      predefined:
+        - informational
+        - low
+        - medium
+        - high
+    - default: false
+      description: |
+        The suppression (in ISO 8601 duration format: PnYnMnDTnHnMnS or PnW) to wait since the last time this alert rule was triggered.
+        Required for scheduled rules.
+      isArray: false
+      name: suppression_duration
+      required: false
+    - auto: PREDEFINED
+      default: false
+      description: |
+        Determines whether the suppression for this alert rule is enabled or disabled.
+        Required for scheduled rules.
+      isArray: false
+      name: suppression_enabled
+      required: false
+      predefined:
+        - yes
+        - no
+    - auto: PREDEFINED
+      default: false
+      description: |
+        The operation against the threshold that triggers the alert rule.
+        Required for scheduled rules.
+      isArray: false
+      name: trigger_operator
+      required: false
+      predefined:
+        - equal
+        - greater_than
+        - less_than
+        - not_equal
+    - default: false
+      description: |
+        The threshold that triggers this alert rule.
+        Required for scheduled rules.
+      isArray: false
+      name: trigger_threshold
+      required: false
+    - default: false
+      description: |
+        The tactics of the alert rule.
+        Relevant for scheduled rules.
+      isArray: true
+      name: tactics
+      required: false
+    - default: false
+      description: |
+        The techniques of the alert rule.
+        Relevant for scheduled rules.
+      isArray: true
+      name: techniques
+      required: false
+    - default: false
+      description: |
+        Option to insert a configured rule JSON instead of using the arguments.
+      isArray: false
+      name: rule_json
+      required: false
+    - default: false
+      description: The subscription ID.
+      isArray: false
+      name: subscription_id
+      required: false
+      secret: false
+    - default: false
+      description: The resource group name.
+      isArray: false
+      name: resource_group_name
+      required: false
+      secret: false
+    description: Updates an alert rule.
+    name: azure-sentinel-update-alert-rule
+    outputs:
+    - contextPath: AzureSentinel.AlertRule.id
+      description: Fully qualified resource ID for the resource.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.name
+      description: The name of the resource.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.etag
+      description: ETag of the Azure resource.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.type
+      description: The type of the resource. E.g., "Microsoft.Compute/virtualMachines" or "Microsoft.Storage/storageAccounts"
+      type: String
+    - contextPath: AzureSentinel.AlertRule.kind
+      description: The alert rule kind.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.properties.displayName
+      description: The display name for alerts created by this alert rule.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.properties.description
+      description: The description of the alert rule.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.properties.alertRuleTemplateName
+      description: The name of the alert rule template used to update this rule.
+      type: Unknown
+    - contextPath: AzureSentinel.AlertRule.properties.tactics
+      description: The tactics of the alert rule.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.properties.severity
+      description: The severity for alerts created by this alert rule.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.properties.enabled
+      description: Determines whether this alert rule is enabled or disabled.
+      type: Boolean
+    - contextPath: AzureSentinel.AlertRule.properties.lastModifiedUtc
+      description: The last time this alert was modified.
+      type: Date
+    - contextPath: AzureSentinel.AlertRule.properties.productFilter
+      description: The alerts' productName on which the cases will be generated.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.properties.severitiesFilter
+      description: The alerts' severities on which the cases will be generated.
+      type: Unknown
+    - contextPath: AzureSentinel.AlertRule.properties.displayNamesFilter
+      description: The alerts' displayNames on which the cases will be generated.
+      type: Unknown
+    - contextPath: AzureSentinel.AlertRule.properties.query
+      description: The query that creates alerts for this rule.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.properties.queryFrequency
+      description: The frequency (in ISO 8601 duration format) for this alert rule to run.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.properties.queryPeriod
+      description: The period (in ISO 8601 duration format) that this alert rule looks at.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.properties.triggerOperator
+      description: The operation against the threshold that triggers alert rule.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.properties.triggerThreshold
+      description: The threshold triggers this alert rule.
+      type: Number
+    - contextPath: AzureSentinel.AlertRule.properties.suppressionDuration
+      description: The suppression (in ISO 8601 duration format) to wait since the last time this alert rule been triggered.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.properties.suppressionEnabled
+      description: Determines whether the suppression for this alert rule is enabled or disabled.
+      type: Boolean
+    - contextPath: AzureSentinel.AlertRule.properties.eventGroupingSettings
+      description: The event grouping settings.
+      type: Unknown
+    - contextPath: AzureSentinel.AlertRule.properties.customDetails
+      description: Dictionary of string key-value pairs of columns to be attached to the alert
+      type: Unknown
+    - contextPath: AzureSentinel.AlertRule.properties.entityMappings
+      description: Array of the entity mappings of the alert rule.
+      type: Unknown
+    - contextPath: AzureSentinel.AlertRule.properties.alertDetailsOverride
+      description: The alert details override settings.
+      type: String
+    - contextPath: AzureSentinel.AlertRule.properties.incidentConfiguration
+      description: The settings of the incidents that were created from alerts triggered by this analytics rule.
+      type: Unknown
+  dockerimage: demisto/crypto:1.0.0.49599
   feed: false
   isfetch: true
   longRunning: false
@@ -1857,7 +3015,13 @@ script:
   script: '-'
   subtype: python3
   type: python
+  ismappable: true
+  isremotesyncin: true
+  isremotesyncout: true
 tests:
 - TestAzureSentinelPlaybookV2
 - No test - Manual test playbook-TestAzureSentinelPlaybook is available in NonCircleTests folder
 fromversion: 5.0.0
+defaultclassifier: Microsoft Sentinel - Classifier
+defaultmapperin: Microsoft Sentinel - Incoming Mapper
+defaultmapperout: Microsoft Sentinel - Outgoing Mapper
