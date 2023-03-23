@@ -1111,7 +1111,7 @@ def main():
                 with open(f'{artifact_path}/{pack}/binary_files/{imgs[0]}', 'rb') as f:
                     logging.info(f'{artifact_path}/{pack}/binary_files/{imgs[0]} is exists')
                     pass
-                pack_exists = f'{artifact_path}/{pack}/binary_files/{imgs[0]}'
+                pack_exists = f'{extract_destination_path}/{pack}/binary_files/{imgs[0]}'
             else:
                 logging.info(f'{artifact_path}/{pack}/binary_files does not exists in artifact - MORE-INFORMATION')
         else:
@@ -1144,7 +1144,7 @@ def main():
     # initiate the statistics handler for marketplace packs
     statistics_handler = StatisticsHandler(service_account, index_folder_path)
     if not os.path.exists(pack_exists):
-            logging.info("THE ARTIFACT REMOVED 3")
+        logging.info("THE ARTIFACT REMOVED 3")
     # clean index and gcs from non existing or invalid packs
     clean_non_existing_packs(index_folder_path, private_packs, storage_bucket, storage_base_path, all_content_packs, marketplace)
     if not os.path.exists(pack_exists):
