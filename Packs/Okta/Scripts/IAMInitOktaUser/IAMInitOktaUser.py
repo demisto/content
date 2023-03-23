@@ -28,6 +28,7 @@ def main():
     max_symbols = args.get("max_symbols", 10)
     password = None
     zip_protect_with_password = args.get("ZipProtectWithPassword", '')
+    temporary_password = argToBoolean(args.get('temporary_password', False))
 
     try:
         # Generate a random password
@@ -59,7 +60,8 @@ def main():
             # Set args for setting the new passsword
             okta_set_pwd_args = {
                 'username': username,
-                'password': password
+                'password': password,
+                'temporary_password': temporary_password
             }
 
             # Set args for activating the user
@@ -125,7 +127,7 @@ def main():
 def send_email(display_name, username, err, to_email, password, email_subject, email_body, zip_with_password):
     if not err:
         if not email_subject:
-            email_subject = f'User {display_name} was successfully activated in Okta'
+            email_subject = f'User {display_name or username} was successfully activated in Okta'
 
         email_password = 'Available in the attached zip file' if zip_with_password else password
         if not email_body:
