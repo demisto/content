@@ -19,7 +19,7 @@ args:
   secret: true
   description: Password of PDF file
 scripttarget: 0
-dockerimage: devdemisto/readpdf:1.0.0.50667
+dockerimage: demisto/readpdf:1.0.0.50670
 fromversion: 5.0.0
 tests:
   - PDFUnlocker-Test
