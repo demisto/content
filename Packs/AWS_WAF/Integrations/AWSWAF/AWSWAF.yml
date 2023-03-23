@@ -1209,7 +1209,7 @@ script:
         isArray: true
         required: true
       - name: condition_operator
-        description: The rule condition operator. If the rule contains only one statement, a value must be provided.
+        description: The rule condition operator. If the rule contains only one statement, a value must be provided. If the rule already contains multiple statements, this argument would be ignored.
         auto: PREDEFINED
         predefined:
           - "And"
@@ -1262,7 +1262,7 @@ script:
         isArray: true
         required: true
       - name: condition_operator
-        description: The rule condition operator. If the rule contains only one statement, a value must be provIDed.
+        description: The rule condition operator. If the rule contains only one statement, a value must be provided. If the rule already contains multiple statements, this argument would be ignored.
         auto: PREDEFINED
         predefined:
           - "And"
@@ -1371,7 +1371,7 @@ script:
           - "URL_DECODE_UNI"
           - "UTF8_TO_UNICODE"
       - name: condition_operator
-        description: The rule condition operator. If the rule contains only one statement, a value must be provided.
+        description: The rule condition operator. If the rule contains only one statement, a value must be provided. If the rule already contains multiple statements, this argument would be ignored.
         auto: PREDEFINED
         predefined:
           - "And"
@@ -1424,7 +1424,7 @@ script:
         isArray: true
         required: true
       - name: condition_operator
-        description: The rule condition operator. If the rule contains only one statement, a value must be provided.
+        description: The rule condition operator. If the rule contains only one statement, a value must be provided. If the rule already contains multiple statements, this argument would be ignored.
         auto: PREDEFINED
         predefined:
           - "And"

@@ -945,7 +945,7 @@ Adds an IP statement to an existing rule.
 | scope | The rule scope. Possible values are: Global, Regional. Default is Regional. | Optional | 
 | region | The AWS Region. If not specified, the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3, us-gov-east-1, us-gov-west-1. | Optional | 
 | ip_set_arn | The IP set ARN. You can get this value by running the aws-waf-ip-set-list command. | Required | 
-| condition_operator | The rule condition operator. If the rule contains only one statement, a value must be provided. Possible values are: And, Or. | Optional | 
+| condition_operator | The rule condition operator. If the rule contains only one statement, a value must be provided. If the rule already contains multiple statements, this argument would be ignored. Possible values are: And, Or. | Optional | 
 
 #### Context Output
 
@@ -969,7 +969,7 @@ Adds a country statement to an existing rule.
 | scope | The rule scope. Possible values are: Global, Regional. Default is Regional. | Optional | 
 | region | The AWS Region. If not specified, the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3, us-gov-east-1, us-gov-west-1. | Optional | 
 | country_codes | A comma-separated list of two-character country codes. | Required | 
-| condition_operator | The rule condition operator. If the rule contains only one statement, a value must be provIDed. Possible values are: And, Or. | Optional | 
+| condition_operator | The rule condition operator. If the rule contains only one statement, a value must be provided. If the rule already contains multiple statements, this argument would be ignored. Possible values are: And, Or. | Optional | 
 
 #### Context Output
 
@@ -998,7 +998,7 @@ Adds a string match statement to an existing rule.
 | web_request_component | The web component to inspect. Possible values are: Headers, Cookies, Query Parameters, Uri Path, Query String, Body, HTTP Method. | Required | 
 | oversize_handling | AWS WAF applies oversize handling to web request contents that are larger than AWS WAF can inspect. If the web_request_component is Headers, Cookies or Body, a value must be provided. Possible values are: CONTINUE, MATCH, NO_MATCH. | Optional | 
 | text_transformation | The text transformation to perform. Possible values are: NONE, COMPRESS_WHITE_SPACE, HTML_ENTITY_DECODE, LOWERCASE, CMD_LINE, URL_DECODE, BASE64_DECODE, HEX_DECODE, MD5, REPLACE_COMMENTS, ESCAPE_SEQ_DECODE, SQL_HEX_DECODE, CSS_DECODE, JS_DECODE, NORMALIZE_PATH, NORMALIZE_PATH_WIN, REMOVE_NULLS, REPLACE_NULLS, BASE64_DECODE_EXT, URL_DECODE_UNI, UTF8_TO_UNICODE. Default is NONE. | Optional | 
-| condition_operator | The rule condition operator. If the rule contains only one statement, a value must be provided. Possible values are: And, Or. | Optional | 
+| condition_operator | The rule condition operator. If the rule contains only one statement, a value must be provided. If the rule already contains multiple statements, this argument would be ignored. Possible values are: And, Or. | Optional | 
 
 #### Context Output
 
@@ -1022,7 +1022,7 @@ Adds a generic statement to an existing rule.
 | scope | The rule scope. Possible values are: Global, Regional. Default is Regional. | Optional | 
 | region | The AWS Region. If not specified, the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3, us-gov-east-1, us-gov-west-1. | Optional | 
 | statement_json | A generic JSON statement to add to the rule. You can get the templates by running the aws-waf-statement-json-template-get command. | Required | 
-| condition_operator | The rule condition operator. If the rule contains only one statement, a value must be provided. Possible values are: And, Or. | Optional | 
+| condition_operator | The rule condition operator. If the rule contains only one statement, a value must be provided. If the rule already contains multiple statements, this argument would be ignored. Possible values are: And, Or. | Optional | 
 
 #### Context Output
 
