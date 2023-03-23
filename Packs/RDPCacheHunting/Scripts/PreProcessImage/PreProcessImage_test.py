@@ -1,5 +1,8 @@
 from CommonServerPython import *
 import pytest
+from PIL import Image
+import io
+import cv2
 
 
 IMAGE_NAME_JPG = 'test_picture_jpg.jpg'
@@ -41,17 +44,13 @@ def test_get_image_details(path, width, height, expected_results):
 
 
 FILES_DETAILS_CASES = [
-    (1, IMAGE_PATH_JPG, IMAGE_NAME_JPG, 50, 70, 'JPEG',
-     {'format': 'JPEG', 'sizes': (50, 70)}  # expected
-     ),
-    (1, IMAGE_PATH_PNG, IMAGE_NAME_PNG, 50, 70, 'PNG',
-     {'format': 'PNG', 'sizes': (50, 70)}  # expected
-     )
+    (1, IMAGE_PATH_JPG, IMAGE_NAME_JPG, 50, 70, 'JPEG'),
+    (1, IMAGE_PATH_PNG, IMAGE_NAME_PNG, 50, 70, 'PNG')
 ]
 
 
-@pytest.mark.parametrize('entry_id, path, name, width, height, format_img, expected_results', FILES_DETAILS_CASES)
-def test_get_file_details(mocker, entry_id, path, name, width, height, format_img, expected_results):
+@pytest.mark.parametrize('entry_id, path, name, width, height, format_img', FILES_DETAILS_CASES)
+def test_get_file_details(mocker, entry_id, path, name, width, height, format_img):
     """
     Given:
         - mocker
@@ -81,3 +80,134 @@ def test_get_file_details(mocker, entry_id, path, name, width, height, format_im
     assert result_name == name
     assert result_img_format == format_img
     assert result_img.any()
+    with Image.open(path) as origin_image:
+        expected_width, expected_height = origin_image.size
+    assert result_img.shape == (expected_height, expected_width, 3)
+
+
+ACTION_WRAP_CASES = [
+    (IMAGE_PATH_JPG, IMAGE_NAME_JPG, 'JPEG'),
+    (IMAGE_PATH_JPG, IMAGE_NAME_JPG, 'JPEG'),
+    (IMAGE_PATH_JPG, IMAGE_NAME_JPG, 'JPEG'),
+    (IMAGE_PATH_PNG, IMAGE_NAME_PNG, 'PNG'),
+    (IMAGE_PATH_PNG, IMAGE_NAME_PNG, 'PNG'),
+    (IMAGE_PATH_PNG, IMAGE_NAME_PNG, 'PNG')
+]
+
+
+@pytest.mark.parametrize('image_path, image_name, format_img', ACTION_WRAP_CASES)
+def test_grayscale(mocker, image_path, image_name, format_img):
+    """
+    Given:
+    - An image in np.ndarray format.
+    - An action to convert the image to grayscale.
+    When:
+    - Calling the action_wrap function.
+    Then:
+    - Ensure the function successfully converts the image to grayscale.
+    """
+    from PreProcessImage import action_wrap
+    import PreProcessImage
+    # Arrange
+    args = {
+        'action': 'grayscale',
+        'file_entry_id': '1',
+        'image_resize_width': None,
+        'image_resize_height': None
+    }
+    from unittest import mock
+    mocker.patch.object(demisto, 'getFilePath', return_value={'path': image_path, 'name': image_name})
+    mocker.patch.object(Image.Image, 'resize')
+    mocker.patch.object(io, 'BytesIO')
+    mocker.patch.object(cv2, 'cvtColor')
+    # Create a mock for Image.fromarray()
+    mock_fromarray = mocker.patch("PIL.Image.fromarray")
+    mock_final_orig_image = mock.MagicMock()
+    mock_fromarray.return_value = mock_final_orig_image
+    # Create a mock for Image.fromarray()
+    mock_fromarray = mocker.patch("PIL.Image.fromarray")
+    mock_final_orig_image = mock.MagicMock()
+    mock_fromarray.return_value = mock_final_orig_image
+
+    # Create a mock for io.BytesIO()
+    mock_stream_orig = mock.MagicMock()
+    # Create a mock for save() and seek() methods
+    mocker.patch.object(mock_stream_orig, "save")
+    mocker.patch.object(mock_stream_orig, "seek")
+    mocker.patch.object(PreProcessImage, 'fileResult', return_value=image_path)
+    # Act
+    action_wrap(args)
+    assert cv2.cvtColor.call_args[0][1] == cv2.COLOR_BGR2GRAY
+    assert Image.fromarray.call_args[0][0] == cv2.cvtColor.return_value
+    assert mock_fromarray.call_count == 1
+
+
+@pytest.mark.parametrize('image_path, image_name, format_img', ACTION_WRAP_CASES)
+def test_sharpened(mocker, image_path, image_name, format_img):
+    """
+    Given:
+    - An image in np.ndarray format.
+    - An action to sharpen the image.
+    When:
+    - Calling the action_wrap function.
+    Then:
+    - Ensure the function successfully sharpens the image.
+    """
+    import PreProcessImage
+    import io
+    # Arrange
+    args = {
+        'action': 'sharpened',
+        'file_entry_id': '1',
+        'image_resize_width': None,
+        'image_resize_height': None
+    }
+    mocker.patch.object(demisto, 'getFilePath', return_value={'path': image_path, 'name': image_name})
+    mocker.patch.object(Image, 'fromarray')
+    mocker.patch.object(Image.Image, 'resize')
+    # mocker.patch.object(Image.Image, 'save')
+    mocker.patch.object(io, 'BytesIO')
+    mocker.patch.object(cv2, 'filter2D')
+
+    def mock_file(filename, data, file_type=None):
+        return {
+            'Contents': '',
+            'ContentsFormat': formats['text'],
+            'Type': entryTypes['file'],
+            'File': f'sharpened_{image_name}',
+            'FileID': '1'
+        }
+
+    mocker.patch.object(PreProcessImage, 'fileResult', side_effect=mock_file)
+    # Act
+    result = PreProcessImage.action_wrap(args)
+    # Assert
+    assert result['Type'] == entryTypes['file']
+    assert result['File'].startswith('sharpened_')
+    assert cv2.filter2D.call_args[0][0].any()
+    assert cv2.filter2D.call_args[0][1] == -1
+    assert cv2.filter2D.call_args[0][2].tolist()
+    assert Image.fromarray.call_args[0][0].any()
+    assert Image.Image.resize.call_count == 0
+
+
+def test_invalid_action(mocker):
+    """
+    Given:
+    - An invalid action.
+    When:
+    - Calling the action_wrap function.
+    Then:
+    - Ensure the function raises a DemistoException when an invalid action is provided.
+    """
+    # Arrange
+    from PreProcessImage import action_wrap
+    args = {
+        'action': 'invalid_action',
+        'file_entry_id': '1',
+        'image_resize_width': None,
+        'image_resize_height': None}
+    mocker.patch.object(demisto, 'getFilePath', return_value={'path': IMAGE_PATH_JPG, 'name': IMAGE_NAME_JPG})
+    # Act & Assert
+    with pytest.raises(DemistoException):
+        action_wrap(args)
