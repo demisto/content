@@ -14,7 +14,7 @@ The following figures show an example of an ExtraHop Reveal(x) detection and the
 
 *Figure 1. Reveal(x) detection card for CVE-2019-0708 RDP Exploit Attempt*
 
-![Cortex XSOAR playbook: ExtraHop Default](https://github.com/demisto/content/raw/master/Packs/ExtraHop/doc_files/ExtraHop_Default.png)
+![Cortex XSOAR playbook: ExtraHop Default](readme_images/ExtraHop_Default.png)
 
 *Figure 2. Reveal(x) Default playbook to set up ticket tracking and run the BlueKeep playbook*
 

@@ -32,7 +32,7 @@ AWS - Security Group Remediation playbook replaces current security groups assoc
 #### AWS - Security Group Remediation v2
 The AWS - Security Group Remediation v2 playbook more selectively determines which security groups are over-permissive, copies them and removes only the over-permissive portions.
 
-![AWS - Security Group Remediation v2](https://raw.githubusercontent.com/demisto/content/575733d345d562597711727c4f8f4b603ef49096/Packs/AWS-Enrichment-Remediation/doc_files/AWS_-_Security_Group_Remediation_v2.png)
+![AWS - Security Group Remediation v2](readme_images/AWS_-_Security_Group_Remediation_v2.png)
 
 #### AWS - Unclaimed S3 Bucket Validation
 AWS - Unclaimed S3 Bucket Validation playbook validates the unclaimed S3 bucket details.
@@ -50,4 +50,4 @@ AWS - Unclaimed S3 Bucket Remediation playbook creates the unclaimed S3 bucket s
 
 Automation to determine which interface on an EC2 instance has an over-permissive security group, determine which security groups have over-permissive rules, and replace them with a copy of the security group that has only the over-permissive portion removed.  Over-permissive is defined as sensitive ports (SSH, RDP, etc) being exposed to the internet via IPv4.
 
-![AWSRecreateSG](https://raw.githubusercontent.com/demisto/content/575733d345d562597711727c4f8f4b603ef49096/Packs/AWS-Enrichment-Remediation/doc_files/AWSRecreateSG.png)
+![AWSRecreateSG](readme_images/AWSRecreateSG.png)

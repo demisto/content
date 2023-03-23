@@ -24,7 +24,7 @@ For setting up the Active Response module for Xpanse, [a guide on how to configu
 Aditionally, [a list of integrations used for the Active Response playbook can be found here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XPANSE/Cortex-Xpanse-Expander-User-Guide/Automated-Remediation-Capabilities-Matrix?section=UUID-0a5dcbc2-d5ab-fa4e-5efc-599daac8b39b_table-idm4546555537995233526554598204). These are needed for different enrichment and remediation possibilities.
 
 ### Demo Video
-[![Active Response in Cortex Xpanse](https://i.ytimg.com/vi/aIP1CCn9ST8/hq720.jpg)](https://www.youtube.com/watch?v=rryAQ23uuqw "Active Response in Cortex Xpanse")
+[![Active Response in Cortex Xpanse](readme_images/hq720.jpg)](https://www.youtube.com/watch?v=rryAQ23uuqw "Active Response in Cortex Xpanse")
 
 ### Automated Remediation Requirements
 
