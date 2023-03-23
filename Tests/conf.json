@@ -113,15 +113,15 @@
             "integrations": "McAfeeNSMv2",
             "playbookID": "Test_McAfeeNSMv2_using_v9",
             "fromversion": "6.5.0",
+            "instance_names": "using_v9",
             "memory_threshold": 200,
             "timeout": 300
         },
         {
             "integrations": "McAfeeNSMv2",
             "playbookID": "Test_McAfeeNSMv2_using_v10",
-            "fromversion": "6.5.0",
-            "memory_threshold": 200,
-            "timeout": 300
+            "instance_names": "using_v10",
+            "fromversion": "6.5.0"
         },
         {
             "playbookID": "Generic Polling Test",

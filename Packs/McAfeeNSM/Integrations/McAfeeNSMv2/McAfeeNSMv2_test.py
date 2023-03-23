@@ -1096,7 +1096,8 @@ def test_update_alerts_command(args, expected_error, mcafeensmv2_client):
 def test_list_device_policy_request__with_and_without_device_id(mocker, mcafeensmv2_client, input, output):
     """
     Given:
-        - A device id or no device id.
+        - 1. A device id is given.
+        - 2. The device id isn't given.
     When:
         - nsm-list-device-policy command is executed.
     Then:
@@ -1114,7 +1115,8 @@ def test_list_device_policy_request__with_and_without_device_id(mocker, mcafeens
 def test_assign_interface_policy_request__with_and_without_custom_json(mocker, mcafeensmv2_client, input, output):
     """
     Given:
-        - A custom_json is given or not
+        - 1. A custom_policy_json is given.
+        - 2. A custom_policy_json is not given.
     When:
         - assign_interface_policy_request command is executed.
     Then:
@@ -1133,7 +1135,8 @@ def test_assign_interface_policy_request__with_and_without_custom_json(mocker, m
 def test_list_interface_policy_request__with_and_without_intereface_id(mocker, mcafeensmv2_client, input, output):
     """
     Given:
-        - A interface id or no interface id.
+        - 1. A interface id is given.
+        - 2. A interface id is not given.
     When:
         - nsm-list_interface_policy_request command is executed.
     Then:
@@ -1165,7 +1168,7 @@ def test_create_body_create_rule_for_v10__with_different_arguments(input, output
     When:
         - create_body_create_rule_for_v10 command is executed.
     Then:
-        - The body is created correctly according to the rule type.
+        - The body is created correctly according to the rule type and other given arguments.
     """
     from McAfeeNSMv2 import create_body_create_rule_for_v10
     res = create_body_create_rule_for_v10(from_to_list=input.get("from_to_list"),
@@ -1201,7 +1204,8 @@ def test_capitalize_key_first_letter(input, output):
     """
     Given:
         - A dictionary contaning dictionaries.
-        - A list of keys to compare to, or not.
+            - 1. A list of keys to check.
+            - 2. A list of keys to check is not given.
     When:
         - capitalize_key_first_letter command is executed.
     Then:
@@ -1220,8 +1224,11 @@ def test_list_device_interface_command__with_different_arguments(mocker, input, 
     """
     Given:
         - A domain id, device id.
+            - 1. A limit was not given.
+            - 2. A limit was given.
+            - 3. A limit and all results == True, were given.
     When:
-        - nsm-list_device_interface_command command is executed, with and without limit, with and without all_results.
+        - nsm-list_device_interface_command command is executed.
     Then:
         - Confirm the output is as expected(number of results, and ID = 0 dose not raise an error).
     """
@@ -1239,7 +1246,8 @@ def test_list_device_interface_command__with_different_arguments(mocker, input, 
 def test_list_device_interface_command__with_missing_arguments(mocker, mcafeensmv2_client, input, output):
     """
     Given:
-        - A domain id or a device id.
+        - 1. A domain id without a device id,
+        - 2. A device id without a domain id.
     When:
         - list_device_interface_command command is executed, with missing arguments.
     Then:
@@ -1263,7 +1271,7 @@ def test_list_device_policy_command__with_different_arguments(mocker, input, out
     Given:
         - A domain_id.
     When:
-        - nsm-list_device_policy_command command is executed with and without limit, with and without all_results.
+        - nsm-list_device_policy_command command is executed.
     Then:
         - Confirm the output is as expected(number of results, and ID = 0 dose not raise an error).
     """

@@ -344,7 +344,7 @@ class Client(BaseClient):
                 pre_firewall_policy: Optional[str] - The pre firewall policy.
                 post_firewall_policy: Optional[str] - The post firewall policy.
             Returns:
-                A success or failure code
+                A success or failure code.
         """
         url_suffix = f'/domain/{domain_id}/policyassignments/device/{device_id}'
         json_data = {"firewallPolicyLast": post_firewall_policy,
@@ -413,38 +413,37 @@ class Client(BaseClient):
         url_suffix = f'/sensor/{device_id}/action/update_sensor_config'
         return self._http_request(method='GET', url_suffix=url_suffix)
 
-    def deploy_device_configuration_request(self, device_id: int, isSSLPushRequired: bool = False,
-                                            isGAMUpdateRequired: bool = False,
-                                            isSigsetConfigPushRequired: bool = False,
-                                            isBotnetPushRequired: bool = False) -> Dict:
+    def deploy_device_configuration_request(self, device_id: int, is_SSL_Push_Required: bool = False,
+                                            is_GAM_Update_Required: bool = False,
+                                            is_Sigset_Config_Push_Required: bool = False,
+                                            is_Botnet_Push_Required: bool = False) -> Dict:
         """ Deploy a device configuration.
             Args:
                 device_id: int - The relevant device id.
-                isSSLPushRequired: bool - Is SSL push required.
-                isGAMUpdateRequired: bool - Is GAM update required.
-                isSigsetConfigPushRequired: bool - Is signature set configuration push required.
-                isBotnetPushRequired: bool - Is botnet push required.
+                is_SSL_Push_Required: bool - Is SSL push required.
+                is_GAM_Update_Required: bool - Is GAM update required.
+                is_Sigset_Config_Push_Required: bool - Is signature set configuration push required.
+                is_Botnet_Push_Required: bool - Is botnet push required.
 
             Returns:
                 A success or failure code.
         """
-        json_data = {"isSSLPushRequired": isSSLPushRequired,
-                     "isGAMUpdateRequired": isGAMUpdateRequired,
-                     "isSigsetConfigPushRequired": isSigsetConfigPushRequired,
-                     "isBotnetPushRequired": isBotnetPushRequired}
+        json_data = {"isSSLPushRequired": is_SSL_Push_Required,
+                     "isGAMUpdateRequired": is_GAM_Update_Required,
+                     "isSigsetConfigPushRequired": is_Sigset_Config_Push_Required,
+                     "isBotnetPushRequired": is_Botnet_Push_Required}
 
         url_suffix = f'/sensor/{device_id}/action/update_sensor_config'
         return self._http_request(method='PUT', url_suffix=url_suffix, json_data=json_data)
 
     def check_deploy_device_configuration_request_status(self, device_id, request_id):
-        """_summary_
-
+        """
+        Checks the status of a device configuration deployment.
         Args:
-            device_id (_type_): _description_
-            request_id (_type_): _description_
+            device_id (int): The relevant device id.
+            request_id (int): The relevant request id.
 
-        Returns:
-            _type_: _description_
+        Returns: A dictionary with the status of deployment for all optional deployment categories.
         """
         url_suffix = f'/sensor/{device_id}/action/update_sensor_config/{request_id}'
         return self._http_request(method='GET', url_suffix=url_suffix)
@@ -723,7 +722,7 @@ def create_body_create_rule(rule_type: str, address: List, number: int,
             rule_type: str - The type of the rule.
             address: List - A list of addresses, if relevant.
             number: int - The number of the IPV.
-            from_to_list: List - A list that contains dictionaries with from and do addresses.
+            from_to_list: List - A list that contains dictionaries with from and to addresses.
         Returns:
             Returns the body for the request.
         """
@@ -742,19 +741,19 @@ def create_body_create_rule(rule_type: str, address: List, number: int,
 
 
 def create_body_create_rule_for_v10(rule_type: str, address: List, number: int,
-                                    from_to_list: list[dict[str, Optional[Any]]], state: str = "Enabled") -> tuple:
+                                    from_to_list: List[Dict[str, Optional[Any]]], state: str = "Enabled") -> tuple:
     """ create part of the body for the command create_rule_object for v10
         Args:
             rule_type: str - The type of the rule.
             address: List - A list of addresses, if relevant.
             number: int - The number of the IPV.
-            from_to_list: List - A list that contains dictionaries with from and do addresses.
+            from_to_list: List - A list that contains dictionaries with from and to addresses.
             state: str - An Enabled or Disabled state.
         Returns:
             Returns the body for the request.
         """
     # build a list of dictionaries with the state and the address
-    list_to_send: list[dict] = [
+    list_to_send: list[Dict] = [
         {"value": single_address, "state": STATE_TO_NUMBER.get(state)}
         for single_address in address]
     # for parameters with a range, we need to add the state to the dictionary
@@ -776,22 +775,23 @@ def create_body_create_rule_for_v10(rule_type: str, address: List, number: int,
 
 
 def create_body_update_rule_for_v10(rule_type: str, address: List, number: int,
-                                    from_to_list: list[dict[str, Optional[Any]]], state: str = "Enabled") -> tuple:
+                                    from_to_list: List[Dict[str, Optional[Any]]], state: str = "Enabled") -> tuple:
     """ create part of the body for the command update_rule_object for v10
         Args:
             rule_type: str - The type of the rule.
             address: List - A list of addresses, if relevant.
             number: int - The number of the IPV.
-            from_to_list: List - A list that contains dictionaries with from and do addresses.
+            from_to_list: List - A list that contains dictionaries with from and to addresses.
             state: str - An Enabled or Disabled state.
         Returns:
             Returns the body for the request.
         """
     # build a list of dictionaries with the state, the address, and changedState for update or delete
+    # code explanations:
     # changedState: 1 = add, 3 = delete, depends on the choice of the user to overwrite or not
     # address is a list of dictionaries or strings. The existing addresses are dictionaries and the upcoming addresses are strings
     # if the address is a dictionary, the user wants to delete and overwrite that's the reason we kept that address in the list.
-    list_to_send: list[dict] = []
+    list_to_send: list[Dict] = []
     for single_address in address:
         if type(single_address) is dict:
             list_to_send.append({"value": single_address.get("value"),
@@ -826,8 +826,7 @@ def modify_v10_results_to_v9_format(results: List[Dict[Any, Any]]) -> List[Dict[
     The main difference is that in v10 the API returns the addresses in a list of dictionaries,
     A dictionary for each address with extra information, and in v9 all the addresses are in one list.
 
-    This function takes a v10 result and returns a v9 result.
-
+    This function takes a v10 result and returns a v9 result (to maintain backward compatibility).
     Args:
         results: List[Dict[Any, Any]] - The results of the command of v10.
     Returns:
@@ -2429,12 +2428,12 @@ def deploy_device_configuration_command(args: Dict, client: Client) -> PollResul
         is_botnet_push_required = argToBoolean(args.get('push_botnet', False))
 
         if not any([is_ssl_push_required, is_gam_update_required, is_sigset_config_push_required, is_botnet_push_required]):
-            raise DemistoException("Please provide at least one argument to deploy")
+            raise DemistoException("Please provide at least one argument to deploy.")
 
-        requests_id = client.deploy_device_configuration_request(device_id=device_id, isSSLPushRequired=is_ssl_push_required,
-                                                                 isGAMUpdateRequired=is_gam_update_required,
-                                                                 isSigsetConfigPushRequired=is_sigset_config_push_required,
-                                                                 isBotnetPushRequired=is_botnet_push_required).get('RequestId')
+        requests_id = client.deploy_device_configuration_request(device_id=device_id, is_SSL_Push_Required=is_ssl_push_required,
+                                                                 is_GAM_Update_Required=is_gam_update_required,
+                                                                 is_Sigset_Config_Push_Required=is_sigset_config_push_required,
+                                                                 is_Botnet_Push_Required=is_botnet_push_required).get('RequestId')
         args["request_id"] = requests_id
     status = client.check_deploy_device_configuration_request_status(device_id=device_id,
                                                                      request_id=request_id)
@@ -2442,7 +2441,7 @@ def deploy_device_configuration_command(args: Dict, client: Client) -> PollResul
     fail_or_success_list = []
     build_a_massage = ""
     for k, v in args.items():
-        if v == "true":  # if the argument is true we need to check it's status
+        if v == "true":  # if the value is true that is one of the arguments to deploy and we need to check its status
             current_percentage_status = status.get(DEPLOY_ARGUMENT_MAPPER.get(str(k)))
             current_message_status = status.get(MESSAGE_MAP.get(str(k)))
             if current_percentage_status != 100 or current_message_status != "DOWNLOAD COMPLETE":
