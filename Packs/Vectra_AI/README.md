@@ -37,9 +37,4 @@ Be sure that the user has a role with sufficient permissions to do all the actio
  - DUDA Olivier
 
 Contributions are welcome and appreciated. For more info, visit our [Contribution Guide](https://xsoar.pan.dev/docs/contributing/contributing).
-### Pack Contributors:
 
----
- - DUDA Olivier
-
-Contributions are welcome and appreciated. For more info, visit our [Contribution Guide](https://xsoar.pan.dev/docs/contributing/contributing).

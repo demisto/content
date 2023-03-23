@@ -8,6 +8,8 @@ It uses version 2.2 of Vectra AI REST API.
 See https://support.vectra.ai/s/article/KB-VS-1174 for more the API reference.
 """
 
+# TODO sed -i '' s/demisto\.info/demisto.\debug/g
+
 import demistomock as demisto
 from CommonServerPython import *
 from typing import Dict, Any, Tuple
@@ -153,7 +155,8 @@ def add_parsing_rules(event: Dict[str, Any]) -> Any:
             f"""Failed adding parsing rules {','.join(XSIAM_PARSING_RULES)} to event '{str(event)}': {str(e)}.
             Will be added in ingestion time"""
         )
-        pass
+
+        return event
 
 
 def get_audits_to_send(
@@ -390,7 +393,6 @@ def fetch_events(
     demisto.info(f"Fetched {len(audits)} audits.")
     if audits:
         most_recent_audit = audits[-1]
-        demisto.info(f"Most recent audit: {str(most_recent_audit)}")
         most_recent_audit_str = most_recent_audit.get(AUDIT_TIMESTAMP_KEY)
 
     else:
