@@ -88,10 +88,10 @@ def file_enrichment_command(client, file_hash):
             # Show Mal-Eval verdict
             mal_eval_output = responseJson['data']['attributes']['mal_eval_result']
             if mal_eval_output:
-                if mal_eval_output['label'] != '':
+                if mal_eval_output['label']:
                     mal_eval_label = mal_eval_output['label']
                     md += f'Mal-Eval Label: {mal_eval_label}\n'
-                if mal_eval_output['probability_bucket'] != '':
+                if mal_eval_output['probability_bucket']:
                     mal_eval_prob = mal_eval_output['probability_bucket']
                     md += f'Mal-Eval Malicious Likelihood: {mal_eval_prob}\n'
             results = CommandResults(
