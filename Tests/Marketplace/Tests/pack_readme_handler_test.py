@@ -4,7 +4,8 @@ from pathlib import Path
 from Tests.Marketplace.marketplace_constants import GCPConfig, BucketUploadFlow
 from Tests.Marketplace.pack_readme_handler import (collect_images_from_readme_and_replace_with_storage_path,
                                                    copy_readme_images,
-                                                   replace_readme_urls)
+                                                   replace_readme_urls,
+                                                   download_readme_images_from_url_data_list)
 
 
 def test_copy_readme_images(mocker):
@@ -50,7 +51,8 @@ def test_collect_images_from_readme_and_replace_with_storage_path():
                                 '4f707f8922d7ef1fe234a194dcc6fa73f96a4a87/Packs/Lansweeper/doc_files/'
                                 'Retrieve_Asset_Details_-_Lansweeper.png',
         'new_gcs_image_path': Path('gcs_test_path/readme_images/Retrieve_Asset_Details_-_Lansweeper.png'),
-        'image_name': 'Retrieve_Asset_Details_-_Lansweeper.png'
+        'image_name': 'Retrieve_Asset_Details_-_Lansweeper.png',
+        'pack_name': 'TestPack'
     }
     ret = collect_images_from_readme_and_replace_with_storage_path(pack_readme_path=path_readme_to_replace_url,
                                                                    gcs_pack_path='gcs_test_path',
@@ -95,3 +97,42 @@ def test_replace_readme_urls(mocker):
 
     assert readme_images == readme_images_expected_result
     assert readme_urls_data_list == readme_urls_data_list_expected_result
+
+
+def test_download_readme_images_from_url_data_list(mocker):
+    """
+        Given:
+            - Readme urls data list.
+        When:
+            - When there are different paths of readme urls.
+        Then:
+            - Validate that the functions are called or not according to the path type.
+    """
+
+    args_and_expected_for_test = [
+        ({
+            'original_read_me_url': 'https://test/test/test.png',
+            'new_gcs_image_path': Path('readme_images/test.png'),
+            'image_name': 'test-test.png',
+            'pack_name': 'TestPack'
+        }, {'download': True, 'extract': False}),
+        ({
+            'original_read_me_url': 'binary_files/test.png',
+            'new_gcs_image_path': Path('readme_images/test.png'),
+            'image_name': 'test-test.png',
+            'pack_name': 'TestPack'
+        }, {'download': False, 'extract': True}),
+        ({
+            'original_read_me_url': 'test/test.png',
+            'new_gcs_image_path': Path('readme_images/test.png'),
+            'image_name': 'test-test.png',
+            'pack_name': 'TestPack'
+        }, {'download': False, 'extract': False})
+    ]
+    mock_download = mocker.patch('Tests.Marketplace.pack_readme_handler.download_readme_image_from_url_and_upload_to_gcs')
+    mock_extracting = mocker.patch('Tests.Marketplace.pack_readme_handler.extracting_readme_image_from_pack_and_upload_to_gcs')
+    for test in args_and_expected_for_test:
+        download_readme_images_from_url_data_list([test[0]], 'test', 'test')
+
+        assert bool(mock_download.call_count) == test[1]['download']
+        assert bool(mock_extracting.call_count) == test[1]['extract']
