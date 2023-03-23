@@ -1083,14 +1083,10 @@ def update_alert_status_command(client: Client, env: str, args=None):
             f"Supported Status Values: {ALERT_STATUSES}"))
 
     variables = {
-        "alert_ids": args.get("ids"),
+        "alert_ids": argToList(args.get("ids")),
         "reason": args.get("reason", ""),
         "resolution_status": args.get("status"),
     }
-
-    if type(variables["alert_ids"]) == str:
-        variables["alert_ids"] = variables["alert_ids"].split(",")  # alerts://id1,alerts://id2
-    variables["alert_ids"] = [x.strip() for x in variables["alert_ids"]]  # Ensure no whitespace
 
     query = """
     mutation alertsServiceUpdateResolutionInfo($alert_ids: [String!], $reason: String, $resolution_status: ResolutionStatus) {
