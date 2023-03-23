@@ -1284,32 +1284,6 @@ def test_logger_init_key_name(mocker):
     assert '<XX_REPLACED>' in args[0]
 
 
-def test_convert_dict_values_bytes_to_str():
-    """
-    Given:
-        Dictionary contains bytes objects
-
-    When:
-        Creating outputs for commands
-
-    Then:
-        assert all bytes objects have been converted to strings
-    """
-
-    input_dict = {'some_key': b'some_value',
-                  'some_key1': [b'some_value'],
-                  'some_key2': {'some_key': [b'some_value'],
-                                'some_key1': b'some_value'}
-                  }
-    expected_output_dict = {'some_key': 'some_value',
-                            'some_key1': ['some_value'],
-                            'some_key2': {'some_key': ['some_value'],
-                                          'some_key1': 'some_value'}
-                            }
-    actual_output = convert_dict_values_bytes_to_str(input_dict)
-    assert actual_output == expected_output_dict
-
-
 def test_logger_replace_strs(mocker):
     mocker.patch.object(demisto, 'params', return_value={
         'apikey': 'my_apikey',
@@ -8851,6 +8825,32 @@ def test_append_metrics(mocker):
 
     results = CommonServerPython.append_metrics(metrics, results)
     assert len(results) == 1
+
+
+def test_convert_dict_values_bytes_to_str():
+    """
+    Given:
+        Dictionary contains bytes objects
+
+    When:
+        Creating outputs for commands
+
+    Then:
+        assert all bytes objects have been converted to strings
+    """
+
+    input_dict = {'some_key': b'some_value',
+                  'some_key1': [b'some_value'],
+                  'some_key2': {'some_key': [b'some_value'],
+                                'some_key1': b'some_value'}
+                  }
+    expected_output_dict = {'some_key': 'some_value',
+                            'some_key1': ['some_value'],
+                            'some_key2': {'some_key': ['some_value'],
+                                          'some_key1': 'some_value'}
+                            }
+    actual_output = convert_dict_values_bytes_to_str(input_dict)
+    assert actual_output == expected_output_dict
 
 
 @pytest.mark.parametrize(
