@@ -2278,6 +2278,10 @@
             "fromversion": "4.1.0"
         },
         {
+            "integrations": "TeamCymru",
+            "playbookID": "TeamCymruTest"
+        },
+        {
             "integrations": "RSA NetWitness Endpoint",
             "playbookID": "NetWitness Endpoint Test"
         },
@@ -4147,7 +4151,7 @@
             "instance_names": [
                 "microsoft_defender_atp_dev_self_deployed"
             ],
-            "timeout": 200
+            "timeout": 250
         },
         {
             "playbookID": "Polygon-Test",
@@ -5809,7 +5813,8 @@
         "Anomali ThreatStream v3": "recording is not working",
         "LogRhythmRest V2": "Submits a file - tests that send files shouldn't be mocked.",
         "Cortex XDR - IR": "internal product, no need to mock",
-        "Microsoft Teams via Webhook": "message sent contains random hostname of server"
+        "Microsoft Teams via Webhook": "message sent contains random hostname of server",
+        "TeamCymru": "Mocks does not support sockets"
     },
     "parallel_integrations": [
         "AWS - ACM",
