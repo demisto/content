@@ -29,4 +29,4 @@ The playbooks included in this pack helps you save time and automate repetitive 
  
 _For more information, visit our  [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/playbooks/sans---incident-handlers-handbook-template)_
 
-![SANS_-_Incident_Handler's_Handbook_Template](binary_files/SANS_-_Incident_Handler's_Handbook_Template.png)
+![SANS_-_Incident_Handler's_Handbook_Template](readme_images/SANS_-_Incident_Handler's_Handbook_Template.png)

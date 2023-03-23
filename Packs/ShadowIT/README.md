@@ -6,4 +6,4 @@ This pack includes a new **Shadow IT** incident type and a playbook.
 - Provides a **Shadow IT** indicator layout.
 - Provides a playbook to handle Shadow IT incidents (**Handle Shadow IT Incident**).
 
-![Handle Shadow IT Incident](binary_files/Handle_Shadow_IT_Incident.png)
+![Handle Shadow IT Incident](readme_images/Handle_Shadow_IT_Incident.png)

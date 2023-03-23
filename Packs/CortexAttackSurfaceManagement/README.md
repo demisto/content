@@ -86,91 +86,91 @@ The main active response playbook is the `Cortex ASM - ASM Alert` playbook. This
 
 Playbook that enriches asset information for ASM alerts and provides means of remediation.
 
-![Cortex ASM - ASM Alert](binary_files/Cortex_ASM_-_ASM_Alert.png)
+![Cortex ASM - ASM Alert](readme_images/Cortex_ASM_-_ASM_Alert.png)
 
 #### Cortex ASM - AWS Enrichment
 
 Playbook that given the IP address enriches AWS information relevant to ASM alerts.
 
-![Cortex ASM - AWS Enrichment](binary_files/Cortex_ASM_-_AWS_Enrichment.png)
+![Cortex ASM - AWS Enrichment](readme_images/Cortex_ASM_-_AWS_Enrichment.png)
 
 #### Cortex ASM - Azure Enrichment
 
 Playbook that given the IP address enriches Azure information relevant to ASM alerts.
 
-![Cortex ASM - Azure Enrichment](binary_files/Cortex_ASM_-_Azure_Enrichment.png)
+![Cortex ASM - Azure Enrichment](readme_images/Cortex_ASM_-_Azure_Enrichment.png)
 
 #### Cortex ASM - Decision
 
 Playbook that returns "RemediationAction" options based on meeting "Automated Remediation Requirements" as well as whether ServiceNowV2 integration is set up.
 
-![Cortex ASM - Decision](binary_files/Cortex_ASM_-_Decision.png)
+![Cortex ASM - Decision](readme_images/Cortex_ASM_-_Decision.png)
 
 #### Cortex ASM - Detect Service
 
 Playbook that looks at what ASM sub-type the alert is and directs it to different pre/post mitigation scans (such as NMAP, SNMP).
 
-![Cortex ASM - Detect Service](binary_files/Cortex_ASM_-_Detect_Service.png)
+![Cortex ASM - Detect Service](readme_images/Cortex_ASM_-_Detect_Service.png)
 
 #### Cortex ASM - Enrichment
 
 Playbook that is used as a container folder for all enrichments of ASM alerts.
 
-![Cortex ASM - Enrichment](binary_files/Cortex_ASM_-_Enrichment.png)
+![Cortex ASM - Enrichment](readme_images/Cortex_ASM_-_Enrichment.png)
 
 #### Cortex ASM - GCP Enrichment
 
 Playbook that given the IP address enriches GCP information relevant to ASM alerts.
 
-![Cortex ASM - GCP Enrichment](binary_files/Cortex_ASM_-_GCP_Enrichment.png)
+![Cortex ASM - GCP Enrichment](readme_images/Cortex_ASM_-_GCP_Enrichment.png)
 
 #### Cortex ASM - Rapid7 Enrichment
 
 Playbook that given the IP address enriches Rapid7 information relevant to ASM alerts.
 
-![Cortex ASM - Rapid7 Enrichment](binary_files/Cortex_ASM_-_Rapid7_Enrichment.png)
+![Cortex ASM - Rapid7 Enrichment](readme_images/Cortex_ASM_-_Rapid7_Enrichment.png)
 
 #### Cortex ASM - Remediation Guidance
 
 Playbook that pulls remediation guidance off of a list based on ASM RuleID to be used in service owner notifications (email or ticketing system).
 
-![Cortex ASM - Remediation Guidance](binary_files/Cortex_ASM_-_Remediation_Guidance.png)
+![Cortex ASM - Remediation Guidance](readme_images/Cortex_ASM_-_Remediation_Guidance.png)
 
 #### Cortex ASM - Remediation Path Rules
 
 Playbook that returns "RemediationAction" options based on the return from the Remediation Path Rules API, or defaults to data collection task options from the "Cortex ADM - Decision" sub-playbook.
 
-![Cortex ASM - Remediation Path Rules](binary_files/Cortex_ASM_-_Remediation_Path_Rules.png)
+![Cortex ASM - Remediation Path Rules](readme_images/Cortex_ASM_-_Remediation_Path_Rules.png)
 
 #### Cortex ASM - Remediation
 
 Playbook that is used as a container folder for all remediation of ASM alerts.
 
-![Cortex ASM - Remediation](binary_files/Cortex_ASM_-_Remediation.png)
+![Cortex ASM - Remediation](readme_images/Cortex_ASM_-_Remediation.png)
 
 #### Cortex ASM - ServiceNow CMDB Enrichment
 
 Playbook that given the IP address enriches ServiceNow CMDB information relevant to ASM alerts.
 
-![Cortex ASM - ServiceNow CMDB Enrichment](binary_files/Cortex_ASM_-_ServiceNow_CMDB_Enrichment.png)
+![Cortex ASM - ServiceNow CMDB Enrichment](readme_images/Cortex_ASM_-_ServiceNow_CMDB_Enrichment.png)
 
 #### Cortex ASM - SNMP Check
 
 Playbook that given the IP address checks if SNMP is enabled or not and returns versions running.
 
-![Cortex ASM - SNMP Check](binary_files/Cortex_ASM_-_SNMP_Check.png)
+![Cortex ASM - SNMP Check](readme_images/Cortex_ASM_-_SNMP_Check.png)
 
 #### Cortex ASM - Splunk Enrichment
 
 Playbook that given the IP address enriches Splunk information relevant to ASM alerts.
 
-![Cortex ASM - Splunk Enrichment](binary_files/Cortex_ASM_-_Splunk_Enrichment.png)
+![Cortex ASM - Splunk Enrichment](readme_images/Cortex_ASM_-_Splunk_Enrichment.png)
 
 #### Cortex ASM - Tenable.io Enrichment
 
 Playbook that given the IP address enriches Tenable.io information relevant to ASM alerts.
 
-![Cortex ASM - Tenable.io Enrichment](binary_files/Cortex_ASM_-_Tenable.io_Enrichment.png)
+![Cortex ASM - Tenable.io Enrichment](readme_images/Cortex_ASM_-_Tenable.io_Enrichment.png)
 
 ### Automation Scripts
 
@@ -180,21 +180,21 @@ This content pack includes the [generateASMReport](#generateasmreport) script:
 
 This automation helps generate an ASM alert summary report with important information found via the playbook run.
 
-![GenerateASMReport](binary_files/GenerateASMReport.png)
+![GenerateASMReport](readme_images/GenerateASMReport.png)
 
 #### InferWhetherServiceIsDev
 
 This automation identifies whether the service is a "development" server. Development servers have no external users and run no production workflows. These servers might be named "dev", but they might also be named "qa", "pre-production", "user acceptance testing", or use other non-production terms. This automation uses both public data visible to anyone (`active_classifications` as derived by Xpanse ASM) as well as checking internal data for AI-learned indicators of development systems (`asm_tags` as derived from integrations with non-public systems).
 
-![InferWhetherServiceIsDev](binary_files/InferWhetherServiceIsDev.png)
+![InferWhetherServiceIsDev](readme_images/InferWhetherServiceIsDev.png)
 
 #### RemediationPathRuleEvaluation
 
 This automation attempts to find a matching remediation path rule based on criteria.  If multiple rules match, it will return the most recently created rule.  This assumes that the rules passed in are filtered to correlate with the alert's attack surface rule (Xpanse only).
 
-![RemediationPathRuleEvaluation](binary_files/RemediationPathRuleEvaluation.png)
+![RemediationPathRuleEvaluation](readme_images/RemediationPathRuleEvaluation.png)
 
 #### SnmpDetection
 
 This automation checks if SNMP is enabled or not and gets the running version on the remote server.
-![SnmpDetection](binary_files/GenerateASMReport.png)
+![SnmpDetection](readme_images/GenerateASMReport.png)

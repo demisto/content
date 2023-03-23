@@ -22,12 +22,12 @@ This content pack includes the following playbooks:
 #### AWS - Enrichment
 AWS - Enrichment playbook reports EC2 and IAM information given an IP address of an EC2 instance.
 
-![AWS - Enrichment](binary_files/AWS_-_Enrichment.png)
+![AWS - Enrichment](readme_images/AWS_-_Enrichment.png)
 
 #### AWS - Security Group Remediation
 AWS - Security Group Remediation playbook replaces current security groups associated to NIC with Remediation security group.
 
-![AWS - Security Group Remediation](binary_files/AWS_-_Security_Group_Remediation.png)
+![AWS - Security Group Remediation](readme_images/AWS_-_Security_Group_Remediation.png)
 
 #### AWS - Security Group Remediation v2
 The AWS - Security Group Remediation v2 playbook more selectively determines which security groups are over-permissive, copies them and removes only the over-permissive portions.
@@ -37,12 +37,12 @@ The AWS - Security Group Remediation v2 playbook more selectively determines whi
 #### AWS - Unclaimed S3 Bucket Validation
 AWS - Unclaimed S3 Bucket Validation playbook validates the unclaimed S3 bucket details.
 
-![AWS - Unclaimed S3 Bucket Validation](binary_files/AWS_-_Unclaimed_S3_Bucket_Validation.png)
+![AWS - Unclaimed S3 Bucket Validation](readme_images/AWS_-_Unclaimed_S3_Bucket_Validation.png)
 
 #### AWS - Unclaimed S3 Bucket Remediation
 AWS - Unclaimed S3 Bucket Remediation playbook creates the unclaimed S3 bucket so other vectors can't claim the bucket.
 
-![AWS - Unclaimed S3 Bucket Remediation](binary_files/AWS_-_Unclaimed_S3_Bucket_Remediation.png)
+![AWS - Unclaimed S3 Bucket Remediation](readme_images/AWS_-_Unclaimed_S3_Bucket_Remediation.png)
 
 ### Automation Scripts
 

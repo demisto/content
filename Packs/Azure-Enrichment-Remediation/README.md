@@ -16,4 +16,4 @@ Users are only able to run the playbook in v6.5.0 or higher as it requires comma
 This content pack includes the following playbook: 
 - Cloud Response - Azure
 
-![Cloud Response - Azure](binary_files/Cloud_Response_-_Azure.png)
+![Cloud Response - Azure](readme_images/Cloud_Response_-_Azure.png)

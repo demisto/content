@@ -21,19 +21,19 @@ type of response can be found in the [API Documentation.](https://help.rapid7.co
 
 #### Nexpose Scan Assets
 
-![image](binary_files/Scan_Assets_-_Nexpose.png)
+![image](readme_images/Scan_Assets_-_Nexpose.png)
 #### Nexpose Scan Site
 
-![image](binary_files/Scan_Site_-_Nexpose.png)
+![image](readme_images/Scan_Site_-_Nexpose.png)
 
 #### Vulnerability Handling - Nexpose
 
-![image](binary_files/Vulnerability_Handling_-_Nexpose.png)
+![image](readme_images/Vulnerability_Handling_-_Nexpose.png)
 
 #### Vulnerability Management - Nexpose
 
-![image](binary_files/Vulnerability_Management_-_Nexpose.png)
+![image](readme_images/Vulnerability_Management_-_Nexpose.png)
 
 #### Nexpose - Create and download a report - GenericPolling
 
-![image](binary_files/Nexpose_-_Create_and_download_a_report.png)
+![image](readme_images/Nexpose_-_Create_and_download_a_report.png)

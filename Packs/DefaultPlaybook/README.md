@@ -11,4 +11,4 @@ The playbook found in this pack provides a great out-of-the-box solution, yet it
 
 _For more information, visit our [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/playbooks/phishing-investigation---generic-v2)_
 
-![Default](binary_files/Default.png)
+![Default](readme_images/Default.png)

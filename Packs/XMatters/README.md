@@ -9,7 +9,7 @@ Trigger xMatters workflows and on-call schedules to track down the appropriate r
 
 ### Trigger Event Playbook Example
 
-![xMatters - Wait For Response Playbook](binary_files/xMatters_-_Wait_for_Response.png)
+![xMatters - Wait For Response Playbook](readme_images/xMatters_-_Wait_for_Response.png)
 
 ## Installation Details
 

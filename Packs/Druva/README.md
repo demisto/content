@@ -14,7 +14,7 @@ The Druva Cloud Platform integration empowers you to automate ransomware inciden
 **What does this pack do?**
 
 
-![alt text](binary_files/CortexXsoar.png)
+![alt text](readme_images/CortexXsoar.png)
 
 This two way API integration enables customers to: 
 - Automate response actions like quarantining effected resources or snapshots to stop the spread of ransomware and avoid reinfection or contamination spread

@@ -15,4 +15,4 @@ As part of this pack, you will also get the out-of-the-box forensics incident ty
 
 For more information, visit our  [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/playbooks/ps-remote-acquire-host-forensics)
 
-![Acquire And Analyze Host Forensics](binary_files/PS-Remote__Acquire_Host_Forensics.png)
+![Acquire And Analyze Host Forensics](readme_images/PS-Remote__Acquire_Host_Forensics.png)

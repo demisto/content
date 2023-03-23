@@ -16,5 +16,5 @@ The script and playbooks included in this pack help you automate repetitive task
 _We encourage you to [learn more about the PCAP Analysis playbook](https://xsoar.pan.dev/docs/reference/playbooks/pcap-analysis)_
 
 ## Demo Video
-[![PCAP Analysis in Cortex XSOAR](binary_files/0.jpg)](https://www.youtube.com/watch?v=VDUdBmGuVYQ "PCAP Analysis in Cortex XSOAR")
+[![PCAP Analysis in Cortex XSOAR](readme_images/0.jpg)](https://www.youtube.com/watch?v=VDUdBmGuVYQ "PCAP Analysis in Cortex XSOAR")
 

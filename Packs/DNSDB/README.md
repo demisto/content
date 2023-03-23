@@ -19,7 +19,7 @@ To measurably improve the speed and accuracy of incident response, security anal
 
 **Benefit**: Automated IP to Hostname queries reduces the time needed to respond to incursions and provide a comprehensive view of the attacker’s infrastructure. Automatic expansion and enrichment of search base saves time because all of data is assembled.
 
-![Playbook summary](binary_files/playbook.png)
+![Playbook summary](readme_images/playbook.png)
 
 ##### Use Case #2: Automated enhancement of interactive forensic investigations
 
@@ -29,7 +29,7 @@ To measurably improve the speed and accuracy of incident response, security anal
 
 **Benefit**: Increases the efficacy of other playbooks by automatically enriching the findings with real-time and historical DNS data.
 
-![DBot example](binary_files/dbot.png)
+![DBot example](readme_images/dbot.png)
 
 ##### About Farsight Security 
 

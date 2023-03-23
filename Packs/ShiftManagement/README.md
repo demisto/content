@@ -11,4 +11,4 @@ This pack's purpose is provide a single interface for all those essential elemen
 
 For more information, visit our [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/packs/Shift_management)
 
-![Shift_management_layout](binary_files/layout.PNG)
+![Shift_management_layout](readme_images/layout.PNG)

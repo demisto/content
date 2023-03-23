@@ -16,7 +16,7 @@ Integrations required for this pack.
 - Rasterize - [(see the documentation)](https://xsoar.pan.dev/docs/reference/integrations/rasterize)
 - Cryptocurrency - [(see the documentation)](https://xsoar.pan.dev/docs/reference/integrations/cryptocurrency)
 For more information, visit our [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/packs/ransomware)
-![Layout Image](binary_files/Post_Intrusion_Ransomware_Investigation_Layout.png)
-![Playbook Image](binary_files/Post_Intrusion_Ransomware_Investigation.png)
+![Layout Image](readme_images/Post_Intrusion_Ransomware_Investigation_Layout.png)
+![Playbook Image](readme_images/Post_Intrusion_Ransomware_Investigation.png)
 
 

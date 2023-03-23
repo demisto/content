@@ -9,18 +9,18 @@ This pack includes XSIAM content.
 2. Click **Server Roles** in the left menu.
 3. Validate that **Active Directory Federation Services** is selected and installed.
 
-   ![Server Screenshot](binary_files/ADFSEnable.png)
+   ![Server Screenshot](readme_images/ADFSEnable.png)
 4. To enable logging of AD FS, run the following commands in PowerShell with administrative privileges:
    - ***Set-AdfsProperties -LogLevel Basic*** - This command will enable basic logging of AD FS.
    - ***Get-AdfsProperties*** - This command will validate that the *AuditLevel* is set to *Basic*.
 
-    ![Server Screenshot](binary_files/ADFSCommands.png)
+    ![Server Screenshot](readme_images/ADFSCommands.png)
 5. Additional validation of the logging can be located at the Windows *Event Viewer*:
 
    1. Run ***eventvwr.msc*** in the search bar.
    2.  In the left directory tree, select **Applications and Services Logs** and validate that *AD FS* exists and *Admin* logs are located in the folder
 
-    ![Server Screenshot](binary_files/ADFSEvent-Viewer.png)
+    ![Server Screenshot](readme_images/ADFSEvent-Viewer.png)
 
 ## Collect Events from Vendor
 For the Filebeat collector, use the following option to collect events from the vendor:

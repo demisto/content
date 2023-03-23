@@ -17,10 +17,10 @@ For more information, please refer to the [MITRE ATT&CK - Courses of Action arti
 
 
 **MITRE ATT&CK Dashboard**
-![MITRE_Dashboard](binary_files/MITRE_Dashboard.png)
+![MITRE_Dashboard](readme_images/MITRE_Dashboard.png)
 
 **Unit 42 STIX Report Indicators**
-![Maze_Ransomware](binary_files/Maze_Indicator.png)
+![Maze_Ransomware](readme_images/Maze_Indicator.png)
 
 **MITRE ATT&CK - Courses of Action Sample Playbook**
-![Courses_of_Action](binary_files/MITRE_ATT%26CK_CoA_-_T1027.png)
+![Courses_of_Action](readme_images/MITRE_ATT%26CK_CoA_-_T1027.png)

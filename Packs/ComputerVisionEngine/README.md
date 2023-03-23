@@ -1,4 +1,4 @@
 ### Demo Screencast
 
-![Integration Demo](binary_files/computervision.gif)
+![Integration Demo](readme_images/computervision.gif)
 

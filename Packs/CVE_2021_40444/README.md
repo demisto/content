@@ -18,4 +18,4 @@ More information:
 
 Note: This is a beta pack, which lets you implement and test pre-release software. Since the playbook is beta, it might contain bugs. Updates to the pack during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the pack to help us identify issues, fix them, and continually improve.
 
-![CVE-2021-40444 - MSHTML RCE](binary_files/CVE-2021-40444_-_MSHTML_RCE.png)
+![CVE-2021-40444 - MSHTML RCE](readme_images/CVE-2021-40444_-_MSHTML_RCE.png)

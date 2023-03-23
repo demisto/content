@@ -14,4 +14,4 @@ As part of this pack, you will also get out-of-the-box incident fields, layouts 
 
 _For more information, visit our [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/playbooks/it---employee-offboarding)_
 
-![IT_Employee_Offboarding](binary_files/IT_Employee_Offboarding.png)
+![IT_Employee_Offboarding](readme_images/IT_Employee_Offboarding.png)

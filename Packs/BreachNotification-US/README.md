@@ -15,4 +15,4 @@ As part of this pack, you will also get out-of-the-box US breach notification in
 
 _For more information, visit our [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/playbooks/us---breach-notification)_
 
-![US-BreachNotification](binary_files/US_-_Breach_Notification.png)
+![US-BreachNotification](readme_images/US_-_Breach_Notification.png)

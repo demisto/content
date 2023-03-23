@@ -6,4 +6,4 @@ Supported from version 6.1 and later.
 
 After installing this pack, you will be able to add the "Elastisearch Monitoring" dashboard to your Dashboards page. 
 
-![](binary_files/demo-dashboard.png)
+![](readme_images/demo-dashboard.png)

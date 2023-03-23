@@ -10,4 +10,4 @@ As part of this pack, you will also get out-of-the-box HIPAA breach notification
 
 _For more information, visit our [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/playbooks/hipaa---breach-notification)_
 
-![HIPAA-BreachNotification](binary_files/HIPAA_-_Breach_Notification.png)
+![HIPAA-BreachNotification](readme_images/HIPAA_-_Breach_Notification.png)

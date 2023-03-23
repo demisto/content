@@ -12,4 +12,4 @@ Automating the process of checking the domain registration age according to the 
 
 For more information, visit our  [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/playbooks/tim---process-domains-with-whois)
 
-![TIM - Process Domains With Whois](binary_files/TIM_-_Process_Domains_With_Whois.png)
+![TIM - Process Domains With Whois](readme_images/TIM_-_Process_Domains_With_Whois.png)

@@ -1,7 +1,7 @@
 This OT Security pack is created to help you to automate the incident response and threat hunting processes in your Operations and ICS environment.
 
 # Pack Overview
-![](binary_files/OTSecurityEnvironment.png)
+![](readme_images/OTSecurityEnvironment.png)
 
 Cortex XSOAR helps to automate OT incidents and alerts response by gathering all relevant data, even from sources that may seem unrelated,
 allowing for the buildout of playbooks that cater to the particular automation needs of an ICS’s operational requirements. It also provides bot-aided war rooms where
@@ -13,26 +13,26 @@ Below are sample types OT investigation that his pack will focus on:
 
 - __Initial Access__
     - Supply Chain Compromise
-    ![](binary_files/ATT%26CK%20T862.png)
+    ![](readme_images/ATT%26CK%20T862.png)
 
     - Data Historian Compromise
-    ![](binary_files/ATT%26CK%20T810.png)
+    ![](readme_images/ATT%26CK%20T810.png)
 
 - __Execution and Persistence__
     - Unauthorized Program State Alteration
-    ![](binary_files/ATT%26CK%20T875.png)
+    ![](readme_images/ATT%26CK%20T875.png)
     - Project File Infection
-    ![](binary_files/ATT%26CK%20T873.png)
+    ![](readme_images/ATT%26CK%20T873.png)
 - __Evasion__
     - Rogue Device Detected
-    ![](binary_files/ATT%26CK%20T848.png)
+    ![](readme_images/ATT%26CK%20T848.png)
     - Rootkits Detected
-    ![](binary_files/ATT%26CK%20T851.png)
+    ![](readme_images/ATT%26CK%20T851.png)
 - __Discovery__
     - I/O Module Discovery
-    ![](binary_files/ATT%26CK%20T851.png)
+    ![](readme_images/ATT%26CK%20T851.png)
     - Network Service Scanning
-    ![](binary_files/ATT%26CK%20T824.png)
+    ![](readme_images/ATT%26CK%20T824.png)
 - __Lateral Movement__
     - Default Credentials Login
     - Unautherized Remote File Copy
@@ -69,7 +69,7 @@ XSOAR content included in this pack will be built based on our integrations with
     - Tenable
 
 # XSOAR in Isolated OT Environment
-![](binary_files/IsolatedDeployment.png)
+![](readme_images/IsolatedDeployment.png)
 XSOAR provides the ability to have a production instance running in an isolated OT environment, with a jumb host access to a local repository that stores the content updates, for more details:
 https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Configure-a-Remote-Repository-on-a-Development-Machine
 

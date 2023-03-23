@@ -17,13 +17,13 @@ The pack comes with 5 out-of-the-box report layouts for easier use:
 You can also add relationships between reports and indicators to add additional data to the report. Markdown is supported in the report body, allowing you to add formatting such as tables, images, and font/background color.
 
 Executive brief report
-![Layout](binary_files/executive_brief.png)
+![Layout](readme_images/executive_brief.png)
 
 Threat actor report
-![Layout](binary_files/threat_actor.png)
+![Layout](readme_images/threat_actor.png)
 
 Malware report
-![Layout](binary_files/malware.png)
+![Layout](readme_images/malware.png)
 
 Vulnerability report
-![Layout](binary_files/vulnerability.png)
+![Layout](readme_images/vulnerability.png)

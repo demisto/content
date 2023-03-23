@@ -25,4 +25,4 @@ This pack includes, out of the box, a full layout, scripts, and incident fields.
 
 _For more information about the pack, visit our [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/packs/email-communication)
 
-![Email_Communication_layout](binary_files/Email_Communication_layout.png)
+![Email_Communication_layout](readme_images/Email_Communication_layout.png)

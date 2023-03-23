@@ -1,4 +1,4 @@
-![Header Image](binary_files/espionage-r3d3-small.png)
+![Header Image](readme_images/espionage-r3d3-small.png)
 
 This pack has a collection of playbooks to rapidly respond to high profile breaches with existing deployed tools in your enterprise. 
 The playbooks in this pack can also be used as a template to hunt and block these indicators using additional tools in your environment.
@@ -29,4 +29,4 @@ More playbooks are available in the following packs:
 - Create a job that will run this playbook on a periodic basis.
 
 
-![HAFNIUM - Exchange 0-day exploits](binary_files/HAFNIUM_-_Exchange_0-day_exploits_6.png)
+![HAFNIUM - Exchange 0-day exploits](readme_images/HAFNIUM_-_Exchange_0-day_exploits_6.png)

@@ -8,4 +8,4 @@ Use this Content Pack to prioritize risks that span your entire cloud estate and
 
 _For more information, visit [Wiz Inc.](https://wiz.io/)_
 
-[![Wiz Overview](binary_files/Author_image.png)](https://wiz.io)
+[![Wiz Overview](readme_images/Author_image.png)](https://wiz.io)

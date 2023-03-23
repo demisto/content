@@ -17,4 +17,4 @@ As part of this pack, you will also get out-of-the-box Access incident type, whi
 
 _For more information, visit our  [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/playbooks/access-investigation---generic)_
 
-![Access_Investigation_-_Generic](binary_files/Access_Investigation_-_Generic_4_5.png)
+![Access_Investigation_-_Generic](readme_images/Access_Investigation_-_Generic_4_5.png)

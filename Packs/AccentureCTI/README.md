@@ -1,5 +1,5 @@
 <p align="center">
-<img alt="Accenture Security" src="binary_files/161065074-2e37b4a0-563d-441f-93e4-77882dd9458e.png"/> 
+<img alt="Accenture Security" src="readme_images/161065074-2e37b4a0-563d-441f-93e4-77882dd9458e.png"/> 
 </p>
 
 

@@ -17,4 +17,4 @@ The pack includes the **OpenCTI** integration and the **OpenCTI Create Indicator
 
 Create an instance of the **OpenCTI** integration and start fetching and ingesting incidents.
 
-![Playbook Image](binary_files/OpenCTI_-_Create_Indicator.png)
+![Playbook Image](readme_images/OpenCTI_-_Create_Indicator.png)

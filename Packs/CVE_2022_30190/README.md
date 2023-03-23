@@ -21,4 +21,4 @@ This playbook includes the following tasks:
 **Note:** This is a beta playbook, which lets you implement and test pre-release software. Since the playbook is beta, it might contain bugs. Updates to the pack during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the pack to help us identify issues, fix them, and continually improve.
 
 
-![CVE-2022-30190 - MSDT RCE](binary_files/CVE-2022-30190_-_MSDT_RCE.png)
+![CVE-2022-30190 - MSDT RCE](readme_images/CVE-2022-30190_-_MSDT_RCE.png)

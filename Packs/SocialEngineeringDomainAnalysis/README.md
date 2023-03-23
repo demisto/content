@@ -14,4 +14,4 @@ Two playbooks are included with this pack:
 The Social Engineering Domain Enrichment playbook can be used as a subplaybook in other investigations and an example usage is provided in the
 Social Engineering Domain Investigation playbook.
 
-![Playbook Image](binary_files/Social_Engineering_Domain_Investigation_Thu_Dec_16_2021.png)
+![Playbook Image](readme_images/Social_Engineering_Domain_Investigation_Thu_Dec_16_2021.png)

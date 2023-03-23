@@ -16,18 +16,18 @@ _For more information, visit our [Cortex XSOAR Developer Docs](https://xsoar.pan
 
 The following figures show an example of a Reveal(x) detection and the resulting incident and workflows in Cortex XSOAR.
 
-![ExtraHop detection card](binary_files/ExtraHop_Detection_CVE-2019-0708_BlueKeep.png)
+![ExtraHop detection card](readme_images/ExtraHop_Detection_CVE-2019-0708_BlueKeep.png)
 
 *Figure 1. Reveal(x) detection card for CVE-2019-0708 RDP Exploit Attempt*
 
-![Cortex XSOAR incident summary](binary_files/ExtraHop_Demisto_Incident_CVE-2019-0708_BlueKeep.png)
+![Cortex XSOAR incident summary](readme_images/ExtraHop_Demisto_Incident_CVE-2019-0708_BlueKeep.png)
 
 *Figure 2. Cortex XSOAR incident summary for CVE-2019-0708 RDP Exploit Attempt*
 
-![Cortex XSOAR playbook: ExtraHop Default](binary_files/ExtraHop_Default.png)
+![Cortex XSOAR playbook: ExtraHop Default](readme_images/ExtraHop_Default.png)
 
 *Figure 3. Reveal(x) Default playbook to set up ticket tracking and run the BlueKeep playbook*
 
-![Cortex XSOAR playbook: ExtraHop CVE-2019-0708 BlueKeep](binary_files/ExtraHop_CVE-2019-0708_BlueKeep.png)
+![Cortex XSOAR playbook: ExtraHop CVE-2019-0708 BlueKeep](readme_images/ExtraHop_CVE-2019-0708_BlueKeep.png)
 
 *Figure 4. Reveal(x) CVE-2019-0708 BlueKeep playbook to automate detailed network investigation*

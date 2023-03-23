@@ -15,4 +15,4 @@ This content pack includes the following playbook:
 
 #### Retrieve Asset Details - Lansweeper
 Get contextual information of asset based on IP/MAC from Lansweeper.
-![Retrieve Asset Details - Lansweeper](binary_files/Retrieve_Asset_Details_-_Lansweeper.png)
+![Retrieve Asset Details - Lansweeper](readme_images/Retrieve_Asset_Details_-_Lansweeper.png)

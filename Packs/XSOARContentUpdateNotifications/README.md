@@ -14,4 +14,4 @@ As part of this pack, you also get out-of-the-box Content Update Manager inciden
 
 _For more information, visit our [Content Update Manager](https://xsoar.pan.dev/docs/reference/packs/content-update-notification)._
 
-![Content_Update_Manager](binary_files/Content_Update_Manager.png)
+![Content_Update_Manager](readme_images/Content_Update_Manager.png)

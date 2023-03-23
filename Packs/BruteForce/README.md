@@ -19,4 +19,4 @@ As part of this pack, you will also get out-of-the-box Brute Force incident type
 
 _For more information, visit our  [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/playbooks/brute-force-investigation---generic)_
 
-![Brute Force Investigation - Generic](binary_files/Brute_Force_Investigation_-_Generic.png)
+![Brute Force Investigation - Generic](readme_images/Brute_Force_Investigation_-_Generic.png)

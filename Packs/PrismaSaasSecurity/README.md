@@ -8,10 +8,10 @@
 
 - **SaaS Security Incident Layout**: 
 
-    ![Saas Security Incident Layout](binary_files/Sass_Security_layout.png)
+    ![Saas Security Incident Layout](readme_images/Sass_Security_layout.png)
 
 
 - **Remediate an Asset**:
 
-    ![Asset Remediation](binary_files/Saas_Security_-_Remediate_an_asset.png)
+    ![Asset Remediation](readme_images/Saas_Security_-_Remediate_an_asset.png)
 
