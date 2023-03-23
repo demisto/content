@@ -468,7 +468,7 @@ def update_rule_group_rules(client: boto3.client,
 def connection_test(client: boto3.client) -> str:  # pragma: no cover
     """ Command to test the connection to the API"""
     try:
-        client.list_ip_sets(Scope={'scope': SCOPE_MAP[DEFAULT_SCOPE]})
+        client.list_ip_sets(Scope=SCOPE_MAP[DEFAULT_SCOPE])
     except Exception as e:
         raise DemistoException(f'Failed to execute test module. Error: {str(e)}')
 
