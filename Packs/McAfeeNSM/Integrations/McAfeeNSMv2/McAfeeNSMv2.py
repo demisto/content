@@ -2434,7 +2434,11 @@ def deploy_device_configuration_command(args: Dict, client: Client) -> PollResul
                                                                  is_GAM_Update_Required=is_gam_update_required,
                                                                  is_Sigset_Config_Push_Required=is_sigset_config_push_required,
                                                                  is_Botnet_Push_Required=is_botnet_push_required).get('RequestId')
+        if not requests_id:
+            raise DemistoException("Failed to deploy the device configuration.")
+
         args["request_id"] = requests_id
+
     status = client.check_deploy_device_configuration_request_status(device_id=device_id,
                                                                      request_id=request_id)
 
