@@ -1102,6 +1102,7 @@ def main():
     shutil.copytree(extract_destination_path, artifact_path)
     logging.info(f'THE ALL PACKS THAT FOUND IN ARTIFACT - {artifact_path=}')
     all_packs = os.listdir(artifact_path)
+    pack_exists = ''
     for pack in all_packs:
         if os.path.exists(f'{artifact_path}/{pack}'):
             if os.path.exists(f'{artifact_path}/{pack}/binary_files'):
@@ -1110,6 +1111,7 @@ def main():
                 with open(f'{artifact_path}/{pack}/binary_files/{imgs[0]}', 'rb') as f:
                     logging.info(f'{artifact_path}/{pack}/binary_files/{imgs[0]} is exists')
                     pass
+                pack_exists = f'{artifact_path}/{pack}/binary_files/{imgs[0]}'
             else:
                 logging.info(f'{artifact_path}/{pack}/binary_files does not exists in artifact - MORE-INFORMATION')
         else:
@@ -1126,22 +1128,27 @@ def main():
         list(filter(lambda x: x.name in pack_names_to_upload, all_content_packs))
 
     diff_files_list = content_repo.commit(current_commit_hash).diff(content_repo.commit(previous_commit_hash))
-
+    if not os.path.exists(pack_exists):
+        logging.info("THE ARTIFACT REMOVED 0")
     # taking care of private packs
     is_private_content_updated, private_packs, updated_private_packs_ids = handle_private_content(
         index_folder_path, private_bucket_name, extract_destination_path, storage_client, pack_names_to_upload, storage_base_path
     )
-
+    if not os.path.exists(pack_exists):
+        logging.info("THE ARTIFACT REMOVED 1")
     if not override_all_packs:
         check_if_index_is_updated(index_folder_path, content_repo, current_commit_hash, previous_commit_hash,
                                   storage_bucket, is_private_content_updated)
-
+    if not os.path.exists(pack_exists):
+        logging.info("THE ARTIFACT REMOVED 2")
     # initiate the statistics handler for marketplace packs
     statistics_handler = StatisticsHandler(service_account, index_folder_path)
-
+    if not os.path.exists(pack_exists):
+            logging.info("THE ARTIFACT REMOVED 3")
     # clean index and gcs from non existing or invalid packs
     clean_non_existing_packs(index_folder_path, private_packs, storage_bucket, storage_base_path, all_content_packs, marketplace)
-
+    if not os.path.exists(pack_exists):
+        logging.info("THE ARTIFACT REMOVED 4")
     # packs that depends on new packs that are not in the previous index.zip
     packs_with_missing_dependencies = []
 
@@ -1165,7 +1172,8 @@ def main():
             continue
         else:
             packs_for_current_marketplace_dict[pack.name] = pack
-
+    if not os.path.exists(pack_exists):
+        logging.info("THE ARTIFACT REMOVED 5")
     # iterating over packs that are for this current marketplace
     # we iterate over all packs (and not just for modified packs) for several reasons -
     # 1. we might need the info about this pack if a modified pack is dependent on it.
@@ -1280,7 +1288,8 @@ def main():
         pack.status = PackStatus.SUCCESS.name
 
     logging.info(f"packs_with_missing_dependencies: {[pack.name for pack in packs_with_missing_dependencies]}")
-
+    if not os.path.exists(pack_exists):
+        logging.info("THE ARTIFACT REMOVED 6")
     # Going over all packs that were marked as missing dependencies,
     # updating them with the new data for the new packs that were added to the index.zip
     for pack in packs_with_missing_dependencies:
@@ -1303,10 +1312,13 @@ def main():
 
         pack.status = PackStatus.SUCCESS.name
 
+    if not os.path.exists(pack_exists):
+        logging.info("THE ARTIFACT REMOVED 7")
     # upload core packs json to bucket
     create_corepacks_config(storage_bucket, build_number, index_folder_path,
                             os.path.dirname(packs_artifacts_path), storage_base_path, marketplace)
-
+    if not os.path.exists(pack_exists):
+        logging.info("THE ARTIFACT REMOVED 8")
     prepare_index_json(index_folder_path=index_folder_path,
                        build_number=build_number,
                        private_packs=private_packs,
