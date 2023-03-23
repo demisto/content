@@ -1,26 +1,81 @@
 {
- "autorun": false,
- "closureScript": "",
- "color": "#e55100",
- "days": 0,
- "daysR": 0,
- "default": false,
- "disabled": false,
- "hours": 0,
- "hoursR": 0,
- "id": "ExtraHop Detection",
- "locked": false,
- "name": "ExtraHop Detection",
- "playbookId": "ExtraHop - Default",
- "preProcessingScript": "",
- "readonly": false,
- "reputationCalc": 2,
- "sortValues": null,
- "system": false,
- "version": -1,
- "weeks": 0,
- "weeksR": 0,
- "layout": "ExtraHop Detection",
- "fromVersion": "5.0.0",
- "marketplaces": ["xsoar"]
+    "id": "ExtraHop Detection",
+    "version": -1,
+    "vcShouldIgnore": false,
+    "locked": false,
+    "name": "ExtraHop Detection",
+    "prevName": "ExtraHop Detection",
+    "color": "#54CEC7",
+    "playbookId": "ExtraHop - Default",
+    "hours": 0,
+    "days": 0,
+    "weeks": 0,
+    "hoursR": 0,
+    "daysR": 0,
+    "weeksR": 0,
+    "system": false,
+    "readonly": false,
+    "default": false,
+    "autorun": true,
+    "disabled": false,
+    "reputationCalc": 0,
+    "onChangeRepAlg": 0,
+    "layout": "ExtraHop Detection",
+    "detached": false,
+    "extractSettings": {
+			"mode": "Specific",
+			"fieldCliNameToExtractSettings": {
+				"assigneduser": {
+					"extractAsIsIndicatorTypeId": "",
+					"isExtractingAllIndicatorTypes": true,
+					"extractIndicatorTypesIDs": []
+				},
+				"categories": {
+					"extractAsIsIndicatorTypeId": "",
+					"isExtractingAllIndicatorTypes": true,
+					"extractIndicatorTypesIDs": []
+				},
+				"extrahoprevealxdetectiondevices": {
+					"extractAsIsIndicatorTypeId": "",
+					"isExtractingAllIndicatorTypes": true,
+					"extractIndicatorTypesIDs": []
+				},
+				"extrahoprevealxdetectionparticipants": {
+					"extractAsIsIndicatorTypeId": "",
+					"isExtractingAllIndicatorTypes": true,
+					"extractIndicatorTypesIDs": []
+				},
+				"extrahoprevealxdetectionstatus": {
+					"extractAsIsIndicatorTypeId": "",
+					"isExtractingAllIndicatorTypes": true,
+					"extractIndicatorTypesIDs": []
+				},
+				"extrahoprevealxdetectiontype": {
+					"extractAsIsIndicatorTypeId": "",
+					"isExtractingAllIndicatorTypes": true,
+					"extractIndicatorTypesIDs": []
+				},
+				"extrahoprevealxmitretactics": {
+					"extractAsIsIndicatorTypeId": "",
+					"isExtractingAllIndicatorTypes": true,
+					"extractIndicatorTypesIDs": []
+				},
+				"extrahoprevealxmitretechniques": {
+					"extractAsIsIndicatorTypeId": "",
+					"isExtractingAllIndicatorTypes": true,
+					"extractIndicatorTypesIDs": []
+				},
+				"extrahoprevealxproperties": {
+					"extractAsIsIndicatorTypeId": "",
+					"isExtractingAllIndicatorTypes": true,
+					"extractIndicatorTypesIDs": []
+				},
+				"extrahoprevealxresolution": {
+					"extractAsIsIndicatorTypeId": "",
+					"isExtractingAllIndicatorTypes": true,
+					"extractIndicatorTypesIDs": []
+				}
+			}
+		},
+    "fromVersion": "5.0.0"
 }
