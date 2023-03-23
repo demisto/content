@@ -1496,7 +1496,7 @@ def get_issue_fields_for_update(issue_args: Dict[str, str], issue_update_mapper:
         issue_fields |= create_update_dict_from_dotted_string(
             issue_fields=issue_fields, dotted_string=dotted_string, update_key=update_key, value=parsed_value or value,
             action=action)
-    print(issue_fields)
+    # print(issue_fields)
     return issue_fields
 
 
@@ -3126,8 +3126,8 @@ def get_comments_bodies_for_fetched_and_mirrored_incident(client: JiraBaseClient
             comment_body = extract_comment_entry_from_raw_response(comment_response).get('Comment', '')
             if incident_modified_date:
                 if (updated_date := comment_response.get('updated')) \
-                        and (comment_created_date := dateparser.parse(updated_date)):
-                    if comment_created_date > incident_modified_date:
+                        and (comment_updated_date := dateparser.parse(updated_date)):
+                    if comment_updated_date > incident_modified_date:
                         comment_entries.append(comment_body)
             else:
                 comment_entries.append(comment_body)
@@ -3214,7 +3214,7 @@ def create_incident_from_issue(client: JiraBaseClient, issue: Dict[str, Any], fe
 
     severity = get_jira_issue_severity(issue_field_priority=demisto.get(issue, 'fields.priority') or {})
 
-    file_names: list = []
+    attachments: list = []
     if fetch_attachments:
         demisto.debug('Fetching attachments')
         attachment_ids: List[str] = [attachment.get('id', '') for attachment in (demisto.get(issue, 'fields.attachment') or [])]
@@ -3223,7 +3223,7 @@ def create_incident_from_issue(client: JiraBaseClient, issue: Dict[str, Any], fe
             client=client,
             attachments_metadata=demisto.get(issue, 'fields.attachment') or [],
         )
-        file_names.extend(
+        attachments.extend(
             {
                 'path': attachment_entry.get('FileID', ''),
                 'name': attachment_entry.get('File', ''),
@@ -3253,7 +3253,7 @@ def create_incident_from_issue(client: JiraBaseClient, issue: Dict[str, Any], fe
         "labels": labels,
         "details": issue_description,
         "severity": severity,
-        "attachment": file_names,
+        "attachment": attachments,
         "rawJSON": json.dumps(issue)
     }
 
@@ -3374,6 +3374,8 @@ def get_remote_data_command(client: JiraBaseClient, args: Dict[str, Any],
     parsed_args = GetRemoteDataArgs(args)
     try:
         issue_id = parsed_args.remote_incident_id
+        demisto.debug(f'Performing get-remote-data command with incident id: {issue_id} '
+                      f'and last_update: {parsed_args.last_update}')
         # Get raw response for issue ID
         issue_raw_response = client.get_issue(issue_id_or_key=issue_id)
         issue_description: str = JiraIssueFieldsParser.get_description_context(issue_raw_response).get('Description') or ''
@@ -3389,7 +3391,6 @@ def get_remote_data_command(client: JiraBaseClient, args: Dict[str, Any],
         remove_empty_custom_fields(issue=issue_raw_response,
                                    issue_fields_id_to_name_mapping=issue_raw_response.get('names', {}) or {})
         demisto.debug(f'Got remote data for incident {issue_id}')
-        demisto.info('')
         # issue_modified_date: Timestamp of the last updated time of the issue in Jira
         # incident_modified_date: Timestamp of the last updated time of the incident in XSOAR
         #
@@ -3397,7 +3398,6 @@ def get_remote_data_command(client: JiraBaseClient, args: Dict[str, Any],
         # by using the walrus operator (:=).
         if (issue_modified_date := dateparser.parse(demisto.get(issue_raw_response, 'fields.updated'))) \
                 and (incident_modified_date := dateparser.parse(parsed_args.last_update)):
-            print(issue_modified_date)
             demisto.debug(f"Issue modified date in Jira: {issue_modified_date}")
             demisto.debug(f"Incident modified date: {incident_modified_date}")
             # Update incident only if issue modified in Jira is after the last update time of the incident
