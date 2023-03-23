@@ -3,7 +3,7 @@
     "feed": false,
     "id": "Darktrace AI Analyst",
     "mapping": {
-        "Darktrace AI Analyst": {
+        "Darktrace AI Analyst Event": {
             "dontMapEventToLabels": false,
             "internalMapping": {
                 "Darktrace AI Analyst Associated Devices": {
@@ -46,16 +46,17 @@
                     }
                 },
                 "Darktrace AI Analyst Related Model Breaches": {
-                    "complex": {
-                        "filters": [],
-                        "root": "modelBreaches",
-                        "transformers": [
-                            {
-                                "operator": "ConvertKeysToTableFieldFormat"
-                            }
-                        ]
-                    }
-                },
+					"complex": {
+						"accessor": "0",
+						"filters": [],
+						"root": "modelBreaches",
+						"transformers": [
+							{
+								"operator": "ConvertKeysToTableFieldFormat"
+							}
+						]
+					}
+				},
                 "Darktrace AI Analyst Score": {
                     "complex": {
                         "filters": [],

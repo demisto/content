@@ -3,7 +3,7 @@
     "feed": false,
     "id": "Darktrace Model Breach",
     "mapping": {
-        "Darktrace Model Breach": {
+        "Darktrace Model Breach Alert": {
             "dontMapEventToLabels": false,
             "internalMapping": {
                 "Darktrace Comment Count": {

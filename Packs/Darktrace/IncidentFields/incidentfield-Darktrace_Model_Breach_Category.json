@@ -19,7 +19,8 @@
     "hidden": false,
     "openEnded": false,
     "associatedTypes": [
-        "Darktrace Model Breach"
+        "Darktrace Model Breach",
+        "Darktrace Model Breach Alert"
     ],
     "associatedToAll": false,
     "unmapped": false,

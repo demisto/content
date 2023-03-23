@@ -50,7 +50,7 @@ tasks:
       - "5"
     scriptarguments:
       eventId:
-        simple: ${incident.labels.event-id}
+        simple: ${incident.labels.eventId}
     separatecontext: false
     view: |-
       {
@@ -112,7 +112,7 @@ tasks:
       - "7"
     scriptarguments:
       eventId:
-        simple: ${incident.labels.event-id}
+        simple: ${incident.labels.eventId}
     separatecontext: false
     view: |-
       {
@@ -282,7 +282,7 @@ tasks:
       - "3"
     scriptarguments:
       eventId:
-        simple: ${incident.labels.event-id}
+        simple: ${incident.labels.eventId}
     separatecontext: false
     view: |-
       {
