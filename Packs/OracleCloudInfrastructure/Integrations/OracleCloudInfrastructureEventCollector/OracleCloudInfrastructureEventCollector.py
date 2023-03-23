@@ -48,7 +48,7 @@ class Client(BaseClient):
         """
         config = {
             'user': user_ocid,
-            'key_content': private_key,
+            'key_content': self.validate_private_key_syntax(private_key),
             'fingerprint': key_fingerprint,
             'tenancy': tenancy_ocid,
             'region': region
@@ -63,8 +63,8 @@ class Client(BaseClient):
             config (Dict[str, str]): A config dict that can be used to create clients.
 
         Raises:
-            DemistoException: if the region is not valid.
-            DemistoException: if the config  dictionary is invalid.
+            DemistoException: If the region is not valid.
+            DemistoException: If the config  dictionary is invalid.
 
         Returns:
             bool: True if the config dictionary is valid, False otherwise.
@@ -81,6 +81,43 @@ class Client(BaseClient):
                 exception=e,
             ) from e
         return True
+
+    def validate_private_key_syntax(self, private_key_parameter: str) -> str:
+        """Validate private key parameter syntax.
+        The Private Key parameter needs to be provided to the OCI SDK config object in a specific format.
+        The most common way to obtain the private key is to download a .pem file from the OCI console.
+        If copied from a .pem file, the private key parameter may contain unnecessary spaces.
+        Further more, since the format uses \n as part of the key,
+        passing this value as a configuration parameter may result in escaped \n characters.
+
+        This function will preform the following actions on the private key parameter:
+            - Unescape the string.
+            - Remove unnecessary spaces in the string.
+
+        Example:
+        Raw Private Key parameter: -----BEGIN PRIVATE KEY-----\\n\n THIS-IS-A\\n\n PRIVATE-KEY\\n\n -----END PRIVATE KEY-----
+        Output: -----BEGIN PRIVATE KEY-----\nTHIS-IS-A\nPRIVATE-KEY\n-----END PRIVATE KEY-----
+
+        Args:
+            private_key (str): Private Key parameter.
+
+        Returns:
+            str: Private Key parameter unescaped and spaceless.
+        """
+        private_key = stringUnEscape(private_key_parameter)
+        private_key = private_key.replace('\n\n', '\n')
+
+        if ' ' not in private_key:
+            return private_key
+
+        prefix = '-----BEGIN PRIVATE KEY-----\n'
+        postfix = '\n-----END PRIVATE KEY-----'
+
+        private_key = private_key.replace(prefix, '').replace(postfix, '')
+
+        private_key_sections = private_key.strip().split(' ')
+        striped_private_key = ''.join(private_key_sections)
+        return prefix + striped_private_key + postfix
 
 
 ''' OCI Event Handler Class '''

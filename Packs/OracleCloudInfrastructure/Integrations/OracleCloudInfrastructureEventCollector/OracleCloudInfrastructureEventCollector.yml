@@ -84,7 +84,7 @@ script:
     description: Gets events from Oracle Cloud Infrastructure.
     execution: false
     name: oracle-cloud-infrastructure-get-events
-  dockerimage: demisto/python3:3.10.5.31928
+  dockerimage: devdemisto/oci:1.0.0.50665
   isfetchevents: true
   runonce: false
   script: '-'
