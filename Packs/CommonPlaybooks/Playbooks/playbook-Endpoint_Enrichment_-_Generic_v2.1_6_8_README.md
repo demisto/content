@@ -1,10 +1,10 @@
 Enrich an endpoint by hostname using one or more integrations.
 Supported integrations:
 - Active Directory Query v2
-- McAfee ePolicy Orchestrator
-- Carbon Black Enterprise Response v2
+- McAfee ePO v2
+- VMware Carbon Black EDR v2
 - Cylance Protect v2
-- CrowdStrike Falcon Host
+- CrowdStrike Falcon
 - ExtraHop Reveal(x)
 
 - Endpoint reputation using !endpoint command
@@ -19,10 +19,10 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Integrations
 
-* McAfee ePO v2
-* carbonblack-v2
-* epo
 * Active Directory Query v2
+* CrowdstrikeFalcon
+* McAfee ePO v2
+* VMware Carbon Black EDR v2
 
 ### Scripts
 
@@ -30,12 +30,10 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Commands
 
-* endpoint
-* cs-device-details
-* cb-sensor-info
-* extrahop-device-search
-* cs-device-search
 * ad-get-computer
+* endpoint
+* cs-falcon-search-device
+* extrahop-device-search
 * epo-find-system
 
 ## Playbook Inputs
@@ -94,15 +92,25 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | Endpoint.IsIsolated | The endpoint isolation status. | unknown |
 | Endpoint.MACAddress | The endpoint MAC address. | unknown |
 | Endpoint.Vendor | The integration name of the endpoint vendor. | unknown |
-| ActiveDirectory.Computers | The information about the hostname that was enriched using Active Directory. | unknown |
+| Endpoint.Relationships | The endpoint relationships of the endpoint that was enriched. | unknown |
+| Endpoint.Processor | The model of the processor. | unknown |
+| Endpoint.Processors | The number of processors. | unknown |
+| Endpoint.Memory | Memory on this endpoint. | unknown |
+| Endpoint.Model | The model of the machine or device. | unknown |
+| Endpoint.BIOSVersion | The endpoint's BIOS version. | unknown |
+| Endpoint.OSVersion | The endpoint's operation system version. | unknown |
+| Endpoint.DHCPServer | The DHCP server of the endpoint. | unknown |
+| McAfee.ePO.Endpoint | The endpoint that was enriched. | unknown |
+| Endpoint.Groups | Groups for which the computer is listed as a member. | unknown |
+| ActiveDirectory.ComputersPageCookie | An opaque string received in a paged search, used for requesting subsequent entries. | unknown |
 | ActiveDirectory.Computers.dn | The computer distinguished name. | unknown |
 | ActiveDirectory.Computers.memberOf | Groups for which the computer is listed. | unknown |
 | ActiveDirectory.Computers.name | The computer name. | unknown |
-| Endpoint.Groups | Groups for which the computer is listed as a member. | unknown |
-| ActiveDirectory.ComputersPageCookie | An opaque string received in a paged search, used for requesting subsequent entries. | unknown |
+| CrowdStrike.Device | The information about  the endpoint. | unknown |
+| ActiveDirectory.Computers | The information about the hostname that was enriched using Active Directory. | unknown |
 
 ## Playbook Image
 
 ---
 
-![Endpoint Enrichment - Generic v2.1](../doc_files/Endpoint_Enrichment_-_Generic_v2.1.png)
+![Endpoint Enrichment - Generic v2.1](../doc_files/Endpoint_Enrichment_-_Generic_v2.1_6_8.png)
