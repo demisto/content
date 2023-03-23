@@ -117,7 +117,7 @@ script:
     - contextPath: FireMonSecurityManager.SIQL.matchId
       description: Resposne for the SIQL query
       type: Unknown
-  dockerimage: demisto/python3:3.10.10.48392
+  dockerimage: demisto/python3:3.10.10.49934
   isfetch: true
   runonce: false
   script: ''
