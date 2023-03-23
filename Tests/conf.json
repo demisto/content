@@ -117,6 +117,13 @@
             "timeout": 300
         },
         {
+            "integrations": "McAfeeNSMv2",
+            "playbookID": "Test_McAfeeNSMv2_using_v10",
+            "fromversion": "6.5.0",
+            "memory_threshold": 200,
+            "timeout": 300
+        },
+        {
             "playbookID": "Generic Polling Test",
             "timeout": 250
         },
