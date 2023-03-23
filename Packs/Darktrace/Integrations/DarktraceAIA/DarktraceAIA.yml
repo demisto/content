@@ -229,7 +229,7 @@ script:
     - contextPath: Darktrace.AIAnalyst.groupCategory
       description: Group category
       type: String
-  dockerimage: demisto/python3:3.10.10.49934
+  dockerimage: demisto/python3:3.10.10.50695
   feed: false
   isfetch: true
   longRunning: false
