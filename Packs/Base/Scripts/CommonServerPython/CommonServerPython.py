@@ -7258,11 +7258,11 @@ def append_metrics(execution_metrics, results):
 def convert_dict_values_bytes_to_str(input_dict: dict):  # type: ignore
     """
     Converts byte dict values to str
-    Args:
-        input_dict: given dictionary
+    :type input_dict: ``dict``
+    :param input_dict: dict to converts its values.
 
-    Returns:
-    Dictionary contains str instead of bytes
+    :return: dict contains str instead of bytes.
+    :rtype: ``dict``
     """
     output_dict = {}
     for key, value in input_dict.items():
