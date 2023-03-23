@@ -14,18 +14,18 @@ args:
   required: false
   secret: false
 - default: false
-  description: The desired height for resizing the image to.
+  description: The desired height for resizing the image to. For example':' image_resize_width=500
   isArray: false
   name: image_resize_height
   required: false
   secret: false
 - default: false
-  description: The entryID of the file to process.
+  description: The entryID of the file to process. For example':' image_resize_height=1000
   isArray: false
   name: file_entry_id
   required: true
   secret: false
-comment: This script pre-process an image file from context.
+comment: This script pre-process(resize, sharpen and grayscale ) an image file from context, given an entry_id.
 commonfields:
   id: PreProcessImage
   version: -1
