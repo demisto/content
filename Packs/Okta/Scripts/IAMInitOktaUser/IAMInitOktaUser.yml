@@ -23,6 +23,13 @@ args:
   description: The Okta username of the user.
 - name: displayname
   description: The display name of the employee.
+- auto: PREDEFINED
+  name: temporary_password
+  description: When true, you'll need to change the password in the next login.
+  defaultValue: 'false'
+  predefined:
+    - 'true'
+    - 'false'
 - name: to_email
   required: true
   description: The email address that the password will be sent to.
@@ -73,7 +80,7 @@ outputs:
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/py3-tools:1.0.0.49929
+dockerimage: demisto/py3-tools:1.0.0.50499
 runas: DBotWeakRole
 fromversion: 6.5.0
 tests:
