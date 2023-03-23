@@ -101,5 +101,5 @@
     "name": "Darktrace AI Analyst",
     "type": "mapping-incoming",
     "version": -1,
-    "fromVersion": "6.8.0"
+    "fromVersion": "6.6.0"
 }

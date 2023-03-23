@@ -485,4 +485,4 @@ outputs: []
 description: Runs a common AI Analyst workflow for fetched AI Analyst events.
 tests:
 - No tests (auto formatted)
-fromversion: 6.8.0
+fromversion: 6.6.0

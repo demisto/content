@@ -353,6 +353,6 @@
     "name": "Darktrace AI Analyst Incident Layout",
     "system": false,
     "version": -1,
-    "fromVersion": "6.8.0",
+    "fromVersion": "6.6.0",
     "marketplaces": ["xsoar"]
 }
