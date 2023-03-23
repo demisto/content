@@ -114,7 +114,7 @@ def download_readme_images_from_url_data_list(readme_urls_data_list: list, artif
             download_readme_image_from_url_and_upload_to_gcs(readme_original_url,
                                                              gcs_storage_path,
                                                              image_name, storage_bucket)
-        elif readme_original_url.startswith('binary_files'):
+        elif readme_original_url.startswith('readme_images'):
             extracting_readme_image_from_pack_and_upload_to_gcs(artifacts_path,
                                                                 gcs_storage_path,
                                                                 readme_original_url,

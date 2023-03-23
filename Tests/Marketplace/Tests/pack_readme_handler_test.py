@@ -117,7 +117,7 @@ def test_download_readme_images_from_url_data_list(mocker):
             'pack_name': 'TestPack'
         }, {'download': True, 'extract': False}),
         ({
-            'original_read_me_url': 'binary_files/test.png',
+            'original_read_me_url': 'readme_images/test.png',
             'new_gcs_image_path': Path('readme_images/test.png'),
             'image_name': 'test-test.png',
             'pack_name': 'TestPack'
