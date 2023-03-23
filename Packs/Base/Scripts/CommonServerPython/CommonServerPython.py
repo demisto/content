@@ -43,7 +43,7 @@ _MODULES_LINE_MAPPING = {
     'CommonServerPython': {'start': __line__() - 43, 'end': float('inf')},
 }
 
-IDEAL_XSIAM_FILE_SIZE = 2**20
+XSIAM_EVENT_CHUNK_SIZE = 2 ** 20 # 1 Mib
 
 
 def register_module_line(module_name, start_end, line, wrapper=0):
@@ -10861,13 +10861,13 @@ def round_up(x):
 
 
 def is_zipped_data_size_ideal(zipped_data):
-    return sys.getsizeof(zipped_data) <= IDEAL_XSIAM_FILE_SIZE
+    return sys.getsizeof(zipped_data) <= XSIAM_EVENT_CHUNK_SIZE
 
 
-def split_xsiam_events(data, size_of_zipped_data):
-    number_of_list = round_up(size_of_zipped_data / IDEAL_XSIAM_FILE_SIZE)
+def split_xsiam_events_to_chunks(data, size_of_zipped_data):
+    num_of_sub_lists = round_up(size_of_zipped_data / XSIAM_EVENT_CHUNK_SIZE)
     data_list = str.split(data, '\n') if isinstance(data, str) else data
-    chunk_size = round_up(len(data_list) / number_of_list)
+    chunk_size = round_up(len(data_list) / num_of_sub_lists)
     return [
         data_list[i: i + chunk_size]
         for i in range(0, len(data_list), chunk_size)
@@ -10981,20 +10981,14 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
 
     zipped_data = gzip.compress(data.encode('utf-8'))  # type: ignore[AttributeError,attr-defined]
     client = BaseClient(base_url=xsiam_url)
-    if is_zipped_data_size_ideal(zipped_data):
+    data_chunks = split_xsiam_events_to_chunks(data, sys.getsizeof(zipped_data))
+    for data_chunk in data_chunks:
+        amount_of_events = len(data_chunk)
+        data_chunk = '\n'.join(data_chunk)
+        zipped_data = gzip.compress(data_chunk.encode('utf-8'))  # type: ignore[AttributeError,attr-defined]
         send_to_xsiam_with_retries(client, events_error_handler, header_msg, headers, num_of_attempts, xsiam_url,
                                    zipped_data)
         demisto.updateModuleHealth({'eventsPulled': amount_of_events})
-    else:
-        demisto.info(f'will split data to chunks of {IDEAL_XSIAM_FILE_SIZE} to send to XSIAM server.')
-        data_chunks = split_xsiam_events(data, sys.getsizeof(zipped_data))
-        for data_chunk in data_chunks:
-            amount_of_events = len(data_chunk)
-            data_chunk = '\n'.join(data_chunk)
-            zipped_data = gzip.compress(data_chunk.encode('utf-8'))  # type: ignore[AttributeError,attr-defined]
-            send_to_xsiam_with_retries(client, events_error_handler, header_msg, headers, num_of_attempts, xsiam_url,
-                                       zipped_data)
-            demisto.updateModuleHealth({'eventsPulled': amount_of_events})
 
 
 def send_to_xsiam_with_retries(client, events_error_handler, header_msg, headers, num_of_attempts, xsiam_url,
