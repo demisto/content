@@ -1806,7 +1806,7 @@ def prepare_args(command, args):
             'body': email_body,
             'body_type': args.get('bodyType', 'html'),
             'flag': args.get('flag', 'notFlagged'),
-            'importance': args.get('importance', 'Low'),
+            'importance': args.get('importance', 'Normal'),
             'internet_message_headers': argToList(args.get('headers')),
             'attach_ids': argToList(args.get('attachIDs')),
             'attach_names': argToList(args.get('attachNames')),
