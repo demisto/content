@@ -1,0 +1,14 @@
+{
+    "RegexPatternSet": {
+        "Name": "name",
+        "Id": "id",
+        "ARN": "arn",
+        "Description": "description",
+        "RegularExpressionList": [
+            {
+                "RegexString": "regex_pattern"
+            }
+        ]
+    },
+    "LockToken": "lockToken"
+}
