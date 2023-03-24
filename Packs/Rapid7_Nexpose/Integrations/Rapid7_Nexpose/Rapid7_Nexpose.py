@@ -27,6 +27,7 @@ class ScanStatus(Enum):
 
 class FlexibleEnum(EnumMeta):
     """A custom EnumMeta to allow flexible conversion from strings to Enum."""
+
     def __getitem__(self, item: Any):
         try:
             return super().__getitem__(item)
@@ -472,7 +473,7 @@ class Client(BaseClient):
             resp_type="json",
         )
 
-    def get_site_included_targets(self, site_id: int) -> dict:
+    def get_site_included_targets(self, site_id: str) -> dict:
         """
         | Retrieves the included targets in a static site.
         |
@@ -491,7 +492,7 @@ class Client(BaseClient):
             resp_type="json"
         )
 
-    def update_site_included_targets(self, site_id: int, targets: list) -> dict:
+    def update_site_included_targets(self, site_id: str, targets: list) -> dict:
         """
         | Updates the included targets in a static site.
         |
@@ -2331,7 +2332,6 @@ def create_report(client: Client, scope: dict[str, Any], template_id: str | None
 
 
 def find_asset_last_scan_data(asset_data: dict) -> tuple[str, str]:
-
     """
     Find the date and ID for the last scan of an asset.
 
@@ -3152,7 +3152,7 @@ def update_site_included_targets(client: Client, site_id: str | None = None, sit
         client=client,
     )
 
-    targets = targets.split(',')
+    targets = argToList(targets)
 
     client.update_site_included_targets(
         site_id=site.id, targets=targets
@@ -5624,4 +5624,3 @@ def main():  # pragma: no cover
 
 if __name__ in ("__main__", "builtin", "builtins"):   # pragma: no cover
     main()
-
