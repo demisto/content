@@ -618,7 +618,7 @@ def test_number_of_file_types():
 
         - Removed type:    Decrease the number here.
     """
-    assert len(FileType) == 76
+    assert len(FileType) == 77
 
 
 @pytest.mark.parametrize(
