@@ -42,7 +42,7 @@ configuration:
   required: false
   type: 0
   section: Collect
-description: '[Get alerts from Stamus Security Platform and build incidents. Then get related artifacts, events and host insight information]'
+description: '[Get Declaration of Compromises from Stamus Security Platform and build Incidents. Then get related artifacts, events and Host Insight information]'
 display: 'Stamus'
 name: Stamus
 script:
@@ -91,7 +91,7 @@ script:
       required: true
       secret: false
     deprecated: false
-    description: '[Get events for a Declaration of Compromise using the Stamus ID.]'
+    description: '[Get events for a Declaration of Compromise using the Stamus ID]'
     execution: false
     name: Stamus-Get-DoC-Events
     outputs:
