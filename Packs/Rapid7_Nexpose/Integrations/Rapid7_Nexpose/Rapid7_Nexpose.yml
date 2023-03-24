@@ -264,10 +264,18 @@ script:
       description: A specific page to retrieve when pagination is used. Page indexing starts at 0.
       isArray: false
       name: page
-    - description: A number of records to limit the response to.
+      required: false
+      secret: false
+    - default: false
+      description: A number of records to limit the response to.
+      isArray: false
       name: limit
+      required: false
+      secret: false
       defaultValue: '10'
-    - description: 'Criteria to sort the records by, in the format: property[,ASC|DESC]. If not specified, default sort order is ascending. Multiple sort criteria can be specified, separated by a ";" separator. For example: "riskScore,DESC;hostName,ASC".'
+    - default: false
+      description: 'Criteria to sort the records by, in the format: property[,ASC|DESC]. If not specified, default sort order is ascending. Multiple sort criteria can be specified, separated by a ";" separator. For example: "riskScore,DESC;hostName,ASC".'
+      isArray: false
       name: sort
       required: false
       secret: false
@@ -419,7 +427,10 @@ script:
       isArray: false
       name: id
       required: true
-    - description: "ID of a vulnerability to search for. Example: 7-zip-cve-2008-6536"
+      secret: false
+    - default: false
+      description: "ID of a vulnerability to search for. Example: 7-zip-cve-2008-6536"
+      isArray: false
       name: vulnerabilityId
       required: true
       secret: false
@@ -509,16 +520,23 @@ script:
       isArray: false
       name: name
       required: true
-    - description: Site assignment configuration for the credential. Assign the shared scan credential either to be available to all sites, or a specific list of sites.
+      secret: false
+    - default: false
+      description: Site assignment configuration for the credential. Assign the shared scan credential either to be available to all sites, or a specific list of sites.
+      isArray: false
       name: site_assignment
       required: true
+      secret: false
       auto: PREDEFINED
       predefined:
       - All-Sites
       - Specific-Sites
-    - description: Credential service type.
+    - default: false
+      description: Credential service type.
+      isArray: false
       name: service
       required: true
+      secret: false
       auto: PREDEFINED
       predefined:
       - AS400
@@ -541,7 +559,9 @@ script:
       - SSH-Key
       - Sybase
       - Telnet
-    - description: Database name.
+    - default: false
+      description: Database name.
+      isArray: false
       name: database
       required: false
       secret: false
@@ -705,7 +725,10 @@ script:
       description: Username for the credential.
       isArray: false
       name: username
+      required: false
+    deprecated: false
     description: "Create a new shared credential. For detailed explanation of all parameters of this command, see: https://help.rapid7.com/insightvm/en-us/api/index.html#operation/createSharedCredential"
+    execution: false
     name: nexpose-create-shared-credential
     outputs:
     - contextPath: Nexpose.SharedCredential.id
@@ -762,7 +785,11 @@ script:
       description: The date and time the vulnerability exception is set to expire in ISO 8601 date format.
       isArray: false
       name: expires
-    - description: "ID of the vulnerability to create the exception for. Example: 7-zip-cve-2008-6536"
+      required: false
+      secret: false
+    - default: false
+      description: "ID of the vulnerability to create the exception for. Example: 7-zip-cve-2008-6536"
+      isArray: false
       name: vulnerability_id
       required: true
       secret: false
@@ -824,12 +851,17 @@ script:
     - contextPath: Nexpose.VulnerabilityException.id
       description: ID of the generated vulnerability exception.
       type: number
-  - description: Delete an asset.
+  - deprecated: false
+    description: Delete an asset.
+    execution: false
     name: nexpose-delete-asset
     arguments:
-    - description: ID of the asset to delete.
+    - default: false
+      description: ID of the asset to delete.
+      isArray: false
       name: id
       required: true
+      secret: false
   - arguments:
     - default: false
       description: ID of the site to delete
@@ -859,7 +891,10 @@ script:
       isArray: false
       name: id
       required: true
+      secret: false
+    deprecated: false
     description: "Beta Command\n\nDelete a shared credential."
+    execution: false
     name: nexpose-delete-shared-credential
   - arguments:
     - default: false
@@ -879,7 +914,10 @@ script:
       isArray: false
       name: credential_id
       required: true
+      secret: false
+    deprecated: false
     description: "Beta Command\n\nDelete a site scan credential."
+    execution: false
     name: nexpose-delete-site-scan-credential
   - arguments:
     - default: false
@@ -961,7 +999,9 @@ script:
     - contextPath: Nexpose.Site.LastScan
       description: The date and time of the site's last scan.
       type: date
-  - description: Returns all available report templates.
+  - deprecated: false
+    description: Returns all available report templates.
+    execution: false
     name: nexpose-get-report-templates
     outputs:
     - contextPath: Nexpose.Template.Id
@@ -976,7 +1016,6 @@ script:
     - contextPath: Nexpose.Template.Type
       description: The type of the report template. document is a templatized, typically printable, report that has various sections of content. export is data-oriented output, typically CSV. file is a printable report template using a report template file.
       type: string
-    arguments: []
   - arguments:
     - default: false
       description: ID of the site.
@@ -1108,15 +1147,29 @@ script:
   - name: nexpose-create-sites-report
     arguments:
     - name: sites
+      required: false
       description: Site IDs to create the report on. Can be a comma-separated list.
+      default: false
       isArray: true
+      secret: false
     - name: site_names
+      required: false
       description: Names of sites to create the report on. Can be a comma-separated list.
+      default: false
       isArray: true
+      secret: false
     - name: template
       description: Report template ID to use for report's creation. If not provided, the first available template will be used.
+      default: false
+      isArray: false
+      required: false
+      secret: false
     - name: name
       description: Report name
+      default: false
+      isArray: false
+      required: false
+      secret: false
     - auto: PREDEFINED
       default: false
       description: Report format (uses PDF by default).
@@ -1169,13 +1222,25 @@ script:
       description: The report format.
       type: string
     description: Generates a new report on given sites according to a template and arguments.
+    deprecated: false
+    execution: false
   - name: nexpose-create-site-scan-credential
     arguments:
     - name: site_id
+      required: false
       description: ID of the site.
+      default: false
+      isArray: false
+      secret: false
     - name: site_name
+      required: false
       description: Name of the site (can be used instead of `site_id`)
-    - description: Name of the credential.
+      default: false
+      isArray: false
+      secret: false
+    - default: false
+      description: Name of the credential.
+      isArray: false
       name: name
       required: true
       secret: false
@@ -1367,11 +1432,14 @@ script:
       description: Username for the credential.
       isArray: false
       name: username
+      required: false
     outputs:
     - contextPath: Nexpose.SiteScanCredential.id
       description: ID of the generated credential.
       type: number
     description: "Beta Command\n\nCreate a new site scan credential. For detailed explanation of all parameters of this command, see: https://help.rapid7.com/insightvm/en-us/api/index.html#operation/createSiteCredential"
+    deprecated: false
+    execution: false
   - arguments:
     - default: false
       description: ID of the scan to create a report about.
@@ -1562,7 +1630,11 @@ script:
       description: ID of the scan template to use.
       isArray: false
       name: scan_template
+      required: false
+      secret: false
+    deprecated: false
     description: "Beta Command\n\nCreate a new site scan schedule."
+    execution: false
     name: nexpose-create-scan-schedule
     outputs:
     - contextPath: Nexpose.ScanSchedule.id
@@ -1792,7 +1864,11 @@ script:
       description: A number of records to limit the response to.
       isArray: false
       name: limit
+      required: false
+      secret: false
+    deprecated: false
     description: "BetaCommand\n\nRetrieve information about scan schedules for a specific site or a specific scan schedule."
+    execution: false
     name: nexpose-list-scan-schedule
     outputs:
     - contextPath: Nexpose.ScanSchedule.assets.excludedAssetGroups.assetGroupIDs
@@ -1965,7 +2041,11 @@ script:
       description: A number of records to limit the response to.
       isArray: false
       name: limit
+      required: false
+      secret: false
+    deprecated: false
     description: "Beta Command\n\nRetrieve information about all or a specific sca credential."
+    execution: false
     name: nexpose-list-site-scan-credential
     outputs:
     - contextPath: Nexpose.SiteScanCredential.account.authenticationType
@@ -2357,6 +2437,7 @@ script:
       isArray: false
       name: credential_id
       required: true
+      secret: false
     name: nexpose-disable-shared-credential
     description: "Beta Command\n\nDisable an assigned shared credential."
   - arguments:
@@ -2418,6 +2499,7 @@ script:
       isArray: false
       name: credential_id
       required: true
+      secret: false
     name: nexpose-enable-shared-credential
     description: "Beta Command\n\nEnable an assigned shared credential."
   - arguments:
@@ -2561,7 +2643,11 @@ script:
       description: ID of the scan template to use.
       isArray: false
       name: scan_template
+      required: false
+      secret: false
+    deprecated: false
     description: "Beta Command\n\nUpdate an existing site scan schedule."
+    execution: false
     name: nexpose-update-scan-schedule
   - arguments:
     - default: false
@@ -2776,7 +2862,10 @@ script:
       description: Username for the credential.
       isArray: false
       name: username
+      required: false
+    deprecated: false
     description: "Beta Command\n\nUpdate an existing site scan credential. For detailed explanation of all parameters of this command, see: https://help.rapid7.com/insightvm/en-us/api/index.html#operation/setSiteCredentials."
+    execution: false
     name: nexpose-update-site-scan-credential
   - arguments:
     - default: false
@@ -2812,6 +2901,8 @@ script:
       - Recall
       - Approve
       - Reject
+      secret: false
+    deprecated: false
     description: Update an existing vulnerability exception.
     execution: false
     name: nexpose-update-vulnerability-exception-status
@@ -3037,33 +3128,12 @@ script:
     description: Update an existing shared credential.
     execution: false
     name: nexpose-update-shared-credential
-  - arguments:
-      - description: ID of the site.
-        name: site_id
-      - description: Name of the site (can be used instead of `site_id`)
-        name: site_name
-    description: Get site included targets
-    name: nexpose-get-site-included-targets
-    outputs:
-      - contextPath: Nexpose.SiteIncludedTargets.included_targets
-        description: List of addresses. Each address is a string that can represent either a hostname, ipv4 address, ipv4 address range, ipv6 address, or CIDR notation.
-  - arguments:
-      - description: ID of the site.
-        name: site_id
-      - description: Name of the site (can be used instead of `site_id`)
-        name: site_name
-      - description: List of addresses to be the site's new included scan targets. Each address is a string that can represent either a hostname, ipv4 address, ipv4 address range, ipv6 address, or CIDR notation.
-        name: targets
-    description: Updates the included targets in a static site.
-    name: nexpose-update-site-included-targets
-    outputs:
-    - contextPath: IncludedTargets
-      description: List of addresses. Each address is a string that can represent either a hostname, ipv4 address, ipv4 address range, ipv6 address, or CIDR notation.
+  isfetch: false
   runonce: false
-  script: ''
+  script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.10.49934
+  dockerimage: demisto/python3:3.10.10.48392
 fromversion: 5.0.0
 tests:
 - nexpose_test

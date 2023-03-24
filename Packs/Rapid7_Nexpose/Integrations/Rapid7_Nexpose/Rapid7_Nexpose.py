@@ -1,11 +1,12 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 import json
 import urllib3
 from copy import deepcopy
 from enum import Enum, EnumMeta
 from time import strptime, struct_time
 from typing import overload
+
+import demistomock as demisto
+from CommonServerPython import *
 
 
 VENDOR_NAME = "Rapid7 Nexpose"  # Vendor name to use for indicators.
@@ -27,7 +28,6 @@ class ScanStatus(Enum):
 
 class FlexibleEnum(EnumMeta):
     """A custom EnumMeta to allow flexible conversion from strings to Enum."""
-
     def __getitem__(self, item: Any):
         try:
             return super().__getitem__(item)
@@ -471,50 +471,6 @@ class Client(BaseClient):
             method="POST",
             json_data=post_data,
             resp_type="json",
-        )
-
-    def get_site_included_targets(self, site_id: str) -> dict:
-        """
-        | Retrieves the included targets in a static site.
-        |
-        | For more information see:
-            https://help.rapid7.com/insightvm/en-us/api/index.html#operation/getIncludedTargets
-
-        Args:
-            site_id (str): ID of the site to create the credential for.
-
-        Returns:
-            dict: API response with information about included targets.
-        """
-        return self._http_request(
-            url_suffix=f"/sites/{site_id}/included_targets",
-            method="GET",
-            resp_type="json"
-        )
-
-    def update_site_included_targets(self, site_id: str, targets: list) -> dict:
-        """
-        | Updates the included targets in a static site.
-        |
-        | For more information see:
-            https://help.rapid7.com/insightvm/en-us/api/index.html#operation/updateIncludedTargets
-
-        Args:
-            site_id (str): ID of the site to create the credential for.
-            targets (list): List of addresses to be the site's new included scan targets. Each
-                address is a string that can represent either a hostname, ipv4 address, ipv4
-                address range, ipv6 address, or CIDR notation.
-
-        Returns:
-            dict: API response with information about updated included targets.
-        """
-        post_data = targets
-
-        return self._http_request(
-            url_suffix=f"/sites/{site_id}/included_targets",
-            method="PUT",
-            json_data=post_data,
-            resp_type="json"
         )
 
     def create_site_scan_credential(self, site_id: str, name: str, service: CredentialService,
@@ -2332,6 +2288,7 @@ def create_report(client: Client, scope: dict[str, Any], template_id: str | None
 
 
 def find_asset_last_scan_data(asset_data: dict) -> tuple[str, str]:
+
     """
     Find the date and ID for the last scan of an asset.
 
@@ -3100,74 +3057,6 @@ def create_site_command(client: Client, name: str, description: str | None = Non
         outputs_prefix="Nexpose.Site",
         outputs_key_field="Id",
         outputs={"Id": response_data['id']},
-        raw_response=response_data,
-    )
-
-
-def get_site_included_targets(client: Client, site_id: str | None = None, site_name: str | None = None):
-    """
-    Get site included targets.
-
-    Args:
-        client (Client): Client to use for API requests.
-        site_id (str | None, optional): ID of the site to get the included targets for.
-        site_name (str | None, optional): Name of the site to get the included targets for.
-            Can be used instead of "site_id".
-    """
-    site = Site(
-        site_id=site_id,
-        site_name=site_name,
-        client=client,
-    )
-
-    response_data = client.get_site_included_targets(
-        site_id=site.id
-    )
-    included_targets = response_data['addresses'] if 'addresses' in response_data else []
-
-    return CommandResults(
-        readable_output=f"Included targets for site ID: {site.id} ->  {response_data}",
-        outputs_prefix="Nexpose.SiteIncludedTargets",
-        outputs_key_field="included_targets",
-        outputs={"included_targets": included_targets},
-        raw_response=response_data,
-    )
-
-
-def update_site_included_targets(client: Client, site_id: str | None = None, site_name: str | None = None,
-                                 targets: str | None = None):
-    """
-    Update site included targets.
-
-    Args:
-        client (Client): Client to use for API requests.
-        site_id (str | None, optional): ID of the site to update the included targets for.
-        site_name (str | None, optional): Name of the site to update the included targets for.
-            Can be used instead of "site_id".
-        targets (str | None): Comma separated list of targets to be updated.
-    """
-    site = Site(
-        site_id=site_id,
-        site_name=site_name,
-        client=client,
-    )
-
-    targets = argToList(targets)
-
-    client.update_site_included_targets(
-        site_id=site.id, targets=targets
-    )
-
-    response_data = client.get_site_included_targets(
-        site_id=site.id
-    )
-    included_targets = response_data['addresses'] if 'addresses' in response_data else []
-
-    return CommandResults(
-        readable_output=f"Included targets for site: Site Name: {site.name} Site ID: {site.id}.",
-        outputs_prefix="Nexpose.SiteIncludedTargets",
-        outputs_key_field="IncludedTargets",
-        outputs={"IncludedTargets": included_targets},
         raw_response=response_data,
     )
 
@@ -5513,10 +5402,6 @@ def main():  # pragma: no cover
             results = create_shared_credential_command(client=client, **args)
         elif command == "nexpose-create-site":
             results = create_site_command(client=client, template_id=args.pop("scanTemplateId", None), **args)
-        elif command == "nexpose-get-site-included-targets":
-            results = get_site_included_targets(client=client, **args)
-        elif command == "nexpose-update-site-included-targets":
-            results = update_site_included_targets(client=client, **args)
         elif command == "nexpose-create-sites-report":
             results = create_sites_report_command(client=client, report_format=args.pop("format", None), **args)
         elif command == "nexpose-create-site-scan-credential":
