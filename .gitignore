@@ -69,3 +69,7 @@ neo4j-data
 
 # MicroSocks (Potentially harmful)
 Packs/Whois/Integrations/Whois/test_data/microsocks
+
+# log files
+demisto_sdk_debug.log
+demisto_sdk_debug.log.*

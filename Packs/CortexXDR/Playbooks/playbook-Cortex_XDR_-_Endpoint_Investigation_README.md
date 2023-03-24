@@ -8,21 +8,27 @@ This playbook is part of the 'Malware Investigation And Response' pack. For more
  Note: The playbook inputs enable manipulating the execution flow; read the input descriptions for details.
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+
 This playbook does not use any sub-playbooks.
 
 ### Integrations
+
 * CortexXDRIR
 
 ### Scripts
+
 This playbook does not use any scripts.
 
 ### Commands
+
 * xdr-get-alerts
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
@@ -51,9 +57,28 @@ This playbook does not use any scripts.
 | RunAll | Whether to run all the sub-tasks for Mitre Tactics. | True | Optional |
 
 ## Playbook Outputs
+
 ---
-There are no outputs for this playbook.
+
+| **Path** | **Description** | **Type** |
+| --- | --- | --- |
+| PaloAltoNetworksXDR.Alert | Alerts retrieved from Cortex XDR | string |
+| PaloAltoNetworksXDR.Alert.internal_id | The unique ID of the alert. | string |
+| PaloAltoNetworksXDR.Alert.source_insert_ts | The detection timestamp | date |
+| PaloAltoNetworksXDR.Alert.alert_name | The name of the alert. | string |
+| PaloAltoNetworksXDR.Alert.severity | The severity of the alert. | string |
+| PaloAltoNetworksXDR.Alert.alert_category | The category of the alert. | string |
+| PaloAltoNetworksXDR.Alert.alert_action_status | The alert action. Possible values.<br/><br/>DETECTED: detected<br/>DETECTED_0: detected \(allowed the session\)<br/>DOWNLOAD: detected \(download\)<br/>DETECTED_19: detected \(forward\)<br/>POST_DETECTED: detected \(post detected\)<br/>PROMPT_ALLOW: detected \(prompt allow\)<br/>DETECTED_4: detected \(raised an alert\)<br/>REPORTED: detected \(reported\)<br/>REPORTED_TRIGGER_4: detected \(on write\)<br/>SCANNED: detected \(scanned\)<br/>DETECTED_23: detected \(sinkhole\)<br/>DETECTED_18: detected \(syncookie sent\)<br/>DETECTED_21: detected \(wildfire upload failure\)<br/>DETECTED_20: detected \(wildfire upload success\)<br/>DETECTED_22: detected \(wildfire upload skip\)<br/>DETECTED_MTH: detected \(xdr managed threat hunting\)<br/>BLOCKED_25: prevented \(block\)<br/>BLOCKED: prevented \(blocked\)<br/>BLOCKED_14: prevented \(block-override\)<br/>BLOCKED_5: prevented \(blocked the url\)<br/>BLOCKED_6: prevented \(blocked the ip\)<br/>BLOCKED_13: prevented \(continue\)<br/>BLOCKED_1: prevented \(denied the session\)<br/>BLOCKED_8: prevented \(dropped all packets\)<br/>BLOCKED_2: prevented \(dropped the session\)<br/>BLOCKED_3: prevented \(dropped the session and sent a tcp reset\)<br/>BLOCKED_7: prevented \(dropped the packet\)<br/>BLOCKED_16: prevented \(override\)<br/>BLOCKED_15: prevented \(override-lockout\)<br/>BLOCKED_26: prevented \(post detected\)<br/>PROMPT_BLOCK: prevented \(prompt block\)<br/>BLOCKED_17: prevented \(random-drop\)<br/>BLOCKED_24: prevented \(silently dropped the session with an icmp unreachable message to the host or application\)<br/>BLOCKED_9: prevented \(terminated the session and sent a tcp reset to both sides of the connection\)<br/>BLOCKED_10: prevented \(terminated the session and sent a tcp reset to the client\)<br/>BLOCKED_11: prevented \(terminated the session and sent a tcp reset to the server\)<br/>BLOCKED_TRIGGER_4: prevented \(on write\)<br/> | string |
+| PaloAltoNetworksXDR.Alert.alert_action_status_readable | The alert action. | string |
+| PaloAltoNetworksXDR.Alert.alert_description | The alert description. | string |
+| PaloAltoNetworksXDR.Alert.agent_ip_addresses | The host IP. | string |
+| PaloAltoNetworksXDR.Alert.agent_hostname | The host name. | string |
+| PaloAltoNetworksXDR.Alert.mitre_tactic_id_and_name | The MITRE attack tactic. | string |
+| PaloAltoNetworksXDR.Alert.mitre_technique_id_and_name | The MITRE attack technique. | string |
+| PaloAltoNetworksXDR.Alert.starred | Whether the alert is starred or not. | string |
 
 ## Playbook Image
+
 ---
+
 ![Cortex XDR - Endpoint Investigation](../doc_files/Cortex_XDR_-_Endpoint_Investigation.png)

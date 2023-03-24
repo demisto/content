@@ -86,10 +86,7 @@ configuration:
   type: 0
   section: Connect
   advanced: true
-- additionalinfo: Relevant only if the integration is running on Azure VM. 
-    If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field.
-    If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity.
-    For additional information, see the Help tab.
+- additionalinfo: Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab.
   display: Use Azure Managed Identities
   name: use_managed_identities
   required: false
@@ -626,16 +623,77 @@ script:
       type: String
     description: Lists all of the attachments of given email
     polling: true
-  - name: msgraph-mail-get-email-as-eml
+  - name: msgraph-mail-get-attachment
     arguments:
     - name: message_id
       required: true
-      description: The unique ID of the email. You cannot use the the 'MessageID' key in the form '<message-id>'.
+      description: The unique ID of the mail. You cannot use the the 'MessageID' key in the form '<message-id>'.
+      default: false
+      isArray: false
+      secret: false
+    - description: 'A comma-separated list of folder IDs, in the format: (mail_box,child_mail_box,child_mail_box).'
+      isArray: false
+      name: folder_id
+      required: false
+      default: false
+      secret: false
+    - default: false
+      description: The ID of the attachment. In case not supplied, the command will return all the attachments.
+      isArray: false
+      name: attachment_id
+      required: false
+      secret: false
     - deprecated: true
       description: flag for rate limit retry
       isArray: false
       name: ran_once_flag
       required: false
+    outputs:
+    - contextPath: File.Size
+      description: The size of the file.
+      type: Number
+    - contextPath: File.SHA1
+      description: The SHA1 hash of the file.
+      type: String
+    - contextPath: File.SHA256
+      description: The SHA256 hash of the file.
+      type: String
+    - contextPath: File.Name
+      description: The name of the file.
+      type: String
+    - contextPath: File.SSDeep
+      description: The SSDeep hash of the file.
+      type: String
+    - contextPath: File.EntryID
+      description: The entry ID of the file.
+      type: String
+    - contextPath: File.Info
+      description: File information.
+      type: String
+    - contextPath: File.Type
+      description: The file type.
+      type: String
+    - contextPath: File.MD5
+      description: The MD5 hash of the file.
+      type: String
+    - contextPath: File.Extension
+      description: The file extension.
+      type: String
+    description: Gets an attachment from the email.
+    polling: true
+    deprecated: false
+    execution: false
+  - name: msgraph-mail-get-email-as-eml
+    arguments:
+    - description: The unique ID of the email. You cannot use the the 'MessageID' key in the form '<message-id>'.
+      name: message_id
+      required: true
+    - description: flag for rate limit retry
+      name: ran_once_flag
+      deprecated: true
+      isArray: false
+      required: false
+    description: Retrieves an email message by message ID and uploads the content as an EML file.
     outputs:
     - contextPath: File.Size
       description: The size of the file.
@@ -670,9 +728,9 @@ script:
     - contextPath: File.Extension
       description: The extension of the file.
       type: String
-    description: Retrieves an email message by message ID and uploads the content as an EML file.
     polling: true
-  - name: msgraph-update-email-status
+  - description: Update the status of an email to read / unread.
+    name: msgraph-update-email-status
     arguments:
     - description: Unique ID of the emails to update. You cannot use the 'MessageID' key in the form '<message-id>'. Can be a list of comma-separated values.
       isArray: true
@@ -687,12 +745,11 @@ script:
       predefined:
       - Read
       - Unread
-    description: Update the status of an email to read / unread.
   - description: Generate the login url used for Authorization code flow.
     execution: false
     name: msgraph-mail-generate-login-url
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.47970
+  dockerimage: demisto/crypto:1.0.0.49599
   isfetch: true
   runonce: false
   script: ''
