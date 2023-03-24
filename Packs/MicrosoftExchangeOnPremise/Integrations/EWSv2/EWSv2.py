@@ -617,7 +617,6 @@ def get_items_from_mailbox(account, item_ids):     # pragma: no cover
         item_ids = [item_ids]
     items = map(lambda x: Item(item_id=x), item_ids)
     result = list(account.fetch(ids=items))
-    demisto.log("result: {result}".format(result=result))
     result = [x for x in result if not (isinstance(x, ErrorItemNotFound) or isinstance(x, ErrorInvalidIdMalformed))]
     if len(result) != len(item_ids):
         raise Exception("One or more items were not found/malformed. Check the input item ids")
