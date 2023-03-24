@@ -159,7 +159,7 @@ def convert_to_demisto_severity(severity: int) -> int:
     }.get(severity, IncidentSeverity.UNKNOWN)
 
 
-def get_command_results(data: dict[str, Any], table: dict[str, Any]) -> CommandResults:
+def get_command_results(data: dict[str, Any], table: str) -> CommandResults:
     return CommandResults(
         readable_output=table,
         outputs_prefix='StamusIntegration.Output',
@@ -188,17 +188,25 @@ def fetch_events(client: Client, args: dict[str, Any]) -> CommandResults:
         result['method'] = result.get('alert', {}).get('signature', 'algorithmic detection')
         result['info'] = ""
         if result.get("hostname_info"):
-            result['info'] = f'Hostname: %s' % (result.get('hostname_info').get('host', 'unknown'))
+            result['info'] = 'Hostname: %s' % (result.get('hostname_info').get('host', 'unknown'))
             result['asset'] = result.get('stamus', {}).get('asset', 'unknown')
             result['offender'] = result.get('stamus', {}).get('source', 'unknown')
             result['killchain'] = result.get('stamus', {}).get('kill_chain', 'unknown')
-    table = tableToMarkdown('Individual Events List', results, headers=['timestamp', 'asset', 'offender', 'killchain', 'method', 'info', 'src_ip', 'dest_ip', 'app_proto'])
+    headers = ['timestamp', 'asset', 'offender', 'killchain', 'method', 'info', 'src_ip', 'dest_ip', 'app_proto']
+    table = tableToMarkdown('Individual Events List', results, headers=headers)
     return get_command_results(results, table)
 
+
 ARRAY_ITEMS = ['client_service', 'hostname', 'username', 'http.user_agent', 'tls.ja3', 'ssh.client', 'roles']
-ITEM_KEY = {'client_service': 'name', 'hostname': 'host', 'username': 'user', 'http.user_agent': 'agent', 'tls.ja3': 'hash', 'ssh.client': 'software_version', 'roles': 'name', 'services': 'app_proto'}
-FIELDS_SUBSTITUTION = (['http.user_agent', 'http_user_agent'], ['http.user_agent_count', 'http_user_agent_count'], ['tls.ja3', 'tls_ja3'], ['tls.ja3_count', 'tls_ja3_count'], ['ssh.client', 'ssh_client'], ['ssh.client_count', 'ssh_client_count'])
-FIELDS_SUBSTITUTION_DICT = {'http.user_agent': 'http_user_agent', 'http.user_agent_count': 'http_user_agent_count', 'tls.ja3': 'tls_ja3', 'tls.ja3_count': 'tls_ja3_count', 'ssh.client': 'ssh_client', 'ssh.client_count': 'ssh_client_count'}
+ITEM_KEY = {'client_service': 'name', 'hostname': 'host', 'username': 'user', 'http.user_agent': 'agent',
+            'tls.ja3': 'hash', 'ssh.client': 'software_version', 'roles': 'name', 'services': 'app_proto'}
+FIELDS_SUBSTITUTION = (['http.user_agent', 'http_user_agent'], ['http.user_agent_count', 'http_user_agent_count'],
+                       ['tls.ja3', 'tls_ja3'], ['tls.ja3_count', 'tls_ja3_count'], ['ssh.client', 'ssh_client'],
+                       ['ssh.client_count', 'ssh_client_count'])
+FIELDS_SUBSTITUTION_DICT = {'http.user_agent': 'http_user_agent', 'http.user_agent_count': 'http_user_agent_count',
+                            'tls.ja3': 'tls_ja3', 'tls.ja3_count': 'tls_ja3_count', 'ssh.client': 'ssh_client',
+                            'ssh.client_count': 'ssh_client_count'}
+
 
 def linearize_host_id(host: dict) -> list:
     host_info = []
@@ -245,6 +253,7 @@ def linearize_host_id(host: dict) -> list:
             else:
                 item_data.pop(key)
     return host_info
+
 
 def fetch_host_id(client: Client, args: dict[str, Any]) -> CommandResults:
     """Fetch host_id info from an IP
@@ -334,6 +343,8 @@ def main() -> None:
         arg_name='First fetch time',
         required=True
     )
+    if first_fetch_time is None:
+        first_fetch_time = datetime.now()
     timestamp = int(first_fetch_time.timestamp())
     headers = {'Authorization': f'Token {api_token}'}
 
