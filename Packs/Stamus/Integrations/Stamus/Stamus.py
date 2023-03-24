@@ -159,9 +159,9 @@ def convert_to_demisto_severity(severity: int) -> int:
     }.get(severity, IncidentSeverity.UNKNOWN)
 
 
-def get_command_results(data: dict[str, Any]) -> CommandResults:
+def get_command_results(data: dict[str, Any], table: dict[str, Any]) -> CommandResults:
     return CommandResults(
-        readable_output=f'## {json.dumps(data)}',
+        readable_output=table,
         outputs_prefix='StamusIntegration.Output',
         outputs=data
     )
@@ -175,19 +175,86 @@ def get_command_results(data: dict[str, Any]) -> CommandResults:
 def fetch_by_ioc(client: Client, args: dict[str, Any]) -> CommandResults:
     """Fetch events from indicator of compromise
     """
-    return get_command_results(client.get_by_ioc(args['key'], args['value'])['results'])
+    results = client.get_by_ioc(args['key'], args['value'])['results']
+    table = tableToMarkdown('IOC Matches', results, headers=['timestamp', 'src_ip', 'dest_ip', 'event_type'])
+    return get_command_results(results, table)
 
 
 def fetch_events(client: Client, args: dict[str, Any]) -> CommandResults:
     """Fetch events from an incident ID
     """
-    return get_command_results(client.get_events(args['id'])['results'])
+    results = client.get_events(args['id'])['results']
+    for result in results:
+        result['method'] = result.get('alert', {}).get('signature', 'algorithmic detection')
+        result['info'] = ""
+        if result.get("hostname_info"):
+            result['info'] = f'Hostname: %s' % (result.get('hostname_info').get('host', 'unknown'))
+            result['asset'] = result.get('stamus', {}).get('asset', 'unknown')
+            result['offender'] = result.get('stamus', {}).get('source', 'unknown')
+            result['killchain'] = result.get('stamus', {}).get('kill_chain', 'unknown')
+    table = tableToMarkdown('Individual Events List', results, headers=['timestamp', 'asset', 'offender', 'killchain', 'method', 'info', 'src_ip', 'dest_ip', 'app_proto'])
+    return get_command_results(results, table)
 
+ARRAY_ITEMS = ['client_service', 'hostname', 'username', 'http.user_agent', 'tls.ja3', 'ssh.client', 'roles']
+ITEM_KEY = {'client_service': 'name', 'hostname': 'host', 'username': 'user', 'http.user_agent': 'agent', 'tls.ja3': 'hash', 'ssh.client': 'software_version', 'roles': 'name', 'services': 'app_proto'}
+FIELDS_SUBSTITUTION = (['http.user_agent', 'http_user_agent'], ['http.user_agent_count', 'http_user_agent_count'], ['tls.ja3', 'tls_ja3'], ['tls.ja3_count', 'tls_ja3_count'], ['ssh.client', 'ssh_client'], ['ssh.client_count', 'ssh_client_count'])
+FIELDS_SUBSTITUTION_DICT = {'http.user_agent': 'http_user_agent', 'http.user_agent_count': 'http_user_agent_count', 'tls.ja3': 'tls_ja3', 'tls.ja3_count': 'tls_ja3_count', 'ssh.client': 'ssh_client', 'ssh.client_count': 'ssh_client_count'}
+
+def linearize_host_id(host: dict) -> list:
+    host_info = []
+    host_data = host['host_id']
+    item_data = {'ip': host['ip']}
+    item_data['event_type'] = 'discovery'
+    item_data['first_seen'] = host_data['first_seen']
+    if 'last_seen' in host_data:
+        item_data['last_seen'] = host_data['last_seen']
+    if 'net_info' in host_data:
+        item_data['net_info'] = host_data['net_info']
+    host_services = host_data.get('services')
+    if host_services is not None:
+        item_data['type'] = 'service'
+        for service in host_services:
+            for value in service['values']:
+                item_data['service'] = value
+                item_data['service']['proto'] = service['proto']
+                item_data['service']['port'] = service['port']
+                item_data['value'] = value['app_proto']
+                if '+' in value['first_seen'] and value['first_seen'][-3] != ':':
+                    item_data['timestamp'] = value['first_seen'][:-2] + ':' + value['first_seen'][-2:]
+                else:
+                    item_data['timestamp'] = value['first_seen']
+                host_info.append(item_data.copy())
+        item_data.pop('service')
+    for key in ARRAY_ITEMS:
+        if key in host_data:
+            if key in FIELDS_SUBSTITUTION_DICT:
+                item_data['type'] = FIELDS_SUBSTITUTION_DICT[key]
+            else:
+                item_data['type'] = key
+            for item in host_data[key]:
+                if key in FIELDS_SUBSTITUTION_DICT:
+                    item_data[FIELDS_SUBSTITUTION_DICT[key]] = item
+                else:
+                    item_data[key] = item
+                item_data['value'] = item[ITEM_KEY[key]]
+                item_data['timestamp'] = item['first_seen']
+                host_info.append(item_data.copy())
+            item_data.pop('timestamp')
+            if key in FIELDS_SUBSTITUTION_DICT:
+                item_data.pop(FIELDS_SUBSTITUTION_DICT[key])
+            else:
+                item_data.pop(key)
+    return host_info
 
 def fetch_host_id(client: Client, args: dict[str, Any]) -> CommandResults:
     """Fetch host_id info from an IP
     """
-    return get_command_results(client.get_host_id(args['ip']))
+    result = client.get_host_id(args['ip'])
+    host_info = linearize_host_id(result)
+
+    table = tableToMarkdown('Host Insight', host_info, headers=['timestamp', 'ip', 'type', 'value'])
+
+    return get_command_results(result, table)
 
 
 def fetch_incidents(client: Client, timestamp: int) -> tuple[dict[str, int], list[dict]]:
