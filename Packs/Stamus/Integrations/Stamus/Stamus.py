@@ -364,15 +364,15 @@ def main() -> None:
             demisto.incidents(incidents)
             # return_results(incidents)
 
-        elif demisto.command() == 'stamus-get-host-id':
+        elif demisto.command() == 'Stamus-Get-Host-Insight':
             args = demisto.args()
             return_results(fetch_host_id(client, args))
 
-        elif demisto.command() == 'stamus-get-events':
+        elif demisto.command() == 'Stamus-Get-DoC-Events':
             args = demisto.args()
             return_results(fetch_events(client, args))
 
-        elif demisto.command() == 'stamus-get-by-ioc':
+        elif demisto.command() == 'Stamus-Check-IOC':
             args = demisto.args()
             return_results(fetch_by_ioc(client, args))
 
