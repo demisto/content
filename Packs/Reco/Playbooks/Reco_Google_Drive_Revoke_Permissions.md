@@ -1,4 +1,4 @@
-Revoke Assets at Risk from Reco Findings
+Reco Google Drive Revoke Permissions Playbook
 
 ## Dependencies
 
@@ -40,4 +40,4 @@ This playbook does not have any outputs.
 
 ---
 
-![Armis Alert Enrichment](../doc_files/Reco-Revoke-Assets.png)
+![Armis Alert Enrichment](../doc_files/Reco-Google-Drive-Revoke-Permissions.png)

@@ -1,7 +1,15 @@
 id: 8a13470e-2470-4ade-8ade-990ecdce720b
-version: 21
+version: 25
 vcShouldKeepItemLegacyProdMachine: false
-name: Reco-Revoke-Assets
+name: Reco-Google-Drive-Revoke-Permissions
+description: This workflow enables you to easily list the permissions of files stored
+  in Google Drive, giving you visibility into who has access to your organization's
+  data. If a file's permission is publicly exposed, the workflow restricts access
+  to the file to prevent unauthorized use. Similarly, if a file's permission is set
+  to accessible by all org users and shared with internal users, access to the file
+  is restricted to authorized users only. Using the Google Drive API and built-in
+  conditional logic, this workflow helps you secure sensitive data and streamline
+  your organization's data management.
 starttaskid: "0"
 tasks:
   "0":
@@ -653,13 +661,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: a6b0847a-73e3-4dde-8c71-e8cf68714f4e
-    type: regular
+    taskid: 6502fc5d-814a-434e-8db9-af0e69610bb2
+    type: title
     task:
-      id: a6b0847a-73e3-4dde-8c71-e8cf68714f4e
+      id: 6502fc5d-814a-434e-8db9-af0e69610bb2
       version: -1
       name: Do Nothing
-      type: regular
+      tags:
+      - Do Nothing
+      type: title
       iscommand: false
       brand: ""
     separatecontext: false

@@ -336,7 +336,7 @@ class RecoClient(BaseClient):
                                 "filters": {
                                     "filters": [
                                         {
-                                            "field": "currently_permitted_users",
+                                            "field": "file_name",
                                             filter: {
                                                 "value": asset_name
                                             },

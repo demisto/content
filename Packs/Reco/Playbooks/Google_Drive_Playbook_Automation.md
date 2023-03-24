@@ -9,7 +9,7 @@ This playbook depends on the following integrations:
 ### Sub-playbooks
 
 This playbook depends on the following sub-playbooks:
- - Reco - Revoke Assets
+ - Reco Google Drive Revoke Permissions
 
 ### Integrations
 

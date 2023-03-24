@@ -161,23 +161,23 @@ script:
     execution: false
     name: reco-add-leaving-org-user-label
   - arguments:
-  - default: false
-    description: Asset name to search for
-    isArray: false
-    name: asset_name
-    required: true
-    secret: false
-  - default: false
-    description: Return only sensitive assets owned by this user
-    isArray: false
-    name: regex_search
-    type: Boolean
-    required: false
-    secret: false
-  deprecated: false
-  description: Get all sensitive assets from Reco by name
-  execution: false
-  name: reco-get-sensitive-assets-by-name
+    - default: false
+      description: Asset name to search for
+      isArray: false
+      name: asset_name
+      required: true
+      secret: false
+    - default: false
+      description: Return only sensitive assets owned by this user
+      isArray: false
+      name: regex_search
+      type: Boolean
+      required: false
+      secret: false
+    deprecated: false
+    description: Get all sensitive assets from Reco by name
+    execution: false
+    name: reco-get-sensitive-assets-by-name
 tests:
 - No tests
 fromversion: 6.5.0
