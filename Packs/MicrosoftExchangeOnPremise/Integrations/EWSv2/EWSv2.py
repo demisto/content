@@ -617,9 +617,10 @@ def get_items_from_mailbox(account, item_ids):     # pragma: no cover
         item_ids = [item_ids]
     items = map(lambda x: Item(item_id=x), item_ids)
     result = list(account.fetch(ids=items))
-    result = [x for x in result if not isinstance(x, ErrorItemNotFound)]
+    demisto.log("result: {result}".format(result=result))
+    result = [x for x in result if not (isinstance(x, ErrorItemNotFound) or isinstance(x, ErrorInvalidIdMalformed))]
     if len(result) != len(item_ids):
-        raise Exception("One or more items were not found. Check the input item ids")
+        raise Exception("One or more items were not found/malformed. Check the input item ids")
     if exchangelib.__version__ != "1.12.0":  # Docker BC
         for item in result:
             item.folder = Folder(account=account)
@@ -1580,13 +1581,6 @@ def delete_items(item_ids, delete_type, target_mailbox=None):     # pragma: no c
         item_ids = item_ids.split(",")
     items = get_items_from_mailbox(account, item_ids)
     delete_type = delete_type.lower()
-
-    demisto.debug('items: {items}'.format(items=items))
-
-    if items and isinstance(items[0], ErrorInvalidIdMalformed):
-        raise Exception(
-            'could not delete item-ids {item_ids}, Error: {error}'.format(item_ids=item_ids, error=items[0])
-        )
 
     for item in items:
         item_id = item.item_id

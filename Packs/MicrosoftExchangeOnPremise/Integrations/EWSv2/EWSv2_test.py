@@ -9,6 +9,7 @@ from exchangelib import Message
 from EWSv2 import fetch_last_emails
 from exchangelib.errors import UnauthorizedError
 from exchangelib import EWSDateTime, EWSTimeZone
+from exchangelib.errors import ErrorInvalidIdMalformed, ErrorItemNotFound
 
 
 class TestNormalCommands:
@@ -309,6 +310,11 @@ def test_last_run(mocker, current_last_run, messages, expected_last_run):
     assert set(last_run.call_args[0][0].get('ids')) == set(expected_last_run.get('ids'))
 
 
+class MockItem:
+    def __init__(self, item_id):
+        self.id = item_id
+
+
 class MockAccount:
     def __init__(self, primary_smtp_address="", error=401):
         self.primary_smtp_address = primary_smtp_address
@@ -320,6 +326,22 @@ class MockAccount:
             raise UnauthorizedError('Wrong username or password')
         if self.error == 404:
             raise Exception('Page not found')
+
+    def fetch(self, ids):
+        if isinstance(ids, type(map)):
+            ids = list(ids)
+
+        result = []
+
+        for item in ids:
+            item_id = item.id
+            if item_id == '3':
+                result.append(ErrorInvalidIdMalformed(value="malformed ID 3"))
+            elif item_id == '4':
+                result.append(ErrorItemNotFound(value="ID 4 was not found"))
+            else:
+                result.append(item_id)
+        return result
 
 
 def test_send_mail(mocker):
@@ -366,11 +388,49 @@ def test_send_mail_with_trailing_comma(mocker):
     }
 
 
-def test_delete_items_malformed_item_id(mocker):
+@pytest.mark.parametrize(
+    'item_ids, should_throw_exception', [
+        (
+            ['1'],
+            False
+        ),
+        (
+            ['1', '2'],
+            False
+        ),
+        (
+            ['1', '2', '3'],
+            True
+        ),
+        (
+            ['1', '2', '3', '4'],
+            True
+        ),
+    ]
+)
+def test_get_items_from_mailbox(mocker, item_ids, should_throw_exception):
     """
+    Given -
+        Case A: single ID which is valid
+        Case B: two IDs which are valid
+        Case C: two ids which are valid and one id == 3 which cannot be found
+        Case D: two ids which are valid and one id == 3 which cannot be found and one id == 4 which is malformed
 
+    When -
+        executing get_items_from_mailbox function
+
+    Then -
+        Case A: make sure the ID is returned successfully
+        Case B: make sure that IDs are returned successfully
+        Case C: make sure an exception is raised
+        Case D: make sure an exception is raised
     """
-    from EWSv2 import delete_items
-    mocker.patch.object(EWSv2, 'Account', return_value=MockAccount(primary_smtp_address="test@gmail.com"))
+    from EWSv2 import get_items_from_mailbox
 
-    result = delete_items(["1"], delete_type='soft', target_mailbox="test@gmail.com")
+    mocker.patch('EWSv2.Item', side_effect=[MockItem(item_id=item_id) for item_id in item_ids])
+
+    if should_throw_exception:
+        with pytest.raises(Exception):
+            get_items_from_mailbox(MockAccount(), item_ids=item_ids)
+    else:
+        assert get_items_from_mailbox(MockAccount(), item_ids=item_ids) == item_ids
