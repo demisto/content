@@ -8,6 +8,8 @@ from CommonServerPython import *  # noqa: F401
 
 
 
+
+
 import asyncio
 import concurrent
 import logging.handlers
@@ -2658,19 +2660,19 @@ def conversation_history():
                 user_details_response = send_slack_request_sync(CLIENT, 'users.info', http_verb="GET", body=body)
                 user_details = user_details_response['user']
                 context = {
-                    'TYPE': message['type'],
-                    'TEXT': message['text'],
-                    'USER ID': message['user'],
-                    'NAME': user_details['name'],
-                    'FULL NAME': user_details['real_name']
+                    'Type': message['type'],
+                    'Text': message['text'],
+                    'UserId': message['user'],
+                    'Name': user_details['name'],
+                    'FullName': user_details['real_name']
                 }
             else:
                 context = {
-                    'TYPE': message['type'],
-                    'TEXT': message['text'],
-                    'USER ID': message['username'],
-                    'NAME': message['username'],
-                    'FULL NAME': message['username']
+                    'Type': message['type'],
+                    'Text': message['text'],
+                    'UserId': message['username'],
+                    'Name': message['username'],
+                    'FullName': message['username']
                 }
             readable_output = tableToMarkdown(f'Channel details from Channel ID - {channel_id}', context)
 
@@ -2686,20 +2688,20 @@ def conversation_history():
                 user_details_response = send_slack_request_sync(CLIENT, 'users.info', http_verb="GET", body=body)
                 user_details = user_details_response['user']
                 entry ={
-                    'TYPE': message['type'],
-                    'TEXT': message['text'],
-                    'USER ID': message['user'],
-                    'NAME': user_details['name'],
-                    'FULL NAME': user_details['real_name']
+                    'Type': message['type'],
+                    'Text': message['text'],
+                    'UserId': message['user'],
+                    'Name': user_details['name'],
+                    'FullName': user_details['real_name']
                 }
                 context.append(entry)
             else:
                 entry ={
-                    'TYPE': message['type'],
-                    'TEXT': message['text'],
-                    'USER ID': message['username'],
-                    'NAME': message['username'],
-                    'FULL NAME': message['username']
+                    'Type': message['type'],
+                    'Text': message['text'],
+                    'UserId': message['username'],
+                    'Name': message['username'],
+                    'FullName': message['username']
                 }
                 context.append(entry)
         readable_output = tableToMarkdown(f'Channel details from Channel ID - {channel_id}', context)
@@ -2928,6 +2930,7 @@ def main() -> None:
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     register_signal_handler_profiling_dump(profiling_dump_rows_limit=PROFILING_DUMP_ROWS_LIMIT)
     main()
+
 
 
 
