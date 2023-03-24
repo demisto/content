@@ -127,7 +127,7 @@ class AWSClient:
             )
             kwargs.update({
                 'RoleArn': self.aws_role_arn or role_arn,
-                'RoleSessionName': self.aws_role_session_name,
+                'RoleSessionName': self.aws_role_session_name or role_session_name,
             })
             demisto.debug(f'{kwargs=}')
             sts_response = sts_client.assume_role(**kwargs)
