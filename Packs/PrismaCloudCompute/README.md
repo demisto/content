@@ -1,4 +1,4 @@
-![image](https://user-images.githubusercontent.com/49071222/72906531-0e452a00-3d3b-11ea-8703-8b97ddf30be0.png)
+![image](readme_images/72906531-0e452a00-3d3b-11ea-8703-8b97ddf30be0.png)
 
 
 ## Overview
@@ -53,13 +53,13 @@ To better understand how playbooks and scripts interoperate, consider the _Prism
 * When the playbook is triggered, a task called **Parse Vulnerability Alert** runs.
 * The task runs the **PrismaCloudComputeParseVulnerabilityAlert** script, which takes the `prismacloudcomputerawalertjson` field of the incident (the raw JSON alert data) as input.
 
-![image](https://raw.githubusercontent.com/demisto/content/f808c78aa6c94a09450879c8702a1b7f023f1d4b/Packs/PrismaCloudCompute/doc_files/prisma_alert_raw_input.png)
+![image](readme_images/prisma_alert_raw_input.png)
 
 
 * Click **outputs** to see how the script transformed the raw JSON input into a Demisto object.
 
 
-![image](https://raw.githubusercontent.com/demisto/content/f808c78aa6c94a09450879c8702a1b7f023f1d4b/Packs/PrismaCloudCompute/doc_files/prisma_alert_outputs.png)
+![image](readme_images/prisma_alert_outputs.png)
 
 At this point, you can add tasks that extend the playbook to check and respond to alerts depending on the properties of the Demisto object.
 
@@ -67,4 +67,4 @@ At this point, you can add tasks that extend the playbook to check and respond t
 
 If any alerts are missing in Demisto, check the status of the integration:
 
-![image](https://raw.githubusercontent.com/demisto/content/f808c78aa6c94a09450879c8702a1b7f023f1d4b/Packs/PrismaCloudCompute/doc_files/prisma_instance.png)
+![image](readme_images/prisma_instance.png)

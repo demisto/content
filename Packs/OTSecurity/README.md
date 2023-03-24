@@ -1,7 +1,7 @@
 This OT Security pack is created to help you to automate the incident response and threat hunting processes in your Operations and ICS environment.
 
 # Pack Overview
-![](https://raw.githubusercontent.com/demisto/content/master/Packs/OTSecurity/doc_files/OTSecurityEnvironment.png)
+![](readme_images/OTSecurityEnvironment.png)
 
 Cortex XSOAR helps to automate OT incidents and alerts response by gathering all relevant data, even from sources that may seem unrelated,
 allowing for the buildout of playbooks that cater to the particular automation needs of an ICS’s operational requirements. It also provides bot-aided war rooms where
@@ -69,7 +69,7 @@ XSOAR content included in this pack will be built based on our integrations with
     - Tenable
 
 # XSOAR in Isolated OT Environment
-![](https://raw.githubusercontent.com/demisto/content/master/Packs/OTSecurity/doc_files/IsolatedDeployment.png)
+![](readme_images/IsolatedDeployment.png)
 XSOAR provides the ability to have a production instance running in an isolated OT environment, with a jumb host access to a local repository that stores the content updates, for more details:
 https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Configure-a-Remote-Repository-on-a-Development-Machine
 

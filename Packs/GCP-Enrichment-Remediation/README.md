@@ -14,10 +14,10 @@ Users are only able to run the playbook in v6.5.0 or higher as it requires comma
 This content pack includes the following playbooks: 
 
 - Cloud Response - GCP
-![Cloud Response - GCP](https://raw.githubusercontent.com/demisto/content/6790c6160863055ad2d0f906e0ffa18963bd7b20/Packs/GCP-Enrichment-Remediation/doc_files/Cloud_Response_-_GCP.png)
+![Cloud Response - GCP](readme_images/Cloud_Response_-_GCP.png)
 
 - GCP - Enrichment  
-![GCP - Enrichment](https://github.com/capanw/chait-content/blob/gcp-updates/Packs/GCP-Enrichment-Remediation/doc_files/GCP_-_Enrichment.png)
+![GCP - Enrichment](readme_images/GCP_-_Enrichment.png)
 
 - GCP - Firewall Remediation
-![GCP - Firewall Remediation](https://github.com/capanw/chait-content/blob/gcp-updates/Packs/GCP-Enrichment-Remediation/doc_files/GCP_-_Firewall_Remediation.png)
+![GCP - Firewall Remediation](readme_images/GCP_-_Firewall_Remediation.png)

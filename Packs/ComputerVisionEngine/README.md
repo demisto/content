@@ -1,4 +1,4 @@
 ### Demo Screencast
 
-![Integration Demo](https://github.com/demisto/content-assets/raw/master/Assets/ComputerVisionEngine/computervision.gif)
+![Integration Demo](readme_images/computervision.gif)
 

@@ -21,4 +21,4 @@ In addition to the incident management, this pack also provides an integration w
 You just need to install the pack and configure the SOCRadar integration instances in XSOAR. For the configuration phase you will need an active API key which can be obtained in the SOCRadar platform. For any further support and questions please feel free to contact with us via **operation@socradar.io**
 
 ### Demo Video
-[![SOCRadar in Cortex XSOAR](https://img.youtube.com/vi/VqyPruyOtTs/0.jpg)](https://www.youtube.com/watch?v=VqyPruyOtTs&ab_channel=SOCRadarInc "SOCRadar in Cortex XSOAR")
+[![SOCRadar in Cortex XSOAR](readme_images/0.jpg)](https://www.youtube.com/watch?v=VqyPruyOtTs&ab_channel=SOCRadarInc "SOCRadar in Cortex XSOAR")

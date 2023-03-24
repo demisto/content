@@ -1,9 +1,9 @@
 DevSecOps content pack contains multiple integrations and playbooks to help shifting security as left as the planning stage of a continues integration pipeline and make DevSecOps orchestration to be within reach.
 
-![](https://github.com/demisto/content/raw/ede7f0dc6211dd5aeaec77fa9912d9a57d5976b0/Packs/DevSecOps/doc_files/Inspiration.png)
+![](readme_images/Inspiration.png)
 
 While CI/CD orchestration tools such as Jenkins, CircleCI and others were primarily built by and to developers, SOAR is better positioned to bridge this orchestration gap between DevOps and SecOps for the following reasons:
-![](https://github.com/demisto/content/raw/ede7f0dc6211dd5aeaec77fa9912d9a57d5976b0/Packs/DevSecOps/doc_files/Playbooks.png)
+![](readme_images/Playbooks.png)
 * CI/CD orchestration pipelines are arguably easy to read and troubleshoot by developers , SOAR provides the same orchestration workflow in two different formats that are readable by both Developers and Security Analysts.
 ![](https://github.com/demisto/content/raw/ede7f0dc6211dd5aeaec77fa9912d9a57d5976b0/Packs/DevSecOps/doc_files/SOAR%20Features.png)
 * SOAR provides way more to a DevSecOps Eco-System than CI/CD Orchestrator does:
@@ -17,7 +17,7 @@ With SOAR integrations, playbooks, fields, XSOAR can be turned into a DevSecOps 
 
 From threat-modeling in the **Planning** stage to IaC security in **Dev**, static code analysis in **Build**, post deployment scans in **Deploy** and **Monitoring**/Responding to incidents once the code is running in production.
 
-![](https://github.com/demisto/content/raw/ede7f0dc6211dd5aeaec77fa9912d9a57d5976b0/Packs/DevSecOps/doc_files/Architecture.png)
+![](readme_images/Architecture.png)
 
 This content pack will be updated with more integrations with different software factory tools:
 
