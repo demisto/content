@@ -102,7 +102,6 @@ class AWSClient:
         demisto.debug(f'{kwargs=}')
 
         if kwargs and not self.aws_access_key_id:  # login with Role ARN
-            demisto.debug(f'entered kwargs and not self.aws_access_key_id')
             if not self.aws_access_key_id:
                 sts_client = boto3.client('sts', config=self.config, verify=self.verify_certificate,
                                           region_name=region if region else self.aws_default_region)
@@ -116,8 +115,7 @@ class AWSClient:
                     verify=self.verify_certificate,
                     config=self.config
                 )
-        elif self.aws_access_key_id and (self.aws_role_arn or role_arn):  # login with Access Key ID and Role ARN
-            demisto.debug(f'entered self.aws_access_key_id and self.aws_role_arn')
+        elif self.aws_access_key_id and (role_arn or self.aws_role_arn):  # login with Access Key ID and Role ARN
             sts_client = boto3.client(
                 service_name='sts',
                 aws_access_key_id=self.aws_access_key_id,
@@ -126,8 +124,8 @@ class AWSClient:
                 config=self.config
             )
             kwargs.update({
-                'RoleArn': self.aws_role_arn or role_arn,
-                'RoleSessionName': self.aws_role_session_name or role_session_name,
+                'RoleArn': role_arn or self.aws_role_arn,
+                'RoleSessionName': role_session_name or self.aws_role_session_name,
             })
             demisto.debug(f'{kwargs=}')
             sts_response = sts_client.assume_role(**kwargs)
@@ -141,7 +139,6 @@ class AWSClient:
                 config=self.config
             )
         elif self.aws_session_token and not self.aws_role_arn:  # login with session token
-            demisto.debug(f'entered self.aws_session_token and not self.aws_role_arn')
             client = boto3.client(
                 service_name=service,
                 region_name=region if region else self.aws_default_region,
@@ -152,7 +149,6 @@ class AWSClient:
                 config=self.config
             )
         elif self.aws_access_key_id and not self.aws_role_arn:  # login with access key id
-            demisto.debug(f'entered self.aws_access_key_id and not self.aws_role_arn')
             client = boto3.client(
                 service_name=service,
                 region_name=region if region else self.aws_default_region,
@@ -162,7 +158,6 @@ class AWSClient:
                 config=self.config
             )
         else:  # login with default permissions, permissions pulled from the ec2 metadata
-            demisto.debug(f'entered else statement')
             client = boto3.client(service_name=service,
                                   region_name=region if region else self.aws_default_region)
 
