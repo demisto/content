@@ -23,6 +23,28 @@ configuration:
   name: incidentType
   required: false
   type: 13
+- display: Minimum severity of alerts to fetch
+  name: min_severity
+  defaultvalue: 'Moderate'
+  required: true
+  type: 15
+  options:
+  - Informational
+  - Moderate
+  - Critical
+- defaultvalue: 'By Host'
+  display: How to group new issues
+  name: issue_grouping
+  required: true
+  type: 15
+  options:
+  - By Host
+  - By Issue
+- defaultvalue: False
+  display: Whether to expand issues into separate Incidents (applicable if grouping By Host)
+  name: expand_issues
+  required: true
+  type: 0
 - display: Fetch limit
   additionalinfo: Maximum number of incidents per fetch
   name: max_fetch
@@ -30,8 +52,7 @@ configuration:
   required: false
   type: 0
 - defaultvalue: 24 hours
-  display: First fetch time (<number> <time unit>, e.g., 12 hours, 7 days, 3 months,
-    1 year)
+  display: First fetch time (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)
   name: first_fetch
   required: false
   type: 0
@@ -43,8 +64,12 @@ script:
     arguments:
     - name: issues_start
       description: timestamp to get incidents after
+    - name: issue_grouping
+      description: whether to group incidents by changed host
+    - name: expand_issues
+      description: make an incident per host & per new issue
     description: Gets the issues for a project from a particular snapshot (defaults to recent)
-  dockerimage: demisto/python3:3.10.6.33415
+  dockerimage: demisto/python3:3.10.10.50695
   isfetch: true
   runonce: false
   subtype: python3
