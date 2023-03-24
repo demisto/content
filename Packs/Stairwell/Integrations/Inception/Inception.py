@@ -85,7 +85,7 @@ def file_enrichment_command(client, file_hash):
                 yara_string = (', '.join([str(x) for x in yara_rules]))
                 md += f'Matching YARA Intel: {yara_string}\n'
 
-            # Show Mal-Eval verdict
+            # Show Mal-Eval result
             mal_eval_output = responseJson['data']['attributes']['mal_eval_result']
             if mal_eval_output:
                 if mal_eval_output['label']:
