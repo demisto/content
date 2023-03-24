@@ -1,0 +1,1 @@
+To leverage two-factor authentication, 2FA must be enabled on the console and be configured for the account accessing the API.

@@ -1,0 +1,40 @@
+commonfields:
+  id: NexposeCreateIncidentsFromAssets
+  version: -1
+name: NexposeCreateIncidentsFromAssets
+deprecated: true
+script: ''
+type: python
+subtype: python2
+tags:
+- nexpose
+comment: |-
+  Deprecated. No available replacement.
+  Create incidents based on the Nexpose asset ID and vulnerability ID.
+  Duplicate incidents are not created for the same asset ID and vulnerability ID.
+system: true
+args:
+- name: assetID
+  required: true
+  description: List of Nexpose assets' IDs
+  isArray: true
+- name: minSeverity
+  required: true
+  auto: PREDEFINED
+  predefined:
+  - Moderate
+  - Severe
+  - Critical
+  description: The minimum Nexpose severity to create incidents for
+- name: incidentType
+  description: The incident type to create incidents for. Default is "Vulnerability".
+scripttarget: 0
+runas: DBotWeakRole
+runonce: false
+dependson:
+  must:
+  - nexpose-get-asset
+tests:
+- No test
+fromversion: 6.8.0
+dockerimage: demisto/python:2.7.18.49010

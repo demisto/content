@@ -1,0 +1,19 @@
+[
+    {
+        "Id": 1,
+        "ScanType": "Manual",
+        "ScanName": "Tue 03 Dec 2019 10:47 PM",
+        "StartedBy": null,
+        "Assets": 0,
+        "Completed": "2019-12-03T20:48:01.368Z",
+        "Status": "finished",
+        "Message": null,
+        "TotalTime": "51.316 seconds",
+        "Vulnerabilities": {
+            "Critical": 0,
+            "Severe": 0,
+            "Moderate": 0,
+            "Total": 0
+        }
+    }
+]

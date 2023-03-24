@@ -1,0 +1,1740 @@
+id: nexpose_test
+version: -1
+name: Nexpose Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 3534910e-336d-4451-8789-fe94a7f8db81
+    type: start
+    task:
+      id: 3534910e-336d-4451-8789-fe94a7f8db81
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: c03ace99-7de7-4438-8a2a-022ea87a6220
+    type: regular
+    task:
+      id: c03ace99-7de7-4438-8a2a-022ea87a6220
+      version: -1
+      name: DeleteContext
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 08093ba8-6a30-4a6c-83e9-3bff0fb3cb79
+    type: regular
+    task:
+      id: 08093ba8-6a30-4a6c-83e9-3bff0fb3cb79
+      version: -1
+      name: nexpose-create-asset
+      description: Create a new asset.
+      script: Rapid7 Nexpose|||nexpose-create-asset
+      type: regular
+      iscommand: true
+      brand: Rapid7 Nexpose
+    nexttasks:
+      '#none#':
+      - "46"
+    scriptarguments:
+      date:
+        complex:
+          root: TimeNow
+      ip:
+        complex:
+          root: inputs.fake_asset_ip
+      site_id:
+        complex:
+          root: Nexpose.Site
+          accessor: Id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 388c20ac-6993-43d7-8de2-54a37ffbb90f
+    type: regular
+    task:
+      id: 388c20ac-6993-43d7-8de2-54a37ffbb90f
+      version: -1
+      name: nexpose-get-sites
+      description: Retrieves accessible sites.
+      script: Rapid7 Nexpose|||nexpose-get-sites
+      type: regular
+      iscommand: true
+      brand: Rapid7 Nexpose
+    nexttasks:
+      '#none#':
+      - "42"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    scriptarguments:
+      limit:
+        simple: "1"
+  "11":
+    id: "11"
+    taskid: cd303484-5de5-4714-81e8-fc27a1181611
+    type: regular
+    task:
+      id: cd303484-5de5-4714-81e8-fc27a1181611
+      version: -1
+      name: nexpose-create-scan-report
+      description: Generates a new report for a specified scan.
+      script: Rapid7 Nexpose|||nexpose-create-scan-report
+      type: regular
+      iscommand: true
+      brand: Rapid7 Nexpose
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      scan:
+        complex:
+          root: Nexpose.Scan
+          accessor: Id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: ba00817f-fbc2-4059-8a78-a3e6679af3a9
+    type: regular
+    task:
+      id: ba00817f-fbc2-4059-8a78-a3e6679af3a9
+      version: -1
+      name: 'nexpose-create-sites-report'
+      description: |-
+        Generates a new report on given sites according to a template and arguments.
+      type: regular
+      iscommand: true
+      brand: "Rapid7 Nexpose"
+      script: Rapid7 Nexpose|||nexpose-create-sites-report
+    nexttasks:
+      '#none#':
+      - "32"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5970
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    scriptarguments:
+      sites:
+        complex:
+          root: Nexpose.Site
+          accessor: Id
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 522e47c1-8c7d-4824-8753-2de80b3ba70a
+    type: regular
+    task:
+      id: 522e47c1-8c7d-4824-8753-2de80b3ba70a
+      version: -1
+      name: nexpose-list-vulnerability (specific ID)
+      description: Retrieve information about all or a specific vulnerability.
+      script: Rapid7 Nexpose|||nexpose-list-vulnerability
+      type: regular
+      iscommand: true
+      brand: Rapid7 Nexpose
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      id:
+        complex:
+          root: Nexpose.Asset.Vulnerability
+          accessor: Id
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 38512b59-0ad3-4a10-849d-0872ba7841ea
+    type: regular
+    task:
+      id: 38512b59-0ad3-4a10-849d-0872ba7841ea
+      version: -1
+      name: nexpose-update-shared-credential
+      description: Update an existing shared credential.
+      script: Rapid7 Nexpose|||nexpose-update-shared-credential
+      type: regular
+      iscommand: true
+      brand: Rapid7 Nexpose
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      id:
+        complex:
+          root: Nexpose.SharedCredential
+          accessor: id
+      name:
+        simple: Test Credential
+      password:
+        simple: New Password
+      service:
+        simple: FTP
+      site_assignment:
+        simple: All-Sites
+      username:
+        simple: New Username
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6845
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: bdbeaa17-78b1-42d0-85bf-0adc609c57ad
+    type: regular
+    task:
+      id: bdbeaa17-78b1-42d0-85bf-0adc609c57ad
+      version: -1
+      name: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5445
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      all:
+        simple: "yes"
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: adfc7d1f-bf09-4daf-8ec9-09753b96b2a7
+    type: regular
+    task:
+      id: adfc7d1f-bf09-4daf-8ec9-09753b96b2a7
+      version: -1
+      name: DeleteContext
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6145
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 5eaf9aae-3ab3-4f08-841a-e0ead13080e5
+    type: regular
+    task:
+      id: 5eaf9aae-3ab3-4f08-841a-e0ead13080e5
+      version: -1
+      name: nexpose-download-report
+      description: Returns the generated report.
+      script: 'Rapid7 Nexpose|||nexpose-download-report'
+      type: regular
+      iscommand: true
+      brand: "Rapid7 Nexpose"
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      instance_id:
+        complex:
+          root: Nexpose.Report
+          accessor: InstanceID
+      report_id:
+        complex:
+          root: Nexpose.Report
+          accessor: ID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 356a75b4-2698-41c6-87a1-5c423d1e38e4
+    type: title
+    task:
+      id: 356a75b4-2698-41c6-87a1-5c423d1e38e4
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: c152fcea-3476-428c-8d25-0fbd2ae9accf
+    type: regular
+    task:
+      id: c152fcea-3476-428c-8d25-0fbd2ae9accf
+      version: -1
+      name: nexpose-search-assets
+      description: Search all assets matching filters (with Returns all assets for which you have access that match the given search criteria.
+      script: Rapid7 Nexpose|||nexpose-search-assets
+      type: regular
+      iscommand: true
+      brand: Rapid7 Nexpose
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      limit:
+        simple: "1"
+      riskScoreHigherThan:
+        simple: "10000"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 1d0faf3a-7945-4d98-839e-6222b02e9910
+    type: regular
+    task:
+      id: 1d0faf3a-7945-4d98-839e-6222b02e9910
+      version: -1
+      name: nexpose-get-asset
+      description: Returns the specified asset.
+      script: Rapid7 Nexpose|||nexpose-get-asset
+      type: regular
+      iscommand: true
+      brand: Rapid7 Nexpose
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      id:
+        complex:
+          root: Nexpose.Asset
+          accessor: id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: bab96ab3-52cd-448a-8b8c-466602a0b84c
+    type: regular
+    task:
+      id: bab96ab3-52cd-448a-8b8c-466602a0b84c
+      version: -1
+      name: nexpose-delete-asset
+      description: Delete an asset.
+      script: Rapid7 Nexpose|||nexpose-delete-asset
+      type: regular
+      iscommand: true
+      brand: Rapid7 Nexpose
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      id:
+        complex:
+          root: Nexpose.Asset
+          accessor: AssetId
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 03bbc844-6aaf-4c28-8f4c-d266713348fd
+    type: regular
+    task:
+      id: 03bbc844-6aaf-4c28-8f4c-d266713348fd
+      version: -1
+      name: nexpose-get-scan
+      description: Get a specific scan.
+      script: Rapid7 Nexpose|||nexpose-get-scan
+      type: regular
+      iscommand: true
+      brand: Rapid7 Nexpose
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      id:
+        complex:
+          root: Nexpose.Scan
+          accessor: Id
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5095
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: c90f11ef-e95a-4879-8c3a-238f3968d150
+    type: regular
+    task:
+      id: c90f11ef-e95a-4879-8c3a-238f3968d150
+      version: -1
+      name: nexpose-create-assets-report
+      description: Generates a new report on given assets according to a template and arguments.
+      script: Rapid7 Nexpose|||nexpose-create-assets-report
+      type: regular
+      iscommand: true
+      brand: Rapid7 Nexpose
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      assets:
+        complex:
+          root: Nexpose.Asset
+          accessor: AssetId
+      download_immediately:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 0bfe159d-2370-4bae-8b47-e58c5acc54ab
+    type: regular
+    task:
+      id: 0bfe159d-2370-4bae-8b47-e58c5acc54ab
+      version: -1
+      name: nexpose-get-assets
+      description: Returns all assets for which you have access.
+      script: Rapid7 Nexpose|||nexpose-get-assets
+      type: regular
+      iscommand: true
+      brand: Rapid7 Nexpose
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      limit:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 5d37a8bd-f323-47be-8ec2-e5b6a3aadad9
+    type: regular
+    task:
+      id: 5d37a8bd-f323-47be-8ec2-e5b6a3aadad9
+      version: -1
+      name: nexpose-create-vulnerability-exception
+      description: Create a new vulnerability exception.
+      script: Rapid7 Nexpose|||nexpose-create-vulnerability-exception
+      type: regular
+      iscommand: true
+      brand: Rapid7 Nexpose
+    nexttasks:
+      '#none#':
+      - "45"
+    scriptarguments:
+      reason:
+        simple: Acceptable Use
+      scope_id:
+        complex:
+          root: Nexpose.Asset
+          accessor: id
+      scope_type:
+        simple: Asset
+      state:
+        simple: Under Review
+      vulnerability_id:
+        complex:
+          root: inputs.vulenrability_id_to_except
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 1e53d91d-b25c-4466-89fe-146138d8b633
+    type: regular
+    task:
+      id: 1e53d91d-b25c-4466-89fe-146138d8b633
+      version: -1
+      name: DeleteContext
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 2ee9b6f5-762f-4841-8a28-77b58bb526f2
+    type: regular
+    task:
+      id: 2ee9b6f5-762f-4841-8a28-77b58bb526f2
+      version: -1
+      name: nexpose-delete-vulnerability-exception
+      description: Delete a vulnerability exception.
+      script: Rapid7 Nexpose|||nexpose-delete-vulnerability-exception
+      type: regular
+      iscommand: true
+      brand: Rapid7 Nexpose
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      id:
+        complex:
+          root: Nexpose.VulnerabilityException
+          accessor: id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 3bf8f93c-33f4-4a9c-8ed2-40baea125142
+    type: regular
+    task:
+      id: 3bf8f93c-33f4-4a9c-8ed2-40baea125142
+      version: -1
+      name: DeleteContext
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: cb370636-11f4-452b-8787-9a9bf3e95a55
+    type: regular
+    task:
+      id: cb370636-11f4-452b-8787-9a9bf3e95a55
+      version: -1
+      name: DeleteContext
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4745
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 62f15e17-081a-45f9-84ea-410e3c38d8c2
+    type: regular
+    task:
+      id: 62f15e17-081a-45f9-84ea-410e3c38d8c2
+      version: -1
+      name: nexpose-create-shared-credential
+      description: 'Create a new shared credential. For detailed explanation of all parameters of this command, please see: https://help.rapid7.com/insightvm/en-us/api/index.html#operation/createSharedCredential'
+      script: Rapid7 Nexpose|||nexpose-create-shared-credential
+      type: regular
+      iscommand: true
+      brand: Rapid7 Nexpose
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      name:
+        simple: Test-Credential
+      password:
+        simple: test
+      service:
+        simple: FTP
+      site_assignment:
+        simple: Specific-Sites
+      sites:
+        complex:
+          root: Nexpose.Site
+          accessor: Id
+      username:
+        simple: test
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: e45bb08b-86a7-44bb-8cd7-f79edc180af7
+    type: regular
+    task:
+      id: e45bb08b-86a7-44bb-8cd7-f79edc180af7
+      version: -1
+      name: nexpose-list-shared-credential (specific ID)
+      description: Retrieve information about all or a specific shared credential.
+      script: Rapid7 Nexpose|||nexpose-list-shared-credential
+      type: regular
+      iscommand: true
+      brand: Rapid7 Nexpose
+    nexttasks:
+      '#none#':
+      - "39"
+    scriptarguments:
+      id:
+        complex:
+          root: Nexpose.SharedCredential
+          accessor: id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7020
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 45d7df55-c0bc-46bc-803d-599558c9ea38
+    type: regular
+    task:
+      id: 45d7df55-c0bc-46bc-803d-599558c9ea38
+      version: -1
+      name: nexpose-delete-shared-credential
+      description: |-
+        Beta Command
+
+         Delete a shared credential.
+      script: Rapid7 Nexpose|||nexpose-delete-shared-credential
+      type: regular
+      iscommand: true
+      brand: Rapid7 Nexpose
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      id:
+        complex:
+          root: Nexpose.SharedCredential
+          accessor: id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: e7075dae-896a-4bc6-85fb-b56167f8f0be
+    type: regular
+    task:
+      id: e7075dae-896a-4bc6-85fb-b56167f8f0be
+      version: -1
+      name: nexpose-get-asset-vulnerability
+      description: Returns details and possible remediations for an asset's vulnerability.
+      script: Rapid7 Nexpose|||nexpose-get-asset-vulnerability
+      type: regular
+      iscommand: true
+      brand: Rapid7 Nexpose
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      id:
+        complex:
+          root: inputs.asset_with_vulnerability_asset_id
+      vulnerabilityId:
+        complex:
+          root: inputs.asset_with_vulnerability_vulnerability_id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 400708cc-b0d6-4792-85a5-38c0b84404dc
+    type: regular
+    task:
+      id: 400708cc-b0d6-4792-85a5-38c0b84404dc
+      version: -1
+      name: nexpose-update-vulnerability-exception-expiration
+      description: Update an existing vulnerability exception.
+      script: Rapid7 Nexpose|||nexpose-update-vulnerability-exception-expiration
+      type: regular
+      iscommand: true
+      brand: Rapid7 Nexpose
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      expiration:
+        complex:
+          root: TimeNow
+      id:
+        complex:
+          root: Nexpose.VulnerabilityException
+          accessor: id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: a02e8b2e-effd-48b1-8532-0306d9bf22b1
+    type: regular
+    task:
+      id: a02e8b2e-effd-48b1-8532-0306d9bf22b1
+      version: -1
+      name: nexpose-update-vulnerability-exception-status
+      description: Update an existing vulnerability exception.
+      script: Rapid7 Nexpose|||nexpose-update-vulnerability-exception-status
+      type: regular
+      iscommand: true
+      brand: Rapid7 Nexpose
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      id:
+        complex:
+          root: Nexpose.VulnerabilityException
+          accessor: id
+      status:
+        simple: Reject
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 50a396f8-7e61-400f-8b3b-295e046aac1e
+    type: regular
+    task:
+      id: 50a396f8-7e61-400f-8b3b-295e046aac1e
+      version: -1
+      name: nexpose-get-asset-tags
+      description: Returns the specified tags for an asset.
+      script: Rapid7 Nexpose|||nexpose-get-asset-tags
+      type: regular
+      iscommand: true
+      brand: Rapid7 Nexpose
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      asset_id:
+        complex:
+          root: Nexpose.Asset
+          accessor: id
+      id:
+        complex:
+          root: Nexpose.Asset
+          accessor: id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 03c338b2-bca0-4d65-8eec-beeebf486304
+    type: regular
+    task:
+      id: 03c338b2-bca0-4d65-8eec-beeebf486304
+      version: -1
+      name: nexpose-get-sites
+      description: Retrieves accessible sites.
+      script: Rapid7 Nexpose|||nexpose-get-sites
+      type: regular
+      iscommand: true
+      brand: Rapid7 Nexpose
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      limit:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 454cf2dd-0708-4ab4-8d0f-44f4e9673665
+    type: regular
+    task:
+      id: 454cf2dd-0708-4ab4-8d0f-44f4e9673665
+      version: -1
+      name: nexpose-get-scans
+      description: Return a list of scans. Returns only active scans by default (active=true).
+      script: Rapid7 Nexpose|||nexpose-get-scans
+      type: regular
+      iscommand: true
+      brand: Rapid7 Nexpose
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      active:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 9fa4181c-d528-4384-8016-09cceabfd8bc
+    type: regular
+    task:
+      id: 9fa4181c-d528-4384-8016-09cceabfd8bc
+      version: -1
+      name: nexpose-get-sites
+      description: Retrieves accessible sites.
+      script: Rapid7 Nexpose|||nexpose-get-sites
+      type: regular
+      iscommand: true
+      brand: Rapid7 Nexpose
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      limit:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 6a5cf06c-2ef9-41d2-8a6e-144edd25ad21
+    type: regular
+    task:
+      id: 6a5cf06c-2ef9-41d2-8a6e-144edd25ad21
+      version: -1
+      name: nexpose-list-shared-credential
+      description: Retrieve information about all or a specific shared credential.
+      script: Rapid7 Nexpose|||nexpose-list-shared-credential
+      type: regular
+      iscommand: true
+      brand: Rapid7 Nexpose
+    nexttasks:
+      '#none#':
+      - "25"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: fa78648f-759f-42c2-84dd-a76664daa32d
+    type: regular
+    task:
+      id: fa78648f-759f-42c2-84dd-a76664daa32d
+      version: -1
+      name: nexpose-list-vulnerability
+      description: Retrieve information about all or a specific vulnerability.
+      script: Rapid7 Nexpose|||nexpose-list-vulnerability
+      type: regular
+      iscommand: true
+      brand: Rapid7 Nexpose
+    nexttasks:
+      '#none#':
+      - "20"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: 2c76c70c-988e-4d4f-80f2-5637736ee6d1
+    type: condition
+    task:
+      id: 2c76c70c-988e-4d4f-80f2-5637736ee6d1
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "44"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Nexpose.Site.Id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: f5bd51a3-4004-4046-8fe1-163e2dd7e565
+    type: condition
+    task:
+      id: f5bd51a3-4004-4046-8fe1-163e2dd7e565
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Nexpose.Site.Id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5795
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: 0fcdda37-8d93-44e3-8d0e-f86c225e05df
+    type: condition
+    task:
+      id: 0fcdda37-8d93-44e3-8d0e-f86c225e05df
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Nexpose.Site.Id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6495
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: 65d9ff73-a24d-4e9a-8a22-9adfe21b350c
+    type: regular
+    task:
+      id: 65d9ff73-a24d-4e9a-8a22-9adfe21b350c
+      version: -1
+      name: GetTime
+      description: |
+        Retrieves the current date and time.
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      dateFormat:
+        simple: ISO
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: e000eb4c-9e30-457b-8b42-516926db2cf9
+    type: regular
+    task:
+      id: e000eb4c-9e30-457b-8b42-516926db2cf9
+      version: -1
+      name: GetTime (+1 year)
+      description: |
+        Retrieves the current date and time.
+      scriptName: GetTime
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      dateFormat:
+        simple: ISO
+      yearsAgo:
+        simple: "-1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: 98df5062-2eca-4ada-88af-781eaa88f828
+    type: regular
+    task:
+      id: 98df5062-2eca-4ada-88af-781eaa88f828
+      version: -1
+      name: nexpose-list-vulnerability-exceptions
+      description: Retrieve information about scan schedules for a specific site or a specific scan schedule.
+      script: Rapid7 Nexpose|||nexpose-list-vulnerability-exceptions
+      type: regular
+      iscommand: true
+      brand: Rapid7 Nexpose
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      limit:
+        simple: "0"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: 50eccbf2-437f-419c-8487-3505f24346de
+    type: regular
+    task:
+      id: 50eccbf2-437f-419c-8487-3505f24346de
+      version: -1
+      name: nexpose-delete-vulnerability-exception
+      description: Delete a vulnerability exception.
+      script: Rapid7 Nexpose|||nexpose-delete-vulnerability-exception
+      type: regular
+      iscommand: true
+      brand: Rapid7 Nexpose
+    nexttasks:
+      '#none#':
+      - "49"
+    scriptarguments:
+      id:
+        complex:
+          root: Nexpose.VulnerabilityException
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Nexpose.VulnerabilityException.scope.vulnerability
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.vulenrability_id_to_except
+                iscontext: true
+          accessor: id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: 31b711ea-3e56-4ac4-8714-cae26b9934b8
+    type: condition
+    task:
+      id: 31b711ea-3e56-4ac4-8714-cae26b9934b8
+      version: -1
+      name: If Vulnerability Already Has An Exception
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "49"
+      "yes":
+      - "47"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: in
+          left:
+            value:
+              simple: inputs.vulenrability_id_to_except
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: Nexpose.VulnerabilityException.scope
+                accessor: vulnerability
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1235
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: a13044ab-fd68-48c7-8737-b9ef109ccb33
+    type: regular
+    task:
+      id: a13044ab-fd68-48c7-8737-b9ef109ccb33
+      version: -1
+      name: DeleteContext (Nexpose.VulnerabilityException)
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      key:
+        simple: Nexpose.VulnerabilityException
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 7560,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: fake_asset_ip
+  value:
+    simple: 192.0.2.0
+  required: false
+  description: IP to use when creating a new asset.
+  playbookInputQuery:
+- key: asset_with_vulnerability_asset_id
+  value:
+    simple: "17"
+  required: false
+  description: ID of an asset with a specific vulnerability to check.
+  playbookInputQuery:
+- key: asset_with_vulnerability_vulnerability_id
+  value:
+    simple: generic-tcp-timestamp
+  required: false
+  description: The vulnerability that exists in the asset that was set on 'asset_with_vulnerability_id'.
+  playbookInputQuery:
+- key: vulenrability_id_to_except
+  value:
+    simple: 7-zip-cve-2008-6536
+  required: false
+  description: ID of a vulnerability to add an exception for.
+  playbookInputQuery:
+outputs: []
+fromversion: 5.0.0
+description: ''

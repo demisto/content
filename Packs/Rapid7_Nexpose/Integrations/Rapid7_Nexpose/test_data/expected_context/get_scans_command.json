@@ -1,0 +1,57 @@
+[
+    {
+        "Id": 1,
+        "ScanType": "Manual",
+        "ScanName": "Tue 03 Dec 2019 10:47 PM",
+        "StartedBy": null,
+        "Assets": 0,
+        "Completed": "2019-12-03T20:48:01.368Z",
+        "Status": "finished",
+        "Message": null,
+        "TotalTime": "51.316 seconds"
+    },
+    {
+        "Id": 2,
+        "ScanType": "Manual",
+        "ScanName": "Tue 03 Dec 2019 10:52 PM",
+        "StartedBy": null,
+        "Assets": 0,
+        "Completed": "2019-12-03T20:53:09.453Z",
+        "Status": "finished",
+        "Message": null,
+        "TotalTime": "29.91 seconds"
+    },
+    {
+        "Id": 3,
+        "ScanType": "Manual",
+        "ScanName": "scan 2019-12-03 19:58:25.961787",
+        "StartedBy": null,
+        "Assets": 0,
+        "Completed": "2019-12-03T21:01:33.970Z",
+        "Status": "finished",
+        "Message": null,
+        "TotalTime": "28.904 seconds"
+    },
+    {
+        "Id": 4,
+        "ScanType": "Manual",
+        "ScanName": "Wed 04 Dec 2019 02:20 AM",
+        "StartedBy": null,
+        "Assets": 0,
+        "Completed": "2019-12-04T00:20:55.763Z",
+        "Status": "finished",
+        "Message": null,
+        "TotalTime": "33.564 seconds"
+    },
+    {
+        "Id": 5,
+        "ScanType": "Manual",
+        "ScanName": "Wed 04 Dec 2019 02:43 AM",
+        "StartedBy": null,
+        "Assets": 0,
+        "Completed": "2019-12-04T00:44:14.576Z",
+        "Status": "finished",
+        "Message": null,
+        "TotalTime": "30.505 seconds"
+    }
+]
