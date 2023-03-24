@@ -1,11 +1,11 @@
 {
     "name": "Stamus",
     "description": "Stamus Security Platform",
-    "support": "community",
+    "support": "partner",
     "currentVersion": "1.0.0",
     "author": "Stamus Networks",
     "url": "https://www.stamus-networks.com/",
-    "email": "",
+    "email": "support@stamus-networks.com",
     "categories": [
         "Network Security"
     ],
