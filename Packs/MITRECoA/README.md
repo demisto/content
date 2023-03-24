@@ -23,4 +23,4 @@ For more information, please refer to the [MITRE ATT&CK - Courses of Action arti
 ![Maze_Ransomware](readme_images/Maze_Indicator.png)
 
 **MITRE ATT&CK - Courses of Action Sample Playbook**
-![Courses_of_Action](https://github.com/demisto/content/raw/8a574f7099b52404b57b6bb06a1936faed95790d/Images/MITRE_ATT%26CK_CoA_-_T1027.png)
+![Courses_of_Action](readme_images/MITRE_ATT%26CK_CoA_-_T1027.png)
