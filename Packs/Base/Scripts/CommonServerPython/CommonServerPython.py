@@ -10935,6 +10935,16 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
     header_msg = 'Error sending new events into XSIAM.\n'
 
     def split_xsiam_events_to_chunks(data, size_of_zipped_data):
+        """
+        Splits a list of XSIAM events into chunks of size XSIAM_EVENT_CHUNK_SIZE.
+
+        Args:
+            data (list or str): A list of XSIAM events or a string containing XSIAM events separated by newline characters.
+            size_of_zipped_data (int): The size of the zipped data.
+
+        Returns:
+            list: A list of sub-lists containing XSIAM events.
+        """
         num_of_sub_lists = math.ceil(size_of_zipped_data / XSIAM_EVENT_CHUNK_SIZE)
         data_list = str.split(data, '\n') if isinstance(data, str) else data
         chunk_size = math.ceil(len(data_list) / num_of_sub_lists)
