@@ -40,8 +40,8 @@ def trigger_generic_webhook(options):
     }
     # post to Content Gold
     try:
-        res = requests.post(secrets_instance_url, json=body, auth=(username, password), verify=False)
-    except requests.exceptions.ConnectionError as e:
+        res = requests.post(secrets_instance_url, json=body, auth=(username, password))
+    except Exception as e:
         print(f'THIS IS THE ERROR FROM REQUESTS: {e}')
 
     if res.status_code != 200:
