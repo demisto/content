@@ -860,18 +860,16 @@ def modify_v10_results_to_v9_format(results: List[Dict[Any, Any]]) -> List[Dict[
     return results
 
 
-def capitalize_key_first_letter(input_lst: List[Dict], check_lst: List = None) -> List[Dict]:
+def capitalize_key_first_letter(input_lst: List[Dict], check_lst: List = []) -> List[Dict]:
     """
         Capitalize the first letter of all keys in all dictionaries,
-        while keeping the rest of the key as is,(can't use 'capitalize()').
+        while keeping the rest of the key as it is.(can't use 'capitalize()').
         Args:
             input_lst: List - A list of dictionaries.
             check_lst: List - A list of keys to check if they exist in the dictionary.
-        Returns:
+        Returns:F
             Returns the dict with the first letter of all keys capitalized.
     """
-    # if check_lst is None:
-    #     check_lst = []
     capitalize_lst = []
     for my_dict in input_lst:
         my_dict = (
@@ -887,11 +885,12 @@ def capitalize_key_first_letter(input_lst: List[Dict], check_lst: List = None) -
     return capitalize_lst
 
 
-def flatten_and_capitalize(main_dict: Dict, inner_dict_key: str, check_lst: List = None) -> Dict:
+def flatten_and_capitalize(main_dict: Dict, inner_dict_key: str, check_lst: List = []) -> Dict:
     """
         Flatten a nested dictionary and capitalize the first letter of all keys.
         Args:
-            nested_dict: Dict - A nested dictionary.
+            main_dict: Dict - A dictionary with a nested dict.
+            inner_dict_key: str - The key of the nested dictionary.
             check_lst: List - A list of keys to check if they exist in the dictionary.
         Returns:
             Returns a flat dict with the first letter of all keys capitalized.
@@ -980,7 +979,7 @@ def overwrite_source_destination_object(rule_object_id: Optional[int], rule_obje
                                         member_rule_list: Dict) -> List:
     """ overwrite the source and destination objects in the command update_firewall_policy.
         Args:
-            rule_object_id: Optinal [int] - The id of the rule.
+            rule_object_id: Optional [int] - The id of the rule.
             rule_object_type: Optional[str] - The type of the rule.
             dest_or_src: str - Overwrite the destination or source object.
             member_rule_list: Dict - The first object in MemberRuleList in the API response.
@@ -2188,7 +2187,7 @@ def list_domain_device_command(client: Client, args: Dict) -> CommandResults:
     all_results = argToBoolean(args.get('all_results', False))
 
     response = client.list_domain_device_request(domain_id)
-    devices: List = response.get('DeviceResponseList') or []
+    devices: List = response.get('DeviceResponseList', [])
 
     capitalize_devices = capitalize_key_first_letter(devices) if all_results else capitalize_key_first_letter(devices)[:limit]
 
@@ -2325,7 +2324,7 @@ def assign_interface_policy_command(client: Client, args: Dict) -> CommandResult
     custom_policy_json = json.loads(custom_policy_json) if custom_policy_json else {}
 
     # Check if at least one policy was provided
-    if not firewall_policy and not firewall_port_policy and not ips_policy and not args.get('custom_policy_json'):
+    if not firewall_policy and not firewall_port_policy and not ips_policy and not custom_policy_json:
         raise DemistoException("Please provide at least one policy to assign.")
 
     response = client.assign_interface_policy_request(domain_id=domain_id,
@@ -2335,9 +2334,9 @@ def assign_interface_policy_command(client: Client, args: Dict) -> CommandResult
                                                       ips_policy=ips_policy,
                                                       custom_policy_json=custom_policy_json
                                                       )
-    readble_output = 'Policy assigned successfully.' if response.get('status') == 1 else 'Policy assignment failed.'
+    readable_output = 'Policy assigned successfully.' if response.get('status') == 1 else 'Policy assignment failed.'
     return CommandResults(
-        readable_output=readble_output,
+        readable_output=readable_output,
         raw_response=response
     )
 
@@ -2376,7 +2375,7 @@ def list_interface_policy_command(client: Client, args: Dict) -> CommandResults:
 
 def get_device_configuration_command(client: Client, args: Dict) -> CommandResults:
     """
-    Retrieves the configuration of a device(e.g pending changes)
+    Retrieves the configuration of a device(e.g pending changes).
     Args:
         client (Client):  - A McAfeeNSM client.
         args (Dict): - The function arguments.
@@ -2390,17 +2389,17 @@ def get_device_configuration_command(client: Client, args: Dict) -> CommandResul
 
     response = client.get_device_configuration_request(device_id=device_id)
     capitalize_response = capitalize_key_first_letter([response])[0]
-    flatterned_response = flatten_and_capitalize(main_dict=capitalize_response,
-                                                 inner_dict_key='PendingChanges')
+    flattened_response = flatten_and_capitalize(main_dict=capitalize_response,
+                                                inner_dict_key='PendingChanges')
 
     readable_output = tableToMarkdown(
-        name='Device Configuration', t=flatterned_response, removeNull=True
+        name='Device Configuration', t=flattened_response, removeNull=True
     )
 
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix='NSM.DeviceConfiguration',
-        outputs=flatterned_response,
+        outputs=flattened_response,
         raw_response=response
     )
 
@@ -2408,13 +2407,13 @@ def get_device_configuration_command(client: Client, args: Dict) -> CommandResul
 @polling_function(name='nsm-deploy-device-configuration', interval=INTERVAL, requires_polling_arg=False)
 def deploy_device_configuration_command(args: Dict, client: Client) -> PollResult:
     """
-    Deploy the configuration of a device.(e.g activate pending changes)
+    Deploy the configuration of a device.(e.g activate pending changes).
     Args:
         args (Dict): - The function arguments.
         client (Client): - A McAfeeNSM client.
 
     Returns:
-        A PollResult object with a success or failure message
+        A PollResult object with a success or failure message.
     """
 
     request_id = arg_to_number(args.get('request_id'))
