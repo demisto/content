@@ -613,7 +613,7 @@ script:
     execution: false
     name: cherwell-run-one-step-action-on-business-object
     outputs: []
-  dockerimage: demisto/python3:3.10.10.48392
+  dockerimage: demisto/python3:3.10.10.49934
   isfetch: true
   runonce: false
   script: '-'
