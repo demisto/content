@@ -1929,6 +1929,25 @@ script:
       predefined:
       - yes
       - no
+    outputs:
+    - contextPath: NSM.Device.ContactInformation
+      description: The contact information of the device.
+      type: string
+    - contextPath: NSM.Device.DeviceId
+      description: The id of the device.
+      type: number
+    - contextPath: NSM.Device.DeviceName
+      description: The name of the device.
+      type: string
+    - contextPath: NSM.Device.DeviceType
+      description: The type of the device.
+      type: string
+    - contextPath: NSM.Device.Location
+      description: The location of the device.
+      type: string
+    - contextPath: NSM.Device.UpdatingMode
+      description: The updating mode of the device.
+      type: string
   - name: nsm-list-device-interface
     description: List the interfaces related to a given device.
     arguments:
@@ -1946,6 +1965,16 @@ script:
       predefined:
       - yes
       - no
+    outputs:
+    - contextPath: NSM.Interface.InterfaceId
+      description: The id of the interface.
+      type: number
+    - contextPath: NSM.Interface.InterfaceName
+      description: The name of the interface.
+      type: Unknown
+    - contextPath: NSM.Interface.InterfaceType
+      description: The type of the interface.
+      type: string
   - name: nsm-assign-device-policy
     description: Assign a policy to a specific device.
     arguments:
@@ -1975,6 +2004,61 @@ script:
       predefined:
       - yes
       - no
+    outputs:
+    - contextPath: NSM.DevicePolicy.DeviceName
+      description: The name of the device.
+      type: string
+    - contextPath: NSM.DevicePolicy.AtdUserForInboundATDAnalysis
+      description: ""
+      type: Unknown
+    - contextPath: NSM.DevicePolicy.InterfaceName
+      description: The name of the interface.
+      type: string
+    - contextPath: NSM.DevicePolicy.FirewallPolicyLast
+      description: ""
+      type: Unknown
+    - contextPath: NSM.DevicePolicy.ReconnaissancePolicy
+      description: ""
+      type: Unknown
+    - contextPath: NSM.DevicePolicy.PolicyGroup
+      description: ""
+      type: Unknown
+    - contextPath: NSM.DevicePolicy.AtdUserForOutboundATDAnalysis
+      description: ""
+      type: Unknown
+    - contextPath: NSM.DevicePolicy.DeviceId
+      description: The id of the device.
+      type: number
+    - contextPath: NSM.DevicePolicy.AdvancedMalwareOutboundPolicy
+      description: ""
+      type: Unknown
+    - contextPath: NSM.DevicePolicy.QosInboundPolicy
+      description: ""
+      type: Unknown
+    - contextPath: NSM.DevicePolicy.ConnectionLimitingPolicy
+      description: ""
+      type: Unknown
+    - contextPath: NSM.DevicePolicy.QosOutboundPolicy
+      description: ""
+      type: Unknown
+    - contextPath: NSM.DevicePolicy.ProtectionOptionsPolicy
+      description: ""
+      type: Unknown
+    - contextPath: NSM.DevicePolicy.AdvancedMalwareInboundPolicy
+      description: ""
+      type: Unknown
+    - contextPath: NSM.DevicePolicy.QosOutboundRateLimitingProfile
+      description: ""
+      type: Unknown
+    - contextPath: NSM.DevicePolicy.IpsPolicy
+      description: ""
+      type: Unknown
+    - contextPath: NSM.DevicePolicy.QosInboundRateLimitingProfile
+      description: ""
+      type: Unknown
+    - contextPath: NSM.DevicePolicy.FirewallPolicyFirst
+      description: ""
+      type: Unknown
   - name: nsm-assign-interface-policy
     description: Assign a policy to a specific interface.
     arguments:
@@ -2008,12 +2092,107 @@ script:
       predefined:
       - yes
       - no
+    outputs:
+    - contextPath: NSM.InterfacePolicy.DeviceName
+      description: The name of the device.
+      type: string
+    - contextPath: NSM.InterfacePolicy.AtdUserForInboundATDAnalysis
+      description: ""
+      type: Unknown
+    - contextPath: NSM.InterfacePolicy.InterfaceName
+      description: The name of the interface.
+      type: string
+    - contextPath: NSM.InterfacePolicy.FirewallPolicyLast
+      description: ""
+      type: Unknown
+    - contextPath: NSM.InterfacePolicy.ReconnaissancePolicy
+      description: ""
+      type: Unknown
+    - contextPath: NSM.InterfacePolicy.PolicyGroup
+      description: ""
+      type: Unknown
+    - contextPath: NSM.InterfacePolicy.AtdUserForOutboundATDAnalysis
+      description: ""
+      type: Unknown
+    - contextPath: NSM.InterfacePolicy.DeviceId
+      description: The id of the device.
+      type: number
+    - contextPath: NSM.InterfacePolicy.AdvancedMalwareOutboundPolicy
+      description: ""
+      type: Unknown
+    - contextPath: NSM.InterfacePolicy.QosInboundPolicy
+      description: ""
+      type: Unknown
+    - contextPath: NSM.InterfacePolicy.ConnectionLimitingPolicy
+      description: ""
+      type: Unknown
+    - contextPath: NSM.InterfacePolicy.QosOutboundPolicy
+      description: ""
+      type: Unknown
+    - contextPath: NSM.InterfacePolicy.ProtectionOptionsPolicy
+      description: ""
+      type: Unknown
+    - contextPath: NSM.InterfacePolicy.AdvancedMalwareInboundPolicy
+      description: ""
+      type: Unknown
+    - contextPath: NSM.InterfacePolicy.QosOutboundRateLimitingProfile
+      description: ""
+      type: Unknown
+    - contextPath: NSM.InterfacePolicy.IpsPolicy
+      description: ""
+      type: Unknown
+    - contextPath: NSM.InterfacePolicy.QosInboundRateLimitingProfile
+      description: ""
+      type: Unknown
+    - contextPath: NSM.InterfacePolicy.FirewallPolicyFirst
+      description: ""
+      type: Unknown
   - name: nsm-get-device-configuration
     description: Provides configuration information of a given device.
     arguments:
     - name: device_id
       description: The ID of the device. To get the device ID, use the !nsm-get-sensors command.
       required: true
+    outputs:
+    - contextPath: NSM.DeviceConfiguration.IsSSLConfigurationChanged
+      description: Was the ssl configuration changed.
+      type: boolean
+    - contextPath: NSM.DeviceConfiguration.DeviceName
+      description: The name of the device.
+      type: string
+    - contextPath: NSM.DeviceConfiguration.IsConfigurationChanged
+      description: Was the configuration changed.
+      type: boolean
+    - contextPath: NSM.DeviceConfiguration.IsMalwareConfigurationChanged
+      description: ""
+      type: boolean
+    - contextPath: NSM.DeviceConfiguration.LastUpdateTime
+      description: ""
+      type: Unknown
+    - contextPath: NSM.DeviceConfiguration.IsGAMUpdateRequired
+      description: ""
+      type: boolean
+    - contextPath: NSM.DeviceConfiguration.IsSignatureSetConfigurationChanged
+      description: ""
+      type: Unknown
+    - contextPath: NSM.DeviceConfiguration.IsSigsetConfigPushRequired
+      description: ""
+      type: boolean
+    - contextPath: NSM.DeviceConfiguration.IsBotnetPushRequired
+      description: ""
+      type: boolean
+    - contextPath: NSM.DeviceConfiguration.IsPolicyConfigurationChanged
+      description: ""
+      type: boolean
+    - contextPath: NSM.DeviceConfiguration.IsSSLPushRequired
+      description: ""
+      type: boolean
+    - contextPath: NSM.DeviceConfiguration.IsGloablPolicyConfigurationChanged
+      description: ""
+      type: boolean
+    - contextPath: NSM.DeviceConfiguration.IsBotnetConfigurationChanged
+      description: ""
+      type: boolean
   - name: nsm-deploy-device-configuration
     polling: true
     description: "Deploy the pending changes.\n Note: In order to avoid extra run time, it is recommended to deploy only the changes that are pending.\nTo get the pending changes, use the !nsm-get-device-configuration command."
