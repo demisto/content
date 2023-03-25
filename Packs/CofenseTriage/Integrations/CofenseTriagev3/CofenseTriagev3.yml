@@ -2380,7 +2380,7 @@ script:
     - contextPath: InfoFile.Extension
       description: File extension.
       type: String
-  dockerimage: demisto/python3:3.10.10.48392
+  dockerimage: demisto/python3:3.10.10.49934
   feed: false
   isfetch: true
   isremotesyncin: true
