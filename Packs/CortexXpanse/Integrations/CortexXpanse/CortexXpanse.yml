@@ -419,7 +419,7 @@ script:
     - contextPath: ASM.Alert.detection_timestamp
       description: Date the alert was created.
       type: Date
-  dockerimage: demisto/python3:3.10.10.48392
+  dockerimage: demisto/python3:3.10.10.49934
   isFetchSamples: true
   isfetch: true
   runonce: false
