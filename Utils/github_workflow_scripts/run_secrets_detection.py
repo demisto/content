@@ -61,6 +61,11 @@ def trigger_generic_webhook(options):
 
 
 def main():
+    import socket
+    try:
+        s = socket.create_connection(('ggk-wrl-win1', 80))
+    except Exception as e:
+        raise ValueError(e)
     options = arguments_handler()
     trigger_generic_webhook(options)
 
