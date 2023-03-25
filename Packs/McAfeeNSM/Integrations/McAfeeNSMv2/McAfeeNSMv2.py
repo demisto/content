@@ -902,6 +902,32 @@ def flatten_and_capitalize(main_dict: Dict, inner_dict_key: str, check_lst: List
     return main_dict
 
 
+def deploy_polling_message(status: Dict, args: Dict):
+    """
+    Builds a message and a fail or success list for the polling command
+    Args:
+        status: the status of the deployment
+        args: the arguments of the deployment command
+        request_id: the request id of the deployment
+    Returns:
+        fail_or_success_list: a list of 0 or 1, 0 for failure and 1 for success
+        message: a message to be printed to the user
+    """
+    fail_or_success_list = []
+    build_a_massage = ""
+    for k, v in args.items():
+        if v == "true":  # if the value is true that is one of the arguments to deploy and we need to check its status
+            current_percentage_status = status.get(DEPLOY_ARGUMENT_MAPPER.get(str(k)))
+            current_message_status = status.get(MESSAGE_MAP.get(str(k)))
+            if current_percentage_status != 100 or current_message_status != "DOWNLOAD COMPLETE":
+                fail_or_success_list.append(0)
+                build_a_massage += f"""\nThe current percentage of deployment for '{k}' is: {current_percentage_status}%
+                \nAnd the current message is: {current_message_status}\n"""
+            else:
+                fail_or_success_list.append(1)
+    return fail_or_success_list, build_a_massage
+
+
 def check_args_create_rule(rule_type: str, address: List, from_address: str, to_address: str, number: int):
     """ Validate the arguments of the function
         Args:
@@ -2444,21 +2470,9 @@ def deploy_device_configuration_command(args: Dict, client: Client) -> PollResul
     status = client.check_deploy_device_configuration_request_status(device_id=device_id,
                                                                      request_id=request_id)
 
-    fail_or_success_list = []
-    build_a_massage = ""
-    for k, v in args.items():
-        if v == "true":  # if the value is true that is one of the arguments to deploy and we need to check its status
-            current_percentage_status = status.get(DEPLOY_ARGUMENT_MAPPER.get(str(k)))
-            current_message_status = status.get(MESSAGE_MAP.get(str(k)))
-            if current_percentage_status != 100 or current_message_status != "DOWNLOAD COMPLETE":
-                fail_or_success_list.append(0)
-                build_a_massage += f"""\nThe current percentage of deployment for '{k}' is: {current_percentage_status}%
-                \nAnd the current message is: {current_message_status}\n"""
-            else:
-                fail_or_success_list.append(1)
-
-        message = CommandResults(
-            readable_output=f"{build_a_massage}\n\nChecking again in {INTERVAL} seconds...")
+    fail_or_success_list, message_to_return = deploy_polling_message(args=args, status=status)
+    message = CommandResults(
+        readable_output=f"{message_to_return}\n\nChecking again in {INTERVAL} seconds...")
 
     if not all(fail_or_success_list):  # if one of the arguments was not fully deployed yet, the polling will continue
         return PollResult(
