@@ -42,14 +42,16 @@ def get_packs_names(packs_to_upload: str) -> set:
         set: unique collection of packs names to upload.
 
     """
-    if packs_to_upload and isinstance(packs_to_upload, str):
-        packs = {p.strip() for p in packs_to_upload.split(',') if p not in IGNORED_FILES}
-        logging.info(f"Number of selected packs to upload is: {len(packs)}")
-        # return only packs from csv list
-        return packs
-    else:
-        logging.critical("Not correct usage of flag -p. Please check help section of upload packs script.")
-        sys.exit(1)
+    if packs_to_upload:
+        if isinstance(packs_to_upload, str):
+            packs = {p.strip() for p in packs_to_upload.split(',') if p not in IGNORED_FILES}
+            logging.info(f"Number of selected packs to upload is: {len(packs)}")
+            # return only packs from csv list
+            return packs
+        else:
+            logging.critical("Not correct usage of flag -p. Please check help section of upload packs script.")
+            sys.exit(1)
+    return set()
 
 
 def extract_packs_artifacts(packs_artifacts_path: str, extract_destination_path: str):
@@ -1091,7 +1093,8 @@ def main():
 
     # taking care of private packs
     is_private_content_updated, private_packs, updated_private_packs_ids = handle_private_content(
-        index_folder_path, private_bucket_name, extract_destination_path, storage_client, pack_names_to_upload, storage_base_path
+        index_folder_path, private_bucket_name, extract_destination_path, storage_client, pack_names_to_upload,
+        storage_base_path
     )
 
     if not override_all_packs:
@@ -1102,7 +1105,8 @@ def main():
     statistics_handler = StatisticsHandler(service_account, index_folder_path)
 
     # clean index and gcs from non existing or invalid packs
-    clean_non_existing_packs(index_folder_path, private_packs, storage_bucket, storage_base_path, all_content_packs, marketplace)
+    clean_non_existing_packs(index_folder_path, private_packs, storage_bucket, storage_base_path, all_content_packs,
+                             marketplace)
 
     # packs that depends on new packs that are not in the previous index.zip
     packs_with_missing_dependencies = []
@@ -1285,7 +1289,8 @@ def main():
                                            packs_for_current_marketplace_dict)
 
     # get the lists of packs divided by their status
-    successful_packs, successful_uploaded_dependencies_zip_packs, skipped_packs, failed_packs = get_packs_summary(packs_list)
+    successful_packs, successful_uploaded_dependencies_zip_packs, skipped_packs, failed_packs = get_packs_summary(
+        packs_list)
 
     # Store successful and failed packs list in CircleCI artifacts - to be used in Upload Packs To Marketplace job
     packs_results_file_path = os.path.join(os.path.dirname(packs_artifacts_path), BucketUploadFlow.PACKS_RESULTS_FILE)
