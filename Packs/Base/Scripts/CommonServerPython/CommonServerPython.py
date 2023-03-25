@@ -20,6 +20,7 @@ import types
 import urllib
 import gzip
 import ssl
+import math
 from random import randint
 import xml.etree.cElementTree as ET
 from collections import OrderedDict
@@ -40,7 +41,7 @@ def __line__():
 
 # 43 - The line offset from the beggining of the file.
 _MODULES_LINE_MAPPING = {
-    'CommonServerPython': {'start': __line__() - 43, 'end': float('inf')},
+    'CommonServerPython': {'start': __line__() - 44, 'end': float('inf')},
 }
 
 XSIAM_EVENT_CHUNK_SIZE = 2 ** 20 # 1 Mib
@@ -10856,24 +10857,6 @@ def xsiam_api_call_with_retries(
     return response
 
 
-def round_up(x):
-    return int(x) + int((x > 0) and (x - int(x)) > 0)
-
-
-def is_zipped_data_size_ideal(zipped_data):
-    return sys.getsizeof(zipped_data) <= XSIAM_EVENT_CHUNK_SIZE
-
-
-def split_xsiam_events_to_chunks(data, size_of_zipped_data):
-    num_of_sub_lists = round_up(size_of_zipped_data / XSIAM_EVENT_CHUNK_SIZE)
-    data_list = str.split(data, '\n') if isinstance(data, str) else data
-    chunk_size = round_up(len(data_list) / num_of_sub_lists)
-    return [
-        data_list[i: i + chunk_size]
-        for i in range(0, len(data_list), chunk_size)
-    ]
-
-
 def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url', num_of_attempts=3):
     """
     Send the fetched events into the XDR data-collector private api.
@@ -10950,6 +10933,15 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
     }
 
     header_msg = 'Error sending new events into XSIAM.\n'
+
+    def split_xsiam_events_to_chunks(data, size_of_zipped_data):
+        num_of_sub_lists = math.ceil(size_of_zipped_data / XSIAM_EVENT_CHUNK_SIZE)
+        data_list = str.split(data, '\n') if isinstance(data, str) else data
+        chunk_size = math.ceil(len(data_list) / num_of_sub_lists)
+        return [
+            data_list[i: i + chunk_size]
+            for i in range(0, len(data_list), chunk_size)
+        ]
 
     def events_error_handler(res):
         """
