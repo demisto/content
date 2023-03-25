@@ -834,8 +834,8 @@ def modify_v10_results_to_v9_format(results: List[Dict[Any, Any]]) -> List[Dict[
     """
     key_list = ['IPv6AddressRange', 'HostIPv6', 'Network_IPV_6', 'Network_IPV_4',
                 'HostIPv4', 'IPv4AddressRange']
-    for policy in results:
-        for key, value in policy.items():
+    for record in results:
+        for key, value in record.items():
             if key in key_list and value:   # find the key that its value is the dict contains the addresses
                 address_list: list = []
                 my_key = key
@@ -843,8 +843,8 @@ def modify_v10_results_to_v9_format(results: List[Dict[Any, Any]]) -> List[Dict[
                 # The value of the first (and only) key is a list containing dict with addresses
                 list_of_dicts_of_adresses = value[next(iter(value))]
                 for inner_dict in list_of_dicts_of_adresses:
-                    temp_dict = {}
                     for key in inner_dict.keys():
+                        temp_dict = {}
                         # choose the keys and values that are relevant ans saves them in a temp dict
                         if key == 'value':
                             address_list.append(inner_dict[key])
@@ -855,7 +855,7 @@ def modify_v10_results_to_v9_format(results: List[Dict[Any, Any]]) -> List[Dict[
 
                 if address_list:
                     # replace the list of dicts with a list of strings containing the addresses
-                    policy[my_key][next(iter(value))] = address_list
+                    record[my_key][next(iter(value))] = address_list
 
     return results
 
