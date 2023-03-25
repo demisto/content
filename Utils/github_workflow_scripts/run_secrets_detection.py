@@ -7,7 +7,7 @@ import urllib3
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-SECRETS_INSTANCE_URL_SUFFIX = "/instance/execute/GenericWebhook_Secrets_copy"
+SECRETS_INSTANCE_URL_SUFFIX = "/instance/execute/GenericWebhook_Secrets"
 
 
 def arguments_handler():
@@ -32,10 +32,10 @@ def trigger_generic_webhook(options):
     username = options.username
     password = options.password
     gold_server_url = options.gold_server_url
-    secrets_instance_url = f"{gold_server_url}/instance/execute/GenericWebhook_Secrets_copy"
+    secrets_instance_url = f"{gold_server_url}/instance/execute/GenericWebhook_Secrets"
 
     body = {
-        "name": "GenericWebhook_Secrets_copy",
+        "name": "GenericWebhook_Secrets",
         "raw_json": {"BranchName": branch_name, "PullRequestNumber": pr_number},
     }
     # post to Content Gold
