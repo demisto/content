@@ -129,7 +129,7 @@ script:
     - contextPath: Cognni.insights.severity
       description: List of insight severities.
       type: Number
-  dockerimage: demisto/python3:3.10.10.48392
+  dockerimage: demisto/python3:3.10.10.49934
   feed: false
   isfetch: true
   longRunning: false
