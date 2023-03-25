@@ -11020,6 +11020,21 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
 
 def send_to_xsiam_with_retries(client, events_error_handler, header_msg, headers, num_of_attempts, xsiam_url,
                                zipped_data):
+    """
+    Sends zipped data to XSIAM with retries.
+
+    Args:
+        client (object): An instance of the client class.
+        events_error_handler (function): A function that handles events errors.
+        header_msg (str): The header message.
+        headers (dict): A dictionary containing headers for the request.
+        num_of_attempts (int): The number of attempts to send the data to XSIAM.
+        xsiam_url (str): The URL of the XSIAM server.
+        zipped_data (bytes): The zipped data to send.
+
+    Returns:
+        bool: True if the data was sent successfully, False otherwise.
+    """
     raw_response = xsiam_api_call_with_retries(
         client, xsiam_url, zipped_data, headers, num_of_attempts, events_error_handler
     ).json()
