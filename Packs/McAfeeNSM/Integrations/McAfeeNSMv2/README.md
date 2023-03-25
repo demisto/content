@@ -2037,7 +2037,15 @@ List the devices related to a given domain.
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| NSM.Device.ContactInformation | string | The contact information of the device. | 
+| NSM.Device.DeviceId | number | The id of the device. | 
+| NSM.Device.DeviceName | string | The name of the device. | 
+| NSM.Device.DeviceType | string | The type of the device. | 
+| NSM.Device.Location | string | The location of the device. | 
+| NSM.Device.UpdatingMode | string | The updating mode of the device. | 
+
 #### Command example
 ```!nsm-list-domain-device domain_id=0```
 #### Context Example
@@ -2048,7 +2056,7 @@ There is no context output for this command.
             {
                 "ContactInformation": null,
                 "DeviceId": 1003,
-                "DeviceName": "Dummy Device Name",
+                "DeviceName": "Virtual_NSP_01",
                 "DeviceType": "IPS_NAC_SENSOR",
                 "Location": null,
                 "UpdatingMode": "ONLINE"
@@ -2063,7 +2071,8 @@ There is no context output for this command.
 >### Domain devices List
 >|DeviceId|DeviceName|DeviceType|UpdatingMode|
 >|---|---|---|---|
->| 1003 | Dummy Device Name | IPS_NAC_SENSOR | ONLINE |
+>| 1003 | Virtual_NSP_01 | IPS_NAC_SENSOR | ONLINE |
+
 
 ### nsm-list-device-interface
 
@@ -2085,7 +2094,12 @@ List the interfaces related to a given device.
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| NSM.Interface.InterfaceId | number | The id of the interface. | 
+| NSM.Interface.InterfaceName | Unknown | The name of the interface. | 
+| NSM.Interface.InterfaceType | string | The type of the interface. | 
+
 #### Command example
 ```!nsm-list-device-interface device_id=1003 domain_id=0```
 #### Context Example
@@ -2122,6 +2136,7 @@ There is no context output for this command.
 >| 103 | 3-4 | Dedicated |
 >| 104 | 1-2 | Dedicated |
 
+
 ### nsm-list-device-policy
 
 ***
@@ -2142,7 +2157,27 @@ List all the policies assigned to a domain or a specific device.
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| NSM.DevicePolicy.DeviceName | string | The name of the device. | 
+| NSM.DevicePolicy.AtdUserForInboundATDAnalysis | Unknown |  | 
+| NSM.DevicePolicy.InterfaceName | string | The name of the interface. | 
+| NSM.DevicePolicy.FirewallPolicyLast | Unknown |  | 
+| NSM.DevicePolicy.ReconnaissancePolicy | Unknown |  | 
+| NSM.DevicePolicy.PolicyGroup | Unknown |  | 
+| NSM.DevicePolicy.AtdUserForOutboundATDAnalysis | Unknown |  | 
+| NSM.DevicePolicy.DeviceId | number | The id of the device. | 
+| NSM.DevicePolicy.AdvancedMalwareOutboundPolicy | Unknown |  | 
+| NSM.DevicePolicy.QosInboundPolicy | Unknown |  | 
+| NSM.DevicePolicy.ConnectionLimitingPolicy | Unknown |  | 
+| NSM.DevicePolicy.QosOutboundPolicy | Unknown |  | 
+| NSM.DevicePolicy.ProtectionOptionsPolicy | Unknown |  | 
+| NSM.DevicePolicy.AdvancedMalwareInboundPolicy | Unknown |  | 
+| NSM.DevicePolicy.QosOutboundRateLimitingProfile | Unknown |  | 
+| NSM.DevicePolicy.IpsPolicy | Unknown |  | 
+| NSM.DevicePolicy.QosInboundRateLimitingProfile | Unknown |  | 
+| NSM.DevicePolicy.FirewallPolicyFirst | Unknown |  | 
+
 #### Command example
 ```!nsm-list-device-policy domain_id=0```
 #### Context Example
@@ -2157,7 +2192,7 @@ There is no context output for this command.
                 "AtdUserForOutboundATDAnalysis": null,
                 "ConnectionLimitingPolicy": null,
                 "DeviceId": 1003,
-                "DeviceName": "Dummy Device Name",
+                "DeviceName": "Virtual_NSP_01",
                 "FirewallPolicy": null,
                 "FirewallPolicyFirst": "Test",
                 "FirewallPolicyLast": null,
@@ -2183,7 +2218,8 @@ There is no context output for this command.
 >### Device policy List
 >|DeviceId|DeviceName|FirewallPolicyFirst|InterfaceId|
 >|---|---|---|---|
->| 1003 | Dummy Device Name | Test | 0 |
+>| 1003 | Virtual_NSP_01 | Test | 0 |
+
 
 ### nsm-list-interface-policy
 
@@ -2205,7 +2241,27 @@ List all the policies assigned to all interfaces or a specific interface.
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| NSM.InterfacePolicy.DeviceName | string | The name of the device. | 
+| NSM.InterfacePolicy.AtdUserForInboundATDAnalysis | Unknown |  | 
+| NSM.InterfacePolicy.InterfaceName | string | The name of the interface. | 
+| NSM.InterfacePolicy.FirewallPolicyLast | Unknown |  | 
+| NSM.InterfacePolicy.ReconnaissancePolicy | Unknown |  | 
+| NSM.InterfacePolicy.PolicyGroup | Unknown |  | 
+| NSM.InterfacePolicy.AtdUserForOutboundATDAnalysis | Unknown |  | 
+| NSM.InterfacePolicy.DeviceId | number | The id of the device. | 
+| NSM.InterfacePolicy.AdvancedMalwareOutboundPolicy | Unknown |  | 
+| NSM.InterfacePolicy.QosInboundPolicy | Unknown |  | 
+| NSM.InterfacePolicy.ConnectionLimitingPolicy | Unknown |  | 
+| NSM.InterfacePolicy.QosOutboundPolicy | Unknown |  | 
+| NSM.InterfacePolicy.ProtectionOptionsPolicy | Unknown |  | 
+| NSM.InterfacePolicy.AdvancedMalwareInboundPolicy | Unknown |  | 
+| NSM.InterfacePolicy.QosOutboundRateLimitingProfile | Unknown |  | 
+| NSM.InterfacePolicy.IpsPolicy | Unknown |  | 
+| NSM.InterfacePolicy.QosInboundRateLimitingProfile | Unknown |  | 
+| NSM.InterfacePolicy.FirewallPolicyFirst | Unknown |  | 
+
 #### Command example
 ```!nsm-list-interface-policy domain_id=0```
 #### Context Example
@@ -2220,7 +2276,7 @@ There is no context output for this command.
                 "AtdUserForOutboundATDAnalysis": null,
                 "ConnectionLimitingPolicy": null,
                 "DeviceId": 1003,
-                "DeviceName": "Dummy Device Name",
+                "DeviceName": "Virtual_NSP_01",
                 "FirewallPolicy": "a policy",
                 "FirewallPolicyFirst": null,
                 "FirewallPolicyLast": null,
@@ -2243,7 +2299,7 @@ There is no context output for this command.
                 "AtdUserForOutboundATDAnalysis": null,
                 "ConnectionLimitingPolicy": null,
                 "DeviceId": 1003,
-                "DeviceName": "Dummy Device Name",
+                "DeviceName": "Virtual_NSP_01",
                 "FirewallPolicy": null,
                 "FirewallPolicyFirst": null,
                 "FirewallPolicyLast": null,
@@ -2266,7 +2322,7 @@ There is no context output for this command.
                 "AtdUserForOutboundATDAnalysis": null,
                 "ConnectionLimitingPolicy": null,
                 "DeviceId": 1003,
-                "DeviceName": "Dummy Device Name",
+                "DeviceName": "Virtual_NSP_01",
                 "FirewallPolicy": null,
                 "FirewallPolicyFirst": null,
                 "FirewallPolicyLast": null,
@@ -2292,9 +2348,10 @@ There is no context output for this command.
 >### Interface policy List
 >|DeviceId|DeviceName|FirewallPolicy|InterfaceId|InterfaceName|IpsPolicy|
 >|---|---|---|---|---|---|
->| 1003 | Dummy Device Name | a policy | 104 | 1-2 | Default Prevention |
->| 1003 | Dummy Device Name |  | 103 | 3-4 | testing |
->| 1003 | Dummy Device Name |  | 102 | 5-6 | testing |
+>| 1003 | Virtual_NSP_01 | a policy | 104 | 1-2 | Default Prevention |
+>| 1003 | Virtual_NSP_01 |  | 103 | 3-4 | testing |
+>| 1003 | Virtual_NSP_01 |  | 102 | 5-6 | testing |
+
 
 ### nsm-assign-device-policy
 
@@ -2367,7 +2424,22 @@ Provides configuration information of a given device.
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| NSM.DeviceConfiguration.IsSSLConfigurationChanged | boolean | Was the ssl configuration changed. | 
+| NSM.DeviceConfiguration.DeviceName | string | The name of the device. | 
+| NSM.DeviceConfiguration.IsConfigurationChanged | boolean | Was the configuration changed. | 
+| NSM.DeviceConfiguration.IsMalwareConfigurationChanged | boolean |  | 
+| NSM.DeviceConfiguration.LastUpdateTime | Unknown |  | 
+| NSM.DeviceConfiguration.IsGAMUpdateRequired | boolean |  | 
+| NSM.DeviceConfiguration.IsSignatureSetConfigurationChanged | Unknown |  | 
+| NSM.DeviceConfiguration.IsSigsetConfigPushRequired | boolean |  | 
+| NSM.DeviceConfiguration.IsBotnetPushRequired | boolean |  | 
+| NSM.DeviceConfiguration.IsPolicyConfigurationChanged | boolean |  | 
+| NSM.DeviceConfiguration.IsSSLPushRequired | boolean |  | 
+| NSM.DeviceConfiguration.IsGloablPolicyConfigurationChanged | boolean |  | 
+| NSM.DeviceConfiguration.IsBotnetConfigurationChanged | boolean |  | 
+
 #### Command example
 ```!nsm-get-device-configuration device_id=1003```
 #### Context Example
@@ -2375,7 +2447,7 @@ There is no context output for this command.
 {
     "NSM": {
         "DeviceConfiguration": {
-            "DeviceName": "Dummy Device Name",
+            "DeviceName": "Virtual_NSP_01",
             "IsBotnetConfigurationChanged": false,
             "IsBotnetPushRequired": false,
             "IsConfigurationChanged": true,
@@ -2387,7 +2459,7 @@ There is no context output for this command.
             "IsSSLPushRequired": false,
             "IsSignatureSetConfigurationChanged": false,
             "IsSigsetConfigPushRequired": true,
-            "LastUpdateTime": "2023-03-19 15:18:27.590 UTC"
+            "LastUpdateTime": "2023-03-25 20:52:59.600 UTC"
         }
     }
 }
@@ -2398,7 +2470,8 @@ There is no context output for this command.
 >### Device Configuration
 >|DeviceName|IsBotnetConfigurationChanged|IsBotnetPushRequired|IsConfigurationChanged|IsGAMUpdateRequired|IsGloablPolicyConfigurationChanged|IsMalwareConfigurationChanged|IsPolicyConfigurationChanged|IsSSLConfigurationChanged|IsSSLPushRequired|IsSignatureSetConfigurationChanged|IsSigsetConfigPushRequired|LastUpdateTime|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| Dummy Device Name | false | false | true | false | false | false | false | false | false | false | true | 2023-03-19 15:18:27.590 UTC |
+>| Virtual_NSP_01 | false | false | true | false | false | false | false | false | false | false | true | 2023-03-25 20:52:59.600 UTC |
+
 
 ### nsm-deploy-device-configuration
 
