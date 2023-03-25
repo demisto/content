@@ -43,6 +43,7 @@ def trigger_generic_webhook(options):
         res = requests.post(secrets_instance_url, json=body, auth=(username, password))
     except Exception as e:
         print(f'THIS IS THE ERROR FROM REQUESTS: {e}')
+        raise e
 
     if res.status_code != 200:
         raise ConnectionError(
