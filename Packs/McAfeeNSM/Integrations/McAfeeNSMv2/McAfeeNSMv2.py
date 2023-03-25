@@ -2420,7 +2420,7 @@ def deploy_device_configuration_command(args: Dict, client: Client) -> PollResul
     device_id = arg_to_number(args.get('device_id'))
     if not device_id and device_id != 0:
         raise DemistoException('Please provide a device_id.')
-    if not request_id:       # if this is the first time the function is called
+    if not request_id:   # if this is the first time the function is called
         is_ssl_push_required = argToBoolean(args.get('push_ssl_key', False))
         is_gam_update_required = argToBoolean(args.get('push_gam_updates', False))
         is_sigset_config_push_required = argToBoolean(args.get('push_configuration_signature_set', False))
@@ -2429,14 +2429,17 @@ def deploy_device_configuration_command(args: Dict, client: Client) -> PollResul
         if not any([is_ssl_push_required, is_gam_update_required, is_sigset_config_push_required, is_botnet_push_required]):
             raise DemistoException("Please provide at least one argument to deploy.")
 
-        requests_id = client.deploy_device_configuration_request(device_id=device_id, is_SSL_Push_Required=is_ssl_push_required,
-                                                                 is_GAM_Update_Required=is_gam_update_required,
-                                                                 is_Sigset_Config_Push_Required=is_sigset_config_push_required,
-                                                                 is_Botnet_Push_Required=is_botnet_push_required).get('RequestId')
-        if not requests_id:
-            raise DemistoException("Failed to deploy the device configuration.")
+        if requests_id := client.deploy_device_configuration_request(
+            device_id=device_id,
+            is_SSL_Push_Required=is_ssl_push_required,
+            is_GAM_Update_Required=is_gam_update_required,
+            is_Sigset_Config_Push_Required=is_sigset_config_push_required,
+            is_Botnet_Push_Required=is_botnet_push_required,
+        ).get('RequestId'):
+            args["request_id"] = requests_id
 
-        args["request_id"] = requests_id
+        else:
+            raise DemistoException("Failed to deploy the device configuration.")
 
     status = client.check_deploy_device_configuration_request_status(device_id=device_id,
                                                                      request_id=request_id)
