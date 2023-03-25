@@ -2058,7 +2058,8 @@ script:
   dockerimage: demisto/python3:3.10.10.49934
 fromversion: 6.5.0
 tests:
-- Test_McAfeeNSMv2
+- Test_McAfeeNSMv2_using_v9
+- Test_McAfeeNSMv2_using_v10
 sectionorder:
 - Connect
 - Collect
