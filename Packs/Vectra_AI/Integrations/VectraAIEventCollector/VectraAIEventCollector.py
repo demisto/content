@@ -8,8 +8,6 @@ It uses version 2.2 of Vectra AI REST API.
 See https://support.vectra.ai/s/article/KB-VS-1174 for more the API reference.
 """
 
-# TODO sed -i '' s/demisto\.info/demisto.\debug/g
-
 import demistomock as demisto
 from CommonServerPython import *
 from typing import Dict, Any, Tuple
