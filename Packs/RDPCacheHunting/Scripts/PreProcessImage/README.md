@@ -32,7 +32,7 @@ Each action can also resize the image when given width and height.
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | PreProcessImage.file_entry_id_new | The entryID of the created file. | String |
-| PreProcessImage.action | The action that were performed,. | String |
+| PreProcessImage.action | The action that was performed. | String |
 
 ## Script Examples
 
