@@ -139,7 +139,8 @@ def add_parsing_rules(event: Dict[str, Any]) -> Any:
                 datetime.strptime(
                     event.get(DETECTION_TIMESTAMP_KEY), DETECTION_TIMESTAMP_FORMAT  # type: ignore
                 ).timestamp()
-                * 1000
+                * 1000,
+                is_utc=True,
             )
 
         # Process Audit
