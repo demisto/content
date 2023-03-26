@@ -2959,7 +2959,7 @@ tasks:
     task:
       id: d52768e3-e3b4-4ef1-8b97-9f6acbc14e88
       version: -1
-      name: Malicious email sender address exist?
+      name: Phishing email sender address exist?
       description: ''
       type: condition
       iscommand: false
@@ -3002,7 +3002,7 @@ tasks:
     task:
       id: 04d6d0cd-28fb-4473-8a27-cfe1b8f16460
       version: -1
-      name: Set sender address verdict as malicious
+      name: Set phishing email sender address verdict as malicious
       description: commands.local.cmd.set.indicator
       script: Builtin|||setIndicator
       type: regular
