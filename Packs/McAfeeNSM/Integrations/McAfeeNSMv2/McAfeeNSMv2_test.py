@@ -1507,3 +1507,23 @@ def test_deploy_device_configuration_command(mocker, mcafeensmv2_client, input, 
                                                     "push_ssl_key": False
                                                     }, client=mcafeensmv2_client)
     assert output in res.readable_output
+
+
+@ pytest.mark.parametrize('input, output', [("m", 1),
+                                            ("x", 0)])
+def test_flatten_and_capitalize(mocker, input, output):
+    """
+    Given:
+        - A dictionary with inner dictionaries.
+        1. A key of the inner dictionary to capitalize exsists in the main dict.
+        2. A key of the inner dictionary to capitalize not exsist in the main dict.
+    When:
+        - flatten_and_capitalize function is executed.
+    Then:
+        - Confirm the capitalize_key_first_letter function is called as expected.
+    """
+    from McAfeeNSMv2 import flatten_and_capitalize
+    # from McAfeeNSMv2 import capitalize_key_first_letter
+    my_mocker = mocker.patch.object(McAfeeNSMv2, 'capitalize_key_first_letter', return_value=[{"bla": "bla"}])
+    flatten_and_capitalize(main_dict={"a": "l", "m": {"b": "cD", "eF": "gH", }}, inner_dict_key=input)
+    assert my_mocker.call_count == output

@@ -862,12 +862,12 @@ def modify_v10_results_to_v9_format(results: List[Dict[Any, Any]]) -> List[Dict[
 
 def capitalize_key_first_letter(input_lst: List[Dict], check_lst: List = []) -> List[Dict]:
     """
-        Capitalize the first letter of all keys in all dictionaries,
+        Capitalize the first letter of all keys in all given dictionaries,
         while keeping the rest of the key as it is.(can't use 'capitalize()').
         Args:
             input_lst: List - A list of dictionaries.
             check_lst: List - A list of keys to check if they exist in the dictionary.
-        Returns:F
+        Returns:
             Returns the dict with the first letter of all keys capitalized.
     """
     capitalize_lst = []
@@ -887,7 +887,7 @@ def capitalize_key_first_letter(input_lst: List[Dict], check_lst: List = []) -> 
 
 def flatten_and_capitalize(main_dict: Dict, inner_dict_key: str, check_lst: List = []) -> Dict:
     """
-        Flatten a nested dictionary and capitalize the first letter of all keys.
+         Flatten a nested dictionary and capitalize the first letter of all the nested dictionary's key
         Args:
             main_dict: Dict - A dictionary with a nested dict.
             inner_dict_key: str - The key of the nested dictionary.
@@ -895,10 +895,9 @@ def flatten_and_capitalize(main_dict: Dict, inner_dict_key: str, check_lst: List
         Returns:
             Returns a flat dict with the first letter of all keys capitalized.
     """
-    inner_dict = main_dict.pop(inner_dict_key) if inner_dict_key in main_dict else {}
-    capitalized_inner = capitalize_key_first_letter(input_lst=[inner_dict], check_lst=check_lst)[
-        0] if capitalize_key_first_letter(input_lst=[inner_dict]) else {}
-    main_dict |= capitalized_inner
+    if inner_dict := main_dict.pop(inner_dict_key, None):
+        capitalized_inner = capitalize_key_first_letter(input_lst=[inner_dict], check_lst=check_lst)[0]
+        main_dict |= capitalized_inner
     return main_dict
 
 
