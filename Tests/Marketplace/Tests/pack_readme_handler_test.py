@@ -111,7 +111,7 @@ def test_download_readme_images_from_url_data_list(mocker):
 
     args_and_expected_for_test = [
         ({
-            'original_read_me_url': 'https://test/test/test.png',
+            'original_read_me_url': 'https://mock.com',
             'new_gcs_image_path': Path('readme_images/test.png'),
             'image_name': 'test-test.png',
             'pack_name': 'TestPack'
