@@ -43,7 +43,8 @@ filter id != null |
         xdm.source.host.hostname = json_extract_scalar(src_host, "$.name"),
         xdm.source.agent.identifier = json_extract_scalar(src_host, "$.id"),
         xdm.event.description = if(description = null, json_extract_scalar(summary, "$.description")),
-        xdm.event.is_completed = if(state = "fixed");
+        xdm.event.is_completed = if(state = "fixed"),
+        xdm.alert.severity = to_string(threat);
 filter id = null  |
     alter
         xdm.event.type = "AUDIT",
