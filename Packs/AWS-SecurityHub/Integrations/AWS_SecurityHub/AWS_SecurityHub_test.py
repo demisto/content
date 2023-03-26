@@ -240,8 +240,7 @@ def test_list_members_command(mocker):
         - Ensure that the command was executed correctly. In particular, ensure that the datetime fields are convereted to str.
     """
     aws_client = AWSClient("reg", "", "", 900, "p", "mock_aws_access_key_id", "mock_aws_secret_access_key", "", "", 3)
-    client = aws_client.aws_session(service='securityhub', region="reg", role_arn='roleArnroleArnroleArn',
-                                    role_session_name='roleSessionName')
+    client = aws_client.aws_session(service='securityhub', role_session_name='roleSessionName')
     time_val = datetime.datetime(2022, 1, 1, 12, 0, 0, 0)
     mock_response = {'ResponseMetadata': 'mock_ResponseMetadata',
                      'Members': [{'UpdatedAt': time_val, 'InvitedAt': time_val}]}
