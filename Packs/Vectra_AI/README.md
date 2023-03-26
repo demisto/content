@@ -30,11 +30,3 @@ To get up and running with this pack, you must have a valid API token on your Ve
 
 It can be retrieved from the Vectra UI > My Profile > General \(tab\) > API Token.  
 Be sure that the user has a role with sufficient permissions to do all the actions.
-
-### Pack Contributors:
-
----
- - DUDA Olivier
-
-Contributions are welcome and appreciated. For more info, visit our [Contribution Guide](https://xsoar.pan.dev/docs/contributing/contributing).
-
