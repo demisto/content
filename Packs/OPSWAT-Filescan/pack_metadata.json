@@ -1,0 +1,20 @@
+{
+    "name": "OPSWAT Filescan",
+    "description": "Unique adaptive threat analysis technology",
+    "support": "xsoar",
+    "currentVersion": "1.1.6",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "created": "2023-03-25T00:00:00Z",
+    "categories": [
+        "Forensics & Malware Analysis"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}
