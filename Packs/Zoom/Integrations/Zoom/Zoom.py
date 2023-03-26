@@ -134,8 +134,9 @@ class Client(BaseClient):
             oauth_token = self.generate_oauth_token()
             ctx = {}
         else:
-            generation_time = dateparser.parse(ctx.get('token_info').get('generation_time'))
-            if generation_time:
+            if generation_time := dateparser.parse(
+                ctx.get('token_info').get('generation_time')
+            ):
                 time_passed = now - generation_time
             else:
                 time_passed = TOKEN_LIFE_TIME
