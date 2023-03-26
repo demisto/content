@@ -1641,7 +1641,7 @@ def test_update_vulnerability_exception_status_command(mocker, mock_client: Clie
                              ("1", None, {"name": "Test Scan"}),
                              ("1", ["192.0.2.0"], {"hosts": ["192.0.2.0"], "name": "Test Scan"})
                          ])
-def test_start_site_scan_command(mocker, mock_client: Client, site_id: str,  hosts: list[str] | None,
+def test_start_site_scan_command(mocker, mock_client: Client, site_id: str, hosts: list[str] | None,
                                  expected_post_data: dict):
     """
     Given: Valid parameters for the start_site_scan_command function.

@@ -1554,7 +1554,7 @@ class Client(BaseClient):
         Returns:
             dict: API response with information about the started scan.
         """
-        post_data = {
+        post_data: dict = {
             "name": scan_name,
         }
 
