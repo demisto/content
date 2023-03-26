@@ -841,8 +841,8 @@ def modify_v10_results_to_v9_format(results: List[Dict[Any, Any]]) -> List[Dict[
                 my_key = key
 
                 # The value of the first (and only) key is a list containing dict with addresses
-                list_of_dicts_of_adresses = value[next(iter(value))]
-                for inner_dict in list_of_dicts_of_adresses:
+                addresses = value[next(iter(value))]
+                for inner_dict in addresses:
                     for key in inner_dict.keys():
                         temp_dict = {}
                         # choose the keys and values that are relevant ans saves them in a temp dict
