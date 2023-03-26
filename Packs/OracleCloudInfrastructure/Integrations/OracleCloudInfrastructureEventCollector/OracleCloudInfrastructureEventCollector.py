@@ -5,6 +5,7 @@ from typing import Any, Dict, List, Optional
 from oci.config import validate_config
 from oci.regions import is_region
 import oci.audit
+import oci.pagination
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -35,16 +36,16 @@ class Client(BaseClient):
 
         Args:
             user_ocid (str): User OCID parameter.
-            private_key (str): private key parameter.
+            private_key (str): Private Key parameter.
             key_fingerprint (str): API Key Fingerprint parameter.
             tenancy_ocid (str): Tenancy OCID parameter.
             region (str): Region parameter.
 
         Raises:
-            DemistoException: if the config object is invalid.
+            DemistoException: If the config object is invalid.
 
         Returns:
-            (dict): a config dict that can be used to create clients.
+            (dict): A config dictionary that can be used to create Audit clients.
         """
         config = {
             'user': user_ocid,
@@ -60,7 +61,7 @@ class Client(BaseClient):
         """Validate the OCI config dictionary structure.
 
         Args:
-            config (Dict[str, str]): A config dict that can be used to create clients.
+            config (Dict[str, str]): A config dict that can be used to create Audit client using the oci.audit.AuditClient class.
 
         Raises:
             DemistoException: If the region is not valid.
@@ -126,7 +127,7 @@ class Client(BaseClient):
 class OCIEventHandler:
     """
     Oracle Cloud Infrastructure event handler class.
-    Handles the logic for fetching events.
+    Handles the logic for creating and handling Audit client and fetching events.
     """
 
     def __init__(self, client: Client, last_run: Dict[str, Any], max_fetch: int, first_fetch_time: datetime):
@@ -138,10 +139,11 @@ class OCIEventHandler:
     def __str__(self):
         return f'OCIEventHandler: {self.last_run=}, {self.max_fetch=}, {self.first_fetch_time=}'
 
-    def get_events(self) -> List[Dict[str, Any]]:
+    def get_events(self, max_events: Optional[int] = None) -> List[Dict[str, Any]]:
         """
         Get events from CIO client.
-
+        This method eagerly loads all audit records in the time range and it does
+        have performance implications of lot of audit records.
         Args:
             prev_id (int): The id of the last event we got from the last run.
             alert_status (str): status of the alert to search for. Options are: 'ACTIVE' or 'CLOSED'.
@@ -150,38 +152,45 @@ class OCIEventHandler:
             List[Dict[str, Any]]: List of events.
         """
         try:
-            events = self.client.audit_client.list_events(
+            response = oci.pagination.list_call_get_all_results(
+                self.client.audit_client.list_events,
                 compartment_id=self.client.config.get('tenancy'),
                 start_time=self.first_fetch_time,
-                end_time=datetime.now()
-            ).data
+                end_time=datetime.now())
+
+            self.last_event_time = self.get_last_event_time(response.data)
+            event_list = json.loads(str(response.data[:max_events])) if max_events \
+                else json.loads(str(response.data[:self.max_fetch]))
 
         except Exception as e:
             raise DemistoException(f'Error while fetching events: {e}') from e
 
-        demisto.debug(f'{len(events)} Events fetched from start time: {self.first_fetch_time}. {events=}')
-        return events[:self.max_fetch]
+        demisto.debug(f'{len(event_list)} Events fetched from start time: {self.first_fetch_time}.')
+        return event_list
 
     def remove_duplicates(self):
         ...
 
-    def get_last_event_time(self, events: List[Dict[str, Any]]) -> Optional[datetime]:
-        """Get the last event time from the events list.
+    def get_last_event_time(self, events: List) -> str:
+        """Get the last event time from the events list for next fetch cycle.
         - Given a non empty list of events,
-          the function will return the time of the last event (most recent) + 1 millisecond for next run.
+          the function will return the time of the last event (most recent) + 1 microseconds.
         - If the event list is empty, the function will return the current first fetch time.
 
         Args:
             events (List[Dict[str, Any]]): list of events.
 
         Returns:
-            Optional[datetime]: last event time in datetime format.
+            str: last event time for next fetch cycle in string format.
         """
         if not events:
-            return arg_to_datetime(arg=self.first_fetch_time)
-        last_event_time = events[-1].get("eventTime")
-        last_event_time = arg_to_datetime(arg=last_event_time)
-        return last_event_time + timedelta(milliseconds=1) if last_event_time else None
+            return str(self.first_fetch_time)
+
+        last_event_time = events[-1].event_time
+        if not isinstance(last_event_time, datetime):
+            last_event_time = arg_to_datetime(arg=last_event_time)
+
+        return str(last_event_time + timedelta(microseconds=1)) if last_event_time else ''
 
 
 def test_module(client: Client, oci_event_handler: OCIEventHandler) -> str:
@@ -199,7 +208,7 @@ def test_module(client: Client, oci_event_handler: OCIEventHandler) -> str:
     client.validate_oci_config(client.config)
 
     try:
-        oci_event_handler.get_events()
+        oci_event_handler.get_events(max_events=1)
     except Exception as e:
         if 'failed' in str(e):
             return 'Authorization Error: make sure OCI parameters are correctly set'
@@ -209,8 +218,17 @@ def test_module(client: Client, oci_event_handler: OCIEventHandler) -> str:
     return 'ok'
 
 
-def calculate_first_fetch_time(last_run: Optional[str], first_fetch_arg: str) -> Optional[datetime]:
-    first_fetch_arg_datetime = arg_to_datetime(arg=first_fetch_arg)
+def calculate_first_fetch_time(last_run: Optional[str], first_fetch_param: str) -> Optional[datetime]:
+    """Calculates the first fetch time.
+
+    Args:
+        last_run (Optional[str]): Last run time from previous fetch.
+        first_fetch_param (str): First fetch time integration parameter.
+
+    Returns:
+        Optional[datetime]: Maximum datetime value between last run from previous fetch and first fetch time parameter.
+    """
+    first_fetch_arg_datetime = arg_to_datetime(arg=first_fetch_param)
 
     # if last_run is None (first time we are fetching) -> return first_fetch_arg datetime object
     if not last_run:
@@ -239,8 +257,7 @@ def main():
     last_run = demisto.getLastRun()
     max_fetch = arg_to_number(params.get('max_fetch')) or MAX_EVENTS_TO_FETCH
     first_fetch = params.get('first_fetch') or FETCH_DEFAULT_TIME
-    first_fetch_time = calculate_first_fetch_time(last_run=last_run.get('last_run'), first_fetch_arg=first_fetch)
-
+    first_fetch_time = calculate_first_fetch_time(last_run=last_run.get('last_run'), first_fetch_param=first_fetch)
     demisto.debug(f'Command being called is {command}')
 
     try:
@@ -270,7 +287,7 @@ def main():
             if command == 'fetch-events' or args.get('should_push_events'):
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
                 if events:
-                    last_event_time = oci_event_handler.get_last_event_time(events)
+                    last_event_time = oci_event_handler.last_event_time
                     demisto.debug(f'Set last run to {last_event_time}')
                     demisto.setLastRun({"last_run": {last_event_time}})
                 else:
