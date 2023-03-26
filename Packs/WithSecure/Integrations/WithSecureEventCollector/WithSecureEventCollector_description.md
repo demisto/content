@@ -1,8 +1,5 @@
-## BaseIntegration Help
+## WithSecure Help
 
-Markdown file for integration configuration  help snippet. In this file add:
+### Authentication Process
+WithSecure Authenticates the User with Client Credentials flow, For detailed instructions about obtaining your own client id and client secret, see this [documentation](https://connect.withsecure.com/getting-started/elements#:~:text=API%20deprecation%20policy.-,Getting%20client%20credentials,-To%20use%20Elements).
 
-- Brief information about how to retrieve the API key of your product
-- Other useful information on how to configure your integration in XSOAR
-
-Since this is a Markdown file, we encourage you to use MD formatting for sections, sub-sections, lists, etc.
