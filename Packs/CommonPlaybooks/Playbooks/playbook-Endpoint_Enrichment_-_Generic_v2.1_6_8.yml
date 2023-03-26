@@ -509,13 +509,11 @@ tasks:
       id: 23c75906-3b4e-42e8-8e32-c883d5f06fb3
       version: -1
       name: Get host information from Active Directory
-      description: |-
-        Uses Active Directory to retrieve detailed information about the computer of the account specified. The computer can be specified by name, email address, or as an Active Directory Distinguished Name (DN).
-        If no filters are specified, returns all computers.
-      script: Active Directory Query v2|||ad-get-computer
+      description: Retrieves detailed information about a computer account. The computer can be specified by name, email address, or as an Active Directory Distinguished Name (DN). If no filters are provided, all computers are returned.
+      script: '|||ad-get-computer'
       type: regular
       iscommand: true
-      brand: Active Directory Query v2
+      brand: ""
     nexttasks:
       '#none#':
       - "4"
@@ -615,50 +613,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "29":
-    id: "29"
-    taskid: be810018-6fbe-4194-8a08-c44cb784103d
-    type: regular
-    task:
-      id: be810018-6fbe-4194-8a08-c44cb784103d
-      version: -1
-      name: Get endpoint information from Crowdstrike Falcon
-      description: Returns information about an endpoint.
-      script: CrowdstrikeFalcon|||endpoint
-      type: regular
-      iscommand: true
-      brand: CrowdstrikeFalcon
-    nexttasks:
-      '#none#':
-      - "4"
-    scriptarguments:
-      hostname:
-        complex:
-          root: inputs.Hostname
-      id:
-        complex:
-          root: CrowdStrike.Device
-          accessor: ID
-      ip:
-        complex:
-          root: inputs.IPAddress
-    reputationcalc: 1
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 2630,
-          "y": 1060
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 2
-    isoversize: false
-    isautoswitchedtoquietmode: false
-    continueonerrortype: ""
   "30":
     id: "30"
     taskid: ec344482-77f7-42b5-8ee4-34317afd1179
@@ -678,7 +632,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1930,
+          "x": 1940,
           "y": 575
         }
       }
@@ -734,8 +688,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1930,
-          "y": 720
+          "x": 1940,
+          "y": 710
         }
       }
     note: false
@@ -833,7 +787,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 420,
+          "x": 430,
           "y": 710
         }
       }
@@ -854,10 +808,10 @@ tasks:
       version: -1
       name: Get- host information from McAfee ePO v2
       description: Finds systems in the McAfee ePO system tree.
-      script: McAfee ePO v2|||epo-find-system
+      script: '|||epo-find-system'
       type: regular
       iscommand: true
-      brand: McAfee ePO v2
+      brand: ""
     nexttasks:
       '#none#':
       - "4"
@@ -1011,17 +965,20 @@ tasks:
       version: -1
       name: Crowdstrike Search device
       description: Searches for a device that matches the query.
-      script: CrowdstrikeFalcon|||cs-falcon-search-device
+      script: '|||cs-falcon-search-device'
       type: regular
       iscommand: true
-      brand: CrowdstrikeFalcon
+      brand: ""
     nexttasks:
       '#none#':
-      - "29"
+      - "4"
     scriptarguments:
       hostname:
         complex:
           root: inputs.Hostname
+      ids:
+        complex:
+          root: inputs.EndpointID
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1041,7 +998,7 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "10_4_#default#": 0.14,
+      "10_4_#default#": 0.12,
       "22_23_yes": 0.43,
       "22_4_#default#": 0.2,
       "31_32_yes": 0.64,
