@@ -26,7 +26,6 @@ AUDIT_NEXT_RUN_KEY = "start"
 AUDIT_TIMESTAMP_KEY = "vectra_timestamp"
 
 XSIAM_TIME_FORMAT = "%Y-%m-%dT%H:%M:%S.000Z"
-XSIAM_PARSING_RULES = ["_time"]
 
 
 """ CLIENT CLASS """
@@ -132,7 +131,7 @@ def add_parsing_rules(event: Dict[str, Any]) -> Any:
     try:
         # Process detection
         if DETECTION_TIMESTAMP_KEY in event:
-            event[XSIAM_PARSING_RULES[0]] = timestamp_to_datestring(
+            event["_time"] = timestamp_to_datestring(
                 datetime.strptime(
                     event.get(DETECTION_TIMESTAMP_KEY), DETECTION_TIMESTAMP_FORMAT  # type: ignore
                 ).timestamp()
@@ -142,7 +141,7 @@ def add_parsing_rules(event: Dict[str, Any]) -> Any:
 
         # Process Audit
         else:
-            event[XSIAM_PARSING_RULES[0]] = timestamp_to_datestring(
+            event["_time"] = timestamp_to_datestring(
                 float(event.get(AUDIT_TIMESTAMP_KEY)) * 1000  # type: ignore
             )
 
@@ -150,7 +149,7 @@ def add_parsing_rules(event: Dict[str, Any]) -> Any:
 
     except Exception as e:
         demisto.info(
-            f"""Failed adding parsing rules {','.join(XSIAM_PARSING_RULES)} to event '{str(event)}': {str(e)}.
+            f"""Failed adding parsing rules to event '{str(event)}': {str(e)}.
             Will be added in ingestion time"""
         )
 
@@ -329,7 +328,7 @@ def fetch_events_cmd(client) -> None:
 
     parsed_events: List[Dict[str, Any]] = []
 
-    demisto.info(f"Attempting to add parsing rules [{','.join(XSIAM_PARSING_RULES)}] to event...")
+    demisto.info(f"Attempting to add parsing rules to event...")
     for event in detections + audits:
         parsed_events.append(add_parsing_rules(event))
     demisto.info("Finished adding parsing rules.")
@@ -500,9 +499,7 @@ def main() -> None:  # pragma: no cover
 
                     parsed_events: List[Dict[str, Any]] = []
 
-                    demisto.info(
-                        f"Attempting to add parsing rules {','.join(XSIAM_PARSING_RULES)} to event..."
-                    )
+                    demisto.info(f"Attempting to add parsing rules to event...")
                     for event in detections_cmd_res.outputs + audits_cmd_res.outputs:  # type: ignore
                         parsed_events.append(add_parsing_rules(event))
                     demisto.info("Finished adding parsing rules.")
