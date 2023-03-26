@@ -1,4 +1,4 @@
-# Microsoft Event Logs
+# Microsoft Windows Logs
 
 This pack includes Cortex XSIAM content.
 
