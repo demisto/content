@@ -5,7 +5,7 @@ sectionOrder:
 commonfields:
   id: WildFire-v2
   version: -1
-defaultEnabled: true
+defaultEnabled: false
 configuration:
 - defaultvalue: https://wildfire.paloaltonetworks.com/publicapi
   display: Server base URL (e.g., https://192.168.0.1/publicapi)
