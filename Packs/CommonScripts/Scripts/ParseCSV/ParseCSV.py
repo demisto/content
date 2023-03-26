@@ -203,28 +203,28 @@ def main():
             for row in csv_data:
                 content += ','.join(row) + '\n'
                 if parse_ip != -1:
-                    md += (row[parse_ip] + '|' if row[parse_ip] else ' |')
                     is_ip = re.search(r'([0-9]{1,3}\.){3}[0-9]{1,3}', row[parse_ip])
                     is_valid = is_ip_valid(row[parse_ip])
                     if is_ip and is_valid:
                         ip_list.append(row[parse_ip])
-                        md += '\n'
                         continue
 
                 if parse_hash != -1:
-                    md += (row[parse_hash] + '|' if row[parse_hash] else ' |')
                     is_hash = re.search(r'[0-9A-Fa-f]{32,128}', row[parse_hash])
                     if is_hash:
                         hash_list.append(row[parse_hash])
-                        md += '\n'
                         continue
 
                 if parse_domain != -1:
-                    md += (row[parse_domain] + '|' if row[parse_domain] else ' |')
                     has_dot = '.' in row[parse_domain]
                     no_spaces = ' ' not in row[parse_domain]
                     if has_dot and no_spaces:
                         domain_list.append(row[parse_domain])
+
+            for c in range(max(len(ip_list), len(domain_list), len(hash_list))):
+                md += ip_list[c] + '|' if len(ip_list) >= c + 1 else ' |'
+                md += domain_list[c] + '|' if len(domain_list) >= c + 1 else ' |'
+                md += hash_list[c] + '|' if len(hash_list) >= c + 1 else ' |'
                 md += '\n'
 
         context = {}  # type: dict

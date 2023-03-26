@@ -16,25 +16,25 @@ If compromised hosts are found, fire off sub-playbooks to isolate/quarantine inf
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Search Endpoints By Hash - Generic V2
 * Search Endpoint by CVE - Generic
-* Isolate Endpoint - Generic
+* Search Endpoints By Hash - Generic V2
+* Isolate Endpoint - Generic V2
 
 ### Integrations
 This playbook does not use any integrations.
 
 ### Scripts
-* findIncidentsWithIndicator
 * http
+* findIncidentsWithIndicator
 
 ### Commands
-* appendIndicatorField
-* cve
 * extractIndicators
-* linkIncidents
 * enrichIndicators
-* closeInvestigation
+* appendIndicatorField
 * createNewIndicator
+* cve
+* closeInvestigation
+* linkIncidents
 
 ## Playbook Inputs
 ---
@@ -51,4 +51,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![FireEye Red Team Tools Investigation and Response](https://raw.githubusercontent.com/demisto/content/e8e92c72293ff3f2b76c28931516003a12980c21/Packs/MajorBreachesInvestigationandResponse/doc_files/FireEye_Red_Team_Tools_Inestigation_and_Response.png)
+![FireEye Red Team Tools Investigation and Response](../doc_files/FireEye_Red_Team_Tools_Investigation_and_Response.png)

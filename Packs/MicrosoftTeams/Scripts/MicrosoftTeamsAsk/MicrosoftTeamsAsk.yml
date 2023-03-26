@@ -55,6 +55,12 @@ args:
   name: channel
   required: false
   secret: false
+- default: false
+  description: The team in which to mirror the Cortex XSOAR investigation. If not specified, the default team configured in the integration parameters will be used.
+  isArray: false
+  name: team
+  required: false
+  secret: false
 comment: Send a team member or channel a question with predefined response options on Microsoft Teams. The response
   can be used to close a task (might be conditional) in a playbook.
 commonfields:
@@ -68,7 +74,7 @@ tags:
 - microsoftteams
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.9.7.24076
+dockerimage: demisto/python3:3.10.10.48392
 tests:
 - No test
 dependson:

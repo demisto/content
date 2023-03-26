@@ -3,7 +3,7 @@ commonfields:
   version: -1
 name: GuardiCore
 display: GuardiCore (Deprecated)
-category: Deception
+category: Deception & Breach Simulation
 description: Deprecated. Use GuardiCore v2 instead.
 configuration:
 - display: Server URL (e.g. https://192.168.0.1)

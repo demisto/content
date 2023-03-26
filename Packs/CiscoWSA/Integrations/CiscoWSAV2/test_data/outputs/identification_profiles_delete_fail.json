@@ -1,0 +1,22 @@
+{
+    "success_list": [],
+    "failure_list": [
+        {
+            "status": 404,
+            "message": "profile_name 'sample' doesn't exist",
+            "profile_name": "sample"
+        },
+        {
+            "status": 404,
+            "message": "profile_name 'asdasd' doesn't exist",
+            "profile_name": "asdasd"
+        },
+        {
+            "status": 404,
+            "message": "profile_name 'asdasd' doesn't exist",
+            "profile_name": "asdasd"
+        }
+    ],
+    "success_count": 0,
+    "failure_count": 3
+}
