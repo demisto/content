@@ -3634,7 +3634,7 @@ class Pack(object):
             List[Pull Request Numbers]: A list of pr numbers of the pack version
         """
         if not os.path.exists(f"{self._pack_path}/{self.RELEASE_NOTES}"):
-            return {}
+            return []
 
         pack_version_rn_file_path = f"Packs/{self.name}/{self.RELEASE_NOTES}/{version.replace('.', '_')}.md"
         packs_version_pr_numbers = get_pull_request_numbers_from_file(pack_version_rn_file_path)
