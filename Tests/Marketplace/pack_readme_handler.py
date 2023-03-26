@@ -71,7 +71,7 @@ def collect_images_from_readme_and_replace_with_storage_path(pack_readme_path: s
         )
         google_api_readme_images_url = f'https://storage.googleapis.com/{marketplace_bucket}/content/packs/{pack_name}'
 
-    url_regex = r"^!\[(.*)\]\((?P<url>.*)\)"
+    url_regex = r"(\!\[.*?\])\((?P<url>[a-zA-Z_/\.0-9\- :]*?)\)((].*)?)"
     urls_list = []
 
     for line in fileinput.input(pack_readme_path, inplace=True):
