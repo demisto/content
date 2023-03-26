@@ -36,7 +36,7 @@ outputs:
   description: The entryID of the created file.
   type: String
 - contextPath: PreProcessImage.action
-  description: The action that were performed,.
+  description: The action that was performed.
   type: String
 script: '-'
 subtype: python3
