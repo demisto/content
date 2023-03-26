@@ -1,6 +1,6 @@
 {
     "name": "Barracuda Email Protection",
-    "description": "## FILL MANDATORY FIELD ##",
+    "description": "Email protection from Barracuda",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
