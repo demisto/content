@@ -7,7 +7,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ### Sub-playbooks
 
 * Azure - Network Security Group Remediation
-* AWS - Security Group Remediation
+* AWS - Security Group Remediation v2
 * AWS - Unclaimed S3 Bucket Remediation
 * GCP - Firewall Remediation
 
@@ -26,10 +26,7 @@ This playbook does not use any commands.
 ## Playbook Inputs
 
 ---
-
-| **Name** | **Description** | **Default Value** | **Required** |
-| --- | --- | --- | --- |
-| RemediationRule | The security group that will be used for remediating internet exposures.  | Remediation-Security-Group | Required |
+There are no inputs for this playbook.
 
 ## Playbook Outputs
 

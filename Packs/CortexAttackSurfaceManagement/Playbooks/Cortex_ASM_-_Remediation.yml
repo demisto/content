@@ -50,9 +50,9 @@ tasks:
       '#default#':
       - "4"
       AWS:
-      - "5"
-      GCP:
       - "8"
+      GCP:
+      - "9"
       Azure:
       - "6"
       Unclaimed S3 Bucket:
@@ -153,68 +153,6 @@ tasks:
     timertriggers: []
     ignoreworker: false
     skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "5":
-    id: "5"
-    taskid: e51e672f-f1b7-4e55-8700-56d93f683135
-    type: playbook
-    task:
-      id: e51e672f-f1b7-4e55-8700-56d93f683135
-      version: -1
-      name: AWS - Security Group Remediation
-      description: Replace current security groups with limited access security groups.
-      playbookName: AWS - Security Group Remediation
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "4"
-    scriptarguments:
-      NicID:
-        complex:
-          root: alert.asmsystemids
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: alert.asmsystemids.Type
-                iscontext: true
-              right:
-                value:
-                  simple: AWS-NIC
-          accessor: ID
-      RemediationRule:
-        complex:
-          root: inputs.RemediationRule
-      VpcID:
-        complex:
-          root: alert.asmsystemids
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: alert.asmsystemids.Type
-                iscontext: true
-              right:
-                value:
-                  simple: AWS-VPC
-          accessor: ID
-    separatecontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 220,
-          "y": 480
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -355,17 +293,82 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 14b3802a-fb0d-41b1-830c-03163c2697e7
+    taskid: 409f127a-6417-41a9-8c53-e35dbfc32f53
     type: playbook
     task:
-      id: 14b3802a-fb0d-41b1-830c-03163c2697e7
+      id: 409f127a-6417-41a9-8c53-e35dbfc32f53
+      version: -1
+      name: AWS - Security Group Remediation v2
+      description: This playbook takes in some information about an EC2 instance (ID and public_ip) and with provided port and protocol, determines what security groups on the primary interface of an EC2 instance are over-permissive. It uses an automation to determine what interface on an EC2 instance has an over-permissive security group on, determine which security groups have over-permissive rules and to replace them with a copy of the security group that has only the over-permissive portion removed. Over-permissive is defined as sensitive ports (SSH, RDP, etc) being exposed to the internet via IPv4.
+      playbookName: AWS - Security Group Remediation v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      InstanceID:
+        complex:
+          root: alert.asmsystemids
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: alert.asmsystemids.Type
+                iscontext: true
+              right:
+                value:
+                  simple: AWS-EC2
+          accessor: ID
+      Port:
+        complex:
+          root: alert
+          accessor: remoteport
+      Protocol:
+        complex:
+          root: alert
+          accessor: protocol
+          transformers:
+          - operator: toLowerCase
+      PublicIP:
+        complex:
+          root: alert
+          accessor: remoteip
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: d7ea937a-8db4-4b32-87d9-7f02b626c16d
+    type: playbook
+    task:
+      id: d7ea937a-8db4-4b32-87d9-7f02b626c16d
       version: -1
       name: GCP - Firewall Remediation
-      description: This playbook adds new firewall rules with access only from  private ip address range and blocks traffic that's exposed to public internet. For example, if RDP is exposed to the entire world, this playbook adds new firewall rules that only allows traffic from private ip address and blocks rest of the RDP traffic.
       playbookName: GCP - Firewall Remediation
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -433,8 +436,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 690,
-          "y": 480
+          "x": 680,
+          "y": 470
         }
       }
     note: false
@@ -456,13 +459,7 @@ view: |-
       }
     }
   }
-inputs:
-- key: RemediationRule
-  value:
-    simple: Remediation-Security-Group
-  required: true
-  description: 'The security group that will be used for remediating internet exposures.'
-  playbookInputQuery:
+inputs: []
 outputs: []
 tests:
 - No tests (auto formatted)
