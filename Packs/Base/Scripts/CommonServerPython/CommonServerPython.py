@@ -20,6 +20,7 @@ import types
 import urllib
 import gzip
 import ssl
+import math
 from random import randint
 import xml.etree.cElementTree as ET
 from collections import OrderedDict
@@ -38,9 +39,9 @@ def __line__():
     return cf.f_back.f_lineno  # type: ignore[union-attr]
 
 
-# 43 - The line offset from the beggining of the file.
+# 44 - The line offset from the beginning of the file.
 _MODULES_LINE_MAPPING = {
-    'CommonServerPython': {'start': __line__() - 43, 'end': float('inf')},
+    'CommonServerPython': {'start': __line__() - 44, 'end': float('inf')},
 }
 
 XSIAM_EVENT_CHUNK_SIZE = 2 ** 20  # 1 Mib
@@ -10969,8 +10970,7 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
 
         :return: A list of sub-lists containing XSIAM events.
         :rtype: ``list``
-        """
-        import math
+        """      
         num_of_sub_lists = math.ceil(size_of_zipped_data / XSIAM_EVENT_CHUNK_SIZE)
         data_list = str.split(data, '\n') if isinstance(data, str) else data
         chunk_size = math.ceil(len(data_list) / num_of_sub_lists)
