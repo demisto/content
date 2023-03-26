@@ -90,7 +90,7 @@ script:
       description: File hash to check.
       isArray: true
       name: file
-      required: false
+      required: true
       secret: false
     - default: false
       description: MD5 hash to check.
@@ -1405,7 +1405,7 @@ script:
     - contextPath: InfoFile.Type
       description: The web artifacts file type.
       type: string
-  dockerimage: demisto/python3:3.10.10.49934
+  dockerimage: demisto/python3:3.10.10.50695
   feed: false
   isfetch: false
   longRunning: false
