@@ -99,7 +99,7 @@ Returns the specified tags for an asset.
 | --- | --- | --- |
 | Nexpose.AssetTag.Type | string | Type of asset tag. | 
 | Nexpose.AssetTag.Name | string | The value of the tag. | 
-| Nexpose.AssetTag.CreatedTime | string | Timestamp of when the tag was create. | 
+| Nexpose.AssetTag.CreatedTime | string | Timestamp of when the tag was created. | 
 | Nexpose.AssetTag.RiskModifier | string | The risk modifier value associated with criticality tag type. | 
 
 #### Command example

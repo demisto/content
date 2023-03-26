@@ -166,7 +166,7 @@ script:
       description: The value of the tag.
       type: string
     - contextPath: Nexpose.AssetTag.CreatedTime
-      description: Timestamp of when the tag was create.
+      description: Timestamp of when the tag was created.
       type: string
     - contextPath: Nexpose.AssetTag.RiskModifier
       description: The risk modifier value associated with criticality tag type.
