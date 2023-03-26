@@ -393,5 +393,5 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 6.8.0
-description: Creation and deletion of AWS Route53 DNS recond
+fromversion: 6.5.0
+description: Creation and deletion of AWS Route53 DNS record
