@@ -1,0 +1,14 @@
+[INGEST:vendor="barracuda", product="cgfw", target_dataset="barracuda_cgfw_raw", no_hit=keep]
+alter
+    tmp_time1_get_epoch = arraystring(regextract(_raw_log, "^.*(\d{10})\s.*BYF"), ""),
+    tmp_time2_gen_year = arraystring(regextract(to_string(_insert_time) , "^.{0,4}"),""), // 2023
+    tmp_time2_get_datetime_log = replace(arraystring(regextract(_raw_log , "\S{3}\s+\S+\s\d{2}\:\d{2}\:\d{2}"), ""), "  ", " ") // Mar 13 07:11:42
+| alter
+    tmp_time2_unite_format = tmp_time2_gen_year + " " + tmp_time2_get_datetime_log
+| alter
+    tmp_time2 = parse_timestamp("%Y %b %e %H:%M:%S", tmp_time2_unite_format)
+| alter
+    tmp_time1_convert = if (tmp_time1_get_epoch ~= "d{10}", to_timestamp(to_integer(tmp_time1_get_epoch), "SECONDS"),null)
+| alter
+    _time = coalesce(tmp_time1_convert, tmp_time2)
+| fields -tmp_time1_get_epoch, tmp_time2_gen_year, tmp_time2_get_datetime_log, tmp_time2_unite_format, tmp_time1_convert, tmp_time2_unite_format, tmp_time1, tmp_time2;
