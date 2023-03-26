@@ -4584,12 +4584,14 @@ def apply_quarantine_file_action_command(args: dict) -> CommandResults:
             offset=args.get('offset')
         )
         search_args = assign_params(
-            sha256=args.get('sha256'),
             state=args.get('state'),
+            sha256=argToList(args.get('sha256')),
             filename=argToList(args.get('filename')),
             hostname=argToList(args.get('hostname')),
             username=argToList(args.get('username')),
         )
+        if not search_args:
+            raise Exception('At least one search argument (filename, hostname, sha256, state, username, ids, or filter) is required to update the quarantine file.')
 
         ids = list_quarantined_files_id(args.get('filter'), search_args, pagination_args).get('resources')
 

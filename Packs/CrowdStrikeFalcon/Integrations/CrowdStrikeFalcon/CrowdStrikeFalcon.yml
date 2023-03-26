@@ -3089,7 +3089,7 @@ script:
     description: Delete the ML exclusions by ID.
     name: cs-falcon-delete-ml-exclusion
   - arguments:
-    - description: "A custom filter by which the exclusions should be filtered. The syntax follows the pattern `<property>:[operator]'<value>'`. For example: value:'test' Available filters: applied_globally, created_by, created_on, last_modified, modified_by, value. For more information please see: https://www.falconpy.io/Service-Collections/Falcon-Query-Language"
+    - description: "A custom filter by which the exclusions should be filtered.\n The syntax follows the pattern `<property>:[operator]'<value>'` for example: value:'test'.\n Available filters: applied_globally, created_by, created_on, last_modified, modified_by, value.\n For more information please see: https://www.falconpy.io/Service-Collections/Falcon-Query-Language"
       name: filter
       required: false
     - description: The value by which the exclusions should be filtered.
@@ -3389,7 +3389,7 @@ script:
     description: Delete the IOA exclusions by ID.
     name: cs-falcon-delete-ioa-exclusion
   - arguments:
-    - description: "A custom filter by which the exclusions should be filtered. The syntax follows the pattern `<property>:[operator]'<value>'`. For example: name:'test' Available filters: applied_globally, created_by, created_on, name, last_modified, modified_by, value, pattern. For more information please see: https://www.falconpy.io/Service-Collections/Falcon-Query-Language"
+    - description: "A custom filter by which the exclusions should be filtered.\n The syntax follows the pattern `<property>:[operator]'<value>'` for example: name:'test'.\n Available filters: applied_globally, created_by, created_on, name, last_modified, modified_by, value, pattern.\n For more information please see: https://www.falconpy.io/Service-Collections/Falcon-Query-Language"
       name: filter
       required: false
     - description: The name by which the exclusions should be filtered.
@@ -3568,22 +3568,22 @@ script:
     - description: Update files based on a custom filter.
       name: filter
       required: false
-    - description: Update files based on the SHA256 hash value.
+    - description: A comma-separated list of quarantined files SHA256 to update.
       name: sha256
       required: false
       isArray: true
-    - description: Update files based on the filename.
+    - description: A comma-separated list of quarantined files name to update.
       name: filename
       required: false
       isArray: true
     - description: Update files based on the state.
       name: state
       required: false
-    - description: Update files based on the hostname.
+    - description: A comma-separated list of quarantined files host name to update.
       name: hostname
       required: false
       isArray: true
-    - description: Update files based on the usernames.
+    - description: A comma-separated list of quarantined files user name to update.
       name: username
       required: false
       isArray: true
