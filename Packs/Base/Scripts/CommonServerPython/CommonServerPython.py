@@ -10882,6 +10882,31 @@ def xsiam_api_call_with_retries(
     return response
 
 
+def split_data_to_chunks(data, chunk_size):
+    """
+    Splits a string of data into chunks of a specified size.
+
+    :type data: ``str``
+    :param data: The string of data to split.
+    :type chunk_size: ``int``
+    :param chunk_size: The maximum size of each chunk.
+
+    :return: A list of chunks containing the data.
+    :rtype: ``list``
+    """
+    chunk = []
+    curr_size = 0
+    for data_part in data.split('\n'):
+        chunk.append(data_part)
+        curr_size += sys.getsizeof(data_part)
+        if curr_size > chunk_size:
+            yield chunk
+            chunk = []
+            curr_size = 0
+    if curr_size != 0:
+        yield chunk
+
+
 def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url', num_of_attempts=3):
     """
     Send the fetched events into the XDR data-collector private api.
@@ -10959,26 +10984,6 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
 
     header_msg = 'Error sending new events into XSIAM.\n'
 
-    def split_xsiam_events_to_chunks(data, size_of_zipped_data):
-        """
-        Splits a list of XSIAM events into chunks of size XSIAM_EVENT_CHUNK_SIZE.
-
-        :type data: ``list or str``
-        :param data: A list of XSIAM events or a string containing XSIAM events separated by newline characters.
-        :typ: size_of_zipped_data: ``int``
-        :param size_of_zipped_data: The size of the zipped data.
-
-        :return: A list of sub-lists containing XSIAM events.
-        :rtype: ``list``
-        """      
-        num_of_sub_lists = math.ceil(size_of_zipped_data / XSIAM_EVENT_CHUNK_SIZE)
-        data_list = str.split(data, '\n') if isinstance(data, str) else data
-        chunk_size = math.ceil(len(data_list) / num_of_sub_lists)
-        return [
-            data_list[i: i + chunk_size]
-            for i in range(0, len(data_list), chunk_size)
-        ]
-
     def events_error_handler(res):
         """
         Internal function to parse the XSIAM API errors
@@ -11007,16 +11012,16 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
         demisto.error(header_msg + api_call_info)
         raise DemistoException(header_msg + error, DemistoException)
 
-    zipped_data = gzip.compress(data.encode('utf-8'))  # type: ignore[AttributeError,attr-defined]
     client = BaseClient(base_url=xsiam_url)
-    data_chunks = split_xsiam_events_to_chunks(data, sys.getsizeof(zipped_data))
+    data_chunks = split_data_to_chunks(data, XSIAM_EVENT_CHUNK_SIZE)
+    amount_of_events = 0
     for data_chunk in data_chunks:
-        amount_of_events = len(data_chunk)
+        amount_of_events += len(data_chunk)
         data_chunk = '\n'.join(data_chunk)
         zipped_data = gzip.compress(data_chunk.encode('utf-8'))  # type: ignore[AttributeError,attr-defined]
         send_to_xsiam_with_retries(client, events_error_handler, header_msg, headers, num_of_attempts, xsiam_url,
                                    zipped_data)
-        demisto.updateModuleHealth({'eventsPulled': amount_of_events})
+    demisto.updateModuleHealth({'eventsPulled': amount_of_events})
 
 
 def send_to_xsiam_with_retries(client, events_error_handler, header_msg, headers, num_of_attempts, xsiam_url,
