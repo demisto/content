@@ -1,0 +1,12 @@
+{
+    "success_list": [],
+    "failure_list": [
+        {
+            "status": 400,
+            "message": "Invalid ID profile: tesasdasdast1",
+            "policy_name": "ronnn"
+        }
+    ],
+    "success_count": 0,
+    "failure_count": 1
+}

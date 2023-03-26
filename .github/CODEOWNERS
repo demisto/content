@@ -25,6 +25,8 @@
 /Tests/scripts/prepare_content_packs_for_testing.sh @yaakovpraisler
 /Utils/trigger_test_upload_flow.sh @yaakovpraisler
 /Utils/trigger_upload_packs_to_production.sh @yaakovpraisler
+/Utils/should_trigger_test_upload.sh @yaakovpraisler
+/Utils/test_upload_flow/* @yaakovpraisler
 
 # Test Collection
 /Tests/scripts/collect_tests @dorschw

@@ -13,13 +13,13 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Cortex XDR - Possible External RDP Brute-Force
+* GenericPolling
 * Cortex XDR - Port Scan - Adjusted
-* Cortex XDR - Cloud Cryptojacking
-* Cortex XDR - Malware Investigation
 * Cortex XDR - First SSO Access
 * Cortex XDR - Cloud IAM User Access Investigation
-* GenericPolling
+* Cortex XDR - Possible External RDP Brute-Force
+* Cortex XDR - XCloud Cryptojacking
+* Cortex XDR - Malware Investigation
 
 ### Integrations
 
