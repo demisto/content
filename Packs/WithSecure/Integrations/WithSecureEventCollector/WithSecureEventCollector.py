@@ -95,7 +95,7 @@ class Client(BaseClient):
 
         return token
 
-    def get_events_api_call(self, fetch_from, limit, next_anchor=None):
+    def get_events_api_call(self, fetch_from: str, limit: int, next_anchor: str = None):
         params = {
             "serverTimestampStart": fetch_from,
             "limit": limit
@@ -128,7 +128,7 @@ def access_token_error_handler(response: requests.Response):
         raise DemistoException('Error: something went wrong, please try again.')
 
 
-def parse_date(dt):
+def parse_date(dt: str) -> str:
     date_time = dateparser.parse(dt, settings={'TIMEZONE': 'UTC'})
     return date_time.strftime(DATE_FORMAT)  # type: ignore
 

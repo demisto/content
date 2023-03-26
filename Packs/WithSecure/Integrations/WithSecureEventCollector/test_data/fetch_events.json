@@ -21,7 +21,7 @@
             "persistenceTimestamp": "2023-03-15T22:00:22.985Z",
             "clientTimestamp": "2023-03-15T21:58:34Z",
             "device": {
-                "name": "WIN10-TMPLT",
+                "name": "WIN10-TMPLT"
             }
         },
         {
@@ -48,6 +48,5 @@
                 "name": "A-WIN81X64-TEMP",
             }
         }
-    ],
-    "nextAnchor": "WzE2Nzg4OTExNTMwMjIsIjFlZmQxOWQxLTY0ZGItM2E1Ni1iOGZkLThkYTJjYjg3ZGMyMF8wIiwiMWVmZDE5ZDEtNjRkYi0zYTU2LWI4ZmQtOGRhMmNiODdkYzIwXzAiXQ=="
+    ]
 }
