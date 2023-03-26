@@ -84,7 +84,7 @@ def get_events(client: boto3.client, start_time: datetime | None = None,
 
 
 def fetch_events(client: boto3.client, last_run: dict[str, str],
-                 first_fetch_time: datetime | None) -> (dict[str, int], list):
+                 first_fetch_time: datetime | None, limit: int = 0) -> (dict[str, int], list):
     """
     Fetch events from AWS Security Hub.
 
@@ -92,6 +92,8 @@ def fetch_events(client: boto3.client, last_run: dict[str, str],
         client (boto3.client): Boto3 client to use.
         last_run (dict): Dict containing the last fetched event creation time.
         first_fetch_time (datetime | None, optional): In case of first fetch, fetch events from this datetime.
+        limit (int): Maximum number of events to fetch. Defaults to 0 (no limit).
+
     Returns:
         dict: Next run dictionary containing the timestamp that will be used in ``last_run`` on the next fetch.
         list: List of events that will be generated in XSIAM.
@@ -108,7 +110,7 @@ def fetch_events(client: boto3.client, last_run: dict[str, str],
         client=client,
         start_time=start_time,
         id_ignore_list=id_ignore_list,
-        limit=DEFAULT_MAX_RESULTS
+        limit=limit
     )
 
     last_finding_update_time: str | None = events[-1].get('UpdatedAt') if events else None
@@ -233,7 +235,8 @@ def main():
             next_run, events = fetch_events(
                 client=client,
                 last_run=demisto.getLastRun(),
-                first_fetch_time=first_fetch_time
+                first_fetch_time=first_fetch_time,
+                limit=limit,
             )
 
             # Saves next_run for the time fetch-events is invoked
