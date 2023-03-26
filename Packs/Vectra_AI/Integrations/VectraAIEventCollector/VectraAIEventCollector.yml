@@ -20,6 +20,7 @@ configuration:
   required: false
   type: 0
   section: Collect
+  advanced: true
 - name: fetch_limit
   defaultvalue: '1000'
   display: Fetch Limit
@@ -27,6 +28,7 @@ configuration:
   required: false
   type: 0
   section: Collect
+  advanced: true
 - name: insecure
   display: Trust any certificate (not secure)
   required: false
