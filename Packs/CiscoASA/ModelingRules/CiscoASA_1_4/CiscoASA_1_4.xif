@@ -76,7 +76,6 @@ alter
     dest_interface2 = arrayindex(regextract(_raw_log,"[\d+|\)]\sto\s*([a-zA-Z0-9-_]+)\:\d+\.\d+\.\d+\.\d+\/*[\w0-9]+"),0)
 //option 3
 // for <interface>:<source_ip>/<source_port> (<mapped_ip>/<mapped_port>) to <dest_ip>/<dest_port>
-// dest_ip, dest_port, dest_interface on option 3 is the same as option 2,4,5
 | alter
     source_ip3 = if(action contains "Built inbound",arrayindex(regextract(_raw_log ,"[for|to]{2,3}\s[o|O]utside\:(\d+\.\d+\.\d+\.\d+)\/\d+\s*"),0),
     action contains "Built outbound",arrayindex(regextract(_raw_log ,"[for|to]{2,3}\sinside\:(\d+\.\d+\.\d+\.\d+)\/\d+"),0),
