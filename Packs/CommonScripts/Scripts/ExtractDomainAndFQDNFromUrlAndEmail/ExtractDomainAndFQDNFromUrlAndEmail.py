@@ -41,9 +41,13 @@ def proofpoint_get_original_url(safe_url):  # pragma: no cover
 
 def unescape_url(escaped_url):
     # Normalize: 1) [.] --> . 2) hxxp --> http 3) &amp --> & 4) http:\\ --> http://
-    url = escaped_url.lower().replace('[.]', '.').replace('hxxp', 'http').replace('&amp;', '&') \
+    url = escaped_url.lower().replace('[.]', '.').replace('&amp;', '&') \
         .replace('http:\\\\', 'http://')
+    schemas = re.compile("(meow|hxxp)", re.IGNORECASE)
     # Normalize the URL with http prefix
+    lower_url = url.lower()
+    if lower_url.startswith("hxxp") or lower_url.startswith('meow'):
+        url = re.sub(schemas, "http", url, count=1)
     if url.find('http:') == 0 and url.find('http://') == -1:
         url = url.replace('http:', 'http://')
     if url.find('http') != 0 and url.find('ftp') != 0:
