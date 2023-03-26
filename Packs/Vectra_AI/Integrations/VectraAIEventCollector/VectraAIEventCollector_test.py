@@ -346,7 +346,7 @@ def test_get_audits_to_send_not_first_fetch(
 @pytest.mark.parametrize(
     "event,expected_time,format",
     [
-        (DETECTIONS.get("results")[0], "2022-08-31T23:15:48.000Z", XSIAM_TIME_FORMAT),
+        (DETECTIONS.get("results")[0], "2022-09-01T02:15:48.000Z", XSIAM_TIME_FORMAT),
         (AUDITS.get("audits")[0], "2023-02-19T00:00:03.000Z", XSIAM_TIME_FORMAT),
     ],
 )
