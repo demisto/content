@@ -7255,6 +7255,31 @@ def append_metrics(execution_metrics, results):
     return results
 
 
+def convert_dict_values_bytes_to_str(input_dict):  # type: ignore
+    """
+    Converts byte dict values to str
+    :type input_dict: ``dict``
+    :param input_dict: dict to converts its values.
+
+    :return: dict contains str instead of bytes.
+    :rtype: ``dict``
+    """
+    output_dict = {}
+    for key, value in input_dict.items():
+        if isinstance(value, dict):
+            output_dict[key] = convert_dict_values_bytes_to_str(value)
+        elif isinstance(value, bytes):
+            output_dict[key] = value.decode()
+        elif isinstance(value, list):
+            output_dict[key] = [
+                convert_dict_values_bytes_to_str(item) if isinstance(item, dict)
+                else item.decode() if isinstance(item, bytes) else item
+                for item in value]
+        else:
+            output_dict[key] = value
+    return output_dict
+
+
 class CommandRunner:
     """
     Class for executing multiple commands and save the results of each command.

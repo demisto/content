@@ -11,6 +11,16 @@ configuration:
   name: proxy
   required: false
   type: 8
+  section: Connect
+  advanced: true
+  defaultvalue: 'false'
+- display: Proxy URL
+  additionalinfo: "Supports socks4/socks5/http connect proxies (e.g., socks5h://host:1080)."
+  name: proxy_url
+  required: false
+  type: 0
+  section: Connect
+  advanced: true
 description: Team Cymru provides various service options dedicated to mapping IP numbers to BGP prefixes and ASNs. Each of the services is based on the same BGP feeds from 50+ BGP peers and is updated at 4-hour intervals.
 display: 'Team Cymru'
 name: TeamCymru
@@ -145,7 +155,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/cymruwhois:1.0.0.48655
+  dockerimage: demisto/cymruwhois:1.0.0.50395
 fromversion: 6.5.0
 tests:
-- No tests (auto formatted)
+- TeamCymruTest
