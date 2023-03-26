@@ -63,6 +63,7 @@ from JSONFeedApiModule import *  # noqa: E402
 
 
 def main():
+    demisto.info('Test packs subscription')
     params = {k: v for k, v in demisto.params().items() if v is not None}
     params['feed_name_to_config'] = get_feed_config(params.get('services', ['AMAZON']),
                                                     argToList(params.get('regions', [])))

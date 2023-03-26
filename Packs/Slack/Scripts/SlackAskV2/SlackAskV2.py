@@ -50,6 +50,7 @@ def create_blocks(text: str, entitlement: str, options: list, reply: str) -> lis
 
 
 def main():
+    demisto.info('Test packs subscription')
     res = demisto.executeCommand('addEntitlement', {'persistent': demisto.get(demisto.args(), 'persistent'),
                                                     'replyEntriesTag': demisto.get(demisto.args(), 'replyEntriesTag')})
     if isError(res[0]):
