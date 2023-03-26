@@ -7,6 +7,7 @@ alter
     ,xdm.email.sender = arrayindex(regextract(json_extract_scalar(payload, "$.hdr_from"), "\<(.*?)\>"), 0) 
     ,xdm.email.subject = json_extract_scalar(payload, "$.subject")
     ,xdm.email.message_id = json_extract_scalar(payload, "$.message_id")
-    ,xdm.source.sent_bytes = to_integer(json_extract(payload, "$.size"))
     ,xdm.email.delivery_timestamp = to_timestamp(parse_epoch("%Y-%m-%dT%H:%M:%S%z", json_extract_scalar(payload, "$.timestamp")) , "SECONDS")
+    ,xdm.email.recipients = arraymap(json_extract_array (payload,"$.recipients"), json_extract_scalar ("@element", "$.email"))
+    ,xdm.source.sent_bytes = to_integer(json_extract(payload, "$.size"))
     ;
