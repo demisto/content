@@ -1,4 +1,5 @@
 from copy import deepcopy
+from typing import Tuple
 
 import urllib3
 
@@ -614,45 +615,44 @@ def alert_to_incident_context(alert: Dict[str, Any]) -> Dict[str, Any]:
     return incident_context
 
 
-def get_remote_incident_data(client: Client, remote_incident_id: str):
+def get_remote_incident_data(client: Client, remote_incident_id: str) -> Tuple[Dict, Dict]:
     """
     Called every time get-remote-data command runs on an alert.
     Gets the details of the relevant alert entity from the remote system (Prisma Cloud).
     Takes from the entity only the relevant incoming mirroring fields, and returns the updated_object for the incident
     we want to mirror in, from the mirrored data, according to the mirroring fields.
     """
-    alert_details = client.alert_get_details_request(alert_id=remote_incident_id, detailed='true')
+    alert_details = client.alert_get_details_request(alert_id=remote_incident_id, detailed='true') # TODO: need to check maybe enough to use detailed=false.
 
-    updated_object: Dict[str, Any] = {'incident_type': 'incident'}
+    updated_object: Dict[str, Any] = {}
     for field in INCIDENT_INCOMING_MIRROR_ARGS:
         if mirrored_field_value := alert_details.get(field):
             updated_object[field] = mirrored_field_value
-    # TODO: need to check whether the keys of the updated object should be according to the field name defined in the mapper or according to the field name got from the API
     return alert_details, updated_object
 
 
-def close_incident_in_xsoar(entries: List, remote_incident_id: str, mirrored_status: str, incident_type_name: str):
+def close_incident_in_xsoar(entries: List, remote_incident_id: str, mirrored_status: str):
     """
     # TODO: need to add description
     """
-    # TODO: ask adi - do I need here the incident_type_name?
-    demisto.debug(f'{incident_type_name} is closed: {remote_incident_id}')
+    demisto.debug(f'Alert is closed: {remote_incident_id}')
     entries.append({
         'Type': EntryType.NOTE,
         'Contents': {
             'dbotIncidentClose': True,
-            'closeReason': f'{incident_type_name} was {mirrored_status} on Prisma Cloud.'
+            'rawCloseReason': '',  # TODO: add the status from prisma
+            'closeReason': f'Alert was {mirrored_status} on Prisma Cloud.', # TODO: add the status mapped from prosma to xsoar possible statuses
+            'closeNotes': f'Alert was {mirrored_status} on Prisma Cloud.' # TODO: probably need to add the dimissal note - verify with dima.
         },
         'ContentsFormat': EntryFormat.JSON
     })
 
 
-def reopen_incident_in_xsoar(entries: List, remote_incident_id: str, incident_type_name: str):
+def reopen_incident_in_xsoar(entries: List, remote_incident_id: str):
     """
     # TODO: need to add description
     """
-    # TODO: ask adi - do I need here the incident_type_name?
-    demisto.debug(f'{incident_type_name} is reopened: {remote_incident_id}')
+    demisto.debug(f' is reopened: {remote_incident_id}')
     entries.append({
         'Type': EntryType.NOTE,
         'Contents': {
@@ -670,7 +670,7 @@ def set_xsoar_incident_entries(updated_object: Dict[str, Any], entries: List, re
         if mirrored_status := updated_object.get('status') in set(INCIDENT_INCOMING_MIRROR_CLOSING_STATUSES):
             close_incident_in_xsoar(entries, remote_incident_id, mirrored_status, 'Incident')
         elif updated_object.get('status') == INCIDENT_INCOMING_MIRROR_REOPENING_STATUS:
-            # TODO: need to verify that with Dima (if this is the only option for re-open scenario).
+            # TODO: need to verify that with Dima (if this is the only option for re-open scenario) - test all possible scenarios.
             reopen_incident_in_xsoar(entries, remote_incident_id, 'Incident')
 
 
@@ -1650,21 +1650,22 @@ def get_modified_remote_data_command(client: Client,
     last_update = remote_args.last_update
     parsed_date = dateparser.parse(last_update, settings={'TIMEZONE': 'UTC'})  # convert to utc format
     if not parsed_date:
-        raise DemistoException(f'could not parse {last_update}')
+        raise DemistoException(f'could not parse {last_update}')  # verify with Judah if need to use assert here
     last_update_timestamp = parsed_date.strftime(DATE_FORMAT)
     demisto.debug(f'Remote arguments last_update in UTC is {last_update_timestamp}')
 
-    # TODO: do we have a limit for the mirroring? if yes - need to add it to alert_search_request()
-    detailed = 'false'  # took false from the thread example - not sure
-    sort_by = ['alertTime:asc']
-    time_filter = handle_time_filter(base_case=ALERT_SEARCH_BASE_TIME_FILTER,
-                                     time_from=last_update_timestamp, # not sure about the time format I need to send here, and if I need to use handle_time_filter at all.
-                                     time_to='now')
-    filters = argToList(params.get('filters')) # TODO: there is a chance we need to remove the alert.status=open filter, or alternatively add all the other optional statuses - resolved, dismissed, snoozed.
-    filters.append('timeRange.type=ALERT_STATUS_UPDATED')
-    # TODO: verify with Adi the above args
+    # TODO: do we have a limit for the mirroring? if yes - need to add it to alert_search_request() -
+    #  consult with dima\yuval about rate limit and Burst limit - we might take 120 as a limit.
 
-    # TODO: what next_token is used for?
+
+    detailed = 'false'  # TODO: took false from the thread example - not sure - need to check if the mirrored fields arrived with false
+    sort_by = ['alertTime:asc']
+    time_filter = handle_time_filter(time_from=last_update_timestamp,
+                                     time_to='now')
+    filters = argToList(params.get('filters')) # TODO: there is a chance we need to remove the alert.status=open filter (alert.status filters in general need to be removed)
+    filters.append('timeRange.type=ALERT_STATUS_UPDATED')
+
+    # TODO: what next_token is used for? need to check if I need to implement it.
     response = client.alert_search_request(time_range=time_filter, filters=filters, detailed=detailed, sort_by=sort_by)
     response_items = response.get('items', [])
     modified_records_ids = [str(item.get('id')) for item in response_items]
@@ -1688,18 +1689,15 @@ def get_remote_data_command(client: Client, args: Dict[str, Any]) -> GetRemoteDa
     remote_args = GetRemoteDataArgs(args)
     remote_incident_id = remote_args.remote_incident_id
 
-    mirrored_data = {}
-    entries: List = []
-    # TODO: ask Adi why those args was passed into function and edited in place? instead of returned new objects from the helper functions.
     try:
         demisto.debug(f'Performing get-remote-data command with incident id: {remote_incident_id} '
                       f'and last_update: {remote_args.last_update}')
         mirrored_data, updated_object = get_remote_incident_data(client, remote_incident_id)
         if updated_object:
             demisto.debug(f'Update incident {remote_incident_id} with fields: {updated_object}')
-            set_xsoar_incident_entries(updated_object, entries, remote_incident_id)  # sets in place
+            set_xsoar_incident_entries(updated_object, entries, remote_incident_id)  # sets in place TODO: no need to transfer the entries + will return only one entry here.
 
-        if not updated_object: # TODO: I think that this is an unreachable condition
+        if not updated_object:
             demisto.debug(f'No delta was found for incident id: {remote_incident_id}.')
 
         return GetRemoteDataResponse(mirrored_object=updated_object, entries=entries)
