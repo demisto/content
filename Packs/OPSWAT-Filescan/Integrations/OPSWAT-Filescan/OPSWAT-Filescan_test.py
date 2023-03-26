@@ -7,6 +7,7 @@ import importlib
 
 OPSWAT_Filescan = importlib.import_module("OPSWAT-Filescan")
 
+
 def util_load_json(path: str) -> Any:
     with io.open(path, mode="r", encoding="utf-8") as f:
         return json.loads(f.read())
@@ -25,6 +26,7 @@ APIKEY_VALIDATION_SUCCESS = {
     "email": "aniko@o.com",
 }
 
+
 @pytest.mark.parametrize("result, expected", [(APIKEY_VALIDATION_SUCCESS, "ok")])
 def test_test_module_positive(mocker, client, result, expected):
     mocker.patch.object(client, "test_module", return_value=result)
@@ -33,6 +35,7 @@ def test_test_module_positive(mocker, client, result, expected):
 
 
 APIKEY_VALIDATION_FAILURE = {"detail": "Could not validate credentials"}
+
 
 @pytest.mark.parametrize(
     "result, expected", [(APIKEY_VALIDATION_FAILURE, DemistoException)]
