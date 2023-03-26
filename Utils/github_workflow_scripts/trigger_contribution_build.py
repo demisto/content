@@ -34,8 +34,6 @@ def trigger_generic_webhook(options):
     username = options.username
     password = options.password
     gold_server_url = options.gold_server_url
-    contribution_build_instance_url = f"{gold_server_url}/instance/" \
-                                      "execute/GenericWebhook_trigger_contribution_build"
 
     body = {
         "name": "GenericWebhook_trigger_contribution_build",
@@ -43,7 +41,7 @@ def trigger_generic_webhook(options):
                      "ProjectID": "2596"},
     }
     # post to Content Gold
-    res = requests.post(contribution_build_instance_url, json=body, auth=(username, password))
+    res = requests.post(gold_server_url, json=body, auth=(username, password))
 
     if res.status_code != 200:
         print(
