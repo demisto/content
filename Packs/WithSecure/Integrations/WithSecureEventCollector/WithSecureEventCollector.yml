@@ -3,7 +3,7 @@ commonfields:
   id: WithSecure Event Collector
   version: -1
 configuration:
-- defaultvalue: https://api.connect.withsecure.com
+- defaultvalue: https://api.connect-stg.fsapi.com
   display: Your server URL
   name: url
   required: true
@@ -24,7 +24,7 @@ configuration:
   type: 0
   connect: true
 - defaultvalue: 1000
-  display: Maximum number of events per fetch
+  display: Maximum number of events per fetch, Max 1000
   name: limit
   type: 0
   required: false

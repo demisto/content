@@ -29,6 +29,7 @@ urllib3.disable_warnings()
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
+MAX_FETCH_LIMIT = 1000
 ''' CLIENT CLASS '''
 
 
@@ -41,26 +42,95 @@ class Client(BaseClient):
     Most calls use _http_request() that handles proxy, SSL verification, etc.
     For this  implementation, no special attributes defined
     """
+    def __init__(self, base_url, verify, proxy, client_id, client_secret):
+        super().__init__(base_url=base_url, verify=verify, proxy=proxy)
+        self.client_id = client_id
+        self.client_secret = client_secret
 
-    # TODO: REMOVE the following dummy function:
-    def baseintegration_dummy(self, dummy: str) -> Dict[str, str]:
-        """Returns a simple python dict with the information provided
-        in the input (dummy).
+    def authenticate(self) -> tuple[str, int]:
+        """Get the access token from the WithSecure API.
 
-        :type dummy: ``str``
-        :param dummy: string to add in the dummy dict that is returned
-
-        :return: dict as {"dummy": dummy}
-        :rtype: ``str``
+        Returns:
+            tuple[str,int]: The token and its expiration time in seconds received from the API.
         """
 
-        return {"dummy": dummy}
-    # TODO: ADD HERE THE FUNCTIONS TO INTERACT WITH YOUR PRODUCT API
+        response = self._http_request(
+            method="POST",
+            url_suffix='as/token.oauth2',
+            auth=(self.client_id, self.client_secret),
+            data={"grant_type": "client_credentials"},
+            error_handler=access_token_error_handler
+        )
+
+        return response.get("access_token"), response.get("expires_in")
+
+    def get_access_token(self):
+        """Return the token stored in integration context or returned from the API call.
+
+        If the token has expired or is not present in the integration context
+        (in the first case), it calls the Authentication function, which
+        generates a new token and stores it in the integration context.
+
+        Returns:
+            str: Authentication token.
+        """
+        integration_context = get_integration_context()
+        token = integration_context.get("access_token")
+        valid_until = integration_context.get("valid_until")
+        time_now = int(time.time())
+
+        # If token exists and is valid, then return it.
+        if (token and valid_until) and (time_now < valid_until):
+            return token
+
+        # Otherwise, generate a new token and store it.
+        token, expires_in = self.authenticate()
+        integration_context = {
+            "access_token": token,
+            "valid_until": time_now + expires_in,
+        }
+        set_integration_context(integration_context)
+
+        return token
+
+    def get_events_api_call(self, fetch_from, limit, next_anchor=None):
+        params = {
+            "serverTimestampStart": fetch_from,
+            "limit": limit
+        }
+        if next_anchor:
+            params['anchor'] = next_anchor
+        return self._http_request(
+            method="GET",
+            url_suffix='security-events/v1/security-events',
+            headers={"Authorization": "Bearer Y0DflGL5TkROWVOVcy3ppr9YVTqB54E6RwXSxND31i864x"},
+            # headers={"Authorization": f"Bearer {self.get_access_token()}"},
+            params=params
+        )
 
 
 ''' HELPER FUNCTIONS '''
 
-# TODO: ADD HERE ANY HELPER FUNCTION YOU MIGHT NEED (if any)
+
+def access_token_error_handler(response: requests.Response):
+    """
+    Error Handler for WithSecure access_token
+    Args:
+        response (response): WithSecure Token url response
+    Raise:
+         DemistoException
+    """
+    if response.status_code == 401:
+        raise DemistoException('Authorization Error: The provided credentials for WithSecure are '
+                               'invalid. Please provide a valid Client ID and Client Secret.')
+    elif response.status_code >= 400:
+        raise DemistoException('Error: something went wrong, please try again.')
+
+
+def parse_date(dt):
+    date_time = dateparser.parse(dt, settings={'TIMEZONE': 'UTC'})
+    return date_time.strftime(DATE_FORMAT)
+
 
 ''' COMMAND FUNCTIONS '''
 
@@ -79,35 +149,24 @@ def test_module(client: Client) -> str:
     :rtype: ``str``
     """
 
-    message: str = ''
-    try:
-        # TODO: ADD HERE some code to test connectivity and authentication to your service.
-        # This  should validate all the inputs given in the integration configuration panel,
-        # either manually or by using an API that uses them.
-        message = 'ok'
-    except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
-            message = 'Authorization Error: make sure API Key is correctly set'
-        else:
-            raise e
-    return message
+    client.get_access_token()
+    return 'ok'
 
 
-# TODO: REMOVE the following dummy command function
-def baseintegration_dummy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_events_command(client: Client, args: dict) -> tuple[list, CommandResults]:
+    fetch_from = parse_date(args.get('fetch_from') or demisto.params().get('first_fetch', '3 months'))
+    limit = args.get('limit') or MAX_FETCH_LIMIT
+    events = []
+    next_anchor = 'first'
+    while next_anchor and len(events) < limit:
+        req_limit = min(MAX_FETCH_LIMIT, limit - len(events))
+        res = client.get_events_api_call(fetch_from,req_limit, next_anchor if next_anchor != 'first' else None)
+        events.extend(res.get('items'))
+        next_anchor = res.get('nextAnchor')
 
-    dummy = args.get('dummy', None)
-    if not dummy:
-        raise ValueError('dummy not specified')
-
-    # Call the Client function and get the raw response
-    result = client.baseintegration_dummy(dummy)
-
-    return CommandResults(
-        outputs_prefix='BaseIntegration',
-        outputs_key_field='',
-        outputs=result,
-    )
+    events = events if len(events) < limit else events[:limit]
+    hr = tableToMarkdown(name='With Secure Events', t=events)
+    return events, CommandResults(readable_output=hr)
 # TODO: ADD additional command functions that translate XSOAR inputs/outputs to Client
 
 
@@ -121,43 +180,37 @@ def main() -> None:
     :rtype:
     """
 
-    # TODO: make sure you properly handle authentication
-    # api_key = demisto.params().get('credentials', {}).get('password')
+    params = demisto.params()
+    args = demisto.args()
+    base_url = params.get('url')
+    client_id = params.get('credentials', {}).get('identifier')
+    client_secret = params.get('credentials', {}).get('password')
+    first_fetch = parse_date(params.get('first_fetch', '3 days'))
+    limit = params.get('limit')
 
-    # get the service API url
-    base_url = urljoin(demisto.params()['url'], '/api/v1')
-
-    # if your Client class inherits from BaseClient, SSL verification is
-    # handled out of the box by it, just pass ``verify_certificate`` to
-    # the Client constructor
-    verify_certificate = not demisto.params().get('insecure', False)
+    verify_ssl = not params.get('insecure', False)
 
     # if your Client class inherits from BaseClient, system proxy is handled
     # out of the box by it, just pass ``proxy`` to the Client constructor
-    proxy = demisto.params().get('proxy', False)
-
-    demisto.debug(f'Command being called is {demisto.command()}')
+    proxy = params.get('proxy', False)
+    command = demisto.command()
+    demisto.debug(f'Command being called is {command}')
     try:
-
-        # TODO: Make sure you add the proper headers for authentication
-        # (i.e. "Authorization": {api key})
-        headers: Dict = {}
-
         client = Client(
             base_url=base_url,
-            verify=verify_certificate,
-            headers=headers,
+            verify=verify_ssl,
+            client_id=client_id,
+            client_secret=client_secret,
             proxy=proxy)
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
-            result = test_module(client)
+            return_results(test_module(client))
+
+        elif command == 'with-secure-get-events':
+            events, result = get_events_command(client, args)
             return_results(result)
 
-        # TODO: REMOVE the following dummy command case:
-        elif demisto.command() == 'baseintegration-dummy':
-            return_results(baseintegration_dummy_command(client, demisto.args()))
-        # TODO: ADD command cases for the commands you will implement
 
     # Log exceptions and return errors
     except Exception as e:
