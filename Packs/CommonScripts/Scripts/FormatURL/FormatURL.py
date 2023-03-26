@@ -34,9 +34,7 @@ class URLCheck(object):
     This class will build and validate a URL based on "URL Living Standard" (https://url.spec.whatwg.org)
     """
     sub_delims = ("!", "$", "&", "'", "(", ")", "*", "+", ",", ";", "=")
-    brackets = ("\"", "'", "[", "]", "{", "}", "(", ")", ",")
-    url_code_points = ("!", "$", "&", "\"", "(", ")", "*", "+", ",", "-", ".", "/", ":", ";", "=", "?", "@",
-                            "_", "~")
+    brackets = ("\"", "'", "[", "]", "{", "}", "(", ")")
 
     bracket_pairs = {
         '{': '}',
@@ -445,11 +443,10 @@ class URLCheck(object):
                 return len(self.modified_url), part
 
         elif char == '\\':
-            # Edge case of the url ending with quotes and an escape char before them
-            if self.modified_url[index + 1] == "\"":
-                return len(self.modified_url), part
+            # Edge case of the url ending with an escape char
+            return len(self.modified_url), part
 
-        elif not char.isalnum() and char not in self.url_code_points:
+        elif not char.isalnum() and not self.check_codepoint_validity(char):
             raise URLError(f"Invalid character {self.modified_url[index]} at position {index}")
 
         else:
@@ -457,6 +454,39 @@ class URLCheck(object):
             index += 1
 
         return index, part
+
+    @staticmethod
+    def check_codepoint_validity(char: str) -> bool:
+        """
+        Checks if a character from the URL is a valid code point, see
+        https://infra.spec.whatwg.org/#code-points for more information.  # disable-secrets-detection
+
+        Args:
+            char (str): A character derived from the URL
+
+        Returns:
+            bool: Is the character a valid code point.
+        """
+        url_code_points = ("!", "$", "&", "\"", "(", ")", "*", "+", ",", "-", ".", "/", ":", ";", "=", "?", "@",
+                           "_", "~")
+        unicode_code_points = {"start": "\u00A0", "end": "\U0010FFFD"}
+        surrogate_characters = {"start": "\uD800", "end": "\uDFFF"}
+        non_characters = {"start": "\uFDD0", "end": "\uFDEF"}
+
+        if surrogate_characters["start"] <= char <= surrogate_characters["end"]:
+            return False
+
+        elif non_characters["start"] <= char <= non_characters["end"]:
+            return False
+
+        elif char in url_code_points:
+            return True
+
+        elif unicode_code_points["start"] <= char <= unicode_code_points["end"]:
+            return True
+
+        else:
+            return False
 
     @staticmethod
     def check_domain(host: str) -> bool:
@@ -705,8 +735,7 @@ def _is_valid_cidr(cidr: str) -> bool:
 def main():
     raw_urls = demisto.args().get('input')
 
-    if isinstance(raw_urls, str):
-        raw_urls = raw_urls.split(",")
+    raw_urls = argToList(raw_urls, separator='|')
 
     formatted_urls: List[str] = []
 
@@ -721,11 +750,11 @@ def main():
         try:
             formatted_url = URLFormatter(url).output
 
-        except URLError as e:
-            demisto.debug(e.__str__())
+        except URLError:
+            demisto.debug(traceback.format_exc())
 
-        except Exception as e:
-            demisto.debug(traceback.format_exc() + str(e))  # print the traceback
+        except Exception:
+            demisto.debug(traceback.format_exc())
 
         finally:
             formatted_urls.append(formatted_url)

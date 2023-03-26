@@ -294,7 +294,7 @@ tasks:
       - "10"
     scriptarguments:
       limit:
-        simple: "1"
+        simple: "10"
       offset:
         simple: "0"
       start_time:
@@ -369,10 +369,14 @@ tasks:
         complex:
           root: PaloAltoNetworksIoT.Vulns
           accessor: vulnerability_name
+          transformers:
+            - operator: FirstArrayElement
       id:
         complex:
           root: PaloAltoNetworksIoT.Vulns
           accessor: zb_ticketid
+          transformers:
+            - operator: FirstArrayElement
       reason:
         simple: XSOAR nightly integration test
     separatecontext: false
