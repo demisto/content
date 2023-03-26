@@ -19,7 +19,7 @@
         },
         "MicrosoftWindowsEvents": {
             "mandatory": false,
-            "display_name": "Microsoft Windows Events"
+            "display_name": "Microsoft Windows Logs"
         }
     },
     "marketplaces": [
