@@ -14,6 +14,7 @@ urllib3.disable_warnings()
 VENDOR = 'AWS'
 PRODUCT = 'Security Hub'
 DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
+DEFAULT_FIRST_FETCH = '3 days'
 DEFAULT_MAX_RESULTS = 1000  # Default maximum number of results to fetch
 
 
@@ -71,7 +72,7 @@ def get_events(client: boto3.client, start_time: datetime | None = None,
 
         demisto.debug(f'Fetching events with kwargs:\n{kwargs}.')
         if response := client.get_findings(**kwargs):
-              events.extend(response.get('Findings', []))
+            events.extend(response.get('Findings', []))
 
         if 'NextToken' in response and (limit == 0 or len(events) < limit):
             kwargs['NextToken'] = response['NextToken']
@@ -181,7 +182,7 @@ def main():
 
     # How much time before the first fetch to retrieve events
     first_fetch_time: datetime.datetime = arg_to_datetime(
-        arg=params.get('first_fetch', '3 days'),
+        arg=params.get('first_fetch', DEFAULT_FIRST_FETCH),
         arg_name='First fetch time',
         required=True
     )
