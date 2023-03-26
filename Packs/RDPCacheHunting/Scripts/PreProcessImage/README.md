@@ -3,7 +3,7 @@ This script pre-processes an image file by preforming one of the following actio
 - sharpen - process that emphasizes the edges in an image to make it appear clearer and more focused.
 - grayscale - convert the image to black, white, and gray colors, in which gray has multiple levels (the value of each pixel represents only the intensity information of the light).
 
-Each action can also resize the image when given width and height.
+Each action can also resize the image when given the width and height.
 
 ## Script Data
 
