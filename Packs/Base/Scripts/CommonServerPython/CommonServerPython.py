@@ -10988,7 +10988,7 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
             error = res.reason
             if response.get('error').lower() == 'false':
                 xsiam_server_err_msg = response.get('error')
-                error += f": {xsiam_server_err_msg}"
+                error += ": " + xsiam_server_err_msg
 
         except ValueError:
             if res.text:
