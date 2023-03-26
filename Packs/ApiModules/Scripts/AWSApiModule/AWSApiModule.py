@@ -74,8 +74,6 @@ class AWSClient:
                     role_policy=None):
         kwargs = {}
 
-        demisto.debug(f'{region=}, {role_arn=}, {role_session_name=}, {role_session_duration=}')
-
         self.update_config()
 
         if role_arn and role_session_name is not None:
@@ -99,7 +97,7 @@ class AWSClient:
         elif self.aws_role_policy is not None:
             kwargs.update({'Policy': self.aws_role_policy})
 
-        demisto.debug(f'{kwargs=}')
+        demisto.debug('{kwargs}='.format(kwargs=kwargs))
 
         if kwargs and not self.aws_access_key_id:  # login with Role ARN
             if not self.aws_access_key_id:
