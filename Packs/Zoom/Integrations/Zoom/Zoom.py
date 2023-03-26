@@ -258,19 +258,19 @@ class Client(BaseClient):
 '''HELPER FUNCTIONS'''
 
 
-# def get_jwt_token(apiKey: str, apiSecret: str) -> str:
-#     """
-#     Encode the JWT token given the api ket and secret
-#     """
-#     now = datetime.now()
-#     expire_time = int(now.strftime('%s')) + JWT_LIFETIME
-#     payload = {
-#         'iss': apiKey,
+def get_jwt_token(apiKey: str, apiSecret: str) -> str:
+    """
+    Encode the JWT token given the api ket and secret
+    """
+    now = datetime.now()
+    expire_time = int(now.strftime('%s')) + JWT_LIFETIME
+    payload = {
+        'iss': apiKey,
 
-#         'exp': expire_time
-#     }
-#     encoded = jwt.encode(payload, apiSecret, algorithm='HS256')
-#     return encoded
+        'exp': expire_time
+    }
+    encoded = jwt.encode(payload, apiSecret, algorithm='HS256')
+    return encoded
 
 
 def test_module(client: Client):
