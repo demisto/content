@@ -344,7 +344,7 @@ Checks the reputation of the given IP address.
             "Campaign": [
                 {
                     "assignee_user": {
-                        "email": "darbel@paloaltonetworks.com",
+                        "email": "user@email.comm",
                         "id": "202",
                         "name": "",
                         "resource_uri": "/api/v1/user/202/"
@@ -370,7 +370,7 @@ Checks the reputation of the given IP address.
                     "modified_ts": "2022-08-01T09:52:10.246877",
                     "name": "Test Investigation",
                     "objective": null,
-                    "organization_id": 88,
+                    "organization_id": 11,
                     "owner_user_id": 202,
                     "publication_status": "new",
                     "published_ts": null,
@@ -1163,7 +1163,7 @@ for time in UTC time. |
                     "is_anonymous": false,
                     "is_cloneable": "yes",
                     "is_public": true,
-                    "modified_ts": "2022-08-02T06:20:19.772588",
+                    "modified_ts": "2022-08-02T06:20:19.772511",
                     "name": "Feeds SDK 2.0: Signature Carbon Black Query test 1",
                     "organization_id": 39,
                     "owner_user_id": 64,
@@ -1183,11 +1183,11 @@ for time in UTC time. |
                         }
                     ],
                     "tlp": "white",
-                    "uuid": "4c0d74d9-6bd5-45c0-a288-5bc1d714eee8",
+                    "uuid": "4c0d74d9-6bd5-45c0-a211-5bc1d714eee8",
                     "workgroups": []
                 }
             ],
-            "Source": "tmalache@paloaltonetworks.com",
+            "Source": "user@email.com",
             "Status": "active",
             "TTP": [
                 {
@@ -1280,7 +1280,7 @@ for time in UTC time. |
                         }
                     ],
                     "tlp": "white",
-                    "update_id": 8849957,
+                    "update_id": 1149957,
                     "uuid": "9f209a42-4cd2-4405-8176-3a925c86ac03",
                     "workgroups": []
                 }
@@ -1295,7 +1295,7 @@ for time in UTC time. |
 >### File reputation for: 275a021bbfb6489e54d471899f7db9d1663fc695ec2fe2a2c4538aabf651fd0f
 >|Confidence|IType|Modified|SHA256|Severity|Source|Status|Tags|Type|
 >|---|---|---|---|---|---|---|---|---|
->| 50 | apt_md5 | 2022-07-11T16:30:00.359Z | 275a021bbfb6489e54d471899f7db9d1663fc695ec2fe2a2c4538aabf651fd0f | very-high | tmalache@paloaltonetworks.com | active | apt | SHA256 |
+>| 50 | apt_md5 | 2022-07-11T16:30:00.359Z | 275a021bbfb6489e54d471899f7db9d1663fc695ec2fe2a2c4538aabf651fd0f | very-high | user@email.com | active | apt | SHA256 |
 >### Actor details:
 >|name|id|
 >|---|---|
@@ -1408,8 +1408,9 @@ Returns enrichment data for Domain or IP for available observables.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | type | The type of passive DNS search ("ip", "domain"). Possible values are: ip, domain. Default is ip. | Required | 
-| value | Possible values are "IP" or "Domain". | Required | 
+| value | The values that can be sent to the API should correspond to the type that is chosen. For example,if IP is chosen in the type argument, then a valid IP address should be sent in the value argument. | Required | 
 | limit | The maximum number of results to return. Default is 50. | Optional | 
+| all_results | Whether to retrieve all results. The "limit" argument will be ignored. Possible values are: true, false. Possible values are: false, true. Default is false. | Optional | 
 
 
 #### Context Output
@@ -1456,43 +1457,47 @@ for time in UTC time. |
 
 
 ### threatstream-import-indicator-with-approval
+
 ***
 Imports indicators (observables) into ThreatStream. The imported data must be approved using the ThreatStream UI. The data can be imported using one of three methods: plain-text, file, or URL.
-
 
 #### Base Command
 
 `threatstream-import-indicator-with-approval`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | confidence | The observable certainty level of a reported indicator type. Default is 50. | Optional | 
 | classification | Whether the indicator data is public or private to the organization. Possible values are: private, public. Default is private. | Optional | 
-| threat_type | Type of threat associated with the imported observables. Can be "adware", "anomalous", "anonymization", "apt", "bot", "brute", "c2", "compromised", "crypto", "data_leakage", "ddos", "dyn_dns", "exfil", "exploit", "hack_tool", "i2p", "informational", "malware", "p2p", "parked", "phish", "scan", "sinkhole", "spam", "suppress", "suspicious", "tor", or "vps". Possible values are: adware, anomalous, anonymization, apt, bot, brute, c2, compromised, crypto, data_leakage, ddos, dyn_dns, exfil, exploit, hack_tool, i2p, informational, malware, p2p, parked, phish, scan, sinkhole, spam, suppress, suspicious, tor, vps. Default is exploit. | Optional | 
-| severity | The potential impact of the indicator type with which the observable is believed to be associated. Can be "low", "medium", "high", or "very-high". Possible values are: low, medium, high, very-high. Default is low. | Optional | 
-| import_type | The import type of the indicator. Can be "datatext", "file-id", or "url". Possible values are: datatext, file-id, url. | Required | 
-| import_value | The source of imported data. Can be one of the following: url, datatext of file-id of uploaded file to the War Room. Supported file types for file-id are: CSV, HTML, IOC, JSON, PDF, TXT. | Required | 
+| threat_type | Type of threat associated with the imported observables. Possible values are: adware, anomalous, anonymization, apt, bot, brute, c2, compromised, crypto, data_leakage, ddos, dyn_dns, exfil, exploit, hack_tool, i2p, informational, malware, p2p, parked, phish, scan, sinkhole, spam, suppress, suspicious, tor, vps. Default is exploit. | Optional | 
+| severity | The potential impact of the indicator type with which the observable is believed to be associated. Possible values are: low, medium, high, very-high. Default is low. | Optional | 
+| import_type | The import type of the indicator. Possible values are: datatext, file-id, url. | Required | 
+| import_value | The imported data source. Can be one of the following: url or file-id datatext of the file uploaded to the War Room. Supported file types for file-id are: CSV, HTML, IOC, JSON, PDF, TXT. | Required | 
 | ip_mapping | Indicator type to assign if a specific type is not associated with an observable. This is a global setting that applies to any imported IP-type observable when an explicit itype is not specified for it. | Optional | 
 | domain_mapping | Indicator type to assign if a specific type is not associated with an observable. This is a global setting that applies to any imported domain-type observable when an explicit itype is not specified for it. | Optional | 
 | url_mapping | Indicator type to assign if a specific type is not associated with an observable. This is a global setting that applies to any imported URL-type observable when an explicit itype is not specified for it. | Optional | 
 | email_mapping | Indicator type to assign if a specific type is not associated with an observable. This is a global setting that applies to any imported email-type observable when an explicit itype is not specified for it. | Optional | 
 | md5_mapping | Indicator type to assign if a specific type is not associated with an observable. This is a global setting that applies to any imported MD5-type observable when an explicit itype is not specified for it. | Optional | 
-
+| tags | A comma-separated list of tags. For example, tag1,tag2. | Optional | 
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ThreatStream.Import.JobID | Number | The identifier for the job on ThreatStream. | 
+| ThreatStream.Import.ImportID | Number | the ID for the import job. | 
 
-#### Command Example
+#### Command example
 ```!threatstream-import-indicator-with-approval import_type=datatext import_value=78.78.78.67```
-
 #### Context Example
 ```json
 {
     "ThreatStream": {
         "Import": {
-            "ImportID": "36118"
+            "ImportID": "120784",
+            "JobID": "2ee6d511-8fcf-454a-af77-74e80f39bc4c"
         }
     }
 }
@@ -1500,7 +1505,9 @@ There is no context output for this command.
 
 #### Human Readable Output
 
->The data was imported successfully. The ID of imported job is: 36118
+>The data was imported successfully.
+>The ID of imported job is: 120784.
+> The identifier for the job on ThreatStream is: 2ee6d511-8fcf-454a-af77-74e80f39bc4c.
 
 ### threatstream-import-indicator-without-approval
 ***
@@ -1548,8 +1555,10 @@ Returns a list of threat models.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| model | The threat model of the returned list. Can be "actor", "campaign", "incident", "signature", "ttp", "vulnerability", or "tipreport". Possible values are: actor, campaign, incident, signature, ttp, vulnerability, tipreport. | Required | 
-| limit | Limits the model size list. Specifying limit=0 returns up to a maximum of 1000 models. For limit=0, the output is not set in the context. Default is 50. | Optional | 
+| model | The threat model of the returned list. Possible values are: actor, campaign, incident, signature, ttp, vulnerability, tipreport, malware, attack pattern. | Required | 
+| limit | Limits the model size list. Specifying limit=0 returns up to a maximum of 1000 models. For limit=0, the output is not set in the context. | Optional | 
+| page | Page number to get result from. Needs to be used with page_size argument. | Optional | 
+| page_size | The page size of the returned results. Needs to be used with the page argument. | Optional | 
 
 
 #### Context Output
@@ -1596,7 +1605,7 @@ Returns a list of threat models.
             },
             {
                 "CreatedTime": "2021-09-14T13:37:02.111599",
-                "ID": 26769,
+                "ID": 22222,
                 "Name": "New_Created_Actor",
                 "Type": "Actor"
             }
@@ -1614,7 +1623,7 @@ Returns a list of threat models.
 >| 2019-08-24T02:47:29.204380 | 10158 | report actor 1 | Actor |
 >| 2019-08-28T16:35:39.316135 | 10159 | report actor 1 | Actor |
 >| 2020-10-14T12:28:54.937276 | 10909 | MANDRA | Actor |
->| 2021-09-14T13:37:02.111599 | 26769 | New_Created_Actor | Actor |
+>| 2021-09-14T13:37:02.111599 | 22222 | New_Created_Actor | Actor |
 
 
 ### threatstream-get-model-description
@@ -1655,7 +1664,7 @@ Returns an HTML file with a description of the threat model.
         "Name": "actor_1.html",
         "SHA1": "c778f72fd7799108db427f632ca6b2bb07c9bde4",
         "SHA256": "6d06bdc613490216373e2b189c8d41143974c7a128da26e8fc4ba4f45a7e718b",
-        "SHA512": "989b0ae32b61b3b5a7ea1c3e629b50f07e7086310f8e4057ec046b368e55fc82cae873bd81eada657d827c96c71253b6ba3688561844ce983cdc5019d9666aa4",
+        "SHA512": "989b0ae32b61b3b5a7ea1c3e629b50f07e7086310f8e4057ec046b368e55fc82cae873bd81eada657d827c96c71253b6ba3611561844ce983cdc5019d9666aa4",
         "SSDeep": "48:32u8P32apgpIph9/gldn2++TnlCC4i72gSmB2rXpzNZx:32tuapgpCglM++TCE2gSN/",
         "Size": 1868,
         "Type": "ASCII text, with very long lines, with no line terminators"
@@ -1679,9 +1688,11 @@ Returns a list of indicators associated with the specified model and ID of the m
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| model | The threat model. Can be "actor", "campaign", "incident", "signature", "ttp", "vulnerability", or "tipreport". Possible values are: actor, campaign, incident, signature, ttp, vulnerability, tipreport. | Required | 
+| model | The threat model. Possible values are: actor, campaign, incident, signature, ttp, vulnerability, tipreport, malware, attack pattern. | Required | 
 | id | The model ID. | Required | 
-| limit | The maximum number of results to return. Default is 20. | Optional | 
+| limit | The maximum number of results to return.  Default value is 20. | Optional | 
+| page | Page number to get result from. Needs to be used with page_size argument. | Optional | 
+| page_size | The page size of the returned results. Needs to be used with the page argument. | Optional | 
 
 
 #### Context Output
@@ -1949,16 +1960,18 @@ Return filtered indicators from ThreatStream. If a query is defined, it override
 | asn | The Autonomous System (AS) number associated with the indicator. | Optional | 
 | confidence | The observable certainty level<br/>of a reported indicator type. Confidence scores range from 0-100 in increasing order of confidence, and are assigned by ThreatStream based on several factors. | Optional | 
 | country | The country associated with the indicator. | Optional | 
-| created_ts | When the indicator was first seen on<br/>the ThreatStream cloud platform. The date must be specified in this format:<br/>YYYYMMDDThhmmss, where "T" denotes the start of the value for time, in UTC time.<br/>For example, 2014-10-02T20:44:35. | Optional | 
+| created_ts | The date the indicator was first seen on<br/>the ThreatStream cloud platform. The date must be specified in this format:<br/>YYYYMMDDThhmmss, where "T" denotes the start of the value for time, in UTC time.<br/>For example, 2014-10-02T20:44:35. | Optional | 
 | id | The unique ID for the indicator. | Optional | 
 | is_public | Whether the classification of the indicator is public. Default is "false". Possible values are: false, true. | Optional | 
 | indicator_severity | The severity assigned to the indicator by ThreatStream. | Optional | 
 | org | The registered owner (organization) of the IP address associated with the indicator. | Optional | 
-| status | The status assigned to the indicator. Can be "active", "inactive", or "falsepos". Possible values are: active, inactive, falsepos. | Optional | 
+| status | The status assigned to the indicator. Possible values are: active, inactive, falsepos. | Optional | 
 | tags_name | The tag assigned to the indicator. | Optional | 
-| type | The type of indicator. Can be "domain", "email", "ip", "MD5", "string", or "url". Possible values are: domain, email, ip, md5, string, url. | Optional | 
+| type | The type of indicator. Possible values are: domain, email, ip, md5, string, url. | Optional | 
 | indicator_value | The value of the indicator. . | Optional | 
-| limit | The maximum number of results to return from ThreatStream. Default is 20. Default is 20. | Optional | 
+| limit | The maximum number of results to return from ThreatStream. Default value is 20. | Optional | 
+| page | Page number to get result from. Needs to be used with page_size argument. | Optional | 
+| page_size | The page size of the returned results. Needs to be used with the page argument. | Optional |  
 
 
 #### Context Output
@@ -2124,7 +2137,7 @@ Creates a threat model with the specified parameters.
                     "Status": "active",
                     "Tags": null,
                     "Type": "SHA256",
-                    "Value": "178ba564b39bd07577e974a9b677dfd86ffa1f1d0299dfd958eb883c5ef6c3e1"
+                    "Value": "178ba564b39bd07577e974a9b677dfd86ffa1f1d0299dfd958eb113c5ef6c3e1"
                 }
             ],
             "ModelID": 26770,
@@ -2139,7 +2152,7 @@ Creates a threat model with the specified parameters.
 >### Indicators list for Threat Model Actor with id 26770
 >|ASN|Confidence|Country|ID|IType|Modified|Organization|Severity|Source|Status|Tags|Type|Value|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
->|  | 50 |  | 191431508 | apt_md5 | 2021-09-13T12:40:42.596Z |  | medium | TestSource | active |  | SHA256 | 178ba564b39bd07577e974a9b677dfd86ffa1f1d0299dfd958eb883c5ef6c3e1 |
+>|  | 50 |  | 191431508 | apt_md5 | 2021-09-13T12:40:42.596Z |  | medium | TestSource | active |  | SHA256 | 178ba564b39bd07577e974a9b677dfd86ffa1f1d0299dfd958eb113c5ef6c3e1 |
 
 
 ### threatstream-update-model
@@ -2186,7 +2199,7 @@ Updates a threat model with specific parameters. If one or more optional paramet
 
 
 #### Command Example
-```!threatstream-update-model model=actor model_id=26769 intelligence=191431508 tags="updated tag,gone"```
+```!threatstream-update-model model=actor model_id=22222 intelligence=191431508 tags="updated tag,gone"```
 
 #### Context Example
 ```json
@@ -2207,10 +2220,10 @@ Updates a threat model with specific parameters. If one or more optional paramet
                     "Status": "active",
                     "Tags": null,
                     "Type": "SHA256",
-                    "Value": "178ba564b39bd07577e974a9b677dfd86ffa1f1d0299dfd958eb883c5ef6c3e1"
+                    "Value": "178ba564b39bd07577e974a9b677dfd86ffa1f1d0299dfd958eb113c5ef6c3e1"
                 }
             ],
-            "ModelID": "26769",
+            "ModelID": "22222",
             "ModelType": "Actor"
         }
     }
@@ -2219,10 +2232,10 @@ Updates a threat model with specific parameters. If one or more optional paramet
 
 #### Human Readable Output
 
->### Indicators list for Threat Model Actor with id 26769
+>### Indicators list for Threat Model Actor with id 22222
 >|ASN|Confidence|Country|ID|IType|Modified|Organization|Severity|Source|Status|Tags|Type|Value|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
->|  | 50 |  | 191431508 | apt_md5 | 2021-09-13T12:40:42.596Z |  | medium | TestSource | active |  | SHA256 | 178ba564b39bd07577e974a9b677dfd86ffa1f1d0299dfd958eb883c5ef6c3e1 |
+>|  | 50 |  | 191431508 | apt_md5 | 2021-09-13T12:40:42.596Z |  | medium | TestSource | active |  | SHA256 | 178ba564b39bd07577e974a9b677dfd86ffa1f1d0299dfd958eb113c5ef6c3e1 |
 
 
 ### threatstream-supported-platforms
@@ -2233,11 +2246,14 @@ Returns a list of supported platforms for default or premium sandbox.
 #### Base Command
 
 `threatstream-supported-platforms`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| sandbox_type | The type of sandbox ("default" or "premium"). Possible values are: default, premium. Default is default. | Optional | 
+| sandbox_type | The type of sandbox. Possible values are: default, premium. Default is default. | Optional | 
+| limit | The maximum number of results to return from ThreatStream. Default is 50. | Optional | 
+| all_results | Whether to retrieve all results. The "limit" argument will be ignored. Possible values are: true, false. Possible values are: false, true. Default is false. | Optional | 
 
 
 #### Context Output
@@ -2718,3 +2734,2069 @@ Returns filtered intelligence from ThreatStream. If a query is defined, it overr
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| true | 100 | 2022-04-21T14:27:51.242Z | 2022-07-20T14:27:51.041Z | 0 | 355250247 | 1.2.4.5 | false | false | true | c2_ip | detail2: bifocals_deactivated_on_2022-07-20_14:30:00.151050<br/>severity: medium | 2022-07-20T14:30:02.307Z | 67 | /api/v2/intelligence/355250247/ | -1 | 1658327402307,<br/>355250247 | Analyst | 100 | inactive | {'id': '4w0', 'name': 'abc'},<br/>{'id': 'o8x', 'name': 'feb3fbcf-d18c-4a1a-89af-fbe054e16f6c'},<br/>{'id': 'vuj', 'name': 'Playboook_source_without_approval_on_cloud'} | c2 | 70 | ip | 940700580 | 3e141a49-6fc9-4567-8efb-919565a39752 | 1.2.4.5 |
 
+
+### threatstream-list-rule
+
+***
+Gets list of rule from ThreatStream.
+
+#### Base Command
+
+`threatstream-list-rule`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| rule_id | Unique ID assigned to the rule. | Optional | 
+| limit | The maximum number of results to return. Default value is 50. | Optional | 
+| page | The page number of the results to retrieve. | Optional | 
+| page_size | The maximum number of objects to retrieve per page. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ThreatStream.Rule.adv_keyword | Unknown | Advanced keyword or regular expression that the rule is designed to match. | 
+| ThreatStream.Rule.backfill | Unknown | Objects that define additional filters or conditions for the rule. | 
+| ThreatStream.Rule.create_investigation | Boolean | Whether or not an investigation should be created when the rule is triggered. | 
+| ThreatStream.Rule.created_ts | Date | Rule creation time. | 
+| ThreatStream.Rule.description | Unknown | The rule description. | 
+| ThreatStream.Rule.exclude_notify_org_whitelisted | Boolean | Whether the rule excluded from matching observables that are included in the organization whitelist. | 
+| ThreatStream.Rule.exclude_notify_owner_org | Boolean | Whether to rule excluded keyword matches on observables imported by the organization from keyword match or hourly digest email notifications. | 
+| ThreatStream.Rule.has_associations | Boolean | Whether the rule has associations. | 
+| ThreatStream.Rule.id | Number | Unique ID assigned to the rule. | 
+| ThreatStream.Rule.intelligence_initiatives | Unknown | Intelligence Initiatives associated with the rule. | 
+| ThreatStream.Rule.is_editable | Boolean | Indicates whether the imported rule can be updated by an intelligence source. | 
+| ThreatStream.Rule.is_enabled | Boolean | Whether or not the rule is currently enabled. | 
+| ThreatStream.Rule.keyword | String | Keyword associated with the rule. | 
+| ThreatStream.Rule.keywords | String | A list of keywords associated with the rule. | 
+| ThreatStream.Rule.match_actors | Boolean | Unused according to ThreatStream API documentation. | 
+| ThreatStream.Rule.match_all_tm | Boolean | Whether or not the rule should match against all threat models. | 
+| ThreatStream.Rule.match_attackpatterns | Boolean | Whether the rule matches keywords in newly created Attack Patterns. | 
+| ThreatStream.Rule.match_campaigns | Boolean | Unused according to ThreatStream API documentation. | 
+| ThreatStream.Rule.match_courseofactions | Boolean | Whether the rule matches keywords in newly created Course of Action. | 
+| ThreatStream.Rule.match_customtms | Boolean | Whether or not the rule should match custom threat models. | 
+| ThreatStream.Rule.match_identities | Boolean | Whether the rule matches keywords in newly created Identities. | 
+| ThreatStream.Rule.match_incidents | Boolean | Unused according to ThreatStream API documentation. | 
+| ThreatStream.Rule.match_infrastructures | Boolean | Whether the rule matches keywords in newly created infrastructures. | 
+| ThreatStream.Rule.match_intrusionsets | Boolean | Whether the rule matches keywords in newly created intrusion sets. | 
+| ThreatStream.Rule.match_malware | Boolean | Unused according to ThreatStream API documentation. | 
+| ThreatStream.Rule.match_observables | Boolean | Whether the rule matches keywords in newly created Observables. | 
+| ThreatStream.Rule.match_reportedfiles | Boolean | Whether the rule should match keywords in newly created Sandbox Reports | 
+| ThreatStream.Rule.match_signatures | Boolean | Whether the rule should match keywords in newly created Signatures. | 
+| ThreatStream.Rule.match_tips | Boolean | Whether the rule matches keywords in newly created Threat Bulletins. | 
+| ThreatStream.Rule.match_tools | Boolean | Whether the rule should match keywords in newly created Tools. | 
+| ThreatStream.Rule.match_ttps | Boolean | Unused according to ThreatStream API documentation. | 
+| ThreatStream.Rule.match_vulnerabilities | Boolean | Whether the rule matches keywords in newly created vulnerabilities. | 
+| ThreatStream.Rule.matches | Number | Total number of keyword matches for the rule. | 
+| ThreatStream.Rule.messages | Unknown | Messages or notifications generated by the rule. | 
+| ThreatStream.Rule.modified_ts | Date | Time stamp of when the rule was last modified, in UTC format. | 
+| ThreatStream.Rule.name | String | The rule name. | 
+| ThreatStream.Rule.notify_list_groups | Unknown | List of group that should be notified when the rule triggers an alert. | 
+| ThreatStream.Rule.notify_me | Boolean | Whether or not the user who created the rule should be notified when the rule triggers an alert. | 
+| ThreatStream.Rule.org_id | Number | ID associated with the organization that created the rule. | 
+| ThreatStream.Rule.org_shared | Boolean | Unused according to ThreatStream API documentation. | 
+| ThreatStream.Rule.organization.id | String | ID associated with the organization that created the rule. | 
+| ThreatStream.Rule.organization.name | String | Name associated with the organization that created the rule. | 
+| ThreatStream.Rule.organization.resource_uri | String | Resource URI associated with the organization that created the rule. | 
+| ThreatStream.Rule.resource_uri | String | Resource URI associated with the rule. | 
+| ThreatStream.Rule.user.avatar_s3_url | Unknown | URL for the avatar image associated with the user that created the rule. | 
+| ThreatStream.Rule.user.can_share_intelligence | Boolean | Whether the user that created the rule can share intelligence. | 
+| ThreatStream.Rule.user.email | String | Email of the user that created the rule. | 
+| ThreatStream.Rule.user.id | String | ID of the user that created the rule. | 
+| ThreatStream.Rule.user.is_active | Boolean | Whether the user that created the rule is active. | 
+| ThreatStream.Rule.user.is_readonly | Boolean | Whether the user that created the rule should be restricted to Read Only status. | 
+| ThreatStream.Rule.user.must_change_password | Boolean | Whether the user that created the rule will be forced to change their password the next time they login. | 
+| ThreatStream.Rule.user.name | String | Name of the user that created the rule. | 
+| ThreatStream.Rule.user.nickname | String | Nickname of the user that created the rule. | 
+| ThreatStream.Rule.user.organization.id | String | The ID associated the organization. | 
+| ThreatStream.Rule.user.organization.name | String | The user's organization name. | 
+| ThreatStream.Rule.user.organization.resource_uri | String | The user's organization resource URI. | 
+| ThreatStream.Rule.user.resource_uri | String | The user's resource URI. | 
+| ThreatStream.Rule.user_id | Number | User ID of the user that created the rule. | 
+| ThreatStream.Rule.workgroups | Unknown | Unused according to ThreatStream API. | 
+| ThreatStream.Rule.actors.id | String | Actor's ID associated with the rule. | 
+| ThreatStream.Rule.actors.name | String | Actor's name associated with the rule. | 
+| ThreatStream.Rule.actors.resource_uri | String | Actor's resource URI associated with the rule. | 
+| ThreatStream.Rule.attackpatterns | Unknown | Attackpatterns associated with the rule. | 
+| ThreatStream.Rule.campaigns.id | String | Campaign's ID associated with the rule. | 
+| ThreatStream.Rule.campaigns.name | String | Campaign's name associated with the rule. | 
+| ThreatStream.Rule.campaigns.resource_uri | String | Campaign's resource URI associated with the rule. | 
+| ThreatStream.Rule.courseofaction | Unknown | Course of Action entities associated with the rule. | 
+| ThreatStream.Rule.customtms | Unknown | Custom threat models entities associated with the rule. | 
+| ThreatStream.Rule.exclude_impacts | String | Indicator types that excluded from rule matches. | 
+| ThreatStream.Rule.identities | Unknown | List of identities associated with the rule. | 
+| ThreatStream.Rule.incidents.id | String | Incident's ID associated with the rule. | 
+| ThreatStream.Rule.incidents.name | String | Incident's name associated with the rule. | 
+| ThreatStream.Rule.incidents.resource_uri | String | Incident's resource URI associated with the rule. | 
+| ThreatStream.Rule.infrastructure | Unknown | Infrastructure entities associated with the rule. | 
+| ThreatStream.Rule.intrusionsets | Unknown | Intrusion Sets entities associated with the rule. | 
+| ThreatStream.Rule.investigation.assignee.assignee_type | String | Type of assignee: "user" or "tsworkgroup". | 
+| ThreatStream.Rule.investigation.assignee.avatar_s3_url | Unknown | URL for the avatar image associated with the assignee user. | 
+| ThreatStream.Rule.investigation.assignee.can_share_intelligence | Boolean | Whether the assignee user can share intelligence. | 
+| ThreatStream.Rule.investigation.assignee.email | String | The email of the assignee user. | 
+| ThreatStream.Rule.investigation.assignee.id | String | The ID of the assignee user. | 
+| ThreatStream.Rule.investigation.assignee.is_active | Boolean | Whether the assignee user is active. | 
+| ThreatStream.Rule.investigation.assignee.is_readonly | Boolean | Whether the assignee user should be restricted to Read Only status. | 
+| ThreatStream.Rule.investigation.assignee.must_change_password | Boolean | Whether the investigation assignee user will be forced to change their password the next time they login. | 
+| ThreatStream.Rule.investigation.assignee.name | String | The investigation assignee user name. | 
+| ThreatStream.Rule.investigation.assignee.nickname | Unknown | The investigation assignee user nickname. | 
+| ThreatStream.Rule.investigation.assignee.resource_uri | String | Resource URI associated with Investigation assignee user. | 
+| ThreatStream.Rule.investigation.id | String | The ID of the investigation. | 
+| ThreatStream.Rule.investigation.name | String | The name of the investigation. | 
+| ThreatStream.Rule.investigation.resource_uri | String | The resource URI of the investigation. | 
+| ThreatStream.Rule.investigation.users | Unknown | List of users associated with the investigation created by the rule. | 
+| ThreatStream.Rule.investigation.workgroups | Unknown | Not used according to ThreatStream API documentation. | 
+| ThreatStream.Rule.malware.id | String | ID of the malware that associate to the rule. | 
+| ThreatStream.Rule.malware.name | String | Name of the malware that associate to the rule. | 
+| ThreatStream.Rule.malware.resource_uri | String | Resource URI of the malware that associate to the rule. | 
+| ThreatStream.Rule.match_impacts | String | Indicator types in which you want to look for rule matches at the exclusion of all others. | 
+| ThreatStream.Rule.signatures.id | String | ID of the signature that associate to the rule. | 
+| ThreatStream.Rule.signatures.name | String | Name of the signature that associate to the rule. | 
+| ThreatStream.Rule.signatures.resource_uri | String | Resource URI of the signature that associate to the rule. | 
+| ThreatStream.Rule.tags.name | String | Name of the tag applied to matched entities. | 
+| ThreatStream.Rule.tips.id | String | ID of the Threat Bulletin with which associate to matched entities. | 
+| ThreatStream.Rule.tips.name | String | Name of the Threat Bulletin with which associate to matched entities. | 
+| ThreatStream.Rule.tips.resource_uri | String | Resource URI of the Threat Bulletin with which associate to matched entities. | 
+| ThreatStream.Rule.tools | Unknown | List of tools associated with the rule. | 
+| ThreatStream.Rule.ttps.id | String | ID of the TTPs that associate to the rule. | 
+| ThreatStream.Rule.ttps.name | String | Name of the TTPs that associate to the rule. | 
+| ThreatStream.Rule.ttps.resource_uri | String | Resource URI of the TTPs that associate to the rule. | 
+| ThreatStream.Rule.vulnerabilities.id | String | ID of the vulnerability with which to associate matched entities. | 
+| ThreatStream.Rule.vulnerabilities.name | String | Name of the vulnerability with which to associate matched entities. | 
+| ThreatStream.Rule.vulnerabilities.resource_uri | String | Resource URI of the vulnerability with which to associate matched entities. | 
+
+#### Command example
+```!threatstream-list-rule```
+#### Context Example
+```json
+{
+    "ThreatStream": {
+        "Rule": [
+            {
+                "adv_keyword": null,
+                "backfill": [],
+                "create_investigation": true,
+                "created_ts": "2023-03-16T12:55:22.446718",
+                "description": null,
+                "exclude_notify_org_whitelisted": true,
+                "exclude_notify_owner_org": true,
+                "has_associations": true,
+                "id": 11111,
+                "intelligence_initiatives": [],
+                "is_editable": true,
+                "is_enabled": true,
+                "keyword": "keyword",
+                "keywords": [
+                    "keywords"
+                ],
+                "match_actors": false,
+                "match_all_tm": false,
+                "match_attackpatterns": false,
+                "match_campaigns": false,
+                "match_courseofactions": false,
+                "match_customtms": false,
+                "match_identities": false,
+                "match_incidents": false,
+                "match_infrastructures": false,
+                "match_intrusionsets": false,
+                "match_malware": false,
+                "match_observables": false,
+                "match_reportedfiles": false,
+                "match_signatures": true,
+                "match_tips": false,
+                "match_tools": false,
+                "match_ttps": false,
+                "match_vulnerabilities": false,
+                "matches": 0,
+                "messages": [],
+                "modified_ts": "2023-03-16T12:58:48.497804",
+                "name": "test_rule1",
+                "notify_list_groups": [],
+                "notify_me": true,
+                "org_id": 11,
+                "org_shared": false,
+                "organization": {
+                    "id": "11",
+                    "name": "name",
+                    "resource_uri": "/api/v1/userorganization/11/"
+                },
+                "resource_uri": "/api/v1/rule/11111/",
+                "tags": [
+                    {
+                        "name": "tag1"
+                    },
+                    {
+                        "name": "tag2"
+                    }
+                ],
+                "user": {
+                    "avatar_s3_url": null,
+                    "can_share_intelligence": false,
+                    "email": "user@email.com",
+                    "id": "111",
+                    "is_active": true,
+                    "is_readonly": false,
+                    "must_change_password": false,
+                    "name": "",
+                    "nickname": null,
+                    "organization": {
+                        "id": "11",
+                        "name": "name",
+                        "resource_uri": "/api/v1/userorganization/11/"
+                    },
+                    "resource_uri": "/api/v1/user/111/"
+                },
+                "user_id": 111,
+                "workgroups": []
+            },
+            {
+                "adv_keyword": null,
+                "backfill": [],
+                "create_investigation": true,
+                "created_ts": "2023-03-16T12:20:07.423911",
+                "description": null,
+                "exclude_notify_org_whitelisted": true,
+                "exclude_notify_owner_org": true,
+                "has_associations": true,
+                "id": 22222,
+                "intelligence_initiatives": [],
+                "is_editable": true,
+                "is_enabled": true,
+                "keyword": "some_keywords",
+                "keywords": [
+                    "some_keywords"
+                ],
+                "match_actors": false,
+                "match_all_tm": false,
+                "match_attackpatterns": false,
+                "match_campaigns": false,
+                "match_courseofactions": false,
+                "match_customtms": false,
+                "match_identities": false,
+                "match_incidents": false,
+                "match_infrastructures": false,
+                "match_intrusionsets": false,
+                "match_malware": false,
+                "match_observables": false,
+                "match_reportedfiles": false,
+                "match_signatures": true,
+                "match_tips": false,
+                "match_tools": false,
+                "match_ttps": false,
+                "match_vulnerabilities": false,
+                "matches": 0,
+                "messages": [],
+                "modified_ts": "2023-03-16T12:20:07.423911",
+                "name": "test_rule2",
+                "notify_list_groups": [],
+                "notify_me": true,
+                "org_id": 11,
+                "org_shared": false,
+                "organization": {
+                    "id": "11",
+                    "name": "name",
+                    "resource_uri": "/api/v1/userorganization/11/"
+                },
+                "resource_uri": "/api/v1/rule/22222/",
+                "tags": [
+                    {
+                        "name": "tag1"
+                    },
+                    {
+                        "name": "tag2"
+                    }
+                ],
+                "user": {
+                    "avatar_s3_url": null,
+                    "can_share_intelligence": false,
+                    "email": "user@email.com",
+                    "id": "111",
+                    "is_active": true,
+                    "is_readonly": false,
+                    "must_change_password": false,
+                    "name": "",
+                    "nickname": null,
+                    "organization": {
+                        "id": "11",
+                        "name": "name",
+                        "resource_uri": "/api/v1/userorganization/11/"
+                    },
+                    "resource_uri": "/api/v1/user/111/"
+                },
+                "user_id": 111,
+                "workgroups": []
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Rules
+>|Name|Id|Matches|Created At|Modified At|Is Notify Me|Is Enabled|
+>|---|---|---|---|---|---|---|
+>| test_rule1 | 11111 | 0 | 2023-03-16T12:55:22.446718 | 2023-03-16T12:58:48.497804 | true | true |
+>| test_rule2 | 22222 | 0 | 2023-03-16T12:20:07.423911 | 2023-03-16T12:20:07.423911 | true | true |
+
+### threatstream-create-rule
+
+***
+Create a rule in ThreatStream platform.
+
+#### Base Command
+
+`threatstream-create-rule`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| rule_name | Name of the rule. | Required | 
+| keywords | A comma-separated list of keywords for which you want the rule to match. Keywords added to rules must adhere to the following requirements: IP addresses must be expressed as regular expressions, IP subnets should be expressed using CIDR notation and not as regular expressions, Do not start or end keywords with *, Keywords must contain at least three characters. | Required | 
+| match_include | A comma-separated list of fields you want the rule match to their keywords. Possible values: observables, sandbox reports, threat bulletins, signatures, vulnerabilities. | Required | 
+| actor_ids | A comma-separated list of IDs of the actors with which you want to associate matched entities. Use the threatstream-get-model-list command to get the actor ids values. | Optional | 
+| campaign_ids | A comma-separated list of IDs of the campaigns with which you want to associate matched entities. Use the threatstream-get-model-list command to get the campaign ids values. | Optional | 
+| investigation_action | The Action you want to do related to the investigation default value is 'No Action'. Possible values are: Create New, Add To Existing, No Action. | Optional | 
+| new_investigation_name | The investigation name ,when selected 'Create New' in investigation_action argument. | Optional | 
+| existing_investigation_id | Existing investigation id ,when selected 'Add To Existing' in investigation_action argument. Use the threatstream-list-investigation command to get the investigation id value. | Optional | 
+| exclude_indicator | A comma-separated list of indicator types you want to exclude from rule matches. Example: actor_ipv6. | Optional | 
+| include_indicator | A comma-separated list of indicator types you want to include from rule matches. Example: actor_ipv6. | Optional | 
+| exclude_notify_org_whitelisted | Whether you want to exclude the rule from matching observables that are included in your organization whitelist. Possible values are: True, False. | Optional | 
+| exclude_notify_owner_org | Whether you want to exclude keyword matches on observables imported by your organization from keyword match or hourly digest email notifications. Possible values are: True, False. | Optional | 
+| incident_ids | A comma-separated list of IDs of the incidents with which you want to associate matched entities. Use the threatstream-get-model-list command to get the incident ids value. | Optional | 
+| malware_ids | A comma-separated list of IDs of the malwares with which you want to associate matched entities. Use the threatstream-get-model-list command to get the malware ids value. | Optional | 
+| signature_ids | A comma-separated list of IDs of the signatures with which you want to associate matched entities. Use the threatstream-get-model-list command to get the signature ids value. | Optional | 
+| threat_bulletin_ids | A comma-separated list of IDs of the threat bulletin with which you want to associate matched entities. Use the threatstream-get-model-list command to get the threat bulletin ids value. | Optional | 
+| ttp_ids | A comma-separated list of IDs of the TTPs with which you want to associate matched entities. Use the threatstream-get-model-list command to get the TTPs ids value. | Optional | 
+| vulnerability_ids | A comma-separated list of IDs of the vulnerabilities with which you want to associate matched entities. Use the threatstream-get-model-list command to get the vulnerabilities ids value. | Optional | 
+| tags | A comma-separated list of IDs of the tags with which you want to associate matched entities. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ThreatStream.Rule.actors.id | String | Actor's ID associated with the rule. | 
+| ThreatStream.Rule.actors.name | String | Actor's name associated with the rule. | 
+| ThreatStream.Rule.actors.resource_uri | String | Actor's resource URI associated with the rule. | 
+| ThreatStream.Rule.adv_keyword | Unknown | Advanced keyword or regular expression that the rule is designed to match. | 
+| ThreatStream.Rule.attackpatterns | Unknown | Attackpatterns associated with the rule. | 
+| ThreatStream.Rule.backfill | Unknown | Objects that define additional filters or conditions for the rule. | 
+| ThreatStream.Rule.campaigns.id | String | Campaign's ID associated with the rule. | 
+| ThreatStream.Rule.campaigns.name | String | Campaign's name associated with the rule. | 
+| ThreatStream.Rule.campaigns.resource_uri | String | Campaign's resource uri associated with the rule. | 
+| ThreatStream.Rule.courseofaction | Unknown | Course of Action entities associated with the rule. | 
+| ThreatStream.Rule.create_investigation | Boolean | Whether or not an investigation should be created when the rule is triggered. | 
+| ThreatStream.Rule.created_ts | Date | Rule creation time. | 
+| ThreatStream.Rule.customtms | Unknown | Custom threat models entities associated with the rule. | 
+| ThreatStream.Rule.description | Unknown | The rule description. | 
+| ThreatStream.Rule.exclude_impacts | String | Indicator types that excluded from rule matches. | 
+| ThreatStream.Rule.exclude_notify_org_whitelisted | Boolean | Whether Observables whitelisted by your organization are excluded from rule matches. | 
+| ThreatStream.Rule.exclude_notify_owner_org | Boolean | Whether to exclude keyword matches on Observables imported by your organization from Keyword Match or Hourly Digest email notifications. | 
+| ThreatStream.Rule.id | Number | Unique ID assigned to the rule. | 
+| ThreatStream.Rule.identities | Unknown | List of identities associated with the rule. | 
+| ThreatStream.Rule.incidents.id | String | Incident's id associated with the rule. | 
+| ThreatStream.Rule.incidents.name | String | Incident's name associated with the rule. | 
+| ThreatStream.Rule.incidents.resource_uri | String | Incident's resource URI associated with the rule. | 
+| ThreatStream.Rule.infrastructure | Unknown | Infrastructure entities associated with the rule. | 
+| ThreatStream.Rule.intelligence_initiatives | Unknown | Intelligence Initiatives associated with the rule. | 
+| ThreatStream.Rule.intrusionsets | Unknown | Intrusion Sets entities associated with the rule. | 
+| ThreatStream.Rule.investigation.assignee.assignee_type | String | Type of assignee: "user" or "tsworkgroup". | 
+| ThreatStream.Rule.investigation.assignee.avatar_s3_url | Unknown | URL for the avatar image associated with the assignee user. | 
+| ThreatStream.Rule.investigation.assignee.can_share_intelligence | Boolean | Whether the assignee user can share intelligence. | 
+| ThreatStream.Rule.investigation.assignee.email | String | The email of the assignee user. | 
+| ThreatStream.Rule.investigation.assignee.id | String | The ID of the assignee user. | 
+| ThreatStream.Rule.investigation.assignee.is_active | Boolean | Whether the assignee user is active. | 
+| ThreatStream.Rule.investigation.assignee.is_readonly | Boolean | Whether the assigne user should be restricted to Read Only status. | 
+| ThreatStream.Rule.investigation.assignee.must_change_password | Boolean | Whether the assignee user will be forced to change their password the next time they login. | 
+| ThreatStream.Rule.investigation.assignee.name | String | The investigation assignee user name. | 
+| ThreatStream.Rule.investigation.assignee.nickname | Unknown | The investigation assignee user nickname. | 
+| ThreatStream.Rule.investigation.assignee.resource_uri | String | Resource URI associated with Investigation assignee user. | 
+| ThreatStream.Rule.investigation.investigation_config.name | String | The name of the investigation configuration associated with the rule. | 
+| ThreatStream.Rule.investigation.id | String | The ID of the investigation. | 
+| ThreatStream.Rule.investigation.name | String | The name of the investigation. | 
+| ThreatStream.Rule.investigation.resource_uri | String | The resource URI of the investigation. | 
+| ThreatStream.Rule.investigation.users | Unknown | List of users associated with the investigation created by the rule. | 
+| ThreatStream.Rule.investigation.workgroups | Unknown | Not used according to ThreatStream API documentation | 
+| ThreatStream.Rule.is_editable | Boolean | Indicates whether the imported rule can be updated by an intelligence source. | 
+| ThreatStream.Rule.is_enabled | Boolean | Whether or not the rule is currently enabled. | 
+| ThreatStream.Rule.keyword | String | Keyword associated with the rule. | 
+| ThreatStream.Rule.keywords | String | A list of keywords associated with the rule. | 
+| ThreatStream.Rule.malware.id | String | ID of the malware that associate to the rule. | 
+| ThreatStream.Rule.malware.name | String | Name of the malware that associate to the rule. | 
+| ThreatStream.Rule.malware.resource_uri | String | Resource URI of the malware that associate to the rule. | 
+| ThreatStream.Rule.match_actors | Boolean | Unused according to ThreatStream API documentation. | 
+| ThreatStream.Rule.match_all_tm | Boolean | Whether or not the rule should match against all threat models. | 
+| ThreatStream.Rule.match_attackpatterns | Boolean | Whether the rule matches keywords in newly created Attack Patterns. | 
+| ThreatStream.Rule.match_campaigns | Boolean | Unused according to ThreatStream API documentation. | 
+| ThreatStream.Rule.match_courseofactions | Boolean | Whether the rule matches keywords in newly created Course of Action. | 
+| ThreatStream.Rule.match_customtms | Boolean | Whether or not the rule should match custom threat models. | 
+| ThreatStream.Rule.match_identities | Boolean | Whether the rule matches keywords in newly created Identities. | 
+| ThreatStream.Rule.match_impacts | String | Indicator types in which you want to look for rule matches at the exclusion of all others. | 
+| ThreatStream.Rule.match_incidents | Boolean | Unused according to ThreatStream API documentation. | 
+| ThreatStream.Rule.match_infrastructures | Boolean | Whether the rule matches keywords in newly created infrastructures. | 
+| ThreatStream.Rule.match_intrusionsets | Boolean | Whether the rule matches keywords in newly created Intrusion Sets. | 
+| ThreatStream.Rule.match_malware | Boolean | Unused according to ThreatStream API documentation. | 
+| ThreatStream.Rule.match_observables | Boolean | Whether the rule matches keywords in newly created Observables. | 
+| ThreatStream.Rule.match_reportedfiles | Boolean | Whether the rule should match keywords in newly created Sandbox Reports. | 
+| ThreatStream.Rule.match_signatures | Boolean | Whether the rule should match keywords in newly created Signatures | 
+| ThreatStream.Rule.match_tips | Boolean | Whether the rule should match keywords in newly created Threat Bulletins. | 
+| ThreatStream.Rule.match_tools | Boolean | Whether the rule should match keywords in newly created Tools. | 
+| ThreatStream.Rule.match_ttps | Boolean | Unused according to ThreatStream API documentation. | 
+| ThreatStream.Rule.match_vulnerabilities | Boolean | Whether the rule should match keywords in newly created vulnerabilities. | 
+| ThreatStream.Rule.matches | Number | Total number of keyword matches for the rule. | 
+| ThreatStream.Rule.messages | Unknown | Messages or notifications generated by the rule. | 
+| ThreatStream.Rule.modified_ts | Date | Time stamp of when the rule was last modified, in UTC format. | 
+| ThreatStream.Rule.name | String | The rule name. | 
+| ThreatStream.Rule.notify_list_groups | Unknown | List of group that should be notified when the rule triggers an alert. | 
+| ThreatStream.Rule.notify_me | Boolean | Whether or not the user who created the rule should be notified when the rule triggers an alert. | 
+| ThreatStream.Rule.org_id | Number | ID associated with the organization that created the rule. | 
+| ThreatStream.Rule.org_shared | Boolean | Unused according to ThreatStream API documentation. | 
+| ThreatStream.Rule.organization.id | String | ID associated with the organization that created the rule. | 
+| ThreatStream.Rule.organization.name | String | Name associated with the organization that created the rule. | 
+| ThreatStream.Rule.organization.resource_uri | String | Resource URI associated with the organization that created the rule. | 
+| ThreatStream.Rule.resource_uri | String | Resource URI associated with the rule. | 
+| ThreatStream.Rule.signatures.id | String | ID of the signature that associate to the rule. | 
+| ThreatStream.Rule.signatures.name | String | Name of the signature that associate to the rule. | 
+| ThreatStream.Rule.signatures.resource_uri | String | Resource URI of the signature that associate to the rule. | 
+| ThreatStream.Rule.tags.name | String | Name of the tag applied to matched entities. | 
+| ThreatStream.Rule.tips.id | String | ID of the Threat Bulletin with which associate to matched entities. | 
+| ThreatStream.Rule.tips.name | String | Name of the Threat Bulletin with which associate to matched entities. | 
+| ThreatStream.Rule.tips.resource_uri | String | Resource URI of the Threat Bulletin with which associate to matched entities. | 
+| ThreatStream.Rule.tools | Unknown | List of tools associated with the rule. | 
+| ThreatStream.Rule.ttps.id | String | ID of the TTPs that associate to the rule. | 
+| ThreatStream.Rule.ttps.name | String | Name of the TTPs that associate to the rule. | 
+| ThreatStream.Rule.ttps.resource_uri | String | Resource URI of the TTPs that associate to the rule. | 
+| ThreatStream.Rule.user.avatar_s3_url | Unknown | URL for the avatar image associated with the user that created the rule. | 
+| ThreatStream.Rule.user.can_share_intelligence | Boolean | Whether the assignee user can share intelligence. | 
+| ThreatStream.Rule.user.email | String | Email of the user that created the rule. | 
+| ThreatStream.Rule.user.id | String | ID of the user that created the rule. | 
+| ThreatStream.Rule.user.is_active | Boolean | Whether the user that created the rule is active. | 
+| ThreatStream.Rule.user.is_readonly | Boolean | Whether the user that created the rule should be restricted to Read Only status. | 
+| ThreatStream.Rule.user.must_change_password | Boolean | Whether the user that created the rule will be forced to change their password the next time they login. | 
+| ThreatStream.Rule.user.name | String | Name of the user that created the rule. | 
+| ThreatStream.Rule.user.nickname | String | Nickname of the user that created the rule. | 
+| ThreatStream.Rule.user.organization.id | String | The ID associated the organization. | 
+| ThreatStream.Rule.user.organization.name | String | The user's organization name. | 
+| ThreatStream.Rule.user.organization.resource_uri | String | The user's organization resource URI. | 
+| ThreatStream.Rule.user.resource_uri | String | The user's resource URI. | 
+| ThreatStream.Rule.user_id | Number | User ID of the user that created the rule. | 
+| ThreatStream.Rule.vulnerabilities.id | String | ID of the vulnerability with which to associate matched entities. | 
+| ThreatStream.Rule.vulnerabilities.name | String | Name of the vulnerability with which to associate matched entities. | 
+| ThreatStream.Rule.vulnerabilities.resource_uri | String | ID of the vulnerability with which to associate matched entities. | 
+| ThreatStream.Rule.workgroups | Unknown | Not used according to ThreatStream API documentation. | 
+
+#### Command example
+```!threatstream-create-rule rule_name=test_rule keywords=some_keywords match_include=signatures```
+#### Context Example
+```json
+{
+    "ThreatStream": {
+        "Rule": {
+            "actors": [],
+            "adv_keyword": null,
+            "attackpatterns": [],
+            "backfill": [],
+            "campaigns": [],
+            "courseofaction": [],
+            "create_investigation": false,
+            "created_ts": "2023-03-26T09:22:44.199820",
+            "customtms": [],
+            "description": null,
+            "exclude_impacts": [],
+            "exclude_notify_org_whitelisted": false,
+            "exclude_notify_owner_org": false,
+            "id": 11111,
+            "identities": [],
+            "incidents": [],
+            "infrastructure": [],
+            "intrusionsets": [],
+            "investigation": null,
+            "is_editable": true,
+            "is_enabled": true,
+            "keyword": "some_keywords",
+            "keywords": [
+                "some_keywords"
+            ],
+            "malware": [],
+            "match_actors": false,
+            "match_all_tm": false,
+            "match_attackpatterns": false,
+            "match_campaigns": false,
+            "match_courseofactions": false,
+            "match_customtms": false,
+            "match_identities": false,
+            "match_impacts": [],
+            "match_incidents": false,
+            "match_infrastructures": false,
+            "match_intrusionsets": false,
+            "match_malware": false,
+            "match_observables": false,
+            "match_reportedfiles": false,
+            "match_signatures": true,
+            "match_tips": false,
+            "match_tools": false,
+            "match_ttps": false,
+            "match_vulnerabilities": false,
+            "matches": 0,
+            "messages": [],
+            "modified_ts": "2023-03-26T09:22:44.199835",
+            "name": "test_rule",
+            "notify_list_groups": [],
+            "notify_me": true,
+            "org_id": 11,
+            "org_shared": false,
+            "organization": {
+                "id": "11",
+                "name": "name",
+                "resource_uri": "/api/v1/userorganization/11/"
+            },
+            "resource_uri": "/api/v1/rule/11111/",
+            "signatures": [],
+            "tags": [],
+            "tips": [],
+            "tools": [],
+            "ttps": [],
+            "user": {
+                "avatar_s3_url": null,
+                "can_share_intelligence": false,
+                "email": "user@email.com",
+                "id": "111",
+                "is_active": true,
+                "is_readonly": false,
+                "must_change_password": false,
+                "name": "",
+                "nickname": null,
+                "organization": {
+                    "id": "11",
+                    "name": "name",
+                    "resource_uri": "/api/v1/userorganization/11/"
+                },
+                "resource_uri": "/api/v1/user/111/"
+            },
+            "user_id": 111,
+            "vulnerabilities": [],
+            "workgroups": []
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>The rule was created successfully with id: 11111.
+
+
+### threatstream-update-rule
+
+***
+Updates exists rule from ThreatStream.
+
+#### Base Command
+
+`threatstream-update-rule`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| rule_id | The rule ID. | Required | 
+| rule_name | The rule name. | Optional | 
+| keywords | A comma-separated list of keywords for which you want the rule to match. Keywords added to rules must adhere to the following requirements: IP addresses must be expressed as regular expressions, IP subnets should be expressed using CIDR notation and not as regular expressions, Do not start or end keywords with *, Keywords must contain at least three characters. | Optional | 
+| match_include | A comma-separated list of fields you want the rule match to their keywords. Possible values: observables, sandbox reports, threat bulletins, signatures, vulnerabilities. | Optional | 
+| actor_ids | A comma-separated list of IDs of the actors with which you want to associate matched entities. Use the threatstream-get-model-list command to get the actor ids values. | Optional | 
+| campaign_ids | A comma-separated list of IDs of the campaigns with which you want to associate matched entities. Use the threatstream-get-model-list command to get the campaign ids values. | Optional | 
+| investigation_action | The Action you want to do related to the investigation default value is 'No Action'. Possible values are: Create New, Add To Existing, No Action. | Optional | 
+| new_investigation_name | The investigation name ,when selected 'Create New' in investigation_action argument. | Optional | 
+| existing_investigation_id | Existing investigation id ,when selected 'Add To Existing' in investigation_action argument. Use the threatstream-list-investigation command to get the investigation id value. | Optional | 
+| exclude_indicator | A comma-separated list of indicator types you want to exclude from rule matches. | Optional | 
+| include_indicator | A comma-separated list of indicator types you want to include from rule matches. | Optional | 
+| exclude_notify_org_whitelisted | Whether Observables whitelisted by your organization are excluded from rule matches. Possible values are: True, False. | Optional | 
+| exclude_notify_owner_org | Whether you want to exclude keyword matches on Observables imported by your organization from Keyword Match or Hourly Digest email notifications. Possible values are: True, False. | Optional | 
+| incident_ids | A comma-separated list of IDs of the incidents with which you want to associate matched entities. Use the threatstream-get-model-list command to get the incident ids value. | Optional | 
+| malware_ids | A comma-separated list of IDs of the malwares with which you want to associate matched entities. Use the threatstream-get-model-list command to get the malware ids value. | Optional | 
+| signature_ids | A comma-separated list of IDs of the signatures with which you want to associate matched entities. Use the threatstream-get-model-list command to get the signature ids value. | Optional | 
+| threat_bulletin_ids | A comma-separated list of IDs of the threat bulletin with which you want to associate matched entities. Use the threatstream-get-model-list command to get the threat bulletin ids value. | Optional | 
+| ttp_ids | A comma-separated list of IDs of the TTPs with which you want to associate matched entities. Use the threatstream-get-model-list command to get the TTPs ids value. | Optional | 
+| vulnerability_ids | A comma-separated list of IDs of the vulnerabilities with which you want to associate matched entities. Use the threatstream-get-model-list command to get the vulnerabilities ids value. | Optional | 
+| tags | A comma-separated list of tags. For example, tag1,tag2. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ThreatStream.Rule.actors.id | String | Actor's ID associated with the rule. | 
+| ThreatStream.Rule.actors.name | String | Actor's name associated with the rule. | 
+| ThreatStream.Rule.actors.resource_uri | String | Actor's resource URI associated with the rule. | 
+| ThreatStream.Rule.adv_keyword | Unknown | Advanced keyword or regular expression that the rule is designed to match. | 
+| ThreatStream.Rule.attackpatterns | Unknown | Attackpatterns associated with the rule. | 
+| ThreatStream.Rule.backfill | Unknown | Objects that define additional filters or conditions for the rule. | 
+| ThreatStream.Rule.campaigns.id | String | Campaign's ID associated with the rule. | 
+| ThreatStream.Rule.campaigns.name | String | Campaign's name associated with the rule. | 
+| ThreatStream.Rule.campaigns.resource_uri | String | Campaign's resource URI associated with the rule. | 
+| ThreatStream.Rule.courseofaction | Unknown | Course of Action entities associated with the rule. | 
+| ThreatStream.Rule.create_investigation | Boolean | Whether or not an investigation should be created when the rule is triggered. | 
+| ThreatStream.Rule.created_ts | Date | Rule creation time. | 
+| ThreatStream.Rule.customtms | Unknown | Custom threat models entities associated with the rule. | 
+| ThreatStream.Rule.description | String | The rule description. | 
+| ThreatStream.Rule.exclude_impacts | String | Indicator types that excluded from rule matches. | 
+| ThreatStream.Rule.exclude_notify_org_whitelisted | Boolean | Whether Observables whitelisted by your organization are excluded from rule matches. | 
+| ThreatStream.Rule.exclude_notify_owner_org | Boolean | Whether to exclude keyword matches on Observables imported by your organization from Keyword Match or Hourly Digest email notifications. | 
+| ThreatStream.Rule.id | Number | Unique ID assigned to the rule. | 
+| ThreatStream.Rule.identities | Unknown | List of identities associated with the rule. | 
+| ThreatStream.Rule.incidents.id | String | Incident's id associated with the rule. | 
+| ThreatStream.Rule.incidents.name | String | Incident's name associated with the rule. | 
+| ThreatStream.Rule.incidents.resource_uri | String | Incident's resource URI associated with the rule. | 
+| ThreatStream.Rule.infrastructure | Unknown | Infrastructure entities associated with the rule. | 
+| ThreatStream.Rule.intelligence_initiatives | Unknown | Intelligence Initiatives associated with the rule. | 
+| ThreatStream.Rule.intrusionsets | Unknown | Intrusion Sets entities associated with the rule. | 
+| ThreatStream.Rule.investigation.assignee.assignee_type | String | Type of assignee: "user" or "tsworkgroup". | 
+| ThreatStream.Rule.investigation.assignee.avatar_s3_url | Unknown | URL for the avatar image associated with the assignee user. | 
+| ThreatStream.Rule.investigation.assignee.can_share_intelligence | Boolean | Whether the assignee user can share intelligence. | 
+| ThreatStream.Rule.investigation.assignee.email | String | The email of the assignee user. | 
+| ThreatStream.Rule.investigation.assignee.id | String | The ID of the assignee user. | 
+| ThreatStream.Rule.investigation.assignee.is_active | Boolean | Whether the assignee user is active. | 
+| ThreatStream.Rule.investigation.assignee.is_readonly | Boolean | Whether the assignee user should be restricted to Read Only status. | 
+| ThreatStream.Rule.investigation.assignee.must_change_password | Boolean | Whether the assignee user will be forced to change their password the next time they login. | 
+| ThreatStream.Rule.investigation.assignee.name | String | The investigation assignee user name. | 
+| ThreatStream.Rule.investigation.assignee.nickname | Unknown | The investigation assignee user nickname. | 
+| ThreatStream.Rule.investigation.assignee.resource_uri | String | Resource URI associated with Investigation assignee user. | 
+| ThreatStream.Rule.investigation.investigation_config.name | String | The name of the investigation configuration associated with the rule. | 
+| ThreatStream.Rule.investigation.id | String | The ID of the investigation. | 
+| ThreatStream.Rule.investigation.name | String | The name of the investigation. | 
+| ThreatStream.Rule.investigation.resource_uri | String | The resource URI of the investigation. | 
+| ThreatStream.Rule.investigation.users | Unknown | List of users associated with the investigation created by the rule. | 
+| ThreatStream.Rule.investigation.workgroups | Unknown | Not used according to ThreatStream API documentation. | 
+| ThreatStream.Rule.is_editable | Boolean | Indicates whether the imported entity can be updated by an intelligence source. | 
+| ThreatStream.Rule.is_enabled | Boolean | Whether or not the rule is currently enabled. | 
+| ThreatStream.Rule.keyword | String | Keyword associated with the rule. | 
+| ThreatStream.Rule.keywords | String | A list of keywords associated with the rule. | 
+| ThreatStream.Rule.malware.id | String | ID of the malware that associate to the rule. | 
+| ThreatStream.Rule.malware.name | String | Name of the malware that associate to the rule. | 
+| ThreatStream.Rule.malware.resource_uri | String | Resource URI of the malware that associate to the rule. | 
+| ThreatStream.Rule.match_actors | Boolean | Unused according to ThreatStream API documentation. | 
+| ThreatStream.Rule.match_all_tm | Boolean | Whether or not the rule should match against all threat models. | 
+| ThreatStream.Rule.match_attackpatterns | Boolean | Whether the rule matches keywords in newly created Attack Patterns. | 
+| ThreatStream.Rule.match_campaigns | Boolean | Unused according to ThreatStream API documentation. | 
+| ThreatStream.Rule.match_courseofactions | Boolean | Whether the rule matches keywords in newly created Course of Action. | 
+| ThreatStream.Rule.match_customtms | Boolean | Whether or not the rule should match custom threat models. | 
+| ThreatStream.Rule.match_identities | Boolean | Whether the rule matches keywords in newly created Identities. | 
+| ThreatStream.Rule.match_impacts | String | Indicator types in which you want to look for rule matches at the exclusion of all others. | 
+| ThreatStream.Rule.match_incidents | Boolean | Unused according to ThreatStream API documentation. | 
+| ThreatStream.Rule.match_infrastructures | Boolean | Whether the rule matches keywords in newly created infrastructures. | 
+| ThreatStream.Rule.match_intrusionsets | Boolean | Whether the rule matches keywords in newly created Intrusion Sets. | 
+| ThreatStream.Rule.match_malware | Boolean | Unused according to ThreatStream API documentation. | 
+| ThreatStream.Rule.match_observables | Boolean | Whether the rule matches keywords in newly created Observables. | 
+| ThreatStream.Rule.match_reportedfiles | Boolean | Whether the rule should match keywords in newly created Sandbox Reports. | 
+| ThreatStream.Rule.match_signatures | Boolean | Whether the rule should match keywords in newly created Signatures. | 
+| ThreatStream.Rule.match_tips | Boolean | Whether the rule should match keywords in newly created Threat Bulletins. | 
+| ThreatStream.Rule.match_tools | Boolean | Whether the rule should match keywords in newly created Tools. | 
+| ThreatStream.Rule.match_ttps | Boolean | Unused according to ThreatStream API documentation. | 
+| ThreatStream.Rule.match_vulnerabilities | Boolean | Whether the rule should match keywords in newly created vulnerabilities. | 
+| ThreatStream.Rule.matches | Number | Total number of keyword matches for the rule. | 
+| ThreatStream.Rule.messages | Unknown | Messages or notifications generated by the rule. | 
+| ThreatStream.Rule.modified_ts | Date | Time stamp of when the rule was last modified, in UTC format. | 
+| ThreatStream.Rule.name | String | The rule name. | 
+| ThreatStream.Rule.notify_list_groups | Unknown | List of group that should be notified when the rule triggers an alert. | 
+| ThreatStream.Rule.notify_me | Boolean | Whether or not the user who created the rule should be notified when the rule triggers an alert. | 
+| ThreatStream.Rule.org_id | Number | ID associated with the organization that created the rule. | 
+| ThreatStream.Rule.org_shared | Boolean | Unused according to ThreatStream API documentation. | 
+| ThreatStream.Rule.organization.id | String | ID associated with the organization that created the rule. | 
+| ThreatStream.Rule.organization.name | String | Name associated with the organization that created the rule. | 
+| ThreatStream.Rule.organization.resource_uri | String | Resource URI associated with the organization that created the rule. | 
+| ThreatStream.Rule.resource_uri | String | Resource URI associated with the rule. | 
+| ThreatStream.Rule.signatures.id | String | ID of the signature that associate to the rule. | 
+| ThreatStream.Rule.signatures.name | String | Name of the signature that associate to the rule. | 
+| ThreatStream.Rule.signatures.resource_uri | String | Resource URI of the signature that associate to the rule. | 
+| ThreatStream.Rule.tags.name | String | Name of the tag applied to matched entities. | 
+| ThreatStream.Rule.tips.id | String | ID of the Threat Bulletin with which associate to matched entities. | 
+| ThreatStream.Rule.tips.name | String | Name of the Threat Bulletin with which associate to matched entities. | 
+| ThreatStream.Rule.tips.resource_uri | String | Resource URI of the Threat Bulletin with which associate to matched entities. | 
+| ThreatStream.Rule.tools | Unknown | List of tools associated with the rule. | 
+| ThreatStream.Rule.ttps.id | String | ID of the TTPs that associate to the rule. | 
+| ThreatStream.Rule.ttps.name | String | Name of the TTPs that associate to the rule. | 
+| ThreatStream.Rule.ttps.resource_uri | String | Resource URI of the TTPs that associate to the rule. | 
+| ThreatStream.Rule.user.avatar_s3_url | Unknown | URL for the avatar image associated with the user that created the rule. | 
+| ThreatStream.Rule.user.can_share_intelligence | Boolean | Whether the user that created the rule can share intelligence. | 
+| ThreatStream.Rule.user.email | String | Email of the user that created the rule. | 
+| ThreatStream.Rule.user.id | String | ID of the user that created the rule. | 
+| ThreatStream.Rule.user.is_active | Boolean | Whether the user that created the rule is active. | 
+| ThreatStream.Rule.user.is_readonly | Boolean | Whether the user that created the rule should be restricted to Read Only status. | 
+| ThreatStream.Rule.user.must_change_password | Boolean | Whether the user that created the rule will be forced to change their password the next time they login. | 
+| ThreatStream.Rule.user.name | String | Name of the user that created the rule. | 
+| ThreatStream.Rule.user.nickname | String | Nickname of the user that created the rule. | 
+| ThreatStream.Rule.user.organization.id | String | The ID associated the organization. | 
+| ThreatStream.Rule.user.organization.name | String | The user's organization name. | 
+| ThreatStream.Rule.user.organization.resource_uri | String | The user's organization resource URI. | 
+| ThreatStream.Rule.user.resource_uri | String | The user's resource URI. | 
+| ThreatStream.Rule.user_id | Number | User ID of the user that created the rule. | 
+| ThreatStream.Rule.vulnerabilities.id | String | ID of the vulnerability with which to associate matched entities. | 
+| ThreatStream.Rule.vulnerabilities.name | String | Name of the vulnerability with which to associate matched entities. | 
+| ThreatStream.Rule.vulnerabilities.resource_uri | String | Resource URI of the vulnerability with which to associate matched entities. | 
+| ThreatStream.Rule.workgroups | Unknown | Not used according to ThreatStream API documentation. | 
+
+#### Command example
+```!threatstream-update-rule rule_id=13937 keywords=some_keywords match_include=signatures ```
+#### Context Example
+```json
+{
+    "ThreatStream": {
+        "Rule": {
+            "actors": [],
+            "adv_keyword": null,
+            "attackpatterns": [],
+            "backfill": [],
+            "campaigns": [],
+            "courseofaction": [],
+            "create_investigation": false,
+            "created_ts": "2023-03-26T09:22:44.199828",
+            "customtms": [],
+            "description": null,
+            "exclude_impacts": [],
+            "exclude_notify_org_whitelisted": false,
+            "exclude_notify_owner_org": false,
+            "id": 13937,
+            "identities": [],
+            "incidents": [],
+            "infrastructure": [],
+            "intrusionsets": [],
+            "investigation": null,
+            "is_editable": true,
+            "is_enabled": true,
+            "keyword": "some_keywords",
+            "keywords": [
+                "some_keywords"
+            ],
+            "malware": [],
+            "match_actors": false,
+            "match_all_tm": false,
+            "match_attackpatterns": false,
+            "match_campaigns": false,
+            "match_courseofactions": false,
+            "match_customtms": false,
+            "match_identities": false,
+            "match_impacts": [],
+            "match_incidents": false,
+            "match_infrastructures": false,
+            "match_intrusionsets": false,
+            "match_malware": false,
+            "match_observables": false,
+            "match_reportedfiles": false,
+            "match_signatures": true,
+            "match_tips": false,
+            "match_tools": false,
+            "match_ttps": false,
+            "match_vulnerabilities": false,
+            "matches": 0,
+            "messages": [],
+            "modified_ts": "2023-03-26T10:05:56.924556",
+            "name": "test_rule",
+            "notify_list_groups": [],
+            "notify_me": true,
+            "org_id": 11,
+            "org_shared": false,
+            "organization": {
+                "id": "11",
+                "name": "name",
+                "resource_uri": "/api/v1/userorganization/11/"
+            },
+            "resource_uri": "/api/v1/rule/13937/",
+            "signatures": [],
+            "tags": [],
+            "tips": [],
+            "tools": [],
+            "ttps": [],
+            "user": {
+                "avatar_s3_url": null,
+                "can_share_intelligence": false,
+                "email": "user@email.com",
+                "id": "111",
+                "is_active": true,
+                "is_readonly": false,
+                "must_change_password": false,
+                "name": "",
+                "nickname": null,
+                "organization": {
+                    "id": "11",
+                    "name": "name",
+                    "resource_uri": "/api/v1/userorganization/11/"
+                },
+                "resource_uri": "/api/v1/user/111/"
+            },
+            "user_id": 111,
+            "vulnerabilities": [],
+            "workgroups": []
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Rules
+>|Name|Id|Matches|Created At|Modified At|Is Notify Me|Is Enabled|
+>|---|---|---|---|---|---|---|
+>| test_rule | 13937 | 0 | 2023-03-26T09:22:44.199828 | 2023-03-26T10:05:56.924556 | true | true |
+
+### threatstream-delete-rule
+
+***
+Delete a rule from ThreatStream.
+
+#### Base Command
+
+`threatstream-delete-rule`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| rule_id | The rule ID. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!threatstream-delete-rule rule_id=13937```
+#### Human Readable Output
+
+>The rule was deleted successfully.
+
+
+### threatstream-list-user
+
+***
+Gets list of users from ThreatStream. Only org admin permission can run this command
+
+#### Base Command
+
+`threatstream-list-user`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_id | ID of the user. When specifying returned the specific user. | Optional | 
+| limit | The maximum number of results to return. Default value is 50. | Optional | 
+| page | The page number of the results to retrieve. | Optional | 
+| page_size | The maximum number of objects to retrieve per page. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ThreatStream.User.avatar_s3_url | String | URL for the avatar image associated with the user. | 
+| ThreatStream.User.can_approve_intel | Boolean | Whether the user can approve intel. | 
+| ThreatStream.User.can_import_to_taxii_inbox | Boolean | Whether the user can import to taxii inbox. | 
+| ThreatStream.User.can_see_api_key | Boolean | Whether the user can see the API key. | 
+| ThreatStream.User.can_share_intelligence | Boolean | Whether the user can share intelligence. | 
+| ThreatStream.User.can_submit_sandbox | Boolean | Whether the user can submit sandbox. | 
+| ThreatStream.User.can_use_chat | Boolean | Whether the user can use chat. | 
+| ThreatStream.User.can_use_match | Boolean | Whether the user can use match. | 
+| ThreatStream.User.date_joined | Date | Timestamp when the user was added to ThreatStream. | 
+| ThreatStream.User.date_password_changed | Unknown | Timestamp when the user last changed their password. | 
+| ThreatStream.User.email | String | The user email. | 
+| ThreatStream.User.is_active | Boolean | Whether the user is active. | 
+| ThreatStream.User.is_locked | Boolean | Whether the user is currently locked. | 
+| ThreatStream.User.is_org_admin | Boolean | Whether the user is an Org Admin. | 
+| ThreatStream.User.is_readonly | Boolean | Whether the user should be restricted to Read Only status. | 
+| ThreatStream.User.is_tfa_exempt | Boolean | Whether the user is excluded from having to use multi-factor authentication. | 
+| ThreatStream.User.last_access_ts | Date | Timestamp when the user last accessed ThreatStream. | 
+| ThreatStream.User.last_login | Unknown | Timestamp when the user was last authenticated to ThreatStream. | 
+| ThreatStream.User.must_change_password | Boolean | Whether the user will be forced to change their password the next time they login. | 
+| ThreatStream.User.name | String | Name entered by the user on the My Profile tab within ThreatStream Settings. | 
+| ThreatStream.User.next_password_change_ts | Unknown | Future timestamp when the user will be forced to change their password. | 
+| ThreatStream.User.nickname | String | The user nickname. | 
+| ThreatStream.User.resource_uri | String | Resource URI of the user. | 
+| ThreatStream.User.user_id | String | ID of the user. | 
+
+#### Command example
+```!threatstream-list-user```
+#### Context Example
+```json
+{
+    "ThreatStream": {
+        "User": [
+            {
+                "avatar_s3_url": "",
+                "can_approve_intel": true,
+                "can_import_to_taxii_inbox": false,
+                "can_see_api_key": true,
+                "can_share_intelligence": false,
+                "can_submit_sandbox": true,
+                "can_use_chat": false,
+                "can_use_match": true,
+                "date_joined": "2020-08-26T12:54:37",
+                "date_password_changed": null,
+                "email": "user@email.com",
+                "is_active": true,
+                "is_locked": false,
+                "is_org_admin": true,
+                "is_readonly": false,
+                "is_tfa_exempt": false,
+                "last_access_ts": "2023-03-26T10:06:30.524797",
+                "last_login": "2023-03-16T15:48:24.808760",
+                "must_change_password": false,
+                "name": "",
+                "next_password_change_ts": null,
+                "nickname": "",
+                "resource_uri": "/api/v1/orgadmin/111/",
+                "user_id": "111"
+            },
+            {
+                "avatar_s3_url": "",
+                "can_approve_intel": false,
+                "can_import_to_taxii_inbox": false,
+                "can_see_api_key": true,
+                "can_share_intelligence": false,
+                "can_submit_sandbox": false,
+                "can_use_chat": false,
+                "can_use_match": true,
+                "date_joined": "2022-08-26T16:51:25",
+                "date_password_changed": null,
+                "email": "cortex-alliances@paloaltonetworks.com",
+                "is_active": true,
+                "is_locked": false,
+                "is_org_admin": false,
+                "is_readonly": false,
+                "is_tfa_exempt": false,
+                "last_access_ts": "1970-01-01T00:00:00",
+                "last_login": null,
+                "must_change_password": true,
+                "name": "",
+                "next_password_change_ts": null,
+                "nickname": "",
+                "resource_uri": "/api/v1/orgadmin/364/",
+                "user_id": "364"
+            },
+            {
+                "avatar_s3_url": "",
+                "can_approve_intel": true,
+                "can_import_to_taxii_inbox": false,
+                "can_see_api_key": true,
+                "can_share_intelligence": false,
+                "can_submit_sandbox": true,
+                "can_use_chat": false,
+                "can_use_match": true,
+                "date_joined": "2020-08-26T12:53:08",
+                "date_password_changed": null,
+                "email": "user@email.comm",
+                "is_active": true,
+                "is_locked": false,
+                "is_org_admin": false,
+                "is_readonly": false,
+                "is_tfa_exempt": false,
+                "last_access_ts": "2023-03-16T15:48:24.644146",
+                "last_login": "2023-03-07T10:16:02.953700",
+                "must_change_password": false,
+                "name": "",
+                "next_password_change_ts": null,
+                "nickname": "",
+                "resource_uri": "/api/v1/orgadmin/202/",
+                "user_id": "202"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Users
+>|User Id|Email|Is Active|Last Login|
+>|---|---|---|---|
+>| 111 | user@email.com | true | 2023-03-16T15:48:24.808760 |
+>| 364 | cortex-alliances@paloaltonetworks.com | true |  |
+>| 202 | user@email.comm | true | 2023-03-07T10:16:02.953700 |
+
+### threatstream-list-investigation
+
+***
+Gets list of investigation from ThreatStream.
+
+#### Base Command
+
+`threatstream-list-investigation`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| investigation_id | ID of the investigation. When specifying returned the specific investigation. | Optional | 
+| limit | The maximum number of results to return. Default value is 50. | Optional | 
+| page | The page number of the results to retrieve. | Optional | 
+| page_size | The maximum number of objects to retrieve per page. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ThreatStream.Investigation.assignee.assignee_type | String | Type of assignee: "user" or "tsworkgroup". | 
+| ThreatStream.Investigation.assignee.avatar_s3_url | Unknown | URL for the avatar image associated with the assignee user. | 
+| ThreatStream.Investigation.assignee.can_share_intelligence | Boolean | Whether the assignee user can share intelligence. | 
+| ThreatStream.Investigation.assignee.email | String | The email of the assignee user. | 
+| ThreatStream.Investigation.assignee.id | String | The ID of the assignee user. | 
+| ThreatStream.Investigation.assignee.is_active | Boolean | Whether the assignee user is active. | 
+| ThreatStream.Investigation.assignee.is_readonly | Boolean | Whether the assignee user should be restricted to Read Only status. | 
+| ThreatStream.Investigation.assignee.must_change_password | Boolean | Whether the assignee user will be forced to change their password the next time they login. | 
+| ThreatStream.Investigation.assignee.name | String | The investigation assignee user name. | 
+| ThreatStream.Investigation.assignee.nickname | Unknown | The investigation assignee user nickname. | 
+| ThreatStream.Investigation.assignee.resource_uri | String | Resource URI associated with Investigation assignee user. | 
+| ThreatStream.Investigation.attachments | Unknown | The investigation attachments. | 
+| ThreatStream.Investigation.candidate_session | Unknown | Investigation candidate session details. | 
+| ThreatStream.Investigation.circles | Unknown | IDs of the trusted circles with which the investigation is shared. | 
+| ThreatStream.Investigation.created_ts | Date | Timestamp when the investigation was created. | 
+| ThreatStream.Investigation.description | String | The investigation description. | 
+| ThreatStream.Investigation.elements | Number | The number of elements associated  with the investigation. | 
+| ThreatStream.Investigation.graph_content | Boolean | The investigation graph content details. | 
+| ThreatStream.Investigation.id | Number | The ID of the investigation. | 
+| ThreatStream.Investigation.intelligence_initiatives | Unknown | Intelligence Initiatives associated with the investigation. | 
+| ThreatStream.Investigation.investigation_attachments | Unknown | List of attachments that are associated with the investigation. | 
+| ThreatStream.Investigation.is_public | Boolean | Whether the entity is public or private. | 
+| ThreatStream.Investigation.modified_ts | Date | The date the investigation was modified. | 
+| ThreatStream.Investigation.name | String | The investigation name. | 
+| ThreatStream.Investigation.owner_org.id | String | The owner organization ID. | 
+| ThreatStream.Investigation.owner_org.name | String | The owner organization name. | 
+| ThreatStream.Investigation.owner_org.resource_uri | String | The owner organization resource URI. | 
+| ThreatStream.Investigation.owner_org_id | Unknown | The owner organization ID. | 
+| ThreatStream.Investigation.pending_import_sessions | Unknown | number of sessions that are currently waiting to be imported into the investigation. | 
+| ThreatStream.Investigation.priority | String | The priority of the investigation. | 
+| ThreatStream.Investigation.reporter.email | String | Email address of the user who created the investigation. | 
+| ThreatStream.Investigation.reporter.id | String | ID of the user who created the investigation. | 
+| ThreatStream.Investigation.reporter.name | String | Name of the user who created the investigation. | 
+| ThreatStream.Investigation.reporter.resource_uri | String | Resource URI of the user who created the investigation. | 
+| ThreatStream.Investigation.reporter_id | Number | ID of the user who created the investigation. | 
+| ThreatStream.Investigation.resource_uri | String | The investigation resource URI. | 
+| ThreatStream.Investigation.source_type | String | The type of source used to create the investigation. | 
+| ThreatStream.Investigation.status | String | The investigation status. | 
+| ThreatStream.Investigation.tags | String | The tags associated with the investigation. | 
+| ThreatStream.Investigation.tasks | Unknown | Tasks associated with the investigation. | 
+| ThreatStream.Investigation.tlp | String | Traffic Light Protocol designation for the investigation—red, amber, green, white. | 
+| ThreatStream.Investigation.users | Unknown | List of users associated with the investigation. | 
+| ThreatStream.Investigation.workgroups | Unknown | Not used according to ThreatStream API documentation. | 
+
+#### Command example
+```!threatstream-list-investigation page=2 page_size=2```
+#### Context Example
+```json
+{
+    "ThreatStream": {
+        "Investigation": [
+            {
+                "assignee": null,
+                "circles": [],
+                "created_ts": "2023-03-23T13:13:07.102464",
+                "id": 118,
+                "intelligence_initiatives": [],
+                "is_public": false,
+                "modified_ts": "2023-03-23T13:13:24.729906",
+                "name": "lala2",
+                "owner_org": {
+                    "id": "11",
+                    "name": "name",
+                    "resource_uri": "/api/v1/userorganization/11/"
+                },
+                "owner_org_id": null,
+                "priority": "medium",
+                "reporter": {
+                    "email": "user@email.com",
+                    "id": "111",
+                    "name": "",
+                    "resource_uri": "/api/v1/user/111/"
+                },
+                "reporter_id": 111,
+                "resource_uri": "/api/v1/investigation/118/",
+                "source_type": "user",
+                "status": "unassigned",
+                "tags": null,
+                "tlp": "white",
+                "workgroups": []
+            },
+            {
+                "assignee": null,
+                "circles": [],
+                "created_ts": "2023-03-23T13:08:28.233746",
+                "id": 117,
+                "intelligence_initiatives": [],
+                "is_public": false,
+                "modified_ts": "2023-03-23T13:11:34.298790",
+                "name": "lala",
+                "owner_org": {
+                    "id": "11",
+                    "name": "name",
+                    "resource_uri": "/api/v1/userorganization/11/"
+                },
+                "owner_org_id": null,
+                "priority": "medium",
+                "reporter": {
+                    "email": "user@email.com",
+                    "id": "111",
+                    "name": "",
+                    "resource_uri": "/api/v1/user/111/"
+                },
+                "reporter_id": 111,
+                "resource_uri": "/api/v1/investigation/117/",
+                "source_type": "user",
+                "status": "unassigned",
+                "tags": null,
+                "tlp": "white",
+                "workgroups": []
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Investigations
+>|Name|Id|Created At|Status|Source Type|Reporter|
+>|---|---|---|---|---|---|
+>| lala2 | 118 | 2023-03-23T13:13:07.102464 | unassigned | user | user@email.com |
+>| lala | 117 | 2023-03-23T13:08:28.233746 | unassigned | user | user@email.com |
+
+
+
+### threatstream-create-investigation
+
+***
+Create an investigation at ThreatStream.
+
+#### Base Command
+
+`threatstream-create-investigation`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | The name of the investigation. | Required | 
+| description | The description of the investigation. | Optional | 
+| priority | The priority of the investigation. Possible values are: Very Low, Low, Medium, High, Very High. | Optional | 
+| status | The status of the investigation. Possible values are: Completed, In-Progress, Pending, Unassigned. | Optional | 
+| tags | A comma-separated list of tags. For example, tag1,tag2. | Optional | 
+| tlp | tlp. Possible values are: White, Green, Amber, Red. | Optional | 
+| assignee_id | Assignee id. Use the threatstream-list-user command to get the user id value. | Optional | 
+| connect_related_indicators | When enabled, observables related to the entity you are associating with the investigation are also added. Possible values are: True, False. | Optional | 
+| associated_actor_ids | A comma-separated list of IDs of the actors with which you want to associate matched entities. Use the threatstream-get-model-list command to get the actor ids value. | Optional | 
+| associated_campaign_ids | A comma-separated list of IDs of the campaigns with which you want to associate matched entities. Use the threatstream-get-model-list command to get the campaign ids value. | Optional | 
+| associated_incident_ids | A comma-separated list of IDs of the incidents with which you want to associate matched entities. Use the threatstream-get-model-list command to get the incident ids value. | Optional | 
+| associated_observable_ids | A comma-separated list of IDs of the observables with which you want to associate matched entities. Use the threatstream-get-indicators command to get the observable ids value. | Optional | 
+| associated_signature_ids | A comma-separated list of IDs of the signatures with which you want to associate matched entities. Use the threatstream-get-model-list command to get the signature ids value. | Optional | 
+| associated_threat_bulletin_ids | A comma-separated list of IDs of the threat bulletin with which you want to associate matched entities. Use the threatstream-get-model-list command to get the threat bulletin ids value. | Optional | 
+| associated_ttp_ids | A comma-separated list of IDs of the TTPs with which you want to associate matched entities. Use the threatstream-get-model-list command to get the TTPs ids value. | Optional | 
+| associated_vulnerability_ids | A comma-separated list of IDs of the vulnerabilities with which you want to associate matched entities. Use the threatstream-get-model-list command to get the vulnerabilities ids value. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ThreatStream.Investigation.add_related_indicators | Number | Whether to add related indicators to the investigation. | 
+| ThreatStream.Investigation.added_elements_count | Number | Number of elements added to the investigation. | 
+| ThreatStream.Investigation.all_added | Boolean | Whether all the elements was added. | 
+| ThreatStream.Investigation.already_exists_elements_count | Number | Number of already exists elements. | 
+| ThreatStream.Investigation.assignee.assignee_type | String | Type of assignee: "user" or "tsworkgroup" | 
+| ThreatStream.Investigation.assignee.avatar_s3_url | Unknown | URL for the avatar image associated with the assignee user. | 
+| ThreatStream.Investigation.assignee.can_share_intelligence | Boolean | Whether the assignee user can share intelligence. | 
+| ThreatStream.Investigation.assignee.email | String | The email of the assignee user. | 
+| ThreatStream.Investigation.assignee.id | String | The ID of the assignee user. | 
+| ThreatStream.Investigation.assignee.is_active | Boolean | Whether the assignee user is active. | 
+| ThreatStream.Investigation.assignee.is_readonly | Boolean | Whether the assignee user should be restricted to Read Only status. | 
+| ThreatStream.Investigation.assignee.must_change_password | Boolean | Whether the assignee user will be forced to change their password the next time they login. | 
+| ThreatStream.Investigation.assignee.name | String | The investigation assignee user name. | 
+| ThreatStream.Investigation.assignee.nickname | Unknown | The investigation assignee user nickname. | 
+| ThreatStream.Investigation.assignee.resource_uri | String | Resource URI associated with Investigation assignee user | 
+| ThreatStream.Investigation.assignee_id | Number | ID of the user or workgroup to which the investigation is assigned | 
+| ThreatStream.Investigation.assignee_type | String | Type of assignee: "user" or "tsworkgroup". | 
+| ThreatStream.Investigation.circles | Unknown | The trusted circles with which the investigation is shared. | 
+| ThreatStream.Investigation.created_ts | Date | Timestamp when the investigation was created. | 
+| ThreatStream.Investigation.description | String | The investigation description. | 
+| ThreatStream.Investigation.elements.add_related_indicators | Number | Whether to add related indicators to the investigation. | 
+| ThreatStream.Investigation.elements.entity.assignee_user | Unknown | The assignee user. | 
+| ThreatStream.Investigation.elements.entity.created_ts | Date | Timestamp when the entity was created. | 
+| ThreatStream.Investigation.elements.entity.feed_id | Number | The feed ID of entity. | 
+| ThreatStream.Investigation.elements.entity.id | Number | Unique ID assign for the entity. | 
+| ThreatStream.Investigation.elements.entity.intelligence_initiatives | Unknown | Intelligence Initiatives associated with the investigation. | 
+| ThreatStream.Investigation.elements.entity.is_anonymous | Boolean | Whether the entity is anonymous. | 
+| ThreatStream.Investigation.elements.entity.is_cloneable | String | Whether the entity is cloneable. | 
+| ThreatStream.Investigation.elements.entity.is_mitre | Boolean | Whether the entity is mitre. | 
+| ThreatStream.Investigation.elements.entity.is_public | Boolean | Whether the entity is public or private | 
+| ThreatStream.Investigation.elements.entity.is_team | Boolean | Whether the entity is a team. | 
+| ThreatStream.Investigation.elements.entity.modified_ts | Date | Time stamp of when the entity was last updated on ThreatStream, in UTC format. | 
+| ThreatStream.Investigation.elements.entity.name | String | The entity name | 
+| ThreatStream.Investigation.elements.entity.organization_id | Number | ID of the \(ThreatStream\) organization that brought in the entity. | 
+| ThreatStream.Investigation.elements.entity.owner_user_id | Number | ID of the ThreatStream user that created the entity. | 
+| ThreatStream.Investigation.elements.entity.primary_motivation | Unknown |  | 
+| ThreatStream.Investigation.elements.entity.publication_status | String | The publication status of entity. | 
+| ThreatStream.Investigation.elements.entity.published_ts | Date | Time stamp of when the entity was published on ThreatStream, in UTC format. | 
+| ThreatStream.Investigation.elements.entity.resource_level | Unknown |  | 
+| ThreatStream.Investigation.elements.entity.resource_uri | String | Resource URI of the entity. | 
+| ThreatStream.Investigation.elements.entity.source_created | Unknown | Time stamp of when the entity was created by its original source. | 
+| ThreatStream.Investigation.elements.entity.source_modified | Unknown | Time stamp of when the entity was last updated by its original source. | 
+| ThreatStream.Investigation.elements.entity.start_date | Unknown | The start date. | 
+| ThreatStream.Investigation.elements.entity.tlp | String | Traffic Light Protocol designation for the entity, amber, green, white. | 
+| ThreatStream.Investigation.elements.entity.uuid | String | UUID assigned to the entity. | 
+| ThreatStream.Investigation.elements.entity.workgroups | Unknown | Not used according to ThreatStream API documentation | 
+| ThreatStream.Investigation.elements.id | Number | Unique ID assigned to the entity. | 
+| ThreatStream.Investigation.elements.r_id | Number | Unique ID assigned to the element entity. | 
+| ThreatStream.Investigation.elements.r_type | String | Type of entity associated with the investigation. | 
+| ThreatStream.Investigation.elements.entity.s_type | String | Signature type of entity associated with the investigation. | 
+| ThreatStream.Investigation.elements.entity.children.id | String | A string representing the ID of the child entity. | 
+| ThreatStream.Investigation.elements.entity.children.name | String | A string representing the name of the child entity. | 
+| ThreatStream.Investigation.elements.entity.children.resource_uri | String | A string representing the resource URI of the child entity. | 
+| ThreatStream.Investigation.elements.entity.is_category | Boolean | A boolean value indicating if the entity is a category. | 
+| ThreatStream.Investigation.elements.entity.children | Unknown | The children of the entity. | 
+| ThreatStream.Investigation.elements.entity.aliases | Unknown | The aliases of the entity. | 
+| ThreatStream.Investigation.elements.entity.is_system | Boolean | Indicating if the entity is a system entity. | 
+| ThreatStream.Investigation.elements.entity.source | String | A string representing the source of the entity. | 
+| ThreatStream.Investigation.elements.entity.update_id | Number | The update ID of the entity. | 
+| ThreatStream.Investigation.elements.entity.assignee_user.email | String | The assignee user email. | 
+| ThreatStream.Investigation.elements.entity.assignee_user.id | String | The assignee user ID. | 
+| ThreatStream.Investigation.elements.entity.assignee_user.name | String | The assignee user name. | 
+| ThreatStream.Investigation.elements.entity.assignee_user.resource_uri | String | The assignee user resource URI. | 
+| ThreatStream.Investigation.elements.entity.end_date | Unknown | The end date of the entity. | 
+| ThreatStream.Investigation.elements.entity.objective | Unknown | The objective of the entity. | 
+| ThreatStream.Investigation.elements.entity.status.display_name | String | The display name of the entity. | 
+| ThreatStream.Investigation.elements.entity.status.id | Number | The status id of the entity. | 
+| ThreatStream.Investigation.elements.entity.status.resource_uri | String | The resource URI of the status of the entity. | 
+| ThreatStream.Investigation.elements.entity.asn | String | The asn of the entity. | 
+| ThreatStream.Investigation.elements.entity.comments | Unknown | Comments related to the  entity. | 
+| ThreatStream.Investigation.elements.entity.confidence | Number | The confidence of the associated entity. | 
+| ThreatStream.Investigation.elements.entity.country | String | The country associated with the entity. | 
+| ThreatStream.Investigation.elements.entity.created_by | String | A string representing the creator of the entity. | 
+| ThreatStream.Investigation.elements.entity.expiration_ts | Date | The time stamp when entity will expire on ThreatStream. | 
+| ThreatStream.Investigation.elements.entity.import_session_id | Number | A number representing the import session ID of the entity. | 
+| ThreatStream.Investigation.elements.entity.import_source | String | A string representing the import source of the entity. | 
+| ThreatStream.Investigation.elements.entity.ip | String | The IP of the entity. | 
+| ThreatStream.Investigation.elements.entity.itype | String | The itype of the entity. | 
+| ThreatStream.Investigation.elements.entity.latitude | String | The latitude of the entity. | 
+| ThreatStream.Investigation.elements.entity.longitude | String | The longitude of the entity. | 
+| ThreatStream.Investigation.elements.entity.meta.detail2 | String | The detail2. | 
+| ThreatStream.Investigation.elements.entity.meta.severity | String | The severity. | 
+| ThreatStream.Investigation.elements.entity.org | String | Registered owner \(organization\) associated with the entity. | 
+| ThreatStream.Investigation.elements.entity.owner_organization_id | Number | The owner organization ID of the entity. | 
+| ThreatStream.Investigation.elements.entity.rdns | Unknown | Domain name \(obtained through reverse domain name lookup\) associated with the entity. | 
+| ThreatStream.Investigation.elements.entity.retina_confidence | Number | The retina confidence of the entity. | 
+| ThreatStream.Investigation.elements.entity.source_reported_confidence | Number | The source reported confidence confidence of the entity. | 
+| ThreatStream.Investigation.elements.entity.status | String | The status of the entity. | 
+| ThreatStream.Investigation.elements.entity.subtype | Unknown | The subtype of the entity. | 
+| ThreatStream.Investigation.elements.entity.tags | Unknown | List of tags associated with the entity. | 
+| ThreatStream.Investigation.elements.entity.threat_type | String | Type of threat associated with the entity. | 
+| ThreatStream.Investigation.elements.entity.threatscore | Number | The threat score of the entity. | 
+| ThreatStream.Investigation.elements.entity.trusted_circle_ids | Unknown | The trusted circleIDs of the entity. | 
+| ThreatStream.Investigation.elements.entity.trusted_circles_ids | Unknown | ID of the trusted circle to which the entity data should be associated. | 
+| ThreatStream.Investigation.elements.entity.type | String | The type of the entity. | 
+| ThreatStream.Investigation.elements.entity.value | String | Value of the entity. | 
+| ThreatStream.Investigation.errors | Unknown | Errors related to the investigation. | 
+| ThreatStream.Investigation.graph_content | Unknown | The investigation graph content details. | 
+| ThreatStream.Investigation.id | Number | The ID of the investigation. | 
+| ThreatStream.Investigation.intelligence_initiatives | Unknown | Intelligence Initiatives associated with the investigation. | 
+| ThreatStream.Investigation.is_public | Boolean | Whether the entity is public or private. | 
+| ThreatStream.Investigation.modified_ts | Date | The date the investigation was modified. | 
+| ThreatStream.Investigation.name | String | The investigation name. | 
+| ThreatStream.Investigation.owner_org.id | String | The owner organization ID. | 
+| ThreatStream.Investigation.owner_org.name | String | The owner organization name. | 
+| ThreatStream.Investigation.owner_org.resource_uri | String | The owner organization resource URI. | 
+| ThreatStream.Investigation.owner_org_id | Unknown | Organization ID of the owner. | 
+| ThreatStream.Investigation.priority | String | The priority of the investigation. | 
+| ThreatStream.Investigation.reporter.email | String | Email address of the user who created the investigation. | 
+| ThreatStream.Investigation.reporter.id | String | ID of the user who created the investigation. | 
+| ThreatStream.Investigation.reporter.name | String | Name of the user who created the investigation. | 
+| ThreatStream.Investigation.reporter.resource_uri | String | Resource URI of the user who created the investigation. | 
+| ThreatStream.Investigation.reporter_id | Number | ID of the user who created the investigation. | 
+| ThreatStream.Investigation.resource_uri | String | The investigation resource URI. | 
+| ThreatStream.Investigation.source_type | String | The type of source used to create the investigation. | 
+| ThreatStream.Investigation.status | String | The investigation status. | 
+| ThreatStream.Investigation.tags | String | The tags associated with the investigation. | 
+| ThreatStream.Investigation.tlp | String | Traffic Light Protocol designation for the investigation—red, amber, green, white. | 
+| ThreatStream.Investigation.users | Unknown | List of users associated with the investigation. | 
+| ThreatStream.Investigation.workgroups | Unknown | Not used according to ThreatStream API documentation | 
+
+#### Command example
+```!threatstream-create-investigation name=new_investigation```
+#### Context Example
+```json
+{
+    "ThreatStream": {
+        "Investigation": {
+            "add_related_indicators": 0,
+            "assignee": null,
+            "circles": [],
+            "created_ts": "2023-03-26T10:13:28.003817",
+            "description": null,
+            "graph_content": null,
+            "id": 111,
+            "intelligence_initiatives": [],
+            "is_public": false,
+            "modified_ts": "2023-03-26T10:13:28.003833",
+            "name": "new_investigation",
+            "owner_org": {
+                "id": "11",
+                "name": "name",
+                "resource_uri": "/api/v1/userorganization/11/"
+            },
+            "owner_org_id": null,
+            "priority": "medium",
+            "reporter": {
+                "email": "user@email.com",
+                "id": "111",
+                "name": "",
+                "resource_uri": "/api/v1/user/111/"
+            },
+            "reporter_id": 111,
+            "resource_uri": "/api/v1/investigation/111/",
+            "source_type": "user",
+            "status": "unassigned",
+            "tags": null,
+            "tlp": "white",
+            "users": [],
+            "workgroups": []
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>Investigation was created successfully with ID: 111
+### threatstream-update-investigation
+
+***
+Updates an existing investigation at ThreatStream.
+
+#### Base Command
+
+`threatstream-update-investigation`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| investigation_id | The ID of the Investigation. Use the threatstream-list-investigation command to get the investigation id value. | Required | 
+| priority | The priority of the investigation. Possible values are: Very Low, Low, Medium, High, Very High. | Optional | 
+| status | The status of the investigation. Possible values are: Completed, In-Progress, Pending, Unassigned. | Optional | 
+| tags | A comma-separated list of tags. For example, tag1,tag2. | Optional | 
+| tlp | The tlp (Traffic Light Protocol designation) of the investigation. Possible values are: White, Green, Amber, Red. | Optional | 
+| assignee_id | Assignee id. Use the threatstream-list-user command to get the user id value. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ThreatStream.Investigation.add_related_indicators | Number | Errors related to the investigation. | 
+| ThreatStream.Investigation.assignee.assignee_type | String | Type of assignee: "user" or "tsworkgroup" | 
+| ThreatStream.Investigation.assignee.avatar_s3_url | Unknown | URL for the avatar image associated with the assignee user. | 
+| ThreatStream.Investigation.assignee.can_share_intelligence | Boolean | Whether the assignee user can share intelligence. | 
+| ThreatStream.Investigation.assignee.email | String | The email of the assignee user. | 
+| ThreatStream.Investigation.assignee.id | String | The ID of the assignee user. | 
+| ThreatStream.Investigation.assignee.is_active | Boolean | Whether the assignee user is active. | 
+| ThreatStream.Investigation.assignee.is_readonly | Boolean | Whether the asiignee user should be restricted to Read Only status. | 
+| ThreatStream.Investigation.assignee.must_change_password | Boolean | Whether the assignee user will be forced to change their password the next time they login. | 
+| ThreatStream.Investigation.assignee.name | String | The investigation assignee user name. | 
+| ThreatStream.Investigation.assignee.nickname | Unknown | The investigation assignee user nickname. | 
+| ThreatStream.Investigation.assignee.resource_uri | String | Resource URI associated with Investigation assignee user | 
+| ThreatStream.Investigation.assignee_id | Number | D of the user or workgroup to which the investigation is assigned | 
+| ThreatStream.Investigation.assignee_type | String | Type of assignee: "user" or "tsworkgroup" | 
+| ThreatStream.Investigation.created_ts | Date | Timestamp when the investigation was created. | 
+| ThreatStream.Investigation.description | String | The investigation description | 
+| ThreatStream.Investigation.elements.add_related_indicators | Number | When enabled, observables related to the entity you are associating with the investigation are also added. | 
+| ThreatStream.Investigation.elements.r_id | Number | Unique ID assigned to the entity. | 
+| ThreatStream.Investigation.elements.r_type | String | Type of entity associated with the investigation. | 
+| ThreatStream.Investigation.graph_content | Boolean |  | 
+| ThreatStream.Investigation.id | Number |  | 
+| ThreatStream.Investigation.is_public | Boolean | Whether the entity is public or private | 
+| ThreatStream.Investigation.modified_ts | Date |  | 
+| ThreatStream.Investigation.name | String |  | 
+| ThreatStream.Investigation.owner_org.id | String |  | 
+| ThreatStream.Investigation.owner_org.name | String |  | 
+| ThreatStream.Investigation.owner_org.resource_uri | String |  | 
+| ThreatStream.Investigation.owner_org_id | Unknown |  | 
+| ThreatStream.Investigation.priority | String |  | 
+| ThreatStream.Investigation.reporter.email | String |  | 
+| ThreatStream.Investigation.reporter.id | String |  | 
+| ThreatStream.Investigation.reporter.name | String |  | 
+| ThreatStream.Investigation.reporter.resource_uri | String |  | 
+| ThreatStream.Investigation.reporter_id | Number |  | 
+| ThreatStream.Investigation.resource_uri | String |  | 
+| ThreatStream.Investigation.source_type | String |  | 
+| ThreatStream.Investigation.status | String |  | 
+| ThreatStream.Investigation.tags | String |  | 
+| ThreatStream.Investigation.tlp | String |  | 
+
+#### Command example
+```!threatstream-update-investigation investigation_id=111 priority=Low status="In-Progress" assignee_id=111```
+#### Context Example
+```json
+{
+    "ThreatStream": {
+        "Investigation": {
+            "assignee": {
+                "assignee_type": "user",
+                "avatar_s3_url": null,
+                "can_share_intelligence": false,
+                "email": "user@email.com",
+                "id": "111",
+                "is_active": true,
+                "is_readonly": false,
+                "must_change_password": false,
+                "name": "",
+                "nickname": null,
+                "resource_uri": "/api/v1/user/111/"
+            },
+            "assignee_id": 111,
+            "assignee_type": "user",
+            "circles": [],
+            "created_ts": "2023-03-26T10:13:27.999475",
+            "description": null,
+            "graph_content": null,
+            "id": 111,
+            "intelligence_initiatives": [],
+            "is_public": false,
+            "modified_ts": "2023-03-26T10:14:03.511198",
+            "name": "new_investigation",
+            "owner_org": {
+                "id": "11",
+                "name": "name",
+                "resource_uri": "/api/v1/userorganization/11/"
+            },
+            "owner_org_id": null,
+            "priority": "low",
+            "reporter": {
+                "email": "user@email.com",
+                "id": "111",
+                "name": "",
+                "resource_uri": "/api/v1/user/111/"
+            },
+            "reporter_id": 111,
+            "resource_uri": "/api/v1/investigation/111/",
+            "source_type": "user",
+            "status": "in-progress",
+            "tags": null,
+            "tlp": "white",
+            "users": [],
+            "workgroups": []
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>Investigation was updated successfully with ID: 111
+### threatstream-add-investigation-element
+
+***
+Add an elements to existing investigation at ThreatStream.
+
+#### Base Command
+
+`threatstream-add-investigation-element`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| investigation_id | The ID of the investigation. Use the threatstream-get-model-list command to get the investigation id value. | Required | 
+| connect_related_indicators | When enabled, observables related to the entity you are associating with the investigation are also added. Possible values are: True, False. | Optional | 
+| associated_actor_ids | A comma-separated list of IDs of the actors with which you want to associate matched entities. Use the threatstream-get-model-list command to get the actor ids value. | Optional | 
+| associated_campaign_ids | A comma-separated list of IDs of the campaigns with which you want to associate matched entities. Use the threatstream-get-model-list command to get the campaign ids value. | Optional | 
+| associated_incident_ids | A comma-separated list of IDs of the incidents with which you want to associate matched entities. Use the threatstream-get-model-list command to get the incident ids value. | Optional | 
+| associated_observable_ids | A comma-separated list of IDs of the observables with which you want to associate matched entities. Use the threatstream-get-indicators command to get the observable ids value. | Optional | 
+| associated_signature_ids | A comma-separated list of IDs of the signatures with which you want to associate matched entities. Use the threatstream-get-model-list command to get the signature ids value. | Optional | 
+| associated_threat_bulletin_ids | A comma-separated list of IDs of the threat bulletin with which you want to associate matched entities. Use the threatstream-get-model-list command to get the threat bulletin ids value. | Optional | 
+| associated_ttp_ids | A comma-separated list of IDs of the TTPs with which you want to associate matched entities. Use the threatstream-get-model-list command to get the TTPs ids value. | Optional | 
+| associated_vulnerability_ids | A comma-separated list of IDs of the vulnerabilities with which you want to associate matched entities. Use the threatstream-get-model-list command to get the vulnerabilities ids value. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!threatstream-add-investigation-element investigation_id=111 associated_campaign_ids=888888```
+#### Human Readable Output
+
+>Elements was added successfully to investigation ID: 111
+### threatstream-delete-investigation
+
+***
+Deletes an existing investigation at ThreatStream.
+
+#### Base Command
+
+`threatstream-delete-investigation`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| investigation_id | The ID of the investigation. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!threatstream-delete-investigation investigation_id=111```
+#### Human Readable Output
+
+>Investigation was deleted successfully.
+### threatstream-list-whitelist-entry
+
+***
+Get a list of whitelist entries
+
+#### Base Command
+
+`threatstream-list-whitelist-entry`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| format | Defines the format of the response. Possible values are: CSV, JSON. Default is JSON. | Optional | 
+| limit | The maximum number of results to return. Default is 50. | Optional | 
+| page | Page number to get result from. Needs to be used with page_size argument. | Optional | 
+| page_size | The page size of the returned results. Needs to be used with the page argument. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| InfoFile.Name | string | FileName | 
+| InfoFile.EntryID | string | The EntryID of the report | 
+| InfoFile.Size | number | File Size | 
+| InfoFile.Type | string | File type e.g. "PE" | 
+| InfoFile.Info | string | Basic information of the file | 
+| ThreatStream.WhitelistEntry.objects.created_ts | Date | Timestamp of when the entry was created. | 
+| ThreatStream.WhitelistEntry.objects.id | Number | Unique ID associated with the whitelist entry. | 
+| ThreatStream.WhitelistEntry.objects.modified_ts | Date | Timestamp of when the entry was most recently modified. | 
+| ThreatStream.WhitelistEntry.objects.notes | String | Contextual note associated with the entry. | 
+| ThreatStream.WhitelistEntry.objects.resource_uri | String | Resource URI of the entry. | 
+| ThreatStream.WhitelistEntry.objects.value | String | Value of the entry. | 
+| ThreatStream.WhitelistEntry.objects.value_type | String | The value of the file to import. file valid structure is : value_type,value,notes
+The entries must be contained in a valid CSV file with the following header line: value_type,value,notes.
+value_type must be specified for each entry, possible types include domain,email, ip, md5, url, user-agent, and cidr.
+value must be specified for each entry. Values must be valid entries based on the specified type. For example, if you specify ip for type, the corresponding value must be a valid IP address.
+notes is optional for each entry.
+All text in the CSV file must be lower-cased. | 
+
+#### Command example
+```!threatstream-list-whitelist-entry```
+#### Context Example
+```json
+{
+    "ThreatStream": {
+        "WhitelistEntry": [
+            {
+                "created_ts": "2023-02-21T20:28:32.111617",
+                "id": 11,
+                "modified_ts": "2023-02-21T20:28:32.111617",
+                "notes": "example domain",
+                "resource_uri": "/api/v1/orgwhitelist/24/",
+                "value": "78.78.78.67",
+                "value_type": "ip"
+            },
+            {
+                "created_ts": "2023-02-21T19:53:06.238020",
+                "id": 22,
+                "modified_ts": "2023-03-20T12:09:10.138185",
+                "notes": "example ip",
+                "resource_uri": "/api/v1/orgwhitelist/17/",
+                "value": "23.98.23.98",
+                "value_type": "ip"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Whitelist entries
+>|Id|Value|Resource Uri|Created At|Modified At|Value Type|Notes|
+>|---|---|---|---|---|---|---|
+>| 11 | 78.78.78.67 | /api/v1/orgwhitelist/11/ | 2023-02-21T20:28:32.111617 | 2023-02-21T20:28:32.111617 | ip | example ip |
+>| 22 | 23.98.23.98 | /api/v1/orgwhitelist/22/ | 2023-02-21T19:53:06.238020 | 2023-03-20T12:09:10.138185 | ip | example ip |
+
+### threatstream-create-whitelist-entry
+
+***
+Creates a new whitelist entry
+
+#### Base Command
+
+`threatstream-create-whitelist-entry`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| entry_id | The value of the file to import. file valid structure is : value_type,value,notes. | Optional | 
+| cidr | A comma-separated list of cidrs associated with the entry. | Optional | 
+| domains | A comma-separated list of domains associated with the entry. | Optional | 
+| emails | A comma-separated list of emails associated with the entry. | Optional | 
+| ips | A comma-separated list of ips associated with the entry. | Optional | 
+| md5 | A comma-separated list of md5 associated with the entry. | Optional | 
+| urls | A comma-separated list of urls associated with the entry. | Optional | 
+| user_agents | A comma-separated list of user_agents associated with the entry. | Optional | 
+| note | A note that will be associated with all the indicators type that are provided in the command arguments. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!threatstream-create-whitelist-entry ips=78.78.78.67```
+#### Human Readable Output
+
+>Created 1 item(s).
+### threatstream-update-whitelist-entry-note
+
+***
+Modify contextual notes associated with existing whitelist entries
+
+#### Base Command
+
+`threatstream-update-whitelist-entry-note`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| entry_id | The ID of the entry you want to update. Use the threatstream-list-whitelist-entry command to get the entry id value. | Required | 
+| note | A note that will be associated with all the indicators type that are provided in the command arguments. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!threatstream-update-whitelist-entry-note note="some_note" entry_id=17```
+#### Human Readable Output
+
+>The note was updated successfully.
+### threatstream-delete-whitelist-entry
+
+***
+Delete a whitelist entry
+
+#### Base Command
+
+`threatstream-delete-whitelist-entry`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| entry_id | The ID of the entry you want to update. Use the threatstream-list-whitelist-entry command to get the entry id value. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!threatstream-delete-whitelist-entry entry_id=17```
+#### Human Readable Output
+
+>The entity was deleted successfully
+### threatstream-list-import-job
+
+***
+Gets an import list
+
+#### Base Command
+
+`threatstream-list-import-job`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| import_id | When specified, the results returned in the list are limited to specific import id. | Optional | 
+| status_in | When specified, the results returned in the list are limited to the selected status. Possible values are: Processing, Errors, Ready To Review, Rejected, Approved. | Optional | 
+| limit | The maximum number of results to return. Default value is 50. | Optional | 
+| page | Page number to get result from. Needs to be used with page_size argument. | Optional | 
+| page_size | The page size of the returned results. Needs to be used with the page argument. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ThreatStream.Import.approved_by_id | Unknown | The id of the user that approved the import. | 
+| ThreatStream.Import.confidence | Number | Confidence scores assigned to import. | 
+| ThreatStream.Import.date | Date | A date representing the import date. | 
+| ThreatStream.Import.date_modified | Date | A date representing the last modified date of the import. | 
+| ThreatStream.Import.default_comment | Unknown | Default comment. | 
+| ThreatStream.Import.email | String | A string representing the email associated with the import. | 
+| ThreatStream.Import.exclude_source_domain | Boolean | Whether the source domain is excluded. | 
+| ThreatStream.Import.expiration_ts | Date | The time stamp when import will expire on ThreatStream. | 
+| ThreatStream.Import.fileName | String | A string representing the name of file associated with the import. | 
+| ThreatStream.Import.fileType | String | A string representing the type of file associated with the import. | 
+| ThreatStream.Import.file_name_label | Unknown | The file name label. | 
+| ThreatStream.Import.id | Number | A number representing the import ID. | 
+| ThreatStream.Import.intelligence_source | String | A string representing the intelligence source of the import. | 
+| ThreatStream.Import.is_anonymous | Boolean | Whether the entity is anonymous. | 
+| ThreatStream.Import.is_public | Boolean | Whether the entity is public or private. | 
+| ThreatStream.Import.jobID | Unknown | The job ID. | 
+| ThreatStream.Import.messages | String | A string representing the messages associated with the import. | 
+| ThreatStream.Import.name | String | The import name. | 
+| ThreatStream.Import.notes | String | A string representing the notes associated with the import. | 
+| ThreatStream.Import.numIndicators | Number | The number of observables that were accepted for importing. | 
+| ThreatStream.Import.numRejected | Number | The number of observables that were rejected for importing. | 
+| ThreatStream.Import.num_private | Number | A number representing the number of private entities associated with the import. | 
+| ThreatStream.Import.num_public | Number | A number representing the number of public entities associated with the import. | 
+| ThreatStream.Import.organization.id | String | ID associated with the organization that created the import. | 
+| ThreatStream.Import.organization.name | String | Name associated with the organization that created the import. | 
+| ThreatStream.Import.organization.resource_uri | String | Resource URI associated with the organization that created the import. | 
+| ThreatStream.Import.processed_ts | Date | A date representing the time stamp when the import was processed. | 
+| ThreatStream.Import.resource_uri | String | Resource URI associated with entity. | 
+| ThreatStream.Import.sandbox_submit | Unknown | The sandbox submit. | 
+| ThreatStream.Import.source_confidence_weight | Number | The source confidence weight of the entity. | 
+| ThreatStream.Import.status | String | The import status. | 
+| ThreatStream.Import.threat_type | String | The threat type. | 
+| ThreatStream.Import.tlp | Unknown | Traffic Light Protocol designation. | 
+| ThreatStream.Import.user_id | Number | A string representing the ID associated with the user that created the import. | 
+| ThreatStream.Import.visibleForReview | Boolean | Whether the entity is visible for review. | 
+
+#### Command example
+```!threatstream-list-import-job```
+#### Context Example
+```json
+{
+    "ThreatStream": {
+        "Import": [
+            {
+                "approved_by": {
+                    "avatar_s3_url": null,
+                    "can_share_intelligence": false,
+                    "email": "user@email.com",
+                    "id": "111",
+                    "is_active": true,
+                    "is_readonly": false,
+                    "must_change_password": false,
+                    "name": "",
+                    "nickname": null,
+                    "organization": {
+                        "id": "11",
+                        "name": "name",
+                        "resource_uri": "/api/v1/userorganization/11/"
+                    },
+                    "resource_uri": "/api/v1/user/111/"
+                },
+                "approved_by_id": 111,
+                "confidence": 50,
+                "date": "2023-03-23T15:19:49.226907",
+                "date_modified": "2023-03-26T10:18:13.828245",
+                "default_comment": null,
+                "email": "user@email.comm",
+                "exclude_source_domain": false,
+                "expiration_ts": "2023-06-21T15:19:49.211632",
+                "fileName": null,
+                "fileType": "analyst",
+                "file_name_label": null,
+                "id": 777777,
+                "intelligence_initiatives": [],
+                "intelligence_source": "",
+                "is_anonymous": false,
+                "is_public": false,
+                "jobID": null,
+                "messages": "",
+                "name": "",
+                "notes": "",
+                "numIndicators": 1,
+                "numRejected": 0,
+                "num_private": 0,
+                "num_public": 0,
+                "organization": {
+                    "id": "11",
+                    "name": "name",
+                    "resource_uri": "/api/v1/userorganization/11/"
+                },
+                "processed_ts": "2023-03-23T15:20:52.504736",
+                "resource_uri": "/api/v1/importsession/777777/",
+                "sandbox_submit": null,
+                "source_confidence_weight": 0,
+                "status": "approved",
+                "tags": [],
+                "threat_type": "exploit",
+                "tlp": null,
+                "trusted_circles": [],
+                "user_id": 111,
+                "visibleForReview": true,
+                "workgroups": []
+            },
+            {
+                "approved_by_id": null,
+                "confidence": 50,
+                "date": "2023-03-23T15:13:57.989671",
+                "date_modified": "2023-03-23T15:13:58.058195",
+                "default_comment": null,
+                "email": "user@email.comm",
+                "exclude_source_domain": false,
+                "expiration_ts": "2023-06-21T15:13:57.979053",
+                "fileName": "1.1.1.1",
+                "fileType": "url",
+                "file_name_label": null,
+                "id": 666666,
+                "intelligence_initiatives": [],
+                "intelligence_source": "1.1.1.1",
+                "is_anonymous": false,
+                "is_public": false,
+                "jobID": null,
+                "messages": "Failed to import the URL ",
+                "name": "",
+                "notes": "",
+                "numIndicators": 0,
+                "numRejected": 0,
+                "num_private": 0,
+                "num_public": 0,
+                "organization": {
+                    "id": "11",
+                    "name": "name",
+                    "resource_uri": "/api/v1/userorganization/11/"
+                },
+                "processed_ts": "2023-03-23T15:13:58.062263",
+                "resource_uri": "/api/v1/importsession/666666/",
+                "sandbox_submit": null,
+                "source_confidence_weight": 0,
+                "status": "errors",
+                "tags": [],
+                "threat_type": "exploit",
+                "tlp": null,
+                "trusted_circles": [],
+                "user_id": 111,
+                "visibleForReview": true,
+                "workgroups": []
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Import entries
+>|Id|Date|Status|Reviewed By|Submitted By|Included|Excluded|
+>|---|---|---|---|---|---|---|
+>| 777777 | 2023-03-23T15:19:49.226907 | approved | user@email.com | user@email.comm | 1 | 0 |
+>| 666666 | 2023-03-23T15:13:57.989671 | errors |  | user@email.comm | 0 | 0 |
+
+### threatstream-approve-import-job
+
+***
+Approving all observables in an import job
+
+#### Base Command
+
+`threatstream-approve-import-job`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| import_id | The ID of the import job. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!threatstream-approve-import-job import_id=777777```
+#### Human Readable Output
+
+>The import session was successfully approved.
+### threatstream-search-threat-model
+
+***
+retrieve threat model entities from ThreatStream
+
+#### Base Command
+
+`threatstream-search-threat-model`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| model_type | A comma-separated list of model types. Supported values are: actor, attackpattern , campaign, courseofaction, incident,identity, infrastructure, intrusionset, malware,signature, tipreport, ttp, tool, vulnerability. | Optional | 
+| name | The name of the threat model. | Optional | 
+| keyword_search | Free text to search string in the fields: Aliases, Description, Name, Tags. | Optional | 
+| alias | Other names by which the actors are known. | Optional | 
+| feed_id | Numeric ID of the threat feed that provided the Threat Model entity. | Optional | 
+| is_email | Whether the threat bulletin was created as a result of an email import. Possible values are: True, False. | Optional | 
+| is_public | Whether the entity is public or private. True—if the Campaign is public, False—if the Campaign is private or belongs to a Trusted Circle. Possible values are: True, False. | Optional | 
+| publication_status | A comma-separated list of publication status. Supported values are: new, pending_review, review_requested, reviewed, published statuses. | Optional | 
+| signature_type | A comma-separated list of signature type. Supported values are: Bro, Carbon Black Query, ClamAV, Custom, CybOX, OpenIOC, RSA NetWitness, Snort, Splunk Query, Suricata, YARA. | Optional | 
+| tags | A comma-spareated list of Additional comments and context associated with the observable when it was imported from its original threat feed. | Optional | 
+| trusted_circle_ids | Used for querying entities associated with specified trusted circles. | Optional | 
+| limit | The maximum number of results to return. Default is 50. | Optional | 
+| page | Page number to get result from. Needs to be used with page_size argument. | Optional | 
+| page_size | The page size of the returned results. Needs to be used with the page argument. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ThreatStream.ThreatModel.source_created | Unknown | Time stamp of when the entity was created by its original source. | 
+| ThreatStream.ThreatModel.circles | Unknown | Trusted circles with which data from streams is shared. | 
+| ThreatStream.ThreatModel.feed_id | Number | Numeric ID of the threat feed that provided the Threat Model entity. | 
+| ThreatStream.ThreatModel.workgroups | Unknown | Unused according to ThreatStream API documentation. | 
+| ThreatStream.ThreatModel.aliases | Unknown | Other names by which the actors are known. | 
+| ThreatStream.ThreatModel.is_email | Unknown | Whether the threat bulletin was created as a result of an email import. | 
+| ThreatStream.ThreatModel.published_ts | String | Time stamp of when the entity was published on ThreatStream, in UTC format. | 
+| ThreatStream.ThreatModel.id | Number | Unique ID assigned to the entity. | 
+| ThreatStream.ThreatModel.source_modified | Date | Time stamp of when the entity was last updated by its original source. | 
+| ThreatStream.ThreatModel.type | String | The Threat Model type | 
+| ThreatStream.ThreatModel.start_date | Unknown | Time when a Threat Model was known to have started. | 
+| ThreatStream.ThreatModel.sort | String | Not used according to ThreatStream API documentation. | 
+| ThreatStream.ThreatModel.publication_status | String | An actor can be in new, pending_review, review_requested, reviewed, published statuses. | 
+| ThreatStream.ThreatModel.end_date | Unknown | Time when a Threat Model was known to have ended. | 
+| ThreatStream.ThreatModel.tags.id | String | The id of the tag assigned to the actor. | 
+| ThreatStream.ThreatModel.tags.name | String | The name of the tag assigned to the actor. | 
+| ThreatStream.ThreatModel.modified_ts | String | Time stamp of when the tag was last updated on ThreatStream, in UTC format. | 
+| ThreatStream.ThreatModel.is_public | Boolean | Whether the entity is public or private. | 
+| ThreatStream.ThreatModel.uuid | String | UUID \(universally unique identifier\) assigned to the observable for STIX compliance. | 
+| ThreatStream.ThreatModel.created_ts | String | Timestamp when the ThreatModel was created. | 
+| ThreatStream.ThreatModel.tlp | String | TLP setting associated with the entity. | 
+| ThreatStream.ThreatModel.name | String | Name of the entity. | 
+| ThreatStream.ThreatModel.status | Unknown | Status of the entity. | 
+| ThreatStream.ThreatModel.model_type | String | Type of threat model entity. | 
+| ThreatStream.ThreatModel.resource_uri | String | Resource URI associated with the entity. | 
+
+#### Command example
+```!threatstream-search-threat-model model_type="signature" signature_type="Carbon Black Query,Bro,ClamAV"```
+#### Context Example
+```json
+{
+    "ThreatStream": {
+        "ThreatModel": [
+            {
+                "aliases": [],
+                "circles": [],
+                "created_ts": "2023-03-19T10:04:13.272377+00:00",
+                "end_date": null,
+                "feed_id": 0,
+                "id": 444444,
+                "is_email": null,
+                "is_public": false,
+                "model_type": "signature",
+                "modified_ts": "2023-03-19T10:09:09.150405+00:00",
+                "name": "signature_threat_model_1",
+                "organization": {
+                    "id": 11,
+                    "title": "name"
+                },
+                "owner_user": {
+                    "email": "user@email.com",
+                    "id": 111,
+                    "name": ""
+                },
+                "publication_status": "new",
+                "published_ts": null,
+                "resource_uri": "/api/v1/signature/444444/",
+                "sort": [
+                    111,
+                    "signature-444444"
+                ],
+                "source_created": null,
+                "source_modified": null,
+                "start_date": null,
+                "status": null,
+                "tags": [
+                    {
+                        "id": "as2",
+                        "name": "Reconnaissance",
+                        "org_id": 11,
+                        "tlp": "white"
+                    },
+                    {
+                        "id": "tz9",
+                        "name": "Delivery",
+                        "org_id": 11,
+                        "tlp": "white"
+                    },
+                    {
+                        "id": "jpb",
+                        "name": "Exploitation",
+                        "org_id": 11,
+                        "tlp": "white"
+                    }
+                ],
+                "tlp": "red",
+                "type": "Carbon Black Query",
+                "uuid": "uuid",
+                "workgroups": []
+            },
+            {
+                "aliases": [],
+                "circles": [],
+                "created_ts": "2020-07-31T20:56:33.459260+00:00",
+                "end_date": null,
+                "feed_id": 155,
+                "id": 555555,
+                "is_email": null,
+                "is_public": true,
+                "model_type": "signature",
+                "modified_ts": "2022-10-08T05:18:20.389951+00:00",
+                "name": "Feeds SDK 2.0: Signature Carbon Black Query test 1",
+                "publication_status": "published",
+                "published_ts": "2020-07-31T20:56:33.295192+00:00",
+                "resource_uri": "/api/v1/signature/555555/",
+                "sort": [
+                    111,
+                    "signature-555555"
+                ],
+                "source_created": null,
+                "source_modified": null,
+                "start_date": null,
+                "status": null,
+                "tags": [
+                    {
+                        "id": "111",
+                        "name": "actor_tag1"
+                    },
+                    {
+                        "id": "111",
+                        "name": "sdk_tag2"
+                    }
+                ],
+                "tlp": "white",
+                "type": "Carbon Black Query",
+                "uuid": "uuid",
+                "workgroups": []
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Threat model entities
+>|Id|Type|Name|Publication Status|Modified At|
+>|---|---|---|---|---|
+>| 444444 | signature | signature_threat_model_1 | new | 2023-03-19T10:09:09.150405+00:00 |
+>| 555555 | signature | Feeds SDK 2.0: Signature Carbon Black Query test 1 | published | 2022-10-08T05:18:20.389951+00:00 |
+
+### threatstream-add-threat-model-association
+
+***
+Creates associations between threat model entities on the ThreatStream platform
+
+#### Base Command
+
+`threatstream-add-threat-model-association`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| entity_type | The type of threat model entity on which you are adding the association. Possible values are: Actor, Attack Pattern, Campaign, Course Of Action, Identity, Infrastructure, Intrusion Set, Incident, Malware, Signature, Threat Bulletin, Tool, Ttp, Vulnerability. | Required | 
+| entity_id | The ID of the threat model entity on which you are adding the association. | Required | 
+| associated_entity_ids | The entities ids we want to associate with the primary entity. Note: the model type of all the ids must be equals to the type in the  “associated_entity_type” argument. | Required | 
+| associated_entity_type | The type of threat model entity on which you are adding the association. Possible values are: Actor, Attack Pattern, Campaign, Course Of Action, Identity, Infrastructure, Intrusion Set, Incident, Malware, Signature, Threat Bulletin, Tool, Ttp, Vulnerability. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!threatstream-add-threat-model-association entity_type="Actor" entity_id="22222" associated_entity_ids="3333,1111" associated_entity_type="Attack Pattern"```
+#### Human Readable Output
+
+>The Attack Pattern entities with ids [1111, 3333] were associated successfully to entity id: 22222.

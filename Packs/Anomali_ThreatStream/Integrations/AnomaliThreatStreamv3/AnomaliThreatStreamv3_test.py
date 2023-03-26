@@ -6,7 +6,11 @@ from AnomaliThreatStreamv3 import main, get_indicators, \
     REPUTATION_COMMANDS, Client, DEFAULT_INDICATOR_MAPPING, \
     FILE_INDICATOR_MAPPING, INDICATOR_EXTENDED_MAPPING, get_model_description, import_ioc_with_approval, \
     import_ioc_without_approval, create_model, update_model, submit_report, add_tag_to_model, file_name_to_valid_string, \
-    get_intelligence, search_intelligence
+    get_intelligence, search_intelligence, delete_whitelist_entry_command, update_whitelist_entry_note_command, \
+    create_whitelist_entry_command, list_whitelist_entry_command, list_import_job_command, get_list_rule_command, \
+    list_user_command, list_investigation_command, create_rule_command, update_rule_command, delete_rule_command, \
+    create_investigation_command, update_investigation_command, delete_investigation_command, add_investigation_element_command, \
+    approve_import_job_command, search_threat_model_command, add_threat_model_association_command
 from CommonServerPython import *
 import pytest
 
@@ -91,6 +95,7 @@ class TestReputationCommands:
 
     def mocked_http_request_ioc(self, method, url_suffix, params=None, data=None, headers=None, files=None, json=None,
                                 resp_type='json'):
+        # sourcery skip: assign-if-exp, inline-immediately-returned-variable, remove-unnecessary-else
         if 'associated_with_intelligence' in url_suffix:
             if 'actor' in url_suffix:
                 mocked_actor_result = util_load_json('test_data/mocked_actor_response.json')
@@ -166,6 +171,7 @@ class TestReputationCommands:
 
     def mocked_http_request(self, method, url_suffix, params=None, data=None, headers=None, files=None, json=None,
                             resp_type='json'):
+        # sourcery skip: inline-immediately-returned-variable
         if 'actor' in url_suffix:
             mocked_actor_result = util_load_json('test_data/mocked_actor_response.json')
             return mocked_actor_result
@@ -387,6 +393,7 @@ class TestImportCommands:
 
     @pytest.mark.parametrize(argnames='import_type', argvalues=['file-id', 'test-import-type'])
     def test_import_indicator_with_approval__happy_path(self, mocker, import_type):
+        # sourcery skip: move-assign-in-block, use-named-expression
         """
         Given:
             - Indicator to import with approval
@@ -402,7 +409,7 @@ class TestImportCommands:
         mocked_file_path = util_tmp_json_file(MOCK_OBJECTS, 'test_file')
         mocker.patch.object(demisto, 'getFilePath', return_value=mocked_file_path)
         mocker.patch.object(Client, 'http_request',
-                            return_value={'success': True, 'import_session_id': 'test_session_id'})
+                            return_value={'success': True, 'import_session_id': 'test_session_id', 'job_id': 'id'})
 
         # run
         result = import_ioc_with_approval(mock_client(), import_type, 'test_value')
@@ -419,7 +426,7 @@ class TestImportCommands:
 
         assert all(key in data for key in ['classification', 'confidence', 'threat_type', 'severity'])
 
-        assert result.outputs == 'test_session_id'
+        assert result.outputs == {'ImportID': 'test_session_id', 'JobID': 'id'}
 
     @pytest.mark.parametrize(
         'mock_object, file_name, args, expected_meta_data_keys, expected_meta_data_changed',
@@ -659,8 +666,13 @@ class TestGetCommands:
              dict(limit='50', skip_intelligence="true", skip_associations="true")),
             ('threatstream-get-model-description', dict(model='Actor', id=1),
              dict(skip_intelligence="true", skip_associations="true")),
-            ('threatstream-get-indicators-by-model', dict(model='Actor', id=1), dict(limit='20')),
+            ('threatstream-get-indicators-by-model', dict(model='Actor', id=1), dict(limit=20)),
+            ('threatstream-get-indicators-by-model', dict(model='Actor', id=1, page=2, page_size=2),
+             dict(limit=2, offset=2)),
             ('threatstream-get-indicators', {}, dict(limit=20, offset=0)),
+            ('threatstream-get-indicators', {'page': 2, 'page_size': 2}, dict(limit=2, offset=2, page=2, page_size=2)),
+            ('threatstream-list-import-job', {'import_id': '1111', 'status_in': 'Errors', 'page': 2, 'page_size': 2},
+             dict(limit=2, offset=2, status_in='errors')),
         ]
     )
     def test_expected_params_in_get_requests(self, mocker, command, command_args, expected_http_params):
@@ -1064,3 +1076,482 @@ def test_search_intelligence_with_confidence(mocker):
     http_call_args = client.http_request.call_args.kwargs.get('params')
     assert 'confidence' not in http_call_args
     assert 'confidence__lt' in http_call_args
+
+
+def test_delete_whitelist_entry_command(mocker):
+    """
+
+    Given:
+        - Entry id to delete
+
+    When:
+        - Call threatstream-delete-whitelist-entry command
+
+    Then:
+        - Validate command result readable output
+
+    """
+    mocker.patch.object(Client, 'http_request', return_value=None)
+
+    args = {'entry_id': '77'}
+    client = mock_client()
+    command_result = delete_whitelist_entry_command(client, **args)
+    assert command_result.readable_output == 'The entity was deleted successfully'
+
+
+def test_update_whitelist_entry_note_command(mocker):
+    """
+
+    Given:
+        -  Entry id to update and a note
+
+    When:
+        - Call threatstream-list-whitelist-entry command
+
+    Then:
+        - Validate command result readable output
+
+    """
+    mocker.patch.object(Client, 'http_request', return_value=None)
+
+    args = {'entry_id': '66',
+            'note': 'some_note'}
+    client = mock_client()
+    command_result = update_whitelist_entry_note_command(client, **args)
+    assert command_result.readable_output == 'The note was updated successfully.'
+
+
+def test_create_whitelist_entry_command(mocker):
+    """
+
+    Given:
+        -  Domain
+
+    When:
+        - Call threatstream-create-whitelist-entry command
+
+    Then:
+        - Validate command result readable output
+
+    """
+    mocker.patch.object(Client, 'http_request', return_value={"message": "Created 1 item(s).", "success": True})
+
+    args = {'domains': 'example.com'}
+    client = mock_client()
+    command_result = create_whitelist_entry_command(client, **args)
+    assert command_result.readable_output == "Created 1 item(s)."
+
+
+def test_list_whitelist_entry_command(mocker):
+    """
+
+    Given:
+        - Format parameter to retrive results by
+
+    When:
+        - Call threatstream-list-whitelist-entry command
+
+    Then:
+        - Validate the command result
+
+    """
+    mocked_response = util_load_json('test_data/mocked_data.json').get('list_whitelist_response')
+    mocker.patch.object(Client, 'http_request', return_value=mocked_response)
+
+    args = {'format': 'JSON'}
+    client = mock_client()
+    command_result = list_whitelist_entry_command(client, **args)
+    assert command_result.readable_output == '### Whitelist entries\n' \
+                                             '|Id|Value|Resource Uri|Created At|Modified At|Value Type|Notes|\n|' \
+                                             '---|---|---|---|---|---|---|\n|' \
+                                             ' 13 | example.com | resource_uri | 2023-02-21T19:59:02.091404 |' \
+                                             ' 2023-02-21T19:59:02.091404 | domain | example domain |\n| 12 | 1.2.4.5 |' \
+                                             ' resource_uri | 2023-03-14T14:28:20.110021 | 2023-03-20T11:38:26.279451 |'   \
+                                             ' ip | example ip |\n| 11 | u | resource_uri | 2023-03-14T14:26:18.765256 |' \
+                                             ' 2023-03-14T14:26:18.765256 | user-agent |  |\n'
+    assert command_result.raw_response == mocked_response
+    assert command_result.outputs_prefix == 'ThreatStream.WhitelistEntry'
+    assert command_result.outputs == [{'created_ts': '2023-02-21T19:59:02.091404', 'id': 13,
+                                       'modified_ts': '2023-02-21T19:59:02.091404', 'notes': 'example domain',
+                                       'resource_uri': 'resource_uri', 'value': 'example.com', 'value_type': 'domain'},
+                                      {'created_ts': '2023-03-14T14:28:20.110021', 'id': 12,
+                                       'modified_ts': '2023-03-20T11:38:26.279451',
+                                       'notes': 'example ip', 'resource_uri': 'resource_uri',
+                                       'value': '1.2.4.5', 'value_type': 'ip'},
+                                      {'created_ts': '2023-03-14T14:26:18.765256', 'id': 11,
+                                       'modified_ts': '2023-03-14T14:26:18.765256',
+                                       'notes': None, 'resource_uri': 'resource_uri', 'value': 'u', 'value_type': 'user-agent'}]
+
+
+def test_list_import_job_command(mocker):
+    """
+
+    Given:
+        -limit parameter
+
+    When:
+        - Call threatstream-list-import-job command
+
+    Then:
+        - Validate the command result
+
+    """
+    load_json = util_load_json('test_data/mocked_data.json')
+    mocked_response = load_json.get('list_import_job_response')
+    mocker.patch.object(Client, 'http_request', return_value=mocked_response)
+
+    args: dict = {'limit': 2}
+    client = mock_client()
+    command_result = list_import_job_command(client, **args)
+    assert command_result.readable_output == '### Import entries\n|Id|Date|Status|Submitted By|Intelligence Initiatives' \
+                                             '|Included|Excluded|Tags|' \
+                                             '\n|---|---|---|---|---|---|---|---|\n|' \
+                                             ' 111111 | 2023-03-19T16:41:21.895297 | done | some_email | malware-intelligence |' \
+                                             ' 0 | 0 |  |\n| 120759 | 2023-03-19T14:29:40.592787 | errors |' \
+                                             ' some_email |  | 0 | 0 | tag1, tag2 |\n'
+    assert command_result.raw_response == mocked_response
+    assert command_result.outputs_prefix == 'ThreatStream.Import'
+    assert command_result.outputs == load_json.get('list_import_job_output')
+
+
+def test_list_rule_command(mocker):
+    """
+
+    Given:
+        - limit parameter
+
+    When:
+        - Call threatstream-list-rule command
+
+    Then:
+        - Validate the command result
+
+    """
+    load_json = util_load_json('test_data/mocked_data.json')
+    mocked_response = load_json.get('list_rule_response')
+    mocker.patch.object(Client, 'http_request', return_value=mocked_response)
+
+    args: dict = {'limit': 4}
+    client = mock_client()
+    command_result = get_list_rule_command(client, **args)
+    assert command_result.readable_output == '### Rules\n|Name|Id|Matches|Created At|Modified At|Is Notify Me|Is Enabled|\n|' \
+                                             '---|---|---|---|---|---|---|\n|' \
+                                             ' some_name | 11111 | 0 | 2023-03-02T14:04:18.511057 |' \
+                                             ' 2023-03-02T14:04:18.511057 | true | true |\n| name | 11112 | 0 |' \
+                                             ' 2023-03-06T12:10:27.497296 |' \
+                                             ' 2023-03-06T12:10:27.497296 | true | true |\n| name | 11111 | 0 |' \
+                                             ' 2023-03-06T12:16:21.980678 |' \
+                                             ' 2023-03-06T12:16:21.980678 | true | true |\n| name | 11113 | 0 |' \
+                                             ' 2023-03-06T12:17:43.907629 |' \
+                                             ' 2023-03-06T12:17:43.907629 | true | true |\n'
+    assert command_result.raw_response == mocked_response
+    assert command_result.outputs_prefix == 'ThreatStream.Rule'
+    assert command_result.outputs == load_json.get('list_rule_outputs')
+
+
+def test_list_user_command(mocker):
+    """
+
+    Given:
+        - limit parameter
+
+    When:
+        - Call threatstream-list-user command
+
+    Then:
+        - Validate the command result
+
+    """
+    load_json = util_load_json('test_data/mocked_data.json')
+    mocked_response = load_json.get('list_user_response')
+    mocker.patch.object(Client, 'http_request', return_value=mocked_response)
+
+    args: dict = {'limit': 50}
+    client = mock_client()
+    command_result = list_user_command(client, **args)
+    assert command_result.readable_output == '### Users\n|User Id|Email|Is Active|Last Login|\n|' \
+                                             '---|---|---|---|\n| 111 | some_email | true | 2023-03-16T15:48:24.808760 ' \
+                                             '|\n| 111 | some_email | true |  |\n| 111 | some_email |' \
+                                             ' true | 2023-03-07T10:16:02.953700 |\n'
+    assert command_result.raw_response == mocked_response
+    assert command_result.outputs_prefix == 'ThreatStream.User'
+    assert command_result.outputs == load_json.get('list_user_outputs')
+
+
+def test_list_investigation_command(mocker):
+    """
+
+    Given:
+        - limit parameter
+
+    When:
+        - Call threatstream-list-investigation command
+
+    Then:
+        - Validate the command result
+
+    """
+    load_json = util_load_json('test_data/mocked_data.json')
+    mocked_response = load_json.get('list_investigation_response')
+    mocker.patch.object(Client, 'http_request', return_value=mocked_response)
+
+    args: dict = {'limit': 2}
+    client = mock_client()
+    command_result = list_investigation_command(client, **args)
+    assert command_result.readable_output == '### Investigations\n|Name|Id|Created At|Status|Source Type|Assignee|Reporter|\n|' \
+                                             '---|---|---|---|---|---|---|\n| Test Incestigation | 111 |' \
+                                             ' 2022-08-01T09:47:36.768535 |' \
+                                             ' in-progress | user | some_email | some_email |\n| New | 111 |' \
+                                             ' 2023-01-24T11:23:03.308344 | pending | rules | some_email | some_email |\n'
+    assert command_result.raw_response == mocked_response
+    assert command_result.outputs_prefix == 'ThreatStream.Investigation'
+    assert command_result.outputs == load_json.get('list_investigation_output')
+
+
+def test_create_rule_command(mocker):
+    """
+
+    Given:
+        - rule_name, keywords, match_include parameters
+
+    When:
+        - Call threatstream-create_rule command
+
+    Then:
+        - Validate the command result
+
+    """
+    load_json = util_load_json('test_data/mocked_data.json')
+    mocked_response = load_json.get('create_rule_response')
+    mocker.patch.object(Client, 'http_request', return_value=mocked_response)
+
+    args: dict = {'rule_name': "rule_1", "keywords": "keywords", "match_include": "observables"}
+    client = mock_client()
+    command_result = create_rule_command(client, **args)
+    assert command_result.readable_output == 'The rule was created successfully with id: 11111.'
+    assert command_result.raw_response == mocked_response
+    assert command_result.outputs_prefix == 'ThreatStream.Rule'
+
+
+def test_update_rule_command(mocker):
+    """
+
+    Given:
+        - rule_id, keywords, match_include, malware_ids parameters
+
+    When:
+        - Call threatstream-update_rule command
+
+    Then:
+        - Validate the command result
+
+    """
+    load_json = util_load_json('test_data/mocked_data.json')
+    mocked_response = load_json.get('update_rule_response')
+    mocker.patch.object(Client, 'http_request', return_value=mocked_response)
+
+    args: dict = {'rule_id': "11111", "keywords": "keywords", "match_include": "sandbox", "malware_ids": 2222}
+    client = mock_client()
+    command_result = update_rule_command(client, **args)
+    assert command_result.readable_output == '### Rules\n|Name|Id|Matches|Created At|Modified At|Is Notify Me|Is Enabled|\n|' \
+                                             '---|---|---|---|---|---|---|\n| rule_1 | 11111 | 0 |' \
+                                             ' 2023-03-21T11:55:54.411471 | 2023-03-21T12:29:37.984911 | true | true |\n'
+    assert command_result.raw_response == mocked_response
+    assert command_result.outputs == mocked_response
+    assert command_result.outputs_prefix == 'ThreatStream.Rule'
+
+
+def test_delete_rule_command(mocker):
+    """
+
+    Given:
+        - rule_id parameter
+
+    When:
+        - Call threatstream-delete_rule command
+
+    Then:
+        - Validate the command result
+
+    """
+    mocker.patch.object(Client, 'http_request', return_value=None)
+
+    args: dict = {'rule_id': "11111"}
+    client = mock_client()
+    command_result = delete_rule_command(client, **args)
+    assert command_result.readable_output == 'The rule was deleted successfully.'
+
+
+def test_create_investigation_command(mocker):
+    """
+
+    Given:
+        - name (Str): investigation name
+
+    When:
+        - Call threatstream-create-investigation command
+
+    Then:
+        - Validate the command result
+
+    """
+    load_json = util_load_json('test_data/mocked_data.json')
+    mocked_response = load_json.get('create_investigation_response')
+    mocker.patch.object(Client, 'http_request', return_value=mocked_response)
+
+    args: dict = {'name': "new_investigation"}
+    client = mock_client()
+    command_result = create_investigation_command(client, **args)
+    assert command_result.readable_output == 'Investigation was created successfully with ID: 111'
+    assert command_result.raw_response == mocked_response
+    assert command_result.outputs == mocked_response
+    assert command_result.outputs_prefix == 'ThreatStream.Investigation'
+
+
+def test_update_investigation_command(mocker):
+    """
+
+    Given:
+        - investigation_id, assignee_id, priority, status, tags, tlp arguments values
+
+    When:
+        - Call threatstream-update-investigation command
+
+    Then:
+        - Validate the command result
+
+    """
+    load_json = util_load_json('test_data/mocked_data.json')
+    mocked_response = load_json.get('update_investigation_response')
+    mocker.patch.object(Client, 'http_request', return_value=mocked_response)
+
+    args: dict = {'investigation_id': '111', 'assignee_id': '111', 'priority': "Very Low",
+                  'status': 'Pending', 'tags': 'tag1,tag2', 'tlp': 'Amber'}
+    client = mock_client()
+    command_result = update_investigation_command(client, **args)
+    assert command_result.readable_output == 'Investigation was updated successfully with ID: 111'
+    assert command_result.raw_response == mocked_response
+    assert command_result.outputs == mocked_response
+    assert command_result.outputs_prefix == 'ThreatStream.Investigation'
+
+
+def test_delete_investigation_command(mocker):
+    """
+
+    Given:
+        - investigation_id (Str): investigation id
+
+    When:
+        - Call threatstream-delete-investigation command
+
+    Then:
+        - Validate the command result
+
+    """
+    mocker.patch.object(Client, 'http_request', return_value=None)
+
+    args: dict = {'investigation_id': "1111"}
+    client = mock_client()
+    command_result = delete_investigation_command(client, **args)
+    assert command_result.readable_output == 'Investigation was deleted successfully.'
+
+
+def test_add_investigation_element_command(mocker):
+    """
+
+    Given:
+        - investigation_id and associated_actor_ids arguments values
+
+    When:
+        - Call threatstream-add-investigation-element command
+
+    Then:
+        - Validate the command result
+
+    """
+    load_json = util_load_json('test_data/mocked_data.json')
+    mocked_response = load_json.get('add_investigation_elements')
+    mocker.patch.object(Client, 'http_request', return_value=mocked_response)
+
+    args: dict = {'investigation_id': '222', 'associated_actor_ids': '55555,11111'}
+    client = mock_client()
+    command_result = add_investigation_element_command(client, **args)
+    assert command_result.readable_output == 'Elements was added successfully to investigation ID: 222'
+    assert command_result.raw_response == mocked_response
+
+
+def test_approve_import_job_command(mocker):
+    """
+
+    Given:
+        - import_id (Str): import id
+
+    When:
+        - Call threatstream-approve-import-job command
+
+    Then:
+        - Validate the command result
+
+    """
+    load_json = util_load_json('test_data/mocked_data.json')
+    mocked_response = load_json.get('approve_import_job_response')
+    mocker.patch.object(Client, 'http_request', return_value=mocked_response)
+
+    args: dict = {'import_id': '222222'}
+    client = mock_client()
+    command_result = approve_import_job_command(client, **args)
+    assert command_result.readable_output == 'The import session was successfully approved.'
+    assert command_result.raw_response == mocked_response
+
+
+def test_search_threat_model_command(mocker):
+    """
+
+    Given:
+        - model_type, signature_type, page, page_size
+
+    When:
+        - Call threatstream-search-threat-model command
+
+    Then:
+        - Validate the command result
+
+    """
+    load_json = util_load_json('test_data/mocked_data.json')
+    mocked_response = load_json.get('search_threat_model_response')
+    mocker.patch.object(Client, 'http_request', return_value=mocked_response)
+
+    args: dict = {'model_type': "signature", 'signature_type': "Carbon Black Query,Bro,ClamAV", 'page': "2", 'page_size': "2"}
+    client = mock_client()
+    command_result = search_threat_model_command(client, **args)
+    assert command_result.readable_output == '### Threat model entities\n|Id|Type|Name|Publication Status|Modified At|\n|' \
+                                             '---|---|---|---|---|\n| 333 | signature | signature_threat_model_1 ' \
+                                             '| new | 2023-03-19T10:09:09.150405+00:00 |\n| 444 | signature | test |' \
+                                             ' published | 2022-10-08T05:18:20.389951+00:00 |\n'
+    assert command_result.raw_response == mocked_response
+    assert command_result.outputs == load_json.get('search_threat_model_outputs')
+    assert command_result.outputs_prefix == 'ThreatStream.ThreatModel'
+
+
+def test_add_threat_model_association_command(mocker):
+    """
+
+    Given:
+        - name (Str): investigation name
+
+    When:
+        - Call threatstream-add-threat-model-association command
+
+    Then:
+        - Validate the command result
+
+    """
+    mocker.patch.object(Client, 'http_request', return_value={'ids': [2222, 3333], 'success': True})
+
+    args: dict = {'entity_type': 'Actor', 'entity_id': '11111', 'associated_entity_ids': '2222,3333',
+                  'associated_entity_type': 'Attack Pattern'}
+    client = mock_client()
+    command_result = add_threat_model_association_command(client, **args)
+    assert command_result.readable_output == 'The Attack Pattern entities with ids' \
+                                             ' [2222, 3333] were associated successfully to entity id: 11111.'
+    assert command_result.raw_response == {'ids': [2222, 3333], 'success': True}

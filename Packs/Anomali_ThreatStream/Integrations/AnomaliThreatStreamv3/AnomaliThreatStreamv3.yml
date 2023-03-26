@@ -2403,6 +2403,15 @@ script:
       name: limit
       required: false
       secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: 'Whether to retrieve all results. The "limit" argument will be ignored. Possible values are: true, false.'
+      isArray: false
+      name: all_results
+      predefined:
+      - 'false'
+      - 'true'
     deprecated: false
     description: Returns enrichment data for Domain or IP for available observables.
     execution: false
@@ -2546,10 +2555,23 @@ script:
       name: md5_mapping
       required: false
       secret: false
+    - default: false
+      description: A comma-separated list of tags. For example, tag1,tag2.
+      isArray: false
+      name: tags
+      required: false
+      secret: false
     deprecated: false
     description: 'Imports indicators (observables) into ThreatStream. The imported data must be approved using the ThreatStream UI. The data can be imported using one of three methods: plain-text, file, or URL.'
     execution: false
     name: threatstream-import-indicator-with-approval
+    outputs:
+    - contextPath: ThreatStream.Import.JobID
+      description: The identifier for the job on ThreatStream.
+      type: Number
+    - contextPath: ThreatStream.Import.ImportID
+      description: the ID for the import job.
+      type: Number
   - arguments:
     - default: false
       defaultValue: '50'
@@ -2637,13 +2659,26 @@ script:
       - ttp
       - vulnerability
       - tipreport
+      - malware
+      - attack pattern
       required: true
       secret: false
     - default: false
-      defaultValue: '50'
       description: Limits the model size list. Specifying limit=0 returns up to a maximum of 1000 models. For limit=0, the output is not set in the context.
       isArray: false
       name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Page number to get result from. Needs to be used with page_size argument.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      description: The page size of the returned results. Needs to be used with the page argument.
+      isArray: false
+      name: page_size
       required: false
       secret: false
     deprecated: false
@@ -2710,6 +2745,8 @@ script:
       - ttp
       - vulnerability
       - tipreport
+      - malware
+      - attack pattern
       required: true
       secret: false
     - default: false
@@ -2719,10 +2756,21 @@ script:
       required: true
       secret: false
     - default: false
-      defaultValue: '20'
       description: The maximum number of results to return.
       isArray: false
       name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Page number to get result from. Needs to be used with page_size argument.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      description: The page size of the returned results. Needs to be used with the page argument.
+      isArray: false
+      name: page_size
       required: false
       secret: false
     deprecated: false
@@ -2840,8 +2888,8 @@ script:
       required: false
       secret: false
       predefined:
-        - 'false'
-        - 'true'
+      - 'false'
+      - 'true'
     deprecated: false
     description: Submits a file or URL to the ThreatStream-hosted sandbox for detonation.
     execution: false
@@ -3067,10 +3115,21 @@ script:
       required: false
       secret: false
     - default: false
-      defaultValue: '20'
-      description: The maximum number of results to return from ThreatStream.
+      description: The maximum number of results to return from ThreatStream. Default value is 20.
       isArray: false
       name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Page number to get result from. Needs to be used with page_size argument.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      description: The page size of the returned results. Needs to be used with the page argument.
+      isArray: false
+      name: page_size
       required: false
       secret: false
     deprecated: false
@@ -3394,6 +3453,22 @@ script:
       - premium
       required: false
       secret: false
+    - default: false
+      defaultValue: '50'
+      description: The maximum number of results to return from ThreatStream. The maximum number of returned results is 1000. For more results, use the page and page_size arguments.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: 'Whether to retrieve all results. The "limit" argument will be ignored. Possible values are: true, false.'
+      isArray: false
+      name: all_results
+      predefined:
+      - 'false'
+      - 'true'
     deprecated: false
     description: Returns a list of supported platforms for default or premium sandbox.
     execution: false
@@ -4370,7 +4445,2856 @@ script:
     - contextPath: ThreatStream.Intelligence.severity
       description: The severity of the intelligence.
       type: String
-  dockerimage: demisto/py3-tools:1.0.0.48698
+  - arguments:
+    - default: false
+      description: Unique ID assigned to the rule.
+      isArray: false
+      name: rule_id
+      required: false
+      secret: false
+    - default: false
+      description: The maximum number of results to return. Default value is 50.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: The page number of the results to retrieve.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      description: The maximum number of objects to retrieve per page.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    deprecated: false
+    description: 'Gets list of rule from ThreatStream.'
+    execution: false
+    name: threatstream-list-rule
+    outputs:
+    - contextPath: ThreatStream.Rule.adv_keyword
+      description: Advanced keyword or regular expression that the rule is designed to match.
+      type: Unknown
+    - contextPath: ThreatStream.Rule.backfill
+      description: Objects that define additional filters or conditions for the rule.
+      type: Unknown
+    - contextPath: ThreatStream.Rule.create_investigation
+      description: Whether or not an investigation should be created when the rule is triggered.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.created_ts
+      description: Rule creation time.
+      type: Date
+    - contextPath: ThreatStream.Rule.description
+      description: The rule description.
+      type: Unknown
+    - contextPath: ThreatStream.Rule.exclude_notify_org_whitelisted
+      description: Whether the rule excluded from matching observables that are included in the organization whitelist.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.exclude_notify_owner_org
+      description: Whether to rule excluded keyword matches on observables imported by the organization from keyword match or hourly digest email notifications.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.has_associations
+      description: Whether the rule has associations.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.id
+      description: Unique ID assigned to the rule.
+      type: Number
+    - contextPath: ThreatStream.Rule.intelligence_initiatives
+      description: Intelligence Initiatives associated with the rule.
+      type: Unknown
+    - contextPath: ThreatStream.Rule.is_editable
+      description: Indicates whether the imported rule can be updated by an intelligence source.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.is_enabled
+      description: Whether or not the rule is currently enabled.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.keyword
+      description: Keyword associated with the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.keywords
+      description: A list of keywords associated with the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.match_actors
+      description: Unused according to ThreatStream API documentation.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.match_all_tm
+      description: Whether or not the rule should match against all threat models.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.match_attackpatterns
+      description: Whether the rule matches keywords in newly created Attack Patterns.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.match_campaigns
+      description: Unused according to ThreatStream API documentation.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.match_courseofactions
+      description: Whether the rule matches keywords in newly created Course of Action.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.match_customtms
+      description: Whether or not the rule should match custom threat models.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.match_identities
+      description: Whether the rule matches keywords in newly created Identities.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.match_incidents
+      description: Unused according to ThreatStream API documentation.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.match_infrastructures
+      description: Whether the rule matches keywords in newly created infrastructures.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.match_intrusionsets
+      description: Whether the rule matches keywords in newly created intrusion sets.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.match_malware
+      description: Unused according to ThreatStream API documentation.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.match_observables
+      description: Whether the rule matches keywords in newly created Observables.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.match_reportedfiles
+      description: Whether the rule should match keywords in newly created Sandbox Reports
+      type: Boolean
+    - contextPath: ThreatStream.Rule.match_signatures
+      description: Whether the rule should match keywords in newly created Signatures.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.match_tips
+      description: Whether the rule matches keywords in newly created Threat Bulletins.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.match_tools
+      description: Whether the rule should match keywords in newly created Tools.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.match_ttps
+      description: Unused according to ThreatStream API documentation.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.match_vulnerabilities
+      description: Whether the rule matches keywords in newly created vulnerabilities.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.matches
+      description: Total number of keyword matches for the rule.
+      type: Number
+    - contextPath: ThreatStream.Rule.messages
+      description: Messages or notifications generated by the rule.
+      type: Unknown
+    - contextPath: ThreatStream.Rule.modified_ts
+      description: Time stamp of when the rule was last modified, in UTC format.
+      type: Date
+    - contextPath: ThreatStream.Rule.name
+      description: The rule name.
+      type: String
+    - contextPath: ThreatStream.Rule.notify_list_groups
+      description: List of group that should be notified when the rule triggers an alert.
+      type: Unknown
+    - contextPath: ThreatStream.Rule.notify_me
+      description: Whether or not the user who created the rule should be notified when the rule triggers an alert.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.org_id
+      description: ID associated with the organization that created the rule.
+      type: Number
+    - contextPath: ThreatStream.Rule.org_shared
+      description: Unused according to ThreatStream API documentation.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.organization.id
+      description: ID associated with the organization that created the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.organization.name
+      description: Name associated with the organization that created the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.organization.resource_uri
+      description: Resource URI associated with the organization that created the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.resource_uri
+      description: Resource URI associated with the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.user.avatar_s3_url
+      description: URL for the avatar image associated with the user that created the rule.
+      type: Unknown
+    - contextPath: ThreatStream.Rule.user.can_share_intelligence
+      description: Whether the user that created the rule can share intelligence.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.user.email
+      description: Email of the user that created the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.user.id
+      description: ID of the user that created the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.user.is_active
+      description: Whether the user that created the rule is active.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.user.is_readonly
+      description: Whether the user that created the rule should be restricted to Read Only status.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.user.must_change_password
+      description: Whether the user that created the rule will be forced to change their password the next time they login.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.user.name
+      description: Name of the user that created the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.user.nickname
+      description: Nickname of the user that created the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.user.organization.id
+      description: The ID associated the organization.
+      type: String
+    - contextPath: ThreatStream.Rule.user.organization.name
+      description: The user's organization name.
+      type: String
+    - contextPath: ThreatStream.Rule.user.organization.resource_uri
+      description: The user's organization resource URI.
+      type: String
+    - contextPath: ThreatStream.Rule.user.resource_uri
+      description: The user's resource URI.
+      type: String
+    - contextPath: ThreatStream.Rule.user_id
+      description: User ID of the user that created the rule.
+      type: Number
+    - contextPath: ThreatStream.Rule.workgroups
+      description: Unused according to ThreatStream API.
+      type: Unknown
+    - contextPath: ThreatStream.Rule.actors.id
+      description: Actor's ID associated with the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.actors.name
+      description: Actor's name associated with the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.actors.resource_uri
+      description: Actor's resource URI associated with the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.attackpatterns
+      description: Attackpatterns associated with the rule.
+      type: Unknown
+    - contextPath: ThreatStream.Rule.campaigns.id
+      description: Campaign's ID associated with the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.campaigns.name
+      description: Campaign's name associated with the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.campaigns.resource_uri
+      description: Campaign's resource URI associated with the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.courseofaction
+      description: Course of Action entities associated with the rule.
+      type: Unknown
+    - contextPath: ThreatStream.Rule.customtms
+      description: Custom threat models entities associated with the rule.
+      type: Unknown
+    - contextPath: ThreatStream.Rule.exclude_impacts
+      description: Indicator types that excluded from rule matches.
+      type: String
+    - contextPath: ThreatStream.Rule.identities
+      description: List of identities associated with the rule.
+      type: Unknown
+    - contextPath: ThreatStream.Rule.incidents.id
+      description: Incident's ID associated with the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.incidents.name
+      description: Incident's name associated with the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.incidents.resource_uri
+      description: Incident's resource URI associated with the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.infrastructure
+      description: Infrastructure entities associated with the rule.
+      type: Unknown
+    - contextPath: ThreatStream.Rule.intrusionsets
+      description: Intrusion Sets entities associated with the rule.
+      type: Unknown
+    - contextPath: ThreatStream.Rule.investigation.assignee.assignee_type
+      description: 'Type of assignee: "user" or "tsworkgroup".'
+      type: String
+    - contextPath: ThreatStream.Rule.investigation.assignee.avatar_s3_url
+      description: URL for the avatar image associated with the assignee user.
+      type: Unknown
+    - contextPath: ThreatStream.Rule.investigation.assignee.can_share_intelligence
+      description: Whether the assignee user can share intelligence.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.investigation.assignee.email
+      description: The email of the assignee user.
+      type: String
+    - contextPath: ThreatStream.Rule.investigation.assignee.id
+      description: The ID of the assignee user.
+      type: String
+    - contextPath: ThreatStream.Rule.investigation.assignee.is_active
+      description: Whether the assignee user is active.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.investigation.assignee.is_readonly
+      description: Whether the assignee user should be restricted to Read Only status.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.investigation.assignee.must_change_password
+      description: Whether the investigation assignee user will be forced to change their password the next time they login.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.investigation.assignee.name
+      description: The investigation assignee user name.
+      type: String
+    - contextPath: ThreatStream.Rule.investigation.assignee.nickname
+      description: The investigation assignee user nickname.
+      type: Unknown
+    - contextPath: ThreatStream.Rule.investigation.assignee.resource_uri
+      description: Resource URI associated with Investigation assignee user.
+      type: String
+    - contextPath: ThreatStream.Rule.investigation.id
+      description: The ID of the investigation.
+      type: String
+    - contextPath: ThreatStream.Rule.investigation.name
+      description: The name of the investigation.
+      type: String
+    - contextPath: ThreatStream.Rule.investigation.resource_uri
+      description: The resource URI of the investigation.
+      type: String
+    - contextPath: ThreatStream.Rule.investigation.users
+      description: List of users associated with the investigation created by the rule.
+      type: Unknown
+    - contextPath: ThreatStream.Rule.investigation.workgroups
+      description: Not used according to ThreatStream API documentation.
+      type: Unknown
+    - contextPath: ThreatStream.Rule.malware.id
+      description: ID of the malware that associate to the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.malware.name
+      description: Name of the malware that associate to the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.malware.resource_uri
+      description: Resource URI of the malware that associate to the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.match_impacts
+      description: Indicator types in which you want to look for rule matches at the exclusion of all others.
+      type: String
+    - contextPath: ThreatStream.Rule.signatures.id
+      description: ID of the signature that associate to the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.signatures.name
+      description: Name of the signature that associate to the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.signatures.resource_uri
+      description: Resource URI of the signature that associate to the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.tags.name
+      description: Name of the tag applied to matched entities.
+      type: String
+    - contextPath: ThreatStream.Rule.tips.id
+      description: ID of the Threat Bulletin with which associate to matched entities.
+      type: String
+    - contextPath: ThreatStream.Rule.tips.name
+      description: Name of the Threat Bulletin with which associate to matched entities.
+      type: String
+    - contextPath: ThreatStream.Rule.tips.resource_uri
+      description: Resource URI of the Threat Bulletin with which associate to matched entities.
+      type: String
+    - contextPath: ThreatStream.Rule.tools
+      description: List of tools associated with the rule.
+      type: Unknown
+    - contextPath: ThreatStream.Rule.ttps.id
+      description: ID of the TTPs that associate to the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.ttps.name
+      description: Name of the TTPs that associate to the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.ttps.resource_uri
+      description: Resource URI of the TTPs that associate to the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.vulnerabilities.id
+      description: ID of the vulnerability with which to associate matched entities.
+      type: String
+    - contextPath: ThreatStream.Rule.vulnerabilities.name
+      description: Name of the vulnerability with which to associate matched entities.
+      type: String
+    - contextPath: ThreatStream.Rule.vulnerabilities.resource_uri
+      description: Resource URI of the vulnerability with which to associate matched entities.
+      type: String
+  - arguments:
+    - default: false
+      description: Name of the rule.
+      isArray: false
+      name: rule_name
+      required: true
+      secret: false
+    - default: false
+      description: 'A comma-separated list of keywords for which you want the rule to match. Keywords added to rules must adhere to the following requirements: IP addresses must be expressed as regular expressions, IP subnets should be expressed using CIDR notation and not as regular expressions, Do not start or end keywords with *, Keywords must contain at least three characters.'
+      isArray: true
+      name: keywords
+      required: true
+      secret: false
+    - default: false
+      description: "A comma-separated list of fields you want the rule match to their keywords. Possible values: observables, sandbox reports, threat bulletins, signatures, vulnerabilities"
+      isArray: true
+      name: match_include
+      required: true
+      secret: false
+    - default: false
+      description: A comma-separated list of IDs of the actors with which you want to associate matched entities. Use the threatstream-get-model-list command to get the actor ids values.
+      isArray: true
+      name: actor_ids
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of IDs of the campaigns with which you want to associate matched entities. Use the threatstream-get-model-list command to get the campaign ids values.
+      isArray: true
+      name: campaign_ids
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The Action you want to do related to the investigation default value is 'No Action'.
+      isArray: false
+      name: investigation_action
+      predefined:
+      - Create New
+      - Add To Existing
+      - No Action
+      required: false
+      secret: false
+    - default: false
+      description: The investigation name ,when selected 'Create New' in investigation_action argument.
+      isArray: false
+      name: new_investigation_name
+      required: false
+      secret: false
+    - default: false
+      description: Existing investigation id ,when selected 'Add To Existing' in investigation_action argument. Use the threatstream-list-investigation command to get the investigation id value.
+      isArray: false
+      name: existing_investigation_id
+      required: false
+      secret: false
+    - default: false
+      description: 'A comma-separated list of indicator types you want to exclude from rule matches. Example: actor_ipv6'
+      isArray: true
+      name: exclude_indicator
+      required: false
+      secret: false
+    - default: false
+      description: 'A comma-separated list of indicator types you want to include from rule matches. Example: actor_ipv6'
+      isArray: true
+      name: include_indicator
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether you want to exclude the rule from matching observables that are included in your organization whitelist.
+      isArray: false
+      name: exclude_notify_org_whitelisted
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether you want to exclude keyword matches on observables imported by your organization from keyword match or hourly digest email notifications.
+      isArray: false
+      name: exclude_notify_owner_org
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of IDs of the incidents with which you want to associate matched entities. Use the threatstream-get-model-list command to get the incident ids value.
+      isArray: true
+      name: incident_ids
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of IDs of the malwares with which you want to associate matched entities. Use the threatstream-get-model-list command to get the malware ids value.
+      isArray: true
+      name: malware_ids
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of IDs of the signatures with which you want to associate matched entities. Use the threatstream-get-model-list command to get the signature ids value.
+      isArray: true
+      name: signature_ids
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of IDs of the threat bulletin with which you want to associate matched entities. Use the threatstream-get-model-list command to get the threat bulletin ids value.
+      isArray: true
+      name: threat_bulletin_ids
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of IDs of the TTPs with which you want to associate matched entities. Use the threatstream-get-model-list command to get the TTPs ids value.
+      isArray: true
+      name: ttp_ids
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of IDs of the vulnerabilities with which you want to associate matched entities. Use the threatstream-get-model-list command to get the vulnerabilities ids value.
+      isArray: true
+      name: vulnerability_ids
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of IDs of the tags with which you want to associate matched entities.
+      isArray: true
+      name: tags
+      required: false
+      secret: false
+    deprecated: false
+    description: 'Create a rule in ThreatStream platform.'
+    execution: false
+    name: threatstream-create-rule
+    outputs:
+    - contextPath: ThreatStream.Rule.actors.id
+      description: Actor's ID associated with the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.actors.name
+      description: Actor's name associated with the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.actors.resource_uri
+      description: Actor's resource URI associated with the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.adv_keyword
+      description: Advanced keyword or regular expression that the rule is designed to match.
+      type: Unknown
+    - contextPath: ThreatStream.Rule.attackpatterns
+      description: Attackpatterns associated with the rule.
+      type: Unknown
+    - contextPath: ThreatStream.Rule.backfill
+      description: Objects that define additional filters or conditions for the rule.
+      type: Unknown
+    - contextPath: ThreatStream.Rule.campaigns.id
+      description: Campaign's ID associated with the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.campaigns.name
+      description: Campaign's name associated with the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.campaigns.resource_uri
+      description: Campaign's resource uri associated with the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.courseofaction
+      description: Course of Action entities associated with the rule.
+      type: Unknown
+    - contextPath: ThreatStream.Rule.create_investigation
+      description: Whether or not an investigation should be created when the rule is triggered.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.created_ts
+      description: Rule creation time.
+      type: Date
+    - contextPath: ThreatStream.Rule.customtms
+      description: Custom threat models entities associated with the rule.
+      type: Unknown
+    - contextPath: ThreatStream.Rule.description
+      description: The rule description.
+      type: Unknown
+    - contextPath: ThreatStream.Rule.exclude_impacts
+      description: Indicator types that excluded from rule matches.
+      type: String
+    - contextPath: ThreatStream.Rule.exclude_notify_org_whitelisted
+      description: Whether Observables whitelisted by your organization are excluded from rule matches.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.exclude_notify_owner_org
+      description: Whether to exclude keyword matches on Observables imported by your organization from Keyword Match or Hourly Digest email notifications.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.id
+      description: Unique ID assigned to the rule.
+      type: Number
+    - contextPath: ThreatStream.Rule.identities
+      description: List of identities associated with the rule.
+      type: Unknown
+    - contextPath: ThreatStream.Rule.incidents.id
+      description: Incident's id associated with the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.incidents.name
+      description: Incident's name associated with the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.incidents.resource_uri
+      description: Incident's resource URI associated with the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.infrastructure
+      description: Infrastructure entities associated with the rule.
+      type: Unknown
+    - contextPath: ThreatStream.Rule.intelligence_initiatives
+      description: Intelligence Initiatives associated with the rule.
+      type: Unknown
+    - contextPath: ThreatStream.Rule.intrusionsets
+      description: Intrusion Sets entities associated with the rule.
+      type: Unknown
+    - contextPath: ThreatStream.Rule.investigation.assignee.assignee_type
+      description: 'Type of assignee: "user" or "tsworkgroup".'
+      type: String
+    - contextPath: ThreatStream.Rule.investigation.assignee.avatar_s3_url
+      description: URL for the avatar image associated with the assignee user.
+      type: Unknown
+    - contextPath: ThreatStream.Rule.investigation.assignee.can_share_intelligence
+      description: Whether the assignee user can share intelligence.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.investigation.assignee.email
+      description: The email of the assignee user.
+      type: String
+    - contextPath: ThreatStream.Rule.investigation.assignee.id
+      description: The ID of the assignee user.
+      type: String
+    - contextPath: ThreatStream.Rule.investigation.assignee.is_active
+      description: Whether the assignee user is active.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.investigation.assignee.is_readonly
+      description: Whether the assigne user should be restricted to Read Only status.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.investigation.assignee.must_change_password
+      description: Whether the assignee user will be forced to change their password the next time they login.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.investigation.assignee.name
+      description: The investigation assignee user name.
+      type: String
+    - contextPath: ThreatStream.Rule.investigation.assignee.nickname
+      description: The investigation assignee user nickname.
+      type: Unknown
+    - contextPath: ThreatStream.Rule.investigation.assignee.resource_uri
+      description: Resource URI associated with Investigation assignee user.
+      type: String
+    - contextPath: ThreatStream.Rule.investigation.investigation_config.name
+      description: The name of the investigation configuration associated with the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.investigation.id
+      description: The ID of the investigation.
+      type: String
+    - contextPath: ThreatStream.Rule.investigation.name
+      description: The name of the investigation.
+      type: String
+    - contextPath: ThreatStream.Rule.investigation.resource_uri
+      description: The resource URI of the investigation.
+      type: String
+    - contextPath: ThreatStream.Rule.investigation.users
+      description: List of users associated with the investigation created by the rule.
+      type: Unknown
+    - contextPath: ThreatStream.Rule.investigation.workgroups
+      description: Not used according to ThreatStream API documentation
+      type: Unknown
+    - contextPath: ThreatStream.Rule.is_editable
+      description: Indicates whether the imported rule can be updated by an intelligence source.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.is_enabled
+      description: Whether or not the rule is currently enabled.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.keyword
+      description: 'Keyword associated with the rule.'
+      type: String
+    - contextPath: ThreatStream.Rule.keywords
+      description: A list of keywords associated with the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.malware.id
+      description: ID of the malware that associate to the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.malware.name
+      description: Name of the malware that associate to the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.malware.resource_uri
+      description: Resource URI of the malware that associate to the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.match_actors
+      description: Unused according to ThreatStream API documentation.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.match_all_tm
+      description: Whether or not the rule should match against all threat models.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.match_attackpatterns
+      description: Whether the rule matches keywords in newly created Attack Patterns.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.match_campaigns
+      description: Unused according to ThreatStream API documentation.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.match_courseofactions
+      description: Whether the rule matches keywords in newly created Course of Action.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.match_customtms
+      description: Whether or not the rule should match custom threat models.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.match_identities
+      description: Whether the rule matches keywords in newly created Identities.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.match_impacts
+      description: Indicator types in which you want to look for rule matches at the exclusion of all others.
+      type: String
+    - contextPath: ThreatStream.Rule.match_incidents
+      description: Unused according to ThreatStream API documentation.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.match_infrastructures
+      description: Whether the rule matches keywords in newly created infrastructures.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.match_intrusionsets
+      description: Whether the rule matches keywords in newly created Intrusion Sets.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.match_malware
+      description: Unused according to ThreatStream API documentation.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.match_observables
+      description: Whether the rule matches keywords in newly created Observables.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.match_reportedfiles
+      description: Whether the rule should match keywords in newly created Sandbox Reports.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.match_signatures
+      description: Whether the rule should match keywords in newly created Signatures
+      type: Boolean
+    - contextPath: ThreatStream.Rule.match_tips
+      description: Whether the rule should match keywords in newly created Threat Bulletins.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.match_tools
+      description: Whether the rule should match keywords in newly created Tools.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.match_ttps
+      description: Unused according to ThreatStream API documentation.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.match_vulnerabilities
+      description: Whether the rule should match keywords in newly created vulnerabilities.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.matches
+      description: Total number of keyword matches for the rule.
+      type: Number
+    - contextPath: ThreatStream.Rule.messages
+      description: Messages or notifications generated by the rule.
+      type: Unknown
+    - contextPath: ThreatStream.Rule.modified_ts
+      description: Time stamp of when the rule was last modified, in UTC format.
+      type: Date
+    - contextPath: ThreatStream.Rule.name
+      description: The rule name.
+      type: String
+    - contextPath: ThreatStream.Rule.notify_list_groups
+      description: List of group that should be notified when the rule triggers an alert.
+      type: Unknown
+    - contextPath: ThreatStream.Rule.notify_me
+      description: Whether or not the user who created the rule should be notified when the rule triggers an alert.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.org_id
+      description: ID associated with the organization that created the rule.
+      type: Number
+    - contextPath: ThreatStream.Rule.org_shared
+      description: Unused according to ThreatStream API documentation.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.organization.id
+      description: ID associated with the organization that created the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.organization.name
+      description: Name associated with the organization that created the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.organization.resource_uri
+      description: Resource URI associated with the organization that created the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.resource_uri
+      description: Resource URI associated with the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.signatures.id
+      description: ID of the signature that associate to the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.signatures.name
+      description: Name of the signature that associate to the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.signatures.resource_uri
+      description: Resource URI of the signature that associate to the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.tags.name
+      description: Name of the tag applied to matched entities.
+      type: String
+    - contextPath: ThreatStream.Rule.tips.id
+      description: ID of the Threat Bulletin with which associate to matched entities.
+      type: String
+    - contextPath: ThreatStream.Rule.tips.name
+      description: Name of the Threat Bulletin with which associate to matched entities.
+      type: String
+    - contextPath: ThreatStream.Rule.tips.resource_uri
+      description: Resource URI of the Threat Bulletin with which associate to matched entities.
+      type: String
+    - contextPath: ThreatStream.Rule.tools
+      description: List of tools associated with the rule.
+      type: Unknown
+    - contextPath: ThreatStream.Rule.ttps.id
+      description: ID of the TTPs that associate to the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.ttps.name
+      description: Name of the TTPs that associate to the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.ttps.resource_uri
+      description: Resource URI of the TTPs that associate to the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.user.avatar_s3_url
+      description: URL for the avatar image associated with the user that created the rule.
+      type: Unknown
+    - contextPath: ThreatStream.Rule.user.can_share_intelligence
+      description: 'Whether the assignee user can share intelligence.'
+      type: Boolean
+    - contextPath: ThreatStream.Rule.user.email
+      description: Email of the user that created the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.user.id
+      description: ID of the user that created the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.user.is_active
+      description: Whether the user that created the rule is active.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.user.is_readonly
+      description: Whether the user that created the rule should be restricted to Read Only status.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.user.must_change_password
+      description: Whether the user that created the rule will be forced to change their password the next time they login.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.user.name
+      description: Name of the user that created the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.user.nickname
+      description: Nickname of the user that created the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.user.organization.id
+      description: The ID associated the organization.
+      type: String
+    - contextPath: ThreatStream.Rule.user.organization.name
+      description: The user's organization name.
+      type: String
+    - contextPath: ThreatStream.Rule.user.organization.resource_uri
+      description: The user's organization resource URI.
+      type: String
+    - contextPath: ThreatStream.Rule.user.resource_uri
+      description: The user's resource URI.
+      type: String
+    - contextPath: ThreatStream.Rule.user_id
+      description: User ID of the user that created the rule.
+      type: Number
+    - contextPath: ThreatStream.Rule.vulnerabilities.id
+      description: ID of the vulnerability with which to associate matched entities.
+      type: String
+    - contextPath: ThreatStream.Rule.vulnerabilities.name
+      description: Name of the vulnerability with which to associate matched entities.
+      type: String
+    - contextPath: ThreatStream.Rule.vulnerabilities.resource_uri
+      description: ID of the vulnerability with which to associate matched entities.
+      type: String
+    - contextPath: ThreatStream.Rule.workgroups
+      description: Not used according to ThreatStream API documentation.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: The rule ID.
+      isArray: false
+      name: rule_id
+      required: true
+      secret: false
+    - default: false
+      description: The rule name.
+      isArray: false
+      name: rule_name
+      required: false
+      secret: false
+    - default: false
+      description: 'A comma-separated list of keywords for which you want the rule to match. Keywords added to rules must adhere to the following requirements: IP addresses must be expressed as regular expressions, IP subnets should be expressed using CIDR notation and not as regular expressions, Do not start or end keywords with *, Keywords must contain at least three characters.'
+      isArray: true
+      name: keywords
+      required: false
+      secret: false
+    - default: false
+      description: "A comma-separated list of fields you want the rule match to their keywords. Possible values: observables, sandbox reports, threat bulletins, signatures, vulnerabilities"
+      isArray: true
+      name: match_include
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of IDs of the actors with which you want to associate matched entities. Use the threatstream-get-model-list command to get the actor ids values.
+      isArray: true
+      name: actor_ids
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of IDs of the campaigns with which you want to associate matched entities. Use the threatstream-get-model-list command to get the campaign ids values.
+      isArray: true
+      name: campaign_ids
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The Action you want to do related to the investigation default value is 'No Action'.
+      isArray: false
+      name: investigation_action
+      predefined:
+      - Create New
+      - Add To Existing
+      - No Action
+      required: false
+      secret: false
+    - default: false
+      description: The investigation name ,when selected 'Create New' in investigation_action argument.
+      isArray: false
+      name: new_investigation_name
+      required: false
+      secret: false
+    - default: false
+      description: Existing investigation id ,when selected 'Add To Existing' in investigation_action argument. Use the threatstream-list-investigation command to get the investigation id value.
+      isArray: false
+      name: existing_investigation_id
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of indicator types you want to exclude from rule matches.
+      isArray: true
+      name: exclude_indicator
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of indicator types you want to include from rule matches.
+      isArray: true
+      name: include_indicator
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Whether Observables whitelisted by your organization are excluded from rule matches.
+      isArray: false
+      name: exclude_notify_org_whitelisted
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'False'
+      description: Whether you want to exclude keyword matches on Observables imported by your organization from Keyword Match or Hourly Digest email notifications.
+      isArray: false
+      name: exclude_notify_owner_org
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of IDs of the incidents with which you want to associate matched entities. Use the threatstream-get-model-list command to get the incident ids value.
+      isArray: true
+      name: incident_ids
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of IDs of the malwares with which you want to associate matched entities. Use the threatstream-get-model-list command to get the malware ids value.
+      isArray: true
+      name: malware_ids
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of IDs of the signatures with which you want to associate matched entities. Use the threatstream-get-model-list command to get the signature ids value.
+      isArray: true
+      name: signature_ids
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of IDs of the threat bulletin with which you want to associate matched entities. Use the threatstream-get-model-list command to get the threat bulletin ids value.
+      isArray: true
+      name: threat_bulletin_ids
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of IDs of the TTPs with which you want to associate matched entities. Use the threatstream-get-model-list command to get the TTPs ids value.
+      isArray: true
+      name: ttp_ids
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of IDs of the vulnerabilities with which you want to associate matched entities. Use the threatstream-get-model-list command to get the vulnerabilities ids value.
+      isArray: true
+      name: vulnerability_ids
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of tags. For example, tag1,tag2.
+      isArray: true
+      name: tags
+      required: false
+      secret: false
+    deprecated: false
+    description: 'Updates exists rule from ThreatStream.'
+    execution: false
+    name: threatstream-update-rule
+    outputs:
+    - contextPath: ThreatStream.Rule.actors.id
+      description: Actor's ID associated with the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.actors.name
+      description: Actor's name associated with the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.actors.resource_uri
+      description: Actor's resource URI associated with the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.adv_keyword
+      description: Advanced keyword or regular expression that the rule is designed to match.
+      type: Unknown
+    - contextPath: ThreatStream.Rule.attackpatterns
+      description: Attackpatterns associated with the rule.
+      type: Unknown
+    - contextPath: ThreatStream.Rule.backfill
+      description: Objects that define additional filters or conditions for the rule.
+      type: Unknown
+    - contextPath: ThreatStream.Rule.campaigns.id
+      description: Campaign's ID associated with the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.campaigns.name
+      description: Campaign's name associated with the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.campaigns.resource_uri
+      description: Campaign's resource URI associated with the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.courseofaction
+      description: Course of Action entities associated with the rule.
+      type: Unknown
+    - contextPath: ThreatStream.Rule.create_investigation
+      description: Whether or not an investigation should be created when the rule is triggered.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.created_ts
+      description: Rule creation time.
+      type: Date
+    - contextPath: ThreatStream.Rule.customtms
+      description: Custom threat models entities associated with the rule.
+      type: Unknown
+    - contextPath: ThreatStream.Rule.description
+      description: The rule description.
+      type: String
+    - contextPath: ThreatStream.Rule.exclude_impacts
+      description: Indicator types that excluded from rule matches.
+      type: String
+    - contextPath: ThreatStream.Rule.exclude_notify_org_whitelisted
+      description: Whether Observables whitelisted by your organization are excluded from rule matches.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.exclude_notify_owner_org
+      description: Whether to exclude keyword matches on Observables imported by your organization from Keyword Match or Hourly Digest email notifications.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.id
+      description: Unique ID assigned to the rule.
+      type: Number
+    - contextPath: ThreatStream.Rule.identities
+      description: List of identities associated with the rule.
+      type: Unknown
+    - contextPath: ThreatStream.Rule.incidents.id
+      description: Incident's id associated with the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.incidents.name
+      description: Incident's name associated with the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.incidents.resource_uri
+      description: Incident's resource URI associated with the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.infrastructure
+      description: Infrastructure entities associated with the rule.
+      type: Unknown
+    - contextPath: ThreatStream.Rule.intelligence_initiatives
+      description: Intelligence Initiatives associated with the rule.
+      type: Unknown
+    - contextPath: ThreatStream.Rule.intrusionsets
+      description: Intrusion Sets entities associated with the rule.
+      type: Unknown
+    - contextPath: ThreatStream.Rule.investigation.assignee.assignee_type
+      description: 'Type of assignee: "user" or "tsworkgroup".'
+      type: String
+    - contextPath: ThreatStream.Rule.investigation.assignee.avatar_s3_url
+      description: URL for the avatar image associated with the assignee user.
+      type: Unknown
+    - contextPath: ThreatStream.Rule.investigation.assignee.can_share_intelligence
+      description: Whether the assignee user can share intelligence.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.investigation.assignee.email
+      description: The email of the assignee user.
+      type: String
+    - contextPath: ThreatStream.Rule.investigation.assignee.id
+      description: The ID of the assignee user.
+      type: String
+    - contextPath: ThreatStream.Rule.investigation.assignee.is_active
+      description: Whether the assignee user is active.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.investigation.assignee.is_readonly
+      description: Whether the assignee user should be restricted to Read Only status.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.investigation.assignee.must_change_password
+      description: Whether the assignee user will be forced to change their password the next time they login.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.investigation.assignee.name
+      description: The investigation assignee user name.
+      type: String
+    - contextPath: ThreatStream.Rule.investigation.assignee.nickname
+      description: The investigation assignee user nickname.
+      type: Unknown
+    - contextPath: ThreatStream.Rule.investigation.assignee.resource_uri
+      description: Resource URI associated with Investigation assignee user.
+      type: String
+    - contextPath: ThreatStream.Rule.investigation.investigation_config.name
+      description: The name of the investigation configuration associated with the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.investigation.id
+      description: The ID of the investigation.
+      type: String
+    - contextPath: ThreatStream.Rule.investigation.name
+      description: The name of the investigation.
+      type: String
+    - contextPath: ThreatStream.Rule.investigation.resource_uri
+      description: The resource URI of the investigation.
+      type: String
+    - contextPath: ThreatStream.Rule.investigation.users
+      description: List of users associated with the investigation created by the rule.
+      type: Unknown
+    - contextPath: ThreatStream.Rule.investigation.workgroups
+      description: Not used according to ThreatStream API documentation.
+      type: Unknown
+    - contextPath: ThreatStream.Rule.is_editable
+      description: Indicates whether the imported entity can be updated by an intelligence source.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.is_enabled
+      description: Whether or not the rule is currently enabled.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.keyword
+      description: Keyword associated with the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.keywords
+      description: A list of keywords associated with the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.malware.id
+      description: ID of the malware that associate to the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.malware.name
+      description: Name of the malware that associate to the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.malware.resource_uri
+      description: Resource URI of the malware that associate to the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.match_actors
+      description: Unused according to ThreatStream API documentation.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.match_all_tm
+      description: Whether or not the rule should match against all threat models.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.match_attackpatterns
+      description: Whether the rule matches keywords in newly created Attack Patterns.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.match_campaigns
+      description: Unused according to ThreatStream API documentation.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.match_courseofactions
+      description: Whether the rule matches keywords in newly created Course of Action.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.match_customtms
+      description: Whether or not the rule should match custom threat models.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.match_identities
+      description: Whether the rule matches keywords in newly created Identities.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.match_impacts
+      description: Indicator types in which you want to look for rule matches at the exclusion of all others.
+      type: String
+    - contextPath: ThreatStream.Rule.match_incidents
+      description: Unused according to ThreatStream API documentation.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.match_infrastructures
+      description: Whether the rule matches keywords in newly created infrastructures.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.match_intrusionsets
+      description: Whether the rule matches keywords in newly created Intrusion Sets.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.match_malware
+      description: Unused according to ThreatStream API documentation.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.match_observables
+      description: Whether the rule matches keywords in newly created Observables.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.match_reportedfiles
+      description: Whether the rule should match keywords in newly created Sandbox Reports.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.match_signatures
+      description: Whether the rule should match keywords in newly created Signatures.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.match_tips
+      description: Whether the rule should match keywords in newly created Threat Bulletins.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.match_tools
+      description: Whether the rule should match keywords in newly created Tools.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.match_ttps
+      description: Unused according to ThreatStream API documentation.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.match_vulnerabilities
+      description: Whether the rule should match keywords in newly created vulnerabilities.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.matches
+      description: Total number of keyword matches for the rule.
+      type: Number
+    - contextPath: ThreatStream.Rule.messages
+      description: Messages or notifications generated by the rule.
+      type: Unknown
+    - contextPath: ThreatStream.Rule.modified_ts
+      description: Time stamp of when the rule was last modified, in UTC format.
+      type: Date
+    - contextPath: ThreatStream.Rule.name
+      description: The rule name.
+      type: String
+    - contextPath: ThreatStream.Rule.notify_list_groups
+      description: List of group that should be notified when the rule triggers an alert.
+      type: Unknown
+    - contextPath: ThreatStream.Rule.notify_me
+      description: Whether or not the user who created the rule should be notified when the rule triggers an alert.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.org_id
+      description: ID associated with the organization that created the rule.
+      type: Number
+    - contextPath: ThreatStream.Rule.org_shared
+      description: Unused according to ThreatStream API documentation.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.organization.id
+      description: ID associated with the organization that created the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.organization.name
+      description: Name associated with the organization that created the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.organization.resource_uri
+      description: Resource URI associated with the organization that created the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.resource_uri
+      description: Resource URI associated with the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.signatures.id
+      description: ID of the signature that associate to the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.signatures.name
+      description: Name of the signature that associate to the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.signatures.resource_uri
+      description: Resource URI of the signature that associate to the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.tags.name
+      description: Name of the tag applied to matched entities.
+      type: String
+    - contextPath: ThreatStream.Rule.tips.id
+      description: ID of the Threat Bulletin with which associate to matched entities.
+      type: String
+    - contextPath: ThreatStream.Rule.tips.name
+      description: Name of the Threat Bulletin with which associate to matched entities.
+      type: String
+    - contextPath: ThreatStream.Rule.tips.resource_uri
+      description: Resource URI of the Threat Bulletin with which associate to matched entities.
+      type: String
+    - contextPath: ThreatStream.Rule.tools
+      description: List of tools associated with the rule.
+      type: Unknown
+    - contextPath: ThreatStream.Rule.ttps.id
+      description: ID of the TTPs that associate to the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.ttps.name
+      description: Name of the TTPs that associate to the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.ttps.resource_uri
+      description: Resource URI of the TTPs that associate to the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.user.avatar_s3_url
+      description: URL for the avatar image associated with the user that created the rule.
+      type: Unknown
+    - contextPath: ThreatStream.Rule.user.can_share_intelligence
+      description: Whether the user that created the rule can share intelligence.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.user.email
+      description: Email of the user that created the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.user.id
+      description: ID of the user that created the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.user.is_active
+      description: Whether the user that created the rule is active.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.user.is_readonly
+      description: Whether the user that created the rule should be restricted to Read Only status.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.user.must_change_password
+      description: Whether the user that created the rule will be forced to change their password the next time they login.
+      type: Boolean
+    - contextPath: ThreatStream.Rule.user.name
+      description: Name of the user that created the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.user.nickname
+      description: Nickname of the user that created the rule.
+      type: String
+    - contextPath: ThreatStream.Rule.user.organization.id
+      description: The ID associated the organization.
+      type: String
+    - contextPath: ThreatStream.Rule.user.organization.name
+      description: The user's organization name.
+      type: String
+    - contextPath: ThreatStream.Rule.user.organization.resource_uri
+      description: The user's organization resource URI.
+      type: String
+    - contextPath: ThreatStream.Rule.user.resource_uri
+      description: The user's resource URI.
+      type: String
+    - contextPath: ThreatStream.Rule.user_id
+      description: User ID of the user that created the rule.
+      type: Number
+    - contextPath: ThreatStream.Rule.vulnerabilities.id
+      description: ID of the vulnerability with which to associate matched entities.
+      type: String
+    - contextPath: ThreatStream.Rule.vulnerabilities.name
+      description: Name of the vulnerability with which to associate matched entities.
+      type: String
+    - contextPath: ThreatStream.Rule.vulnerabilities.resource_uri
+      description: Resource URI of the vulnerability with which to associate matched entities.
+      type: String
+    - contextPath: ThreatStream.Rule.workgroups
+      description: Not used according to ThreatStream API documentation.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: The rule ID.
+      isArray: false
+      name: rule_id
+      required: true
+      secret: false
+    description: 'Delete a rule from ThreatStream.'
+    execution: false
+    name: threatstream-delete-rule
+  - arguments:
+    - default: false
+      description: ID of the user. When specifying returned the specific user.
+      isArray: false
+      name: user_id
+      required: false
+      secret: false
+    - default: false
+      description: The maximum number of results to return. Default value is 50.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: The page number of the results to retrieve.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      description: The maximum number of objects to retrieve per page.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    deprecated: false
+    description: 'Gets list of users from ThreatStream. Only org admin permission can run this command'
+    execution: false
+    name: threatstream-list-user
+    outputs:
+    - contextPath: ThreatStream.User.avatar_s3_url
+      description: URL for the avatar image associated with the user.
+      type: String
+    - contextPath: ThreatStream.User.can_approve_intel
+      description: Whether the user can approve intel.
+      type: Boolean
+    - contextPath: ThreatStream.User.can_import_to_taxii_inbox
+      description: Whether the user can import to taxii inbox.
+      type: Boolean
+    - contextPath: ThreatStream.User.can_see_api_key
+      description: Whether the user can see the API key.
+      type: Boolean
+    - contextPath: ThreatStream.User.can_share_intelligence
+      description: Whether the user can share intelligence.
+      type: Boolean
+    - contextPath: ThreatStream.User.can_submit_sandbox
+      description: Whether the user can submit sandbox.
+      type: Boolean
+    - contextPath: ThreatStream.User.can_use_chat
+      description: Whether the user can use chat.
+      type: Boolean
+    - contextPath: ThreatStream.User.can_use_match
+      description: Whether the user can use match.
+      type: Boolean
+    - contextPath: ThreatStream.User.date_joined
+      description: Timestamp when the user was added to ThreatStream.
+      type: Date
+    - contextPath: ThreatStream.User.date_password_changed
+      description: Timestamp when the user last changed their password.
+      type: Unknown
+    - contextPath: ThreatStream.User.email
+      description: The user email.
+      type: String
+    - contextPath: ThreatStream.User.is_active
+      description: Whether the user is active.
+      type: Boolean
+    - contextPath: ThreatStream.User.is_locked
+      description: Whether the user is currently locked.
+      type: Boolean
+    - contextPath: ThreatStream.User.is_org_admin
+      description: Whether the user is an Org Admin.
+      type: Boolean
+    - contextPath: ThreatStream.User.is_readonly
+      description: Whether the user should be restricted to Read Only status.
+      type: Boolean
+    - contextPath: ThreatStream.User.is_tfa_exempt
+      description: Whether the user is excluded from having to use multi-factor authentication.
+      type: Boolean
+    - contextPath: ThreatStream.User.last_access_ts
+      description: Timestamp when the user last accessed ThreatStream.
+      type: Date
+    - contextPath: ThreatStream.User.last_login
+      description: Timestamp when the user was last authenticated to ThreatStream.
+      type: Unknown
+    - contextPath: ThreatStream.User.must_change_password
+      description: Whether the user will be forced to change their password the next time they login.
+      type: Boolean
+    - contextPath: ThreatStream.User.name
+      description: Name entered by the user on the My Profile tab within ThreatStream Settings.
+      type: String
+    - contextPath: ThreatStream.User.next_password_change_ts
+      description: Future timestamp when the user will be forced to change their password.
+      type: Unknown
+    - contextPath: ThreatStream.User.nickname
+      description: The user nickname.
+      type: String
+    - contextPath: ThreatStream.User.resource_uri
+      description: Resource URI of the user.
+      type: String
+    - contextPath: ThreatStream.User.user_id
+      description: ID of the user.
+      type: String
+  - arguments:
+    - default: false
+      description: ID of the investigation. When specifying returned the specific investigation.
+      isArray: false
+      name: investigation_id
+      required: false
+      secret: false
+    - default: false
+      description: The maximum number of results to return. Default value is 50.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: The page number of the results to retrieve.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      description: The maximum number of objects to retrieve per page.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    deprecated: false
+    description: 'Gets list of investigation from ThreatStream.'
+    execution: false
+    name: threatstream-list-investigation
+    outputs:
+    - contextPath: ThreatStream.Investigation.assignee.assignee_type
+      description: 'Type of assignee: "user" or "tsworkgroup".'
+      type: String
+    - contextPath: ThreatStream.Investigation.assignee.avatar_s3_url
+      description: URL for the avatar image associated with the assignee user.
+      type: Unknown
+    - contextPath: ThreatStream.Investigation.assignee.can_share_intelligence
+      description: Whether the assignee user can share intelligence.
+      type: Boolean
+    - contextPath: ThreatStream.Investigation.assignee.email
+      description: The email of the assignee user.
+      type: String
+    - contextPath: ThreatStream.Investigation.assignee.id
+      description: The ID of the assignee user.
+      type: String
+    - contextPath: ThreatStream.Investigation.assignee.is_active
+      description: Whether the assignee user is active.
+      type: Boolean
+    - contextPath: ThreatStream.Investigation.assignee.is_readonly
+      description: Whether the assignee user should be restricted to Read Only status.
+      type: Boolean
+    - contextPath: ThreatStream.Investigation.assignee.must_change_password
+      description: Whether the assignee user will be forced to change their password the next time they login.
+      type: Boolean
+    - contextPath: ThreatStream.Investigation.assignee.name
+      description: The investigation assignee user name.
+      type: String
+    - contextPath: ThreatStream.Investigation.assignee.nickname
+      description: The investigation assignee user nickname.
+      type: Unknown
+    - contextPath: ThreatStream.Investigation.assignee.resource_uri
+      description: Resource URI associated with Investigation assignee user.
+      type: String
+    - contextPath: ThreatStream.Investigation.attachments
+      description: The investigation attachments.
+      type: Unknown
+    - contextPath: ThreatStream.Investigation.candidate_session
+      description: Investigation candidate session details.
+      type: Unknown
+    - contextPath: ThreatStream.Investigation.circles
+      description: IDs of the trusted circles with which the investigation is shared.
+      type: Unknown
+    - contextPath: ThreatStream.Investigation.created_ts
+      description: Timestamp when the investigation was created.
+      type: Date
+    - contextPath: ThreatStream.Investigation.description
+      description: The investigation description.
+      type: String
+    - contextPath: ThreatStream.Investigation.elements
+      description: The number of elements associated  with the investigation.
+      type: Number
+    - contextPath: ThreatStream.Investigation.graph_content
+      description: The investigation graph content details.
+      type: Boolean
+    - contextPath: ThreatStream.Investigation.id
+      description: The ID of the investigation.
+      type: Number
+    - contextPath: ThreatStream.Investigation.intelligence_initiatives
+      description: Intelligence Initiatives associated with the investigation.
+      type: Unknown
+    - contextPath: ThreatStream.Investigation.investigation_attachments
+      description: List of attachments that are associated with the investigation.
+      type: Unknown
+    - contextPath: ThreatStream.Investigation.is_public
+      description: Whether the entity is public or private.
+      type: Boolean
+    - contextPath: ThreatStream.Investigation.modified_ts
+      description: The date the investigation was modified.
+      type: Date
+    - contextPath: ThreatStream.Investigation.name
+      description: The investigation name.
+      type: String
+    - contextPath: ThreatStream.Investigation.owner_org.id
+      description: The owner organization ID.
+      type: String
+    - contextPath: ThreatStream.Investigation.owner_org.name
+      description: The owner organization name.
+      type: String
+    - contextPath: ThreatStream.Investigation.owner_org.resource_uri
+      description: The owner organization resource URI.
+      type: String
+    - contextPath: ThreatStream.Investigation.owner_org_id
+      description: The owner organization ID.
+      type: Unknown
+    - contextPath: ThreatStream.Investigation.pending_import_sessions
+      description: number of sessions that are currently waiting to be imported into the investigation.
+      type: Unknown
+    - contextPath: ThreatStream.Investigation.priority
+      description: The priority of the investigation.
+      type: String
+    - contextPath: ThreatStream.Investigation.reporter.email
+      description: Email address of the user who created the investigation.
+      type: String
+    - contextPath: ThreatStream.Investigation.reporter.id
+      description: ID of the user who created the investigation.
+      type: String
+    - contextPath: ThreatStream.Investigation.reporter.name
+      description: Name of the user who created the investigation.
+      type: String
+    - contextPath: ThreatStream.Investigation.reporter.resource_uri
+      description: Resource URI of the user who created the investigation.
+      type: String
+    - contextPath: ThreatStream.Investigation.reporter_id
+      description: ID of the user who created the investigation.
+      type: Number
+    - contextPath: ThreatStream.Investigation.resource_uri
+      description: The investigation resource URI.
+      type: String
+    - contextPath: ThreatStream.Investigation.source_type
+      description: The type of source used to create the investigation.
+      type: String
+    - contextPath: ThreatStream.Investigation.status
+      description: The investigation status.
+      type: String
+    - contextPath: ThreatStream.Investigation.tags
+      description: The tags associated with the investigation.
+      type: String
+    - contextPath: ThreatStream.Investigation.tasks
+      description: Tasks associated with the investigation.
+      type: Unknown
+    - contextPath: ThreatStream.Investigation.tlp
+      description: Traffic Light Protocol designation for the investigation—red, amber, green, white.
+      type: String
+    - contextPath: ThreatStream.Investigation.users
+      description: List of users associated with the investigation.
+      type: Unknown
+    - contextPath: ThreatStream.Investigation.workgroups
+      description: Not used according to ThreatStream API documentation.
+      type: Unknown
+  - arguments:
+    - default: false
+      description: The name of the investigation.
+      isArray: false
+      name: name
+      required: true
+      secret: false
+    - default: false
+      description: The description of the investigation.
+      isArray: false
+      name: description
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The priority of the investigation.
+      isArray: false
+      name: priority
+      predefined:
+      - 'Very Low'
+      - 'Low'
+      - 'Medium'
+      - 'High'
+      - 'Very High'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The status of the investigation.
+      isArray: false
+      name: status
+      predefined:
+      - 'Completed'
+      - 'In-Progress'
+      - 'Pending'
+      - 'Unassigned'
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of tags. For example, tag1,tag2.
+      isArray: true
+      name: tags
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: tlp.
+      isArray: false
+      name: tlp
+      predefined:
+      - 'White'
+      - 'Green'
+      - 'Amber'
+      - 'Red'
+      required: false
+      secret: false
+    - default: false
+      description: Assignee id. Use the threatstream-list-user command to get the user id value.
+      isArray: false
+      name: assignee_id
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      description: When enabled, observables related to the entity you are associating with the investigation are also added.
+      isArray: false
+      name: connect_related_indicators
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+      default: false
+    - default: false
+      description: A comma-separated list of IDs of the actors with which you want to associate matched entities. Use the threatstream-get-model-list command to get the actor ids value.
+      isArray: true
+      name: associated_actor_ids
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of IDs of the campaigns with which you want to associate matched entities. Use the threatstream-get-model-list command to get the campaign ids value.
+      isArray: true
+      name: associated_campaign_ids
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of IDs of the incidents with which you want to associate matched entities. Use the threatstream-get-model-list command to get the incident ids value.
+      isArray: true
+      name: associated_incident_ids
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of IDs of the observables with which you want to associate matched entities. Use the threatstream-get-indicators command to get the observable ids value.
+      isArray: true
+      name: associated_observable_ids
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of IDs of the signatures with which you want to associate matched entities. Use the threatstream-get-model-list command to get the signature ids value.
+      isArray: true
+      name: associated_signature_ids
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of IDs of the threat bulletin with which you want to associate matched entities. Use the threatstream-get-model-list command to get the threat bulletin ids value.
+      isArray: true
+      name: associated_threat_bulletin_ids
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of IDs of the TTPs with which you want to associate matched entities. Use the threatstream-get-model-list command to get the TTPs ids value.
+      isArray: true
+      name: associated_ttp_ids
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of IDs of the vulnerabilities with which you want to associate matched entities. Use the threatstream-get-model-list command to get the vulnerabilities ids value.
+      isArray: true
+      name: associated_vulnerability_ids
+      required: false
+      secret: false
+    deprecated: false
+    description: 'Create an investigation at ThreatStream.'
+    execution: false
+    name: threatstream-create-investigation
+    outputs:
+    - contextPath: ThreatStream.Investigation.add_related_indicators
+      description: Whether to add related indicators to the investigation.
+      type: Number
+    - contextPath: ThreatStream.Investigation.added_elements_count
+      description: Number of elements added to the investigation.
+      type: Number
+    - contextPath: ThreatStream.Investigation.all_added
+      description: Whether all the elements was added.
+      type: Boolean
+    - contextPath: ThreatStream.Investigation.already_exists_elements_count
+      description: Number of already exists elements.
+      type: Number
+    - contextPath: ThreatStream.Investigation.assignee.assignee_type
+      description: 'Type of assignee: "user" or "tsworkgroup"'
+      type: String
+    - contextPath: ThreatStream.Investigation.assignee.avatar_s3_url
+      description: URL for the avatar image associated with the assignee user.
+      type: Unknown
+    - contextPath: ThreatStream.Investigation.assignee.can_share_intelligence
+      description: Whether the assignee user can share intelligence.
+      type: Boolean
+    - contextPath: ThreatStream.Investigation.assignee.email
+      description: The email of the assignee user.
+      type: String
+    - contextPath: ThreatStream.Investigation.assignee.id
+      description: The ID of the assignee user.
+      type: String
+    - contextPath: ThreatStream.Investigation.assignee.is_active
+      description: Whether the assignee user is active.
+      type: Boolean
+    - contextPath: ThreatStream.Investigation.assignee.is_readonly
+      description: Whether the assignee user should be restricted to Read Only status.
+      type: Boolean
+    - contextPath: ThreatStream.Investigation.assignee.must_change_password
+      description: Whether the assignee user will be forced to change their password the next time they login.
+      type: Boolean
+    - contextPath: ThreatStream.Investigation.assignee.name
+      description: The investigation assignee user name.
+      type: String
+    - contextPath: ThreatStream.Investigation.assignee.nickname
+      description: The investigation assignee user nickname.
+      type: Unknown
+    - contextPath: ThreatStream.Investigation.assignee.resource_uri
+      description: 'Resource URI associated with Investigation assignee user'
+      type: String
+    - contextPath: ThreatStream.Investigation.assignee_id
+      description: ID of the user or workgroup to which the investigation is assigned
+      type: Number
+    - contextPath: ThreatStream.Investigation.assignee_type
+      description: 'Type of assignee: "user" or "tsworkgroup".'
+      type: String
+    - contextPath: ThreatStream.Investigation.circles
+      description: The trusted circles with which the investigation is shared.
+      type: Unknown
+    - contextPath: ThreatStream.Investigation.created_ts
+      description: Timestamp when the investigation was created.
+      type: Date
+    - contextPath: ThreatStream.Investigation.description
+      description: The investigation description.
+      type: String
+    - contextPath: ThreatStream.Investigation.elements.add_related_indicators
+      description: Whether to add related indicators to the investigation.
+      type: Number
+    - contextPath: ThreatStream.Investigation.elements.entity.assignee_user
+      description: The assignee user.
+      type: Unknown
+    - contextPath: ThreatStream.Investigation.elements.entity.created_ts
+      description: Timestamp when the entity was created.
+      type: Date
+    - contextPath: ThreatStream.Investigation.elements.entity.feed_id
+      description: The feed ID of entity.
+      type: Number
+    - contextPath: ThreatStream.Investigation.elements.entity.id
+      description: Unique ID assign for the entity.
+      type: Number
+    - contextPath: ThreatStream.Investigation.elements.entity.intelligence_initiatives
+      description: Intelligence Initiatives associated with the investigation.
+      type: Unknown
+    - contextPath: ThreatStream.Investigation.elements.entity.is_anonymous
+      description: Whether the entity is anonymous.
+      type: Boolean
+    - contextPath: ThreatStream.Investigation.elements.entity.is_cloneable
+      description: Whether the entity is cloneable.
+      type: String
+    - contextPath: ThreatStream.Investigation.elements.entity.is_mitre
+      description: Whether the entity is mitre.
+      type: Boolean
+    - contextPath: ThreatStream.Investigation.elements.entity.is_public
+      description: 'Whether the entity is public or private'
+      type: Boolean
+    - contextPath: ThreatStream.Investigation.elements.entity.is_team
+      description: Whether the entity is a team.
+      type: Boolean
+    - contextPath: ThreatStream.Investigation.elements.entity.modified_ts
+      description: Time stamp of when the entity was last updated on ThreatStream, in UTC format.
+      type: Date
+    - contextPath: ThreatStream.Investigation.elements.entity.name
+      description: 'The entity name'
+      type: String
+    - contextPath: ThreatStream.Investigation.elements.entity.organization_id
+      description: ID of the (ThreatStream) organization that brought in the entity.
+      type: Number
+    - contextPath: ThreatStream.Investigation.elements.entity.owner_user_id
+      description: ID of the ThreatStream user that created the entity.
+      type: Number
+    - contextPath: ThreatStream.Investigation.elements.entity.primary_motivation
+      description: The primary motivation.
+      type: Unknown
+    - contextPath: ThreatStream.Investigation.elements.entity.publication_status
+      description: The publication status of entity.
+      type: String
+    - contextPath: ThreatStream.Investigation.elements.entity.published_ts
+      description: Time stamp of when the entity was published on ThreatStream, in UTC format.
+      type: Date
+    - contextPath: ThreatStream.Investigation.elements.entity.resource_level
+      description: The resource level.
+      type: Unknown
+    - contextPath: ThreatStream.Investigation.elements.entity.resource_uri
+      description: Resource URI of the entity.
+      type: String
+    - contextPath: ThreatStream.Investigation.elements.entity.source_created
+      description: Time stamp of when the entity was created by its original source.
+      type: Unknown
+    - contextPath: ThreatStream.Investigation.elements.entity.source_modified
+      description: Time stamp of when the entity was last updated by its original source.
+      type: Unknown
+    - contextPath: ThreatStream.Investigation.elements.entity.start_date
+      description: The start date.
+      type: Unknown
+    - contextPath: ThreatStream.Investigation.elements.entity.tlp
+      description: Traffic Light Protocol designation for the entity, amber, green, white.
+      type: String
+    - contextPath: ThreatStream.Investigation.elements.entity.uuid
+      description: UUID assigned to the entity.
+      type: String
+    - contextPath: ThreatStream.Investigation.elements.entity.workgroups
+      description: Not used according to ThreatStream API documentation
+      type: Unknown
+    - contextPath: ThreatStream.Investigation.elements.id
+      description: Unique ID assigned to the entity.
+      type: Number
+    - contextPath: ThreatStream.Investigation.elements.r_id
+      description: Unique ID assigned to the element entity.
+      type: Number
+    - contextPath: ThreatStream.Investigation.elements.r_type
+      description: Type of entity associated with the investigation.
+      type: String
+    - contextPath: ThreatStream.Investigation.elements.entity.s_type
+      description: Signature type of entity associated with the investigation.
+      type: String
+    - contextPath: ThreatStream.Investigation.elements.entity.children.id
+      description: A string representing the ID of the child entity.
+      type: String
+    - contextPath: ThreatStream.Investigation.elements.entity.children.name
+      description: A string representing the name of the child entity.
+      type: String
+    - contextPath: ThreatStream.Investigation.elements.entity.children.resource_uri
+      description: A string representing the resource URI of the child entity.
+      type: String
+    - contextPath: ThreatStream.Investigation.elements.entity.is_category
+      description: A boolean value indicating if the entity is a category.
+      type: Boolean
+    - contextPath: ThreatStream.Investigation.elements.entity.children
+      description: The children of the entity.
+      type: Unknown
+    - contextPath: ThreatStream.Investigation.elements.entity.aliases
+      description: The aliases of the entity.
+      type: Unknown
+    - contextPath: ThreatStream.Investigation.elements.entity.is_system
+      description: Indicating if the entity is a system entity.
+      type: Boolean
+    - contextPath: ThreatStream.Investigation.elements.entity.source
+      description: A string representing the source of the entity.
+      type: String
+    - contextPath: ThreatStream.Investigation.elements.entity.update_id
+      description: The update ID of the entity.
+      type: Number
+    - contextPath: ThreatStream.Investigation.elements.entity.assignee_user.email
+      description: The assignee user email.
+      type: String
+    - contextPath: ThreatStream.Investigation.elements.entity.assignee_user.id
+      description: The assignee user ID.
+      type: String
+    - contextPath: ThreatStream.Investigation.elements.entity.assignee_user.name
+      description: The assignee user name.
+      type: String
+    - contextPath: ThreatStream.Investigation.elements.entity.assignee_user.resource_uri
+      description: The assignee user resource URI.
+      type: String
+    - contextPath: ThreatStream.Investigation.elements.entity.end_date
+      description: The end date of the entity.
+      type: Unknown
+    - contextPath: ThreatStream.Investigation.elements.entity.objective
+      description: The objective of the entity.
+      type: Unknown
+    - contextPath: ThreatStream.Investigation.elements.entity.status.display_name
+      description: The display name of the entity.
+      type: String
+    - contextPath: ThreatStream.Investigation.elements.entity.status.id
+      description: The status id of the entity.
+      type: Number
+    - contextPath: ThreatStream.Investigation.elements.entity.status.resource_uri
+      description: The resource URI of the status of the entity.
+      type: String
+    - contextPath: ThreatStream.Investigation.elements.entity.asn
+      description: The asn of the entity.
+      type: String
+    - contextPath: ThreatStream.Investigation.elements.entity.comments
+      description: Comments related to the  entity.
+      type: Unknown
+    - contextPath: ThreatStream.Investigation.elements.entity.confidence
+      description: The confidence of the associated entity.
+      type: Number
+    - contextPath: ThreatStream.Investigation.elements.entity.country
+      description: The country associated with the entity.
+      type: String
+    - contextPath: ThreatStream.Investigation.elements.entity.created_by
+      description: A string representing the creator of the entity.
+      type: String
+    - contextPath: ThreatStream.Investigation.elements.entity.expiration_ts
+      description: The time stamp when entity will expire on ThreatStream.
+      type: Date
+    - contextPath: ThreatStream.Investigation.elements.entity.import_session_id
+      description: A number representing the import session ID of the entity.
+      type: Number
+    - contextPath: ThreatStream.Investigation.elements.entity.import_source
+      description: A string representing the import source of the entity.
+      type: String
+    - contextPath: ThreatStream.Investigation.elements.entity.ip
+      description: The IP of the entity.
+      type: String
+    - contextPath: ThreatStream.Investigation.elements.entity.itype
+      description: The itype of the entity.
+      type: String
+    - contextPath: ThreatStream.Investigation.elements.entity.latitude
+      description: The latitude of the entity.
+      type: String
+    - contextPath: ThreatStream.Investigation.elements.entity.longitude
+      description: The longitude of the entity.
+      type: String
+    - contextPath: ThreatStream.Investigation.elements.entity.meta.detail2
+      description: The detail2.
+      type: String
+    - contextPath: ThreatStream.Investigation.elements.entity.meta.severity
+      description: The severity.
+      type: String
+    - contextPath: ThreatStream.Investigation.elements.entity.org
+      description: Registered owner (organization) associated with the entity.
+      type: String
+    - contextPath: ThreatStream.Investigation.elements.entity.owner_organization_id
+      description: The owner organization ID of the entity.
+      type: Number
+    - contextPath: ThreatStream.Investigation.elements.entity.rdns
+      description: Domain name (obtained through reverse domain name lookup) associated with the entity.
+      type: Unknown
+    - contextPath: ThreatStream.Investigation.elements.entity.retina_confidence
+      description: The retina confidence of the entity.
+      type: Number
+    - contextPath: ThreatStream.Investigation.elements.entity.source_reported_confidence
+      description: The source reported confidence confidence of the entity.
+      type: Number
+    - contextPath: ThreatStream.Investigation.elements.entity.status
+      description: The status of the entity.
+      type: String
+    - contextPath: ThreatStream.Investigation.elements.entity.subtype
+      description: The subtype of the entity.
+      type: Unknown
+    - contextPath: ThreatStream.Investigation.elements.entity.tags
+      description: List of tags associated with the entity.
+      type: Unknown
+    - contextPath: ThreatStream.Investigation.elements.entity.threat_type
+      description: Type of threat associated with the entity.
+      type: String
+    - contextPath: ThreatStream.Investigation.elements.entity.threatscore
+      description: The threat score of the entity.
+      type: Number
+    - contextPath: ThreatStream.Investigation.elements.entity.trusted_circle_ids
+      description: The trusted circleIDs of the entity.
+      type: Unknown
+    - contextPath: ThreatStream.Investigation.elements.entity.trusted_circles_ids
+      description: ID of the trusted circle to which the entity data should be associated.
+      type: Unknown
+    - contextPath: ThreatStream.Investigation.elements.entity.type
+      description: The type of the entity.
+      type: String
+    - contextPath: ThreatStream.Investigation.elements.entity.value
+      description: Value of the entity.
+      type: String
+    - contextPath: ThreatStream.Investigation.errors
+      description: Errors related to the investigation.
+      type: Unknown
+    - contextPath: ThreatStream.Investigation.graph_content
+      description: The investigation graph content details.
+      type: Unknown
+    - contextPath: ThreatStream.Investigation.id
+      description: The ID of the investigation.
+      type: Number
+    - contextPath: ThreatStream.Investigation.intelligence_initiatives
+      description: Intelligence Initiatives associated with the investigation.
+      type: Unknown
+    - contextPath: ThreatStream.Investigation.is_public
+      description: Whether the entity is public or private.
+      type: Boolean
+    - contextPath: ThreatStream.Investigation.modified_ts
+      description: The date the investigation was modified.
+      type: Date
+    - contextPath: ThreatStream.Investigation.name
+      description: The investigation name.
+      type: String
+    - contextPath: ThreatStream.Investigation.owner_org.id
+      description: The owner organization ID.
+      type: String
+    - contextPath: ThreatStream.Investigation.owner_org.name
+      description: The owner organization name.
+      type: String
+    - contextPath: ThreatStream.Investigation.owner_org.resource_uri
+      description: The owner organization resource URI.
+      type: String
+    - contextPath: ThreatStream.Investigation.owner_org_id
+      description: Organization ID of the owner.
+      type: Unknown
+    - contextPath: ThreatStream.Investigation.priority
+      description: The priority of the investigation.
+      type: String
+    - contextPath: ThreatStream.Investigation.reporter.email
+      description: Email address of the user who created the investigation.
+      type: String
+    - contextPath: ThreatStream.Investigation.reporter.id
+      description: ID of the user who created the investigation.
+      type: String
+    - contextPath: ThreatStream.Investigation.reporter.name
+      description: Name of the user who created the investigation.
+      type: String
+    - contextPath: ThreatStream.Investigation.reporter.resource_uri
+      description: Resource URI of the user who created the investigation.
+      type: String
+    - contextPath: ThreatStream.Investigation.reporter_id
+      description: ID of the user who created the investigation.
+      type: Number
+    - contextPath: ThreatStream.Investigation.resource_uri
+      description: The investigation resource URI.
+      type: String
+    - contextPath: ThreatStream.Investigation.source_type
+      description: The type of source used to create the investigation.
+      type: String
+    - contextPath: ThreatStream.Investigation.status
+      description: The investigation status.
+      type: String
+    - contextPath: ThreatStream.Investigation.tags
+      description: The tags associated with the investigation.
+      type: String
+    - contextPath: ThreatStream.Investigation.tlp
+      description: Traffic Light Protocol designation for the investigation—red, amber, green, white.
+      type: String
+    - contextPath: ThreatStream.Investigation.users
+      description: List of users associated with the investigation.
+      type: Unknown
+    - contextPath: ThreatStream.Investigation.workgroups
+      description: Not used according to ThreatStream API documentation
+      type: Unknown
+  - arguments:
+    - default: false
+      description: The ID of the Investigation. Use the threatstream-list-investigation command to get the investigation id value.
+      isArray: false
+      name: investigation_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The priority of the investigation.
+      isArray: false
+      name: priority
+      predefined:
+      - 'Very Low'
+      - 'Low'
+      - 'Medium'
+      - 'High'
+      - 'Very High'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The status of the investigation.
+      isArray: false
+      name: status
+      predefined:
+      - 'Completed'
+      - 'In-Progress'
+      - 'Pending'
+      - 'Unassigned'
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of tags. For example, tag1,tag2.
+      isArray: true
+      name: tags
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The tlp (Traffic Light Protocol designation) of the investigation.
+      isArray: false
+      name: tlp
+      predefined:
+      - 'White'
+      - 'Green'
+      - 'Amber'
+      - 'Red'
+      required: false
+      secret: false
+    - default: false
+      description: Assignee id. Use the threatstream-list-user command to get the user id value.
+      isArray: false
+      name: assignee_id
+      required: false
+      secret: false
+    name: threatstream-update-investigation
+    description: 'Updates an existing investigation at ThreatStream.'
+    outputs:
+    - contextPath: ThreatStream.Investigation.add_related_indicators
+      description: Errors related to the investigation.
+      type: Number
+    - contextPath: ThreatStream.Investigation.assignee.assignee_type
+      description: 'Type of assignee: "user" or "tsworkgroup"'
+      type: String
+    - contextPath: ThreatStream.Investigation.assignee.avatar_s3_url
+      description: URL for the avatar image associated with the assignee user.
+      type: Unknown
+    - contextPath: ThreatStream.Investigation.assignee.can_share_intelligence
+      description: Whether the assignee user can share intelligence.
+      type: Boolean
+    - contextPath: ThreatStream.Investigation.assignee.email
+      description: The email of the assignee user.
+      type: String
+    - contextPath: ThreatStream.Investigation.assignee.id
+      description: The ID of the assignee user.
+      type: String
+    - contextPath: ThreatStream.Investigation.assignee.is_active
+      description: Whether the assignee user is active.
+      type: Boolean
+    - contextPath: ThreatStream.Investigation.assignee.is_readonly
+      description: Whether the asiignee user should be restricted to Read Only status.
+      type: Boolean
+    - contextPath: ThreatStream.Investigation.assignee.must_change_password
+      description: Whether the assignee user will be forced to change their password the next time they login.
+      type: Boolean
+    - contextPath: ThreatStream.Investigation.assignee.name
+      description: The investigation assignee user name.
+      type: String
+    - contextPath: ThreatStream.Investigation.assignee.nickname
+      description: The investigation assignee user nickname.
+      type: Unknown
+    - contextPath: ThreatStream.Investigation.assignee.resource_uri
+      description: 'Resource URI associated with Investigation assignee user'
+      type: String
+    - contextPath: ThreatStream.Investigation.assignee_id
+      description: D of the user or workgroup to which the investigation is assigned
+      type: Number
+    - contextPath: ThreatStream.Investigation.assignee_type
+      description: 'Type of assignee: "user" or "tsworkgroup"'
+      type: String
+    - contextPath: ThreatStream.Investigation.created_ts
+      description: Timestamp when the investigation was created.
+      type: Date
+    - contextPath: ThreatStream.Investigation.description
+      description: 'The investigation description'
+      type: String
+    - contextPath: ThreatStream.Investigation.elements.add_related_indicators
+      description: 'When enabled, observables related to the entity you are associating with the investigation are also added.'
+      type: Number
+    - contextPath: ThreatStream.Investigation.elements.r_id
+      description: Unique ID assigned to the entity.
+      type: Number
+    - contextPath: ThreatStream.Investigation.elements.r_type
+      description: 'Type of entity associated with the investigation.'
+      type: String
+    - contextPath: ThreatStream.Investigation.graph_content
+      description: The investigation graph content details.
+      type: Unknown
+    - contextPath: ThreatStream.Investigation.id
+      description: The ID of the investigation.
+      type: Number
+    - contextPath: ThreatStream.Investigation.is_public
+      description: 'Whether the entity is public or private'
+      type: Boolean
+    - contextPath: ThreatStream.Investigation.modified_ts
+      description: The date the investigation was modified.
+      type: Date
+    - contextPath: ThreatStream.Investigation.name
+      description: The investigation name.
+      type: String
+    - contextPath: ThreatStream.Investigation.owner_org.id
+      description: The owner organization ID.
+      type: String
+    - contextPath: ThreatStream.Investigation.owner_org.name
+      description: The owner organization name.
+      type: String
+    - contextPath: ThreatStream.Investigation.owner_org.resource_uri
+      description: The owner organization resource URI.
+      type: String
+    - contextPath: ThreatStream.Investigation.owner_org_id
+      description: Organization ID of the owner.
+      type: Unknown
+    - contextPath: ThreatStream.Investigation.priority
+      description: The priority of the investigation.
+      type: String
+    - contextPath: ThreatStream.Investigation.reporter.email
+      description: Email address of the user who created the investigation.
+      type: String
+    - contextPath: ThreatStream.Investigation.reporter.id
+      description: ID of the user who created the investigation.
+      type: String
+    - contextPath: ThreatStream.Investigation.reporter.name
+      description: Name of the user who created the investigation.
+      type: String
+    - contextPath: ThreatStream.Investigation.reporter.resource_uri
+      description: Resource URI of the user who created the investigation.
+      type: String
+    - contextPath: ThreatStream.Investigation.reporter_id
+      description: ID of the user who created the investigation.
+      type: Number
+    - contextPath: ThreatStream.Investigation.resource_uri
+      description: The investigation resource URI.
+      type: String
+    - contextPath: ThreatStream.Investigation.source_type
+      description: The type of source used to create the investigation.
+      type: String
+    - contextPath: ThreatStream.Investigation.status
+      description: The investigation status.
+      type: String
+    - contextPath: ThreatStream.Investigation.tags
+      description: The tags associated with the investigation.
+      type: String
+    - contextPath: ThreatStream.Investigation.tlp
+      description: Traffic Light Protocol designation for the investigation—red, amber, green, white.
+      type: String
+  - arguments:
+    - default: false
+      description: The ID of the investigation.
+      isArray: false
+      name: investigation_id
+      required: true
+      secret: false
+    name: threatstream-delete-investigation
+    description: 'Deletes an existing investigation at ThreatStream.'
+  - arguments:
+    - default: false
+      description: The ID of the investigation. Use the threatstream-get-model-list command to get the investigation id value.
+      isArray: false
+      name: investigation_id
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      description: When enabled, observables related to the entity you are associating with the investigation are also added.
+      isArray: false
+      name: connect_related_indicators
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+      default: false
+    - default: false
+      description: A comma-separated list of IDs of the actors with which you want to associate matched entities. Use the threatstream-get-model-list command to get the actor ids value.
+      isArray: true
+      name: associated_actor_ids
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of IDs of the campaigns with which you want to associate matched entities. Use the threatstream-get-model-list command to get the campaign ids value.
+      isArray: true
+      name: associated_campaign_ids
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of IDs of the incidents with which you want to associate matched entities. Use the threatstream-get-model-list command to get the incident ids value.
+      isArray: true
+      name: associated_incident_ids
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of IDs of the observables with which you want to associate matched entities. Use the threatstream-get-indicators command to get the observable ids value.
+      isArray: true
+      name: associated_observable_ids
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of IDs of the signatures with which you want to associate matched entities. Use the threatstream-get-model-list command to get the signature ids value.
+      isArray: true
+      name: associated_signature_ids
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of IDs of the threat bulletin with which you want to associate matched entities. Use the threatstream-get-model-list command to get the threat bulletin ids value.
+      isArray: true
+      name: associated_threat_bulletin_ids
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of IDs of the TTPs with which you want to associate matched entities. Use the threatstream-get-model-list command to get the TTPs ids value.
+      isArray: true
+      name: associated_ttp_ids
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of IDs of the vulnerabilities with which you want to associate matched entities. Use the threatstream-get-model-list command to get the vulnerabilities ids value.
+      isArray: true
+      name: associated_vulnerability_ids
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    name: threatstream-add-investigation-element
+    description: 'Add an elements to existing investigation at ThreatStream.'
+  - arguments:
+    - auto: PREDEFINED
+      default: true
+      defaultValue: 'JSON'
+      description: Defines the format of the response.
+      isArray: false
+      name: format
+      predefined:
+      - 'CSV'
+      - 'JSON'
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: The maximum number of results to return.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Page number to get result from. Needs to be used with page_size argument.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      description: The page size of the returned results. Needs to be used with the page argument.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    description: "Get a list of whitelist entries"
+    name: threatstream-list-whitelist-entry
+    outputs:
+    - contextPath: InfoFile.Name
+      description: FileName
+      type: string
+    - contextPath: InfoFile.EntryID
+      description: The EntryID of the report
+      type: string
+    - contextPath: InfoFile.Size
+      description: File Size
+      type: number
+    - contextPath: InfoFile.Type
+      description: File type e.g. "PE"
+      type: string
+    - contextPath: InfoFile.Info
+      description: Basic information of the file
+      type: string
+    - contextPath: ThreatStream.WhitelistEntry.objects.created_ts
+      description: Timestamp of when the entry was created.
+      type: Date
+    - contextPath: ThreatStream.WhitelistEntry.objects.id
+      description: Unique ID associated with the whitelist entry.
+      type: Number
+    - contextPath: ThreatStream.WhitelistEntry.objects.modified_ts
+      description: Timestamp of when the entry was most recently modified.
+      type: Date
+    - contextPath: ThreatStream.WhitelistEntry.objects.notes
+      description: Contextual note associated with the entry.
+      type: String
+    - contextPath: ThreatStream.WhitelistEntry.objects.resource_uri
+      description: Resource URI of the entry.
+      type: String
+    - contextPath: ThreatStream.WhitelistEntry.objects.value
+      description: Value of the entry.
+      type: String
+    - contextPath: ThreatStream.WhitelistEntry.objects.value_type
+      description: |-
+        The value of the file to import. file valid structure is : value_type,value,notes
+        The entries must be contained in a valid CSV file with the following header line: value_type,value,notes.
+        value_type must be specified for each entry, possible types include domain,email, ip, md5, url, user-agent, and cidr.
+        value must be specified for each entry. Values must be valid entries based on the specified type. For example, if you specify ip for type, the corresponding value must be a valid IP address.
+        notes is optional for each entry.
+        All text in the CSV file must be lower-cased.
+      type: String
+  - arguments:
+    - default: false
+      description: 'The value of the file to import. file valid structure is : value_type,value,notes'
+      isArray: false
+      name: entry_id
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of cidrs associated with the entry.
+      isArray: true
+      name: cidr
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of domains associated with the entry.
+      isArray: true
+      name: domains
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of emails associated with the entry.
+      isArray: true
+      name: emails
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of ips associated with the entry.
+      isArray: true
+      name: ips
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of md5 associated with the entry.
+      isArray: true
+      name: md5
+      required: false
+      secret: false
+    - default: false
+      description: A comma-separated list of urls associated with the entry.
+      isArray: true
+      name: urls
+      required: false
+    - default: false
+      description: A comma-separated list of user_agents associated with the entry.
+      isArray: true
+      name: user_agents
+      required: false
+    - default: false
+      description: A note that will be associated with all the indicators type that are provided in the command arguments.
+      isArray: false
+      name: note
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    description: "Creates a new whitelist entry"
+    name: threatstream-create-whitelist-entry
+  - arguments:
+    - default: false
+      description: The ID of the entry you want to update. Use the threatstream-list-whitelist-entry command to get the entry id value.
+      isArray: false
+      name: entry_id
+      required: true
+      secret: false
+    - default: false
+      description: A note that will be associated with all the indicators type that are provided in the command arguments.
+      isArray: false
+      name: note
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    description: "Modify contextual notes associated with existing whitelist entries"
+    name: threatstream-update-whitelist-entry-note
+  - arguments:
+    - default: false
+      description: The ID of the entry you want to update. Use the threatstream-list-whitelist-entry command to get the entry id value.
+      isArray: false
+      name: entry_id
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    description: "Delete a whitelist entry"
+    name: threatstream-delete-whitelist-entry
+  - arguments:
+    - default: false
+      description: When specified, the results returned in the list are limited to specific import id.
+      isArray: false
+      name: import_id
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: When specified, the results returned in the list are limited to the selected status.
+      isArray: false
+      name: status_in
+      predefined:
+      - 'Processing'
+      - 'Errors'
+      - 'Ready To Review'
+      - 'Rejected'
+      - 'Approved'
+      required: false
+      secret: false
+    - default: false
+      description: The maximum number of results to return. Default value is 50.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Page number to get result from. Needs to be used with page_size argument.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      description: The page size of the returned results. Needs to be used with the page argument.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    description: "Gets an import list"
+    name: threatstream-list-import-job
+    outputs:
+    - contextPath: ThreatStream.Import.approved_by_id
+      description: The id of the user that approved the import.
+      type: Unknown
+    - contextPath: ThreatStream.Import.confidence
+      description: Confidence scores assigned to import.
+      type: Number
+    - contextPath: ThreatStream.Import.date
+      description: A date representing the import date.
+      type: Date
+    - contextPath: ThreatStream.Import.date_modified
+      description: A date representing the last modified date of the import.
+      type: Date
+    - contextPath: ThreatStream.Import.default_comment
+      description: Default comment.
+      type: Unknown
+    - contextPath: ThreatStream.Import.email
+      description: A string representing the email associated with the import.
+      type: String
+    - contextPath: ThreatStream.Import.exclude_source_domain
+      description: Whether the source domain is excluded.
+      type: Boolean
+    - contextPath: ThreatStream.Import.expiration_ts
+      description: The time stamp when import will expire on ThreatStream.
+      type: Date
+    - contextPath: ThreatStream.Import.fileName
+      description: A string representing the name of file associated with the import.
+      type: String
+    - contextPath: ThreatStream.Import.fileType
+      description: A string representing the type of file associated with the import.
+      type: String
+    - contextPath: ThreatStream.Import.file_name_label
+      description: The file name label.
+      type: Unknown
+    - contextPath: ThreatStream.Import.id
+      description: A number representing the import ID.
+      type: Number
+    - contextPath: ThreatStream.Import.intelligence_source
+      description: A string representing the intelligence source of the import.
+      type: String
+    - contextPath: ThreatStream.Import.is_anonymous
+      description: Whether the entity is anonymous.
+      type: Boolean
+    - contextPath: ThreatStream.Import.is_public
+      description: Whether the entity is public or private.
+      type: Boolean
+    - contextPath: ThreatStream.Import.jobID
+      description: The job ID.
+      type: Unknown
+    - contextPath: ThreatStream.Import.messages
+      description: A string representing the messages associated with the import.
+      type: String
+    - contextPath: ThreatStream.Import.name
+      description: The import name.
+      type: String
+    - contextPath: ThreatStream.Import.notes
+      description: A string representing the notes associated with the import.
+      type: String
+    - contextPath: ThreatStream.Import.numIndicators
+      description: The number of observables that were accepted for importing.
+      type: Number
+    - contextPath: ThreatStream.Import.numRejected
+      description: The number of observables that were rejected for importing.
+      type: Number
+    - contextPath: ThreatStream.Import.num_private
+      description: A number representing the number of private entities associated with the import.
+      type: Number
+    - contextPath: ThreatStream.Import.num_public
+      description: A number representing the number of public entities associated with the import.
+      type: Number
+    - contextPath: ThreatStream.Import.organization.id
+      description: ID associated with the organization that created the import.
+      type: String
+    - contextPath: ThreatStream.Import.organization.name
+      description: Name associated with the organization that created the import.
+      type: String
+    - contextPath: ThreatStream.Import.organization.resource_uri
+      description: Resource URI associated with the organization that created the import.
+      type: String
+    - contextPath: ThreatStream.Import.processed_ts
+      description: A date representing the time stamp when the import was processed.
+      type: Date
+    - contextPath: ThreatStream.Import.resource_uri
+      description: Resource URI associated with entity.
+      type: String
+    - contextPath: ThreatStream.Import.sandbox_submit
+      description: The sandbox submit.
+      type: Unknown
+    - contextPath: ThreatStream.Import.source_confidence_weight
+      description: The source confidence weight of the entity.
+      type: Number
+    - contextPath: ThreatStream.Import.status
+      description: The import status.
+      type: String
+    - contextPath: ThreatStream.Import.threat_type
+      description: The threat type.
+      type: String
+    - contextPath: ThreatStream.Import.tlp
+      description: Traffic Light Protocol designation.
+      type: Unknown
+    - contextPath: ThreatStream.Import.user_id
+      description: A string representing the ID associated with the user that created the import.
+      type: Number
+    - contextPath: ThreatStream.Import.visibleForReview
+      description: Whether the entity is visible for review.
+      type: Boolean
+  - arguments:
+    - default: false
+      description: The ID of the import job.
+      isArray: false
+      name: import_id
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    description: Approving all observables in an import job
+    name: threatstream-approve-import-job
+  - arguments:
+    - default: false
+      description: 'A comma-separated list of model types. Supported values are: actor, attackpattern , campaign, courseofaction, incident,identity, infrastructure, intrusionset, malware,signature, tipreport, ttp, tool, vulnerability.'
+      isArray: true
+      name: model_type
+      required: false
+      secret: false
+    - default: false
+      description: 'The name of the threat model'
+      isArray: false
+      name: name
+      required: false
+      secret: false
+    - default: false
+      description: 'Free text to search string in the fields: Aliases, Description, Name, Tags.'
+      isArray: false
+      name: keyword_search
+      required: false
+      secret: false
+    - default: false
+      description: 'Other names by which the actors are known.'
+      isArray: false
+      name: alias
+      required: false
+      secret: false
+    - default: false
+      description: 'Numeric ID of the threat feed that provided the Threat Model entity.'
+      isArray: false
+      name: feed_id
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      description: 'Whether the threat bulletin was created as a result of an email import.'
+      isArray: false
+      name: is_email
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+      default: false
+    - auto: PREDEFINED
+      description: 'Whether the entity is public or private. True—if the Campaign is public, False—if the Campaign is private or belongs to a Trusted Circle'
+      isArray: false
+      name: is_public
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+      default: false
+    - default: false
+      description: 'A comma-separated list of publication status. Supported values are: new, pending_review, review_requested, reviewed, published statuses.'
+      isArray: true
+      name: publication_status
+      required: false
+      secret: false
+    - default: false
+      description: 'A comma-separated list of signature type. Supported values are: Bro, Carbon Black Query, ClamAV, Custom, CybOX, OpenIOC, RSA NetWitness, Snort, Splunk Query, Suricata, YARA'
+      isArray: true
+      name: signature_type
+      required: false
+      secret: false
+    - default: false
+      description: 'A comma-spareated list of Additional comments and context associated with the observable when it was imported from its original threat feed'
+      isArray: true
+      name: tags
+      required: false
+      secret: false
+    - default: false
+      description: Used for querying entities associated with specified trusted circles.
+      isArray: false
+      name: trusted_circle_ids
+      required: false
+      secret: false
+    - default: false
+      defaultValue: '50'
+      description: The maximum number of results to return.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - default: false
+      description: Page number to get result from. Needs to be used with page_size argument.
+      isArray: false
+      name: page
+      required: false
+      secret: false
+    - default: false
+      description: The page size of the returned results. Needs to be used with the page argument.
+      isArray: false
+      name: page_size
+      required: false
+      secret: false
+    deprecated: false
+    execution: false
+    description: "retrieve threat model entities from ThreatStream"
+    name: threatstream-search-threat-model
+    outputs:
+    - contextPath: ThreatStream.ThreatModel.source_created
+      description: Time stamp of when the entity was created by its original source.
+      type: Unknown
+    - contextPath: ThreatStream.ThreatModel.circles
+      description: Trusted circles with which data from streams is shared.
+      type: Unknown
+    - contextPath: ThreatStream.ThreatModel.feed_id
+      description: Numeric ID of the threat feed that provided the Threat Model entity.
+      type: Number
+    - contextPath: ThreatStream.ThreatModel.workgroups
+      description: Unused according to ThreatStream API documentation.
+      type: Unknown
+    - contextPath: ThreatStream.ThreatModel.aliases
+      description: Other names by which the actors are known.
+      type: Unknown
+    - contextPath: ThreatStream.ThreatModel.is_email
+      description: Whether the threat bulletin was created as a result of an email import.
+      type: Unknown
+    - contextPath: ThreatStream.ThreatModel.published_ts
+      description: Time stamp of when the entity was published on ThreatStream, in UTC format.
+      type: String
+    - contextPath: ThreatStream.ThreatModel.id
+      description: Unique ID assigned to the entity.
+      type: Number
+    - contextPath: ThreatStream.ThreatModel.source_modified
+      description: Time stamp of when the entity was last updated by its original source.
+      type: Date
+    - contextPath: ThreatStream.ThreatModel.type
+      description: 'The Threat Model type'
+      type: String
+    - contextPath: ThreatStream.ThreatModel.start_date
+      description: 'Time when a Threat Model was known to have started.'
+      type: Unknown
+    - contextPath: ThreatStream.ThreatModel.sort
+      description: 'Not used according to ThreatStream API documentation.'
+      type: String
+    - contextPath: ThreatStream.ThreatModel.publication_status
+      description: An actor can be in new, pending_review, review_requested, reviewed, published statuses.
+      type: String
+    - contextPath: ThreatStream.ThreatModel.end_date
+      description: 'Time when a Threat Model was known to have ended.'
+      type: Unknown
+    - contextPath: ThreatStream.ThreatModel.tags.id
+      description: The id of the tag assigned to the actor.
+      type: String
+    - contextPath: ThreatStream.ThreatModel.tags.name
+      description: The name of the tag assigned to the actor.
+      type: String
+    - contextPath: ThreatStream.ThreatModel.modified_ts
+      description: Time stamp of when the tag was last updated on ThreatStream, in UTC format.
+      type: String
+    - contextPath: ThreatStream.ThreatModel.is_public
+      description: Whether the entity is public or private.
+      type: Boolean
+    - contextPath: ThreatStream.ThreatModel.uuid
+      description: UUID (universally unique identifier) assigned to the observable for STIX compliance.
+      type: String
+    - contextPath: ThreatStream.ThreatModel.created_ts
+      description: 'Timestamp when the ThreatModel was created.'
+      type: String
+    - contextPath: ThreatStream.ThreatModel.tlp
+      description: 'TLP setting associated with the entity.'
+      type: String
+    - contextPath: ThreatStream.ThreatModel.name
+      description: 'Name of the entity.'
+      type: String
+    - contextPath: ThreatStream.ThreatModel.status
+      description: 'Status of the entity.'
+      type: Unknown
+    - contextPath: ThreatStream.ThreatModel.model_type
+      description: 'Type of threat model entity.'
+      type: String
+    - contextPath: ThreatStream.ThreatModel.resource_uri
+      description: 'Resource URI associated with the entity.'
+      type: String
+  - arguments:
+    - auto: PREDEFINED
+      default: false
+      description: 'The type of threat model entity on which you are adding the association.'
+      isArray: false
+      name: entity_type
+      predefined:
+      - 'Actor'
+      - 'Attack Pattern'
+      - 'Campaign'
+      - 'Course Of Action'
+      - 'Identity'
+      - 'Infrastructure'
+      - 'Intrusion Set'
+      - 'Incident'
+      - 'Malware'
+      - 'Signature'
+      - 'Threat Bulletin'
+      - 'Tool'
+      - 'Ttp'
+      - 'Vulnerability'
+      required: true
+      secret: false
+    - default: false
+      description: 'The ID of the threat model entity on which you are adding the association.'
+      isArray: false
+      name: entity_id
+      required: true
+      secret: false
+    - default: false
+      description: 'The entities ids we want to associate with the primary entity. Note: the model type of all the ids must be equals to the type in the  “associated_entity_type” argument.'
+      isArray: true
+      name: associated_entity_ids
+      required: true
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: 'The type of threat model entity on which you are adding the association.'
+      isArray: false
+      name: associated_entity_type
+      predefined:
+      - 'Actor'
+      - 'Attack Pattern'
+      - 'Campaign'
+      - 'Course Of Action'
+      - 'Identity'
+      - 'Infrastructure'
+      - 'Intrusion Set'
+      - 'Incident'
+      - 'Malware'
+      - 'Signature'
+      - 'Threat Bulletin'
+      - 'Tool'
+      - 'Ttp'
+      - 'Vulnerability'
+      required: true
+      secret: false
+    deprecated: false
+    execution: false
+    description: "Creates associations between threat model entities on the ThreatStream platform"
+    name: threatstream-add-threat-model-association
+  dockerimage: demisto/py3-tools:1.0.0.51296
   feed: false
   isfetch: false
   longRunning: false
