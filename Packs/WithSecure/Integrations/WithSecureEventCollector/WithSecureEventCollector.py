@@ -19,7 +19,6 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 from CommonServerUserPython import *  # noqa
 
 import urllib3
-from typing import Dict, Any
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -131,7 +130,7 @@ def access_token_error_handler(response: requests.Response):
 
 def parse_date(dt):
     date_time = dateparser.parse(dt, settings={'TIMEZONE': 'UTC'})
-    return date_time.strftime(DATE_FORMAT)
+    return date_time.strftime(DATE_FORMAT)  # type: ignore
 
 
 def parse_events(events, last_fetch):
@@ -145,6 +144,18 @@ def parse_events(events, last_fetch):
             last_event_time = event.get('serverTimestamp')
 
     return parse_date(last_event_time), events
+
+
+def get_events(client: Client, fetch_from, limit) -> list:
+    events: list = []
+    next_anchor = 'first'
+    while next_anchor and len(events) < limit:
+        req_limit = min(MAX_FETCH_LIMIT, limit - len(events))
+        res = client.get_events_api_call(fetch_from, req_limit, next_anchor if next_anchor != 'first' else None)
+        events.extend(res.get('items'))
+        next_anchor = res.get('nextAnchor')
+
+    return events
 
 
 ''' COMMAND FUNCTIONS '''
@@ -169,32 +180,58 @@ def test_module(client: Client) -> str:
 
 
 def get_events_command(client: Client, args: dict) -> tuple[list, CommandResults]:
+    """
+    Gets all the events from the WithSecure API for each log type.
+    Args:
+        client (Client): client to use.
+        args: dict, demisto args.
+    Returns:
+        list: A list containing the events
+        CommandResults: A CommandResults object that contains the events in a table format.
+    """
     fetch_from = parse_date(args.get('fetch_from') or demisto.params().get('first_fetch', '3 months'))
     limit = args.get('limit') or MAX_FETCH_LIMIT
-    events = []
-    next_anchor = 'first'
-    while next_anchor and len(events) < limit:
-        req_limit = min(MAX_FETCH_LIMIT, limit - len(events))
-        res = client.get_events_api_call(fetch_from, req_limit, next_anchor if next_anchor != 'first' else None)
-        events.extend(res.get('items'))
-        next_anchor = res.get('nextAnchor')
+    events = get_events(client, fetch_from, limit)
+    # events: list = []
+    # next_anchor = 'first'
+    # while next_anchor and len(events) < limit:
+    #     req_limit = min(MAX_FETCH_LIMIT, limit - len(events))
+    #     res = client.get_events_api_call(fetch_from, req_limit, next_anchor if next_anchor != 'first' else None)
+    #     events.extend(res.get('items'))
+    #     next_anchor = res.get('nextAnchor')
 
     events = events if len(events) < limit else events[:limit]
     hr = tableToMarkdown(name='With Secure Events', t=events)
     return events, CommandResults(readable_output=hr)
 
 
-def fetch_events_command(client, first_fetch, limit):
+def fetch_events_command(client: Client, first_fetch: str, limit: int):
+    """
+    This function retrieves new alerts every interval (default is 1 minute).
+    It has to implement the logic of making sure that events are fetched only once and no events are missed.
+    By default it's invoked by XSIAM every minute. It will use last_run to save the timestamp of the last event it
+    processed. If last_run is not provided, it should use the integration parameter first_fetch_time to determine when
+    to start fetching the first time.
+
+    Args:
+        client (Client): RunZero client to use.
+        first_fetch (str): Timestamp to start fetch from
+        limit (int): Maximum numbers of events per fetch.
+    Returns:
+        list: List of events that will be created in XSIAM.
+    """
+
     last_run = demisto.getLastRun()
     fetch_from = last_run.get('fetch_from') or first_fetch
-    events = []
-    next_anchor = 'first'
-
-    while next_anchor and len(events) < limit:
-        req_limit = min(MAX_FETCH_LIMIT, limit - len(events))
-        res = client.get_events_api_call(fetch_from, req_limit, next_anchor if next_anchor != 'first' else None)
-        events.extend(res.get('items'))
-        next_anchor = res.get('nextAnchor')
+    events = get_events(client, fetch_from, limit)
+    # events: list = []
+    # next_anchor = 'first'
+    #
+    # while next_anchor and len(events) < limit:
+    #     req_limit = min(MAX_FETCH_LIMIT, limit - len(events))
+    #     res = client.get_events_api_call(fetch_from, req_limit, next_anchor if next_anchor != 'first' else None)
+    #     events.extend(res.get('items'))
+    #     next_anchor = res.get('nextAnchor')
 
     last_fetch, parsed_events = parse_events(events if len(events) < limit else events[:limit], fetch_from)
     demisto.setLastRun({'fetch_from': last_fetch})

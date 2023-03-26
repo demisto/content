@@ -58,7 +58,7 @@ script:
     deprecated: false
     description: Manual command used to fetch events and display them.
     execution: false
-    name: with-seucre-get-events
+    name: with-secure-get-events
   isfetchevents: true
   runonce: false
   script: '-'

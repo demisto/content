@@ -1,15 +1,3 @@
-"""Base Integration for Cortex XSOAR - Unit Tests file
-
-Pytest Unit Tests: all funcion names must start with "test_"
-
-More details: https://xsoar.pan.dev/docs/integrations/unit-testing
-
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-
-You must add at least a Unit Test function for every XSOAR command
-you are implementing with your integration
-"""
-
 import json
 import io
 
@@ -19,24 +7,28 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-# TODO: REMOVE the following dummy unit test function
-def test_baseintegration_dummy():
-    """Tests helloworld-say-hello command function.
+def test_get_events_command(requests_mock, mocker):
+    """Tests get-events command function.
 
     Checks the output of the command function with the expected output.
 
     No mock is needed here because the say_hello_command does not call
     any external API.
     """
-    from BaseIntegration import Client, baseintegration_dummy_command
+    from WithSecureEventCollector import Client, get_events_command
 
-    client = Client(base_url='some_mock_url', verify=False)
+    client = Client(base_url='https://test.com', verify=False, proxy=False, client_id='client_id',
+                    client_secret='client_secret')
+    mock_response = util_load_json('test_data/get_events.json')
     args = {
-        'dummy': 'this is a dummy response'
+        'fetch_from': '2022-12-26T00:00:00Z',
+        'limit': 2
     }
-    response = baseintegration_dummy_command(client, args)
+    mocker.patch.object(Client, 'get_access_token', return_value={'access_token': 'access_token'})
+    requests_mock.get(
+        'https://test.com/security-events/v1/security-events?limit=2&serverTimestampStart=2022-12-26T00:00:00Z',
+        json=mock_response)
+    events, response = get_events_command(client, args)
 
-    mock_response = util_load_json('test_data/baseintegration-dummy.json')
-
-    assert response.outputs == mock_response
-# TODO: ADD HERE unit tests for every command
+    assert len(events) == 2
+    assert events == mock_response.get('items')

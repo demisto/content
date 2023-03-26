@@ -1,0 +1,61 @@
+{
+    "items": [
+        {
+            "severity": "critical",
+            "engine": "edr",
+            "serverTimestamp": "2023-03-15T22:00:22.574Z",
+            "organization": {
+                "name": "Palo Alto_comp",
+                "id": "b856d1ab-29c1-4803-b9b5-91ec7b24f94c"
+            },
+            "action": "created",
+            "details": {
+                "incidentPublicId": "4550314-13",
+                "fingerprint": "10e34c3d5a3b531505140351b515e5d0f563b761",
+                "initialDetectionTimestamp": "1678917621712",
+                "risk": "MEDIUM",
+                "categories": "LATERAL_MOVEMENT",
+                "incidentId": "b7ffb469-44c2-4cc0-9adb-6a3663bba393",
+                "clientTimestamp": "1678917514000",
+                "resolution": "UNCONFIRMED",
+                "userSam": "NT AUTHORITY\\SYSTEM"
+            },
+            "persistenceTimestamp": "2023-03-15T22:00:22.985Z",
+            "id": "dae559cd-37fe-3fc8-8fb1-7098c8a4d368_0",
+            "clientTimestamp": "2023-03-15T21:58:34Z",
+            "device": {
+                "name": "WIN10-TMPLT",
+                "id": "45581e9d-266c-4676-9f55-1ff36f7519f9"
+            }
+        },
+        {
+            "severity": "critical",
+            "engine": "edr",
+            "serverTimestamp": "2023-03-15T14:39:13.022Z",
+            "organization": {
+                "name": "Palo Alto_comp",
+                "id": "b856d1ab-29c1-4803-b9b5-91ec7b24f94c"
+            },
+            "action": "created",
+            "details": {
+                "incidentPublicId": "4550314-5",
+                "fingerprint": "3a653902d97ee6aa241b3e4ae18b0c01a32b97fe",
+                "initialDetectionTimestamp": "1678891152183",
+                "risk": "HIGH",
+                "categories": "SYSTEM_OR_TOOL_MISUSE",
+                "incidentId": "3b519e5d-addd-440f-b2b6-d8ab5bb0f4ff",
+                "clientTimestamp": "1678888889000",
+                "resolution": "UNCONFIRMED",
+                "userSam": "A-WIN81X64-TEMP\\admin"
+            },
+            "persistenceTimestamp": "2023-03-15T14:39:15.695Z",
+            "id": "1efd19d1-64db-3a56-b8fd-8da2cb87dc20_0",
+            "clientTimestamp": "2023-03-15T14:01:29Z",
+            "device": {
+                "name": "A-WIN81X64-TEMP",
+                "id": "fb939719-e4b5-4fb0-bfd9-3e7079833cec"
+            }
+        }
+    ],
+    "nextAnchor": "WzE2Nzg4OTExNTMwMjIsIjFlZmQxOWQxLTY0ZGItM2E1Ni1iOGZkLThkYTJjYjg3ZGMyMF8wIiwiMWVmZDE5ZDEtNjRkYi0zYTU2LWI4ZmQtOGRhMmNiODdkYzIwXzAiXQ=="
+}
