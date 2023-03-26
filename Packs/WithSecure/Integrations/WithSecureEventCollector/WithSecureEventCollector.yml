@@ -22,7 +22,7 @@ configuration:
   name: first_fetch_time
   required: false
   type: 0
-  connect: true
+  section: Connect
 - defaultvalue: 1000
   display: Maximum number of events per fetch, Max 1000
   name: limit
@@ -33,10 +33,12 @@ configuration:
   name: insecure
   required: false
   type: 8
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
 description: WithSecure event collector integration for Cortex XSIAM.
 display: 'WithSecure Event Collector'
 name: WithSecure Event Collector
