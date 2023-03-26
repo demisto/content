@@ -2,7 +2,7 @@
     "name": "Cortex Attack Surface Management",
     "description": "Content for working with Attack Surface Management (ASM).",
     "support": "xsoar",
-    "currentVersion": "1.6.1",
+    "currentVersion": "1.6.2",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -54,6 +54,10 @@
         "Tenable_io": {
             "mandatory": false,
             "display_name": "Tenable.io"
+        },
+        "qualys": {
+            "mandatory": false,
+            "display_name": "Qualys"
         }
     },
     "marketplaces": [
@@ -72,6 +76,7 @@
         "Rapid7_Nexpose",
         "SplunkPy",
         "ServiceNow",
-        "Tenable_io"
+        "Tenable_io",
+        "qualys"
     ]
 }
