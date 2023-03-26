@@ -477,7 +477,7 @@ script:
       the targeted user's risk level to none.
     execution: false
     name: azure-ad-identity-protection-risky-user-dismiss
-  dockerimage: demisto/crypto:1.0.0.49599
+  dockerimage: demisto/crypto:1.0.0.51288
   feed: false
   isfetch: true
   longRunning: false
