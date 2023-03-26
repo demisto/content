@@ -25,7 +25,7 @@ args:
   name: file_entry_id
   required: true
   secret: false
-comment: This script pre-process(resize, sharpen and grayscale ) an image file from context, given an entry_id.
+comment: This script pre-processes (resizes, sharpens, and grayscales) an image file from context, given an entry_id.
 commonfields:
   id: PreProcessImage
   version: -1
