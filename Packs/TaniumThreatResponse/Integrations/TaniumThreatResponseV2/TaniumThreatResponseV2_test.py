@@ -122,7 +122,7 @@ FILTER_GET_SYSTEM_STATUS_ARGS = [
 
 @freeze_time("2023-03-12T13:34:14Z")
 @pytest.mark.parametrize('date_string, expected_output',
-                         [('3 days', '2023-03-15T13:34:14'), ('in 4 hours', '2023-03-12T17:34:14'), ('5 mhours', '')])
+                         [('3 days', '2023-03-15T15:34:14'), ('in 4 hours', '2023-03-12T19:34:14'), ('5 mhours', '')])
 def test_get_future_date(date_string, expected_output):
     """
         Given -
