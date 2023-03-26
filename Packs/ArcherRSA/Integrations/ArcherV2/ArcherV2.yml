@@ -42,6 +42,7 @@ configuration:
   name: applicationDateField
   required: true
   type: 0
+  additionalinfo: The value should be the field name
 - defaultvalue: '10'
   display: Maximum number of incidents to pull per fetch
   name: fetch_limit
