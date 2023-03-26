@@ -4591,7 +4591,8 @@ def apply_quarantine_file_action_command(args: dict) -> CommandResults:
             username=argToList(args.get('username')),
         )
         if not search_args:
-            raise Exception('At least one search argument (filename, hostname, sha256, state, username, ids, or filter) is required to update the quarantine file.')
+            raise Exception('At least one search argument (filename, hostname, sha256, state, username, ids, or filter)'
+                            ' is required to update the quarantine file.')
 
         ids = list_quarantined_files_id(args.get('filter'), search_args, pagination_args).get('resources')
 
