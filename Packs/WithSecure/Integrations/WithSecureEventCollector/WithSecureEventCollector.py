@@ -30,6 +30,9 @@ urllib3.disable_warnings()
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
 MAX_FETCH_LIMIT = 1000
+VENDOR = 'WithSecure'
+PRODUCT = 'Endpoint Protection'
+
 ''' CLIENT CLASS '''
 
 
@@ -131,6 +134,19 @@ def parse_date(dt):
     return date_time.strftime(DATE_FORMAT)
 
 
+def parse_events(events, last_fetch):
+    last_fetch_timestamp = date_to_timestamp(last_fetch, DATE_FORMAT)
+    last_event_time = None
+    for event in events:
+        event['_time'] = parse_date(event.get('clientTimestamp'))
+        event_time = date_to_timestamp(parse_date(event.get('serverTimestamp')), DATE_FORMAT)
+        if last_fetch_timestamp < event_time:
+            last_fetch_timestamp = event_time
+            last_event_time = event.get('serverTimestamp')
+
+    return parse_date(last_event_time), events
+
+
 ''' COMMAND FUNCTIONS '''
 
 
@@ -167,9 +183,24 @@ def get_events_command(client: Client, args: dict) -> tuple[list, CommandResults
     hr = tableToMarkdown(name='With Secure Events', t=events)
     return events, CommandResults(readable_output=hr)
 
+
 def fetch_events_command(client, first_fetch, limit):
     last_run = demisto.getLastRun()
     fetch_from = last_run.get('fetch_from') or first_fetch
+    events = []
+    next_anchor = 'first'
+
+    while next_anchor and len(events) < limit:
+        req_limit = min(MAX_FETCH_LIMIT, limit - len(events))
+        res = client.get_events_api_call(fetch_from, req_limit, next_anchor if next_anchor != 'first' else None)
+        events.extend(res.get('items'))
+        next_anchor = res.get('nextAnchor')
+
+    last_fetch, parsed_events = parse_events(events if len(events) < limit else events[:limit], fetch_from)
+    demisto.setLastRun({'fetch_from': last_fetch})
+    return parsed_events
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -185,13 +216,11 @@ def main() -> None:
     base_url = params.get('url')
     client_id = params.get('credentials', {}).get('identifier')
     client_secret = params.get('credentials', {}).get('password')
-    first_fetch = parse_date(params.get('first_fetch', '3 days'))
-    limit = params.get('limit')
+    first_fetch = parse_date(params.get('first_fetch', '3 months'))
+    limit = params.get('limit', 1000)
 
     verify_ssl = not params.get('insecure', False)
 
-    # if your Client class inherits from BaseClient, system proxy is handled
-    # out of the box by it, just pass ``proxy`` to the Client constructor
     proxy = params.get('proxy', False)
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
@@ -204,7 +233,6 @@ def main() -> None:
             proxy=proxy)
 
         if demisto.command() == 'test-module':
-            # This is the call made when pressing the integration Test button.
             return_results(test_module(client))
 
         elif command == 'with-secure-get-events':
@@ -213,14 +241,10 @@ def main() -> None:
 
         elif command == 'fetch-events':
             events = fetch_events_command(client, first_fetch, limit)
+            send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
 
-
-    # Log exceptions and return errors
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
-
-
-''' ENTRY POINT '''
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
