@@ -5656,7 +5656,8 @@
         "AttackIQFireDrill": "License issues #29774",
         "LogRhythm": "The integration is deprecated",
         "Threat Grid": "No instance & Depreceated, replaced by ThreatGridv2",
-        "ThreatGridv2": "No instance - developed by Qmasters"
+        "ThreatGridv2": "No instance - developed by Qmasters",
+        "SentinelOne V2": "No instance - developed by partner"
     },
     "nightly_integrations": [],
     "nightly_packs": [
