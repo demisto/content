@@ -50,6 +50,8 @@ MIRROR_DIRECTION = MIRROR_DIRECTION_MAPPING.get(demisto.params().get('mirror_dir
 INTEGRATION_INSTANCE = demisto.integrationInstance()
 
 INCIDENT_INCOMING_MIRROR_ARGS = ['status', 'dismissalNote']
+INCIDENT_INCOMING_MIRROR_CLOSING_STATUSES = ['Dismissed', 'Resolved', 'Snoozed']
+INCIDENT_INCOMING_MIRROR_REOPENING_STATUS = 'Open'
 
 PAGE_NUMBER_DEFAULT_VALUE = 1
 PAGE_SIZE_DEFAULT_VALUE = 50
@@ -625,8 +627,51 @@ def get_remote_incident_data(client: Client, remote_incident_id: str):
     for field in INCIDENT_INCOMING_MIRROR_ARGS:
         if mirrored_field_value := alert_details.get(field):
             updated_object[field] = mirrored_field_value
-    # TODO: need to check whether the keys of the updated opject should be according to the field name defined in the mapper or according to the field name got from the API
+    # TODO: need to check whether the keys of the updated object should be according to the field name defined in the mapper or according to the field name got from the API
     return alert_details, updated_object
+
+
+def close_incident_in_xsoar(entries: List, remote_incident_id: str, mirrored_status: str, incident_type_name: str):
+    """
+    # TODO: need to add description
+    """
+    # TODO: ask adi - do I need here the incident_type_name?
+    demisto.debug(f'{incident_type_name} is closed: {remote_incident_id}')
+    entries.append({
+        'Type': EntryType.NOTE,
+        'Contents': {
+            'dbotIncidentClose': True,
+            'closeReason': f'{incident_type_name} was {mirrored_status} on Prisma Cloud.'
+        },
+        'ContentsFormat': EntryFormat.JSON
+    })
+
+
+def reopen_incident_in_xsoar(entries: List, remote_incident_id: str, incident_type_name: str):
+    """
+    # TODO: need to add description
+    """
+    # TODO: ask adi - do I need here the incident_type_name?
+    demisto.debug(f'{incident_type_name} is reopened: {remote_incident_id}')
+    entries.append({
+        'Type': EntryType.NOTE,
+        'Contents': {
+            'dbotIncidentReopen': True
+        },
+        'ContentsFormat': EntryFormat.JSON
+    })
+
+
+def set_xsoar_incident_entries(updated_object: Dict[str, Any], entries: List, remote_incident_id: str):
+    """
+    # TODO: need to add description
+    """
+    if demisto.params().get('close_incident'):
+        if mirrored_status := updated_object.get('status') in set(INCIDENT_INCOMING_MIRROR_CLOSING_STATUSES):
+            close_incident_in_xsoar(entries, remote_incident_id, mirrored_status, 'Incident')
+        elif updated_object.get('status') == INCIDENT_INCOMING_MIRROR_REOPENING_STATUS:
+            # TODO: need to verify that with Dima (if this is the only option for re-open scenario).
+            reopen_incident_in_xsoar(entries, remote_incident_id, 'Incident')
 
 
 ''' V1 DEPRECATED COMMAND FUNCTIONS to support backwards compatibility '''
@@ -1645,7 +1690,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any]) -> GetRemoteDa
 
     mirrored_data = {}
     entries: List = []
-    # TODO: ask Adi why those args was passed into function and edited in place? instead of returned new objucts from the helper functions.
+    # TODO: ask Adi why those args was passed into function and edited in place? instead of returned new objects from the helper functions.
     try:
         demisto.debug(f'Performing get-remote-data command with incident id: {remote_incident_id} '
                       f'and last_update: {remote_args.last_update}')
@@ -1654,7 +1699,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any]) -> GetRemoteDa
             demisto.debug(f'Update incident {remote_incident_id} with fields: {updated_object}')
             set_xsoar_incident_entries(updated_object, entries, remote_incident_id)  # sets in place
 
-        if not updated_object:
+        if not updated_object: # TODO: I think that this is an unreachable condition
             demisto.debug(f'No delta was found for incident id: {remote_incident_id}.')
 
         return GetRemoteDataResponse(mirrored_object=updated_object, entries=entries)
@@ -1753,6 +1798,7 @@ def main() -> None:
 
             'prisma-cloud-host-finding-list': host_finding_list_command,
             'prisma-cloud-permission-list': permission_list_command,
+            'get-remote-data':  get_remote_data_command,
         }
         commands_v1 = {
             'redlock-search-alerts': alert_search_v1_command,
