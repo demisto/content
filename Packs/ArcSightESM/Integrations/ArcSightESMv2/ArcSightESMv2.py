@@ -41,11 +41,11 @@ ENTRY = "<entry>{}</entry>".format
 COLUMN = "<columns>{}</columns>".format
 BODY = "<act:entryList>{}</act:entryList>".format
 
-# if not demisto.params().get("proxy", False):
-#     del os.environ["HTTP_PROXY"]
-#     del os.environ["HTTPS_PROXY"]
-#     del os.environ["http_proxy"]
-#     del os.environ["https_proxy"]
+if not demisto.params().get("proxy", False):
+    del os.environ["HTTP_PROXY"]
+    del os.environ["HTTPS_PROXY"]
+    del os.environ["http_proxy"]
+    del os.environ["https_proxy"]
 
 
 @logger
@@ -876,7 +876,7 @@ def get_all_query_viewers_command():
         demisto.results('No Query Viewers were found')
 
 
-# AUTH_TOKEN = demisto.getIntegrationContext().get('auth_token') or login()
+AUTH_TOKEN = demisto.getIntegrationContext().get('auth_token') or login()
 
 
 def main():
