@@ -793,7 +793,7 @@ def create_body_update_rule_for_v10(rule_type: str, address: List, number: int,
     # if the address is a dictionary, the user wants to delete and overwrite that's the reason we kept that address in the list.
     list_to_send: list[Dict] = []
     for single_address in address:
-        if type(single_address) is dict:
+        if type(single_address) is dict:  #
             list_to_send.append({"value": single_address.get("value"),
                                  "state": STATE_TO_NUMBER.get(state),
                                  "changedState": 3})
@@ -841,17 +841,17 @@ def modify_v10_results_to_v9_format(results: List[Dict[Any, Any]]) -> List[Dict[
                 my_key = key
 
                 # The value of the first (and only) key is a list containing dict with addresses
-                addresses = value[next(iter(value))]
+                addresses = value[next(iter(value))]  # getting the value of the first key in a dict
                 for inner_dict in addresses:
+                    temp_dict = {}
                     for key in inner_dict.keys():
-                        temp_dict = {}
-                        # choose the keys and values that are relevant ans saves them in a temp dict
+                        # choose the relevant keys and values and saves them in a temp dict
                         if key == 'value':
                             address_list.append(inner_dict[key])
                         elif key in ['FromAddress', 'ToAddress']:
                             temp_dict[key] = inner_dict[key]
 
-                        address_list.append(temp_dict) if temp_dict else None
+                    address_list.append(temp_dict) if temp_dict else None
 
                 if address_list:
                     # replace the list of dicts with a list of strings containing the addresses
@@ -925,6 +925,17 @@ def deploy_polling_message(status: Dict, args: Dict):
             else:
                 fail_or_success_list.append(1)
     return fail_or_success_list, build_a_massage
+
+
+def check_required_arg(arg_name: str, arg_value: int | None) -> int:
+    """ Check if the required arguments are present in the command.
+        Args:
+            arg_value: int - The expected value for the argument.
+            arg_name: str - The name of the argument.
+    """
+    if not arg_value and arg_value != 0:
+        raise DemistoException(f'Please provide a {arg_name} argument.')
+    return arg_value
 
 
 def check_args_create_rule(rule_type: str, address: List, from_address: str, to_address: str, number: int):
@@ -2205,9 +2216,8 @@ def list_domain_device_command(client: Client, args: Dict) -> CommandResults:
     Returns:
         A CommandResult object with a list of domain devices.
     """
-    domain_id = arg_to_number(args.get('domain_id'))
-    if not domain_id and domain_id != 0:
-        raise DemistoException('Please provide a domain_id.')
+    domain_id = arg_to_number(args.get('domain_id'), arg_name='domain_id', required=True)
+    domain_id = check_required_arg(arg_name="domain_id", arg_value=domain_id)
     limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
     all_results = argToBoolean(args.get('all_results', False))
 
@@ -2236,12 +2246,10 @@ def list_device_interface_command(client: Client, args: Dict) -> CommandResults:
     Returns:
         A CommandResult object with a list of device interfaces.
     """
-    device_id = arg_to_number(args.get('device_id'))
-    if not device_id and device_id != 0:
-        raise DemistoException('Please provide a device_id.')
-    domain_id = arg_to_number(args.get('domain_id'))
-    if not domain_id and domain_id != 0:
-        raise DemistoException('Please provide a domain_id.')
+    device_id = arg_to_number(args.get('device_id'), arg_name='device_id', required=True)
+    device_id = check_required_arg(arg_name="device_id", arg_value=device_id)
+    domain_id = arg_to_number(args.get('domain_id'), arg_name='domain_id', required=True)
+    domain_id = check_required_arg(arg_name="domain_id", arg_value=domain_id)
     limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
     all_results = argToBoolean(args.get('all_results', False))
 
@@ -2273,12 +2281,10 @@ def assign_device_policy_command(client: Client, args: Dict) -> CommandResults:
     Returns:
         A CommandResult object with a success or failure message.
     """
-    device_id = arg_to_number(args.get('device_id'))
-    if not device_id and device_id != 0:
-        raise DemistoException('Please provide a device_id.')
-    domain_id = arg_to_number(args.get('domain_id'))
-    if not domain_id and domain_id != 0:
-        raise DemistoException('Please provide a domain_id.')
+    device_id = arg_to_number(args.get('device_id'), arg_name='device_id', required=True)
+    device_id = check_required_arg(arg_name="device_id", arg_value=device_id)
+    domain_id = arg_to_number(args.get('domain_id'), arg_name='domain_id', required=True)
+    domain_id = check_required_arg(arg_name="domain_id", arg_value=domain_id)
     pre_firewall_policy = args.get('pre_firewall_policy_name')
     post_firewall_policy = args.get('post_firewall_policy_name')
 
@@ -2303,9 +2309,8 @@ def list_device_policy_command(client: Client, args: Dict) -> CommandResults:
          A CommandResult object with a list of device policies.
     """
     device_id = arg_to_number(args.get('device_id'))
-    domain_id = arg_to_number(args.get('domain_id'))
-    if not domain_id and domain_id != 0:
-        raise DemistoException('Please provide a domain_id.')
+    domain_id = arg_to_number(args.get('domain_id'), arg_name='domain_id', required=True)
+    domain_id = check_required_arg(arg_name="domain_id", arg_value=domain_id)
     limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
     all_results = argToBoolean(args.get('all_results', False))
 
@@ -2336,12 +2341,10 @@ def assign_interface_policy_command(client: Client, args: Dict) -> CommandResult
     Returns:
         A CommandResult object with a success or failure message.
     """
-    domain_id = arg_to_number(args.get('domain_id'))
-    if not domain_id and domain_id != 0:
-        raise DemistoException('Please provide a domain_id.')
-    interface_id = arg_to_number(args.get('interface_id'))
-    if not interface_id and interface_id != 0:
-        raise DemistoException('Please provide a interface_id.')
+    domain_id = arg_to_number(args.get('domain_id'), arg_name='domain_id', required=True)
+    domain_id = check_required_arg(arg_name="domain_id", arg_value=domain_id)
+    interface_id = arg_to_number(args.get('interface_id'), arg_name='interface_id', required=True)
+    interface_id = check_required_arg(arg_name="interface_id", arg_value=interface_id)
     firewall_policy = args.get('firewall_policy_name')
     firewall_port_policy = args.get('firewall_port_policy_name')
     ips_policy = args.get('ips_policy_name')
@@ -2376,9 +2379,8 @@ def list_interface_policy_command(client: Client, args: Dict) -> CommandResults:
     Returns:
         A CommandResult object with a list of policies.
     """
-    domain_id = arg_to_number(args.get('domain_id'))
-    if not domain_id and domain_id != 0:
-        raise DemistoException('Please provide a domain_id.')
+    domain_id = arg_to_number(args.get('domain_id'), arg_name='domain_id', required=True)
+    domain_id = check_required_arg(arg_name="domain_id", arg_value=domain_id)
     interface_id = arg_to_number(args.get('interface_id'))
     limit = arg_to_number(args.get('limit', DEFAULT_LIMIT))
     all_results = argToBoolean(args.get('all_results', False))
@@ -2408,9 +2410,8 @@ def get_device_configuration_command(client: Client, args: Dict) -> CommandResul
     Returns:
         A CommandResult object with the device configuration information.
     """
-    device_id = arg_to_number(args.get('device_id'))
-    if not device_id and device_id != 0:
-        raise DemistoException('Please provide a device_id.')
+    device_id = arg_to_number(args.get('device_id'), arg_name='device_id', required=True)
+    device_id = check_required_arg(arg_name="device_id", arg_value=device_id)
 
     response = client.get_device_configuration_request(device_id=device_id)
     capitalize_response = capitalize_key_first_letter([response])[0]
@@ -2442,9 +2443,9 @@ def deploy_device_configuration_command(args: Dict, client: Client) -> PollResul
     """
 
     request_id = arg_to_number(args.get('request_id'))
-    device_id = arg_to_number(args.get('device_id'))
-    if not device_id and device_id != 0:
-        raise DemistoException('Please provide a device_id.')
+    device_id = arg_to_number(args.get('device_id'), arg_name='device_id', required=True)
+    device_id = check_required_arg(arg_name="device_id", arg_value=device_id)
+
     if not request_id:   # if this is the first time the function is called
         is_ssl_push_required = argToBoolean(args.get('push_ssl_key', False))
         is_gam_update_required = argToBoolean(args.get('push_gam_updates', False))
