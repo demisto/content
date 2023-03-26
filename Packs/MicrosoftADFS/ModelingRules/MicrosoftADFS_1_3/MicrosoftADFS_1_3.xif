@@ -1,15 +1,18 @@
 [MODEL: dataset = microsoft_windows_raw]
+// filter event ids based on XDRC configuration.
+filter event_id in (510, 1200, 1201, 1202, 1203, 1204, 1205, 1206, 1207)
+| alter event_data_xml = if(json_extract_scalar(event_data ,"$.param2") ~= "^\<\?xml\s.*", json_extract_scalar(event_data ,"$.param2") , null)
 // xml part
-alter audit_type = arrayindex(regextract(event_data , "<AuditType>([^<]+)"),0),
-    accountName = arrayindex(regextract(message ,"Account\sName\:\s+(\S+)"),0),
+| alter accountName = arrayindex(regextract(message ,"Account\sName\:\s+(\S+)"),0),
     userName = to_string(json_extract_scalar(user, "$.name")),
-    user_id = arrayindex(regextract(event_data ,"\<UserId\>([^\<]*)"),0),
-    mfa_method = arrayindex(regextract(event_data ,"\<MfaMethod\>([^\<]*)"),0),
-    device_id = arrayindex(regextract(event_data ,"\<DeviceId\>([^\<]*)"),0),
-    server  = arrayindex(regextract(event_data ,"\<Server\>([^\<]*)"),0),
-    auth_protocol  = arrayindex(regextract(event_data ,"\<AuthProtocol\>([^\<]*)"),0),
-    ip_address  = arrayindex(regextract(event_data ,"\<IpAddress\>([^\<]*)"),0),
-    user_agent  = arrayindex(regextract(event_data ,"\<UserAgentString\>([^\<]*)"),0)
+    audit_type = arrayindex(regextract(event_data_xml , "<AuditType>([^<]+)"),0),
+    user_id = arrayindex(regextract(event_data_xml ,"\<UserId\>([^\<]*)"),0),
+    mfa_method = arrayindex(regextract(event_data_xml ,"\<MfaMethod\>([^\<]*)"),0),
+    device_id = arrayindex(regextract(event_data_xml ,"\<DeviceId\>([^\<]*)"),0),
+    server  = arrayindex(regextract(event_data_xml ,"\<Server\>([^\<]*)"),0),
+    auth_protocol  = arrayindex(regextract(event_data_xml ,"\<AuthProtocol\>([^\<]*)"),0),
+    ip_address  = arrayindex(regextract(event_data_xml ,"\<IpAddress\>([^\<]*)"),0),
+    user_agent  = arrayindex(regextract(event_data_xml ,"\<UserAgentString\>([^\<]*)"),0)
 // json part
 | alter raw_param_2 = to_string(json_extract_scalar(event_data , "$.param2")),
     raw_param_3 = to_string(json_extract_scalar(event_data , "$.param3")),
