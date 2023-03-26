@@ -1241,27 +1241,6 @@ def test_list_device_interface_command__with_different_arguments(mocker, input, 
     assert res.outputs == output
 
 
-@ pytest.mark.parametrize('input, output', [({"domain_id": 777}, "Please provide a device_id."),
-                                            ({"device_id": 777}, "Please provide a domain_id.")])
-def test_list_device_interface_command__with_missing_arguments(mocker, mcafeensmv2_client, input, output):
-    """
-    Given:
-        - 1. A domain id without a device id,
-        - 2. A device id without a domain id.
-    When:
-        - list_device_interface_command command is executed, with missing arguments.
-    Then:
-        - Confirm the output is as expected(error message).
-    """
-    from McAfeeNSMv2 import list_device_interface_command
-    mocker.patch.object(mcafeensmv2_client, 'list_device_interface_request',
-                        return_value={"allocatedInterfaceList": [{"interfaceId": "mock"}, {"interfaceId": "mock"}]})
-    with pytest.raises(DemistoException) as e:
-        list_device_interface_command(client=mcafeensmv2_client, args=input)
-
-    assert e.value.message == output
-
-
 @ pytest.mark.parametrize('input, output', [({"domain_id": 0}, [{'policyId': 'mock'}, {'policyId': 'mock'}]),
                                             ({"domain_id": 777, "limit": 1}, [{'policyId': 'mock'}]),
                                             ({"domain_id": 777, "limit": 1, "all_results": True},
@@ -1286,24 +1265,6 @@ def test_list_device_policy_command__with_different_arguments(mocker, input, out
     assert res.outputs == output
 
 
-def test_list_device_policy_command__with_missing_arguments(mocker, mcafeensmv2_client):
-    """
-    Given:
-        - No domain_id.
-    When:
-        - list_device_policy_command command is executed, with missing arguments.
-    Then:
-        - Confirm the output is as expected(error message).
-    """
-    from McAfeeNSMv2 import list_device_policy_command
-    mocker.patch.object(mcafeensmv2_client, 'list_device_policy_request',
-                        return_value={None})
-    with pytest.raises(DemistoException) as e:
-        list_device_policy_command(client=mcafeensmv2_client, args={})
-
-    assert e.value.message == "Please provide a domain_id."
-
-
 @ pytest.mark.parametrize('input, output', [({"domain_id": 0}, [{'deviceId': 'mock'}, {'deviceId': 'mock'}]),
                                             ({"domain_id": 777, "limit": 1}, [{'deviceId': 'mock'}]),
                                             ({"domain_id": 777, "limit": 1, "all_results": True},
@@ -1326,42 +1287,6 @@ def test_list_domain_device_command_with_diffrent_arguments(mocker, mcafeensmv2_
     mocker.patch.object(McAfeeNSMv2, 'capitalize_key_first_letter', return_value=[{"deviceId": "mock"}, {"deviceId": "mock"}])
     res = list_domain_device_command(client=mcafeensmv2_client, args=input)
     assert res.outputs == output
-
-
-def test_list_domain_device_command__without_domain_id(mcafeensmv2_client):
-    """
-    Given:
-        - No domain id.
-    When:
-        - list_domain_device_command command is executed.
-    Then:
-        - Confirm the output is as expected(error message).
-    """
-    from McAfeeNSMv2 import list_domain_device_command
-    with pytest.raises(DemistoException) as e:
-        list_domain_device_command(client=mcafeensmv2_client, args={})
-    assert e.value.message == "Please provide a domain_id."
-
-
-@ pytest.mark.parametrize('input, output', [({"domain_id": 777, "interface_id": 777, },
-                                            "Please provide at least one policy to assign."),
-                                            ({"domain_id": 777}, "Please provide a interface_id."),
-                                            ({"interface_id": 777, }, "Please provide a domain_id.")])
-def test_assign_interface_policy_command__with_missing_arguments(mcafeensmv2_client, input, output):
-    """
-    Given:
-        - 1. A domain id and interface id with no policy.
-        - 2. A domain id with no policy.
-        - 3. A interface id with no policy.
-    When:
-        - nsm-assign_interface_policy_command command is executed.
-    Then:
-        - Confirm the output is as expected(error message).
-    """
-    from McAfeeNSMv2 import assign_interface_policy_command
-    with pytest.raises(DemistoException) as e:
-        assign_interface_policy_command(client=mcafeensmv2_client, args=input)
-    assert e.value.message == output
 
 
 @ pytest.mark.parametrize('input, output', [({"interface_id": None,
@@ -1392,41 +1317,6 @@ def test_list_interface_policy_command__with_multiple_different_arguments(mocker
     assert res.outputs == output
 
 
-def test_list_interface_policy_command__without_domain_id(mcafeensmv2_client):
-    """
-    Given:
-        - No domain id.
-    When:
-        - list_interface_policy_command command is executed.
-    Then:
-        - Confirm the output is as expected(error message).
-    """
-    from McAfeeNSMv2 import list_interface_policy_command
-    with pytest.raises(DemistoException) as e:
-        list_interface_policy_command(client=mcafeensmv2_client, args={})
-    assert e.value.message == "Please provide a domain_id."
-
-
-@ pytest.mark.parametrize('input, output', [({"domain_id": 777}, "Please provide a device_id."),
-                                            ({"device_id": 777}, "Please provide a domain_id.")])
-def test_assign_device_policy_command__with_missing_arguments(mocker, mcafeensmv2_client, input, output):
-    """
-    Given:
-        - 1. A domain id.
-        - 2. A device id.
-    When:
-        - assign_device_policy command command is executed, with missing arguments.
-    Then:
-        - Confirm the output is as expected(error message).
-    """
-    from McAfeeNSMv2 import assign_device_policy_command
-    mocker.patch.object(mcafeensmv2_client, 'assign_device_policy_request',
-                        return_value={None})
-    with pytest.raises(DemistoException) as e:
-        assign_device_policy_command(client=mcafeensmv2_client, args=input)
-    assert e.value.message == output
-
-
 def test_get_device_configuration_command(mocker, mcafeensmv2_client):
     """
     Given:
@@ -1443,28 +1333,10 @@ def test_get_device_configuration_command(mocker, mcafeensmv2_client):
     assert res.outputs == {'DeviceConfiguration': {'deviceConfigurationId': 'mock'}}
 
 
-def test_get_device_configuration_command__without_device_id(mcafeensmv2_client):
+def test_deploy_device_configuration_command__missing_arguments(mocker, mcafeensmv2_client):
     """
     Given:
-        - No device id.
-    When:
-        - get_device_configuration_command command is executed.
-    Then:
-        - Confirm the output is as expected(error message).
-    """
-    from McAfeeNSMv2 import get_device_configuration_command
-    with pytest.raises(DemistoException) as e:
-        get_device_configuration_command(client=mcafeensmv2_client, args={})
-    assert e.value.message == "Please provide a device_id."
-
-
-@pytest.mark.parametrize('input, output', [({}, "Please provide a device_id."),
-                                           ({"device_id": 777}, "Please provide at least one argument to deploy.")])
-def test_deploy_device_configuration_command__missing_arguments(mocker, mcafeensmv2_client, input, output):
-    """
-    Given:
-        - 1. An empty json
-        - 2. A device id withot arguments to deploy.
+        - A device id withot arguments to deploy.
     When:
         - deploy_device_configuration_command command is executed.
     Then:
@@ -1473,32 +1345,32 @@ def test_deploy_device_configuration_command__missing_arguments(mocker, mcafeens
     from McAfeeNSMv2 import deploy_device_configuration_command
     mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported', return_value=None)
     with pytest.raises(DemistoException) as e:
-        deploy_device_configuration_command(client=mcafeensmv2_client, args=input)
-    assert e.value.message == output
+        deploy_device_configuration_command(client=mcafeensmv2_client, args={"device_id": 777})
+    assert e.value.message == "Please provide at least one argument to deploy."
 
 
-@ pytest.mark.parametrize('input, output', [({"sigsetConfigPercentageComplete": "0", "sigsetConfigStatusMessage": "mock"},
-                                             "\nThe current"),
-                                            ({"sigsetConfigPercentageComplete": 100,
-                                              "sigsetConfigStatusMessage": "DOWNLOAD COMPLETE"}, "The device c")])
+@ pytest.mark.parametrize('input, output', [(([0], "tets"), "tets\n\nChecking again in 30 seconds..."),
+                                            (([1], "TEST"), 'The device configuration has been deployed successfully.')])
 def test_deploy_device_configuration_command(mocker, mcafeensmv2_client, input, output):
     """
 
     Given:
-        - A device id, a arguments to deploy, a request id.
-            - 1. A pending status message.
-            - 2. A success status message.
+        - A fail_or_seccess_list, 1 or 0, and a message.
+            - 1. A pending status list = 0
+            - 2. A success status list = 1
     When:
         - deploy_device_configuration_command command is executed.
     Then:
         - Confirm the readable output is as expected.
     """
     from McAfeeNSMv2 import deploy_device_configuration_command
+    mocker.patch.object(McAfeeNSMv2, 'check_required_arg', return_value=5)
     mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported', return_value=None)
     mocker.patch.object(mcafeensmv2_client, 'deploy_device_configuration_request',
                         return_value={"RequestId": "123"})
     mocker.patch.object(mcafeensmv2_client, 'check_deploy_device_configuration_request_status',
                         return_value=input)
+    mocker.patch.object(McAfeeNSMv2, 'deploy_polling_message', return_value=input)
     res = deploy_device_configuration_command(args={"device_id": 0,
                                                     "interval_in_seconds": 50,
                                                     "push_botnet": False,
@@ -1506,7 +1378,7 @@ def test_deploy_device_configuration_command(mocker, mcafeensmv2_client, input, 
                                                     "push_gam_updates": False,
                                                     "push_ssl_key": False
                                                     }, client=mcafeensmv2_client)
-    assert output in res.readable_output
+    assert res.readable_output == output
 
 
 @ pytest.mark.parametrize('input, output', [("m", 1),
@@ -1515,8 +1387,8 @@ def test_flatten_and_capitalize(mocker, input, output):
     """
     Given:
         - A dictionary with inner dictionaries.
-        1. A key of the inner dictionary to capitalize exsists in the main dict.
-        2. A key of the inner dictionary to capitalize not exsist in the main dict.
+        1. A key of the inner dictionary to capitalize exists in the main dict.
+        2. A key of the inner dictionary to capitalize not exists in the main dict.
     When:
         - flatten_and_capitalize function is executed.
     Then:
@@ -1527,3 +1399,57 @@ def test_flatten_and_capitalize(mocker, input, output):
     my_mocker = mocker.patch.object(McAfeeNSMv2, 'capitalize_key_first_letter', return_value=[{"bla": "bla"}])
     flatten_and_capitalize(main_dict={"a": "l", "m": {"b": "cD", "eF": "gH", }}, inner_dict_key=input)
     assert my_mocker.call_count == output
+
+
+def test_check_required_arg__with_None():
+    """
+    Given:
+        - A required argument with a None value.
+    When:
+        - check_required_arg function is executed.
+    Then:
+        - Confirm the output is as expected. (error message)
+    """
+    from McAfeeNSMv2 import check_required_arg
+    with pytest.raises(DemistoException) as e:
+        check_required_arg(arg_name="test", arg_value=None)
+    assert e.value.message == 'Please provide a test argument.'
+
+
+def test_check_required_arg__with_value_0():
+    """
+    Given:
+        - A required argument with an 0 as a value.
+    When:
+        - check_required_arg function is executed.
+    Then:
+        - Confirm the output is as expected.
+    """
+    from McAfeeNSMv2 import check_required_arg
+    assert check_required_arg(arg_name="test", arg_value=0) == 0
+
+
+@ pytest.mark.parametrize('input, output', [({"sigsetConfigPercentageComplete": "0", "sigsetConfigStatusMessage": "mock"},
+                                            ([0], "\nThe current percentage of deployment for 'push_configuration_signature_set' is: 0%\n                \nAnd the current message is: mock\n")),
+                                            ({"sigsetConfigPercentageComplete": 100,
+                                              "sigsetConfigStatusMessage": "DOWNLOAD COMPLETE"}, ([1], ''))])
+def test_deploy_polling_message(input, output):
+    """
+    Given:
+        - A percentage complete and a status message.
+        1. A pending status message.
+        2. A success status message.
+    When:
+        - deploy_polling_message function is executed.
+    Then:
+        - Confirm the output is as expected.
+    """
+    from McAfeeNSMv2 import deploy_polling_message
+    res = deploy_polling_message(status=input, args={"device_id": 0,
+                                                     "interval_in_seconds": 50,
+                                                     "push_botnet": False,
+                                                     "push_configuration_signature_set": "true",
+                                                     "push_gam_updates": False,
+                                                     "push_ssl_key": False
+                                                     })
+    assert res[1] == output[1] and res[0] == output[0]
