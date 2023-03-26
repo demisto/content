@@ -1482,29 +1482,6 @@ tasks:
           accessor: Indicator
           transformers:
           - operator: uniq
-      FilesToBlock:
-        complex:
-          root: DBotScore
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: file
-          - - operator: greaterThanOrEqual
-              left:
-                value:
-                  simple: DBotScore.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "3"
-          accessor: Indicator
-          transformers:
-          - operator: uniq
       IP:
         complex:
           root: DBotScore
@@ -1570,10 +1547,6 @@ tasks:
           accessor: Indicator
           transformers:
           - operator: uniq
-      RuleDirection:
-        simple: outbound
-      RuleName:
-        simple: XSOAR - Block Indicators playbook - ${incident.id}
       SHA256:
         complex:
           root: DBotScore

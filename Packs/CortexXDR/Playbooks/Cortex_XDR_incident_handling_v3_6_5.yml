@@ -1716,8 +1716,6 @@ tasks:
                   simple: PortScan.AttackerIPs
                 iscontext: true
           - operator: uniq
-      InputEnrichment:
-        simple: "False"
       MD5:
         complex:
           root: File
@@ -1730,10 +1728,6 @@ tasks:
           accessor: MD5
           transformers:
           - operator: uniq
-      RuleDirection:
-        simple: outbound
-      RuleName:
-        simple: XSOAR - Block Indicators playbook - ${incident.id}
       SHA256:
         complex:
           root: File

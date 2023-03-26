@@ -2493,29 +2493,6 @@ tasks:
       DomainToBlock:
         complex:
           root: inputs.Domain
-      FilesToBlock:
-        complex:
-          root: DBotScore
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: file
-          - - operator: greaterThanOrEqual
-              left:
-                value:
-                  simple: DBotScore.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "3"
-          accessor: Indicator
-          transformers:
-          - operator: uniq
       IP:
         complex:
           root: inputs.IP
@@ -2535,10 +2512,6 @@ tasks:
               right:
                 value:
                   simple: "32"
-      RuleDirection:
-        simple: outbound
-      RuleName:
-        simple: XSOAR - Block Indicators playbook - ${incident.id}
       SHA256:
         complex:
           root: inputs.FileHash
@@ -2632,29 +2605,6 @@ tasks:
                 iscontext: true
           transformers:
           - operator: uniq
-      FilesToBlock:
-        complex:
-          root: DBotScore
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: file
-          - - operator: greaterThanOrEqual
-              left:
-                value:
-                  simple: DBotScore.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "3"
-          accessor: Indicator
-          transformers:
-          - operator: uniq
       IP:
         complex:
           root: inputs.IP
@@ -2695,10 +2645,6 @@ tasks:
                   simple: BlockIndicatorsList
                 iscontext: true
               ignorecase: true
-      RuleDirection:
-        simple: outbound
-      RuleName:
-        simple: XSOAR - Block Indicators playbook - ${incident.id}
       SHA256:
         complex:
           root: inputs.FileHash

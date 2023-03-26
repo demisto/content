@@ -1372,12 +1372,6 @@ tasks:
           accessor: action_remote_ip
           transformers:
             - operator: uniq
-      InputEnrichment:
-        simple: "False"
-      RuleDirection:
-        simple: outbound
-      RuleName:
-        simple: XSOAR - Block IP playbook - ${incident.id}
       UserVerification:
         complex:
           root: inputs.UserVerification
