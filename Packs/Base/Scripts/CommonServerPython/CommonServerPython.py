@@ -11039,8 +11039,8 @@ def send_to_xsiam_with_retries(client, events_error_handler, header_msg, headers
     :type zipped_data: ``bytes``
     :param zipped_data: The zipped data to send.
 
-    :return: Bool or DemistoException
-    :rtype: ``Bool`` or ``DemistoException``
+    :return: The response from XSIAM API or exception.
+    :rtype: ``requests.Response`` or ``DemistoException``
     """
     raw_response = xsiam_api_call_with_retries(
         client, xsiam_url, zipped_data, headers, num_of_attempts, events_error_handler
