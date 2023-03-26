@@ -41,11 +41,11 @@ ENTRY = "<entry>{}</entry>".format
 COLUMN = "<columns>{}</columns>".format
 BODY = "<act:entryList>{}</act:entryList>".format
 
-if not demisto.params().get("proxy", False):
-    del os.environ["HTTP_PROXY"]
-    del os.environ["HTTPS_PROXY"]
-    del os.environ["http_proxy"]
-    del os.environ["https_proxy"]
+# if not demisto.params().get("proxy", False):
+#     del os.environ["HTTP_PROXY"]
+#     del os.environ["HTTPS_PROXY"]
+#     del os.environ["http_proxy"]
+#     del os.environ["https_proxy"]
 
 
 @logger
@@ -111,6 +111,8 @@ def decode_arcsight_output(d, depth=0, remove_nones=True):
             return [decode_arcsight_output(d_, depth + 1) for d_ in d]
         if isinstance(d, dict):
             for key, value in d.copy().items():
+                if isinstance(value, list):
+                    return [decode_arcsight_output(value_, depth + 1) for value_ in value]
                 if isinstance(value, dict):
                     decode_arcsight_output(value, depth + 1)
                 elif value in NONE_VALUES:
@@ -131,6 +133,8 @@ def decode_arcsight_output(d, depth=0, remove_nones=True):
                     # the platform rounds number larger than 10000000000000000
                     # so we cast them to string to keep as is
                     d[key] = str(value)
+                elif isinstance(value, bytes):
+                    d[key] = value.decode()
     return d
 
 
@@ -872,7 +876,7 @@ def get_all_query_viewers_command():
         demisto.results('No Query Viewers were found')
 
 
-AUTH_TOKEN = demisto.getIntegrationContext().get('auth_token') or login()
+# AUTH_TOKEN = demisto.getIntegrationContext().get('auth_token') or login()
 
 
 def main():
