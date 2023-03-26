@@ -167,6 +167,11 @@
             "fromversion": "5.0.0"
         },
         {
+            "integrations": "AWS-WAF",
+            "playbookID": "TEST_AWS_WAF",
+            "fromversion": "6.5.0"
+        },
+        {
             "integrations": "GoogleDrive",
             "playbookID": "GoogleDrive-Test",
             "fromversion": "5.0.0"
@@ -650,7 +655,7 @@
             "integrations": "AutoFocus V2",
             "playbookID": "Autofocus Query Samples, Sessions and Tags Test Playbook",
             "fromversion": "4.5.0",
-            "timeout": 1000
+            "timeout": 1500
         },
         {
             "integrations": "HelloWorld",
@@ -2276,6 +2281,10 @@
             "integrations": "Whois",
             "playbookID": "whois_test",
             "fromversion": "4.1.0"
+        },
+        {
+            "integrations": "TeamCymru",
+            "playbookID": "TeamCymruTest"
         },
         {
             "integrations": "RSA NetWitness Endpoint",
@@ -5647,7 +5656,8 @@
         "AttackIQFireDrill": "License issues #29774",
         "LogRhythm": "The integration is deprecated",
         "Threat Grid": "No instance & Depreceated, replaced by ThreatGridv2",
-        "ThreatGridv2": "No instance - developed by Qmasters"
+        "ThreatGridv2": "No instance - developed by Qmasters",
+        "SentinelOne V2": "No instance - developed by partner"
     },
     "nightly_integrations": [],
     "nightly_packs": [
@@ -5809,7 +5819,8 @@
         "Anomali ThreatStream v3": "recording is not working",
         "LogRhythmRest V2": "Submits a file - tests that send files shouldn't be mocked.",
         "Cortex XDR - IR": "internal product, no need to mock",
-        "Microsoft Teams via Webhook": "message sent contains random hostname of server"
+        "Microsoft Teams via Webhook": "message sent contains random hostname of server",
+        "TeamCymru": "Mocks does not support sockets"
     },
     "parallel_integrations": [
         "AWS - ACM",
