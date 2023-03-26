@@ -26,6 +26,7 @@ def test_list_hosted_zones(mocker):
     - Ensure that the bucket was successfully created.
     """
     from CommonServerPython import tableToMarkdown
+
     args = TEST_PARAMS
     response = {
         'HostedZones': [
