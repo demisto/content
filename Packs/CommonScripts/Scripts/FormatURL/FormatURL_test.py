@@ -4,6 +4,7 @@ from FormatURL import *
 
 TEST_URL_HTTP = 'http://www.test.com'
 TEST_URL_HTTPS = 'https://www.test.com'
+TEST_URL_INNER_HXXP = 'http://www.testhxxp.com'
 
 NOT_FORMAT_TO_FORMAT = [  # Start of http:/ replacements.
     ('http:/www.test.com', TEST_URL_HTTP),
@@ -21,11 +22,15 @@ NOT_FORMAT_TO_FORMAT = [  # Start of http:/ replacements.
     ('hxxps:/www.test.com', TEST_URL_HTTPS),
     ('hXXp:/www.test.com', TEST_URL_HTTP),
     ('hXXps:/www.test.com', TEST_URL_HTTPS),
+    ('hxxp:/www.testhxxp.com', 'http://www.testhxxp.com'),
+    ('hXxp:/www.testhxxp.com', 'http://www.testhxxp.com'),
+
 
     ('hxxp:\\www.test.com', TEST_URL_HTTP),
     ('hxxps:\\www.test.com', TEST_URL_HTTPS),
     ('hXXp:\\www.test.com', TEST_URL_HTTP),
     ('hXXps:\\www.test.com', TEST_URL_HTTPS),
+    ('hxxps:/www.testhxxp.com', 'https://www.testhxxp.com'),
 
     ('hxxp:\\\\www.test.com', TEST_URL_HTTP),
     ('hxxps:\\\\www.test.com', TEST_URL_HTTPS),
@@ -39,7 +44,9 @@ NOT_FORMAT_TO_FORMAT = [  # Start of http:/ replacements.
     ('meow:\\\\www.test.com', TEST_URL_HTTP),
     ('meows:\\\\www.test.com', TEST_URL_HTTPS),
     ('meow:\\www.test.com', TEST_URL_HTTP),
+    ('meow:\\www.meow.com', 'http://www.meow.com'),
     ('meows:\\www.test.com', TEST_URL_HTTPS),
+    ('meows:\\www.meow.com', 'https://www.meow.com'),
     # end of meow/s replacements.
 
     # Start of Sanity test, no replacement should be done.
