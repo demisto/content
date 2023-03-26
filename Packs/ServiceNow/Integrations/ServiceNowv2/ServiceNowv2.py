@@ -1,8 +1,9 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import shutil
 from typing import Callable, Dict, Iterable, List, Tuple
 
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
+
 import mimetypes
 
 # disable insecure warnings
@@ -2110,10 +2111,12 @@ def get_mirroring():
     return {
         'mirror_direction': MIRROR_DIRECTION.get(params.get('mirror_direction')),
         'mirror_tags': [
-            params.get('comment_tag'),
+            params.get('comment_tag'),  # comment tag to service now
+            params.get('comment_tag_from_servicenow'),
             params.get('file_tag'),  # file tag to service now
             params.get('file_tag_from_service_now'),
-            params.get('work_notes_tag')
+            params.get('work_notes_tag'),  # work not tag to service now
+            params.get('work_notes_tag_from_servicenow')
         ],
         'mirror_instance': demisto.integrationInstance()
     }
@@ -2435,13 +2438,27 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
     for note in comments_result.get('result', []):
         if 'Mirrored from Cortex XSOAR' not in note.get('value'):
             comments_context = {'comments_and_work_notes': note.get('value')}
+
+            if (tagsstr := note.get('tags', 'none')) == 'none':
+                if note.get('element') == 'comments':
+                    tags = [params.get('comment_tag_from_servicenow', 'CommentFromServiceNow')]
+                else:
+                    tags = [params.get('work_notes_tag_from_servicenow', 'WorkNoteFromServiceNow')]
+            else:
+                if str(note.get('element')) == 'comments':
+                    tags = tagsstr + params.get('comment_tag_from_servicenow', 'CommentFromServiceNow')
+                    tags = argToList(tags)
+                else:
+                    tags = tagsstr + params.get('work_notes_tag_from_servicenow', 'WorkNoteFromServiceNow')
+                    tags = argToList(tags)
+
             entries.append({
                 'Type': note.get('type'),
                 'Category': note.get('category'),
                 'Contents': f"Type: {note.get('element')}\nCreated By: {note.get('sys_created_by')}\n"
                             f"Created On: {note.get('sys_created_on')}\n{note.get('value')}",
                 'ContentsFormat': note.get('format'),
-                'Tags': note.get('tags'),
+                'Tags': tags,
                 'Note': True,
                 'EntryContext': comments_context
             })
@@ -2458,7 +2475,7 @@ def get_remote_data_command(client: Client, args: Dict[str, Any], params: Dict) 
                 'Type': EntryType.NOTE,
                 'Contents': {
                     'dbotIncidentClose': True,
-                    'closeNotes': f'From ServiceNow: {ticket.get("close_notes")}',
+                    'closeNotes': ticket.get("close_notes"),
                     'closeReason': converts_state_close_reason(ticket.get("state"), server_close_custom_state)
                 },
                 'ContentsFormat': EntryFormat.JSON
@@ -2955,6 +2972,26 @@ def main():
         raise Exception(
             f'File Entry Tag To ServiceNow and File Entry Tag '
             f'From ServiceNow cannot be the same name [{file_tag_from_service_now}].'
+        )
+
+    comment_tag_from_servicenow, comment_tag = (
+        params.get('comment_tag_from_servicenow'), params.get('comment_tag')
+    )
+
+    if comment_tag_from_servicenow == comment_tag:
+        raise Exception(
+            f'Comment Entry Tag To ServiceNow and Comment Entry Tag '
+            f'From ServiceNow cannot be the same name [{comment_tag_from_servicenow}].'
+        )
+
+    work_notes_tag_from_servicenow, work_notes_tag = (
+        params.get('work_notes_tag_from_servicenow'), params.get('work_notes_tag')
+    )
+
+    if work_notes_tag_from_servicenow == work_notes_tag:
+        raise Exception(
+            f'Work note Entry Tag To ServiceNow and Work Note Entry Tag '
+            f'From ServiceNow cannot be the same name [{work_notes_tag_from_servicenow}].'
         )
 
     raise_exception = False
