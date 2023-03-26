@@ -150,7 +150,7 @@ class TestCommands:
         """
 
         mocker.patch.object(client, "get_detections", return_value=detections)
-        cmd_res = get_detections_cmd(client, last_timestamp="")
+        cmd_res = get_detections_cmd(client, first_timestamp="")
 
         if detections:
             assert len(cmd_res.outputs) == len(detections.get("results"))

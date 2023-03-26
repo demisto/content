@@ -19,12 +19,14 @@ configuration:
   display: First fetch time
   required: false
   type: 0
+  section: Collect
 - name: fetch_limit
   defaultvalue: '1000'
   display: Fetch Limit
   additionalinfo: Maximum amount of detections to fetch. Audits API does not include a fetch limit therefore this configuration is only relevant to detections.
   required: false
   type: 0
+  section: Collect
 - name: insecure
   display: Trust any certificate (not secure)
   required: false

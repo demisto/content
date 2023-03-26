@@ -69,12 +69,12 @@ class VectraClient(BaseClient):
             "Authorization": f"Token {self.api_key}",
         }
 
-    def get_detections(self, last_timestamp: str) -> Dict[str, Any]:
+    def get_detections(self, first_timestamp: str) -> Dict[str, Any]:
         """
         Retrieve detections. Detection objects contain all the information related to security events detected on the network.
 
         Arguments:
-        - `last_timestamp` (``str``): Filter for Detections by last updated. The date format is
+        - `first_timestamp` (``str``): Filter for Detections by last updated. The date format is
         DETECTION_TIMESTAMP_QUERY_FORMAT.
 
         Returns:
@@ -83,7 +83,7 @@ class VectraClient(BaseClient):
 
         params = {
             "page_size": self.max_fetch,
-            "query_string": f"detection.last_timestamp:[{last_timestamp} to NOW]",
+            "query_string": f"detection.first_timestamp:[{first_timestamp} to NOW]",
         }
 
         return self._http_request(
@@ -199,7 +199,7 @@ def get_most_recent_detection(detections: List[Dict[str, Any]]) -> Dict[str, Any
         - `detections` (``List[Dict[str, Any]]``): The list of detections
 
     Returns:
-        - `Dict[str, Any]` representing the most recent detection according to last_timestamp.
+        - `Dict[str, Any]` representing the most recent detection according to first_timestamp.
 
     """
     return sorted(
@@ -233,7 +233,7 @@ def test_module(client: VectraClient) -> str:
     return "ok"
 
 
-def get_detections_cmd(client: VectraClient, last_timestamp: str) -> CommandResults:
+def get_detections_cmd(client: VectraClient, first_timestamp: str) -> CommandResults:
 
     """
     Command function to retrieve detections.
@@ -245,7 +245,7 @@ def get_detections_cmd(client: VectraClient, last_timestamp: str) -> CommandResu
     - `CommandResults` to War Room.
     """
 
-    detections: List[Dict[str, Any]] = client.get_detections(last_timestamp=last_timestamp).get("results", [])  # type: ignore
+    detections: List[Dict[str, Any]] = client.get_detections(first_timestamp=first_timestamp).get("results", [])  # type: ignore
     if detections:
         md = tableToMarkdown(
             "Detections",
@@ -368,13 +368,13 @@ def fetch_events(
         )
 
         start = first_fetch.strftime(AUDIT_START_TIMESTAMP_FORMAT)
-        last_timestamp = first_fetch.strftime(DETECTION_TIMESTAMP_QUERY_FORMAT)
+        first_timestamp = first_fetch.strftime(DETECTION_TIMESTAMP_QUERY_FORMAT)
         previous_fetch_most_recent_audit_timestamp_str = "0"
 
     # Next fetches
     else:
 
-        last_timestamp = demisto.getLastRun().get(DETECTION_TIMESTAMP_KEY)
+        first_timestamp = demisto.getLastRun().get(DETECTION_TIMESTAMP_KEY)
 
         # If we're already fetching, we want only from today
         start = datetime.now().strftime(AUDIT_START_TIMESTAMP_FORMAT)
@@ -400,15 +400,15 @@ def fetch_events(
         most_recent_audit_str = previous_fetch_most_recent_audit_timestamp_str
 
     # Fetch Detections
-    demisto.info(f"Fetching detections from {last_timestamp} to now...")
-    detections = client.get_detections(last_timestamp=last_timestamp).get("results", [])
+    demisto.info(f"Fetching detections from {first_timestamp} to now...")
+    detections = client.get_detections(first_timestamp=first_timestamp).get("results", [])
 
     demisto.info(f"{len(detections)} detections found.")
 
     if detections:
         most_recent_detection = get_most_recent_detection(detections)
-        # The filter for detections by last_timestamp is inclusive so we need to increase it by 1 minute
-        next_run_detection_last_timestamp = datetime.strftime(
+        # The filter for detections by first_timestamp is inclusive so we need to increase it by 1 minute
+        next_run_detection_first_timestamp = datetime.strftime(
             datetime.strptime(
                 most_recent_detection.get(DETECTION_TIMESTAMP_KEY), DETECTION_TIMESTAMP_FORMAT
             )
@@ -418,13 +418,13 @@ def fetch_events(
 
     # If no detections were fetched, we can reuse the current min_id
     else:
-        next_run_detection_last_timestamp = last_timestamp
+        next_run_detection_first_timestamp = first_timestamp
 
     return (
         detections,
         audits,
         {
-            DETECTION_TIMESTAMP_KEY: next_run_detection_last_timestamp,
+            DETECTION_TIMESTAMP_KEY: next_run_detection_first_timestamp,
             AUDIT_NEXT_RUN_KEY: most_recent_audit_str,  # type: ignore
         },
     )
@@ -447,7 +447,7 @@ def get_events(
     """
 
     detection_res = get_detections_cmd(
-        client=client, last_timestamp=first_fetch.strftime(DETECTION_TIMESTAMP_QUERY_FORMAT)
+        client=client, first_timestamp=first_fetch.strftime(DETECTION_TIMESTAMP_QUERY_FORMAT)
     )
 
     audits_res = get_audits_cmd(
