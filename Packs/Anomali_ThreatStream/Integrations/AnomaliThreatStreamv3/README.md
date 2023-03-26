@@ -3574,6 +3574,10 @@ Gets list of users from ThreatStream. Only org admin permission can run this com
 
 `threatstream-list-user`
 
+##### Required Permissions
+
+`org admin`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -4104,27 +4108,26 @@ Updates an existing investigation at ThreatStream.
 | ThreatStream.Investigation.elements.add_related_indicators | Number | When enabled, observables related to the entity you are associating with the investigation are also added. | 
 | ThreatStream.Investigation.elements.r_id | Number | Unique ID assigned to the entity. | 
 | ThreatStream.Investigation.elements.r_type | String | Type of entity associated with the investigation. | 
-| ThreatStream.Investigation.graph_content | Boolean |  | 
-| ThreatStream.Investigation.id | Number |  | 
+| ThreatStream.Investigation.graph_content | Unknown | The investigation graph content details. | 
+| ThreatStream.Investigation.id | Number | The ID of the investigation. | 
 | ThreatStream.Investigation.is_public | Boolean | Whether the entity is public or private | 
-| ThreatStream.Investigation.modified_ts | Date |  | 
-| ThreatStream.Investigation.name | String |  | 
-| ThreatStream.Investigation.owner_org.id | String |  | 
-| ThreatStream.Investigation.owner_org.name | String |  | 
-| ThreatStream.Investigation.owner_org.resource_uri | String |  | 
-| ThreatStream.Investigation.owner_org_id | Unknown |  | 
-| ThreatStream.Investigation.priority | String |  | 
-| ThreatStream.Investigation.reporter.email | String |  | 
-| ThreatStream.Investigation.reporter.id | String |  | 
-| ThreatStream.Investigation.reporter.name | String |  | 
-| ThreatStream.Investigation.reporter.resource_uri | String |  | 
-| ThreatStream.Investigation.reporter_id | Number |  | 
-| ThreatStream.Investigation.resource_uri | String |  | 
-| ThreatStream.Investigation.source_type | String |  | 
-| ThreatStream.Investigation.status | String |  | 
-| ThreatStream.Investigation.tags | String |  | 
-| ThreatStream.Investigation.tlp | String |  | 
-
+| ThreatStream.Investigation.modified_ts | Date | The date the investigation was modified. | 
+| ThreatStream.Investigation.name | String | The investigation name. | 
+| ThreatStream.Investigation.owner_org.id | String | The owner organization ID. | 
+| ThreatStream.Investigation.owner_org.name | String | The owner organization name. | 
+| ThreatStream.Investigation.owner_org.resource_uri | String | The owner organization resource URI. | 
+| ThreatStream.Investigation.owner_org_id | Unknown | Organization ID of the owner. | 
+| ThreatStream.Investigation.priority | String | The priority of the investigation. | 
+| ThreatStream.Investigation.reporter.email | String | Email address of the user who created the investigation. | 
+| ThreatStream.Investigation.reporter.id | String | ID of the user who created the investigation. | 
+| ThreatStream.Investigation.reporter.name | String | Name of the user who created the investigation. | 
+| ThreatStream.Investigation.reporter.resource_uri | String | Resource URI of the user who created the investigation. | 
+| ThreatStream.Investigation.reporter_id | Number | ID of the user who created the investigation. | 
+| ThreatStream.Investigation.resource_uri | String | The investigation resource URI. | 
+| ThreatStream.Investigation.source_type | String | The type of source used to create the investigation. | 
+| ThreatStream.Investigation.status | String | The investigation status. | 
+| ThreatStream.Investigation.tags | String | The tags associated with the investigation. | 
+| ThreatStream.Investigation.tlp | String | Traffic Light Protocol designation for the investigation—red, amber, green, white. | 
 #### Command example
 ```!threatstream-update-investigation investigation_id=111 priority=Low status="In-Progress" assignee_id=111```
 #### Context Example
@@ -4586,6 +4589,10 @@ Approving all observables in an import job
 #### Base Command
 
 `threatstream-approve-import-job`
+
+##### Required Permissions
+
+`Approve Intel user permission`
 
 #### Input
 
