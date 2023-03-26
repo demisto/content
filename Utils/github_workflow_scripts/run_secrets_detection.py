@@ -39,6 +39,11 @@ def trigger_generic_webhook(options):
         "raw_json": {"BranchName": branch_name, "PullRequestNumber": pr_number},
     }
     # post to Content Gold
+    import socket
+    try:
+        s = socket.create_connection(('google.com', 80))
+    except Exception as e:
+        raise ValueError(e)
     try:
         res = requests.post(secrets_instance_url, json=body, auth=(username, password))
     except Exception as e:
