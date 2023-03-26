@@ -43,14 +43,15 @@ configuration:
   name: filter_by_label_name
   required: false
   type: 0
-- display: API Version
+  defaultvalue: ''
+- defaultvalue: 3.x
+  display: API Version
   additionalinfo: the version of Tanium Threat Response your instance supports.
-  defaultvalue: 4.x
   name: api_version
   required: false
   options:
-  - 3.x
-  - 4.x
+    - 3.x
+    - 4.x
   type: 15
 - display: Trust any certificate (not secure)
   name: insecure
@@ -1828,19 +1829,47 @@ script:
     name: tanium-tr-get-response-actions
     outputs:
     - contextPath: Tanium.ResponseActions.id
+      description: ''
+      type: String
     - contextPath: Tanium.ResponseActions.type
+      description: ''
+      type: String
     - contextPath: Tanium.ResponseActions.status
+      description: ''
+      type: String
     - contextPath: Tanium.ResponseActions.computerName
+      description: ''
+      type: String
     - contextPath: Tanium.ResponseActions.userId
+      description: ''
+      type: String
     - contextPath: Tanium.ResponseActions.userName
+      description: ''
+      type: String
     - contextPath: Tanium.ResponseActions.results.taskIds
+      description: ''
+      type: String
     - contextPath: Tanium.ResponseActions.results.actionIds
+      description: ''
+      type: String
     - contextPath: Tanium.ResponseActions.results.snapshotName
+      description: ''
+      type: String
     - contextPath: Tanium.ResponseActions.results.uuid
+      description: ''
+      type: String
     - contextPath: Tanium.ResponseActions.expirationTime
+      description: ''
+      type: Date
     - contextPath: Tanium.ResponseActions.createdAt
+      description: ''
+      type: Date
     - contextPath: Tanium.ResponseActions.updatedAt
+      description: ''
+      type: Date
     - contextPath: Tanium.ResponseActions.eid
+      description: ''
+      type: String
   - arguments:
     - description: Target computer name
       name: computer_name
@@ -1851,17 +1880,41 @@ script:
     name: tanium-tr-response-action-gather-snapshot
     outputs:
     - contextPath: Tanium.ResponseActions.type
+      description: ''
+      type: String
     - contextPath: Tanium.ResponseActions.computerName
+      description: ''
+      type: String
     - contextPath: Tanium.ResponseActions.options
+      description: ''
+      type: String
     - contextPath: Tanium.ResponseActions.status
+      description: ''
+      type: String
     - contextPath: Tanium.ResponseActions.userId
+      description: ''
+      type: String
     - contextPath: Tanium.ResponseActions.userName
+      description: ''
+      type: String
     - contextPath: Tanium.ResponseActions.results
+      description: ''
+      type: String
     - contextPath: Tanium.ResponseActions.expirationTime
+      description: ''
+      type: Date
     - contextPath: Tanium.ResponseActions.createdAt
+      description: ''
+      type: Date
     - contextPath: Tanium.ResponseActions.updatedAt
+      description: ''
+      type: Date
     - contextPath: Tanium.ResponseActions.id
+      description: ''
+      type: String
     - contextPath: Tanium.ResponseActions.eid
+      description: ''
+      type: String
   dockerimage: demisto/lxml:1.0.0.48857
   isfetch: true
   runonce: false

@@ -621,7 +621,7 @@ def test_alert_update_state(requests_mock):
     requests_mock.put(BASE_URL + '/plugin/products/detect3/api/v1/alerts/', json={})
     requests_mock.put(BASE_URL + '/plugin/products/threat-response/api/v1/alerts/', json={})
 
-    args = {'alert_ids': '1,2',
+    args = {'alert_ids': '1,2,test',
             'state': 'unresolved'}
     human_readable, outputs, _ = TaniumThreatResponseV2.alert_update_state(MOCK_CLIENT, args)
     assert 'Alert state updated to unresolved' in human_readable
