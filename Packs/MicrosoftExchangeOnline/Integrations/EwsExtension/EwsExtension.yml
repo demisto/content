@@ -1,4 +1,4 @@
-category: Messaging
+category: Email
 sectionorder:
 - Connect
 - Collect
@@ -1836,7 +1836,8 @@ script:
       description: The date in UTC format of when the mailbox audit bypass association
         was created.
       type: Date
-  dockerimage: demisto/powershell-ubuntu:7.2.2.29705
+  dockerimage: demisto/powershell-ubuntu:7.1.4.24032
+  # Please do not change the docker image until CIAC-5623 is handled.
   feed: false
   isfetch: false
   longRunning: false
@@ -1845,5 +1846,6 @@ script:
   script: '-'
   type: powershell
 tests:
-- O365 - EWS - Extension - Test
+- playbook-EWS_O365_Extension_test
 fromversion: 5.5.0
+autoUpdateDockerImage: false

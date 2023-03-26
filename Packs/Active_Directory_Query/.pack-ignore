@@ -17,4 +17,4 @@ ignore=CJ105
 LDAP
 TLS
 userAccountControl
-
+ZipProtectWithPassword

@@ -1,0 +1,6 @@
+!aws-access-analyzer-list-analyzers
+!aws-access-analyzer-list-findings analyzerArn=arn:aws:access-analyzer:us-east-1:120785635586:analyzer/ConsoleAnalyzer-fc3b189d-f88a-48a5-9c2b-f42f9187c898
+!aws-access-analyzer-list-analyzed-resource analyzerArn=arn:aws:access-analyzer:us-east-1:120785635586:analyzer/ConsoleAnalyzer-fc3b189d-f88a-48a5-9c2b-f42f9187c898
+!aws-access-analyzer-get-analyzed-resource analyzerArn=arn:aws:access-analyzer:us-east-1:120785635586:analyzer/ConsoleAnalyzer-fc3b189d-f88a-48a5-9c2b-f42f9187c898 resourceArn=arn:aws:iam::120785635586:role/-TestRole
+!aws-access-analyzer-get-finding analyzerArn=arn:aws:access-analyzer:us-east-1:120785635586:analyzer/ConsoleAnalyzer-fc3b189d-f88a-48a5-9c2b-f42f9187c898 findingId=03c44171-223c-4615-be8a-bf0b626f0b13
+!aws-access-analyzer-start-resource-scan analyzerArn=arn:aws:access-analyzer:us-east-1:120785635586:analyzer/ConsoleAnalyzer-fc3b189d-f88a-48a5-9c2b-f42f9187c898 resourceArn=arn:aws:iam::120785635586:role/billing-bot-role
