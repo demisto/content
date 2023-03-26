@@ -10,9 +10,7 @@ from VectraAIEventCollector import (
     XSIAM_TIME_FORMAT,
     AUDIT_START_TIMESTAMP_FORMAT,
     AUDIT_NEXT_RUN_KEY,
-    DETECTION_TIMESTAMP_FORMAT,
     DETECTION_TIMESTAMP_QUERY_FORMAT,
-    DETECTION_NEXT_RUN_KEY,
     DETECTION_TIMESTAMP_KEY,
     get_detections_cmd,
     get_audits_cmd,
@@ -239,9 +237,9 @@ class TestCommands:
 
         if detections_actual:
             assert len(detections_actual) == 5
-            assert next_fetch.get(DETECTION_NEXT_RUN_KEY) == "2022-09-30T0557"
+            assert next_fetch.get(DETECTION_TIMESTAMP_KEY) == "2022-09-14T0105"
         else:
-            assert next_fetch.get(DETECTION_NEXT_RUN_KEY) == "1969-12-29T0000"
+            assert next_fetch.get(DETECTION_TIMESTAMP_KEY) == "1969-12-29T0000"
 
     @freeze_time("2023-02-19 00:00:13")
     def test_not_first_fetch(
@@ -270,7 +268,7 @@ class TestCommands:
             demisto,
             "getLastRun",
             return_value={
-                DETECTION_NEXT_RUN_KEY: datetime.now().strftime(DETECTION_TIMESTAMP_QUERY_FORMAT),
+                DETECTION_TIMESTAMP_KEY: datetime.now().strftime(DETECTION_TIMESTAMP_QUERY_FORMAT),
                 AUDIT_NEXT_RUN_KEY: str(datetime.now().timestamp()),
             },
         )
@@ -284,9 +282,9 @@ class TestCommands:
             )
 
         if detections_actual:
-            assert next_fetch.get(DETECTION_NEXT_RUN_KEY) == "2022-09-30T0557"
+            assert next_fetch.get(DETECTION_TIMESTAMP_KEY) == "2022-09-14T0105"
         else:
-            assert next_fetch.get(DETECTION_NEXT_RUN_KEY) == "2023-02-19T0000"
+            assert next_fetch.get(DETECTION_TIMESTAMP_KEY) == "2023-02-19T0000"
 
 
 """ Helper Functions Tests """
@@ -376,13 +374,13 @@ def test_add_parsing_rules(event: Dict[str, Any], expected_time: str, format: st
     [
         (
             [
-                {DETECTION_NEXT_RUN_KEY: "2022-09-14T00:54:56Z"},
-                {DETECTION_NEXT_RUN_KEY: "2022-09-16T00:54:56Z"},
-                {DETECTION_NEXT_RUN_KEY: "2022-09-15T00:54:56Z"},
+                {DETECTION_TIMESTAMP_KEY: "2022-09-14T00:54:56Z"},
+                {DETECTION_TIMESTAMP_KEY: "2022-09-16T00:54:56Z"},
+                {DETECTION_TIMESTAMP_KEY: "2022-09-15T00:54:56Z"},
             ],
             "2022-09-16T00:54:56Z",
         ),
-        (DETECTIONS.get("results"), "2022-09-30T05:56:02Z"),
+        (DETECTIONS.get("results"), "2022-09-14T01:04:43Z"),
     ],
 )
 def test_get_most_recent_detection(detections: List[Dict[str, Any]], expected: str):
@@ -398,4 +396,4 @@ def test_get_most_recent_detection(detections: List[Dict[str, Any]], expected: s
 
     actual = get_most_recent_detection(detections=detections)
     assert isinstance(actual, Dict)
-    assert actual.get(DETECTION_NEXT_RUN_KEY) == expected
+    assert actual.get(DETECTION_TIMESTAMP_KEY) == expected

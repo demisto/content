@@ -21,7 +21,6 @@ VENDOR = "Vectra"
 
 DETECTION_TIMESTAMP_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 DETECTION_TIMESTAMP_QUERY_FORMAT = "%Y-%m-%dT%H%M"
-DETECTION_NEXT_RUN_KEY = "last_timestamp"
 DETECTION_TIMESTAMP_KEY = "first_timestamp"
 
 AUDIT_START_TIMESTAMP_FORMAT = "%Y-%m-%d"
@@ -205,7 +204,7 @@ def get_most_recent_detection(detections: List[Dict[str, Any]]) -> Dict[str, Any
     """
     return sorted(
         detections,
-        key=lambda d: datetime.strptime(d.get(DETECTION_NEXT_RUN_KEY), DETECTION_TIMESTAMP_FORMAT),
+        key=lambda d: datetime.strptime(d.get(DETECTION_TIMESTAMP_KEY), DETECTION_TIMESTAMP_FORMAT),
         reverse=True,
     )[0]
 
@@ -375,7 +374,7 @@ def fetch_events(
     # Next fetches
     else:
 
-        last_timestamp = demisto.getLastRun().get(DETECTION_NEXT_RUN_KEY)
+        last_timestamp = demisto.getLastRun().get(DETECTION_TIMESTAMP_KEY)
 
         # If we're already fetching, we want only from today
         start = datetime.now().strftime(AUDIT_START_TIMESTAMP_FORMAT)
@@ -411,7 +410,7 @@ def fetch_events(
         # The filter for detections by last_timestamp is inclusive so we need to increase it by 1 minute
         next_run_detection_last_timestamp = datetime.strftime(
             datetime.strptime(
-                most_recent_detection.get(DETECTION_NEXT_RUN_KEY), DETECTION_TIMESTAMP_FORMAT
+                most_recent_detection.get(DETECTION_TIMESTAMP_KEY), DETECTION_TIMESTAMP_FORMAT
             )
             + timedelta(minutes=1),
             DETECTION_TIMESTAMP_QUERY_FORMAT,
@@ -425,7 +424,7 @@ def fetch_events(
         detections,
         audits,
         {
-            DETECTION_NEXT_RUN_KEY: next_run_detection_last_timestamp,
+            DETECTION_TIMESTAMP_KEY: next_run_detection_last_timestamp,
             AUDIT_NEXT_RUN_KEY: most_recent_audit_str,  # type: ignore
         },
     )
