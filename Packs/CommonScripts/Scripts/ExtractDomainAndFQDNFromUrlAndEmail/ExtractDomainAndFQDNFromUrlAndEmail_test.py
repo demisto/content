@@ -24,8 +24,10 @@ import pytest
     ('hxxps://path.test.com/check', 'path.test.com'),
     ('hxxps://path.test.com/check', 'path.test.com'),
     ('hxxps://path.hxxp.com/check', 'path.hxxp.com'),
+    ('hxXps://path.hxxp.com/check', 'path.hxxp.com'),
     ('meow://path.meow.com/check', 'path.meow.com'),
     ('meow://path.mEow.com/check', 'path.meow.com'),
+    ('meOw://path.mEow.com/check', 'path.meow.com'),
     ('http-3A__go.getpostman.com_', 'go.getpostman.com'),
     ('http://survey.lavulcamktg.cl/index.php/', 'survey.lavulcamktg.cl'),
 

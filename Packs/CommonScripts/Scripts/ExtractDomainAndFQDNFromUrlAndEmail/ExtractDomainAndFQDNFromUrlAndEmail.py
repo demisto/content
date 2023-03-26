@@ -41,8 +41,7 @@ def proofpoint_get_original_url(safe_url):  # pragma: no cover
 
 def unescape_url(escaped_url):
     # Normalize: 1) [.] --> . 2) hxxp --> http 3) &amp --> & 4) http:\\ --> http://
-    url = escaped_url.lower().replace('[.]', '.').replace('&amp;', '&') \
-        .replace('http:\\\\', 'http://')
+    url = escaped_url.lower().replace('[.]', '.').replace('&amp;', '&').replace('http:\\\\', 'http://')
     schemas = re.compile("(meow|hxxp)", re.IGNORECASE)
     # Normalize the URL with http prefix
     lower_url = url.lower()
