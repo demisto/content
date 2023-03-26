@@ -2,11 +2,12 @@ args:
 - auto: PREDEFINED
   description: The action to perform on the image.
   name: action
+  defaultValue: original
   predefined:
   - grayscale
   - sharpened
   - original
-  required: true
+  required: false
 - default: false
   description: 'The desired width for resizing the image to. For example: image_resize_width=500'
   isArray: false
