@@ -87,10 +87,10 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
         'components': 'fields.components'
     }
 
-    # This will hold a mapping between the issue fields arguments that is supplied by the user, and the path
-    # of them in the issue fields object when updating a new issue, in dotted string format, and the key to hold
-    # the new value. For example, when updating a new issue, we send to the API an issue fields object that holds data
-    # about the updated issue, and if we want to update the assignee_id, then we supply it as:
+    # This will hold a mapping between the issue fields arguments that is supplied by the user, and a tuple,
+    # where the first value is the path of them in the issue fields object when updating an issue, in dotted string format,
+    # and the key to hold the new value. For example, when updating a new issue, we send to the API an issue fields object that
+    # holds data about the updated issue, and if we want to update the assignee_id, then we supply it as:
     # {update:
     #   {assignee:
     #       [{set: {accountId: THE_PROJECT_KEY}}]
@@ -102,20 +102,20 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
     #       [{set: NEW_SUMMARY}]
     #   }
     # }
-    ISSUE_FIELDS_UPDATE_MAPPER: Dict[str, tuple[str, str]] = {
-        'summary': ('update.summary', ''),
-        'description': ('update.description', ''),
+    ISSUE_FIELDS_APPENDABLE_MAPPER: Dict[str, tuple[str, str]] = {
+        # 'summary': ('update.summary', ''),
+        # 'description': ('update.description', ''),
         'labels': ('update.labels', ''),
-        'priority': ('update.priority', 'name'),
-        'due_date': ('update.duedate', ''),
-        'assignee': ('update.assignee', 'name'),  # Does not work for Jira Cloud
-        'assignee_id': ('update.assignee', 'accountId'),
-        'reporter': ('update.reporter', 'name'),
-        'reporter_id': ('update.reporter', 'accountId'),
-        'parent_issue_key': ('update.parent', 'key'),
-        'parent_issue_id': ('update.parent', 'id'),
-        'environment': ('update.environment', ''),
-        'security': ('update.security', 'name'),
+        # 'priority': ('update.priority', 'name'),
+        # 'due_date': ('update.duedate', ''),
+        # 'assignee': ('update.assignee', 'name'),  # Does not work for Jira Cloud
+        # 'assignee_id': ('update.assignee', 'accountId'),
+        # 'reporter': ('update.reporter', 'name'),
+        # 'reporter_id': ('update.reporter', 'accountId'),
+        # 'parent_issue_key': ('update.parent', 'key'),
+        # 'parent_issue_id': ('update.parent', 'id'),
+        # 'environment': ('update.environment', ''),
+        # 'security': ('update.security', 'name'),
         'components': ('update.components', '')
     }
 
@@ -1374,7 +1374,7 @@ def create_fields_dict_from_dotted_string(issue_fields: Dict[str, Any], dotted_s
     return nested_dict
 
 
-def get_issue_fields_for_create(issue_args: Dict[str, str], issue_fields_mapper: Dict[str, str]) -> Dict[str, Any]:
+def create_issue_fields(issue_args: Dict[str, str], issue_fields_mapper: Dict[str, str]) -> Dict[str, Any]:
     """This will create the issue fields object that will be sent to the API in order to create a new Jira issue.
 
     Args:
@@ -1459,15 +1459,15 @@ def create_update_dict_from_dotted_string(issue_fields: Dict[str, Any], dotted_s
     return nested_dict
 
 
-def get_issue_fields_for_update(issue_args: Dict[str, str], issue_update_mapper: Dict[str, tuple[str, str]],
-                                action: str) -> Dict[str, Any]:
+def create_issue_fields_for_update(issue_args: Dict[str, str], issue_update_mapper: Dict[str, tuple[str, str]],
+                                   action: str) -> Dict[str, Any]:
     """This will create the issue fields object that will be sent to the API in order to update a Jira issue.
 
     Args:
         issue_args (Dict[str, str]): The issue arguments supplied by the user
         issue_fields_mapper (Dict[str, str]): A mapper that will map between the issue fields arguments that is supplied by
         the user, and the path of them in the issue fields object when updating a new issue, in dotted string format, and the
-        key to hold the new value, for reference, look at the ISSUE_FIELDS_UPDATE_MAPPER constant in JiraBaseClient.
+        key to hold the new value, for reference, look at the ISSUE_FIELDS_APPENDABLE_MAPPER constant in JiraBaseClient.
         action (str): Whether the update should append or rewrite the values.
 
     Raises:
@@ -1894,7 +1894,7 @@ def create_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> Comman
     Returns:
         CommandResults: CommandResults to return to XSOAR.
     """
-    issue_fields = get_issue_fields_for_create(issue_args=args, issue_fields_mapper=client.ISSUE_FIELDS_CREATE_MAPPER)
+    issue_fields = create_issue_fields(issue_args=args, issue_fields_mapper=client.ISSUE_FIELDS_CREATE_MAPPER)
     res = client.create_issue(json_data=issue_fields)
     outputs = {'Id': res.get('id', ''), 'Key': res.get('key', '')}
     markdown_dict = outputs | {'Ticket Link': res.get('self', ''),
@@ -1922,8 +1922,8 @@ def edit_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandR
     Returns:
         CommandResults: CommandResults to return to XSOAR.
     """
-    # TODO If the action is rewrite, then use the same issue fields object as returned by get_issue_fields_for_create,
-    # and if the action is append, the use get_issue_fields_for_update, this way, we will also be able to change the parent issue
+    # TODO If the action is rewrite, then use the same issue fields object as returned by create_issue_fields,
+    # and if the action is append, the use create_issue_fields_for_update, this way, we will also be able to change the parent issue
     # of a subtask.
     issue_id_or_key = args.get('issue_id', args.get('issue_key', ''))
     if not issue_id_or_key:
@@ -1939,11 +1939,18 @@ def edit_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandR
         demisto.log(f'Updating the status using the transition: {transition}')
         apply_issue_transition(client=client, issue_id_or_key=issue_id_or_key, transition_name=transition)
     action = args.get('action', 'rewrite')
-    update_fields = get_issue_fields_for_update(
-        issue_args=args, issue_update_mapper=client.ISSUE_FIELDS_UPDATE_MAPPER, action=action)
-    # issue_fields = get_issue_fields_for_create(issue_args=args, issue_fields_mapper=client.ISSUE_FIELDS_CREATE_MAPPER)
+    issue_fields = {}
+    if action == 'rewrite':
+        issue_fields = create_issue_fields(issue_args=args, issue_fields_mapper=client.ISSUE_FIELDS_CREATE_MAPPER)
+    else:
+        # That means the action was `append`
+        issue_fields = create_issue_fields_for_update(
+            issue_args=args, issue_update_mapper=client.ISSUE_FIELDS_APPENDABLE_MAPPER, action=action)
+    # update_fields = create_issue_fields_for_update(
+    #     issue_args=args, issue_update_mapper=client.ISSUE_FIELDS_APPENDABLE_MAPPER, action=action)
+    # issue_fields = create_issue_fields(issue_args=args, issue_fields_mapper=client.ISSUE_FIELDS_CREATE_MAPPER)
     # client.edit_issue(issue_id_or_key=issue_id_or_key, json_data=issue_fields)
-    client.edit_issue(issue_id_or_key=issue_id_or_key, json_data=update_fields)
+    client.edit_issue(issue_id_or_key=issue_id_or_key, json_data=issue_fields)
     demisto.log(f'Issue {issue_id_or_key} was updated successfully')
     res = client.get_issue(issue_id_or_key=issue_id_or_key)
     markdown_dict, outputs = create_issue_md_and_outputs_dict(issue_data=res)
@@ -3036,7 +3043,6 @@ def remove_empty_custom_fields(issue: Dict[str, Any], issue_fields_id_to_name_ma
     # Since issue.get('renderedFields') can also return the fields of the issue, rendered in HTML
     # format if possible, therefore, we also need to iterate over them to remove empty custom fields.
     for issue_fields in [issue.get('fields', {}), issue.get('renderedFields', {})]:
-        # issue_fields = issue.get('fields', {})
         # It is important to iterate over list(issue_fields) and not issue_fields or issue_fields.items(),
         # because we are deleting entries while iterating over the dictionary, if we do not, we will get the error,
         # RuntimeError: dictionary changed size during iteration
@@ -3205,11 +3211,7 @@ def create_incident_from_issue(client: JiraBaseClient, issue: Dict[str, Any], fe
 
     ]
     issue['parsedDescription'] = issue_description
-    issue['extractedAttachments'] = JiraIssueFieldsParser.get_attachments_context(issue_data=issue).get('Attachments') or []
-    issue['extractedSubtasks'] = JiraIssueFieldsParser.get_subtasks_context(issue_data=issue).get('Subtasks') or []
-    issue['extractedCreator'] = JiraIssueFieldsParser.get_creator_context(issue_data=issue).get('Creator') or ''
-    issue['extractedComponents'] = JiraIssueFieldsParser.get_components_context(issue_data=issue).get('Components') or []
-
+    add_extracted_data_to_incident(issue=issue)
     incident_name = f"Jira issue: {issue.get('id')}"
 
     severity = get_jira_issue_severity(issue_field_priority=demisto.get(issue, 'fields.priority') or {})
@@ -3256,6 +3258,21 @@ def create_incident_from_issue(client: JiraBaseClient, issue: Dict[str, Any], fe
         "attachment": attachments,
         "rawJSON": json.dumps(issue)
     }
+
+
+def add_extracted_data_to_incident(issue: Dict[str, Any]) -> None:
+    """This function extracts data from the issue response returned from the API, to add it to the given issue object,
+    so it can be forwarded as part of the incident's data, since most of the data returned from the API contains a lot
+    of nested objects, which require further extraction.
+    The data that is extracted: Attachments, Subtasks, Creator, Components
+
+    Args:
+        issue (Dict[str, Any]): The issue object returned from the API.
+    """
+    issue['extractedAttachments'] = JiraIssueFieldsParser.get_attachments_context(issue_data=issue).get('Attachments') or []
+    issue['extractedSubtasks'] = JiraIssueFieldsParser.get_subtasks_context(issue_data=issue).get('Subtasks') or []
+    issue['extractedCreator'] = JiraIssueFieldsParser.get_creator_context(issue_data=issue).get('Creator') or ''
+    issue['extractedComponents'] = JiraIssueFieldsParser.get_components_context(issue_data=issue).get('Components') or []
 
 
 def get_jira_issue_severity(issue_field_priority: Dict[str, Any]) -> int:
@@ -3355,13 +3372,17 @@ def get_modified_issue_ids(client: JiraBaseClient, last_update_date: str, timezo
 
 
 def get_remote_data_command(client: JiraBaseClient, args: Dict[str, Any],
+                            attachment_tag: str, comment_tag: str,
                             mirror_resolved_issue: bool) -> GetRemoteDataResponse:
-    """ Mirror-in data to incident from Jira into XSOAR 'jira issue' incident.
+    """ Mirror-in data to incident from Jira into XSOAR 'Jira Incident' incident.
 
-    Notes:
-        1. Documentation on mirroring - https://xsoar.pan.dev/docs/integrations/mirroring_integration
+    NOTE: Documentation on mirroring - https://xsoar.pan.dev/docs/integrations/mirroring_integration
 
     Args:
+        client (JiraBaseClient): The Jira client.
+        attachment_tag (str): The attachment tag, to tag the mirrored attachments.
+        comment_tag (str): The comment tag, to tag the mirrored comments.
+        mirror_resolved_issue (bool): Whether to mirror Jira issues that have been resolved, or have the status `Done`.
         args:
             id: Remote incident id.
             lastUpdate: Server last sync time with remote server.
@@ -3369,7 +3390,7 @@ def get_remote_data_command(client: JiraBaseClient, args: Dict[str, Any],
     Returns:
         GetRemoteDataResponse: Structured incident response.
     """
-    incident_update = {}
+    updated_incident: Dict[str, Any] = {}
     parsed_entries: List[Dict[str, Any]] = []
     parsed_args = GetRemoteDataArgs(args)
     try:
@@ -3377,72 +3398,78 @@ def get_remote_data_command(client: JiraBaseClient, args: Dict[str, Any],
         demisto.debug(f'Performing get-remote-data command with incident id: {issue_id} '
                       f'and last_update: {parsed_args.last_update}')
         # Get raw response for issue ID
-        issue_raw_response = client.get_issue(issue_id_or_key=issue_id)
-        issue_description: str = JiraIssueFieldsParser.get_description_context(issue_raw_response).get('Description') or ''
-        issue_raw_response['parsedDescription'] = issue_description
-        issue_raw_response['extractedAttachments'] = JiraIssueFieldsParser.get_attachments_context(
-            issue_raw_response).get('Attachments') or []
-        issue_raw_response['extractedSubtasks'] = JiraIssueFieldsParser.get_subtasks_context(
-            issue_raw_response).get('Subtasks') or []
-        issue_raw_response['extractedCreator'] = JiraIssueFieldsParser.get_creator_context(
-            issue_raw_response).get('Creator') or ''
-        issue_raw_response['extractedComponents'] = JiraIssueFieldsParser.get_components_context(
-            issue_raw_response).get('Components') or []
-        remove_empty_custom_fields(issue=issue_raw_response,
-                                   issue_fields_id_to_name_mapping=issue_raw_response.get('names', {}) or {})
+        issue = client.get_issue(issue_id_or_key=issue_id)
+        issue['parsedDescription'] = JiraIssueFieldsParser.get_description_context(
+            issue).get('Description') or ''
+        add_extracted_data_to_incident(issue=issue)
+        remove_empty_custom_fields(issue=issue,
+                                   issue_fields_id_to_name_mapping=issue.get('names', {}) or {})
         demisto.debug(f'Got remote data for incident {issue_id}')
         # issue_modified_date: Timestamp of the last updated time of the issue in Jira
         # incident_modified_date: Timestamp of the last updated time of the incident in XSOAR
         #
         # The following if statement is to make sure that we don't get None values when using dateparser.parse
         # by using the walrus operator (:=).
-        if (issue_modified_date := dateparser.parse(demisto.get(issue_raw_response, 'fields.updated'))) \
+        if (issue_modified_date := dateparser.parse(demisto.get(issue, 'fields.updated'))) \
                 and (incident_modified_date := dateparser.parse(parsed_args.last_update)):
             demisto.debug(f"Issue modified date in Jira: {issue_modified_date}")
             demisto.debug(f"Incident modified date: {incident_modified_date}")
             # Update incident only if issue modified in Jira is after the last update time of the incident
             if issue_modified_date > incident_modified_date:
-                demisto.debug('Updating remote data')
-                incident_update = issue_raw_response
+                #     demisto.debug('Updating remote data')
+                #     updated_incident = issue
 
-                demisto.debug(f"\nUpdate incident:\n\tIncident name: Jira issue {issue_raw_response.get('id')}\n\t"
-                              f"Reason: Issue modified in remote.\n\tIncident Last update time: {incident_modified_date}"
-                              f"\n\Issue last updated time: {issue_modified_date}\n")
-                demisto.debug(f"\n Raw issue response: {issue_raw_response}\n")
-                if mirror_resolved_issue:
-                    if closed_issue := handle_incoming_resolved_issue(
-                        incident_update
-                    ):
-                        demisto.debug(
-                            f'Close incident with ID: {issue_id}, since corresponding issue was resolved')
-                        return GetRemoteDataResponse(incident_update, [closed_issue])
+                #     demisto.debug(f"\nUpdate incident:\n\tIncident name: Jira issue {issue.get('id')}\n\t"
+                #                   f"Reason: Issue modified in remote.\n\tIncident Last update time: {incident_modified_date}"
+                #                   f"\n\Issue last updated time: {issue_modified_date}\n")
+                #     demisto.debug(f"\n Raw issue response: {issue}\n")
+                #     if mirror_resolved_issue:
+                #         if closed_issue := handle_incoming_resolved_issue(
+                #             updated_incident
+                #         ):
+                #             demisto.debug(
+                #                 f'Close incident with ID: {issue_id}, since corresponding issue was resolved')
+                #             return GetRemoteDataResponse(updated_incident, [closed_issue])
 
-                attachments_entries = get_attachments_entries_for_fetched_and_mirrored_incident(
-                    client=client,
-                    attachments_metadata=demisto.get(issue_raw_response, 'fields.attachment') or [],
-                    incident_modified_date=incident_modified_date
-                )
-                comments_bodies = get_comments_bodies_for_fetched_and_mirrored_incident(
-                    client=client,
-                    issue_id_or_key=issue_id,
-                    incident_modified_date=incident_modified_date
-                )
-                incident_update['extractedComments'] = comments_bodies
-                parsed_entries.extend(
-                    {
-                        'Type': EntryType.NOTE,
-                        'Contents': comment_body,
-                        'ContentsFormat': EntryFormat.TEXT,
-                        'Tags': ['comment'],  # the list of tags to add to the entry
-                        'Note': True,
-                    }
-                    for comment_body in comments_bodies
-                )
-                parsed_entries.extend(attachments_entries)
-            if parsed_entries:
-                demisto.debug(f'Update the next entries: {parsed_entries}')
+                #     attachments_entries = get_attachments_entries_for_fetched_and_mirrored_incident(
+                #         client=client,
+                #         attachments_metadata=demisto.get(issue, 'fields.attachment') or [],
+                #         incident_modified_date=incident_modified_date
+                #     )
+                #     for attachment_entry in attachments_entries:
+                #         attachment_entry['Tags'] = [attachment_tag]
+                #         parsed_entries.append(attachment_entry)
+                #     demisto.debug(f'####################\n{attachments_entries}\n################')
+                #     comments_bodies = get_comments_bodies_for_fetched_and_mirrored_incident(
+                #         client=client,
+                #         issue_id_or_key=issue_id,
+                #         incident_modified_date=incident_modified_date
+                #     )
+                #     updated_incident['extractedComments'] = comments_bodies
+                #     parsed_entries.extend(
+                #         {
+                #             'Type': EntryType.NOTE,
+                #             'Contents': comment_body,
+                #             'ContentsFormat': EntryFormat.TEXT,
+                #             'Tags': [comment_tag],  # the list of tags to add to the entry
+                #             'Note': True,
+                #         }
+                #         for comment_body in comments_bodies
+                #     )
+                #     # parsed_entries.extend(iter(attachments_entries))
+                #     # parsed_entries.extend(attachments_entries)
+                # if parsed_entries:
+                #     demisto.debug(f'Update the next entries: {parsed_entries}')
+                parsed_entries = get_updated_remote_data(
+                    client=client, issue=issue, updated_incident=updated_incident,
+                    issue_modified_date=issue_modified_date, incident_modified_date=incident_modified_date,
+                    issue_id=issue_id, mirror_resolved_issue=mirror_resolved_issue, attachment_tag=attachment_tag,
+                    comment_tag=comment_tag)
+        else:
+            demisto.debug('The last update time of the incident, or the updated time of the corresponding Jira issue'
+                          'were not in correct datetime format')
 
-        return GetRemoteDataResponse(incident_update, parsed_entries)
+        return GetRemoteDataResponse(updated_incident, parsed_entries)
 
     except Exception as e:
         demisto.debug(f"Error in Jira incoming mirror for incident {parsed_args.remote_incident_id} \n"
@@ -3451,8 +3478,8 @@ def get_remote_data_command(client: JiraBaseClient, args: Dict[str, Any],
         if "Rate limit exceeded" in str(e):
             return_error("API rate limit")
 
-        if incident_update:
-            incident_update['in_mirror_error'] = str(e)
+        if updated_incident:
+            updated_incident['in_mirror_error'] = str(e)
         else:
             incident_update = {
                 'id': parsed_args.remote_incident_id,
@@ -3464,11 +3491,83 @@ def get_remote_data_command(client: JiraBaseClient, args: Dict[str, Any],
         )
 
 
-def handle_incoming_resolved_issue(issue_data: Dict[str, Any]) -> Dict[str, Any]:
+def get_updated_remote_data(client: JiraBaseClient, issue: Dict[str, Any], updated_incident: Dict[str, Any],
+                            issue_modified_date: datetime, incident_modified_date: datetime, issue_id: str,
+                            mirror_resolved_issue: bool, attachment_tag: str, comment_tag: str,
+                            ) -> List[Dict[str, Any]]:
+    """This function is in charge of returning the parsed entries of the updated incident, while updating
+    the content of updated_incident, which is in charge of holding the updated data of the incident (since arguments
+    are passed by reference, we can update the object in this function, and the changes to the object will be reflected
+    when we return to the function that called this function).
+
+    Args:
+        client (JiraBaseClient): The Jira client.
+        issue (Dict[str, Any]): The issue object returned from the API.
+        updated_incident (Dict[str, Any]): The object that will hold the updated data of the incident.
+        issue_modified_date (datetime): Timestamp of the last updated time of the issue in Jira.
+        incident_modified_date (datetime): Timestamp of the last updated time of the incident in XSOAR.
+        issue_id (str): The issue id
+        mirror_resolved_issue (bool): Whether to mirror Jira issues that have been resolved, or have the status `Done`.
+        attachment_tag (str): The attachment tag, to tag the mirrored attachments.
+        comment_tag (str): The comment tag, to tag the mirrored comments.
+
+    Returns:
+        List[Dict[str, Any]]:  Parsed entries of the updated incident, which will be supplied to the class GetRemoteDataResponse.
+    """
+    parsed_entries: List[Dict[str, Any]] = []
+    demisto.debug('Updating remote data')
+    updated_incident = issue
+    demisto.debug(f"\nUpdate incident:\n\tIncident name: Jira issue {issue.get('id')}\n\t"
+                  f"Reason: Issue modified in remote.\n\tIncident Last update time: {incident_modified_date}"
+                  f"\n\Issue last updated time: {issue_modified_date}\n")
+    demisto.debug(f"\n Raw issue response: {issue}\n")
+    if mirror_resolved_issue:
+        if closed_issue := handle_incoming_resolved_issue(
+            updated_incident
+        ):
+            demisto.debug(
+                f'Closing incident with ID: {issue_id}, since corresponding issue was resolved, or had status `Done`,'
+                f'the closing entry: {closed_issue}')
+            return [closed_issue]
+
+    attachments_entries = get_attachments_entries_for_fetched_and_mirrored_incident(
+        client=client,
+        attachments_metadata=demisto.get(issue, 'fields.attachment') or [],
+        incident_modified_date=incident_modified_date
+    )
+    for attachment_entry in attachments_entries:
+        attachment_entry['Tags'] = [attachment_tag]
+        parsed_entries.append(attachment_entry)
+    demisto.debug(f'####################\n{attachments_entries}\n################')
+    comments_bodies = get_comments_bodies_for_fetched_and_mirrored_incident(
+        client=client,
+        issue_id_or_key=issue_id,
+        incident_modified_date=incident_modified_date
+    )
+    updated_incident['extractedComments'] = comments_bodies
+    parsed_entries.extend(
+        {
+            'Type': EntryType.NOTE,
+            'Contents': comment_body,
+            'ContentsFormat': EntryFormat.TEXT,
+            'Tags': [comment_tag],  # the list of tags to add to the entry
+            'Note': True,
+        }
+        for comment_body in comments_bodies
+    )
+    # parsed_entries.extend(iter(attachments_entries))
+    # parsed_entries.extend(attachments_entries)
+    if parsed_entries:
+        demisto.debug(f'Update the next entries: {parsed_entries}')
+    return parsed_entries
+
+
+def handle_incoming_resolved_issue(issue: Dict[str, Any]) -> Dict[str, Any]:
     """This function creates an entry to send to XSOAR, which will indicate that the incident that corresponds
-    to the issue_data, has been resolved and closed, by checking the resolution time.
-    NOTE: Checking the status if it equals to `Done` or `Closed` is not enough, since not every
-    workflow has these two statuses
+    to the issue, transitioned to status `Done`, or has been resolved and closed, by checking the resolution time.
+    NOTE: Checking the status if it equals to `Done` is not enough, since not every
+    workflow has these two statuses, therefore, to make the implementation backwards compatible,
+    an extra condition was added to check if the issue was `resolved`.
 
     Args:
         issue_data (Dict[str, Any]): The issue object returned from the API, which will be mirrored to XSAOR.
@@ -3477,9 +3576,14 @@ def handle_incoming_resolved_issue(issue_data: Dict[str, Any]) -> Dict[str, Any]
         Dict[str, Any]: An entry that indicates that the incident that corresponds to the issue will be closed.
     """
     closing_entry: Dict[str, Any] = {}
-    issue_id = issue_data.get('id', '') or ''
-    if resolution_date := demisto.get(issue_data, 'fields.resolutiondate', ''):
-        demisto.debug(f'Handling incoming resolved issue (id {issue_id}) with resolution date: {resolution_date}')
+    issue_id = issue.get('id', '') or ''
+    issue_fields = issue.get('fields') or {}
+    resolution_date = ''
+    if (demisto.get(issue_fields, 'status.name', '') == 'Done') \
+            or (resolution_date := demisto.get(issue, 'fields.resolutiondate', '')):
+        demisto.debug(f'Handling incoming resolved issue (id {issue_id}) with resolution date: {resolution_date}'
+                      if resolution_date
+                      else f'Handling incoming resolved issue (id {issue_id}) with status `Done`')
         # if issue_data.get('fields').get('status').get('name') == 'Done':
         closing_entry = {
             'Type': EntryType.NOTE,
@@ -3605,7 +3709,9 @@ def main() -> None:
         #     return_results(update_remote_system_command(demisto.args()))
 
         elif demisto.command() == 'get-remote-data':
-            return_results(get_remote_data_command(client=client, args=args, mirror_resolved_issue=mirror_resolved_issue))
+            return_results(get_remote_data_command(client=client, args=args, comment_tag=comment_tag,
+                                                   attachment_tag=attachment_tag,
+                                                   mirror_resolved_issue=mirror_resolved_issue))
         elif demisto.command() == 'get-modified-remote-data':
             return_results(get_modified_remote_data_command(client=client, args=args))
         else:
