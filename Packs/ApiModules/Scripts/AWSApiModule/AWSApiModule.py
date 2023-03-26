@@ -113,7 +113,7 @@ class AWSClient:
                     verify=self.verify_certificate,
                     config=self.config
                 )
-        elif self.aws_access_key_id and self.aws_role_arn:  # login with Access Key ID and Role ARN
+        elif self.aws_access_key_id and (role_arn or self.aws_role_arn):  # login with Access Key ID and Role ARN
             sts_client = boto3.client(
                 service_name='sts',
                 aws_access_key_id=self.aws_access_key_id,
@@ -122,8 +122,8 @@ class AWSClient:
                 config=self.config
             )
             kwargs.update({
-                'RoleArn': self.aws_role_arn,
-                'RoleSessionName': self.aws_role_session_name,
+                'RoleArn': role_arn or self.aws_role_arn,
+                'RoleSessionName': role_session_name or self.aws_role_session_name,
             })
             sts_response = sts_client.assume_role(**kwargs)
             client = boto3.client(
