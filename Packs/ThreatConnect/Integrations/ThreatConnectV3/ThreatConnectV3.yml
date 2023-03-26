@@ -1510,8 +1510,8 @@ script:
       - False Positive
       - No Further Action
       - Escalated
-    - description: The description of the event.
-      name: description
+    - description: The name of the owner to which the group belongs. By default, events will be created in the organization in which the API user account resides.
+      name: owner_name
     - description: A comma-separated list of the tags of the event.
       name: tag
     description: Creates a group based on the Event type.
@@ -2188,7 +2188,7 @@ script:
     - contextPath: TC.Group.ID
       description: The ID of the group.
       type: string
-  dockerimage: demisto/python3:3.10.7.33922
+  dockerimage: demisto/python3:3.10.10.50695
   runonce: false
   isfetch: true
   script: ''
