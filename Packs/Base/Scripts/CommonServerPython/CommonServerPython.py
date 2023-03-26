@@ -10963,11 +10963,14 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
         Splits a list of XSIAM events into chunks of size XSIAM_EVENT_CHUNK_SIZE.
 
         Args:
-            data (list or str): A list of XSIAM events or a string containing XSIAM events separated by newline characters.
-            size_of_zipped_data (int): The size of the zipped data.
+            :type data: ``list or str``
+            :param data A list of XSIAM events or a string containing XSIAM events separated by newline characters.
+            :type size_of_zipped_data ``int``
+            :param size_of_zipped_data The size of the zipped data.
 
         Returns:
             list: A list of sub-lists containing XSIAM events.
+            type: list
         """
         import math
         num_of_sub_lists = math.ceil(size_of_zipped_data / XSIAM_EVENT_CHUNK_SIZE)
@@ -11024,13 +11027,20 @@ def send_to_xsiam_with_retries(client, events_error_handler, header_msg, headers
     Sends zipped data to XSIAM with retries.
 
     Args:
-        client (object): An instance of the client class.
-        events_error_handler (function): A function that handles events errors.
-        header_msg (str): The header message.
-        headers (dict): A dictionary containing headers for the request.
-        num_of_attempts (int): The number of attempts to send the data to XSIAM.
-        xsiam_url (str): The URL of the XSIAM server.
-        zipped_data (bytes): The zipped data to send.
+        :type: client ``base client object``
+        :param: An instance of the client class.
+        :type: events_error_handler ``function``
+        :param: events_error_handler A function that handles events errors.
+        :type: header_msg ``str``
+        :param: header_msg: The header message.
+        :type: headers ``dict``
+        :param: headers A dictionary containing headers for the request.
+        :type: num_of_attempts ``int``
+        :param: num_of_attempts The number of attempts to send the data to XSIAM.
+        :type: xsiam_url ``str``
+        :param: xsiam_url The URL of the XSIAM server.
+        :type: zipped_data ``bytes``
+        :param: zipped_data: The zipped data to send.
 
     Returns:
         bool: True if the data was sent successfully, False otherwise.
