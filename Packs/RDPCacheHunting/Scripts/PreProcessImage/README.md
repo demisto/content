@@ -1,4 +1,4 @@
-This script pre-process an image file by preforming one of the actions:
+This script pre-processes an image file by preforming one of the following actions:
 - original - return the original image.
 - sharpen - process that emphasizes the edges in an image to make it appear clearer and more focused.
 - grayscale - convert the image to black, white, and gray colors, in which gray has multiple levels (the value of each pixel represents only the intensity information of the light).
