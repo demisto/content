@@ -103,8 +103,7 @@ class Client(BaseClient):
         return self._http_request(
             method="GET",
             url_suffix='security-events/v1/security-events',
-            headers={"Authorization": "Bearer Y0DflGL5TkROWVOVcy3ppr9YVTqB54E6RwXSxND31i864x"},
-            # headers={"Authorization": f"Bearer {self.get_access_token()}"},
+            headers={"Authorization": f"Bearer {self.get_access_token()}"},
             params=params
         )
 
@@ -160,16 +159,17 @@ def get_events_command(client: Client, args: dict) -> tuple[list, CommandResults
     next_anchor = 'first'
     while next_anchor and len(events) < limit:
         req_limit = min(MAX_FETCH_LIMIT, limit - len(events))
-        res = client.get_events_api_call(fetch_from,req_limit, next_anchor if next_anchor != 'first' else None)
+        res = client.get_events_api_call(fetch_from, req_limit, next_anchor if next_anchor != 'first' else None)
         events.extend(res.get('items'))
         next_anchor = res.get('nextAnchor')
 
     events = events if len(events) < limit else events[:limit]
     hr = tableToMarkdown(name='With Secure Events', t=events)
     return events, CommandResults(readable_output=hr)
-# TODO: ADD additional command functions that translate XSOAR inputs/outputs to Client
 
-
+def fetch_events_command(client, first_fetch, limit):
+    last_run = demisto.getLastRun()
+    fetch_from = last_run.get('fetch_from') or first_fetch
 ''' MAIN FUNCTION '''
 
 
@@ -210,6 +210,9 @@ def main() -> None:
         elif command == 'with-secure-get-events':
             events, result = get_events_command(client, args)
             return_results(result)
+
+        elif command == 'fetch-events':
+            events = fetch_events_command(client, first_fetch, limit)
 
 
     # Log exceptions and return errors
