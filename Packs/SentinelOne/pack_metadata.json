@@ -1,11 +1,11 @@
 {
     "name": "SentinelOne",
     "description": "Endpoint protection",
-    "support": "xsoar",
-    "currentVersion": "3.0.8",
-    "author": "Cortex XSOAR",
-    "url": "https://www.paloaltonetworks.com/cortex",
-    "email": "",
+    "support": "partner",
+    "currentVersion": "3.1.0",
+    "author": "SentinelOne",
+    "url": "https://www.sentinelone.com/support/",
+    "email": "support@sentinelone.com",
     "created": "2020-04-14T00:00:00Z",
     "categories": [
         "Endpoint"
