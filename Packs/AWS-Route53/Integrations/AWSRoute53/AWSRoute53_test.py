@@ -2,8 +2,11 @@ import importlib
 
 AWS_ROUTE53 = importlib.import_module("AWSRoute53")
 
-TEST_PARAMS = {'region': 'test_region', 'roleArn': 'test_arn', 'roleSessionName': 'test_role_session',
-               'roleSessionDuration': 'test_role_session_duration'}
+TEST_PARAMS = {
+    'roleArn': 'test_arn',
+    'roleSessionName': 'test_role_session',
+    'roleSessionDuration': 'test_role_session_duration'
+}
 
 
 class AWSClient:  # pragma: no cover

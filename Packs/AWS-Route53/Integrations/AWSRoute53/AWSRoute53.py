@@ -274,7 +274,6 @@ def test_module(
 def main():  # pragma: no cover
     params = demisto.params()
     command = demisto.command()
-    aws_default_region = params.get('defaultRegion')
     aws_role_arn = params.get('roleArn')
     aws_role_session_name = params.get('roleSessionName')
     aws_role_session_duration = params.get('sessionDuration')
@@ -287,15 +286,15 @@ def main():  # pragma: no cover
 
     try:
         args = demisto.args()
-        validate_params(aws_default_region, aws_role_arn, aws_role_session_name, aws_access_key_id,  # noqa
+        validate_params(True, aws_role_arn, aws_role_session_name, aws_access_key_id,  # noqa
                         aws_secret_access_key)
 
-        aws_client = AWSClient(aws_default_region, aws_role_arn, aws_role_session_name,  # noqa
+        aws_client = AWSClient(None, aws_role_arn, aws_role_session_name,  # noqa
                                aws_role_session_duration, aws_role_policy, aws_access_key_id, aws_secret_access_key,
                                verify_certificate, timeout, retries)
-        aws_session = aws_client.aws_session(service=SERVICE, region=args.get('region'), role_arn=args.get('roleArn'),
-                                             role_session_name=args.get('roleSessionName'),
-                                             role_session_duration=args.get('roleSessionDuration'))
+        aws_session = aws_client.aws_session(service=SERVICE, role_arn=aws_role_arn,
+                                             role_session_name=aws_role_session_name,
+                                             role_session_duration=aws_role_session_duration)
 
         demisto.info(f'Command being called is {demisto.command()}')
         if command == 'test-module':
