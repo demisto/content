@@ -3108,7 +3108,6 @@ class Pack(object):
             storage_base_path (str): the path under the bucket to upload to.
             diff_files_list (list): The list of all modified/added files found in the diff
             override_all_packs (bool): Whether to override all packs without checking for changes
-            marketplace (str): the marketplace the upload is made for
         Returns:
             True if the images were successfully uploaded, false otherwise.
 
@@ -3133,11 +3132,6 @@ class Pack(object):
         task_status = self.upload_author_image(storage_bucket, storage_base_path, diff_files_list, detect_changes)
         if not task_status:
             self._status = PackStatus.FAILED_AUTHOR_IMAGE_UPLOAD.name
-            self.cleanup()
-            return False
-
-        if not task_status:
-            self._status = PackStatus.FAILED_README_IMAGE_UPLOAD.name
             self.cleanup()
             return False
 
