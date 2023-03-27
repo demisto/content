@@ -10828,8 +10828,8 @@ def xsiam_api_call_with_retries(
     xsiam_url,
     zipped_data,
     headers,
-    header_msg,
     num_of_attempts,
+    error_msg='',
     events_error_handler=None,
     is_json_response=True
 ):
@@ -10848,8 +10848,8 @@ def xsiam_api_call_with_retries(
     :type headers: ``dict``
     :param headers: headers for the request
     
-    :type header_msg: ``str``
-    :param header_msg: The header message.
+    :type error_msg: ``str``
+    :param error_msg: The error message prefix in case of an error.
 
     :type num_of_attempts: ``int``
     :param num_of_attempts: The num of attempts to do in case there is an api limit (429 error codes).
@@ -10885,8 +10885,8 @@ def xsiam_api_call_with_retries(
         attempt_num += 1
     if is_json_response:
         response = response.json()
-    if response.get('error', '').lower() != 'false':
-        raise DemistoException(header_msg + response.get('error'))
+        if response.get('error', '').lower() != 'false':
+            raise DemistoException(error_msg + response.get('error'))
     return response
 
 
@@ -10895,8 +10895,8 @@ def split_data_to_chunks(data, target_chunk_size):
     Splits a string of data into chunks of an approximately specified size.
     The actual size can be lower.
 
-    :type data: ``str``
-    :param data: The string of data to split.
+    :type data: ``list`` or a ``string``
+    :param data: A list of data or a string delimited with \n  to split to chunks.
     :type target_chunk_size: ``int``
     :param target_chunk_size: The maximum size of each chunk.
 
@@ -10905,7 +10905,9 @@ def split_data_to_chunks(data, target_chunk_size):
     """
     chunk = []
     chunk_size = 0
-    for data_part in data.split('\n'):
+    if isinstance(data, str):
+        data = data.split('\n')
+    for data_part in data:
         if chunk_size >= target_chunk_size:
             yield chunk
             chunk = []
@@ -11029,12 +11031,10 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
         data_chunk = '\n'.join(data_chunk)
         zipped_data = gzip.compress(data_chunk.encode('utf-8'))  # type: ignore[AttributeError,attr-defined]
         xsiam_api_call_with_retries(client=client, events_error_handler=events_error_handler,
-                                    header_msg=header_msg, headers=headers,
+                                    error_msg=header_msg, headers=headers,
                                     num_of_attempts=num_of_attempts, xsiam_url=xsiam_url,
                                     zipped_data=zipped_data)
     demisto.updateModuleHealth({'eventsPulled': amount_of_events})
-
-
 
 
 def is_scheduled_command_retry():
