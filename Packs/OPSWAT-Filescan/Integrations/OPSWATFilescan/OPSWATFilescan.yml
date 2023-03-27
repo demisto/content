@@ -12,8 +12,10 @@ configuration:
     required: true
     type: 0
   - name: api_key
-    display: API Key
+    displaypassword: API Key
+    additionalinfo: The API Key to use for connection
     required: true
+    hiddenusername: true
     type: 9
   - name: insecure
     display: Trust any certificate (not secure)
@@ -244,6 +246,7 @@ script:
       arguments:
         - name: query
           required: true
+          default: true
           description: The query string
       outputs:
         - contextPath: DBotScore.Indicator

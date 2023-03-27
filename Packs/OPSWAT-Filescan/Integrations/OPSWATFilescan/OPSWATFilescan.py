@@ -358,7 +358,7 @@ def main():
 
     params = demisto.params()
     base_url = params.get("url", "")
-    api_key = params.get("api_key", "")
+    api_key = params.get('api_key', {}).get('password')
     verify = not params.get("insecure", False)
     proxy = params.get("proxy", False)
 
