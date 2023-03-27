@@ -1183,7 +1183,7 @@ def test_create_body_create_rule_for_v10__with_different_arguments(input, output
                                                 {'value': '1234', 'state': 1, 'changedState': 3},
                                                 {'value': '789', 'state': 1, 'changedState': 1}]})),
                                            ({"rule": "ADDRESS_RANGE", "from_to_list": [{"mock"}]},
-                                            ('IPv9AddressRange', {'IPV9RangeList': [{'mock', 'state'}]})),
+                                            ('IPv9AddressRange', {'IPV9RangeList': [{'mock', 'state', 'changedState'}]})),
                                            ({"rule": "NETWORK", "from_to_list": []},
                                             ('Network_IPV_9', {'networkIPV9List': [
                                                 {'value': '1234', 'state': 1, 'changedState': 3},
