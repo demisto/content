@@ -635,3 +635,20 @@ def test_fetch_all_alerts(requests_mock, orca_client: OrcaClient) -> None:
     )
     assert last_run['step'] == STEP_FETCH
     assert len(fetched_incidents) == 0
+
+
+def test_set_alert_severity(requests_mock, orca_client: OrcaClient) -> None:
+    alert_id = "orca-1111"
+
+    requests_mock.put(f"{DUMMY_ORCA_API_DNS_NAME}/alerts/{alert_id}/severity", json={
+        "user_email": "test@test.com",
+        "alert_id": alert_id,
+        "details": {
+            "description": "Alert risk level changed",
+            "severity": "Hazardous"
+        }
+    })
+
+    response = orca_client.set_alert_score(alert_id, 5)
+    assert response.get("alert_id", "") == alert_id
+

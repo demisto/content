@@ -72,3 +72,26 @@ Get Description of An asset
 #### Command Example
 ``` ```
 
+#### Base Command
+
+`set-alert-severity`
+#### Input
+
+| **Argument Name** | **Description**                | **Required** |
+|-------------------|--------------------------------|--------------|
+| alert_id          | Id of the alert.               | Required     | 
+| score             | New score value. From 0 to 10. | Required     | 
+
+
+#### Context Output
+
+| **Path**                       | **Type** | **Description**     |
+|--------------------------------| --- |---------------------|
+| Orca.SetAlertSeverity.id       | String | Response            | 
+| Orca.SetAlertSeverity.details  | String | Response details    | 
+| Orca.SetAlertSeverity.severity | String | New alert serverity | 
+
+
+#### Command Example
+``` !set-alert-severity alert_id=orca1 score=5 ```
+

@@ -145,6 +145,27 @@ class OrcaClient:
 
         return response
 
+    def set_alert_score(self, alert_id: str, orca_score: float) -> Dict[str, Any]:
+        demisto.debug("Set alert score.")
+
+        try:
+            response = self.client._http_request(
+                method="PUT", url_suffix=f"/alerts/{alert_id}/severity",
+                data={"orca_score": orca_score},
+                timeout=ORCA_API_TIMEOUT
+            )
+
+            if 'error' in response or not response:
+                demisto.debug(response.get("error"))
+
+            return response
+        except DemistoException:
+            demisto.debug(f"could not change alert severity {alert_id}")
+        except requests.exceptions.ReadTimeout as e:
+            demisto.debug(f"Set severity Request ReadTimeout error: {str(e)}")
+
+        return {}
+
 
 def map_orca_score_to_demisto_score(orca_score: int) -> Union[int, float]:  # pylint: disable=E1136
     # demisto_unknown = 0  (commented because of linter issues)
@@ -237,6 +258,26 @@ def fetch_incidents(
     return next_run, incidents
 
 
+def set_alert_severity(orca_client: OrcaClient, args: Dict[str, Any]) -> CommandResults:
+    alert_id = args.get("alert_id")
+    score = args.get("score")
+
+    response = orca_client.set_alert_score(alert_id=alert_id, orca_score=score)
+
+    context = {
+        "id": response.get("alert_id"),
+        "details": response.get("details", "").get("description"),
+        "severity": response.get("details", "").get("severity")
+    }
+
+    return CommandResults(
+        readable_output="Alert severity changed",
+        outputs_prefix='Orca.SetAlertSeverity',
+        outputs=context,
+        raw_response=response
+    )
+
+
 def main() -> None:
     """main function, parses params and runs command functions
 
@@ -274,8 +315,9 @@ def main() -> None:
         )
 
         orca_client = OrcaClient(client=client)
+        demisto_args = demisto.args()
+
         if command == "orca-get-alerts":
-            demisto_args = demisto.args()
             alert_type = demisto_args.get('alert_type')
             asset_unique_id = demisto_args.get('asset_unique_id')
             alerts = orca_client.get_alerts_by_filter(
@@ -308,6 +350,25 @@ def main() -> None:
             )
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
+
+        elif command == "set-alert-severity":
+            return_results(set_alert_severity(orca_client=orca_client, args=demisto_args))
+
+        elif command == "get-alert-event-log":
+            # GET /alerts/{alert_id}/event_log
+            print("get alert event log")
+
+        elif command == "set-alert-status":
+            # PUT /alerts/{alert_id}/status/{status}
+            print("set alert status")
+
+        elif command == "verify-alert":
+            # PUT /alerts/{alert_id}/verify
+            print("Verify alert")
+
+        elif command == "get_malicious_file":
+            # GET /alerts/{alert_id}/download_malicious_file
+            print("Get malicious file")
 
         elif command == "test-module":
             test_res = orca_client.validate_api_key()
