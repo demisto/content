@@ -358,7 +358,7 @@ script:
     - contextPath: TaegisXDR.Endpoint
       description: Results from fetching the endpoint information
     description: Fetch endpoint information
-  dockerimage: demisto/python3:3.10.10.49934
+  dockerimage: demisto/python3:3.10.10.50695
   runonce: false
   subtype: python3
   isfetch: true
