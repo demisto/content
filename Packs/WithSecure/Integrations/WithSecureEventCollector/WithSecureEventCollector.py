@@ -190,7 +190,7 @@ def get_events_command(client: Client, args: dict) -> tuple[list, CommandResults
         CommandResults: A CommandResults object that contains the events in a table format.
     """
     fetch_from = parse_date(args.get('fetch_from') or demisto.params().get('first_fetch', '3 months'))
-    limit = args.get('limit') or MAX_FETCH_LIMIT
+    limit = arg_to_number(args.get('limit')) or MAX_FETCH_LIMIT
     events = get_events(client, fetch_from, limit)
 
     events = events if len(events) < limit else events[:limit]
@@ -239,7 +239,7 @@ def main() -> None:
     client_id = params.get('credentials', {}).get('identifier')
     client_secret = params.get('credentials', {}).get('password')
     first_fetch = parse_date(params.get('first_fetch', '3 months'))
-    limit = params.get('limit', 1000)
+    limit = arg_to_number(params.get('limit', 1000))
 
     verify_ssl = not params.get('insecure', False)
 
