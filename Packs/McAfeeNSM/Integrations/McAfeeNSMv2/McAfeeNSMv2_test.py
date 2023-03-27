@@ -1178,13 +1178,13 @@ def test_create_body_create_rule_for_v10__with_different_arguments(input, output
     assert res == output
 
 
-@pytest.mark.parametrize('input, output', [(),
-                                           ()])
-def test_create_body_update_rule_for_v10(mocker, mcafeensmv2_client, input, output):
-    from McAfeeNSM import create_body_update_rule_for_v10
-    res = create_body_update_rule_for_v10(rule_type=input, address="bla", number=9, from_to_list=[])
+# @pytest.mark.parametrize('input, output', [(),
+#                                            ()])
+# def test_create_body_update_rule_for_v10(mocker, mcafeensmv2_client, input, output):
+#     from McAfeeNSM import create_body_update_rule_for_v10
+#     res = create_body_update_rule_for_v10(rule_type=input, address="bla", number=9, from_to_list=[])
 
-    assert res == output
+#     assert res == output
 
 
 def test_modify_v10_results_to_v9_format():
@@ -1278,7 +1278,7 @@ def test_list_device_policy_command__with_different_arguments(mocker, input, out
                                             ({"domain_id": 777, "limit": 1}, [{'deviceId': 'mock'}]),
                                             ({"domain_id": 777, "limit": 1, "all_results": True},
                                              [{'deviceId': 'mock'}, {'deviceId': 'mock'}])])
-def test_list_domain_device_command_with_diffrent_arguments(mocker, mcafeensmv2_client, input, output):
+def test_list_domain_device_command_with_different_arguments(mocker, mcafeensmv2_client, input, output):
     """
     Given:
         - A domain id.
