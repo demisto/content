@@ -1643,6 +1643,9 @@ script:
       name: project
     description: AlertProfiles returns the all alert profiles
     name: prisma-cloud-compute-get-alert-profiles
+  - arguments: []
+    description: DefenderSettings returns the defenders settings
+    name: prisma-cloud-compute-get-settings-defender
 tests:
 - PaloAltoNetworks_PrismaCloudCompute-Test
 fromversion: 5.0.0

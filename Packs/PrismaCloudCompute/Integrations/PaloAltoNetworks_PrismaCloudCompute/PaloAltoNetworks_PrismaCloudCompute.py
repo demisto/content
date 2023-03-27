@@ -365,6 +365,16 @@ class PrismaCloudComputeClient(BaseClient):
 
         return self._http_request('get', 'alert-profiles', headers=headers, params=params)
 
+    def get_api_v1_settings_defender_request(self):
+        """
+        Get the defender settings.
+
+        Returns:
+            dict: the defender settings
+        """
+        headers = self._headers
+
+        return self._http_request('get', 'settings/defender', headers=headers)
 
 def str_to_bool(s):
     """
@@ -1793,6 +1803,25 @@ def get_api_v1_alert_profiles_command(client, args):
     )
 
 
+def get_api_v1_settings_defender_command(client, args):
+    """
+    Get the defender settings.
+
+    Args:
+        client (PrismaCloudComputeClient): prisma-cloud-compute client.
+        args (dict): prisma-cloud-compute-get-settings-defender command arguments
+
+    Returns:
+        CommandResults: command-results object.
+    """
+    response = client.get_api_v1_settings_defender_request()
+    return CommandResults(
+        outputs_prefix='PrismaCloudCompute.DefenderSettings',
+        outputs=format_context(response),
+        raw_response=response
+    )
+
+
 def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
@@ -1896,7 +1925,10 @@ def main():
             return_results(update_waas_policies(client=client, args=demisto.args()))
         elif requested_command == 'prisma-cloud-compute-get-audit-firewall-container-alerts':
             return_results(results=get_audit_firewall_container_alerts(client, args=demisto.args()))
-        elif requested_command == "prisma-cloud-compute-get-alert-profiles": return_results(results=get_api_v1_alert_profiles_command)
+        elif requested_command == "prisma-cloud-compute-get-alert-profiles": 
+            return_results(results=get_api_v1_alert_profiles_command)
+        elif requested_command == "prisma-cloud-compute-get-settings-defender":
+            return_results(results=get_api_v1_settings_defender_command)
     # Log exceptions
     except Exception as e:
         return_error(f'Failed to execute {requested_command} command. Error: {str(e)}')
