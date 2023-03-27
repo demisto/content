@@ -242,7 +242,7 @@ script:
     description: 'WARNING: This command will reset your fetch history.'
     execution: false
     name: taxii2-reset-fetch-indicators
-  dockerimage: demisto/taxii2:1.0.0.50128
+  dockerimage: demisto/taxii2:1.0.0.51142
   feed: true
   isfetch: false
   longRunning: false
