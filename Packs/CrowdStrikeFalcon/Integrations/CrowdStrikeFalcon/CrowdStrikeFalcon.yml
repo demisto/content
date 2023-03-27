@@ -3500,7 +3500,7 @@ script:
     - description: Maximum number of IDs to return. Max 5000. Default 50.
       name: limit
       required: false
-    - description: Starting index of the overall result set from which to return IDs.
+    - description: Starting index of the overall result set from which to return IDs. Default 0.
       name: offset
       required: false
     description: Get quarantine file metadata by specified IDs or filter.
