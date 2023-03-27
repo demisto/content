@@ -4,7 +4,7 @@ commonfields:
   version: -1
 configuration:
 - additionalinfo: Freshservice URL (make sure your URL includes your unique environment name)
-  defaultvalue: https://{environment}.Freshservice.com/
+  defaultvalue: https://{environment}.freshservice.com/
   display: Server URL
   name: url
   type: 0

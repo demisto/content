@@ -359,7 +359,6 @@ TICKET_TYPE_TO_INCIDENT_TYPE = {
 }
 
 MIRRORING_COMMON_FIELDS = [
-    "ticket_type",
     "category",
     "sub_category",
     "department_id",
@@ -367,6 +366,8 @@ MIRRORING_COMMON_FIELDS = [
     "assets",
     "due_by",
     "description",
+    "status",
+    "priority",
 ]
 
 TICKET_TYPE_TO_ADDITIONAL_MIRRORING_FIELDS = {
@@ -2218,7 +2219,7 @@ def list_freshservice_ticket_command(
 
     updated_response = convert_response_properties(
         response.get(command_response_key),
-        TICKET.get(entity_name),
+        TICKET[entity_name],
     )
 
     readable_output = tableToMarkdown(
@@ -2271,7 +2272,7 @@ def create_update_freshservice_ticket_command(
     response = update_response if update_response else response
     updated_response = convert_response_properties(
         response.get(entity_name),
-        TICKET.get(entity_name),
+        TICKET[entity_name],
     )
 
     readable_output = tableToMarkdown(
@@ -2399,7 +2400,8 @@ def create_update_freshservice_ticket_task_command(
                       notify_before=notify_before_seconds,
                       title=args.get('title'),
                       description=args.get('description'),
-                      status=TASK['status'].get(args.get('status'))))
+                      status=TASK['status'][args['status']]
+                      if args.get('status') else None))
 
     freshservice_request = get_command_request(
         client, f'{entity_name}_task_{command_operator}')
@@ -2627,7 +2629,7 @@ def update_freshservice_ticket_conversation_command(
     )
 
     updated_output = {
-        'id': response.get('conversation').get('ticket_id'),
+        'id': response['conversation'].get('ticket_id'),
         'Conversation': response.get('conversation'),
     }
 
@@ -2872,14 +2874,14 @@ def get_arg_template(
     return arg_template
 
 
-def update_custom_fields(args: Dict[str, Any], ) -> Dict[str, Any]:
+def update_custom_fields(args: Dict[str, Any], ) -> Optional[Dict[Any, Any]]:
     """ Update custom_fields argument to match Freshservice template.
 
     Args:
         args (Dict[str, Any]): command arguments from XSOAR.
 
     Returns:
-        Dict[str, Any]: Updated field.
+        Optional[Dict[Any, Any]]: Updated field.
     """
     updated_custom_fields = None
     if custom_fields := args.get('custom_fields'):
@@ -2934,7 +2936,7 @@ def get_files_to_attach(args: Dict[str, Any], ) -> List[Tuple]:
 
 def convert_response_properties(
     updated_response: List[dict],
-    predefined_values: Optional[Dict[str, Dict[str, int]]],
+    predefined_values: Dict[str, Dict[str, int]],
 ) -> List[dict]:
     """ Convert command properties from number to string for
         the XSOAR output.
@@ -2959,12 +2961,9 @@ def convert_response_properties(
             if item.get(response_key) and response_key in list(
                     predefined_values.keys()):
 
-                property_values = reverse_dict(
-                    predefined_values.get(response_key))
-                item.update({
-                    response_key:
-                    property_values.get(item.get(response_key))
-                })
+                property_values = reverse_dict(predefined_values[response_key])
+                item.update(
+                    {response_key: property_values.get(item[response_key])})
 
     return updated_response
 
@@ -3058,23 +3057,21 @@ def convert_command_properties(args: Dict[str, Any],
     Returns:
         Tuple: The converted arguments.
     """
-
-    urgency = TICKET[ticket_type]['urgency'].get(
-        args.get('urgency')) if args.get('urgency') else None
-    status = TICKET[ticket_type]['status'].get(
-        args.get('status')) if args.get('status') else None
-    source = TICKET[ticket_type]['source'].get(
-        args.get('source')) if args.get('source') else None
-    priority = TICKET[ticket_type]['priority'].get(
-        args.get('priority')) if args.get('priority') else None
-    impact = TICKET[ticket_type]['impact'].get(
-        args.get('impact')) if args.get('impact') else None
-    risk = TICKET[ticket_type]['risk'].get(
-        args.get('risk')) if args.get('risk') else None
-    change_type = TICKET[ticket_type]['change_type'].get(
-        args.get('change_type')) if args.get('change_type') else None
-    release_type = TICKET[ticket_type]['release_type'].get(
-        args.get('release_type')) if args.get('release_type') else None
+    ticket_properties = TICKET[ticket_type]
+    urgency = dict_safe_get(ticket_properties,
+                            ['urgency', args.get('urgency')])
+    status = dict_safe_get(ticket_properties, ['status', args.get('status')])
+    source = dict_safe_get(ticket_properties, ['source', args.get('source')])
+    priority = dict_safe_get(ticket_properties,
+                             ['priority', args.get('priority')])
+    impact = dict_safe_get(ticket_properties, ['impact', args.get('impact')])
+    risk = dict_safe_get(ticket_properties, ['risk', args.get('risk')])
+    change_type = dict_safe_get(
+        ticket_properties,
+        ['change_type', args.get('change_type')])
+    release_type = dict_safe_get(
+        ticket_properties,
+        ['release_type', args.get('release_type')])
 
     return urgency, status, source, priority, impact, risk, change_type, release_type
 
@@ -3233,7 +3230,7 @@ def build_query(
 
             # Convert str value to int in case it's a predefined values
             if entity_name in ['ticket', 'problem', 'change', 'release']:
-                if dict_key := TICKET.get(entity_name).get(key):
+                if dict_key := TICKET[entity_name].get(key):
                     integer_value = dict_key.get(value)
                     correct_value = integer_value if integer_value else correct_value
 
@@ -3257,7 +3254,10 @@ def convert_date_time(date_time: str) -> str:
     Returns:
         str: The updated datetime.
     """
-    return arg_to_datetime(date_time).strftime(STRFTIME)
+    datetime_arg = arg_to_datetime(date_time)
+    if isinstance(datetime_arg, datetime):
+        updated_datetime_arg = datetime_arg.strftime(STRFTIME)
+    return updated_datetime_arg
 
 
 def validate_pagination_arguments(
@@ -3360,7 +3360,7 @@ def get_modified_remote_data(
         response = freshservice_request(**request_args)
         modified_tickets_by_type = convert_response_properties(
             response.get(f'{ticket_type}s'),
-            TICKET.get(ticket_type),
+            TICKET[ticket_type],
         )
 
         for ticket in modified_tickets_by_type:
@@ -3488,11 +3488,11 @@ def get_remote_data_command(
     freshservice_request = get_command_request(client, f'{ticket_type}')
     response = freshservice_request(**{'ticket_id': ticket_id})
 
-    mirrored_ticket = convert_response_properties(
+    response = convert_response_properties(
         response.get(f'{ticket_type}'),
-        TICKET.get(ticket_type),
+        TICKET[ticket_type],
     )
-    mirrored_ticket = mirrored_ticket[0] if mirrored_ticket else mirrored_ticket
+    mirrored_ticket = response[0]
 
     ticket_last_update = date_to_epoch_for_fetch(
         arg_to_datetime(mirrored_ticket.get('updated_at')))
@@ -3589,7 +3589,8 @@ def get_last_run(args: Dict[str, Any], ticket_type: str) -> Tuple:
 
     # convert the last_run_time to Freshservice time format
     last_run_datetime = dateparser.parse(last_run_time)
-    last_run_datetime_str = last_run_datetime.strftime(TIME_FORMAT)
+    if isinstance(last_run_datetime, datetime):
+        last_run_datetime_str = last_run_datetime.strftime(TIME_FORMAT)
     last_run_datetime = dateparser.parse(last_run_datetime_str)
 
     return last_run_id, last_run_datetime, last_run_datetime_str
@@ -3663,7 +3664,7 @@ def parse_incident(alert: dict, entity_name: str,
         dict: XSOAR Incident.
     """
 
-    alert_iso_time = convert_datetime_to_iso(alert.get("created_at"))
+    alert_iso_time = convert_datetime_to_iso(alert['created_at'])
     alert['ticket_type'] = entity_name
     alert["mirror_direction"] = mirror_direction
     alert["mirror_instance"] = demisto.integrationInstance()
@@ -3690,11 +3691,11 @@ def fetch_incidents(client: Client, params: dict) -> None:
         args (dict): The args for fetch: alert types, alert severities, alert status,
                      max fetch and first fetch.
     """
-    max_fetch = arg_to_number(params.get('max_fetch'))
+    max_fetch = arg_to_number(params['max_fetch'])
 
-    mirror_direction = MIRROR_DIRECTION_MAPPING[params.get("mirror_direction")]
+    mirror_direction = MIRROR_DIRECTION_MAPPING[params["mirror_direction"]]
     ticket_types, alert_properties = get_alert_properties(params)
-    fetch_ticket_task = params.get('fetch_ticket_task')
+    fetch_ticket_task = argToBoolean(params['fetch_ticket_task'])
     max_fetch_per_ticket_type = int(max_fetch / len(ticket_types))
 
     incidents = []
@@ -3713,7 +3714,7 @@ def fetch_incidents(client: Client, params: dict) -> None:
 
         alert_list = convert_response_properties(
             response.get(f'{ticket_type}s'),
-            TICKET.get(ticket_type),
+            TICKET[ticket_type],
         )
 
         relevant_alerts, relevant_incidents = fetch_relevant_tickets_by_ticket_type(
@@ -3744,7 +3745,7 @@ def main() -> None:
     params: Dict[str, Any] = demisto.params()
     args: Dict[str, Any] = demisto.args()
 
-    url = params.get('url')
+    url = params['url']
     api_token = params.get('credentials', {}).get('password')
     verify_certificate: bool = not params.get('insecure', False)
     proxy = params.get('proxy', False)

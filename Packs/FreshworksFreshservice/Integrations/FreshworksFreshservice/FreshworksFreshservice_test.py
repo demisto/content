@@ -1758,6 +1758,7 @@ def test_fetch_incidents(client, requests_mock):
     fetch_incidents(
         client, {
             'max_fetch': 10,
+            'fetch_ticket_task': 'false',
             'first_fetch': '2023-01-01',
             'mirror_direction': 'Incoming',
             'ticket_type': ['Incident/Service Request', 'Problem Request'],
