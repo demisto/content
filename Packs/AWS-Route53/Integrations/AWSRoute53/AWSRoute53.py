@@ -41,13 +41,9 @@ def raise_error(error: Any) -> CommandResults:
 
 def create_record(
         args: Dict[Any, Any],
-        aws_client: AWSClient  # noqa
+        aws_session: Any,
 ) -> CommandResults:
     try:
-        client = aws_client.aws_session(service=SERVICE, region=args.get('region'), role_arn=args.get('roleArn'),
-                                        role_session_name=args.get('roleSessionName'),
-                                        role_session_duration=args.get('roleSessionDuration'), )
-
         change_batch: Dict[Any, Any] = {
             'Changes': [
                 {
@@ -62,7 +58,7 @@ def create_record(
             ]
         }
 
-        if args.get('comment') is not None:
+        if args.get('comment'):
             change_batch['Comment'] = args.get('comment')
 
         kwargs = {
@@ -70,7 +66,7 @@ def create_record(
             'ChangeBatch': change_batch
         }
 
-        response = client.change_resource_record_sets(**kwargs)
+        response = aws_session.change_resource_record_sets(**kwargs)
         record = response['ChangeInfo']
         data = ({
             'Id': record['Id'],
@@ -86,12 +82,9 @@ def create_record(
 
 def delete_record(
         args: Dict[Any, Any],
-        aws_client: AWSClient  # noqa
+        aws_session: Any
 ) -> CommandResults:
     try:
-        client = aws_client.aws_session(service=SERVICE, region=args.get('region'), role_arn=args.get('roleArn'),
-                                        role_session_name=args.get('roleSessionName'),
-                                        role_session_duration=args.get('roleSessionDuration'), )
         kwargs = {
             'HostedZoneId': args.get('hostedZoneId'),
             'ChangeBatch': {
@@ -109,7 +102,7 @@ def delete_record(
             }
         }
 
-        response = client.change_resource_record_sets(**kwargs)
+        response = aws_session.change_resource_record_sets(**kwargs)
         record = response['ChangeInfo']
         data = ({
             'Id': record['Id'],
@@ -125,12 +118,9 @@ def delete_record(
 
 def upsert_record(
         args: Dict[Any, Any],
-        aws_client: AWSClient  # noqa
+        aws_session: Any
 ) -> CommandResults:
     try:
-        client = aws_client.aws_session(service=SERVICE, region=args.get('region'), role_arn=args.get('roleArn'),
-                                        role_session_name=args.get('roleSessionName'),
-                                        role_session_duration=args.get('roleSessionDuration'), )
         change_batch: Dict[Any, Any] = {
             'Changes': [
                 {
@@ -145,14 +135,14 @@ def upsert_record(
             ]
         }
 
-        if args.get('comment') is not None:
+        if args.get('comment'):
             change_batch['Comment'] = args.get('comment')
         kwargs = {
             'HostedZoneId': args.get('hostedZoneId'),
             'ChangeBatch': change_batch
         }
 
-        response = client.change_resource_record_sets(**kwargs)
+        response = aws_session.change_resource_record_sets(**kwargs)
         record = response['ChangeInfo']
         data = ({
             'Id': record['Id'],
@@ -167,15 +157,11 @@ def upsert_record(
 
 
 def list_hosted_zones(
-        args: Dict[Any, Any],
-        aws_client: AWSClient  # noqa
+        aws_session: Any
 ) -> CommandResults:
     try:
-        client = aws_client.aws_session(service=SERVICE, region=args.get('region'), role_arn=args.get('roleArn'),
-                                        role_session_name=args.get('roleSessionName'),
-                                        role_session_duration=args.get('roleSessionDuration'), )
         data = []
-        response = client.list_hosted_zones()
+        response = aws_session.list_hosted_zones()
         for hosted_zone in response['HostedZones']:
             data.append({
                 'Name': hosted_zone['Name'],
@@ -191,22 +177,19 @@ def list_hosted_zones(
 
 def list_resource_record_sets(
         args: Dict[Any, Any],
-        aws_client: AWSClient  # noqa
+        aws_session: Any
 ) -> CommandResults:
     try:
-        client = aws_client.aws_session(service=SERVICE, region=args.get('region'), role_arn=args.get('roleArn'),
-                                        role_session_name=args.get('roleSessionName'),
-                                        role_session_duration=args.get('roleSessionDuration'), )
         kwargs = {'HostedZoneId': args.get('hostedZoneId')}
-        if args.get('startRecordName') is not None:
+        if args.get('startRecordName'):
             kwargs.update({'StartRecordName': args.get('startRecordName')})
-        if args.get('startRecordType') is not None:
+        if args.get('startRecordType'):
             kwargs.update({'StartRecordType': args.get('startRecordType')})
-        if args.get('startRecordIdentifier') is not None:
+        if args.get('startRecordIdentifier'):
             kwargs.update({'StartRecordIdentifier': args.get('startRecordIdentifier')})
 
         data = []
-        response = client.list_resource_record_sets(**kwargs)
+        response = aws_session.list_resource_record_sets(**kwargs)
         records = response['ResourceRecordSets']
         for record in records:
             data.append({
@@ -224,23 +207,20 @@ def list_resource_record_sets(
 
 def waiter_resource_record_sets_changed(
         args: Dict[Any, Any],
-        aws_client: AWSClient  # noqa
+        aws_session: Any
 ) -> CommandResults:
     try:
-        client = aws_client.aws_session(service=SERVICE, region=args.get('region'), role_arn=args.get('roleArn'),
-                                        role_session_name=args.get('roleSessionName'),
-                                        role_session_duration=args.get('roleSessionDuration'), )
         kwargs = {'Id': args.get('id')}
         if args.get('waiterDelay') is not None:
             kwargs.update({
                 'WaiterConfig': {'Delay': arg_to_number(args.get('waiterDelay'), 'waiterDelay', True)}
             })
-        if args.get('waiterMaxAttempts') is not None:
+        if args.get('waiterMaxAttempts'):
             kwargs.update({
                 'WaiterConfig': {'MaxAttempts': arg_to_number(args.get('waiterMaxAttempts'), 'waiterMaxAttempts', True)}
             })
 
-        waiter = client.get_waiter('resource_record_sets_changed')
+        waiter = aws_session.get_waiter('resource_record_sets_changed')
         waiter.wait(**kwargs)
         return CommandResults(entry_type=EntryType.NOTE, content_format=EntryFormat.JSON, readable_output="success")
 
@@ -250,21 +230,18 @@ def waiter_resource_record_sets_changed(
 
 def test_dns_answer(
         args: Dict[Any, Any],
-        aws_client: AWSClient  # noqa
+        aws_session: Any
 ) -> CommandResults:
     try:
-        client = aws_client.aws_session(service=SERVICE, region=args.get('region'), role_arn=args.get('roleArn'),
-                                        role_session_name=args.get('roleSessionName'),
-                                        role_session_duration=args.get('roleSessionDuration'), )
         kwargs = {
             'HostedZoneId': args.get('hostedZoneId'),
             'RecordName': args.get('recordName'),
             'RecordType': args.get('recordType'),
         }
-        if args.get('resolverIP') is not None:
+        if args.get('resolverIP'):
             kwargs.update({'ResolverIP': args.get('resolverIP')})
 
-        response = client.test_dns_answer(**kwargs)
+        response = aws_session.test_dns_answer(**kwargs)
         data = ({
             'Nameserver': response['Nameserver'],
             'RecordName': response['RecordName'],
@@ -280,11 +257,10 @@ def test_dns_answer(
 
 
 def test_module(
-        aws_client: AWSClient  # noqa
+        aws_session: Any
 ) -> CommandResults:
     try:
-        client = aws_client.aws_session(service=SERVICE)
-        response = client.list_hosted_zones()
+        response = aws_session.list_hosted_zones()
         if response['ResponseMetadata']['HTTPStatusCode'] == HTTPStatus.OK:
             return_results("ok")
 
@@ -310,39 +286,41 @@ def main():  # pragma: no cover
     retries = params.get('retries', DEFAULT_RETRIES)
 
     try:
+        args = demisto.args()
         validate_params(aws_default_region, aws_role_arn, aws_role_session_name, aws_access_key_id,  # noqa
                         aws_secret_access_key)
 
         aws_client = AWSClient(aws_default_region, aws_role_arn, aws_role_session_name,  # noqa
                                aws_role_session_duration, aws_role_policy, aws_access_key_id, aws_secret_access_key,
                                verify_certificate, timeout, retries)
-
-        args = demisto.args()
+        aws_session = aws_client.aws_session(service=SERVICE, region=args.get('region'), role_arn=args.get('roleArn'),
+                                             role_session_name=args.get('roleSessionName'),
+                                             role_session_duration=args.get('roleSessionDuration'))
 
         demisto.info(f'Command being called is {demisto.command()}')
         if command == 'test-module':
-            return_results(test_module(aws_client))
+            return_results(test_module(aws_session))
 
         elif command == 'aws-route53-create-record':
-            return_results(create_record(args, aws_client))
+            return_results(create_record(args, aws_session))
 
         elif command == 'aws-route53-upsert-record':
-            return_results(upsert_record(args, aws_client))
+            return_results(upsert_record(args, aws_session))
 
         elif command == 'aws-route53-delete-record':
-            return_results(delete_record(args, aws_client))
+            return_results(delete_record(args, aws_session))
 
         elif command == 'aws-route53-list-hosted-zones':
-            return_results(list_hosted_zones(args, aws_client))
+            return_results(list_hosted_zones(aws_session))
 
         elif command == 'aws-route53-list-resource-record-sets':
-            return_results(list_resource_record_sets(args, aws_client))
+            return_results(list_resource_record_sets(args, aws_session))
 
         elif command == 'aws-route53-waiter-resource-record-sets-changed':
-            return_results(waiter_resource_record_sets_changed(args, aws_client))
+            return_results(waiter_resource_record_sets_changed(args, aws_session))
 
         elif command == 'aws-route53-test-dns-answer':
-            return_results(test_dns_answer(args, aws_client))
+            return_results(test_dns_answer(args, aws_session))
         else:
             raise NotImplementedError(f'{command} command is not implemented.')
 

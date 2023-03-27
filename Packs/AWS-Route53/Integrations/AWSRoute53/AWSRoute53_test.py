@@ -59,11 +59,10 @@ def test_create_record(mocker):
             'Status': 'changed',
         }
     }
-    mocker.patch.object(AWSClient, "aws_session", return_value=AWSRoute53Client())
     mocker.patch.object(AWSRoute53Client, "change_resource_record_sets", return_value=response)
 
-    client = AWSClient()
-    res = AWS_ROUTE53.create_record(args, client)
+    session = AWSRoute53Client()
+    res = AWS_ROUTE53.create_record(args, session)
     data = {
         'Id': '__mock_id__',
         'Status': 'changed',
@@ -95,11 +94,10 @@ def test_delete_record(mocker):
             'Status': 'deleted',
         }
     }
-    mocker.patch.object(AWSClient, "aws_session", return_value=AWSRoute53Client())
     mocker.patch.object(AWSRoute53Client, "change_resource_record_sets", return_value=response)
 
-    client = AWSClient()
-    res = AWS_ROUTE53.delete_record(args, client)
+    session = AWSRoute53Client()
+    res = AWS_ROUTE53.delete_record(args, session)
     data = {
         'Id': '__mock_id__',
         'Status': 'deleted',
@@ -133,11 +131,10 @@ def test_upsert_record(mocker):
             'Status': 'updated',
         }
     }
-    mocker.patch.object(AWSClient, "aws_session", return_value=AWSRoute53Client())
     mocker.patch.object(AWSRoute53Client, "change_resource_record_sets", return_value=response)
 
-    client = AWSClient()
-    res = AWS_ROUTE53.upsert_record(args, client)
+    session = AWSRoute53Client()
+    res = AWS_ROUTE53.upsert_record(args, session)
     data = {
         'Id': '__mock_id__',
         'Status': 'updated',
@@ -156,7 +153,6 @@ def test_list_hosted_zones(mocker):
     """
     from CommonServerPython import tableToMarkdown
 
-    args = TEST_PARAMS
     response = {
         'HostedZones': [
             {
@@ -166,11 +162,10 @@ def test_list_hosted_zones(mocker):
             }
         ]
     }
-    mocker.patch.object(AWSClient, "aws_session", return_value=AWSRoute53Client())
     mocker.patch.object(AWSRoute53Client, "list_hosted_zones", return_value=response)
 
-    client = AWSClient()
-    res = AWS_ROUTE53.list_hosted_zones(args, client)
+    session = AWSRoute53Client()
+    res = AWS_ROUTE53.list_hosted_zones(session)
     data = {
         'Name': 'test-domain.com',
         'Id': 'xxx',
@@ -212,11 +207,10 @@ def test_list_resource_record_sets(mocker):
             }
         ]
     }
-    mocker.patch.object(AWSClient, "aws_session", return_value=AWSRoute53Client())
     mocker.patch.object(AWSRoute53Client, "list_resource_record_sets", return_value=response)
 
-    client = AWSClient()
-    res = AWS_ROUTE53.list_resource_record_sets(args, client)
+    session = AWSRoute53Client()
+    res = AWS_ROUTE53.list_resource_record_sets(args, session)
     data = [
         {
             'Name': 'a.test-domain.com',
@@ -245,11 +239,10 @@ def test_waiter_resource_record_sets_changed(mocker):
         'waiterMaxAttempts': 3,
     })
 
-    mocker.patch.object(AWSClient, "aws_session", return_value=AWSRoute53Client())
     mocker.patch.object(AWSRoute53ClientWaiter, "wait", return_value={})
 
-    client = AWSClient()
-    res = AWS_ROUTE53.waiter_resource_record_sets_changed(args, client)
+    session = AWSRoute53Client()
+    res = AWS_ROUTE53.waiter_resource_record_sets_changed(args, session)
     assert "success" == res.readable_output
 
 
@@ -278,11 +271,10 @@ def test_test_dns_answer(mocker):
         'ResponseCode': '__ResponseCode__',
         'Protocol': '__Protocol__',
     }
-    mocker.patch.object(AWSClient, "aws_session", return_value=AWSRoute53Client())
     mocker.patch.object(AWSRoute53Client, "test_dns_answer", return_value=response)
 
-    client = AWSClient()
-    res = AWS_ROUTE53.test_dns_answer(args, client)
+    session = AWSRoute53Client()
+    res = AWS_ROUTE53.test_dns_answer(args, session)
     data = {
         'Nameserver': '__Nameserver__',
         'RecordName': '__RecordName__',
