@@ -12,3 +12,10 @@ The playbook found in this pack provides a great out-of-the-box solution, yet it
 _For more information, visit our [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/playbooks/phishing-investigation---generic-v2)_
 
 ![Default](https://raw.githubusercontent.com/demisto/content/fb32f760304f6430237fee965ce834c3c1adcbda/Packs/DefaultPlaybook/doc_files/Default.png)
+
+## Demo Video
+<video controls>
+    <source src="https://github.com/demisto/content-assets/blob/master/Assets/Default/Default%20Pack%20-%20Playbook%20and%20Layout.mp4"
+            type="video/mp4"/>
+    Sorry, your browser doesn't support embedded videos. You can download the video at: https://github.com/demisto/content-assets/raw/7fd9e45c4d809dc1a41521c66828733dafe82148/Assets/FeedAutofocus/AutoFocus_Feed_demo.mp4 
+</video>
