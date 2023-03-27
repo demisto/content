@@ -151,7 +151,7 @@ dest_port3 = if(action contains "Built inbound",arrayindex(regextract(_raw_log ,
     dest_interface14 = arrayindex(regextract(_raw_log ,"dst\s([\w\-\_]+)\:\d+\.\d+\.\d+\.\d+\/\d+"),0)
 // option 15
 // faddr <source_ip>/<icmp_type>(<source_user_name>)
-| alter source_ip15 = arrayindex(regextract(_raw_log ,"for\sfaddr\s\d+\.\d+\.\d+\.\d+\/\d\(([^\)]+)\)"),0),
+| alter source_ip15 = arrayindex(regextract(_raw_log ,"for\sfaddr\s(\d+\.\d+\.\d+\.\d+)\/\d\([^\)]+\)"),0),
     source_user_name15 = arrayindex(regextract(_raw_log ,"for faddr \d+\.\d+\.\d+\.\d+\/\d+\(([^\)]+)\)"),0)
 // merge the fields
 | alter
