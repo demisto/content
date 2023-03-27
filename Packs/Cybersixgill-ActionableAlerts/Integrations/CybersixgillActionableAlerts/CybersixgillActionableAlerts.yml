@@ -16,6 +16,11 @@ configuration:
   required: true
   type: 4
   section: Connect
+- display: Cybersixgill Organization ID
+  name: org_id
+  type: 0
+  required: true
+  section: Connect
 - defaultvalue: '25'
   display: Maximum number of incidents to fetch - maximum is 25
   name: max_fetch
