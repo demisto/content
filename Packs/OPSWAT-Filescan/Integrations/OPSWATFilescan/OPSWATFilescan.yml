@@ -14,7 +14,7 @@ configuration:
   - name: api_key
     display: API Key
     required: true
-    type: 4
+    type: 9
   - name: insecure
     display: Trust any certificate (not secure)
     required: false
@@ -23,16 +23,11 @@ configuration:
     display: Use system proxy settings
     required: false
     type: 8
-  - name: verbose
-    display: "Verbose (show log in case of error) "
-    defaultvalue: ""
-    type: 8
-    required: false
 script:
   script: "-"
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.10.48392
+  dockerimage: demisto/python3:3.10.10.50695
   runonce: false
   commands:
     - name: filescan-scan-url
@@ -298,4 +293,4 @@ script:
           type: Unknown
 fromversion: 6.8.0
 tests:
-  - Run all tests
+- No tests 

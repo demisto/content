@@ -463,7 +463,7 @@ Search for reports. Finds reports and uploaded files by various tokens.
 | File.SHA256 | String | The SHA256 hash of the file. | 
 | OPSWAT.Filescan.Analysis.id | String | The analysis id. | 
 | OPSWAT.Filescan.Analysis.file.name | String | The name of the file. | 
-| OPSWAT.Filescan.Analysis.file.hash | String | The SHA256 of the file. | 
+| OPSWAT.Filescan.Analysis.file.sha256 | String | The SHA256 of the file. | 
 | OPSWAT.Filescan.Analysis.verdict | String | The final verdict. | 
 | OPSWAT.Filescan.Analysis.state | String | Overall state of the scan. | 
 | OPSWAT.Filescan.Analysis.date | Date | The scan date. | 
