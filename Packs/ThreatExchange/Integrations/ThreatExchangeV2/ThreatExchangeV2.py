@@ -934,7 +934,6 @@ def main():
     handle_proxy()
 
     demisto.debug(f'Command being called is {command}')
-    demisto.info('Test!!!!!')
     try:
         client = Client(
             base_url=base_url,

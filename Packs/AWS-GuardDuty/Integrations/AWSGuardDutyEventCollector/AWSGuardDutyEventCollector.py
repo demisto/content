@@ -244,7 +244,6 @@ def main():  # pragma: no cover
             raise NotImplementedError(f"Command {command} is not implemented.")
 
     except Exception as e:
-        demisto.error('test!!!!')
         return_error(f'Failed to execute {demisto.command()} command in AWSGuardDutyEventCollector.\nError:\n{str(e)}')
 
 
