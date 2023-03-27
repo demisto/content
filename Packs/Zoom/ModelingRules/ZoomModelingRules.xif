@@ -1,0 +1,19 @@
+[MODEL: dataset="zoom_zoom_raw"]
+filter
+    user = null
+| alter
+	xdm.source.user.upn = email,
+	xdm.event.operation = type,
+	_time = time,
+	xdm.source.ipv4 = ip_address,
+	xdm.source.interface = client_type,
+	xdm.observer.version = version;
+
+filter
+    user != null
+| alter
+	_time = time,
+	xdm.source.user.upn = operator,
+	xdm.event.type = category_type,
+	xdm.event.description = operation_detail,
+	xdm.event.outcome_reason = action;
