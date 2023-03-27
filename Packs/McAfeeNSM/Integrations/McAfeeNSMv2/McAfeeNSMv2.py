@@ -793,11 +793,11 @@ def create_body_update_rule_for_v10(rule_type: str, address: List, number: int,
     # if the address is a dictionary, the user wants to delete and overwrite that's the reason we kept that address in the list.
     list_to_send: list[Dict] = []
     for single_address in address:
-        if type(single_address) is dict:  #
+        if type(single_address) is dict:  # if its a dict == its an existing address to overwrite, we saved from the 'get' call
             list_to_send.append({"value": single_address.get("value"),
                                  "state": STATE_TO_NUMBER.get(state),
                                  "changedState": 3})
-        else:
+        else:       # its a new address the user wants to add
             list_to_send.append({"value": single_address,
                                  "state": STATE_TO_NUMBER.get(state),
                                  "changedState": 1})
