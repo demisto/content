@@ -3228,7 +3228,7 @@ def test_search_device_command(requests_mock):
             assert context[key] == [endpoint_context]
 
 
-def test_get_endpint_command(requests_mock, mocker):
+def test_get_endpoint_command(requests_mock, mocker):
     """
     Test get_endpint_command with a successful id
     Given
