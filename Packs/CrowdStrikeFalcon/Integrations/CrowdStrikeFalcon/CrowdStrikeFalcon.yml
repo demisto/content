@@ -3478,22 +3478,22 @@ script:
     - description: A custom filter by which the retrieve quarantined file should be filtered.
       name: filter
       required: false
-    - description: The SHA256 hash value of the quarantined files to retrieve.
+    - description: A comma-separated list of SHA256 hash of the files to retrieve.
       name: sha256
       required: false
       isArray: true
-    - description: The file name of the quarantined files to retrieve.
+    - description: A comma-separated list of the name of the files to retrieve.
       name: filename
       required: false
       isArray: true
     - description: Filter the retrieved files by state.
       name: state
       required: false
-    - description: Filter the retrieved files by hostname.
+    - description: A comma-separated list of the hostnames of the files to retrieve.
       name: hostname
       required: false
       isArray: true
-    - description: Filter the retrieved files by username.
+    - description: A comma-separated list of the usernames of the files to retrieve.
       name: username
       required: false
       isArray: true
@@ -3579,7 +3579,7 @@ script:
       name: hostname
       required: false
       isArray: true
-    - description: A comma-separated list of quarantined files user name to update.
+    - description: A comma-separated list of quarantined files username to update.
       name: username
       required: false
       isArray: true

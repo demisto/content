@@ -4542,8 +4542,8 @@ def list_quarantined_file_command(args: dict) -> CommandResults:
             offset=args.get('offset')
         )
         search_args = assign_params(
-            sha256=argToList(args.get('sha256')),
             state=args.get('state'),
+            sha256=argToList(args.get('sha256')),
             filename=argToList(args.get('filename')),
             hostname=argToList(args.get('hostname')),
             username=argToList(args.get('username')),
