@@ -1,12 +1,11 @@
 import shutil
-import demistomock as demisto  # noqa: F401
-import jwt
-from CommonServerPython import *  # noqa: F401
-#from datetime import timedelta
-from traceback import format_exc
-
-#import dateparser
 from ZoomApiModule import *
+import demistomock as demisto  # noqa: F401
+# import jwt
+from CommonServerPython import *  # noqa: F401
+# from datetime import timedelta
+from traceback import format_exc
+# import dateparser
 
 # OAUTH_TOKEN_GENERATOR_URL = 'https://zoom.us/oauth/token'
 # # The token’s time to live is 1 hour,
@@ -45,9 +44,9 @@ FILE_TYPE_MAPPING = {
     'M4A': 'Audio'
 }
 # ERRORS
-INVALID_CREDENTIALS = 'Invalid credentials. Verify that your credentials are valid.'
-INVALID_API_SECRET = 'Invalid API Secret. Verify that your API Secret is valid.'
-INVALID_ID_OR_SECRET = 'Invalid Client ID or Client Secret. Verify that your ID and Secret is valid.'
+# INVALID_CREDENTIALS = 'Invalid credentials. Verify that your credentials are valid.'
+# INVALID_API_SECRET = 'Invalid API Secret. Verify that your API Secret is valid.'
+# INVALID_ID_OR_SECRET = 'Invalid Client ID or Client Secret. Verify that your ID and Secret is valid.'
 WRONG_TIME_FORMAT = "Wrong time format. Use this format: 'yyyy-MM-ddTHH:mm:ssZ' or 'yyyy-MM-ddTHH:mm:ss' "
 LIMIT_AND_EXTRA_ARGUMENTS = """Too many arguments. If you choose a limit,
                                        don't enter a user_id or page_size or next_page_token or page_number."""

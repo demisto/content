@@ -1,7 +1,7 @@
 commonfields:
-  id: Zoom
+  id: ZoomApiModule
   version: 
-name: Zoom
+name: ZoomApiModule
 script: "-"
 subtype: python3
 type: python
