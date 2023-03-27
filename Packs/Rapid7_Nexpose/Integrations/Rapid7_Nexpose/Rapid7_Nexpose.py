@@ -1554,10 +1554,12 @@ class Client(BaseClient):
         Returns:
             dict: API response with information about the started scan.
         """
-        post_data = {
+        post_data: dict = {
             "name": scan_name,
-            "hosts": hosts
         }
+
+        if hosts:
+            post_data["hosts"] = hosts
 
         return self._http_request(
             url_suffix=f"/sites/{site_id}/scans",
@@ -2288,7 +2290,6 @@ def create_report(client: Client, scope: dict[str, Any], template_id: str | None
 
 
 def find_asset_last_scan_data(asset_data: dict) -> tuple[str, str]:
-
     """
     Find the date and ID for the last scan of an asset.
 
@@ -4924,31 +4925,10 @@ def start_site_scan_command(client: Client, site_id: str | None = None, site_nam
         client=client,
     )
 
-    if not name:
-        name = f"scan {datetime.now()}"
-
-    if hosts:
-        hosts_list = argToList(hosts)
-
-    else:
-        assets = client.get_site_assets(site.id)
-
-        hosts_list = []
-
-        for asset in assets:
-            if asset.get("ip") and asset["ip"] not in hosts_list:
-                hosts_list.append(asset["ip"])
-
-            # In some cases there is an IP address in the "addresses" field, but not in the "ip" field.
-            elif asset.get("addresses"):
-                for address in asset["addresses"]:
-                    if address.get("ip") and address["ip"] not in hosts_list:
-                        hosts_list.append(address["ip"])
-
     scan_response = client.start_site_scan(
         site_id=site.id,
-        scan_name=name,
-        hosts=hosts_list,
+        scan_name=name if name else f"scan {datetime.now()}",
+        hosts=argToList(hosts) if hosts else None,
     )
 
     if not scan_response or "id" not in scan_response:
