@@ -803,9 +803,14 @@ def create_body_update_rule_for_v10(rule_type: str, address: List, number: int,
                                  "state": STATE_TO_NUMBER.get(state),
                                  "changedState": 1})
 
-    # for parameters with a range, we need to add the state to the dictionary
+    # for parameters with a range, we need to add the state and the changeState to the dictionary
+    # The same logic as above, if "state" is in the dictionary, the user wants to delete and overwrite that's the reason we kept that range in the list.
     if from_to_list:
-        from_to_list[0].update({"state": STATE_TO_NUMBER.get(state)})
+        for dictionary in from_to_list:
+            if "state" in dictionary:  # if the state is in the dictionary, it means the user wants to delete that range of addresses
+                dictionary.update({"changedState": 3})
+            else:  # if the state is not in the dictionary, it means the user wants to add that range of addresses
+                dictionary.update({"state": STATE_TO_NUMBER.get(state), "changedState": 1})
 
     if HOST in rule_type:
         return f'HostIPv{number}', {
