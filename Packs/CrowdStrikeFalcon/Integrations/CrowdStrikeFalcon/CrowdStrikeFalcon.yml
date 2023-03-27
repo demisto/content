@@ -2929,10 +2929,10 @@ script:
       description: Unique identifier for a vulnerability as cataloged in the National Vulnerability Database (NVD).
       type: String
   - arguments:
-    - description: Value to match for the exclusion.
+    - description: Value to match for exclusion.
       name: value
       required: true
-    - description: "A comma-separated list from where to exclude the exclusion possible values are: blocking, extraction."
+    - description: "A comma-separated list from where to exclude the exclusion. Possible values are: blocking, extraction."
       name: excluded_from
       required: true
       isArray: true
@@ -3013,11 +3013,7 @@ script:
     - description: Comment describing why the exclusions were created.
       name: comment
       required: false
-    - description: "A comma-separated list from where to exclude the exclusion possible values are: blocking, extraction."
-      name: excluded_from
-      required: false
-      isArray: true
-    - description: A comma-separated list of group ID(s) impacted by the exclusion
+    - description: A comma-separated list of group ID(s) impacted by the exclusion.
       name: groups
       required: false
       isArray: true
@@ -3089,7 +3085,7 @@ script:
     description: Delete the ML exclusions by ID.
     name: cs-falcon-delete-ml-exclusion
   - arguments:
-    - description: "A custom filter by which the exclusions should be filtered.\n The syntax follows the pattern `<property>:[operator]'<value>'` for example: value:'test'.\n Available filters: applied_globally, created_by, created_on, last_modified, modified_by, value.\n For more information please see: https://www.falconpy.io/Service-Collections/Falcon-Query-Language"
+    - description: "A custom filter by which the exclusions should be filtered.\n The syntax follows the pattern `<property>:[operator]'<value>'` for example: value:'test'.\n Available filters: applied_globally, created_by, created_on, last_modified, modified_by, value.\n For more information, see: https://www.falconpy.io/Service-Collections/Falcon-Query-Language."
       name: filter
       required: false
     - description: The value by which the exclusions should be filtered.
@@ -3099,10 +3095,10 @@ script:
       name: ids
       required: false
       isArray: true
-    - description: The maximum number of records to return. [1-500]. Works only if IDs argument is not supplied.
+    - description: The maximum number of records to return. [1-500]. Applies only if the IDs argument is not supplied.
       name: limit
       required: false
-    - description: The offset to start retrieving records from. Works only if IDs argument is not supplied.
+    - description: The offset to start retrieving records from. Applies only if the IDs argument is not supplied.
       name: offset
       required: false
     - auto: PREDEFINED
@@ -3308,7 +3304,7 @@ script:
     - description: JSON formatted detection template.
       name: detection_json
       required: false
-    - description: A comma-separated list of group ID(s) impacted by the exclusion
+    - description: A comma-separated list of group ID(s) impacted by the exclusion.
       name: groups
       required: false
       isArray: true
@@ -3389,7 +3385,7 @@ script:
     description: Delete the IOA exclusions by ID.
     name: cs-falcon-delete-ioa-exclusion
   - arguments:
-    - description: "A custom filter by which the exclusions should be filtered.\n The syntax follows the pattern `<property>:[operator]'<value>'` for example: name:'test'.\n Available filters: applied_globally, created_by, created_on, name, last_modified, modified_by, value, pattern.\n For more information please see: https://www.falconpy.io/Service-Collections/Falcon-Query-Language"
+    - description: "A custom filter by which the exclusions should be filtered.\n The syntax follows the pattern `<property>:[operator]'<value>'` for example: name:'test'.\n Available filters: applied_globally, created_by, created_on, name, last_modified, modified_by, value, pattern.\n For more information, see: https://www.falconpy.io/Service-Collections/Falcon-Query-Language."
       name: filter
       required: false
     - description: The name by which the exclusions should be filtered.
@@ -3399,13 +3395,13 @@ script:
       name: ids
       required: false
       isArray: true
-    - description: The limit of how many exclusions to retrieve. Default is 50. Works only if IDs argument is not supplied.
+    - description: The limit of how many exclusions to retrieve. Default is 50. Applies only if the IDs argument is not supplied.
       name: limit
       required: false
-    - description: The offset of how many exclusions to skip. Default is 0. Works only if IDs argument is not supplied.
+    - description: The offset of how many exclusions to skip. Default is 0. Applies only if the IDs argument is not supplied.
       name: offset
       required: false
-    description: Get a list of IOA exclusions by specifying their IDs or a filter
+    description: Get a list of IOA exclusions by specifying their IDs or a filter.
     name: cs-falcon-search-ioa-exclusion
     outputs:
     - contextPath: CrowdStrike.IOAExclusion.id
@@ -3475,7 +3471,7 @@ script:
       description: The date when the exclusion rule was created.
       type: String
   - arguments:
-    - description: A comma-separated list of quarantined files IDs to retrieve.
+    - description: A comma-separated list of quarantined file IDs to retrieve.
       name: ids
       required: false
       isArray: true
@@ -3517,7 +3513,7 @@ script:
       description: The agent identifier of the agent that quarantined the file.
       type: String
     - contextPath: CrowdStrike.QuarantinedFile.cid
-      description: The unique identifier for the customer that owns the agent.
+      description: The unique identifier for the customer that who the agent.
       type: String
     - contextPath: CrowdStrike.QuarantinedFile.sha256
       description: The SHA256 hash value of the quarantined file.
@@ -3550,7 +3546,7 @@ script:
       description: The date the quarantined file was created.
       type: Date
   - arguments:
-    - description: A comma-separated list of quarantined files IDs to update.
+    - description: A comma-separated list of quarantined file IDs to update.
       name: ids
       required: false
       isArray: true
@@ -3572,14 +3568,14 @@ script:
       name: sha256
       required: false
       isArray: true
-    - description: A comma-separated list of quarantined files name to update.
+    - description: A comma-separated list of quarantined file names to update.
       name: filename
       required: false
       isArray: true
     - description: Update files based on the state.
       name: state
       required: false
-    - description: A comma-separated list of quarantined files host name to update.
+    - description: A comma-separated list of quarantined file hostnames to update.
       name: hostname
       required: false
       isArray: true
@@ -3587,7 +3583,7 @@ script:
       name: username
       required: false
       isArray: true
-    description: Apply action to quarantined file by file ids or filter.
+    description: Apply action to quarantined file by file IDs or filter.
     name: cs-falcon-apply-quarantine-file-action
   - arguments:
     - description: A comma-separated list of incident IDs.
