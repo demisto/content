@@ -1178,13 +1178,34 @@ def test_create_body_create_rule_for_v10__with_different_arguments(input, output
     assert res == output
 
 
-# @pytest.mark.parametrize('input, output', [(),
-#                                            ()])
-# def test_create_body_update_rule_for_v10(mocker, mcafeensmv2_client, input, output):
-#     from McAfeeNSM import create_body_update_rule_for_v10
-#     res = create_body_update_rule_for_v10(rule_type=input, address="bla", number=9, from_to_list=[])
+@pytest.mark.parametrize('input, output', [({"rule": "HOST", "from_to_list": []},
+                                            ('HostIPv9', {'hostIPv9AddressList': [
+                                                {'value': '1234', 'state': 1, 'changedState': 3},
+                                                {'value': '789', 'state': 1, 'changedState': 1}]})),
+                                           ({"rule": "ADDRESS_RANGE", "from_to_list": [{"mock"}]},
+                                            ('IPv9AddressRange', {'IPV9RangeList': [{'mock', 'state'}]})),
+                                           ({"rule": "NETWORK", "from_to_list": []},
+                                            ('Network_IPV_9', {'networkIPV9List': [
+                                                {'value': '1234', 'state': 1, 'changedState': 3},
+                                                {'value': '789', 'state': 1, 'changedState': 1}]}))])
+def test_create_body_update_rule_for_v10(input, output):
+    """
+    Given:
+        - A rule type and other relevant arguments.
+        1. A rule type is HOST. from_to_list is empty.
+        2. A rule type is ADDRESS_RANGE. from_to_list is not empty.
+        3. A rule type is NETWORK. from_to_list is empty.
+    When:
+        - create_body_update_rule_for_v10 command is executed.
+    Then:
+        - The body is created correctly according to the rule type and other given arguments.
+    """
+    from McAfeeNSMv2 import create_body_update_rule_for_v10
+    res = create_body_update_rule_for_v10(rule_type=input.get("rule"),
+                                          address=[{"test": "test", "value": "1234"}, "789"], number=9,
+                                          from_to_list=input.get("from_to_list"))
 
-#     assert res == output
+    assert res == output
 
 
 def test_modify_v10_results_to_v9_format():
