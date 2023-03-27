@@ -40,4 +40,4 @@ This playbook does not have any outputs.
 
 ---
 
-![Armis Alert Enrichment](../doc_files/Reco_Google_Drive_Playbook_Automation.png)
+![Reco Google Drive Playbook Automation](../doc_files/Reco_Google_Drive_Playbook_Automation.png)

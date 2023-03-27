@@ -1,15 +1,7 @@
-id: 20bb3993-d04a-406a-8ded-292039c675b9
-version: 9
-vcShouldKeepItemLegacyProdMachine: false
+id: Reco Google Drive Playbook Automation
+version: -1
 name: Reco Google Drive Playbook Automation
-description: Automate Google Drive alert remediation with our solution that revokes
-  over-access permissions and shares file details and links with end-users via Slack.
-  Reco workflow seamlessly integrates with Palo Alto Networks' Demisto platform to
-  resolve the alert and streamline your organization's security operations. By automating
-  remediation, you can ensure that sensitive data is protected and that end-users
-  are promptly notified of any changes to their file access. With our solution, you
-  can close alerts in Demisto and improve your organization's security posture with
-  minimal effort.
+description: Automate Google Drive alert remediation with our solution that revokes over-access permissions and shares file details and links with end-users via Slack. Reco workflow seamlessly integrates with Palo Alto Networks' Demisto platform to resolve the alert and streamline your organization's security operations. By automating remediation, you can ensure that sensitive data is protected and that end-users are promptly notified of any changes to their file access. With our solution, you can close alerts in Demisto and improve your organization's security posture with minimal effort.
 starttaskid: "0"
 tasks:
   "0":
@@ -22,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "92"
@@ -144,19 +137,7 @@ tasks:
       - "90"
     scriptarguments:
       blocks:
-        simple: "[\n\t\t{\n\t\t\t\"type\": \"section\",\n\t\t\t\"text\": {\n\t\t\t\t\"type\":
-          \"mrkdwn\",\n\t\t\t\t\"text\": \"Hello ${incident.labels.asset_owner},\\n\\nWe
-          have identified sensitive file(s) belonging to you that are publicly exposed.\"\n\t\t\t}\n\t\t},\n\t\t{\n\t\t\t\"type\":
-          \"divider\"\n\t\t},\n\t\t{\n\t\t\t\"type\": \"section\",\n\t\t\t\"text\":
-          {\n\t\t\t\t\"type\": \"mrkdwn\",\n\t\t\t\t\"text\": \"*Sensitive File(s)
-          with revoked public permissions:*\\n ${finalstring}\"\n\t\t\t}\n\t\t},\n\t\t{\n\t\t\t\"type\":
-          \"divider\"\n\t\t},\n\t\t{\n\t\t\t\"type\": \"section\",\n\t\t\t\"text\":
-          {\n\t\t\t\t\"type\": \"mrkdwn\",\n\t\t\t\t\"text\": \"Selecting \\\"Anyone
-          with this link\\\" widely exposes the file to anyone who has the link. Therefore,
-          if the resource should not be shared *publicly*, you are requested to limit
-          the access permissions to specified identities or restricted users only.\"\n\t\t\t}\n\t\t},\n\t\t{\n\t\t\t\"type\":
-          \"section\",\n\t\t\t\"fields\": [\n\t\t\t\t{\n\t\t\t\t\t\"type\": \"mrkdwn\",\n\t\t\t\t\t\"text\":
-          \"For more information please contact security team\"\n\t\t\t\t}\n\t\t\t]\n\t\t}\n\t]"
+        simple: "[\n\t\t{\n\t\t\t\"type\": \"section\",\n\t\t\t\"text\": {\n\t\t\t\t\"type\": \"mrkdwn\",\n\t\t\t\t\"text\": \"Hello ${incident.labels.asset_owner},\\n\\nWe have identified sensitive file(s) belonging to you that are publicly exposed.\"\n\t\t\t}\n\t\t},\n\t\t{\n\t\t\t\"type\": \"divider\"\n\t\t},\n\t\t{\n\t\t\t\"type\": \"section\",\n\t\t\t\"text\": {\n\t\t\t\t\"type\": \"mrkdwn\",\n\t\t\t\t\"text\": \"*Sensitive File(s) with revoked public permissions:*\\n ${finalstring}\"\n\t\t\t}\n\t\t},\n\t\t{\n\t\t\t\"type\": \"divider\"\n\t\t},\n\t\t{\n\t\t\t\"type\": \"section\",\n\t\t\t\"text\": {\n\t\t\t\t\"type\": \"mrkdwn\",\n\t\t\t\t\"text\": \"Selecting \\\"Anyone with this link\\\" widely exposes the file to anyone who has the link. Therefore, if the resource should not be shared *publicly*, you are requested to limit the access permissions to specified identities or restricted users only.\"\n\t\t\t}\n\t\t},\n\t\t{\n\t\t\t\"type\": \"section\",\n\t\t\t\"fields\": [\n\t\t\t\t{\n\t\t\t\t\t\"type\": \"mrkdwn\",\n\t\t\t\t\t\"text\": \"For more information please contact security team\"\n\t\t\t\t}\n\t\t\t]\n\t\t}\n\t]"
       to:
         simple: ${incident.labels.asset_owner}
     separatecontext: false
@@ -193,12 +174,7 @@ tasks:
       - "90"
     scriptarguments:
       blocks:
-        simple: "[\n\t\t{\n\t\t\t\"type\": \"section\",\n\t\t\t\"text\": {\n\t\t\t\t\"type\":
-          \"mrkdwn\",\n\t\t\t\t\"text\": \"Reco finding remediated by PAWN XSOAR.\"\n\t\t\t}\n\t\t},\n\t\t{\n\t\t\t\"type\":
-          \"section\",\n\t\t\t\"fields\": [\n\t\t\t\t{\n\t\t\t\t\t\"type\": \"mrkdwn\",\n\t\t\t\t\t\"text\":
-          \"**Sensitive File(s) with revoked public permissions:*\\n ${finalstring}\"\n\t\t\t\t},\n\t\t\t\t{\n\t\t\t\t\t\"type\":
-          \"mrkdwn\",\n\t\t\t\t\t\"text\": \"*DM to the user for more information:*\\n${incident.labels.asset_owner}\"\n\t\t\t\t},\n\t\t\t\t{\n\t\t\t\t\t\"type\":
-          \"mrkdwn\",\n\t\t\t\t\t\"text\": \"*Link to Finding:*\\nhttps://[customer].reco.ai/inicdent/${incident.dbotMirrorId}\"\n\t\t\t\t}\n\t\t\t]\n\t\t}\n\t]"
+        simple: "[\n\t\t{\n\t\t\t\"type\": \"section\",\n\t\t\t\"text\": {\n\t\t\t\t\"type\": \"mrkdwn\",\n\t\t\t\t\"text\": \"Reco finding remediated by PAWN XSOAR.\"\n\t\t\t}\n\t\t},\n\t\t{\n\t\t\t\"type\": \"section\",\n\t\t\t\"fields\": [\n\t\t\t\t{\n\t\t\t\t\t\"type\": \"mrkdwn\",\n\t\t\t\t\t\"text\": \"**Sensitive File(s) with revoked public permissions:*\\n ${finalstring}\"\n\t\t\t\t},\n\t\t\t\t{\n\t\t\t\t\t\"type\": \"mrkdwn\",\n\t\t\t\t\t\"text\": \"*DM to the user for more information:*\\n${incident.labels.asset_owner}\"\n\t\t\t\t},\n\t\t\t\t{\n\t\t\t\t\t\"type\": \"mrkdwn\",\n\t\t\t\t\t\"text\": \"*Link to Finding:*\\nhttps://[customer].reco.ai/inicdent/${incident.dbotMirrorId}\"\n\t\t\t\t}\n\t\t\t]\n\t\t}\n\t]"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -301,6 +277,7 @@ tasks:
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "87"
@@ -328,8 +305,7 @@ tasks:
       id: 766ab176-319a-4d76-83af-9eba2d513cd0
       version: -1
       name: Google Drive Enabled
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -368,8 +344,7 @@ tasks:
       id: 78fb589b-0feb-48ed-8897-a0a0401fa2f3
       version: -1
       name: Is Slack Enabled
-      description: Returns 'yes' if integration brand is available. Otherwise returns
-        'no'
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -413,6 +388,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -445,4 +421,6 @@ view: |-
   }
 inputs: []
 outputs: []
-sourceplaybookid: 3f37dfe4-4eff-43bd-8008-354a06b5de80
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0

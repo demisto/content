@@ -40,4 +40,4 @@ This playbook does not have any outputs.
 
 ---
 
-![Armis Alert Enrichment](../doc_files/Reco-Google-Drive-Revoke-Permissions.png)
+![Recok Goole Drive Revoke Permission](../doc_files/Reco-Google-Drive-Revoke-Permissions.png)

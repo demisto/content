@@ -1,5 +1,5 @@
 id: 8a13470e-2470-4ade-8ade-990ecdce720b
-version: 25
+version: 27
 vcShouldKeepItemLegacyProdMachine: false
 name: Reco-Google-Drive-Revoke-Permissions
 description: This workflow enables you to easily list the permissions of files stored
@@ -14,10 +14,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 857c3616-d84d-4807-805d-03abdd15e378
+    taskid: f18b296c-af9b-4c51-844f-8aa31f78c8ce
     type: start
     task:
-      id: 857c3616-d84d-4807-805d-03abdd15e378
+      id: f18b296c-af9b-4c51-844f-8aa31f78c8ce
       version: -1
       name: ""
       iscommand: false
@@ -43,10 +43,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 520cd20a-e6d8-4193-8538-18ca4396c03f
+    taskid: e90060a3-2a8f-40c6-81a4-336d9dff24c3
     type: regular
     task:
-      id: 520cd20a-e6d8-4193-8538-18ca4396c03f
+      id: e90060a3-2a8f-40c6-81a4-336d9dff24c3
       version: -1
       name: Google Drive Delete Permission
       description: Delete a permission.
@@ -101,10 +101,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 1fef3948-8572-4f56-830d-87ca929bc08a
+    taskid: 9a10f8ba-2004-471a-8754-c985ed25b621
     type: regular
     task:
-      id: 1fef3948-8572-4f56-830d-87ca929bc08a
+      id: 9a10f8ba-2004-471a-8754-c985ed25b621
       version: -1
       name: Reco - Asset Resolved - all org users
       description: Resolve an event in Reco Finding. Reco Findings contains aggregations
@@ -147,10 +147,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: fbc600ee-6a0c-4b38-8f93-3f5c4ed076d1
+    taskid: e691ce6b-aa6d-46f4-8c23-780b00cd1471
     type: regular
     task:
-      id: fbc600ee-6a0c-4b38-8f93-3f5c4ed076d1
+      id: e691ce6b-aa6d-46f4-8c23-780b00cd1471
       version: -1
       name: Update timeline
       description: Add a comment to an incident in Reco
@@ -198,13 +198,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 5ab914b8-1e66-4e14-8cc7-0c2f9af67f19
+    taskid: bb3f1d61-05ff-460a-8db0-2e3c7448d785
     type: playbook
     task:
-      id: 5ab914b8-1e66-4e14-8cc7-0c2f9af67f19
+      id: bb3f1d61-05ff-460a-8db0-2e3c7448d785
       version: -1
       name: buildString
-      playbookName: buildString
+      playbookName: Reco Build String Message
       type: playbook
       iscommand: false
       brand: ""
@@ -237,10 +237,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: d32608ec-3600-4686-823e-67fa398fb7f9
+    taskid: 60ea0fe5-0e3c-47f5-8a86-6932d80f7034
     type: regular
     task:
-      id: d32608ec-3600-4686-823e-67fa398fb7f9
+      id: 60ea0fe5-0e3c-47f5-8a86-6932d80f7034
       version: -1
       name: Parse Assets
       description: Set a value in context under the key you entered.
@@ -274,10 +274,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 8dd787a2-532a-4b1a-8036-becb50c28c9c
+    taskid: cd9e9908-9e77-437c-8ba8-35d640ae9bc5
     type: regular
     task:
-      id: 8dd787a2-532a-4b1a-8036-becb50c28c9c
+      id: cd9e9908-9e77-437c-8ba8-35d640ae9bc5
       version: -1
       name: List Permissions
       description: Lists a file's or shared drive's permissions.
@@ -330,10 +330,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 328ca47f-b601-4b44-8587-fa62d6ef78ef
+    taskid: 96d51497-e263-4124-8b68-6059373b8d8e
     type: regular
     task:
-      id: 328ca47f-b601-4b44-8587-fa62d6ef78ef
+      id: 96d51497-e263-4124-8b68-6059373b8d8e
       version: -1
       name: Update timeline
       description: Add a comment to an incident in Reco
@@ -378,10 +378,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 86c96831-8e84-4036-8b76-afef19f80f94
+    taskid: 21b4e92c-6c8a-46e3-85a1-782276c7d5df
     type: regular
     task:
-      id: 86c96831-8e84-4036-8b76-afef19f80f94
+      id: 21b4e92c-6c8a-46e3-85a1-782276c7d5df
       version: -1
       name: Reco - Asset Resolved
       description: Resolve an event in Reco Finding. Reco Findings contains aggregations
@@ -424,10 +424,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 07eccf15-66f7-4338-8b37-459efb3f8f23
+    taskid: b44b0884-9757-4699-8e5b-7ce378f82287
     type: condition
     task:
-      id: 07eccf15-66f7-4338-8b37-459efb3f8f23
+      id: b44b0884-9757-4699-8e5b-7ce378f82287
       version: -1
       name: Permission Condition
       type: condition
@@ -435,7 +435,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "21"
+      - "22"
       Condition for org permission:
       - "18"
       "yes":
@@ -483,10 +483,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 04d0989e-5beb-45f0-849a-13a37fbcf440
+    taskid: 817f0e7e-9687-471d-8816-0e8e8ebc7608
     type: regular
     task:
-      id: 04d0989e-5beb-45f0-849a-13a37fbcf440
+      id: 817f0e7e-9687-471d-8816-0e8e8ebc7608
       version: -1
       name: Google Drive Delete Permission
       description: Delete a permission.
@@ -541,10 +541,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: afb79b27-bd37-43a5-800d-aba0c4d76f40
+    taskid: 4a9bf094-ec04-4e60-8e1c-ce990c6942e8
     type: condition
     task:
-      id: afb79b27-bd37-43a5-800d-aba0c4d76f40
+      id: 4a9bf094-ec04-4e60-8e1c-ce990c6942e8
       version: -1
       name: Permission for Specific email address
       type: condition
@@ -552,7 +552,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "19"
+      - "22"
       "yes":
       - "17"
     separatecontext: false
@@ -586,39 +586,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "19":
-    id: "19"
-    taskid: db317f6c-b280-412d-805d-105267d9af6d
-    type: regular
-    task:
-      id: db317f6c-b280-412d-805d-105267d9af6d
-      version: -1
-      name: Do Nothing
-      type: regular
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -1060,
-          "y": 1110
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 4d7ee461-52de-43e6-8d79-65592a6f0eff
+    taskid: ff39a2ff-3333-4d90-8895-f063575370bb
     type: regular
     task:
-      id: 4d7ee461-52de-43e6-8d79-65592a6f0eff
+      id: ff39a2ff-3333-4d90-8895-f063575370bb
       version: -1
       name: Reco - Asset Resolved
       description: Resolve an event in Reco Finding. Reco Findings contains aggregations
@@ -659,16 +632,16 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "21":
-    id: "21"
-    taskid: 6502fc5d-814a-434e-8db9-af0e69610bb2
+  "22":
+    id: "22"
+    taskid: 97ede596-dde0-4e68-83f4-6584af4033b6
     type: title
     task:
-      id: 6502fc5d-814a-434e-8db9-af0e69610bb2
+      id: 97ede596-dde0-4e68-83f4-6584af4033b6
       version: -1
-      name: Do Nothing
+      name: Done
       tags:
-      - Do Nothing
+      - Done
       type: title
       iscommand: false
       brand: ""
@@ -677,8 +650,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1500,
-          "y": 630
+          "x": -1060,
+          "y": 1290
         }
       }
     note: false
@@ -691,13 +664,14 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "15_2_yes": 0.74
+      "15_2_yes": 0.74,
+      "18_17_yes": 0.87
     },
     "paper": {
       "dimensions": {
         "height": 1895,
-        "width": 2360,
-        "x": -1500,
+        "width": 1920,
+        "x": -1060,
         "y": 40
       }
     }

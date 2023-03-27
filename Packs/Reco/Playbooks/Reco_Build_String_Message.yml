@@ -1,15 +1,16 @@
 id: 775899e3-472e-492a-88ff-e183b566c1f7
-version: 8
+version: 10
 vcShouldKeepItemLegacyProdMachine: false
-name: buildString
+name: Reco Build String Message
+description: Build a string message from list of files (file name, link)
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 9f844653-9cd8-4a0e-84f1-0c906a3f0c48
+    taskid: 4a53fd65-be5f-4bc5-83ae-6a27d13f1003
     type: start
     task:
-      id: 9f844653-9cd8-4a0e-84f1-0c906a3f0c48
+      id: 4a53fd65-be5f-4bc5-83ae-6a27d13f1003
       version: -1
       name: ""
       iscommand: false
@@ -35,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 5e4f4886-cebe-4db3-8f71-c9ef1b9da511
+    taskid: 89abc71a-774e-4f7e-8576-ca33bdf2392c
     type: condition
     task:
-      id: 5e4f4886-cebe-4db3-8f71-c9ef1b9da511
+      id: 89abc71a-774e-4f7e-8576-ca33bdf2392c
       version: -1
       name: check if key final string exists
       type: condition
@@ -75,10 +76,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 37c5fced-1bb5-4cd7-86e8-d25c4e4b4184
+    taskid: 06384f8a-65c5-4bd7-8b06-0b03d1e65d3d
     type: regular
     task:
-      id: 37c5fced-1bb5-4cd7-86e8-d25c4e4b4184
+      id: 06384f8a-65c5-4bd7-8b06-0b03d1e65d3d
       version: -1
       name: Prepare temporary string
       description: Set a value in context under the key you entered.
@@ -112,10 +113,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 52107e0d-11e0-48e2-8125-368dd4e9f1bf
+    taskid: e0e063dc-8b71-476d-81e1-b2beaca9b366
     type: regular
     task:
-      id: 52107e0d-11e0-48e2-8125-368dd4e9f1bf
+      id: e0e063dc-8b71-476d-81e1-b2beaca9b366
       version: -1
       name: Append to final string
       description: Set a value in context under the key you entered.
@@ -160,10 +161,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 6e177f3f-0b9a-4979-8ca9-f13a999f52e7
+    taskid: f4a3e474-c980-42fc-8689-32d126023df1
     type: regular
     task:
-      id: 6e177f3f-0b9a-4979-8ca9-f13a999f52e7
+      id: f4a3e474-c980-42fc-8689-32d126023df1
       version: -1
       name: Key not exists
       description: Set a value in context under the key you entered.
@@ -194,10 +195,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 36b975b0-2cda-4b8d-841c-21315d41e9e5
+    taskid: e43c23a0-e7e3-4068-8dc5-144c9be427b3
     type: regular
     task:
-      id: 36b975b0-2cda-4b8d-841c-21315d41e9e5
+      id: e43c23a0-e7e3-4068-8dc5-144c9be427b3
       version: -1
       name: Calculate String Size
       description: Returns the length of  the string passed as argument
@@ -229,10 +230,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 109da374-1c35-4fe2-8510-4c870457ca8c
+    taskid: 6053c312-1c13-4140-8fb8-eb67a1a60d9e
     type: condition
     task:
-      id: 109da374-1c35-4fe2-8510-4c870457ca8c
+      id: 6053c312-1c13-4140-8fb8-eb67a1a60d9e
       version: -1
       name: Check String Size
       type: condition
@@ -272,10 +273,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: af0683d5-4417-467b-8a18-5df243742c0c
+    taskid: 863f1fca-897c-4780-8f88-23737ddc8fca
     type: regular
     task:
-      id: af0683d5-4417-467b-8a18-5df243742c0c
+      id: 863f1fca-897c-4780-8f88-23737ddc8fca
       version: -1
       name: Don't append
       type: regular
