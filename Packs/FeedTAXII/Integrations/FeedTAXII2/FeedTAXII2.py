@@ -1,7 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-from typing import Any, Tuple
 
 """ CONSTANT VARIABLES """
 
@@ -15,7 +14,7 @@ COMPLEX_OBSERVATION_MODE_CREATE_ALL = "Create indicator for each observation"
 
 def try_parse_integer(
     int_to_parse: Any, err_msg: str = "Please provide a valid limit (positive integer)"
-) -> int:
+) -> int: 
     """
     Tries to parse an integer, and if fails will throw DemistoException with given err_msg
     """
