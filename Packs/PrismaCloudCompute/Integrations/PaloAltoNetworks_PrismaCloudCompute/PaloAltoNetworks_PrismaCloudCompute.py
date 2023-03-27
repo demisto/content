@@ -376,6 +376,20 @@ class PrismaCloudComputeClient(BaseClient):
 
         return self._http_request('get', 'settings/defender', headers=headers)
 
+    def api_v1_logs_defender_request(self, hostname, lines):
+        """
+        Get the defender logs.
+
+        Returns:
+            list: the defender logs
+        """
+        params = assign_params(hostname=hostname, lines=lines)
+
+        headers = self._headers
+
+        return self._http_request('get', 'logs/defender', params=params, headers=headers)
+
+
 def str_to_bool(s):
     """
     Translates string representing boolean value into boolean value
@@ -1821,6 +1835,33 @@ def get_api_v1_settings_defender_command(client, args):
         raw_response=response
     )
 
+def api_v1_logs_defender_command(client, args):
+    """
+    Get the defender logs.
+
+    Args:
+        client (PrismaCloudComputeClient): prisma-cloud-compute client.
+        args (dict): prisma-cloud-compute-logs-defender command arguments
+
+    Returns:
+        CommandResults: command-results object.
+    """
+    hostname = str(args.get('hostname', ''))
+    lines = args.get('lines', None)
+
+    response = client.api_v1_logs_defender_request(hostname, lines)
+    entry = {
+        "Hostname": hostname,
+        "Logs": response
+    }
+    return CommandResults(
+        outputs_prefix='PrismaCloudCompute.Defenders',
+        outputs=format_context(entry),
+        outputs_key_field='Hostname',
+        raw_response=entry,
+        readable_output=tableToMarkdown("Logs", entry.get("Logs"))
+    )
+
 
 def main():
     """
@@ -1929,6 +1970,9 @@ def main():
             return_results(results=get_api_v1_alert_profiles_command)
         elif requested_command == "prisma-cloud-compute-get-settings-defender":
             return_results(results=get_api_v1_settings_defender_command)
+
+        elif requested_command == "prisma-cloud-compute-logs-defender":
+            return_results(results=api_v1_logs_defender_command)
     # Log exceptions
     except Exception as e:
         return_error(f'Failed to execute {requested_command} command. Error: {str(e)}')

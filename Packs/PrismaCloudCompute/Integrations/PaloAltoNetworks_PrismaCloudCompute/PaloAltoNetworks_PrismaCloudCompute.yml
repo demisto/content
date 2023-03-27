@@ -1646,6 +1646,13 @@ script:
   - arguments: []
     description: DefenderSettings returns the defenders settings
     name: prisma-cloud-compute-get-settings-defender
+  - arguments:
+    - description: 'Hostname is the target defender hostname '
+      name: hostname
+    - description: 'Lines is the number of lines to fetch '
+      name: lines
+    description: 'DownloadDefenderLogs downloads all defender logs and metadata '
+    name: prisma-cloud-compute-logs-defender-download
 tests:
 - PaloAltoNetworks_PrismaCloudCompute-Test
 fromversion: 5.0.0
