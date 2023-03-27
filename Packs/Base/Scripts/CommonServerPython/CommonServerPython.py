@@ -10828,8 +10828,10 @@ def xsiam_api_call_with_retries(
     xsiam_url,
     zipped_data,
     headers,
+    header_msg,
     num_of_attempts,
-    events_error_handler=None
+    events_error_handler=None,
+    is_json_response=True
 ):
     """
     Send the fetched events into the XDR data-collector private api.
@@ -10845,6 +10847,9 @@ def xsiam_api_call_with_retries(
 
     :type headers: ``dict``
     :param headers: headers for the request
+    
+    :type header_msg: ``str``
+    :param header_msg: The header message.
 
     :type num_of_attempts: ``int``
     :param num_of_attempts: The num of attempts to do in case there is an api limit (429 error codes).
@@ -10852,8 +10857,8 @@ def xsiam_api_call_with_retries(
     :type events_error_handler: ``callable``
     :param events_error_handler: error handler function
 
-    :return: Response object
-    :rtype: ``requests.Response``
+    :return: Response object or DemistoException
+    :rtype: ``requests.Response`` or ``DemistoException``
     """
     # retry mechanism in case there is a rate limit (429) from xsiam.
     status_code = None
@@ -10878,32 +10883,36 @@ def xsiam_api_call_with_retries(
         if status_code == 429:
             time.sleep(1)
         attempt_num += 1
-
+    if is_json_response:
+        response = response.json()
+    if response.get('error', '').lower() != 'false':
+        raise DemistoException(header_msg + response.get('error'))
     return response
 
 
-def split_data_to_chunks(data, chunk_size):
+def split_data_to_chunks(data, target_chunk_size):
     """
-    Splits a string of data into chunks of a specified size.
+    Splits a string of data into chunks of an approximately specified size.
+    The actual size can be lower.
 
     :type data: ``str``
     :param data: The string of data to split.
-    :type chunk_size: ``int``
-    :param chunk_size: The maximum size of each chunk.
+    :type target_chunk_size: ``int``
+    :param target_chunk_size: The maximum size of each chunk.
 
-    :return: A list of chunks containing the data.
-    :rtype: ``list``
+    :return: : An iterable of lists where each list contains events with approx size of chunk size.
+    :rtype: ``collections.Iterable[list]``
     """
     chunk = []
-    curr_size = 0
+    chunk_size = 0
     for data_part in data.split('\n'):
-        chunk.append(data_part)
-        curr_size += sys.getsizeof(data_part)
-        if curr_size > chunk_size:
+        if chunk_size >= target_chunk_size:
             yield chunk
             chunk = []
-            curr_size = 0
-    if curr_size != 0:
+            chunk_size = 0
+        chunk.append(data_part)
+        chunk_size += sys.getsizeof(data_part)
+    if chunk_size != 0:
         yield chunk
 
 
@@ -11019,40 +11028,13 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
         amount_of_events += len(data_chunk)
         data_chunk = '\n'.join(data_chunk)
         zipped_data = gzip.compress(data_chunk.encode('utf-8'))  # type: ignore[AttributeError,attr-defined]
-        send_to_xsiam_with_retries(client, events_error_handler, header_msg, headers, num_of_attempts, xsiam_url,
-                                   zipped_data)
+        xsiam_api_call_with_retries(client=client, events_error_handler=events_error_handler,
+                                    header_msg=header_msg, headers=headers,
+                                    num_of_attempts=num_of_attempts, xsiam_url=xsiam_url,
+                                    zipped_data=zipped_data)
     demisto.updateModuleHealth({'eventsPulled': amount_of_events})
 
 
-def send_to_xsiam_with_retries(client, events_error_handler, header_msg, headers, num_of_attempts, xsiam_url,
-                               zipped_data):
-    """
-    Sends zipped data to XSIAM with retries.
-
-    :type client: ``base client object``
-    :param client: An instance of the client class.
-    :type events_error_handler: ``function``
-    :param events_error_handler: A function that handles events errors.
-    :type header_msg: ``str``
-    :param header_msg: The header message.
-    :type headers: ``dict``
-    :param headers: A dictionary containing headers for the request.
-    :type num_of_attempts: ``int``
-    :param num_of_attempts: The number of attempts to send the data to XSIAM.
-    :type xsiam_url: ``str``
-    :param xsiam_url: The URL of the XSIAM server.
-    :type zipped_data: ``bytes``
-    :param zipped_data: The zipped data to send.
-
-    :return: The response from XSIAM API or exception.
-    :rtype: ``requests.Response`` or ``DemistoException``
-    """
-    raw_response = xsiam_api_call_with_retries(
-        client, xsiam_url, zipped_data, headers, num_of_attempts, events_error_handler
-    ).json()
-    if raw_response.get('error').lower() != 'false':
-        raise DemistoException(header_msg + raw_response.get('error'))
-    return raw_response
 
 
 def is_scheduled_command_retry():
