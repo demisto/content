@@ -1,18 +1,17 @@
 [MODEL: dataset = microsoft_windows_raw]
 // filter event ids based on XDRC configuration.
 filter event_id in (510, 1200, 1201, 1202, 1203, 1204, 1205, 1206, 1207)
-| alter event_data_xml = if(json_extract_scalar(event_data ,"$.param2") ~= "^\<\?xml\s.*", json_extract_scalar(event_data ,"$.param2") , null)
 // xml part
 | alter accountName = arrayindex(regextract(message ,"Account\sName\:\s+(\S+)"),0),
     userName = to_string(json_extract_scalar(user, "$.name")),
-    audit_type = arrayindex(regextract(event_data_xml , "<AuditType>([^<]+)"),0),
-    user_id = arrayindex(regextract(event_data_xml ,"\<UserId\>([^\<]*)"),0),
-    mfa_method = arrayindex(regextract(event_data_xml ,"\<MfaMethod\>([^\<]*)"),0),
-    device_id = arrayindex(regextract(event_data_xml ,"\<DeviceId\>([^\<]*)"),0),
-    server  = arrayindex(regextract(event_data_xml ,"\<Server\>([^\<]*)"),0),
-    auth_protocol  = arrayindex(regextract(event_data_xml ,"\<AuthProtocol\>([^\<]*)"),0),
-    ip_address  = arrayindex(regextract(event_data_xml ,"\<IpAddress\>([^\<]*)"),0),
-    user_agent  = arrayindex(regextract(event_data_xml ,"\<UserAgentString\>([^\<]*)"),0)
+    audit_type = arrayindex(regextract(if(json_extract_scalar(event_data ,"$.param2") ~= "^\<\?xml\s.*", json_extract_scalar(event_data ,"$.param2") , null) , "<AuditType>([^<]+)"),0),
+    user_id = arrayindex(regextract(if(json_extract_scalar(event_data ,"$.param2") ~= "^\<\?xml\s.*", json_extract_scalar(event_data ,"$.param2") , null) ,"\<UserId\>([^\<]*)"),0),
+    mfa_method = arrayindex(regextract(if(json_extract_scalar(event_data ,"$.param2") ~= "^\<\?xml\s.*", json_extract_scalar(event_data ,"$.param2") , null) ,"\<MfaMethod\>([^\<]*)"),0),
+    device_id = arrayindex(regextract(if(json_extract_scalar(event_data ,"$.param2") ~= "^\<\?xml\s.*", json_extract_scalar(event_data ,"$.param2") , null) ,"\<DeviceId\>([^\<]*)"),0),
+    server  = arrayindex(regextract(if(json_extract_scalar(event_data ,"$.param2") ~= "^\<\?xml\s.*", json_extract_scalar(event_data ,"$.param2") , null) ,"\<Server\>([^\<]*)"),0),
+    auth_protocol  = arrayindex(regextract(if(json_extract_scalar(event_data ,"$.param2") ~= "^\<\?xml\s.*", json_extract_scalar(event_data ,"$.param2") , null) ,"\<AuthProtocol\>([^\<]*)"),0),
+    ip_address  = arrayindex(regextract(if(json_extract_scalar(event_data ,"$.param2") ~= "^\<\?xml\s.*", json_extract_scalar(event_data ,"$.param2") , null) ,"\<IpAddress\>([^\<]*)"),0),
+    user_agent  = arrayindex(regextract(if(json_extract_scalar(event_data ,"$.param2") ~= "^\<\?xml\s.*", json_extract_scalar(event_data ,"$.param2") , null) ,"\<UserAgentString\>([^\<]*)"),0)
 // json part
 | alter raw_param_2 = to_string(json_extract_scalar(event_data , "$.param2")),
     raw_param_3 = to_string(json_extract_scalar(event_data , "$.param3")),
@@ -43,9 +42,11 @@ filter event_id in (510, 1200, 1201, 1202, 1203, 1204, 1205, 1206, 1207)
     ,raw_param_14 = if(raw_param_14 = "-", replace(raw_param_14,"-",""),raw_param_14)
     ,raw_param_15 = if(raw_param_15 = "-", replace(raw_param_15,"-",""),raw_param_15)
 | alter raw_data_json = raw_param_2 + raw_param_3 +raw_param_4 + raw_param_5 +raw_param_6 + raw_param_7 + raw_param_8 + raw_param_9 + raw_param_10 + raw_param_11 + raw_param_12 + raw_param_13 + raw_param_14 + raw_param_15
-| alter event_type_connection = json_extract_scalar(raw_data_json ,"$.Connection")
-    ,referer = json_extract_scalar(raw_data_json ,"$.Referer")
-    ,user_agent2 = json_extract_scalar(raw_data_json ,"$.User-Agent")
+| alter event_type_connection = json_extract_scalar(raw_data_json ,"$.Connection"),
+    referer = json_extract_scalar(raw_data_json ,"$.Referer"),
+    user_agent2 = json_extract_scalar(raw_data_json ,"$.User-Agent"),
+    Host = json_extract_scalar(raw_data_json ,"$.Host"),
+    Content_Type = json_extract_scalar(raw_data_json ,"$.Content-Type")
 //
 | alter xdm.event.operation_sub_type = audit_type,
     xdm.source.user.employee_id = user_id,
@@ -59,6 +60,7 @@ filter event_id in (510, 1200, 1201, 1202, 1203, 1204, 1205, 1206, 1207)
     xdm.event.type = event_type_connection,
     xdm.session_context_id = to_string(record_id),
     xdm.source.user.username = coalesce(userName ,accountName),
-    xdm.source.host.hostname = host_name,
+    xdm.source.host.hostname = coalesce(host_name,Host),
     xdm.alert.severity = coalesce(opcode, log_level),
-    xdm.event.outcome = if(event_result = "failure", XDM_CONST.OUTCOME_FAILED, event_result = "success", XDM_CONST.OUTCOME_SUCCESS, event_result = null, null, to_string(event_result));
+    xdm.event.outcome = if(event_result = "failure", XDM_CONST.OUTCOME_FAILED, event_result = "success", XDM_CONST.OUTCOME_SUCCESS, event_result = null, null, to_string(event_result)),
+    xdm.target.file.file_type = Content_Type;
