@@ -152,7 +152,7 @@ dest_port3 = if(action contains "Built inbound",arrayindex(regextract(_raw_log ,
 // option 15
 // faddr <source_ip>/<icmp_type>(<source_user_name>)
 | alter source_ip15 = arrayindex(regextract(_raw_log ,"for\sfaddr\s\d+\.\d+\.\d+\.\d+\/\d\(([^\)]+)\)"),0),
-    source_user_name15 = arrayindex(regextract(_raw_log ,"for faddr \d+\.\d+\.\d+\.\d+\/(\d+)\("),0)
+    source_user_name15 = arrayindex(regextract(_raw_log ,"for faddr \d+\.\d+\.\d+\.\d+\/\d+\(([^\)]+)\)"),0)
 // merge the fields
 | alter
     source_ip = coalesce(source_ip1, source_ip2, source_ip3, source_ip4, source_ip5, source_ip6, source_ip7, source_ip8, source_ip9, source_ip10, source_ip11, source_ip12, source_ip13,source_ip14,source_ip15),
