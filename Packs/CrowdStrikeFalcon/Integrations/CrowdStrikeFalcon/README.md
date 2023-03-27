@@ -4301,10 +4301,10 @@ Create an ML exclusion.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| value | Value to match for the exclusion. | Required | 
-| excluded_from | Exclusion excluded from. Possible values are: blocking, extraction. | Required | 
+| value | Value to match for exclusion. | Required | 
+| excluded_from | A comma-separated list from where to exclude the exclusion. Possible values are: blocking, extraction. | Required | 
 | comment | Comment describing why the exclusions were created. | Optional | 
-| groups | A comma-separated list of group ID(s) impacted by the exclusion OR all if empty. Default is all. | Required | 
+| groups | A comma-separated list of group ID(s) impacted by the exclusion OR all if empty. | Optional | 
 
 #### Context Output
 
@@ -4391,8 +4391,7 @@ Updates an ML exclusion. At least one argument is required in addition to the ID
 | id | The ID of the exclusion to update. | Required | 
 | value | Value to match for the exclusion (the exclusion pattern). | Optional | 
 | comment | Comment describing why the exclusions were created. | Optional | 
-| excluded_from | Group ID(s) explicitly excluded from the exclusion. | Optional | 
-| groups | Group ID(s) impacted by the exclusion. | Optional | 
+| groups | A comma-separated list of group ID(s) impacted by the exclusion. | Optional | 
 
 #### Context Output
 
@@ -4477,7 +4476,7 @@ Delete the ML exclusions by ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ids | Delete the ML exclusions by id. Default is The ID of the exclusion to update.. | Required | 
+| ids | A comma-separated list of exclusion IDs to delete. | Required | 
 
 #### Context Output
 
@@ -4488,7 +4487,14 @@ There is no context output for this command.
 
 #### Human Readable Output
 
->'The machine learning exclusions with IDs ['123456'] was successfully deleted.'
+>'The machine learning exclusions with IDs '123456' was successfully deleted.'
+
+### cs-falcon-search-ml-exclusion
+
+***
+Get a list of ML exclusions by specifying their IDs, value, or a specific filter.
+
+#### Base Command
 
 ### cs-falcon-search-ml-exclusion
 
@@ -4503,11 +4509,11 @@ Get a list of ML exclusions by specifying their IDs, value, or a specific filter
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filter | A custom filter by which the exclusions should be filtered. For example `value:”&lt;value&gt;”`. | Optional | 
+| filter | A custom filter by which the exclusions should be filtered.<br/> The syntax follows the pattern `&lt;property&gt;:[operator]'&lt;value&gt;'` for example: value:'test'.<br/> Available filters: applied_globally, created_by, created_on, last_modified, modified_by, value.<br/> For more information, see: https://www.falconpy.io/Service-Collections/Falcon-Query-Language. | Optional | 
 | value | The value by which the exclusions should be filtered. | Optional | 
-| ids | The IDs of the exclusions to retrieve. The IDs overwrite the filter and value. | Optional | 
-| limit | The maximum number of records to return. [1-500]. | Optional | 
-| offset | The offset to start retrieving records from. | Optional | 
+| ids | A comma-separated list of exclusion IDs to retrieve. The IDs overwrite the filter and value. | Optional | 
+| limit | The maximum number of records to return. [1-500]. Applies only if the IDs argument is not supplied. | Optional | 
+| offset | The offset to start retrieving records from. Applies only if the IDs argument is not supplied. | Optional | 
 | sort | How to sort the retrieved exclusions. Possible values are: applied_globally.asc, applied_globally.desc, created_by.asc, created_by.desc, created_on.asc, created_on.desc, last_modified.asc, last_modified.desc, modified_by.asc, modified_by.desc, value.asc, value.desc. | Optional | 
 
 #### Context Output
@@ -4596,11 +4602,11 @@ Create an IOA exclusion.
 | pattern_name | Name of the exclusion pattern. | Optional | 
 | pattern_id | ID of the exclusion pattern. | Required | 
 | cl_regex | Command line regular expression. | Required | 
-| ifn_regex | Indicator file name regular expression. | Required | 
+| ifn_regex | Image file name regular expression. | Required | 
 | comment | Comment describing why the exclusions were created. | Optional | 
 | description | Exclusion description. | Optional | 
 | detection_json | JSON formatted detection template. | Optional | 
-| groups | Group ID(s) impacted by the exclusion. | Required | 
+| groups | A comma-separated list of group ID(s) impacted by the exclusion OR all if empty. | Required | 
 
 #### Context Output
 
@@ -4693,11 +4699,11 @@ Updates an IOA exclusion. At least one argument is required in addition to the I
 | pattern_id | ID of the exclusion pattern to update. | Optional | 
 | pattern_name | Name of the exclusion pattern. | Optional | 
 | cl_regex | Command line regular expression. | Optional | 
-| ifn_regex | Indicator file name regular expression. | Optional | 
+| ifn_regex | Image file name regular expression. | Optional | 
 | comment | Comment describing why the exclusions was created. | Optional | 
 | description | Exclusion description. | Optional | 
 | detection_json | JSON formatted detection template. | Optional | 
-| groups | Group ID(s) impacted by the exclusion. | Optional | 
+| groups | A comma-separated list of group ID(s) impacted by the exclusion. | Optional | 
 
 #### Context Output
 
@@ -4785,7 +4791,7 @@ Delete the IOA exclusions by ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ids | IDs of the exclusions to be deleted. | Required | 
+| ids | A comma-separated list of exclusion IDs to delete. | Required | 
 
 #### Context Output
 
@@ -4796,13 +4802,13 @@ There is no context output for this command.
 
 #### Human Readable Output
 
->'The IOA exclusions with IDs ['123456'] was successfully deleted.'
+>'The IOA exclusions with IDs '123456' was successfully deleted.'
 
 
 ### cs-falcon-search-ioa-exclusion
 
 ***
-Get a list of IOA exclusions by specifying their IDs or a filter
+Get a list of IOA exclusions by specifying their IDs or a filter.
 
 #### Base Command
 
@@ -4812,11 +4818,11 @@ Get a list of IOA exclusions by specifying their IDs or a filter
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filter | A custom filter by which the exclusions should be filtered. For example `value:”&lt;value&gt;”`. | Optional | 
-| value | The value by which the exclusions should be filtered. | Optional | 
-| ids | The IDs of the exclusions to retrieve. The IDs overwrite the filter and value. | Optional | 
-| limit | The limit of how many exclusions to retrieve. Default is 50. | Optional | 
-| offset | The offset of how many exclusions to skip. Default is 0. | Optional | 
+| filter | A custom filter by which the exclusions should be filtered.<br/> The syntax follows the pattern `&lt;property&gt;:[operator]'&lt;value&gt;'` for example: name:'test'.<br/> Available filters: applied_globally, created_by, created_on, name, last_modified, modified_by, value, pattern.<br/> For more information, see: https://www.falconpy.io/Service-Collections/Falcon-Query-Language. | Optional | 
+| name | The name by which the exclusions should be filtered. | Optional | 
+| ids | A comma-separated list of exclusion IDs to retrieve. The IDs overwrite the filter and name. | Optional | 
+| limit | The limit of how many exclusions to retrieve. Default is 50. Applies only if the IDs argument is not supplied. | Optional | 
+| offset | The offset of how many exclusions to skip. Default is 0. Applies only if the IDs argument is not supplied. | Optional | 
 
 #### Context Output
 
@@ -4892,15 +4898,15 @@ Get quarantine file metadata by specified IDs or filter.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ids | The IDs of the quarantined files to retrieve. | Optional | 
+| ids | A comma-separated list of quarantined file IDs to retrieve. | Optional | 
 | filter | A custom filter by which the retrieve quarantined file should be filtered. | Optional | 
-| sha256 | The SHA256 hash value of the quarantined files to retrieve. | Optional | 
-| filename | The file name of the quarantined files to retrieve. | Optional | 
+| sha256 | A comma-separated list of SHA256 hash of the files to retrieve. | Optional | 
+| filename | A comma-separated list of the name of the files to retrieve. | Optional | 
 | state | Filter the retrieved files by state. | Optional | 
-| hostname | Filter the retrieved files by hostname. | Optional | 
-| username | Filter the retrieved files by username. | Optional | 
+| hostname | A comma-separated list of the hostnames of the files to retrieve. | Optional | 
+| username | A comma-separated list of the usernames of the files to retrieve. | Optional | 
 | limit | Maximum number of IDs to return. Max 5000. Default 50. | Optional | 
-| offset | Starting index of the overall result set from which to return IDs. | Optional | 
+| offset | Starting index of the overall result set from which to return IDs. Default 0. | Optional | 
 
 #### Context Output
 
@@ -4908,7 +4914,7 @@ Get quarantine file metadata by specified IDs or filter.
 | --- | --- | --- |
 | CrowdStrike.QuarantinedFile.id | String | A unique identifier for the quarantined file. | 
 | CrowdStrike.QuarantinedFile.aid | String | The agent identifier of the agent that quarantined the file. | 
-| CrowdStrike.QuarantinedFile.cid | String | The unique identifier for the customer that owns the agent. | 
+| CrowdStrike.QuarantinedFile.cid | String | The unique identifier for the customer that who the agent. | 
 | CrowdStrike.QuarantinedFile.sha256 | String | The SHA256 hash value of the quarantined file. | 
 | CrowdStrike.QuarantinedFile.paths.path | String | The full path of the quarantined file. | 
 | CrowdStrike.QuarantinedFile.paths.filename | String | The name of the quarantined file. | 
@@ -4962,7 +4968,7 @@ Get quarantine file metadata by specified IDs or filter.
 ### cs-falcon-apply-quarantine-file-action
 
 ***
-Update quarantine file metadata by the specified IDs or a filter.
+Apply action to quarantined file by file IDs or filter.
 
 #### Base Command
 
@@ -4972,15 +4978,15 @@ Update quarantine file metadata by the specified IDs or a filter.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ids | The IDs of the quarantined files to update. | Optional | 
+| ids | A comma-separated list of quarantined file IDs to update. | Optional | 
 | action | Action to perform against the quarantined file. Possible values are: delete, release, unrelease. | Required | 
 | comment | Comment to appear along with the action taken. | Required | 
 | filter | Update files based on a custom filter. | Optional | 
-| sha256 | Update files based on the SHA256 hash value. | Optional | 
-| filename | Update files based on the filename. | Optional | 
+| sha256 | A comma-separated list of quarantined files SHA256 to update. | Optional | 
+| filename | A comma-separated list of quarantined file names to update. | Optional | 
 | state | Update files based on the state. | Optional | 
-| hostname | Update files based on the hostname. | Optional | 
-| username | Update files based on the usernames. | Optional | 
+| hostname | A comma-separated list of quarantined file hostnames to update. | Optional | 
+| username | A comma-separated list of quarantined files username to update. | Optional | 
 
 #### Context Output
 
