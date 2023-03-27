@@ -1,6 +1,5 @@
-id: 775899e3-472e-492a-88ff-e183b566c1f7
-version: 10
-vcShouldKeepItemLegacyProdMachine: false
+id: Reco Build String Message
+version: -1
 name: Reco Build String Message
 description: Build a string message from list of files (file name, link)
 starttaskid: "0"
@@ -14,6 +13,7 @@ tasks:
       version: -1
       name: ""
       iscommand: false
+      description: ""
       brand: ""
     nexttasks:
       '#none#':
@@ -44,6 +44,7 @@ tasks:
       name: check if key final string exists
       type: condition
       iscommand: false
+      description: "Check if key final string exists"
       brand: ""
     nexttasks:
       '#default#':
@@ -238,6 +239,7 @@ tasks:
       name: Check String Size
       type: condition
       iscommand: false
+      description: "Check string message"
       brand: ""
     nexttasks:
       '#default#':
@@ -281,6 +283,7 @@ tasks:
       name: Don't append
       type: regular
       iscommand: false
+      description: "Don't append to final string"
       brand: ""
     separatecontext: false
     continueonerrortype: ""
@@ -315,10 +318,13 @@ inputs:
   value: {}
   required: false
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: link
   value: {}
   required: false
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0

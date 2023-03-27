@@ -1,4 +1,4 @@
-Reco Google Drive Revoke Permissions Playbook
+Reco Google Drive Revoke Permissions
 
 ## Dependencies
 

@@ -125,7 +125,10 @@ Get assets user has access to (optional to get only sensitive assets)
 
 #### Context Output
 
-There is no context output for this command.
+| **Path**    | **Type** | **Description** |
+|-------------|----------|----------------|
+| Reco.Assets | string   | Assets         | 
+
 
 
 ### reco-get-sensitive-assets-by-name

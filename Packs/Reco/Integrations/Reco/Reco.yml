@@ -65,7 +65,7 @@ description: Reco is a Saas data security solution that protects your data from 
 display: Reco
 name: Reco
 script:
-  dockerimage: demisto/python3:3.10.10.49934
+  dockerimage: demisto/python3:3.10.10.50695
   feed: false
   isfetch: true
   longRunning: false
@@ -150,12 +150,12 @@ script:
     - contextPath: Reco.Assets
       description: Assets user has access to
   - arguments:
-      - default: false
-        description: Email address of the user to tag as levaing org user
-        isArray: false
-        name: email_address
-        required: true
-        secret: false
+    - default: false
+      description: Email address of the user to tag as levaing org user
+      isArray: false
+      name: email_address
+      required: true
+      secret: false
     deprecated: false
     description: Tag a user as leaving org user in Reco
     execution: false

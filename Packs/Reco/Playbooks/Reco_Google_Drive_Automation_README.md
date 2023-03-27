@@ -1,4 +1,4 @@
-Reco Google Drive Playbook Automation
+Reco Google Drive Automation
 
 ## Dependencies
 

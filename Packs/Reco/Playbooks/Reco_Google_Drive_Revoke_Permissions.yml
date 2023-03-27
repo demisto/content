@@ -1,15 +1,7 @@
-id: 8a13470e-2470-4ade-8ade-990ecdce720b
-version: 27
-vcShouldKeepItemLegacyProdMachine: false
+id: Reco-Google-Drive-Revoke-Permissions
+version: -1
 name: Reco-Google-Drive-Revoke-Permissions
-description: This workflow enables you to easily list the permissions of files stored
-  in Google Drive, giving you visibility into who has access to your organization's
-  data. If a file's permission is publicly exposed, the workflow restricts access
-  to the file to prevent unauthorized use. Similarly, if a file's permission is set
-  to accessible by all org users and shared with internal users, access to the file
-  is restricted to authorized users only. Using the Google Drive API and built-in
-  conditional logic, this workflow helps you secure sensitive data and streamline
-  your organization's data management.
+description: This workflow enables you to easily list the permissions of files stored in Google Drive, giving you visibility into who has access to your organization's data. If a file's permission is publicly exposed, the workflow restricts access to the file to prevent unauthorized use. Similarly, if a file's permission is set to accessible by all org users and shared with internal users, access to the file is restricted to authorized users only. Using the Google Drive API and built-in conditional logic, this workflow helps you secure sensitive data and streamline your organization's data management.
 starttaskid: "0"
 tasks:
   "0":
@@ -22,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "9"
@@ -107,8 +100,7 @@ tasks:
       id: 9a10f8ba-2004-471a-8754-c985ed25b621
       version: -1
       name: Reco - Asset Resolved - all org users
-      description: Resolve an event in Reco Finding. Reco Findings contains aggregations
-        of events. This command resolves the event in the Reco Finding.
+      description: Resolve an event in Reco Finding. Reco Findings contains aggregations of events. This command resolves the event in the Reco Finding.
       script: Reco|||reco-resolve-visibility-event
       type: regular
       iscommand: true
@@ -203,11 +195,12 @@ tasks:
     task:
       id: bb3f1d61-05ff-460a-8db0-2e3c7448d785
       version: -1
-      name: buildString
+      name: Reco Build String Message
       playbookName: Reco Build String Message
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     scriptarguments:
       link:
         simple: ${JsonObject.link}
@@ -384,8 +377,7 @@ tasks:
       id: 21b4e92c-6c8a-46e3-85a1-782276c7d5df
       version: -1
       name: Reco - Asset Resolved
-      description: Resolve an event in Reco Finding. Reco Findings contains aggregations
-        of events. This command resolves the event in the Reco Finding.
+      description: Resolve an event in Reco Finding. Reco Findings contains aggregations of events. This command resolves the event in the Reco Finding.
       script: Reco|||reco-resolve-visibility-event
       type: regular
       iscommand: true
@@ -432,6 +424,7 @@ tasks:
       name: Permission Condition
       type: condition
       iscommand: false
+      description: 'Check permissions for the file'
       brand: ""
     nexttasks:
       '#default#':
@@ -549,6 +542,7 @@ tasks:
       name: Permission for Specific email address
       type: condition
       iscommand: false
+      description: 'Check permissions for the file for specific email address'
       brand: ""
     nexttasks:
       '#default#':
@@ -594,8 +588,7 @@ tasks:
       id: ff39a2ff-3333-4d90-8895-f063575370bb
       version: -1
       name: Reco - Asset Resolved
-      description: Resolve an event in Reco Finding. Reco Findings contains aggregations
-        of events. This command resolves the event in the Reco Finding.
+      description: Resolve an event in Reco Finding. Reco Findings contains aggregations of events. This command resolves the event in the Reco Finding.
       script: Reco|||reco-resolve-visibility-event
       type: regular
       iscommand: true
@@ -645,6 +638,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -678,3 +672,6 @@ view: |-
   }
 inputs: []
 outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0

@@ -1,6 +1,6 @@
-id: Reco Google Drive Playbook Automation
+id: Reco Google Drive Automation
 version: -1
-name: Reco Google Drive Playbook Automation
+name: Reco Google Drive Automation
 description: Automate Google Drive alert remediation with our solution that revokes over-access permissions and shares file details and links with end-users via Slack. Reco workflow seamlessly integrates with Palo Alto Networks' Demisto platform to resolve the alert and streamline your organization's security operations. By automating remediation, you can ensure that sensitive data is protected and that end-users are promptly notified of any changes to their file access. With our solution, you can close alerts in Demisto and improve your organization's security posture with minimal effort.
 starttaskid: "0"
 tasks:
@@ -80,6 +80,7 @@ tasks:
       name: Is a Slack user?
       type: condition
       iscommand: false
+      description: "Is a Slack user?"
       brand: ""
     nexttasks:
       "no":
@@ -201,6 +202,7 @@ tasks:
       name: Check is message exists
       type: condition
       iscommand: false
+      description: "Check if message exists"
       brand: ""
     nexttasks:
       '#default#':
