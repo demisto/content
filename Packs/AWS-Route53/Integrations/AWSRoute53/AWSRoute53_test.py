@@ -55,9 +55,9 @@ def test_create_record(mocker):
     })
     response = {
         'ChangeInfo': {
-                'Id': '__mock_id__',
-                'Status': 'changed',
-            }
+            'Id': '__mock_id__',
+            'Status': 'changed',
+        }
     }
     mocker.patch.object(AWSClient, "aws_session", return_value=AWSRoute53Client())
     mocker.patch.object(AWSRoute53Client, "change_resource_record_sets", return_value=response)
@@ -91,9 +91,9 @@ def test_delete_record(mocker):
     })
     response = {
         'ChangeInfo': {
-                'Id': '__mock_id__',
-                'Status': 'deleted',
-            }
+            'Id': '__mock_id__',
+            'Status': 'deleted',
+        }
     }
     mocker.patch.object(AWSClient, "aws_session", return_value=AWSRoute53Client())
     mocker.patch.object(AWSRoute53Client, "change_resource_record_sets", return_value=response)
@@ -129,9 +129,9 @@ def test_upsert_record(mocker):
     })
     response = {
         'ChangeInfo': {
-                'Id': '__mock_id__',
-                'Status': 'updated',
-            }
+            'Id': '__mock_id__',
+            'Status': 'updated',
+        }
     }
     mocker.patch.object(AWSClient, "aws_session", return_value=AWSRoute53Client())
     mocker.patch.object(AWSRoute53Client, "change_resource_record_sets", return_value=response)
