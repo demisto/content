@@ -1833,7 +1833,8 @@ def get_packs_with_higher_min_version(packs_names: Set[str],
         pack_metadata = get_json_file(f"{extract_content_packs_path}/{pack_name}/metadata.json")
         server_min_version = pack_metadata.get(Metadata.SERVER_MIN_VERSION,
                                                pack_metadata.get('server_min_version', Metadata.SERVER_DEFAULT_MIN_VERSION))
-
+        logging.debug(f"Checking min version for {pack_name=} - {server_numeric_version=}({type(server_numeric_version)}) - "
+                      f"{server_min_version=}({type(server_min_version)})")
         if 'Master' not in server_numeric_version and Version(server_numeric_version) < Version(server_min_version):
             packs_with_higher_version.add(pack_name)
             logging.info(f"Found pack '{pack_name}' with min version {server_min_version} that is "
