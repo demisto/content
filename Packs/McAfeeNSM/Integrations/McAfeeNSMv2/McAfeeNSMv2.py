@@ -27,6 +27,14 @@ MESSAGE_MAP = {"push_ssl_key": "SSLStatusMessage",
                "push_gam_updates": "GamUpdateStatusMessage",
                "push_configuration_signature_set": "sigsetConfigStatusMessage",
                "push_botnet": "botnetStatusMessage"}
+
+ADDRESS_LIST_MAP = {"IPv6AddressRange": "IPV6RangeList",
+                    "IPv4AddressRange": "IPV4RangeList",
+                    "HostIPv4": "hostIPv4AddressList",
+                    "HostIPv6": "hostIPv6AddressList",
+                    "Network_IPV_6": "networkIPV6List",
+                    "Network_IPV_4": "networkIPV4List",
+                    }
 INTERVAL = arg_to_number(demisto.args().get("interval_in_seconds", 30))
 
 ''' CLIENT CLASS '''
@@ -827,28 +835,28 @@ def create_body_update_rule_for_v10(rule_type: str, address: List, number: int,
         }
 
 
-def modify_v10_results_to_v9_format(results: List[Dict[Any, Any]]) -> List[Dict[Any, Any]]:
+def modify_v10_results_to_v9_format(response: List[Dict[Any, Any]]) -> List[Dict[Any, Any]]:
     """
-    Modify the results of v10 to be in the same format as in v9.
+    Modify the response of v10 to be in the same format as in v9.
     The main difference is that in v10 the API returns the addresses in a list of dictionaries,
     A dictionary for each address with extra information, and in v9 all the addresses are in one list.
 
-    This function takes a v10 result and returns a v9 result (to maintain backward compatibility).
+    This function takes a v10 response and returns a v9 response (to maintain backward compatibility).
     Args:
-        results: List[Dict[Any, Any]] - The results of the command of v10.
+        response: List[Dict[Any, Any]] - The response of the command of v10.
     Returns:
         A list of dictionaries in the same format as in v9.
     """
     key_list = ['IPv6AddressRange', 'HostIPv6', 'Network_IPV_6', 'Network_IPV_4',
                 'HostIPv4', 'IPv4AddressRange']
-    for record in results:
+    for record in response:
         for key, value in record.items():
             if key in key_list and value:   # find the key that its value is the dict contains the addresses
                 address_list: list = []
                 my_key = key
 
                 # The value of the first (and only) key is a list containing dict with addresses
-                addresses = value[next(iter(value))]  # getting the value of the first key in a dict
+                addresses = value[ADDRESS_LIST_MAP.get(key)]
                 for inner_dict in addresses:
                     temp_dict = {}
                     for key in inner_dict.keys():
@@ -861,10 +869,10 @@ def modify_v10_results_to_v9_format(results: List[Dict[Any, Any]]) -> List[Dict[
                     address_list.append(temp_dict) if temp_dict else None
 
                 if address_list:
-                    # replace the list of dicts with a list of strings containing the addresses
-                    record[my_key][next(iter(value))] = address_list
+                    # replace the list of dicts in the original record with a list of strings containing the addresses
+                    record[my_key] = {ADDRESS_LIST_MAP.get(my_key): address_list}
 
-    return results
+    return response
 
 
 def capitalize_key_first_letter(input_lst: List[Dict], check_lst: List = []) -> List[Dict]:
