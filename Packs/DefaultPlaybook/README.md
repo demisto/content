@@ -15,7 +15,7 @@ _For more information, visit our [Cortex XSOAR Developer Docs](https://xsoar.pan
 
 ## Demo Video
 <video controls>
-    <source src="https://github.com/demisto/content-assets/blob/master/Assets/Default/Default%20Pack%20-%20Playbook%20and%20Layout.mp4"
+    <source src="https://github.com/demisto/content-assets/blob/master/Assets/Default/Default%20Pack%20-%20Playbook%20and%20Layout.mp4?raw=true"
             type="video/mp4"/>
     Sorry, your browser doesn't support embedded videos. You can download the video at: https://github.com/demisto/content-assets/raw/7fd9e45c4d809dc1a41521c66828733dafe82148/Assets/FeedAutofocus/AutoFocus_Feed_demo.mp4 
 </video>
