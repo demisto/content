@@ -1149,7 +1149,7 @@ def add_investigation_element_command(client: Client, investigation_id: str = No
     )
 
 
-def list_whitelist_entry_command(client: Client, format: str = None, limit: str = '50',
+def list_whitelist_entry_command(client: Client, format: str = 'json', limit: str = '50',
                                  page: str = None, page_size: str = None) -> CommandResults:
     """
     Get a list of whitelist entries.

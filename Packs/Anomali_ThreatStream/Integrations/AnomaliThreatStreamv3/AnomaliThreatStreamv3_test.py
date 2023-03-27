@@ -10,7 +10,8 @@ from AnomaliThreatStreamv3 import main, get_indicators, \
     create_whitelist_entry_command, list_whitelist_entry_command, list_import_job_command, get_list_rule_command, \
     list_user_command, list_investigation_command, create_rule_command, update_rule_command, delete_rule_command, \
     create_investigation_command, update_investigation_command, delete_investigation_command, add_investigation_element_command, \
-    approve_import_job_command, search_threat_model_command, add_threat_model_association_command
+    approve_import_job_command, search_threat_model_command, create_element_list, \
+    add_threat_model_association_command, validate_values_search_threat_model
 from CommonServerPython import *
 import pytest
 
@@ -673,6 +674,17 @@ class TestGetCommands:
             ('threatstream-get-indicators', {'page': 2, 'page_size': 2}, dict(limit=2, offset=2, page=2, page_size=2)),
             ('threatstream-list-import-job', {'import_id': '1111', 'status_in': 'Errors', 'page': 2, 'page_size': 2},
              dict(limit=2, offset=2, status_in='errors')),
+            ('threatstream-list-user', {'page': 2, 'page_size': 3}, dict(limit=3, offset=3)),
+            ('threatstream-list-user', {}, dict(limit=50)),
+            ('threatstream-list-investigation', {'page': 3, 'page_size': 2}, dict(limit=2, offset=4, order_by='-created_ts')),
+            ('threatstream-list-investigation', {}, dict(limit=50, order_by='-created_ts')),
+            ('threatstream-list-rule', {'page': 2, 'page_size': 2}, dict(limit=2, offset=2, order_by='-created_ts')),
+            ('threatstream-list-rule', {}, dict(limit=50, order_by='-created_ts')),
+            ('threatstream-list-whitelist-entry', {'page': 2, 'page_size': 4}, dict(limit=4, offset=4,
+                                                                                    format='json', showNote='true')),
+            ('threatstream-list-whitelist-entry', {}, dict(limit=50, format='json', showNote='true')),
+            ('threatstream-list-import-job', {'page': 2, 'page_size': 4}, dict(limit=4, offset=4)),
+            ('threatstream-list-import-job', {}, dict(limit=50))
         ]
     )
     def test_expected_params_in_get_requests(self, mocker, command, command_args, expected_http_params):
@@ -1555,3 +1567,50 @@ def test_add_threat_model_association_command(mocker):
     assert command_result.readable_output == 'The Attack Pattern entities with ids' \
                                              ' [2222, 3333] were associated successfully to entity id: 11111.'
     assert command_result.raw_response == {'ids': [2222, 3333], 'success': True}
+
+
+@pytest.mark.parametrize('model_type, publication_status, signature_type, message', [
+    ('', '', 'bro, carbon black query', 'Unvalid values signature_type argument'),
+    ('', 'pending_review, review requested,', '', 'Unvalid values publication_status argument'),
+    ('ttl', '', '', 'Unvalid values model_type argument'),
+])
+def test_validate_values_search_threat_model(model_type, publication_status, signature_type, message):
+    with pytest.raises(DemistoException) as de:
+        validate_values_search_threat_model(model_type, publication_status, signature_type)
+
+        assert (
+            de.value.message == message
+        )
+
+
+@pytest.mark.parametrize('names_and_ids_list, add_related_indicators, is_update, investigation_id, expected_result', [
+    ([('vulnerability', [1]), ('actor', [2]), ('intelligence2', [3]),
+      ('incident', [4]), ('signature', [5]), ('tipreport', [6]), ('ttp', [7]), ('campaign', [8])],
+     1, False, 0,
+     [{'r_type': 'vulnerability', 'r_id': 1, 'add_related_indicators': 1},
+      {'r_type': 'actor', 'r_id': 2, 'add_related_indicators': 1},
+      {'r_type': 'intelligence2', 'r_id': 3, 'add_related_indicators': 1},
+      {'r_type': 'incident', 'r_id': 4, 'add_related_indicators': 1},
+      {'r_type': 'signature', 'r_id': 5, 'add_related_indicators': 1},
+      {'r_type': 'tipreport', 'r_id': 6, 'add_related_indicators': 1},
+      {'r_type': 'ttp', 'r_id': 7, 'add_related_indicators': 1},
+      {'r_type': 'campaign', 'r_id': 8, 'add_related_indicators': 1}]),
+    ([('vulnerability', [1]), ('actor', [2]), ('intelligence2', [3]),
+      ('incident', [4]), ('signature', [5]), ('tipreport', [6]), ('ttp', [7]), ('campaign', [8])],
+     1, True, 111,
+     [{'r_type': 'vulnerability', 'r_id': 1, 'add_related_indicators': 1, 'investigation_id': 111},
+      {'r_type': 'actor', 'r_id': 2, 'add_related_indicators': 1, 'investigation_id': 111},
+      {'r_type': 'intelligence2', 'r_id': 3, 'add_related_indicators': 1, 'investigation_id': 111},
+      {'r_type': 'incident', 'r_id': 4, 'add_related_indicators': 1, 'investigation_id': 111},
+      {'r_type': 'signature', 'r_id': 5, 'add_related_indicators': 1, 'investigation_id': 111},
+      {'r_type': 'tipreport', 'r_id': 6, 'add_related_indicators': 1, 'investigation_id': 111},
+      {'r_type': 'ttp', 'r_id': 7, 'add_related_indicators': 1, 'investigation_id': 111},
+      {'r_type': 'campaign', 'r_id': 8, 'add_related_indicators': 1, 'investigation_id': 111}]),
+    ([('vulnerability', []), ('actor', []), ('intelligence2', []),
+      ('incident', []), ('signature', []), ('tipreport', []), ('ttp', []), ('campaign', [])],
+     1, True, 1111, []),
+])
+def test_create_element_list(names_and_ids_list, add_related_indicators,
+                             is_update, investigation_id, expected_result):
+    result = create_element_list(names_and_ids_list, add_related_indicators, is_update, investigation_id)
+    assert result == expected_result
