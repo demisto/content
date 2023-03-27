@@ -350,6 +350,21 @@ class PrismaCloudComputeClient(BaseClient):
             method="GET", url_suffix="audits/firewall/app/container", params=params
         )
 
+    def get_api_v1_alert_profiles_request(self, project):
+        """
+        Get the alert profiles.
+
+        Args:
+            project (str): The project name
+
+        Returns:
+            dict: the alert profiles
+        """
+        params = assign_params(project=project)
+        headers = self._headers
+
+        return self._http_request('get', 'alert-profiles', headers=headers, params=params)
+
 
 def str_to_bool(s):
     """
@@ -1757,6 +1772,27 @@ def get_audit_firewall_container_alerts(client: PrismaCloudComputeClient, args: 
     )
 
 
+def get_api_v1_alert_profiles_command(client, args):
+    """
+    Get the alert profiles.
+
+    Args:
+        client (PrismaCloudComputeClient): prisma-cloud-compute client.
+        args (dict): prisma-cloud-compute-get-alert-profiles command arguments
+
+    Returns:
+        CommandResults: command-results object.
+    """
+    project = args.get("project", None)
+    response = client.get_api_v1_alert_profiles_request(project)
+    return CommandResults(
+        outputs_prefix='PrismaCloudCompute.AlertProfiles',
+        outputs_key_field='_Id',
+        outputs=format_context(response),
+        raw_response=response
+    )
+
+
 def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
@@ -1860,6 +1896,7 @@ def main():
             return_results(update_waas_policies(client=client, args=demisto.args()))
         elif requested_command == 'prisma-cloud-compute-get-audit-firewall-container-alerts':
             return_results(results=get_audit_firewall_container_alerts(client, args=demisto.args()))
+        elif requested_command == "prismacloudcompute-get-alert-profiles": return_results(results=get_api_v1_alert_profiles_command)
     # Log exceptions
     except Exception as e:
         return_error(f'Failed to execute {requested_command} command. Error: {str(e)}')
