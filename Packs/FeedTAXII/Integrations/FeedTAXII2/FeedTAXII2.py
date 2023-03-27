@@ -157,6 +157,10 @@ def get_indicators_command(
 
     else:
         indicators = client.build_iterator(limit=limit, added_after=added_after)
+    relationships_list: list = []
+    if indicators and indicators[-1].get('value', ) == "$$DummyIndicator$$":
+        relationships_list = indicators[-1].get('relationships', )
+        indicators.pop()
 
     if raw:
         demisto.results({"indicators": [x.get("rawJSON") for x in indicators]})
@@ -165,6 +169,9 @@ def get_indicators_command(
     md = f"Found {len(indicators)} results:\n" + tableToMarkdown(
         "", indicators, ["value", "type"]
     )
+    if relationships_list:
+        parsed_relationships = tableToMarkdown("", relationships_list)
+        md = f"{md}\n\n\nRelations ships:\n{parsed_relationships}"
     if indicators:
         return CommandResults(
             outputs_prefix=CONTEXT_PREFIX + ".Indicators",
