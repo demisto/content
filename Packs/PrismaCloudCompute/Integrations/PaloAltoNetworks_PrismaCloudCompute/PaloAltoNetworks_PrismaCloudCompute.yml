@@ -1642,7 +1642,7 @@ script:
     - description: The project to get the alert profiles for
       name: project
     description: AlertProfiles returns the all alert profiles
-    name: prismacloudcompute-get-alert-profiles
+    name: prisma-cloud-compute-get-alert-profiles
 tests:
 - PaloAltoNetworks_PrismaCloudCompute-Test
 fromversion: 5.0.0

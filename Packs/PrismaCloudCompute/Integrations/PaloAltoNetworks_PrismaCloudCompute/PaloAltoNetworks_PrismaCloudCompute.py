@@ -1896,7 +1896,7 @@ def main():
             return_results(update_waas_policies(client=client, args=demisto.args()))
         elif requested_command == 'prisma-cloud-compute-get-audit-firewall-container-alerts':
             return_results(results=get_audit_firewall_container_alerts(client, args=demisto.args()))
-        elif requested_command == "prismacloudcompute-get-alert-profiles": return_results(results=get_api_v1_alert_profiles_command)
+        elif requested_command == "prisma-cloud-compute-get-alert-profiles": return_results(results=get_api_v1_alert_profiles_command)
     # Log exceptions
     except Exception as e:
         return_error(f'Failed to execute {requested_command} command. Error: {str(e)}')
