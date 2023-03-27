@@ -15,11 +15,11 @@
     "dependencies": {
         "MicrosoftCore": {
             "mandatory": true,
-            "display_name": "Microsoft Events Core"
+            "display_name": "Microsoft Logs Base"
         },
         "MicrosoftWindowsEvents": {
             "mandatory": false,
-            "display_name": "Microsoft Windows Logs"
+            "display_name": "Microsoft Windows Event Logs"
         }
     },
     "marketplaces": [
