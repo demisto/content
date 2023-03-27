@@ -397,8 +397,8 @@ def fetch_alerts_command(client: Client, env: str, args=None):
 
 
 def fetch_assets_command(client: Client, env: str, args=None):
-    page = arg_to_number(args.get("page", 0))
-    page_size = arg_to_number(args.get("page_size", 10))
+    page = arg_to_number(args.get("page")) or 0
+    page_size = arg_to_number(args.get("page_size", 10)) or 0
 
     variables: Dict[str, Any] = {
         "input": {},
