@@ -6,24 +6,153 @@ TEST_PARAMS = {'region': 'test_region', 'roleArn': 'test_arn', 'roleSessionName'
                'roleSessionDuration': 'test_role_session_duration'}
 
 
-class AWSClient:
+class AWSClient:  # pragma: no cover
     def aws_session(self):
         pass
 
 
-class AWSRoute53Client:
+class AWSRoute53ClientWaiter:  # pragma: no cover
+    def wait(self, **kwargs):
+        pass
+
+
+class AWSRoute53Client:  # pragma: no cover
     def list_hosted_zones(self):
         pass
+
+    def change_resource_record_sets(self, **kwargs):
+        pass
+
+    def list_resource_record_sets(self, **kwargs):
+        pass
+
+    def get_waiter(self, *args):  # noqa
+        return AWSRoute53ClientWaiter()
+
+    def test_dns_answer(self, **kwargs):
+        pass
+
+
+def test_create_record(mocker):
+    """
+    Given:
+    - A DNS record.
+    When:
+    - Calling create_record method.
+    Then:
+    - Ensure that the DNS record was successfully created.
+    """
+    from CommonServerPython import tableToMarkdown
+
+    args = TEST_PARAMS
+    args.update({
+        'hostedZoneId': 'test-domain.com',
+        'source': 'foo.test-domain.com',
+        'type': 'CNAME',
+        'ttl': 300,
+        'target': 'google.com',
+        'comment': 'redirect to google.com'
+    })
+    response = {
+        'ChangeInfo': {
+                'Id': '__mock_id__',
+                'Status': 'changed',
+            }
+    }
+    mocker.patch.object(AWSClient, "aws_session", return_value=AWSRoute53Client())
+    mocker.patch.object(AWSRoute53Client, "change_resource_record_sets", return_value=response)
+
+    client = AWSClient()
+    res = AWS_ROUTE53.create_record(args, client)
+    data = {
+        'Id': '__mock_id__',
+        'Status': 'changed',
+    }
+    assert tableToMarkdown('AWS Route53 record created', data) == res.readable_output
+
+
+def test_delete_record(mocker):
+    """
+    Given:
+    - A DNS record.
+    When:
+    - Calling delete_record method.
+    Then:
+    - Ensure that the DNS record was successfully deleted.
+    """
+    from CommonServerPython import tableToMarkdown
+
+    args = TEST_PARAMS
+    args.update({
+        'hostedZoneId': 'test-domain.com',
+        'source': 'foo.test-domain.com',
+        'type': 'CNAME',
+        'ttl': 300,
+    })
+    response = {
+        'ChangeInfo': {
+                'Id': '__mock_id__',
+                'Status': 'deleted',
+            }
+    }
+    mocker.patch.object(AWSClient, "aws_session", return_value=AWSRoute53Client())
+    mocker.patch.object(AWSRoute53Client, "change_resource_record_sets", return_value=response)
+
+    client = AWSClient()
+    res = AWS_ROUTE53.delete_record(args, client)
+    data = {
+        'Id': '__mock_id__',
+        'Status': 'deleted',
+    }
+    assert tableToMarkdown('AWS Route53 record deleted', data) == res.readable_output
+
+
+def test_upsert_record(mocker):
+    """
+    Given:
+    - A DNS record.
+    When:
+    - Calling upsert_record method.
+    Then:
+    - Ensure that the DNS record was successfully updated.
+    """
+    from CommonServerPython import tableToMarkdown
+
+    args = TEST_PARAMS
+    args.update({
+        'hostedZoneId': 'test-domain.com',
+        'source': 'foo.test-domain.com',
+        'type': 'CNAME',
+        'ttl': 300,
+        'target': 'palo.com',
+        'comment': 'redirect to palo.com'
+    })
+    response = {
+        'ChangeInfo': {
+                'Id': '__mock_id__',
+                'Status': 'updated',
+            }
+    }
+    mocker.patch.object(AWSClient, "aws_session", return_value=AWSRoute53Client())
+    mocker.patch.object(AWSRoute53Client, "change_resource_record_sets", return_value=response)
+
+    client = AWSClient()
+    res = AWS_ROUTE53.upsert_record(args, client)
+    data = {
+        'Id': '__mock_id__',
+        'Status': 'updated',
+    }
+    assert tableToMarkdown('AWS Route53 record Upsert', data) == res.readable_output
 
 
 def test_list_hosted_zones(mocker):
     """
     Given:
-    - A bucket name and location.
+    - A Hosted Zone.
     When:
-    - Calling create_bucket_command method.
+    - Calling list_hosted_zones method.
     Then:
-    - Ensure that the bucket was successfully created.
+    - Ensure we get the list of hosted zones.
     """
     from CommonServerPython import tableToMarkdown
 
@@ -48,3 +177,117 @@ def test_list_hosted_zones(mocker):
         'ResourceRecordSetCount': 5,
     }
     assert tableToMarkdown('AWS Route53 Hosted Zones', data) == res.readable_output
+
+
+def test_list_resource_record_sets(mocker):
+    """
+    Given:
+    - A Hosted Zone.
+    When:
+    - Calling list_resource_record_sets method.
+    Then:
+    - Ensure we get the list of record sets from the hosted zones.
+    """
+    from CommonServerPython import tableToMarkdown
+
+    args = TEST_PARAMS
+    args.update({
+        'HostedZoneId': '__x__',
+        'startRecordName': 'aaa',
+        'startRecordType': 'CNAME',
+        'startRecordIdentifier': 'a',
+    })
+    response = {
+        'ResourceRecordSets': [
+            {
+                'Name': 'a.test-domain.com',
+                'Type': 'A',
+                'TTL': 555,
+                'ResourceRecords':
+                    [
+                        {
+                            "Value": 'test-domain.com'
+                        }
+                    ],
+            }
+        ]
+    }
+    mocker.patch.object(AWSClient, "aws_session", return_value=AWSRoute53Client())
+    mocker.patch.object(AWSRoute53Client, "list_resource_record_sets", return_value=response)
+
+    client = AWSClient()
+    res = AWS_ROUTE53.list_resource_record_sets(args, client)
+    data = [
+        {
+            'Name': 'a.test-domain.com',
+            'Type': 'A',
+            'TTL': 555,
+            'ResourceRecords': 'test-domain.com',
+        }
+    ]
+    assert tableToMarkdown('AWS Route53 Record Sets', data) == res.readable_output
+
+
+def test_waiter_resource_record_sets_changed(mocker):
+    """
+    Given:
+    - A Hosted Zone.
+    When:
+    - Calling waiter_resource_record_sets_changed method.
+    Then:
+    - Ensure we call the wait record changed method.
+    """
+
+    args = TEST_PARAMS
+    args.update({
+        'id': '__x__',
+        'waiterDelay': 60,
+        'waiterMaxAttempts': 3,
+    })
+
+    mocker.patch.object(AWSClient, "aws_session", return_value=AWSRoute53Client())
+    mocker.patch.object(AWSRoute53ClientWaiter, "wait", return_value={})
+
+    client = AWSClient()
+    res = AWS_ROUTE53.waiter_resource_record_sets_changed(args, client)
+    assert "success" == res.readable_output
+
+
+def test_test_dns_answer(mocker):
+    """
+    Given:
+    - A Hosted Zone.
+    When:
+    - Calling test_dns_answer method.
+    Then:
+    - Ensure we test the DNS answer.
+    """
+    from CommonServerPython import tableToMarkdown
+
+    args = TEST_PARAMS
+    args.update({
+        'HostedZoneId': '__x__',
+        'RecordName': 'a.test-domain.com',
+        'RecordType': 'CNAME',
+        'resolverIP': '8.8.8.8',
+    })
+    response = {
+        'Nameserver': '__Nameserver__',
+        'RecordName': '__RecordName__',
+        'RecordType': '__RecordType__',
+        'ResponseCode': '__ResponseCode__',
+        'Protocol': '__Protocol__',
+    }
+    mocker.patch.object(AWSClient, "aws_session", return_value=AWSRoute53Client())
+    mocker.patch.object(AWSRoute53Client, "test_dns_answer", return_value=response)
+
+    client = AWSClient()
+    res = AWS_ROUTE53.test_dns_answer(args, client)
+    data = {
+        'Nameserver': '__Nameserver__',
+        'RecordName': '__RecordName__',
+        'RecordType': '__RecordType__',
+        'ResponseCode': '__ResponseCode__',
+        'Protocol': '__Protocol__',
+    }
+    assert tableToMarkdown('AWS Route53 Test DNS Answer', data) == res.readable_output
