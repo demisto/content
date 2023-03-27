@@ -1,4 +1,4 @@
-Google Drive Playbook Automation
+Reco Google Drive Playbook Automation
 
 ## Dependencies
 
@@ -40,4 +40,4 @@ This playbook does not have any outputs.
 
 ---
 
-![Armis Alert Enrichment](../doc_files/Google_Drive_Playbook_Automation.png)
+![Armis Alert Enrichment](../doc_files/Reco_Google_Drive_Playbook_Automation.png)

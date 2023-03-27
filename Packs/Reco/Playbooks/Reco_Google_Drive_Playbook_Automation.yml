@@ -1,7 +1,7 @@
 id: 20bb3993-d04a-406a-8ded-292039c675b9
-version: 5
+version: 9
 vcShouldKeepItemLegacyProdMachine: false
-name: Google Drive Playbook Automation
+name: Reco Google Drive Playbook Automation
 description: Automate Google Drive alert remediation with our solution that revokes
   over-access permissions and shares file details and links with end-users via Slack.
   Reco workflow seamlessly integrates with Palo Alto Networks' Demisto platform to
@@ -14,23 +14,23 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: b65b880c-90fa-48db-8aa9-e3ba48512bf5
+    taskid: 47c24362-22a2-4e48-8ee1-3852575bac6d
     type: start
     task:
-      id: b65b880c-90fa-48db-8aa9-e3ba48512bf5
+      id: 47c24362-22a2-4e48-8ee1-3852575bac6d
       version: -1
       name: ""
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "91"
+      - "92"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 377.5,
+          "x": 367.5,
           "y": 50
         }
       }
@@ -43,10 +43,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "63":
     id: "63"
-    taskid: b2cb0461-6dfd-4f56-84d3-4915d727bfda
+    taskid: 6843c20b-7eca-46d0-83e5-d5f2ae8a89aa
     type: regular
     task:
-      id: b2cb0461-6dfd-4f56-84d3-4915d727bfda
+      id: 6843c20b-7eca-46d0-83e5-d5f2ae8a89aa
       version: -1
       name: Get Slack User
       description: Get details about a specified user.
@@ -67,7 +67,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 545
+          "y": 895
         }
       }
     note: false
@@ -79,10 +79,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "64":
     id: "64"
-    taskid: 9784ec91-6ce9-4a87-8f12-1ed09336693b
+    taskid: 992b9b7b-964f-408f-8022-90f4b8bb4ddc
     type: condition
     task:
-      id: 9784ec91-6ce9-4a87-8f12-1ed09336693b
+      id: 992b9b7b-964f-408f-8022-90f4b8bb4ddc
       version: -1
       name: Is a Slack user?
       type: condition
@@ -116,7 +116,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 720
+          "y": 1070
         }
       }
     note: false
@@ -128,10 +128,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "85":
     id: "85"
-    taskid: e5af6cea-ac64-4a39-8ea4-456c24d4e963
+    taskid: f19c0804-107d-460c-8f94-bafa7092441b
     type: regular
     task:
-      id: e5af6cea-ac64-4a39-8ea4-456c24d4e963
+      id: f19c0804-107d-460c-8f94-bafa7092441b
       version: -1
       name: Notify Asset Owner
       description: Sends a message to a user, group, or channel.
@@ -164,8 +164,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 895
+          "x": 480,
+          "y": 1245
         }
       }
     note: false
@@ -177,10 +177,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "86":
     id: "86"
-    taskid: 57662f73-9fa2-4d97-883b-edee093c0e7a
+    taskid: b078afdb-4287-481c-8fe0-615cb626003d
     type: regular
     task:
-      id: 57662f73-9fa2-4d97-883b-edee093c0e7a
+      id: b078afdb-4287-481c-8fe0-615cb626003d
       version: -1
       name: Notify SecOps
       description: Sends a message to a user, group, or channel.
@@ -204,8 +204,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 895
+          "x": 50,
+          "y": 1245
         }
       }
     note: false
@@ -217,10 +217,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "87":
     id: "87"
-    taskid: 9c5dcf14-5cc0-4150-8ac4-3ada81e0ea66
+    taskid: 34e92315-7a4f-4d01-8bcb-7c002bba15f8
     type: condition
     task:
-      id: 9c5dcf14-5cc0-4150-8ac4-3ada81e0ea66
+      id: 34e92315-7a4f-4d01-8bcb-7c002bba15f8
       version: -1
       name: Check is message exists
       type: condition
@@ -244,8 +244,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 377.5,
-          "y": 370
+          "x": 152.5,
+          "y": 720
         }
       }
     note: false
@@ -257,10 +257,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "90":
     id: "90"
-    taskid: bae95b80-d757-4226-81c0-b1ece7068c79
+    taskid: ce2624aa-c542-4ed7-84fd-db3d8f2fa6df
     type: regular
     task:
-      id: bae95b80-d757-4226-81c0-b1ece7068c79
+      id: ce2624aa-c542-4ed7-84fd-db3d8f2fa6df
       version: -1
       name: Close incident
       description: commands.local.cmd.close.inv
@@ -278,8 +278,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 1070
+          "x": 152.5,
+          "y": 1420
         }
       }
     note: false
@@ -291,10 +291,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "91":
     id: "91"
-    taskid: c83193d8-2aaf-4a10-8661-a2a6f16fbe8d
+    taskid: 5fc52161-e44e-41c3-8d19-41216eb33c42
     type: playbook
     task:
-      id: c83193d8-2aaf-4a10-8661-a2a6f16fbe8d
+      id: 5fc52161-e44e-41c3-8d19-41216eb33c42
       version: -1
       name: Reco-Google-Drive-Revoke-Permissions
       playbookName: Reco-Google-Drive-Revoke-Permissions
@@ -309,8 +309,117 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 377.5,
-          "y": 210
+          "x": 152.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "92":
+    id: "92"
+    taskid: 766ab176-319a-4d76-83af-9eba2d513cd0
+    type: condition
+    task:
+      id: 766ab176-319a-4d76-83af-9eba2d513cd0
+      version: -1
+      name: Google Drive Enabled
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "94"
+      "yes":
+      - "93"
+    scriptarguments:
+      brandname:
+        simple: GoogleDrive
+    results:
+    - brandInstances
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 367.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "93":
+    id: "93"
+    taskid: 78fb589b-0feb-48ed-8897-a0a0401fa2f3
+    type: condition
+    task:
+      id: 78fb589b-0feb-48ed-8897-a0a0401fa2f3
+      version: -1
+      name: Is Slack Enabled
+      description: Returns 'yes' if integration brand is available. Otherwise returns
+        'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "94"
+      "yes":
+      - "91"
+    scriptarguments:
+      brandname:
+        simple: SlackV3
+    results:
+    - brandInstances
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "94":
+    id: "94"
+    taskid: bb8a3a00-a1f1-4b08-8a9d-e99d2b2946af
+    type: title
+    task:
+      id: bb8a3a00-a1f1-4b08-8a9d-e99d2b2946af
+      version: -1
+      name: Slack & Google Drive integrations Disabled - Contact Administrator
+      tags:
+      - Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 720,
+          "y": 690
         }
       }
     note: false
@@ -327,8 +436,8 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1115,
-        "width": 810,
+        "height": 1465,
+        "width": 1050,
         "x": 50,
         "y": 50
       }
