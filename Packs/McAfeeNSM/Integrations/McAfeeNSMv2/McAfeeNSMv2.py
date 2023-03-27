@@ -804,7 +804,7 @@ def create_body_update_rule_for_v10(rule_type: str, address: List, number: int,
                                  "changedState": 1})
 
     # for parameters with a range, we need to add the state and the changeState to the dictionary
-    # The same logic as above, if "state" is in the dictionary, the user wants to delete and overwrite that's the reason
+    # Similar logic to above, if "state" is in the dictionary, the user wants to delete and overwrite that's the reason
     # we kept that range in the list.
     if from_to_list:
         for dictionary in from_to_list:
