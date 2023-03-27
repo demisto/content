@@ -1,0 +1,139 @@
+{
+    "roles": [
+        {
+            "description": "Has complete admin control over the service desk including access to account or billing related information",
+            "id": 1,
+            "name": "Account Admin",
+            "created_at": "roles[0]_created_at",
+            "updated_at": "roles[0]_updated_at",
+            "default": true,
+            "role_type": 1
+        },
+        {
+            "description": "Can perform all non-admin actions except reporting",
+            "id": 21000388919,
+            "name": "IT Agent",
+            "created_at": "roles[1]_created_at",
+            "updated_at": "roles[1]_updated_at",
+            "default": true,
+            "role_type": 2
+        },
+        {
+            "description": "Can perform all non-admin actions",
+            "id": 21000388920,
+            "name": "IT Supervisor",
+            "created_at": "roles[2]_created_at",
+            "updated_at": "roles[2]_updated_at",
+            "default": true,
+            "role_type": 2
+        },
+        {
+            "description": "Can perform all agent related activities, view and create change and have full access for problem module",
+            "id": 21000388921,
+            "name": "Problem Manager",
+            "created_at": "roles[3]_created_at",
+            "updated_at": "roles[3]_updated_at",
+            "default": true,
+            "role_type": 2
+        },
+        {
+            "description": "Can perform all agent related activities, view and create problem release and have full access for change module",
+            "id": 21000388922,
+            "name": "Change Manager",
+            "created_at": "roles[4]_created_at",
+            "updated_at": "roles[4]_updated_at",
+            "default": true,
+            "role_type": 2
+        },
+        {
+            "description": "Can perform all agent related activities, view and create change and have full access for release module",
+            "id": 21000388923,
+            "name": "Release Manager",
+            "created_at": "roles[5]_created_at",
+            "updated_at": "roles[5]_updated_at",
+            "default": true,
+            "role_type": 2
+        },
+        {
+            "description": "Can perform all agent related activities, view problem, change, release and have full access for CMDB module",
+            "id": 21000388924,
+            "name": "Configuration Manager",
+            "created_at": "roles[6]_created_at",
+            "updated_at": "roles[6]_updated_at",
+            "default": true,
+            "role_type": 2
+        },
+        {
+            "description": "Can perform all agent related activities, view problem, change and have full access for Contract module",
+            "id": 21000388925,
+            "name": "Contract Manager",
+            "created_at": "roles[7]_created_at",
+            "updated_at": "roles[7]_updated_at",
+            "default": true,
+            "role_type": 2
+        },
+        {
+            "description": "Can perform all agent related activities, can view and manage alerts",
+            "id": 21000388926,
+            "name": "IT Ops Agent",
+            "created_at": "roles[8]_created_at",
+            "updated_at": "roles[8]_updated_at",
+            "default": true,
+            "role_type": 2
+        },
+        {
+            "description": "Can view, create and manage projects",
+            "id": 21000388927,
+            "name": "Project Manager",
+            "created_at": "roles[9]_created_at",
+            "updated_at": "roles[9]_updated_at",
+            "default": true,
+            "role_type": 2
+        },
+        {
+            "description": "Can view and work on projects",
+            "id": 21000388928,
+            "name": "Project Member",
+            "created_at": "roles[10]_created_at",
+            "updated_at": "roles[10]_updated_at",
+            "default": true,
+            "role_type": 2
+        },
+        {
+            "description": "Can perform all agent related activities and perform all activities on Purchase Order",
+            "id": 21000388929,
+            "name": "Procurement Manager",
+            "created_at": "roles[11]_created_at",
+            "updated_at": "roles[11]_updated_at",
+            "default": true,
+            "role_type": 2
+        },
+        {
+            "description": "Can work on Tickets, Projects, Solutions, and Announcements. Cannot view reports",
+            "id": 21000388930,
+            "name": "Business Agent",
+            "created_at": "roles[12]_created_at",
+            "updated_at": "roles[12]_updated_at",
+            "default": true,
+            "role_type": 2
+        },
+        {
+            "description": "Can work on Tickets, Projects, Solutions, and Announcements. Can view and manage reports",
+            "id": 21000388931,
+            "name": "Business Team Supervisor",
+            "created_at": "roles[13]_created_at",
+            "updated_at": "roles[13]_updated_at",
+            "default": true,
+            "role_type": 2
+        },
+        {
+            "description": "Workspace Admin",
+            "id": 21000388932,
+            "name": "Workspace Admin",
+            "created_at": "roles[14]_created_at",
+            "updated_at": "roles[14]_updated_at",
+            "default": true,
+            "role_type": 1
+        }
+    ]
+}

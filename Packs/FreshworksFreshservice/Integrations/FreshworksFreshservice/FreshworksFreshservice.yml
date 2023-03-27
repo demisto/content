@@ -1,0 +1,4191 @@
+category: Case Management
+commonfields:
+  id: FreshworksFreshservice
+  version: -1
+configuration:
+- additionalinfo: Freshservice URL (make sure your URL includes your unique environment name)
+  defaultvalue: https://{environment}.Freshservice.com/
+  display: Server URL
+  name: url
+  type: 0
+  required: true
+- additionalinfo: Freshservice API access token.
+  displaypassword: API Token
+  hiddenusername: true
+  name: credentials
+  required: true
+  type: 9
+- defaultvalue: 'false'
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+- defaultvalue: 'false'
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- defaultvalue: 'false'
+  display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- additionalinfo: First alert created date to fetch. e.g., "1 min ago","2 weeks ago","3 months ago"
+  defaultvalue: 3 days
+  display: First fetch timestamp
+  name: first_fetch
+  type: 0
+  required: false
+- additionalinfo: Maximum number of incidents per fetch. Default is 50. The maximum is 100.
+  defaultvalue: '50'
+  display: Maximum incidents per fetch
+  name: max_fetch
+  required: false
+  type: 0
+- defaultvalue: All
+  display: 'Ticket type to fetch as incidents. '
+  name: ticket_type
+  options:
+  - All
+  - Incident/Service Request
+  - Problem Request
+  - Change Request
+  - Release Request
+  required: false
+  type: 16
+- additionalinfo: Incident priorities to fetch. The default is All. You can choose multiple.
+  defaultvalue: All
+  name: ticket_priority
+  options:
+  - All
+  - Low
+  - Medium
+  - High
+  - Urgent
+  required: false
+  type: 16
+- additionalinfo: "Incident impacts to fetch. The default is All. You can choose multiple."
+  defaultvalue: All
+  display: Ticket Impact
+  name: ticket_impact
+  options:
+  - All
+  - Low
+  - Medium
+  - High
+  required: false
+  type: 16
+- additionalinfo: The status of the tickets to fetch. Since each ticket type has its own unique set of statuses, select only statuses that match the selected ticket type(s).
+  defaultvalue: All
+  display: Ticket Status
+  name: ticket_status
+  options:
+  - All
+  - Open
+  - Pending
+  - Pending Release
+  - Pending Review
+  - Resolved
+  - Planning
+  - Approval
+  - Change Requested
+  - On hold
+  - In Progress
+  - Incomplete
+  - Completed
+  - Closed
+  required: false
+  type: 16
+- additionalinfo: The risk of the tickets to fetch. Available only for the 'Change Request' ticket type.
+  defaultvalue: All
+  display: Ticket Risk
+  name: ticket_risk
+  options:
+  - All
+  - Low
+  - Medium
+  - High
+  - Very High
+  required: false
+  type: 16
+- additionalinfo: "The urgency of the tickets to fetch. Available only for the 'Incident/Service Request' ticket type. The default is All. You can choose multiple."
+  defaultvalue: All
+  display: Ticket Urgency
+  name: ticket_urgency
+  options:
+  - All
+  - Low
+  - Medium
+  - High
+  required: false
+  type: 16
+- additionalinfo: 'Choose the direction to mirror the incident: Incoming (from Freshservice to Cortex XSOAR), Outgoing (from Cortex XSOAR to Freshservice), or Incoming and Outgoing (from/to Cortex XSOAR and Freshservice).'
+  defaultvalue: None
+  display: Incident Mirroring Direction
+  name: mirror_direction
+  options:
+  - None
+  - Incoming
+  - Outgoing
+  - Incoming And Outgoing
+  required: false
+  type: 15
+- additionalinfo: When selected, closing the Freshservice ticket is mirrored in Cortex XSOAR.
+  defaultvalue: 'false'
+  display: Close Mirrored XSOAR Incident
+  name: close_incident
+  required: false
+  type: 8
+- additionalinfo: When selected, closing the Cortex XSOAR incident is mirrored in Freshservice.
+  defaultvalue: 'false'
+  display: Close Mirrored Freshservice Ticket
+  name: close_ticket
+  required: false
+  type: 8
+- additionalinfo: Fetch tasks for each ticket type and consider them in the mirroring (required an additional API request per each ticket).
+  defaultvalue: 'false'
+  display: Fetch tickets tasks
+  name: fetch_ticket_task
+  required: false
+  type: 8
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+description: 'Freshservice is a service management solution that allows customers to manage service requests, incidents, change requests tasks, and problem investigation. '
+display: Freshworks Freshservice
+name: FreshworksFreshservice
+script:
+  commands:
+  - arguments:
+    - description: 'Page number of paginated results. Minimum value: 1. Only for fetching a list of tickets.'
+      isArray: false
+      name: page
+      required: false
+    - description: The number of items per page.
+      isArray: false
+      name: page_size
+      required: false
+    - defaultValue: '50'
+      description: The maximum number of records to retrieve.
+      isArray: false
+      name: limit
+      required: false
+    - description: The Ticket ID. If not provided, return all existing tickets.
+      isArray: false
+      name: ticket_id
+      required: false
+    - auto: PREDEFINED
+      description: Extra Ticket information to include. Just the 'stats', 'requester','requested_for' values are available for fetching a list of tickets. Use 'include' to embed additional details in the response. Each include will consume an additional 2 credits. For example, if you embed the stats information you will be charged a total of 3 API credits (1 credit for the API call, and 2 credits for the additional stats embedding).
+      isArray: true
+      name: include
+      predefined:
+      - conversations
+      - requester
+      - requested_for
+      - stats
+      - department
+      - tags
+      required: false
+    - auto: PREDEFINED
+      description: Ticket filter. You can specify 'query' argument, 'filter' argument or any filter arguments, not all of them together.
+      isArray: true
+      name: filter
+      predefined:
+      - open
+      - watching
+      - spam
+      - deleted
+      required: false
+    - description: Ticket requester ID (use freshservice-agent-list to get the agent ID).
+      isArray: false
+      name: requester_id
+      required: false
+    - description: Ticket requester email.
+      isArray: false
+      name: email
+      required: false
+    - description: Ticket update since (for example "YYYY-MM-DDThh:mm", "1 min ago", "2 weeks ago").
+      isArray: false
+      name: updated_since
+      required: false
+    - auto: PREDEFINED
+      description: Ticket type.
+      isArray: false
+      name: type
+      predefined:
+      - Incident
+      - Service Request
+      required: false
+    - auto: PREDEFINED
+      description: Tickets order type (order by ticket ID).
+      isArray: false
+      name: order_type
+      predefined:
+      - asc
+      - desc
+      required: false
+    - description: Filter by agent ID. Use freshservice-agent-list to get the agent ID.
+      isArray: false
+      name: agent_id
+      required: false
+    - description: Filter Tickets by group ID. Use freshservice-agent-group-list to get the agent group ID.
+      isArray: false
+      name: group_id
+      required: false
+    - auto: PREDEFINED
+      description: Filter Tickets by priority.
+      isArray: false
+      name: priority
+      predefined:
+      - Low
+      - Medium
+      - High
+      - Urgent
+      required: false
+    - auto: PREDEFINED
+      description: Filter Tickets by status.
+      isArray: false
+      name: status
+      predefined:
+      - Open
+      - Pending
+      - Resolved
+      - Closed
+      required: false
+    - auto: PREDEFINED
+      description: Filter Tickets by impact.
+      isArray: false
+      name: impact
+      predefined:
+      - Low
+      - Medium
+      - High
+      required: false
+    - auto: PREDEFINED
+      description: Filter Tickets by urgency.
+      isArray: false
+      name: urgency
+      predefined:
+      - Low
+      - Medium
+      - High
+      required: false
+    - description: Filter Tickets by tag.
+      isArray: false
+      name: tag
+      required: false
+    - description: "Filter Tickets by due by, (for example \"YYYY-MM-DDThh:mm\", \"1 min ago\", \"2 weeks ago\")."
+      isArray: false
+      name: due_by
+      required: false
+    - description: "Filter Tickets by fr due by, (for example \"YYYY-MM-DDThh:mm\", \"1 min ago\", \"2 weeks ago\")."
+      isArray: false
+      name: fr_due_by
+      required: false
+    - description: "Filter Tickets by created at, (for example \"YYYY-MM-DDThh:mm\", \"1 min ago\", \"2 weeks ago\")."
+      isArray: false
+      name: created_at
+      required: false
+    - description: Query to fetch tickets. You can specify 'query' argument, 'filter' argument or any filter arguments, not all of them together. For example "priority:3 AND group_id:21000478054 AND status:2" (Logical operators AND, OR along with parentheses () can be used to group conditions).
+      isArray: false
+      name: query
+      required: false
+    deprecated: false
+    description: Retrieve all existing tickets or the specific Ticket by specified Ticket ID. By default, only tickets that have been created within the past 30 days will be returned. For older tickets, use the updated_since filter. You can specify 'query' argument, 'filter' argument or any filter arguments, not all of them together. When providing multiple filter arguments the connection between them will be "AND".
+    execution: false
+    name: freshservice-ticket-list
+    outputs:
+    - contextPath: Freshservice.Ticket.subject
+      description: Ticket subject.
+      type: String
+    - contextPath: Freshservice.Ticket.group_id
+      description: Ticket group ID.
+      type: Number
+    - contextPath: Freshservice.Ticket.department_id
+      description: Ticket department ID.
+      type: Number
+    - contextPath: Freshservice.Ticket.category
+      description: Ticket category.
+      type: String
+    - contextPath: Freshservice.Ticket.sub_category
+      description: Ticket subcategory.
+      type: String
+    - contextPath: Freshservice.Ticket.item_category
+      description: Ticket item category.
+      type: String
+    - contextPath: Freshservice.Ticket.requester_id
+      description: Ticket requester ID.
+      type: Number
+    - contextPath: Freshservice.Ticket.responder_id
+      description: Ticket responder ID.
+      type: Number
+    - contextPath: Freshservice.Ticket.due_by
+      description: Ticket due by.
+      type: Date
+    - contextPath: Freshservice.Ticket.fr_escalated
+      description: Ticket fr escalated.
+      type: Boolean
+    - contextPath: Freshservice.Ticket.deleted
+      description: Ticket deleted.
+      type: Boolean
+    - contextPath: Freshservice.Ticket.spam
+      description: Ticket spam.
+      type: Boolean
+    - contextPath: Freshservice.Ticket.email_config_id
+      description: Ticket email config ID.
+      type: Number
+    - contextPath: Freshservice.Ticket.is_escalated
+      description: Ticket is escalated.
+      type: Boolean
+    - contextPath: Freshservice.Ticket.fr_due_by
+      description: Ticket fr due by.
+      type: Date
+    - contextPath: Freshservice.Ticket.id
+      description: Ticket ID.
+      type: Number
+    - contextPath: Freshservice.Ticket.priority
+      description: Ticket priority.
+      type: Number
+    - contextPath: Freshservice.Ticket.status
+      description: Ticket status.
+      type: Number
+    - contextPath: Freshservice.Ticket.source
+      description: Ticket source.
+      type: Number
+    - contextPath: Freshservice.Ticket.created_at
+      description: Ticket created at.
+      type: Date
+    - contextPath: Freshservice.Ticket.updated_at
+      description: Ticket updated at.
+      type: Date
+    - contextPath: Freshservice.Ticket.requested_for_id
+      description: Ticket requested for ID.
+      type: Number
+    - contextPath: Freshservice.Ticket.to_emails
+      description: Ticket to emails.
+      type: Number
+    - contextPath: Freshservice.Ticket.type
+      description: Ticket type.
+      type: String
+    - contextPath: Freshservice.Ticket.description
+      description: Ticket description.
+      type: String
+    - contextPath: Freshservice.Ticket.workspace_id
+      description: Ticket workspace ID.
+      type: Number
+  - arguments:
+    - description: HTML content of the ticket.
+      isArray: false
+      name: description
+      required: true
+    - description: Name of the requester.
+      isArray: false
+      name: name
+      required: false
+    - description: User ID of the requester. For existing contacts, the 'requester_id' can be passed instead of the requester's email. In case specified both 'email' and 'requester ID', the requester ID will be override 'email' field. If 'requester_id' is not provided, 'email' must be specified.
+      isArray: false
+      name: requester_id
+      required: false
+    - description: Default identifier. If 'email' is not provided - 'requester_id' must be specified. In case specified both 'email' and 'requester ID', the requester ID will be override 'email' field. Email address of the requester. If no contact exists with this email address in Freshservice, it will be added as a new contact.
+      isArray: false
+      name: email
+      required: false
+    - description: Phone number of the requester. The 'phone' can be passed instead of the requester's email. If no contact exists with this phone number in Freshservice, it will be added as a new contact. The name attribute is mandatory if the phone number is set and the email address is not.
+      isArray: false
+      name: phone
+      required: false
+    - auto: PREDEFINED
+      description: Status of the Ticket (Open=2, Pending=3, Resolved=4, Closed=5).
+      isArray: false
+      name: status
+      predefined:
+      - Open
+      - Pending
+      - Resolved
+      - Closed
+      required: true
+    - auto: PREDEFINED
+      description: Priority of the Ticket (Low=1, Medium=2, High=3, Urgent=4).
+      isArray: false
+      name: priority
+      predefined:
+      - Low
+      - Medium
+      - High
+      - Urgent
+      required: true
+    - description: The subject of the ticket.
+      isArray: false
+      name: subject
+      required: true
+    - auto: PREDEFINED
+      description: The channel through which the Ticket was created. The default value is 'Portal'. (Email=1, Portal=2, Phone=3, Chat=4, Feedback widget=5, Yammer=6, AWS Cloudwatch=7, Pagerduty=8, Walkup=9, Slack=10).
+      isArray: false
+      name: source
+      predefined:
+      - Email
+      - Portal
+      - Phone
+      - Chat
+      - Feedback widget
+      - Yammer
+      - AWS Cloudwatch
+      - Pagerduty
+      - Walkup
+      - Slack
+      required: false
+    - description: Tags that have been associated with the ticket.
+      isArray: true
+      name: tags
+      required: false
+    - description: Department ID of the requester. Use freshservice-department-list to get the department ID.
+      isArray: false
+      name: department_id
+      required: false
+    - auto: PREDEFINED
+      description: Ticket category.
+      isArray: false
+      name: category
+      predefined:
+      - Hardware
+      - Software
+      - Network
+      - Office Applications
+      - Talent Management
+      - Travel
+      - Employee Records and Documents
+      - Office Furniture
+      - Office Equipment
+      - Employee Benefits
+      - Employee Onboarding/Offboarding
+      - Employee Relations
+      - Workplace Access and Security
+      - Building and Grounds Maintenance
+      - Vendor Document Review
+      - Payroll
+      - Vendor Payment
+      - Customer Payment
+      - Reimbursements and Advances
+      - Legal Document Creation
+      - Legal Review - Vendor Documents
+      - Legal Review - Customer Documents
+      - Other
+      required: false
+    - description: Ticket subcategory. Note that each category has a different predefined subcategory.
+      isArray: false
+      name: sub_category
+      required: false
+    - description: Assets that have to be associated with the ticket (the asset display_id).
+      isArray: false
+      name: assets
+      required: false
+    - auto: PREDEFINED
+      description: Ticket urgency.
+      isArray: false
+      name: urgency
+      predefined:
+      - Low
+      - Medium
+      - High
+      required: false
+    - auto: PREDEFINED
+      description: Ticket impact.
+      isArray: false
+      name: impact
+      predefined:
+      - Low
+      - Medium
+      - High
+      required: false
+    - description: The problem that needs to be associated with the Ticket  (use freshservice-problem-list to get the problem ID).
+      isArray: false
+      name: problem
+      required: false
+    - description: Change causing the Ticket that needs to be associated with the Ticket (use freshservice-change-list to get the change ID).
+      isArray: false
+      name: change_initiating_ticket
+      required: false
+    - description: Change needed for the Ticket to be fixed that needs to be associated with the Ticket (use freshservice-change-list to get the change ID).
+      isArray: false
+      name: change_initiated_by_ticket
+      required: false
+    - description: The ID of the agent to whom the Ticket has been assigned (use freshservice-agent-list to get the agent ID).
+      isArray: false
+      name: responder_id
+      required: false
+    - description: Ticket attachments. The total size of these attachments cannot exceed 15MB. Please upload the file to XSOAR and provide the file ID for attaching the file to Freshservice tickets.
+      isArray: true
+      name: attachments
+      required: false
+    - description: Email address added in the 'cc' field of the incoming Ticket email.
+      isArray: true
+      name: cc_emails
+      required: false
+    - description: Key value pairs containing the names and values of custom fields. For example 'key1=value1, key2=value2'.
+      isArray: true
+      name: custom_fields
+      required: false
+    - description: The timestamp that denotes when the Ticket is due to be resolved. Has to be greater than ticket creation time.
+      isArray: false
+      name: due_by
+      required: false
+    - description: The ID of the email config which is used for this ticket. (i.e., support@yourcompany.com/sales@yourcompany.com).
+      isArray: false
+      name: email_config_id
+      required: false
+    - description: The timestamp that denotes when the first response is due. Has to be greater than ticket creation time. It should not be blank if due_by is given. (for example YYYY-MM-DDThh:mm).
+      isArray: false
+      name: fr_due_by
+      required: false
+    - description: The ID of the group to which the Ticket has been assigned. The default value is the ID of the group that is associated with the given email config ID. Use freshservice-agent-group-list to get the agent group ID.
+      isArray: false
+      name: group_id
+      required: false
+    deprecated: false
+    description: |-
+      Create a new Ticket at the service desk. The default Ticket type
+      is incident. Create ticket required one of the following: requester_id, phone, email. Ticket type helps categorize the ticket according to the different
+      kinds of issues your support team deals with. As of now, API v2 supports only
+      type 'incident'.
+    execution: false
+    name: freshservice-ticket-create
+    outputs:
+    - contextPath: Freshservice.Ticket.fr_escalated
+      description: Ticket fr escalated.
+      type: Boolean
+    - contextPath: Freshservice.Ticket.spam
+      description: Ticket spam.
+      type: Boolean
+    - contextPath: Freshservice.Ticket.email_config_id
+      description: Ticket email config ID.
+      type: Number
+    - contextPath: Freshservice.Ticket.group_id
+      description: Ticket group ID.
+      type: Number
+    - contextPath: Freshservice.Ticket.priority
+      description: Ticket priority.
+      type: Number
+    - contextPath: Freshservice.Ticket.requester_id
+      description: Ticket requester ID.
+      type: Date
+    - contextPath: Freshservice.Ticket.requested_for_id
+      description: Ticket requested for ID.
+      type: Date
+    - contextPath: Freshservice.Ticket.responder_id
+      description: Ticket responder ID.
+      type: Number
+    - contextPath: Freshservice.Ticket.source
+      description: Ticket source.
+      type: Number
+    - contextPath: Freshservice.Ticket.status
+      description: Ticket status.
+      type: Number
+    - contextPath: Freshservice.Ticket.subject
+      description: Ticket subject.
+      type: String
+    - contextPath: Freshservice.Ticket.to_emails
+      description: Ticket to emails.
+      type: String
+    - contextPath: Freshservice.Ticket.department_id
+      description: Ticket department ID.
+      type: Number
+    - contextPath: Freshservice.Ticket.id
+      description: Ticket ID.
+      type: Number
+    - contextPath: Freshservice.Ticket.type
+      description: Ticket type.
+      type: String
+    - contextPath: Freshservice.Ticket.due_by
+      description: Ticket due by.
+      type: Date
+    - contextPath: Freshservice.Ticket.fr_due_by
+      description: Ticket fr due by.
+      type: Date
+    - contextPath: Freshservice.Ticket.is_escalated
+      description: Ticket is escalated.
+      type: Boolean
+    - contextPath: Freshservice.Ticket.description
+      description: Ticket description.
+      type: String
+    - contextPath: Freshservice.Ticket.category
+      description: Ticket category.
+      type: String
+    - contextPath: Freshservice.Ticket.sub_category
+      description: Ticket subcategory.
+      type: String
+    - contextPath: Freshservice.Ticket.item_category
+      description: Ticket item category.
+      type: String
+    - contextPath: Freshservice.Ticket.created_at
+      description: Ticket created at.
+      type: Date
+    - contextPath: Freshservice.Ticket.updated_at
+      description: Ticket updated at.
+      type: Date
+  - arguments:
+    - description: The Ticket ID to update (use freshservice-ticket-list to get ticket ID).
+      isArray: false
+      name: ticket_id
+      required: true
+    - description: HTML content of the ticket.
+      isArray: false
+      name: description
+      required: false
+    - description: Name of the requester.
+      isArray: false
+      name: name
+      required: false
+    - description: User ID of the requester (use freshservice-agent-list to get the agent ID). For existing contacts, the requester_id can be passed instead of the requester's email.
+      isArray: false
+      name: requester_id
+      required: false
+    - description: Email address of the requester. If no contact exists with this email address in Freshservice, it will be added as a new contact.
+      isArray: false
+      name: email
+      required: false
+    - description: Phone number of the requester. If no contact exists with this phone number in Freshservice, it will be added as a new contact. The name attribute is mandatory if the phone number is set and the email address is not.
+      isArray: false
+      name: phone
+      required: false
+    - auto: PREDEFINED
+      description: Status of the Ticket (Open=2, Pending=3, Resolved=4, Closed=5).
+      isArray: false
+      name: status
+      predefined:
+      - Open
+      - Pending
+      - Resolved
+      - Closed
+      required: false
+    - auto: PREDEFINED
+      description: Priority of the Ticket (Low=1, Medium=2, High=3, Urgent=4).
+      isArray: false
+      name: priority
+      predefined:
+      - Low
+      - Medium
+      - High
+      - Urgent
+      required: false
+    - description: The subject of the ticket.
+      isArray: false
+      name: subject
+      required: false
+    - auto: PREDEFINED
+      description: The channel through which the Ticket was created. The default value is 2. (Email=1, Portal=2, Phone=3, Chat=4, Feedback widget=5, Yammer=6, AWS Cloudwatch=7, Pagerduty=8, Walkup=9, Slack=10).
+      isArray: false
+      name: source
+      predefined:
+      - Email
+      - Portal
+      - Phone
+      - Chat
+      - Feedback widget
+      - Yammer
+      - AWS Cloudwatch
+      - Pagerduty
+      - Walkup
+      - Slack
+      required: false
+    - description: Tags that have been associated with the ticket (replace the exist value).
+      isArray: true
+      name: tags
+      required: false
+    - description: Department ID of the requester. Use freshservice-department-list to get the department ID.
+      isArray: false
+      name: department_id
+      required: false
+    - auto: PREDEFINED
+      description: Ticket category.
+      isArray: false
+      name: category
+      predefined:
+      - Hardware
+      - Software
+      - Network
+      - Office Applications
+      - Talent Management
+      - Travel
+      - Employee Records and Documents
+      - Office Furniture
+      - Office Equipment
+      - Employee Benefits
+      - Employee Onboarding/Offboarding
+      - Employee Relations
+      - Workplace Access and Security
+      - Building and Grounds Maintenance
+      - Vendor Document Review
+      - Payroll
+      - Vendor Payment
+      - Customer Payment
+      - Reimbursements and Advances
+      - Legal Document Creation
+      - Legal Review - Vendor Documents
+      - Legal Review - Customer Documents
+      - Other
+      required: false
+    - description: "Ticket subcategory.  Note that each category has a different predefined subcategory."
+      isArray: false
+      name: sub_category
+      required: false
+    - description: Assets that have to be associated with the ticket (the asset display_id. Replace the exist value).
+      isArray: false
+      name: assets
+      required: false
+    - auto: PREDEFINED
+      description: Ticket urgency.
+      isArray: false
+      name: urgency
+      predefined:
+      - Low
+      - Medium
+      - High
+      required: false
+    - auto: PREDEFINED
+      description: Ticket impact.
+      isArray: false
+      name: impact
+      predefined:
+      - Low
+      - Medium
+      - High
+      required: false
+    - description: The problem that needs to be associated with the Ticket  (use freshservice-problem-list to get the problem ID).
+      isArray: false
+      name: problem
+      required: false
+    - description: Change causing the Ticket that needs to be associated with the Ticket (use freshservice-change-list to get the change ID).
+      isArray: false
+      name: change_initiating_ticket
+      required: false
+    - description: Change needed for the Ticket to be fixed that needs to be associated with the Ticket (use freshservice-change-list to get the change ID).
+      isArray: false
+      name: change_initiated_by_ticket
+      required: false
+    - description: The ID of the agent to whom the Ticket has been assigned (use freshservice-agent-list to get the agent ID).
+      isArray: false
+      name: responder_id
+      required: false
+    - description: Ticket attachments. The total size of these attachments cannot exceed 15MB. Please upload the file to XSOAR and provide the file ID for attaching the file to Freshservice tickets.
+      isArray: true
+      name: attachments
+      required: false
+    - description: Email address added in the 'cc' field of the incoming Ticket email.
+      isArray: true
+      name: cc_emails
+      required: false
+    - description: Key value pairs containing the names and values of custom fields. Read more here.
+      isArray: false
+      name: custom_fields
+      required: false
+    - description: Timestamp that denotes when the Ticket is due to be resolved (for example YYYY-MM-DDThh:mm)..
+      isArray: false
+      name: due_by
+      required: false
+    - description: The ID of the email config which is used for this ticket. (i.e., support@yourcompany.com/sales@yourcompany.com).
+      isArray: false
+      name: email_config_id
+      required: false
+    - description: Timestamp that denotes when the first response is due (for example YYYY-MM-DDThh:mm).
+      isArray: false
+      name: fr_due_by
+      required: false
+    - description: The ID of the group to which the Ticket has been assigned. The default value is the ID of the group that is associated with the given email_config_id. Use freshservice-agent-group-list to get the agent group ID.
+      isArray: false
+      name: group_id
+      required: false
+    deprecated: false
+    description: Update an existing Ticket in Freshservice.
+    execution: false
+    name: freshservice-ticket-update
+    outputs:
+    - contextPath: Freshservice.Ticket.spam
+      description: Ticket spam.
+      type: Boolean
+    - contextPath: Freshservice.Ticket.email_config_id
+      description: Ticket email config ID.
+      type: Number
+    - contextPath: Freshservice.Ticket.fr_escalated
+      description: Ticket fr escalated.
+      type: Boolean
+    - contextPath: Freshservice.Ticket.group_id
+      description: Ticket group ID.
+      type: Number
+    - contextPath: Freshservice.Ticket.priority
+      description: Ticket priority.
+      type: Number
+    - contextPath: Freshservice.Ticket.requester_id
+      description: Ticket requester ID.
+      type: Date
+    - contextPath: Freshservice.Ticket.requested_for_id
+      description: Ticket requested for ID.
+      type: Date
+    - contextPath: Freshservice.Ticket.responder_id
+      description: Ticket responder ID.
+      type: Number
+    - contextPath: Freshservice.Ticket.source
+      description: Ticket source.
+      type: Number
+    - contextPath: Freshservice.Ticket.status
+      description: Ticket status.
+      type: Number
+    - contextPath: Freshservice.Ticket.subject
+      description: Ticket subject.
+      type: String
+    - contextPath: Freshservice.Ticket.description
+      description: Ticket description.
+      type: String
+    - contextPath: Freshservice.Ticket.category
+      description: Ticket category.
+      type: String
+    - contextPath: Freshservice.Ticket.sub_category
+      description: Ticket sub-category.
+      type: String
+    - contextPath: Freshservice.Ticket.item_category
+      description: Ticket item category.
+      type: String
+    - contextPath: Freshservice.Ticket.id
+      description: Ticket ID.
+      type: Number
+    - contextPath: Freshservice.Ticket.type
+      description: Ticket type.
+      type: String
+    - contextPath: Freshservice.Ticket.to_emails
+      description: Ticket to emails.
+      type: String
+    - contextPath: Freshservice.Ticket.department_id
+      description: Ticket department ID.
+      type: Number
+    - contextPath: Freshservice.Ticket.is_escalated
+      description: Ticket is escalated.
+      type: Boolean
+    - contextPath: Freshservice.Ticket.due_by
+      description: Ticket due by.
+      type: Date
+    - contextPath: Freshservice.Ticket.fr_due_by
+      description: Ticket fr due by.
+      type: Date
+    - contextPath: Freshservice.Ticket.created_at
+      description: Ticket created at.
+      type: Date
+    - contextPath: Freshservice.Ticket.updated_at
+      description: Ticket updated at.
+      type: Date
+  - arguments:
+    - description: The Ticket ID to delete (use freshservice-ticket-list to get ticket ID).
+      isArray: false
+      name: ticket_id
+      required: true
+    deprecated: false
+    description: Delete an existing Ticket in Freshservice.
+    execution: false
+    name: freshservice-ticket-delete
+  - arguments:
+    - description: 'Page number of paginated results. Minimum value: 1'
+      isArray: false
+      name: page
+      required: false
+    - description: The number of items per page.
+      isArray: false
+      name: page_size
+      required: false
+    - defaultValue: '50'
+      description: The maximum number of records to retrieve.
+      isArray: false
+      name: limit
+      required: false
+    - description: The Ticket ID (use freshservice-ticket-list to get ticket ID).
+      isArray: false
+      name: ticket_id
+      required: true
+    - description: The Ticket task ID.
+      isArray: false
+      name: task_id
+      required: false
+    deprecated: false
+    description: Retrieve tasks list (or a specific task) on a Ticket with the given ID from Freshservice.
+    execution: false
+    name: freshservice-ticket-task-list
+    outputs:
+    - contextPath: Freshservice.Ticket.Task.id
+      description: Task ID.
+      type: Number
+    - contextPath: Freshservice.Ticket.Task.agent_id
+      description: Task agent ID.
+      type: Number
+    - contextPath: Freshservice.Ticket.Task.status
+      description: Task status.
+      type: Number
+    - contextPath: Freshservice.Ticket.Task.due_date
+      description: Task due date.
+      type: Date
+    - contextPath: Freshservice.Ticket.Task.notify_before
+      description: Task notify before.
+      type: Number
+    - contextPath: Freshservice.Ticket.Task.title
+      description: Task title.
+      type: String
+    - contextPath: Freshservice.Ticket.Task.description
+      description: Task description.
+      type: String
+    - contextPath: Freshservice.Ticket.Task.created_at
+      description: Task created at.
+      type: Date
+    - contextPath: Freshservice.Ticket.Task.updated_at
+      description: Task updated at.
+      type: Date
+    - contextPath: Freshservice.Ticket.Task.closed_at
+      description: Task closed at.
+      type: Date
+    - contextPath: Freshservice.Ticket.Task.group_id
+      description: Task group ID.
+      type: Number
+    - contextPath: Freshservice.Ticket.Task.deleted
+      description: Task deleted.
+      type: Boolean
+  - arguments:
+    - description: Task due date (for example YYYY-MM-DDThh:mm).
+      isArray: false
+      name: due_date
+      required: true
+    - description: Time in seconds before which notification is sent prior to due date (For example 30 minutes, 7 hours and etc)..
+      isArray: false
+      name: notify_before
+      required: true
+    - description: Task title.
+      isArray: false
+      name: title
+      required: true
+    - description: Task description.
+      isArray: false
+      name: description
+      required: true
+    - auto: PREDEFINED
+      description: Task status, default is 'Open'.
+      isArray: false
+      name: status
+      predefined:
+      - Open
+      - In Progress
+      - Completed
+      required: false
+    - description: The Ticket ID to add a task for (use freshservice-ticket-list to get ticket ID).
+      isArray: false
+      name: ticket_id
+      required: true
+    deprecated: false
+    description: Create a new task on a Ticket request in Freshservice.
+    execution: false
+    name: freshservice-ticket-task-create
+    outputs:
+    - contextPath: Freshservice.Ticket.Task.id
+      description: Task ID.
+      type: Number
+    - contextPath: Freshservice.Ticket.Task.agent_id
+      description: Task agent ID.
+      type: Number
+    - contextPath: Freshservice.Ticket.Task.status
+      description: Task status.
+      type: Number
+    - contextPath: Freshservice.Ticket.Task.due_date
+      description: Task due date.
+      type: Date
+    - contextPath: Freshservice.Ticket.Task.notify_before
+      description: Task notify before.
+      type: Number
+    - contextPath: Freshservice.Ticket.Task.title
+      description: Task title.
+      type: String
+    - contextPath: Freshservice.Ticket.Task.description
+      description: Task description.
+      type: String
+    - contextPath: Freshservice.Ticket.Task.created_at
+      description: Task created at.
+      type: Date
+    - contextPath: Freshservice.Ticket.Task.updated_at
+      description: Task updated at.
+      type: Date
+    - contextPath: Freshservice.Ticket.Task.closed_at
+      description: Task closed at.
+      type: Date
+    - contextPath: Freshservice.Ticket.Task.group_id
+      description: Task group ID.
+      type: Number
+    - contextPath: Freshservice.Ticket.Task.deleted
+      description: Task deleted.
+      type: Boolean
+  - arguments:
+    - description: Task due date (for example YYYY-MM-DDThh:mm).
+      isArray: false
+      name: due_date
+      required: false
+    - description: Time in seconds before which notification is sent prior to due date (For example 30 minutes, 7 hours and etc).
+      isArray: false
+      name: notify_before
+      required: false
+    - description: Task title.
+      isArray: false
+      name: title
+      required: false
+    - description: Task description.
+      isArray: false
+      name: description
+      required: false
+    - auto: PREDEFINED
+      description: Task status, default is 'Open'.
+      isArray: false
+      name: status
+      predefined:
+      - Open
+      - In Progress
+      - Completed
+      required: false
+    - description: The Ticket ID to update a task for (use freshservice-ticket-list to get ticket ID).
+      isArray: false
+      name: ticket_id
+      required: true
+    - description: The Task ID for an update (use freshservice-ticket-task-list to get the task ID).
+      isArray: false
+      name: task_id
+      required: true
+    deprecated: false
+    description: Update an existing task on an existing Ticket in Freshservice.
+    execution: false
+    name: freshservice-ticket-task-update
+    outputs:
+    - contextPath: Freshservice.Ticket.Task.id
+      description: Task ID.
+      type: Number
+    - contextPath: Freshservice.Ticket.Task.agent_id
+      description: Task agent ID.
+      type: Number
+    - contextPath: Freshservice.Ticket.Task.status
+      description: Task status.
+      type: Number
+    - contextPath: Freshservice.Ticket.Task.due_date
+      description: Task due date.
+      type: Date
+    - contextPath: Freshservice.Ticket.Task.notify_before
+      description: Task notify before.
+      type: Number
+    - contextPath: Freshservice.Ticket.Task.title
+      description: Task title.
+      type: String
+    - contextPath: Freshservice.Ticket.Task.description
+      description: Task description.
+      type: String
+    - contextPath: Freshservice.Ticket.Task.created_at
+      description: Task created at.
+      type: Date
+    - contextPath: Freshservice.Ticket.Task.updated_at
+      description: Task updated at.
+      type: Date
+    - contextPath: Freshservice.Ticket.Task.closed_at
+      description: Task closed at.
+      type: Date
+    - contextPath: Freshservice.Ticket.Task.group_id
+      description: Task group ID.
+      type: Number
+    - contextPath: Freshservice.Ticket.Task.deleted
+      description: Task deleted.
+      type: Boolean
+  - arguments:
+    - description: Ticket ID (use freshservice-ticket-list to get ticket ID).
+      isArray: false
+      name: ticket_id
+      required: true
+    - description: Task ID to delete (use freshservice-ticket-task-list to get the task ID).
+      isArray: false
+      name: task_id
+      required: true
+    deprecated: false
+    description: Delete the task on a Ticket with the given ID from Freshservice.
+    execution: false
+    name: freshservice-ticket-task-delete
+  - arguments:
+    - description: 'Page number of paginated results. Minimum value: 1'
+      isArray: false
+      name: page
+      required: false
+    - description: The number of items per page.
+      isArray: false
+      name: page_size
+      required: false
+    - defaultValue: '50'
+      description: The maximum number of records to retrieve.
+      isArray: false
+      name: limit
+      required: false
+    - description: The Ticket ID (use freshservice-ticket-list to get ticket ID).
+      isArray: false
+      name: ticket_id
+      required: true
+    deprecated: false
+    description: Retrieve all Conversations of a Ticket. Conversations consist of replies as well as public and private notes added to a ticket. Notes are non-invasive ways of sharing updates about a ticket amongst agents and requesters. Private notes are for collaboration between agents and are not visible to the requester. Public notes are visible to and can be created by, both requesters and agents.
+    execution: false
+    name: freshservice-ticket-conversation-list
+    outputs:
+    - contextPath: Freshservice.Ticket.Conversation.id
+      description: Conversation ID.
+      type: Date
+    - contextPath: Freshservice.Ticket.Conversation.user_id
+      description: Conversation user ID.
+      type: Date
+    - contextPath: Freshservice.Ticket.Conversation.to_emails
+      description: Conversation to emails.
+      type: String
+    - contextPath: Freshservice.Ticket.Conversation.body
+      description: Conversation body.
+      type: String
+    - contextPath: Freshservice.Ticket.Conversation.body_text
+      description: Conversation body text.
+      type: String
+    - contextPath: Freshservice.Ticket.Conversation.ticket_id
+      description: Conversation ticket ID.
+      type: Number
+    - contextPath: Freshservice.Ticket.Conversation.created_at
+      description: Conversation created at.
+      type: Date
+    - contextPath: Freshservice.Ticket.Conversation.updated_at
+      description: Conversation updated at.
+      type: Date
+    - contextPath: Freshservice.Ticket.Conversation.incoming
+      description: Conversation incoming.
+      type: Boolean
+    - contextPath: Freshservice.Ticket.Conversation.private
+      description: Conversation private.
+      type: Boolean
+    - contextPath: Freshservice.Ticket.Conversation.support_email
+      description: Conversation support email.
+      type: String
+    - contextPath: Freshservice.Ticket.Conversation.source
+      description: Conversation source.
+      type: Number
+    - contextPath: Freshservice.Ticket.Conversation.from_email
+      description: Conversation from email.
+      type: String
+    - contextPath: Freshservice.Ticket.Conversation.meta.count
+      description: Conversation meta count.
+      type: Number
+  - arguments:
+    - description: Content of the note.
+      isArray: false
+      name: body
+      required: true
+    - description: Attachments. The total size of all the Ticket attachments (not just this note) cannot exceed 15MB. Please upload the file to XSOAR and provide the file ID for attaching the file to Freshservice tickets.
+      isArray: true
+      name: attachments
+      required: false
+    - description: The email address from which the reply is sent. By default, the global support email will be used.
+      isArray: false
+      name: from_email
+      required: false
+    - description: The ID of the agent/user who is adding the note (use freshservice-agent-list to get the agent ID).
+      isArray: false
+      name: user_id
+      required: false
+    - description: Email address added in the 'cc' field of the outgoing Ticket email.
+      isArray: true
+      name: cc_emails
+      required: false
+    - description: Email address added in the 'bcc' field of the outgoing Ticket email.
+      isArray: true
+      name: bcc_emails
+      required: false
+    - description: Ticket ID (use freshservice-ticket-list to get ticket ID).
+      isArray: false
+      name: ticket_id
+      required: true
+    deprecated: false
+    description: Create a new reply for an existing Ticket Conversation.
+    execution: false
+    name: freshservice-ticket-conversation-reply-create
+    outputs:
+    - contextPath: Freshservice.Ticket.Conversation.Reply.id
+      description: Ticket Conversation Reply ID.
+      type: Number
+    - contextPath: Freshservice.Ticket.Conversation.Reply.user_id
+      description: Ticket Conversation Reply user ID.
+      type: Number
+    - contextPath: Freshservice.Ticket.Conversation.Reply.to_emails
+      description: Ticket Conversation Reply to emails.
+      type: String
+    - contextPath: Freshservice.Ticket.Conversation.Reply.body
+      description: Ticket Conversation Reply body.
+      type: String
+    - contextPath: Freshservice.Ticket.Conversation.Reply.body_text
+      description: Ticket Conversation Reply body text.
+      type: String
+    - contextPath: Freshservice.Ticket.Conversation.Reply.ticket_id
+      description: Ticket Conversation Reply ticket ID.
+      type: Number
+    - contextPath: Freshservice.Ticket.Conversation.Reply.created_at
+      description: Ticket Conversation Reply created at.
+      type: Date
+    - contextPath: Freshservice.Ticket.Conversation.Reply.updated_at
+      description: Ticket Conversation Reply updated at.
+      type: Date
+    - contextPath: Freshservice.Ticket.Conversation.Reply.from_email
+      description: Ticket Conversation Reply from email.
+      type: String
+  - arguments:
+    - description: Attachments. The total size of all the Ticket attachments (not just this note) cannot exceed 15MB. Please upload the file to XSOAR and provide the file ID for attaching the file to Freshservice tickets.
+      isArray: true
+      name: attachments
+      required: false
+    - description: Content of the note.
+      isArray: false
+      name: body
+      required: true
+    - description: Set to true if a particular note should appear as being created from the outside (i.e., not through the web portal). The default value is false.
+      isArray: false
+      name: incoming
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Email addresses of agents/users who need to be notified about this note.
+      isArray: true
+      name: notify_emails
+      required: false
+    - auto: PREDEFINED
+      description: Set to false if the note is not private. The default value is true.
+      isArray: false
+      name: private
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
+    - description: The ID of the agent/user who is adding the note (use freshservice-agent-list to get the agent ID).
+      isArray: false
+      name: user_id
+      required: false
+    - description: Ticket ID (use freshservice-ticket-list to get ticket ID).
+      isArray: false
+      name: ticket_id
+      required: true
+    deprecated: false
+    description: Create a new note for an existing Ticket Conversation.
+    execution: false
+    name: freshservice-ticket-conversation-note-create
+    outputs:
+    - contextPath: Freshservice.Ticket.Conversation.Note.id
+      description: Ticket Conversation Note ID.
+      type: Date
+    - contextPath: Freshservice.Ticket.Conversation.Note.user_id
+      description: Ticket Conversation Note user ID.
+      type: Date
+    - contextPath: Freshservice.Ticket.Conversation.Note.body
+      description: Ticket Conversation Note body.
+      type: String
+    - contextPath: Freshservice.Ticket.Conversation.Note.body_text
+      description: Ticket Conversation Note body text.
+      type: String
+    - contextPath: Freshservice.Ticket.Conversation.Note.ticket_id
+      description: Ticket Conversation Note ticket ID.
+      type: Number
+    - contextPath: Freshservice.Ticket.Conversation.NoteCreate.Created_at
+      description: Ticket Conversation Note created at.
+      type: Date
+    - contextPath: Freshservice.Ticket.Conversation.Note.updated_at
+      description: Ticket Conversation Note updated at.
+      type: Date
+    - contextPath: Freshservice.Ticket.Conversation.Note.incoming
+      description: Ticket Conversation Note incoming.
+      type: Boolean
+    - contextPath: Freshservice.Ticket.Conversation.Note.private
+      description: Ticket Conversation Note private.
+      type: Boolean
+    - contextPath: Freshservice.Ticket.Conversation.Note.support_email
+      description: Ticket Conversation Note support email.
+      type: String
+  - arguments:
+    - description: Conversation content to update.
+      isArray: false
+      name: body
+      required: true
+    - description: The Conversation ID (use freshservice-ticket-conversation-list to get the conversation ID).
+      isArray: false
+      name: conversation_id
+      required: true
+    - description: Conversation name.
+      isArray: false
+      name: name
+      required: false
+    - description: Conversation attachment.
+      isArray: true
+      name: attachment
+      required: false
+    deprecated: false
+    description: Update an existing Conversation on an existing Ticket in Freshservice.
+    execution: false
+    name: freshservice-ticket-conversation-update
+    outputs:
+    - contextPath: Freshservice.Ticket.Conversation.id
+      description: Conversation ID.
+      type: Date
+    - contextPath: Freshservice.Ticket.Conversation.user_id
+      description: Conversation user ID.
+      type: Date
+    - contextPath: Freshservice.Ticket.Conversation.body
+      description: Conversation body.
+      type: String
+    - contextPath: Freshservice.Ticket.Conversation.body_text
+      description: Conversation body text.
+      type: String
+    - contextPath: Freshservice.Ticket.Conversation.ticket_id
+      description: Conversation ticket ID.
+      type: Number
+    - contextPath: Freshservice.Ticket.Conversation.created_at
+      description: Conversation created at.
+      type: Date
+    - contextPath: Freshservice.Ticket.Conversation.updated_at
+      description: Conversation updated at.
+      type: Date
+    - contextPath: Freshservice.Ticket.Conversation.incoming
+      description: Conversation incoming.
+      type: Boolean
+    - contextPath: Freshservice.Ticket.Conversation.private
+      description: Conversation private.
+      type: Boolean
+    - contextPath: Freshservice.Ticket.Conversation.support_email
+      description: Conversation support email.
+      type: String
+  - arguments:
+    - description: The conversation ID to delete (use freshservice-ticket-conversation-list to get the conversation ID).
+      isArray: false
+      name: conversation_id
+      required: true
+    deprecated: false
+    description: Delete the Conversation on a Ticket with the given ID from Freshservice.
+    execution: false
+    name: freshservice-ticket-conversation-delete
+  - arguments:
+    - description: 'Page number of paginated results. Minimum value: 1'
+      isArray: false
+      name: page
+      required: false
+    - description: The number of items per page.
+      isArray: false
+      name: page_size
+      required: false
+    - defaultValue: '50'
+      description: The maximum number of records to retrieve.
+      isArray: false
+      name: limit
+      required: false
+    - description: The Problem request ID.
+      isArray: false
+      name: problem_id
+      required: false
+    deprecated: false
+    description: Retrieve a list of all Problems or a specific problem with the given ID from Freshservice.
+    execution: false
+    name: freshservice-problem-list
+    outputs:
+    - contextPath: Freshservice.Problem.id
+      description: Problem ID.
+      type: Number
+    - contextPath: Freshservice.Problem.agent_id
+      description: Problem agent ID.
+      type: Number
+    - contextPath: Freshservice.Problem.description
+      description: Problem description.
+      type: String
+    - contextPath: Freshservice.Problem.requester_id
+      description: Problem requester ID.
+      type: Date
+    - contextPath: Freshservice.Problem.subject
+      description: Problem subject.
+      type: String
+    - contextPath: Freshservice.Problem.group_id
+      description: Problem group ID.
+      type: Date
+    - contextPath: Freshservice.Problem.priority
+      description: Problem priority.
+      type: Number
+    - contextPath: Freshservice.Problem.impact
+      description: Problem impact.
+      type: Number
+    - contextPath: Freshservice.Problem.status
+      description: Problem status.
+      type: Number
+    - contextPath: Freshservice.Problem.due_by
+      description: Problem due by.
+      type: Date
+    - contextPath: Freshservice.Problem.known_error
+      description: Problem known error.
+      type: Boolean
+    - contextPath: Freshservice.Problem.department_id
+      description: Problem department ID.
+      type: Number
+    - contextPath: Freshservice.Problem.category
+      description: Problem category.
+      type: String
+    - contextPath: Freshservice.Problem.sub_category
+      description: Problem sub-category.
+      type: String
+    - contextPath: Freshservice.Problem.item_category
+      description: Problem item category.
+      type: String
+    - contextPath: Freshservice.Problem.created_at
+      description: Problem created at.
+      type: Date
+    - contextPath: Freshservice.Problem.updated_at
+      description: Problem updated at.
+      type: Date
+  - arguments:
+    - description: Problem request description.
+      isArray: false
+      name: description
+      required: true
+    - description: Problem request subject.
+      isArray: false
+      name: subject
+      required: true
+    - description: Requester email. If not specified - must provide 'requester_id'.
+      isArray: false
+      name: email
+      required: false
+    - description: Requester ID (use freshservice-agent-list to get the agent ID). If not specified - must provide 'email'.
+      isArray: false
+      name: requester_id
+      required: false
+    - auto: PREDEFINED
+      description: Priority of the Problem.
+      isArray: false
+      name: priority
+      predefined:
+      - Low
+      - Medium
+      - High
+      - Urgent
+      required: true
+    - auto: PREDEFINED
+      description: Status identifier of the Problem.
+      isArray: false
+      name: status
+      predefined:
+      - Open
+      - Change Requested
+      - Closed
+      required: true
+    - description: Timestamp at which Problem due ends (for example YYYY-MM-DDThh:mm).
+      isArray: false
+      name: due_by
+      required: true
+    - auto: PREDEFINED
+      description: Impact of the Problem.
+      isArray: false
+      name: impact
+      predefined:
+      - Low
+      - Medium
+      - High
+      required: true
+    - description: Unique ID of the department initiating the Problem. Use freshservice-department-list to get the department ID.
+      isArray: false
+      name: department_id
+      required: false
+    - auto: PREDEFINED
+      description: Category of the Problem.
+      isArray: false
+      name: category
+      predefined:
+      - Hardware
+      - Software
+      - Network
+      - Office Applications
+      - Talent Management
+      - Travel
+      - Employee Records and Documents
+      - Office Furniture
+      - Office Equipment
+      - Employee Benefits
+      - Employee Onboarding/Offboarding
+      - Employee Relations
+      - Workplace Access and Security
+      - Building and Grounds Maintenance
+      - Vendor Document Review
+      - Payroll
+      - Vendor Payment
+      - Customer Payment
+      - Reimbursements and Advances
+      - Legal Document Creation
+      - Legal Review - Vendor Documents
+      - Legal Review - Customer Documents
+      - Other
+      required: false
+    - description: The sub-category of the Problem.
+      isArray: false
+      name: sub_category
+      required: false
+    - description: Key value pairs containing the names and values of custom fields.
+      isArray: false
+      name: custom_fields
+      required: false
+    - description: Key value pairs containing the names and values of the Problem Cause, Problem Symptom, and Problem Impact.
+      isArray: false
+      name: analysis_fields
+      required: false
+    - description: List of assets associated with the problem (the asset display_id).
+      isArray: false
+      name: assets
+      required: false
+    - description: Unique identifier of the agent to whom the Problem is assigned. Use freshservice-agent-list to get the agent ID.
+      isArray: false
+      name: agent_id
+      required: false
+    - description: Unique identifier of the agent group to which the Problem is assigned. Use freshservice-agent-group-list to get the agent group ID.
+      isArray: false
+      name: group_id
+      required: false
+    deprecated: false
+    description: Create a new problem request in Freshservice. Creating a problem required one of the following- requester_id or email.
+    execution: false
+    name: freshservice-problem-create
+    outputs:
+    - contextPath: Freshservice.Problem.id
+      description: Problem ID.
+      type: Number
+    - contextPath: Freshservice.Problem.agent_id
+      description: Problem agent ID.
+      type: Unknown
+    - contextPath: Freshservice.Problem.description
+      description: Problem description.
+      type: String
+    - contextPath: Freshservice.Problem.requester_id
+      description: Problem requester ID.
+      type: Date
+    - contextPath: Freshservice.Problem.subject
+      description: Problem subject.
+      type: String
+    - contextPath: Freshservice.Problem.group_id
+      description: Problem group ID.
+      type: Date
+    - contextPath: Freshservice.Problem.priority
+      description: Problem priority.
+      type: Number
+    - contextPath: Freshservice.Problem.impact
+      description: Problem impact.
+      type: Number
+    - contextPath: Freshservice.Problem.status
+      description: Problem status.
+      type: Number
+    - contextPath: Freshservice.Problem.due_by
+      description: Problem due by.
+      type: Date
+    - contextPath: Freshservice.Problem.known_error
+      description: Problem known error.
+      type: Boolean
+    - contextPath: Freshservice.Problem.department_id
+      description: Problem department ID.
+      type: Date
+    - contextPath: Freshservice.Problem.category
+      description: Problem category.
+      type: String
+    - contextPath: Freshservice.Problem.sub_category
+      description: Problem sub-category.
+      type: String
+    - contextPath: Freshservice.Problem.item_category
+      description: Problem item category.
+      type: String
+    - contextPath: Freshservice.Problem.created_at
+      description: Problem created at.
+      type: Date
+    - contextPath: Freshservice.Problem.updated_at
+      description: Problem updated at.
+      type: Date
+  - arguments:
+    - description: The problem ID for an update (use freshservice-problem-list to get the problem request ID).
+      isArray: false
+      name: problem_id
+      required: true
+    - description: Problem request description.
+      isArray: false
+      name: description
+      required: false
+    - description: Problem request subject.
+      isArray: false
+      name: subject
+      required: false
+    - description: Requester email.
+      isArray: false
+      name: email
+      required: false
+    - auto: PREDEFINED
+      description: Priority of the Problem.
+      isArray: false
+      name: priority
+      predefined:
+      - Low
+      - Medium
+      - High
+      - Urgent
+      required: false
+    - auto: PREDEFINED
+      description: Status identifier of the Problem.
+      isArray: false
+      name: status
+      predefined:
+      - Open
+      - Change Requested
+      - Closed
+      required: false
+    - description: Timestamp at which Problem due ends (for example YYYY-MM-DDThh:mm).
+      isArray: false
+      name: due_by
+      required: false
+    - auto: PREDEFINED
+      description: Impact of the Problem.
+      isArray: false
+      name: impact
+      predefined:
+      - Low
+      - Medium
+      - High
+      required: false
+    - description: Unique ID of the department initiating the Problem. Use freshservice-department-list to get the department ID.
+      isArray: false
+      name: department_id
+      required: false
+    - auto: PREDEFINED
+      description: Category of the Problem.
+      isArray: false
+      name: category
+      predefined:
+      - Hardware
+      - Software
+      - Network
+      - Office Applications
+      - Talent Management
+      - Travel
+      - Employee Records and Documents
+      - Office Furniture
+      - Office Equipment
+      - Employee Benefits
+      - Employee Onboarding/Offboarding
+      - Employee Relations
+      - Workplace Access and Security
+      - Building and Grounds Maintenance
+      - Vendor Document Review
+      - Payroll
+      - Vendor Payment
+      - Customer Payment
+      - Reimbursements and Advances
+      - Legal Document Creation
+      - Legal Review - Vendor Documents
+      - Legal Review - Customer Documents
+      - Other
+      required: false
+    - description: The sub-category of the Problem.
+      isArray: false
+      name: sub_category
+      required: false
+    - description: Key value pairs containing the names and values of custom fields.
+      isArray: false
+      name: custom_fields
+      required: false
+    - description: Key value pairs containing the names and values of the Problem Cause, Problem Symptom, and Problem Impact.
+      isArray: false
+      name: analysis_fields
+      required: false
+    - description: List of assets associated with the problem (replace the exist value).
+      isArray: true
+      name: assets
+      required: false
+    - description: Unique identifier of the agent group to which the Problem is assigned. Use freshservice-agent-group-list to get the agent group ID.
+      isArray: false
+      name: group_id
+      required: false
+    - description: Unique identifier of the agent to whom the Problem is assigned. Use freshservice-agent-list to get the agent ID.
+      isArray: false
+      name: agent_id
+      required: false
+    deprecated: false
+    description: Update an existing Problem in Freshservice.
+    execution: false
+    name: freshservice-problem-update
+    outputs:
+    - contextPath: Freshservice.Problem.id
+      description: Problem ID.
+      type: Number
+    - contextPath: Freshservice.Problem.agent_id
+      description: Problem agent ID.
+      type: Unknown
+    - contextPath: Freshservice.Problem.description
+      description: Problem description.
+      type: String
+    - contextPath: Freshservice.Problem.requester_id
+      description: Problem requester ID.
+      type: Date
+    - contextPath: Freshservice.Problem.subject
+      description: Problem subject.
+      type: String
+    - contextPath: Freshservice.Problem.group_id
+      description: Problem group ID.
+      type: Date
+    - contextPath: Freshservice.Problem.priority
+      description: Problem priority.
+      type: Number
+    - contextPath: Freshservice.Problem.impact
+      description: Problem impact.
+      type: Number
+    - contextPath: Freshservice.Problem.status
+      description: Problem status.
+      type: Number
+    - contextPath: Freshservice.Problem.due_by
+      description: Problem due by.
+      type: Date
+    - contextPath: Freshservice.Problem.known_error
+      description: Problem known error.
+      type: Boolean
+    - contextPath: Freshservice.Problem.department_id
+      description: Problem department ID.
+      type: Date
+    - contextPath: Freshservice.Problem.category
+      description: Problem category.
+      type: String
+    - contextPath: Freshservice.Problem.sub_category
+      description: Problem sub-category.
+      type: Unknown
+    - contextPath: Freshservice.Problem.item_category
+      description: Problem item category.
+      type: Unknown
+    - contextPath: Freshservice.Problem.created_at
+      description: Problem created at.
+      type: Date
+    - contextPath: Freshservice.Problem.updated_at
+      description: Problem updated at.
+      type: Date
+  - arguments:
+    - description: The problem ID to delete (use freshservice-problem-list to get the problem request ID).
+      isArray: false
+      name: problem_id
+      required: true
+    deprecated: false
+    description: Delete the Problem with the given ID from Freshservice.
+    execution: false
+    name: freshservice-problem-delete
+  - arguments:
+    - description: 'Page number of paginated results. Minimum value: 1'
+      isArray: false
+      name: page
+      required: false
+    - description: The number of items per page.
+      isArray: false
+      name: page_size
+      required: false
+    - defaultValue: '50'
+      description: The maximum number of records to retrieve.
+      isArray: false
+      name: limit
+      required: false
+    - description: Problem ID.
+      isArray: false
+      name: problem_id
+      required: true
+    - description: The change request task ID.
+      isArray: false
+      name: task_id
+      required: false
+    deprecated: false
+    description: Retrieve the tasks on a Problem with the given ID from Freshservice.
+    execution: false
+    name: freshservice-problem-task-list
+    outputs:
+    - contextPath: Freshservice.Problem.Task.id
+      description: Task ID.
+      type: Number
+    - contextPath: Freshservice.Problem.Task.agent_id
+      description: Task agent ID.
+      type: Unknown
+    - contextPath: Freshservice.Problem.Task.status
+      description: Task status.
+      type: Number
+    - contextPath: Freshservice.Problem.Task.due_date
+      description: Task due date.
+      type: Date
+    - contextPath: Freshservice.Problem.Task.notify_before
+      description: Task notify before.
+      type: Number
+    - contextPath: Freshservice.Problem.Task.title
+      description: Task title.
+      type: String
+    - contextPath: Freshservice.Problem.Task.description
+      description: Task description.
+      type: String
+    - contextPath: Freshservice.Problem.Task.created_at
+      description: Task created at.
+      type: Date
+    - contextPath: Freshservice.Problem.Task.updated_at
+      description: Task updated at.
+      type: Date
+    - contextPath: Freshservice.Problem.Task.closed_at
+      description: Task closed at.
+      type: Unknown
+    - contextPath: Freshservice.Problem.Task.group_id
+      description: Task group ID.
+      type: Unknown
+    - contextPath: Freshservice.Problem.Task.deleted
+      description: Task deleted.
+      type: Boolean
+  - arguments:
+    - description: Task due date (for example YYYY-MM-DDThh:mm).
+      isArray: false
+      name: due_date
+      required: true
+    - description: Time in seconds before which notification is sent prior to due date (For example 30 minutes, 7 hours and etc).
+      isArray: false
+      name: notify_before
+      required: true
+    - description: Task title.
+      isArray: false
+      name: title
+      required: true
+    - description: Task description.
+      isArray: false
+      name: description
+      required: true
+    - auto: PREDEFINED
+      description: Task status, default is 'Open'.
+      isArray: false
+      name: status
+      predefined:
+      - Open
+      - In Progress
+      - Completed
+      required: false
+    - description: The problem ID to add a task for (use freshservice-problem-list to get the problem request ID).
+      isArray: false
+      name: problem_id
+      required: true
+    deprecated: false
+    description: Create a new task on a problem in Freshservice.
+    execution: false
+    name: freshservice-problem-task-create
+    outputs:
+    - contextPath: Freshservice.Problem.Task.id
+      description: Task ID.
+      type: Number
+    - contextPath: Freshservice.Problem.Task.agent_id
+      description: Task agent ID.
+      type: Unknown
+    - contextPath: Freshservice.Problem.Task.status
+      description: Task status.
+      type: Number
+    - contextPath: Freshservice.Problem.Task.due_date
+      description: Task due date.
+      type: Date
+    - contextPath: Freshservice.Problem.Task.notify_before
+      description: Task notify before.
+      type: Number
+    - contextPath: Freshservice.Problem.Task.title
+      description: Task title.
+      type: String
+    - contextPath: Freshservice.Problem.Task.description
+      description: Task description.
+      type: String
+    - contextPath: Freshservice.Problem.Task.created_at
+      description: Task created at.
+      type: Date
+    - contextPath: Freshservice.Problem.Task.updated_at
+      description: Task updated at.
+      type: Date
+    - contextPath: Freshservice.Problem.Task.closed_at
+      description: Task closed at.
+      type: Unknown
+    - contextPath: Freshservice.Problem.Task.group_id
+      description: Task group ID.
+      type: Unknown
+    - contextPath: Freshservice.Problem.Task.deleted
+      description: Task deleted.
+      type: Boolean
+  - arguments:
+    - description: Task due date (for example YYYY-MM-DDThh:mm).
+      isArray: false
+      name: due_date
+      required: false
+    - description: Time in seconds before which notification is sent prior to due date (For example 30 minutes, 7 hours and etc).
+      isArray: false
+      name: notify_before
+      required: false
+    - description: Task title.
+      isArray: false
+      name: title
+      required: false
+    - description: Task description.
+      isArray: false
+      name: description
+      required: false
+    - auto: PREDEFINED
+      description: Task status, default is 'Open'.
+      isArray: false
+      name: status
+      predefined:
+      - Open
+      - In Progress
+      - Completed
+      required: false
+    - description: The problem ID to update a task for (use freshservice-problem-list to get the problem request ID).
+      isArray: false
+      name: problem_id
+      required: true
+    - description: The Task ID for an update (use freshservice-problem-task-list to get the task ID).
+      isArray: false
+      name: task_id
+      required: true
+    deprecated: false
+    description: Update an existing task on an existing Problem in Freshservice.
+    execution: false
+    name: freshservice-problem-task-update
+    outputs:
+    - contextPath: Freshservice.Problem.Task.id
+      description: Task ID.
+      type: Number
+    - contextPath: Freshservice.Problem.Task.agent_id
+      description: Task agent ID.
+      type: Unknown
+    - contextPath: Freshservice.Problem.Task.status
+      description: Task status.
+      type: Number
+    - contextPath: Freshservice.Problem.Task.due_date
+      description: Task due date.
+      type: Date
+    - contextPath: Freshservice.Problem.Task.notify_before
+      description: Task notify before.
+      type: Number
+    - contextPath: Freshservice.Problem.Task.title
+      description: Task title.
+      type: String
+    - contextPath: Freshservice.Problem.Task.description
+      description: Task description.
+      type: String
+    - contextPath: Freshservice.Problem.Task.created_at
+      description: Task created at.
+      type: Date
+    - contextPath: Freshservice.Problem.Task.updated_at
+      description: Task updated at.
+      type: Date
+    - contextPath: Freshservice.Problem.Task.closed_at
+      description: Task closed at.
+      type: Unknown
+    - contextPath: Freshservice.Problem.Task.group_id
+      description: Task group ID.
+      type: Unknown
+    - contextPath: Freshservice.Problem.Task.deleted
+      description: Task deleted.
+      type: Boolean
+  - arguments:
+    - description: The problem ID (use freshservice-problem-list to get problem request ID).
+      isArray: false
+      name: problem_id
+      required: true
+    - description: The task ID for delete (use freshservice-problem-task-list to get the task ID).
+      isArray: false
+      name: task_id
+      required: true
+    deprecated: false
+    description: Delete the task on a Problem with the given ID from Freshservice.
+    execution: false
+    name: freshservice-problem-task-delete
+  - arguments:
+    - description: 'Page number of paginated results. Minimum value: 1'
+      isArray: false
+      name: page
+      required: false
+    - description: The number of items per page.
+      isArray: false
+      name: page_size
+      required: false
+    - defaultValue: '50'
+      description: The maximum number of records to retrieve.
+      isArray: false
+      name: limit
+      required: false
+    - description: Change request ID.
+      isArray: false
+      name: change_id
+      required: false
+    deprecated: false
+    description: Retrieve a list of all Change requests or the Change request with the given ID from Freshservice.
+    execution: false
+    name: freshservice-change-list
+    outputs:
+    - contextPath: Freshservice.Change.agent_id
+      description: Change agent ID.
+      type: Unknown
+    - contextPath: Freshservice.Change.group_id
+      description: Change group ID.
+      type: Unknown
+    - contextPath: Freshservice.Change.priority
+      description: Change priority.
+      type: Number
+    - contextPath: Freshservice.Change.impact
+      description: Change impact.
+      type: Number
+    - contextPath: Freshservice.Change.status
+      description: Change status.
+      type: Number
+    - contextPath: Freshservice.Change.risk
+      description: Change risk.
+      type: Number
+    - contextPath: Freshservice.Change.change_type
+      description: Change type.
+      type: Number
+    - contextPath: Freshservice.Change.planned_start_date
+      description: Change planned start date.
+      type: Date
+    - contextPath: Freshservice.Change.planned_end_date
+      description: Change planned end date.
+      type: Date
+    - contextPath: Freshservice.Change.subject
+      description: Change subject.
+      type: String
+    - contextPath: Freshservice.Change.department_id
+      description: Change department ID.
+      type: Unknown
+    - contextPath: Freshservice.Change.category
+      description: Change category.
+      type: Unknown
+    - contextPath: Freshservice.Change.sub_category
+      description: Change sub-category.
+      type: Unknown
+    - contextPath: Freshservice.Change.item_category
+      description: Change item category.
+      type: Unknown
+    - contextPath: Freshservice.Change.description
+      description: Change description.
+      type: String
+    - contextPath: Freshservice.Change.id
+      description: Change ID.
+      type: Number
+    - contextPath: Freshservice.Change.requester_id
+      description: Change requester ID.
+      type: Date
+    - contextPath: Freshservice.Change.approval_status
+      description: Change approval status.
+      type: Number
+    - contextPath: Freshservice.Change.change_window_id
+      description: Change window ID.
+      type: Unknown
+    - contextPath: Freshservice.Change.created_at
+      description: Change created at.
+      type: Date
+    - contextPath: Freshservice.Change.updated_at
+      description: Change updated at.
+      type: Date
+  - arguments:
+    - description: The content of the change.
+      isArray: false
+      name: description
+      required: true
+    - auto: PREDEFINED
+      description: Priority of the change.
+      isArray: false
+      name: priority
+      predefined:
+      - Low
+      - Medium
+      - High
+      - Urgent
+      required: true
+    - auto: PREDEFINED
+      description: Impact of the change (Low-1, Medium-2, High-3).
+      isArray: false
+      name: impact
+      predefined:
+      - Low
+      - Medium
+      - High
+      required: true
+    - auto: PREDEFINED
+      description: Status of the change (Open-1,Planning-2,Approval-3,Pending Release-4,Pending Review-5,closed-6).
+      isArray: false
+      name: status
+      predefined:
+      - Open
+      - Planning
+      - Approval
+      - Pending Release
+      - Pending Review
+      - closed
+      required: true
+    - auto: PREDEFINED
+      description: Risk of the change (Low-1, Medium-2, High-3, Very High-4).
+      isArray: false
+      name: risk
+      predefined:
+      - Low
+      - Medium
+      - High
+      - Very High
+      required: true
+    - auto: PREDEFINED
+      description: Type of the change.
+      isArray: false
+      name: change_type
+      predefined:
+      - Minor
+      - Standard
+      - Major
+      - Emergency
+      required: true
+    - description: Timestamp at which change is starting (for example YYYY-MM-DDThh:mm).
+      isArray: false
+      name: planned_start_date
+      required: true
+    - description: Timestamp at which change is ending (for example YYYY-MM-DDThh:mm).
+      isArray: false
+      name: planned_end_date
+      required: true
+    - description: The subject of the change.
+      isArray: false
+      name: subject
+      required: true
+    - description: Requester email. If not specified - must provide 'requester_id'.
+      isArray: false
+      name: email
+      required: false
+    - description: Requester ID (use freshservice-agent-list to get the agent ID). If not specified - must provide 'email'.
+      isArray: false
+      name: requester_id
+      required: false
+    - description: Unique identifier of the agent to whom the change is assigned. Use freshservice-agent-list to get the agent ID.
+      isArray: false
+      name: agent_id
+      required: false
+    - description: Unique identifier of the agent group to which the change is assigned. Use freshservice-agent-group-list to get the agent group ID.
+      isArray: false
+      name: group_id
+      required: false
+    - description: Unique ID of the department initiating the change. Use freshservice-department-list to get the department ID.
+      isArray: false
+      name: department_id
+      required: false
+    - auto: PREDEFINED
+      description: Category of the Problem.
+      isArray: false
+      name: category
+      predefined:
+      - Hardware
+      - Software
+      - Network
+      - Office Applications
+      - Talent Management
+      - Travel
+      - Employee Records and Documents
+      - Office Furniture
+      - Office Equipment
+      - Employee Benefits
+      - Employee Onboarding/Offboarding
+      - Employee Relations
+      - Workplace Access and Security
+      - Building and Grounds Maintenance
+      - Vendor Document Review
+      - Payroll
+      - Vendor Payment
+      - Customer Payment
+      - Reimbursements and Advances
+      - Legal Document Creation
+      - Legal Review - Vendor Documents
+      - Legal Review - Customer Documents
+      - Other
+      required: false
+    - description: The sub-category of the Problem.
+      isArray: false
+      name: sub_category
+      required: false
+    deprecated: false
+    description: Create a new Change request in Freshservice. Creating a ticket required one of the following- requester_id or email.
+    execution: false
+    name: freshservice-change-create
+    outputs:
+    - contextPath: Freshservice.Change.agent_id
+      description: Change agent ID.
+      type: Unknown
+    - contextPath: Freshservice.Change.group_id
+      description: Change group ID.
+      type: Unknown
+    - contextPath: Freshservice.Change.priority
+      description: Change priority.
+      type: Number
+    - contextPath: Freshservice.Change.impact
+      description: Change impact.
+      type: Number
+    - contextPath: Freshservice.Change.status
+      description: Change status.
+      type: Number
+    - contextPath: Freshservice.Change.risk
+      description: Change risk.
+      type: Number
+    - contextPath: Freshservice.Change.change_type
+      description: Change change_type.
+      type: Number
+    - contextPath: Freshservice.Change.planned_start_date
+      description: Change planned start date.
+      type: Date
+    - contextPath: Freshservice.Change.planned_end_date
+      description: Change planned end date.
+      type: Date
+    - contextPath: Freshservice.Change.subject
+      description: Change subject.
+      type: String
+    - contextPath: Freshservice.Change.department_id
+      description: Change department ID.
+      type: Unknown
+    - contextPath: Freshservice.Change.category
+      description: Change category.
+      type: Unknown
+    - contextPath: Freshservice.Change.sub_category
+      description: Change sub-category.
+      type: Unknown
+    - contextPath: Freshservice.Change.item_category
+      description: Change item category.
+      type: Unknown
+    - contextPath: Freshservice.Change.description
+      description: Change description.
+      type: String
+    - contextPath: Freshservice.Change.id
+      description: Change ID.
+      type: Number
+    - contextPath: Freshservice.Change.requester_id
+      description: Change requester ID.
+      type: Date
+    - contextPath: Freshservice.Change.approval_status
+      description: Change approval status.
+      type: Number
+    - contextPath: Freshservice.Change.change_window_id
+      description: Change window ID.
+      type: Unknown
+    - contextPath: Freshservice.Change.created_at
+      description: Change created at.
+      type: Date
+    - contextPath: Freshservice.Change.updated_at
+      description: Change updated at.
+      type: Date
+  - arguments:
+    - description: The content of the change.
+      isArray: false
+      name: description
+      required: false
+    - description: The change ID (use freshservice-change-list to get the change request ID).
+      isArray: false
+      name: change_id
+      required: true
+    - auto: PREDEFINED
+      description: Priority of the change.
+      isArray: false
+      name: priority
+      predefined:
+      - Low
+      - Medium
+      - High
+      - Urgent
+      required: false
+    - auto: PREDEFINED
+      description: Impact of the change (Low-1, Medium-2, High-3).
+      isArray: false
+      name: impact
+      predefined:
+      - Low
+      - Medium
+      - High
+      required: false
+    - auto: PREDEFINED
+      description: Status of the change (Open-1,Planning-2,Approval-3,Pending Release-4,Pending Review-5,closed-6).
+      isArray: false
+      name: status
+      predefined:
+      - Open
+      - Planning
+      - Approval
+      - Pending Release
+      - Pending Review
+      - closed
+      required: false
+    - auto: PREDEFINED
+      description: Risk of the change (Low-1, Medium-2, High-3, Very High-4).
+      isArray: false
+      name: risk
+      predefined:
+      - Low
+      - Medium
+      - High
+      - Very High
+      required: false
+    - auto: PREDEFINED
+      description: Type of the change.
+      isArray: false
+      name: change_type
+      predefined:
+      - Minor
+      - Standard
+      - Major
+      - Emergency
+      required: false
+    - description: Timestamp at which change is starting (for example YYYY-MM-DDThh:mm).
+      isArray: false
+      name: planned_start_date
+      required: false
+    - description: Timestamp at which change is ending (for example YYYY-MM-DDThh:mm).
+      isArray: false
+      name: planned_end_date
+      required: false
+    - description: The subject of the change.
+      isArray: false
+      name: subject
+      required: false
+    - description: requester email.
+      isArray: false
+      name: email
+      required: false
+    - description: Unique identifier of the agent to whom the change is assigned. Use freshservice-agent-list to get the agent ID.
+      isArray: false
+      name: agent_id
+      required: false
+    - description: Unique identifier of the agent group to which the change is assigned. Use freshservice-agent-group-list to get the agent group ID.
+      isArray: false
+      name: group_id
+      required: false
+    - description: Unique ID of the department initiating the change. Use freshservice-department-list to get the department ID.
+      isArray: false
+      name: department_id
+      required: false
+    - auto: PREDEFINED
+      description: Category of the Problem.
+      isArray: false
+      name: category
+      predefined:
+      - Hardware
+      - Software
+      - Network
+      - Office Applications
+      - Talent Management
+      - Travel
+      - Employee Records and Documents
+      - Office Furniture
+      - Office Equipment
+      - Employee Benefits
+      - Employee Onboarding/Offboarding
+      - Employee Relations
+      - Workplace Access and Security
+      - Building and Grounds Maintenance
+      - Vendor Document Review
+      - Payroll
+      - Vendor Payment
+      - Customer Payment
+      - Reimbursements and Advances
+      - Legal Document Creation
+      - Legal Review - Vendor Documents
+      - Legal Review - Customer Documents
+      - Other
+      required: false
+    - description: The sub-category of the Problem.
+      isArray: false
+      name: sub_category
+      required: false
+    deprecated: false
+    description: Update an existing Change request in Freshservice.
+    execution: false
+    name: freshservice-change-update
+    outputs:
+    - contextPath: Freshservice.Change.agent_id
+      description: Change agent ID.
+      type: Unknown
+    - contextPath: Freshservice.Change.group_id
+      description: Change group ID.
+      type: Unknown
+    - contextPath: Freshservice.Change.priority
+      description: Change priority.
+      type: Number
+    - contextPath: Freshservice.Change.impact
+      description: Change impact.
+      type: Number
+    - contextPath: Freshservice.Change.status
+      description: Change status.
+      type: Number
+    - contextPath: Freshservice.Change.risk
+      description: Change risk.
+      type: Number
+    - contextPath: Freshservice.Change.change_type
+      description: Change change_type.
+      type: Number
+    - contextPath: Freshservice.Change.planned_start_date
+      description: Change planned start date.
+      type: Date
+    - contextPath: Freshservice.Change.planned_end_date
+      description: Change planned end date.
+      type: Date
+    - contextPath: Freshservice.Change.subject
+      description: Change subject.
+      type: String
+    - contextPath: Freshservice.Change.department_id
+      description: Change department ID.
+      type: Unknown
+    - contextPath: Freshservice.Change.category
+      description: Change category.
+      type: Unknown
+    - contextPath: Freshservice.Change.sub_category
+      description: Change sub-category.
+      type: Unknown
+    - contextPath: Freshservice.Change.item_category
+      description: Change item category.
+      type: Unknown
+    - contextPath: Freshservice.Change.description
+      description: Change description.
+      type: String
+    - contextPath: Freshservice.Change.id
+      description: Change ID.
+      type: Number
+    - contextPath: Freshservice.Change.requester_id
+      description: Change requester ID.
+      type: Date
+    - contextPath: Freshservice.Change.approval_status
+      description: Change approval status.
+      type: Number
+    - contextPath: Freshservice.Change.change_window_id
+      description: Change window ID.
+      type: Unknown
+    - contextPath: Freshservice.Change.created_at
+      description: Change created at.
+      type: Date
+    - contextPath: Freshservice.Change.updated_at
+      description: Change updated at.
+      type: Date
+  - arguments:
+    - description: The change ID to delete (use freshservice-change-list to get the change request ID).
+      isArray: false
+      name: change_id
+      required: true
+    deprecated: false
+    description: Delete the Change request with the given ID from Freshservice.
+    execution: false
+    name: freshservice-change-delete
+  - arguments:
+    - description: 'Page number of paginated results. Minimum value: 1'
+      isArray: false
+      name: page
+      required: false
+    - description: The number of items per page.
+      isArray: false
+      name: page_size
+      required: false
+    - defaultValue: '50'
+      description: The maximum number of records to retrieve.
+      isArray: false
+      name: limit
+      required: false
+    - description: Change request ID (use freshservice-change-list to get the change request ID).
+      isArray: false
+      name: change_id
+      required: true
+    - description: The change request task ID.
+      isArray: false
+      name: task_id
+      required: false
+    deprecated: false
+    description: Retrieve the tasks on a Change request with the given ID from Freshservice.
+    execution: false
+    name: freshservice-change-task-list
+    outputs:
+    - contextPath: Freshservice.Change.Task.id
+      description: Task ID.
+      type: Number
+    - contextPath: Freshservice.Change.Task.agent_id
+      description: Task agent ID.
+      type: Unknown
+    - contextPath: Freshservice.Change.Task.status
+      description: Task status.
+      type: Number
+    - contextPath: Freshservice.Change.Task.due_date
+      description: Task due date.
+      type: Date
+    - contextPath: Freshservice.Change.Task.notify_before
+      description: Task notify before.
+      type: Number
+    - contextPath: Freshservice.Change.Task.title
+      description: Task title.
+      type: String
+    - contextPath: Freshservice.Change.Task.description
+      description: Task description.
+      type: String
+    - contextPath: Freshservice.Change.Task.created_at
+      description: Task created at.
+      type: Date
+    - contextPath: Freshservice.Change.Task.updated_at
+      description: Task updated at.
+      type: Date
+    - contextPath: Freshservice.Change.Task.closed_at
+      description: Task closed at.
+      type: Unknown
+    - contextPath: Freshservice.Change.Task.group_id
+      description: Task group ID.
+      type: Unknown
+    - contextPath: Freshservice.Change.Task.deleted
+      description: Task deleted.
+      type: Boolean
+  - arguments:
+    - description: Task due date (for example YYYY-MM-DDThh:mm).
+      isArray: false
+      name: due_date
+      required: true
+    - description: Time in seconds before which notification is sent prior to due date (For example 30 minutes, 7 hours and etc).
+      isArray: false
+      name: notify_before
+      required: true
+    - description: Task title.
+      isArray: false
+      name: title
+      required: true
+    - description: Task description.
+      isArray: false
+      name: description
+      required: true
+    - auto: PREDEFINED
+      description: Task status, default is 'Open'.
+      isArray: false
+      name: status
+      predefined:
+      - Open
+      - In Progress
+      - Completed
+      required: false
+    - description: The change ID to add a task for (use freshservice-change-list to get the change request ID).
+      isArray: false
+      name: change_id
+      required: true
+    deprecated: false
+    description: Create a new task on a change request in Freshservice.
+    execution: false
+    name: freshservice-change-task-create
+    outputs:
+    - contextPath: Freshservice.Change.Task.id
+      description: Task ID.
+      type: Number
+    - contextPath: Freshservice.Change.Task.agent_id
+      description: Task agent ID.
+      type: Unknown
+    - contextPath: Freshservice.Change.Task.status
+      description: Task status.
+      type: Number
+    - contextPath: Freshservice.Change.Task.due_date
+      description: Task due date.
+      type: Date
+    - contextPath: Freshservice.Change.Task.notify_before
+      description: Task notify before.
+      type: Number
+    - contextPath: Freshservice.Change.Task.title
+      description: Task title.
+      type: String
+    - contextPath: Freshservice.Change.Task.description
+      description: Task description.
+      type: String
+    - contextPath: Freshservice.Change.Task.created_at
+      description: Task created at.
+      type: Date
+    - contextPath: Freshservice.Change.Task.updated_at
+      description: Task updated at.
+      type: Date
+    - contextPath: Freshservice.Change.Task.closed_at
+      description: Task closed at.
+      type: Unknown
+    - contextPath: Freshservice.Change.Task.group_id
+      description: Task group ID.
+      type: Unknown
+    - contextPath: Freshservice.Change.Task.deleted
+      description: Task deleted.
+      type: Boolean
+  - arguments:
+    - description: Task due date (for example YYYY-MM-DDThh:mm).
+      isArray: false
+      name: due_date
+      required: false
+    - description: Task notify before (For example 30 minutes, 7 hours and etc).
+      isArray: false
+      name: notify_before
+      required: false
+    - description: Task title.
+      isArray: false
+      name: title
+      required: false
+    - description: Task description.
+      isArray: false
+      name: description
+      required: false
+    - auto: PREDEFINED
+      description: Task status, default is 'Open'.
+      isArray: false
+      name: status
+      predefined:
+      - Open
+      - In Progress
+      - Completed
+      required: false
+    - description: The change ID to update a task (use freshservice-change-list to get the change request ID).
+      isArray: false
+      name: change_id
+      required: true
+    - description: The Task ID for an update (use freshservice-change-task-list to get the task ID).
+      isArray: false
+      name: task_id
+      required: true
+    deprecated: false
+    description: Update an existing task on an existing Change request in Freshservice.
+    execution: false
+    name: freshservice-change-task-update
+    outputs:
+    - contextPath: Freshservice.Change.Task.id
+      description: Task ID.
+      type: Number
+    - contextPath: Freshservice.Change.Task.agent_id
+      description: Task agent ID.
+      type: Unknown
+    - contextPath: Freshservice.Change.Task.status
+      description: Task status.
+      type: Number
+    - contextPath: Freshservice.Change.Task.due_date
+      description: Task due date.
+      type: Date
+    - contextPath: Freshservice.Change.Task.notify_before
+      description: Task notify before.
+      type: Number
+    - contextPath: Freshservice.Change.Task.title
+      description: Task title.
+      type: String
+    - contextPath: Freshservice.Change.Task.description
+      description: Task description.
+      type: String
+    - contextPath: Freshservice.Change.Task.created_at
+      description: Task created at.
+      type: Date
+    - contextPath: Freshservice.Change.Task.updated_at
+      description: Task updated at.
+      type: Date
+    - contextPath: Freshservice.Change.Task.closed_at
+      description: Task closed at.
+      type: Unknown
+    - contextPath: Freshservice.Change.Task.group_id
+      description: Task group ID.
+      type: Unknown
+    - contextPath: Freshservice.Change.Task.deleted
+      description: Task deleted.
+      type: Boolean
+  - arguments:
+    - description: Change ID (use freshservice-change-list to get the change request ID).
+      isArray: false
+      name: change_id
+      required: true
+    - description: Task ID (use freshservice-change-task-list to get the task ID).
+      isArray: false
+      name: task_id
+      required: true
+    deprecated: false
+    description: Delete the task on a Change request with the given ID from Freshservice.
+    execution: false
+    name: freshservice-change-task-delete
+  - arguments:
+    - description: 'Page number of paginated results. Minimum value: 1'
+      isArray: false
+      name: page
+      required: false
+    - description: The number of items per page.
+      isArray: false
+      name: page_size
+      required: false
+    - defaultValue: '50'
+      description: The maximum number of records to retrieve.
+      isArray: false
+      name: limit
+      required: false
+    - description: The release ID.
+      isArray: false
+      name: release_id
+      required: false
+    - auto: PREDEFINED
+      description: Filters to view only specific releases (which match only the criteria you choose).
+      isArray: false
+      name: filter_name
+      predefined:
+      - all
+      - my_open
+      - unassigned
+      - completed
+      - incompleted
+      - deleted
+      required: false
+    deprecated: false
+    description: Retrieve a list of all Releases (or specific by ID) in Freshservice.
+    execution: false
+    name: freshservice-release-list
+    outputs:
+    - contextPath: Freshservice.Release.id
+      description: release ID.
+      type: Number
+    - contextPath: Freshservice.Release.agent_id
+      description: release agent ID.
+      type: Unknown
+    - contextPath: Freshservice.Release.description
+      description: release description.
+      type: String
+    - contextPath: Freshservice.Release.group_id
+      description: release group ID.
+      type: Unknown
+    - contextPath: Freshservice.Release.department_id
+      description: release department ID.
+      type: Unknown
+    - contextPath: Freshservice.Release.subject
+      description: release subject.
+      type: String
+    - contextPath: Freshservice.Release.category
+      description: release category.
+      type: Unknown
+    - contextPath: Freshservice.Release.sub_category
+      description: release sub-category.
+      type: Unknown
+    - contextPath: Freshservice.Release.item_category
+      description: release item category.
+      type: Unknown
+    - contextPath: Freshservice.Release.planned_start_date
+      description: release planned start date.
+      type: Date
+    - contextPath: Freshservice.Release.planned_end_date
+      description: release planned end date.
+      type: Date
+    - contextPath: Freshservice.Release.status
+      description: release status.
+      type: Number
+    - contextPath: Freshservice.Release.priority
+      description: release priority.
+      type: Number
+    - contextPath: Freshservice.Release.release_type
+      description: release release_type.
+      type: Number
+    - contextPath: Freshservice.Release.work_start_date
+      description: release work start date.
+      type: Date
+    - contextPath: Freshservice.Release.work_end_date
+      description: release work end date.
+      type: Date
+    - contextPath: Freshservice.Release.created_at
+      description: release created at.
+      type: Date
+    - contextPath: Freshservice.Release.updated_at
+      description: release updated at.
+      type: Date
+    - contextPath: Freshservice.Release.associated_change_ids
+      description: release associated change IDs.
+      type: Number
+  - arguments:
+    - auto: PREDEFINED
+      description: Priority of the Release.
+      isArray: false
+      name: priority
+      predefined:
+      - Low
+      - Medium
+      - High
+      - Urgent
+      required: true
+    - auto: PREDEFINED
+      description: Status identifier of the Release. (1-Open, 2-On hold, 3-In Progress, 4-Incomplete, 5-Completed).
+      isArray: false
+      name: status
+      predefined:
+      - Open
+      - On hold
+      - In Progress
+      - Incomplete
+      - Completed
+      required: true
+    - auto: PREDEFINED
+      description: Type of the Release (1-minor, 2-standard, 3-major, 4-emergency).
+      isArray: false
+      name: release_type
+      predefined:
+      - Minor
+      - Standard
+      - Major
+      - Emergency
+      required: true
+    - description: The subject of the Release.
+      isArray: false
+      name: subject
+      required: true
+    - description: Description of the release.
+      isArray: true
+      name: description
+      required: true
+    - description: Timestamp at which the release is starting (for example YYYY-MM-DDThh:mm).
+      isArray: false
+      name: planned_start_date
+      required: true
+    - description: Timestamp at which release is ending (for example YYYY-MM-DDThh:mm).
+      isArray: false
+      name: planned_end_date
+      required: true
+    - auto: PREDEFINED
+      description: Category of the Release.
+      isArray: false
+      name: category
+      predefined:
+      - Hardware
+      - Software
+      - Network
+      - Office Applications
+      - Talent Management
+      - Travel
+      - Employee Records and Documents
+      - Office Furniture
+      - Office Equipment
+      - Employee Benefits
+      - Employee Onboarding/Offboarding
+      - Employee Relations
+      - Workplace Access and Security
+      - Building and Grounds Maintenance
+      - Vendor Document Review
+      - Payroll
+      - Vendor Payment
+      - Customer Payment
+      - Reimbursements and Advances
+      - Legal Document Creation
+      - Legal Review - Vendor Documents
+      - Legal Review - Customer Documents
+      - Other
+      required: false
+    - description: Key value pairs containing the names and values of custom fields.
+      isArray: false
+      name: custom_fields
+      required: false
+    - description: Unique identifier of the agent to whom the Release is assigned. Use freshservice-agent-list to get the agent ID.
+      isArray: false
+      name: agent_id
+      required: false
+    - description: Unique identifier of the agent group to which the Release is assigned. Use freshservice-agent-group-list to get the agent group ID.
+      isArray: false
+      name: group_id
+      required: false
+    - description: Unique ID of the department initiating the Release. Use freshservice-department-list to get the department ID.
+      isArray: false
+      name: department_id
+      required: false
+    - description: The sub-category of the Release.
+      isArray: false
+      name: sub_category
+      required: false
+    deprecated: false
+    description: Create a new Release request in Freshservice.
+    execution: false
+    name: freshservice-release-create
+    outputs:
+    - contextPath: Freshservice.Release.id
+      description: Release ID.
+      type: Number
+    - contextPath: Freshservice.Release.agent_id
+      description: Release agent ID.
+      type: Unknown
+    - contextPath: Freshservice.Release.description
+      description: Release description.
+      type: String
+    - contextPath: Freshservice.Release.group_id
+      description: Release group ID.
+      type: Unknown
+    - contextPath: Freshservice.Release.department_id
+      description: Release department ID.
+      type: Unknown
+    - contextPath: Freshservice.Release.subject
+      description: Release subject.
+      type: String
+    - contextPath: Freshservice.Release.category
+      description: Release category.
+      type: String
+    - contextPath: Freshservice.Release.sub_category
+      description: Release sub-category.
+      type: Unknown
+    - contextPath: Freshservice.Release.item_category
+      description: Release item category.
+      type: Unknown
+    - contextPath: Freshservice.Release.planned_start_date
+      description: Release planned start date.
+      type: Date
+    - contextPath: Freshservice.Release.planned_end_date
+      description: Release planned end date.
+      type: Date
+    - contextPath: Freshservice.Release.status
+      description: Release status.
+      type: Number
+    - contextPath: Freshservice.Release.priority
+      description: Release priority.
+      type: Number
+    - contextPath: Freshservice.Release.release_type
+      description: Release type.
+      type: Number
+    - contextPath: Freshservice.Release.work_start_date
+      description: Release work start date.
+      type: Date
+    - contextPath: Freshservice.Release.work_end_date
+      description: Release work end date.
+      type: Date
+    - contextPath: Freshservice.Release.created_at
+      description: Release created at.
+      type: Date
+    - contextPath: Freshservice.Release.updated_at
+      description: Release updated at.
+      type: Date
+  - arguments:
+    - auto: PREDEFINED
+      description: Priority of the Release.
+      isArray: false
+      name: priority
+      predefined:
+      - Low
+      - Medium
+      - High
+      - Urgent
+      required: false
+    - auto: PREDEFINED
+      description: Status identifier of the Release. (1-Open, 2-On hold, 3-In Progress, 4-Incomplete, 5-Completed).
+      isArray: false
+      name: status
+      predefined:
+      - Open
+      - On hold
+      - In Progress
+      - Incomplete
+      - Completed
+      required: false
+    - auto: PREDEFINED
+      description: Type of the Release (1-minor, 2-standard, 3-major, 4-emergency).
+      isArray: false
+      name: release_type
+      predefined:
+      - Minor
+      - Standard
+      - Major
+      - Emergency
+      required: false
+    - description: The subject of the Release.
+      isArray: false
+      name: subject
+      required: false
+    - description: Description of the release.
+      isArray: false
+      name: description
+      required: false
+    - description: Timestamp at which release is starting (for example YYYY-MM-DDThh:mm).
+      isArray: false
+      name: planned_start_date
+      required: false
+    - description: Timestamp at which release is ending (for example YYYY-MM-DDThh:mm).
+      isArray: false
+      name: planned_end_date
+      required: false
+    - description: The release ID (use freshservice-release-list to get the release request ID).
+      isArray: false
+      name: release_id
+      required: true
+    - description: Sub-category of the Release.
+      isArray: false
+      name: sub_category
+      required: false
+    - description: Unique ID of the department initiating the Release. Use freshservice-department-list to get the department ID.
+      isArray: false
+      name: department_id
+      required: false
+    - description: Unique identifier of the agent to whom the Release is assigned. Use freshservice-agent-list to get the agent ID.
+      isArray: false
+      name: agent_id
+      required: false
+    - description: Unique identifier of the agent group to which the Release is assigned. Use freshservice-agent-group-list to get the agent group ID.
+      isArray: false
+      name: group_id
+      required: false
+    - description: Key value pairs containing the names and values of custom fields.
+      isArray: false
+      name: custom_fields
+      required: false
+    deprecated: false
+    description: Update an existing Release in Freshservice.
+    execution: false
+    name: freshservice-release-update
+    outputs:
+    - contextPath: Freshservice.Release.id
+      description: Release ID.
+      type: Number
+    - contextPath: Freshservice.Release.agent_id
+      description: Release agent ID.
+      type: Unknown
+    - contextPath: Freshservice.Release.description
+      description: Release description.
+      type: String
+    - contextPath: Freshservice.Release.group_id
+      description: Release group ID.
+      type: Unknown
+    - contextPath: Freshservice.Release.department_id
+      description: Release department ID.
+      type: Unknown
+    - contextPath: Freshservice.Release.subject
+      description: Release subject.
+      type: String
+    - contextPath: Freshservice.Release.category
+      description: Release category.
+      type: String
+    - contextPath: Freshservice.Release.sub_category
+      description: Release sub-category.
+      type: Unknown
+    - contextPath: Freshservice.Release.item_category
+      description: Release item category.
+      type: Unknown
+    - contextPath: Freshservice.Release.planned_start_date
+      description: Release planned start date.
+      type: Date
+    - contextPath: Freshservice.Release.planned_end_date
+      description: Release planned end date.
+      type: Date
+    - contextPath: Freshservice.Release.status
+      description: Release status.
+      type: Number
+    - contextPath: Freshservice.Release.priority
+      description: Release priority.
+      type: Number
+    - contextPath: Freshservice.Release.release_type
+      description: Release release_type.
+      type: Number
+    - contextPath: Freshservice.Release.work_start_date
+      description: Release work start date.
+      type: Date
+    - contextPath: Freshservice.Release.work_end_date
+      description: Release work end date.
+      type: Date
+    - contextPath: Freshservice.Release.created_at
+      description: Release created at.
+      type: Date
+    - contextPath: Freshservice.Release.updated_at
+      description: Release updated at.
+      type: Date
+  - arguments:
+    - description: The release ID (use freshservice-release-list to get the release request ID).
+      isArray: false
+      name: release_id
+      required: true
+    deprecated: false
+    description: Delete a Release with the given ID from Freshservice.
+    execution: false
+    name: freshservice-release-delete
+  - arguments:
+    - description: 'Page number of paginated results. Minimum value: 1'
+      isArray: false
+      name: page
+      required: false
+    - description: The number of items per page.
+      isArray: false
+      name: page_size
+      required: false
+    - defaultValue: '50'
+      description: The maximum number of records to retrieve.
+      isArray: false
+      name: limit
+      required: false
+    - description: The release ID (use freshservice-release-list to get the release request ID).
+      isArray: false
+      name: release_id
+      required: true
+    - description: The release request task ID.
+      isArray: false
+      name: task_id
+      required: false
+    deprecated: false
+    description: Retrieve the tasks on a Release with the given ID from Freshservice.
+    execution: false
+    name: freshservice-release-task-list
+    outputs:
+    - contextPath: Freshservice.Release.Task.id
+      description: Task ID.
+      type: Number
+    - contextPath: Freshservice.Release.Task.agent_id
+      description: Task agent ID.
+      type: Unknown
+    - contextPath: Freshservice.Release.Task.status
+      description: Task status.
+      type: Number
+    - contextPath: Freshservice.Release.Task.due_date
+      description: Task due date.
+      type: Date
+    - contextPath: Freshservice.Release.Task.notify_before
+      description: Task notify before.
+      type: Number
+    - contextPath: Freshservice.Release.Task.title
+      description: Task title.
+      type: String
+    - contextPath: Freshservice.Release.Task.description
+      description: Task description.
+      type: String
+    - contextPath: Freshservice.Release.Task.created_at
+      description: Task created at.
+      type: Date
+    - contextPath: Freshservice.Release.Task.updated_at
+      description: Task updated at.
+      type: Date
+    - contextPath: Freshservice.Release.Task.closed_at
+      description: Task closed at.
+      type: Unknown
+    - contextPath: Freshservice.Release.Task.group_id
+      description: Task group ID.
+      type: Number
+    - contextPath: Freshservice.Release.Task.deleted
+      description: Task deleted.
+      type: Boolean
+  - arguments:
+    - description: Task due date (for example YYYY-MM-DDThh:mm).
+      isArray: false
+      name: due_date
+      required: true
+    - description: Time in seconds before which notification is sent prior to due date (For example 30 minutes, 7 hours and etc).
+      isArray: false
+      name: notify_before
+      required: true
+    - description: Task title.
+      isArray: false
+      name: title
+      required: true
+    - description: Task description.
+      isArray: false
+      name: description
+      required: true
+    - auto: PREDEFINED
+      description: Status of the task,.
+      isArray: false
+      name: status
+      predefined:
+      - Open
+      - In Progress
+      - Completed
+      required: false
+    - description: The release ID to add a task for (use freshservice-release-list to get the release request ID).
+      isArray: false
+      name: release_id
+      required: true
+    deprecated: false
+    description: Create a new task on a Release in Freshservice.
+    execution: false
+    name: freshservice-release-task-create
+    outputs:
+    - contextPath: Freshservice.Release.Task.id
+      description: Task ID.
+      type: Number
+    - contextPath: Freshservice.Release.Task.agent_id
+      description: Task agent ID.
+      type: Unknown
+    - contextPath: Freshservice.Release.Task.status
+      description: Task status.
+      type: Number
+    - contextPath: Freshservice.Release.Task.due_date
+      description: Task due date.
+      type: Date
+    - contextPath: Freshservice.Release.Task.notify_before
+      description: Task notify before.
+      type: Number
+    - contextPath: Freshservice.Release.Task.title
+      description: Task title.
+      type: String
+    - contextPath: Freshservice.Release.Task.description
+      description: Task description.
+      type: String
+    - contextPath: Freshservice.Release.Task.created_at
+      description: Task created at.
+      type: Date
+    - contextPath: Freshservice.Release.Task.updated_at
+      description: Task updated at.
+      type: Date
+    - contextPath: Freshservice.Release.Task.closed_at
+      description: Task closed at.
+      type: Unknown
+    - contextPath: Freshservice.Release.Task.group_id
+      description: Task group ID.
+      type: Unknown
+    - contextPath: Freshservice.Release.Task.deleted
+      description: Task deleted.
+      type: Boolean
+  - arguments:
+    - description: Task due date (for example YYYY-MM-DDThh:mm).
+      isArray: false
+      name: due_date
+      required: false
+    - description: Task notify before (For example 30 minutes, 7 hours and etc).
+      isArray: false
+      name: notify_before
+      required: false
+    - description: Task title.
+      isArray: false
+      name: title
+      required: false
+    - description: Task description.
+      isArray: false
+      name: description
+      required: false
+    - auto: PREDEFINED
+      description: Status of the task,.
+      isArray: false
+      name: status
+      predefined:
+      - Open
+      - In Progress
+      - Completed
+      required: false
+    - description: The Release ID to update a task for (use freshservice-release-list to get the release request ID).
+      isArray: false
+      name: release_id
+      required: true
+    - description: The Task ID for an update (use freshservice-release-task-list to get the task ID).
+      isArray: false
+      name: task_id
+      required: true
+    deprecated: false
+    description: Update an existing task on an existing Release in Freshservice.
+    execution: false
+    name: freshservice-release-task-update
+    outputs:
+    - contextPath: Freshservice.Release.Task.id
+      description: Task ID.
+      type: Number
+    - contextPath: Freshservice.Release.Task.agent_id
+      description: Task agent ID.
+      type: Unknown
+    - contextPath: Freshservice.Release.Task.status
+      description: Task status.
+      type: Number
+    - contextPath: Freshservice.Release.Task.due_date
+      description: Task due date.
+      type: Date
+    - contextPath: Freshservice.Release.Task.notify_before
+      description: Task notify before.
+      type: Number
+    - contextPath: Freshservice.Release.Task.title
+      description: Task title.
+      type: String
+    - contextPath: Freshservice.Release.Task.description
+      description: Task description.
+      type: String
+    - contextPath: Freshservice.Release.Task.created_at
+      description: Task created at.
+      type: Date
+    - contextPath: Freshservice.Release.Task.updated_at
+      description: Task updated at.
+      type: Date
+    - contextPath: Freshservice.Release.Task.closed_at
+      description: Task closed at.
+      type: Unknown
+    - contextPath: Freshservice.Release.Task.group_id
+      description: Task group ID.
+      type: Unknown
+    - contextPath: Freshservice.Release.Task.deleted
+      description: Task deleted.
+      type: Boolean
+  - arguments:
+    - description: The Release ID (use freshservice-release-list to get the release request ID).
+      isArray: false
+      name: release_id
+      required: true
+    - description: The task ID to delete (use freshservice-release-task-list to get the task ID).
+      isArray: false
+      name: task_id
+      required: true
+    deprecated: false
+    description: Delete the task on a Release with the given ID from Freshservice.
+    execution: false
+    name: freshservice-release-task-delete
+  - arguments:
+    - description: 'Page number of paginated results. Minimum value: 1'
+      isArray: false
+      name: page
+      required: false
+    - description: The number of items per page.
+      isArray: false
+      name: page_size
+      required: false
+    - defaultValue: '50'
+      description: The maximum number of records to retrieve.
+      isArray: false
+      name: limit
+      required: false
+    - description: The requester ID (use freshservice-agent-list to get the requester ID).
+      isArray: false
+      name: requester_id
+      required: false
+    - description: First name of the requester.
+      isArray: false
+      name: first_name
+      required: false
+    - description: Last name of the requester.
+      isArray: false
+      name: last_name
+      required: false
+    - description: Concatenation of first_name and last_name with single space in-between fields.
+      isArray: false
+      name: name
+      required: false
+    - description: Title of the requester.
+      isArray: false
+      name: job_title
+      required: false
+    - description: Email address of the requester.
+      isArray: false
+      name: primary_email
+      required: false
+    - description: Work phone of the requester.
+      isArray: false
+      name: work_phone_number
+      required: false
+    - description: Mobile phone of the requester.
+      isArray: false
+      name: mobile_phone_number
+      required: false
+    - description: ID of the department(s) assigned to the requester (use freshservice-department-list to get the department ID).
+      isArray: false
+      name: department_id
+      required: false
+    - description: User ID of the agent's reporting manager (you can use freshservice-agent-list to extract the reporting_manager_id).
+      isArray: false
+      name: reporting_manager_id
+      required: false
+    - description: Requester time zone.
+      isArray: false
+      name: time_zone
+      required: false
+    - description: Language code(Eg. en, ja-JP).
+      isArray: false
+      name: language
+      required: false
+    - description: ID of the location.
+      isArray: false
+      name: location_id
+      required: false
+    - description: Date (YYYY-MM-DDThh:mm) when the requester is created.
+      isArray: false
+      name: created_at
+      required: false
+    - description: Date (YYYY-MM-DDThh:mm) when the requester is updated.
+      isArray: false
+      name: updated_at
+      required: false
+    - description: Query to fetch requesters. Use query or other filter arguments, not both. For example "time_zone:'Eastern Time (US & Canada)' AND language:'en'" (Logical operators AND, OR along with parentheses () can be used to group conditions).
+      isArray: false
+      name: query
+      required: false
+    deprecated: false
+    description: Lists all the requesters (information about a user) in a Freshservice account. You can specify 'query' argument or any filter arguments, not both. When providing multiple filter arguments the connection between them will be "AND".
+    execution: false
+    name: freshservice-requester-list
+    outputs:
+    - contextPath: Freshservice.Requester.active
+      description: Requester active.
+      type: Boolean
+    - contextPath: Freshservice.Requester.address
+      description: Requester address.
+      type: Unknown
+    - contextPath: Freshservice.Requester.background_information
+      description: Requester background information.
+      type: Unknown
+    - contextPath: Freshservice.Requester.can_see_all_changes_from_associated_departments
+      description: Requester can see all changes from associated departments.
+      type: Boolean
+    - contextPath: Freshservice.Requester.can_see_all_tickets_from_associated_departments
+      description: Requester can see all tickets from associated departments.
+      type: Boolean
+    - contextPath: Freshservice.Requester.created_at
+      description: Requester created at.
+      type: Date
+    - contextPath: Freshservice.Requester.department_names
+      description: Requester department names.
+      type: Unknown
+    - contextPath: Freshservice.Requester.external_id
+      description: Requester external ID.
+      type: Unknown
+    - contextPath: Freshservice.Requester.first_name
+      description: Requester first name.
+      type: String
+    - contextPath: Freshservice.Requester.has_logged_in
+      description: Requester has logged in.
+      type: Boolean
+    - contextPath: Freshservice.Requester.id
+      description: Requester ID.
+      type: Date
+    - contextPath: Freshservice.Requester.is_agent
+      description: Requester is agent.
+      type: Boolean
+    - contextPath: Freshservice.Requester.job_title
+      description: Requester job title.
+      type: Unknown
+    - contextPath: Freshservice.Requester.language
+      description: Requester language.
+      type: String
+    - contextPath: Freshservice.Requester.last_name
+      description: Requester last name.
+      type: Unknown
+    - contextPath: Freshservice.Requester.location_id
+      description: Requester location ID.
+      type: Unknown
+    - contextPath: Freshservice.Requester.location_name
+      description: Requester location name.
+      type: Unknown
+    - contextPath: Freshservice.Requester.mobile_phone_number
+      description: Requester mobile phone number.
+      type: Unknown
+    - contextPath: Freshservice.Requester.primary_email
+      description: Requester primary email.
+      type: String
+    - contextPath: Freshservice.Requester.reporting_manager_id
+      description: Requester reporting manager ID.
+      type: Unknown
+    - contextPath: Freshservice.Requester.time_format
+      description: Requester time format.
+      type: String
+    - contextPath: Freshservice.Requester.time_zone
+      description: Requester time zone.
+      type: String
+    - contextPath: Freshservice.Requester.updated_at
+      description: Requester updated at.
+      type: Date
+    - contextPath: Freshservice.Requester.vip_user
+      description: Requester vip user.
+      type: Boolean
+    - contextPath: Freshservice.Requester.work_phone_number
+      description: Requester work phone number.
+      type: Unknown
+  - arguments:
+    - description: 'Page number of paginated results. Minimum value: 1'
+      isArray: false
+      name: page
+      required: false
+    - description: The number of items per page.
+      isArray: false
+      name: page_size
+      required: false
+    - defaultValue: '50'
+      description: The maximum number of records to retrieve.
+      isArray: false
+      name: limit
+      required: false
+    - description: Agent ID.
+      isArray: false
+      name: agent_id
+      required: false
+    - description: First name of the agent.
+      isArray: false
+      name: first_name
+      required: false
+    - description: Last name of the agent.
+      isArray: false
+      name: last_name
+      required: false
+    - description: Concatenation of first_name and last_name with single space in-between fields.
+      isArray: false
+      name: name
+      required: false
+    - description: Title of the agent.
+      isArray: false
+      name: job_title
+      required: false
+    - description: Email address of the agent.
+      isArray: false
+      name: email
+      required: false
+    - description: Work phone of the agent.
+      isArray: false
+      name: work_phone_number
+      required: false
+    - description: Mobile phone of the agent.
+      isArray: false
+      name: mobile_phone_number
+      required: false
+    - description: ID of the department(s) assigned to the agent. Use freshservice-department-list to get the agent ID.
+      isArray: false
+      name: department_id
+      required: false
+    - description: User ID of the agent's reporting manager.
+      isArray: false
+      name: reporting_manager_id
+      required: false
+    - description: Agent time zone.
+      isArray: false
+      name: time_zone
+      required: false
+    - description: Language code(Eg. en, ja-JP).
+      isArray: false
+      name: language
+      required: false
+    - description: ID of the location.
+      isArray: false
+      name: location_id
+      required: false
+    - description: Date when the agent is created (for example YYYY-MM-DDThh:mm).
+      isArray: false
+      name: created_at
+      required: false
+    - description: Date when the agent is updated (for example YYYY-MM-DDThh:mm).
+      isArray: false
+      name: updated_at
+      required: false
+    - description: Query to fetch agents. Use query or other filter arguments, not both. For example "(department_id:4001 OR department_id:5001) AND (location_id:200 OR location_id:300)".
+      isArray: false
+      name: query
+      required: false
+    deprecated: false
+    description: Retrieve a list of all Agents (or specific by ID) in Freshservice. You can specify 'query' argument or any filter arguments, not both. When providing multiple filter arguments the connection between them will be "AND".
+    execution: false
+    name: freshservice-agent-list
+    outputs:
+    - contextPath: Freshservice.Agent.active
+      description: Agent active.
+      type: Boolean
+    - contextPath: Freshservice.Agent.address
+      description: Agent address.
+      type: Unknown
+    - contextPath: Freshservice.Agent.auto_assign_status_changed_at
+      description: Agent auto_assign_status_changed_at.
+      type: Unknown
+    - contextPath: Freshservice.Agent.auto_assign_tickets
+      description: Agent auto assign tickets.
+      type: Boolean
+    - contextPath: Freshservice.Agent.background_information
+      description: Agent background information.
+      type: Unknown
+    - contextPath: Freshservice.Agent.can_see_all_tickets_from_associated_departments
+      description: Agent can see all tickets from associated departments.
+      type: Boolean
+    - contextPath: Freshservice.Agent.created_at
+      description: Agent created at.
+      type: Date
+    - contextPath: Freshservice.Agent.department_names
+      description: Agent department names.
+      type: Unknown
+    - contextPath: Freshservice.Agent.email
+      description: Agent email.
+      type: String
+    - contextPath: Freshservice.Agent.external_id
+      description: Agent external ID.
+      type: Unknown
+    - contextPath: Freshservice.Agent.first_name
+      description: Agent first name.
+      type: String
+    - contextPath: Freshservice.Agent.has_logged_in
+      description: Agent has logged in.
+      type: Boolean
+    - contextPath: Freshservice.Agent.id
+      description: Agent ID.
+      type: Date
+    - contextPath: Freshservice.Agent.job_title
+      description: Agent job title.
+      type: Unknown
+    - contextPath: Freshservice.Agent.language
+      description: Agent language.
+      type: String
+    - contextPath: Freshservice.Agent.last_active_at
+      description: Agent last active at.
+      type: Date
+    - contextPath: Freshservice.Agent.last_login_at
+      description: Agent last login at.
+      type: Unknown
+    - contextPath: Freshservice.Agent.last_name
+      description: Agent last name.
+      type: String
+    - contextPath: Freshservice.Agent.location_id
+      description: Agent location ID.
+      type: Unknown
+    - contextPath: Freshservice.Agent.location_name
+      description: Agent location name.
+      type: Unknown
+    - contextPath: Freshservice.Agent.mobile_phone_number
+      description: Agent mobile phone number.
+      type: Unknown
+    - contextPath: Freshservice.Agent.occasional
+      description: Agent occasional.
+      type: Boolean
+    - contextPath: Freshservice.Agent.reporting_manager_id
+      description: Agent reporting manager ID.
+      type: Unknown
+    - contextPath: Freshservice.Agent.role_ids
+      description: Agent role IDs.
+      type: Date
+    - contextPath: Freshservice.Agent.role_id
+      description: Agent role ID.
+      type: Date
+    - contextPath: Freshservice.Agent.assignment_scope
+      description: Agent roles assignment scope.
+      type: String
+    - contextPath: Freshservice.Agent.workspace_id
+      description: Agent roles workspace ID.
+      type: Number
+    - contextPath: Freshservice.Agent.signature
+      description: Agent signature.
+      type: String
+    - contextPath: Freshservice.Agent.time_format
+      description: Agent time format.
+      type: String
+    - contextPath: Freshservice.Agent.time_zone
+      description: Agent time zone.
+      type: String
+    - contextPath: Freshservice.Agent.updated_at
+      description: Agent updated at.
+      type: Date
+    - contextPath: Freshservice.Agent.vip_user
+      description: Agent vip user.
+      type: Boolean
+    - contextPath: Freshservice.Agent.work_phone_number
+      description: Agent work phone number.
+      type: Unknown
+    - contextPath: Freshservice.Agent.workspace_ids
+      description: Agent workspace IDs.
+      type: Number
+  - arguments:
+    - description: 'Page number of paginated results. Minimum value: 1'
+      isArray: false
+      name: page
+      required: false
+    - description: The number of items per page.
+      isArray: false
+      name: page_size
+      required: false
+    - defaultValue: '50'
+      description: The maximum number of records to retrieve.
+      isArray: false
+      name: limit
+      required: false
+    - description: The role ID.
+      isArray: false
+      name: role_id
+      required: false
+    deprecated: false
+    description: Lists all the roles in a Freshservice account. Roles allow you to manage access permissions for agents.
+    execution: false
+    name: freshservice-role-list
+    outputs:
+    - contextPath: Freshservice.Role.description
+      description: Role description.
+      type: String
+    - contextPath: Freshservice.Role.id
+      description: Role ID.
+      type: Date
+    - contextPath: Freshservice.Role.name
+      description: Role name.
+      type: String
+    - contextPath: Freshservice.Role.created_at
+      description: Role created at.
+      type: Date
+    - contextPath: Freshservice.Role.updated_at
+      description: Role updated at.
+      type: Date
+    - contextPath: Freshservice.Role.default
+      description: Role default.
+      type: Boolean
+    - contextPath: Freshservice.Role.role_type
+      description: Role type.
+      type: Number
+  - arguments:
+    - description: 'Page number of paginated results. Minimum value: 1'
+      isArray: false
+      name: page
+      required: false
+    - description: The number of items per page.
+      isArray: false
+      name: page_size
+      required: false
+    - defaultValue: '50'
+      description: The maximum number of records to retrieve.
+      isArray: false
+      name: limit
+      required: false
+    - description: Vendor ID.
+      isArray: false
+      name: vendor_id
+      required: false
+    deprecated: false
+    description: Lists all the vendors (or specific by ID) in the Freshservice account.
+    execution: false
+    name: freshservice-vendor-list
+    outputs:
+    - contextPath: Freshservice.Vendor.address.line1
+      description: Vendor address line1.
+      type: Unknown
+    - contextPath: Freshservice.Vendor.address.city
+      description: Vendor address city.
+      type: Unknown
+    - contextPath: Freshservice.Vendor.address.state
+      description: Vendor address state.
+      type: Unknown
+    - contextPath: Freshservice.Vendor.address.country
+      description: Vendor address country.
+      type: Unknown
+    - contextPath: Freshservice.Vendor.address.zipcode
+      description: Vendor address zip code.
+      type: Unknown
+    - contextPath: Freshservice.Vendor.id
+      description: Vendor ID.
+      type: Date
+    - contextPath: Freshservice.Vendor.name
+      description: Vendor name.
+      type: String
+    - contextPath: Freshservice.Vendor.description
+      description: Vendor description.
+      type: String
+    - contextPath: Freshservice.Vendor.contact_name
+      description: Vendor contact name.
+      type: Unknown
+    - contextPath: Freshservice.Vendor.email
+      description: Vendor email.
+      type: Unknown
+    - contextPath: Freshservice.Vendor.mobile
+      description: Vendor mobile.
+      type: Unknown
+    - contextPath: Freshservice.Vendor.phone
+      description: Vendor phone.
+      type: Unknown
+    - contextPath: Freshservice.Vendor.primary_contact_id
+      description: Vendor primary contact ID.
+      type: Unknown
+    - contextPath: Freshservice.Vendor.created_at
+      description: Vendor created at.
+      type: Date
+    - contextPath: Freshservice.Vendor.updated_at
+      description: Vendor updated at.
+      type: Date
+  - arguments:
+    - description: 'Page number of paginated results. Minimum value: 1'
+      isArray: false
+      name: page
+      required: false
+    - description: The number of items per page.
+      isArray: false
+      name: page_size
+      required: false
+    - defaultValue: '50'
+      description: The maximum number of records to retrieve.
+      isArray: false
+      name: limit
+      required: false
+    - description: Software ID.
+      isArray: false
+      name: software_id
+      required: false
+    deprecated: false
+    description: Lists all the softwares (or specific by ID) in the Freshservice account.
+    execution: false
+    name: freshservice-software-list
+    outputs:
+    - contextPath: Freshservice.Software.overview
+      description: Software application overview.
+      type: Unknown
+    - contextPath: Freshservice.Software.graph_data
+      description: Software application graph data.
+      type: Unknown
+    - contextPath: Freshservice.Software.last_sync_date
+      description: Software application last sync date.
+      type: Unknown
+    - contextPath: Freshservice.Software.user_count
+      description: Software application user count.
+      type: Number
+    - contextPath: Freshservice.Software.installation_count
+      description: Software application installation count.
+      type: Number
+    - contextPath: Freshservice.Software.id
+      description: Software application ID.
+      type: Date
+    - contextPath: Freshservice.Software.name
+      description: Software application name.
+      type: String
+    - contextPath: Freshservice.Software.description
+      description: Software application description.
+      type: Unknown
+    - contextPath: Freshservice.Software.notes
+      description: Software application notes.
+      type: Unknown
+    - contextPath: Freshservice.Software.publisher_id
+      description: Software application publisher ID.
+      type: Date
+    - contextPath: Freshservice.Software.created_at
+      description: Software application created at.
+      type: Date
+    - contextPath: Freshservice.Software.updated_at
+      description: Software application updated at.
+      type: Date
+    - contextPath: Freshservice.Software.workspace_id
+      description: Software application workspace ID.
+      type: Number
+    - contextPath: Freshservice.Software.application_type
+      description: Software application application type.
+      type: String
+    - contextPath: Freshservice.Software.status
+      description: Software application status.
+      type: String
+    - contextPath: Freshservice.Software.managed_by_id
+      description: Software application managed by ID.
+      type: Date
+    - contextPath: Freshservice.Software.category
+      description: Software application category.
+      type: Unknown
+  - arguments:
+    - description: 'Page number of paginated results. Minimum value: 1'
+      isArray: false
+      name: page
+      required: false
+    - description: The number of items per page.
+      isArray: false
+      name: page_size
+      required: false
+    - defaultValue: '50'
+      description: The maximum number of records to retrieve.
+      isArray: false
+      name: limit
+      required: false
+    - description: Asset ID.
+      isArray: false
+      name: asset_id
+      required: false
+    - description: ID of the asset type.
+      isArray: false
+      name: asset_type_id
+      required: false
+    - description: ID of the department to which the asset belongs. Use freshservice-department-list to get the agent ID.
+      isArray: false
+      name: department_id
+      required: false
+    - description: ID of the location.
+      isArray: false
+      name: location_id
+      required: false
+    - auto: PREDEFINED
+      description: Status of the asset.
+      isArray: false
+      name: asset_state
+      predefined:
+      - IN USE
+      - IN STOCK
+      required: false
+    - description: ID of the user to whom the asset is assigned (use freshservice-agent-list to get the agent ID).
+      isArray: false
+      name: user_id
+      required: false
+    - description: ID of the agent by whom the asset is managed. Use freshservice-agent-list to get the agent ID.
+      isArray: false
+      name: agent_id
+      required: false
+    - description: Display name of the asset.
+      isArray: false
+      name: name
+      required: false
+    - description: Tag that is assigned to the asset.
+      isArray: false
+      name: asset_tag
+      required: false
+    - description: Date when the asset is created (for example YYYY-MM-DDThh:mm).
+      isArray: false
+      name: created_at
+      required: false
+    - description: Date when the asset is updated (for example YYYY-MM-DDThh:mm).
+      isArray: false
+      name: updated_at
+      required: false
+    - description: Serial number of the asset.
+      isArray: false
+      name: serial_number
+      required: false
+    - description: Query to fetch assets. Use query or other filter arguments, not both. For example "asset_state:'IN STOCK' AND created_at:>'2018-08-10'" (Logical operators AND, OR along with parentheses () can be used to group conditions).
+      name: query
+    deprecated: false
+    description: Lists all the assets (or specific by ID) in the Freshservice account. You can specify 'query' argument or any filter arguments, not both. When providing multiple filter arguments the connection between them will be "AND".
+    execution: false
+    name: freshservice-asset-list
+    outputs:
+    - contextPath: Freshservice.Asset.id
+      description: Asset ID.
+      type: Date
+    - contextPath: Freshservice.Asset.display_id
+      description: Asset display ID.
+      type: Number
+    - contextPath: Freshservice.Asset.name
+      description: Asset name.
+      type: String
+    - contextPath: Freshservice.Asset.description
+      description: Asset description.
+      type: Unknown
+    - contextPath: Freshservice.Asset.asset_type_id
+      description: Asset type ID.
+      type: Date
+    - contextPath: Freshservice.Asset.impact
+      description: Asset impact.
+      type: String
+    - contextPath: Freshservice.Asset.author_type
+      description: Asset author type.
+      type: String
+    - contextPath: Freshservice.Asset.usage_type
+      description: Asset usage type.
+      type: String
+    - contextPath: Freshservice.Asset.asset_tag
+      description: Asset tag.
+      type: String
+    - contextPath: Freshservice.Asset.user_id
+      description: Asset user ID.
+      type: Date
+    - contextPath: Freshservice.Asset.department_id
+      description: Asset department ID.
+      type: Unknown
+    - contextPath: Freshservice.Asset.location_id
+      description: Asset location ID.
+      type: Unknown
+    - contextPath: Freshservice.Asset.agent_id
+      description: Asset agent ID.
+      type: Unknown
+    - contextPath: Freshservice.Asset.group_id
+      description: Asset group ID.
+      type: Unknown
+    - contextPath: Freshservice.Asset.assigned_on
+      description: Asset assigned_on.
+      type: Unknown
+    - contextPath: Freshservice.Asset.created_at
+      description: Asset created at.
+      type: Date
+    - contextPath: Freshservice.Asset.updated_at
+      description: Asset updated at.
+      type: Date
+    - contextPath: Freshservice.Asset.end_of_life
+      description: Asset end of life.
+      type: Date
+    - contextPath: Freshservice.Asset.workspace_id
+      description: Asset workspace ID.
+      type: Number
+  - arguments:
+    - description: 'Page number of paginated results. Minimum value: 1'
+      isArray: false
+      name: page
+      required: false
+    - description: The number of items per page.
+      isArray: false
+      name: page_size
+      required: false
+    - defaultValue: '50'
+      description: The maximum number of records to retrieve.
+      isArray: false
+      name: limit
+      required: false
+    - description: Purchase order ID.
+      isArray: false
+      name: purchase_order_id
+      required: false
+    deprecated: false
+    description: Lists all the purchase orders (or specific by ID) in a Freshservice account.
+    execution: false
+    name: freshservice-purchase-order-list
+    outputs:
+    - contextPath: Freshservice.PurchaseOrder.id
+      description: Purchase order ID.
+      type: Number
+    - contextPath: Freshservice.PurchaseOrder.name
+      description: Purchase order name.
+      type: String
+    - contextPath: Freshservice.PurchaseOrder.po_number
+      description: Purchase order number.
+      type: String
+    - contextPath: Freshservice.PurchaseOrder.total_cost
+      description: Purchase order total cost.
+      type: Number
+    - contextPath: Freshservice.PurchaseOrder.expected_delivery_date
+      description: Purchase order expected delivery date.
+      type: Date
+    - contextPath: Freshservice.PurchaseOrder.created_at
+      description: Purchase order created at.
+      type: Date
+    - contextPath: Freshservice.PurchaseOrder.updated_at
+      description: Purchase order updated at.
+      type: Date
+    - contextPath: Freshservice.PurchaseOrder.vendor_id
+      description: Purchase order vendor ID.
+      type: Date
+    - contextPath: Freshservice.PurchaseOrder.department_id
+      description: Purchase order department ID.
+      type: Unknown
+    - contextPath: Freshservice.PurchaseOrder.created_by
+      description: Purchase order created by.
+      type: Date
+    - contextPath: Freshservice.PurchaseOrder.status
+      description: Purchase order status.
+      type: Number
+    - contextPath: Freshservice.PurchaseOrder.workspace_id
+      description: Purchase order workspace ID.
+      type: Number
+  - arguments:
+    - description: 'Page number of paginated results. Minimum value: 1'
+      isArray: false
+      name: page
+      required: false
+    - description: The number of items per page.
+      isArray: false
+      name: page_size
+      required: false
+    - defaultValue: '50'
+      description: The maximum number of records to retrieve.
+      isArray: false
+      name: limit
+      required: false
+    - description: Agent group ID.
+      isArray: false
+      name: agent_group_id
+      required: false
+    deprecated: false
+    description: Lists all the agent groups (or specific by ID) in a Freshservice account.
+    execution: false
+    name: freshservice-agent-group-list
+    outputs:
+    - contextPath: Freshservice.AgentGroup.id
+      description: Agent groupr ID.
+      type: Number
+    - contextPath: Freshservice.AgentGroup.name
+      description: Agent group name.
+      type: String
+    - contextPath: Freshservice.AgentGroup.description
+      description: Agent group description.
+      type: String
+    - contextPath: Freshservice.AgentGroup.auto_ticket_assign
+      description: Agent group auto ticket assign.
+      type: String
+    - contextPath: Freshservice.AgentGroup.workspace_id
+      description: Agent group workspace ID.
+      type: Number
+    - contextPath: Freshservice.AgentGroup.created_at
+      description: Agent group created at.
+      type: Date
+    - contextPath: Freshservice.AgentGroup.updated_at
+      description: Agent group updated at.
+      type: Date
+    - contextPath: Freshservice.AgentGroup.agent_ids
+      description: Agent group agent IDs.
+      type: String
+    - contextPath: Freshservice.AgentGroup.members
+      description: Agent group members.
+      type: String
+    - contextPath: Freshservice.AgentGroup.observers
+      description: Agent group observers.
+      type: String
+    - contextPath: Freshservice.AgentGroup.unassigned_for
+      description: Agent group unassigned for.
+      type: String
+  - arguments:
+    - description: 'Page number of paginated results. Minimum value: 1'
+      isArray: false
+      name: page
+      required: false
+    - description: The number of items per page.
+      isArray: false
+      name: page_size
+      required: false
+    - defaultValue: '50'
+      description: The maximum number of records to retrieve.
+      isArray: false
+      name: limit
+      required: false
+    - description: Department ID.
+      isArray: false
+      name: department_id
+      required: false
+    - description: Name of the department.
+      isArray: false
+      name: name
+      required: false
+    deprecated: false
+    description: Lists all the departments (or specific by ID) in a Freshservice account.
+    execution: false
+    name: freshservice-department-list
+    outputs:
+    - contextPath: Freshservice.Department.id
+      description: Department ID.
+      type: Number
+    - contextPath: Freshservice.Department.name
+      description: Department name.
+      type: String
+    - contextPath: Freshservice.Department.description
+      description: Department description.
+      type: String
+    - contextPath: Freshservice.Department.custom_fields
+      description: Department custom fields.
+      type: String
+    - contextPath: Freshservice.Department.domains
+      description: Department domains.
+      type: String
+    - contextPath: Freshservice.Department.created_at
+      description: Department created at.
+      type: Date
+    - contextPath: Freshservice.Department.updated_at
+      description: Department updated at.
+      type: Date
+    - contextPath: Freshservice.Department.prime_user_id
+      description: Department prime user ID.
+      type: Number
+    - contextPath: Freshservice.Department.head_user_id
+      description: Department head user ID.
+      type: Number
+  - arguments: []
+    deprecated: false
+    description: Lists all the Requester fields in a Freshservice account.
+    execution: false
+    name: freshservice-requester-field-list
+    outputs:
+    - contextPath: Freshservice.RequesterField.id
+      description: Requester fields ID.
+      type: Number
+    - contextPath: Freshservice.RequesterField.name
+      description: Requester fields name.
+      type: String
+    - contextPath: Freshservice.RequesterField.label
+      description: Requester fields label.
+      type: String
+    - contextPath: Freshservice.RequesterField.position
+      description: Requester fields position.
+      type: Number
+    - contextPath: Freshservice.RequesterField.type
+      description: Requester fields type.
+      type: String
+    - contextPath: Freshservice.RequesterField.created_at
+      description: Requester fields created at.
+      type: Date
+    - contextPath: Freshservice.RequesterField.updated_at
+      description: Requester fields updated at.
+      type: Date
+    - contextPath: Freshservice.RequesterField.label_for_requesters
+      description: Requester field label for.
+      type: String
+    - contextPath: Freshservice.RequesterField.choices
+      description: Requester fields choices.
+      type: String
+  - arguments: []
+    description: Returns the list of fields for an incident type.
+    name: get-mapping-fields
+  - arguments:
+    - description: The ticket ID.
+      name: id
+      required: true
+    - description: Retrieves entries that were created after lastUpdate.
+      name: lastUpdate
+      required: true
+    description: Gets remote data from a remote incident. This method does not update the current incident, and should be used for debugging purposes.
+    name: get-remote-data
+  - arguments:
+    - description: A date string in local time representing the last time the incident was updated. The incident is only returned if it was modified after the last update time.
+      name: lastUpdate
+    description: Gets the list of incidents that were modified since the last update time. Note that this method is here for debugging purposes. The get-modified-remote-data command is used as part of a Mirroring feature, which is available in Cortex XSOAR from version 6.1.
+    name: get-modified-remote-data
+  dockerimage: demisto/python3:3.10.10.50695
+  feed: false
+  isfetch: true
+  ismappable: true
+  isremotesyncin: true
+  isremotesyncout: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+fromversion: 6.8.0
+tests:
+- No tests (auto formatted)

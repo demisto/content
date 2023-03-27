@@ -1,0 +1,27 @@
+{
+    "release": {
+        "id": 1,
+        "agent_id": null,
+        "description": "<div>Hi Team,<br/><br/> Exchange Server 3 needs immediate replacement.  Please expedite this. <br/><br/> Regards <br/> Rachel</div>",
+        "description_text": null,
+        "assets": [],
+        "group_id": null,
+        "department_id": null,
+        "subject": "Replacing Exchange Server 3 (ES3)",
+        "category": null,
+        "sub_category": null,
+        "item_category": null,
+        "planned_start_date": "releases[0]_planned_start_date",
+        "planned_end_date": "releases[0]_planned_end_date",
+        "status": 1,
+        "priority": 1,
+        "release_type": 1,
+        "work_start_date": "releases[0]_work_start_date",
+        "work_end_date": "releases[0]_work_end_date",
+        "created_at": "releases[0]_created_at",
+        "updated_at": "releases[0]_updated_at",
+        "associated_change_ids": [
+            1
+        ]
+    }
+}
