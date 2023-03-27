@@ -7,7 +7,6 @@ from traceback import format_exc
 
 #import dateparser
 from ZoomApiModule import *
-import ZoomApiModule.py
 
 # OAUTH_TOKEN_GENERATOR_URL = 'https://zoom.us/oauth/token'
 # # The token’s time to live is 1 hour,
