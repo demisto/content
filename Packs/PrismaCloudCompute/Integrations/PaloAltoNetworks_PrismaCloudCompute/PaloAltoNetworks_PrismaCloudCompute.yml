@@ -1652,7 +1652,19 @@ script:
     - description: 'Lines is the number of lines to fetch '
       name: lines
     description: 'DownloadDefenderLogs downloads all defender logs and metadata '
+    name: prisma-cloud-compute-logs-defender
+  - arguments:
+    - description: 'Hostname is the target defender hostname '
+      name: hostname
+    - description: 'Lines is the number of lines to fetch '
+      name: lines
+    description: 'DownloadDefenderLogs downloads all defender logs and metadata '
     name: prisma-cloud-compute-logs-defender-download
+  - arguments:
+    - description: The project to retrieve the backups from
+      name: project
+    description: List returns the available backups
+    name: prisma-cloud-compute-get-backups
 tests:
 - PaloAltoNetworks_PrismaCloudCompute-Test
 fromversion: 5.0.0

@@ -390,6 +390,49 @@ class PrismaCloudComputeClient(BaseClient):
         return self._http_request('get', 'logs/defender', params=params, headers=headers)
 
 
+    def get_api_v1_backups_request(self, project):
+        """
+        Get the defender backups.
+
+        Args:
+            project (str): The project name
+
+        Returns:
+            list: the defender backups
+        """
+        params = assign_params(project=project)
+        headers = self._headers
+
+        return self._http_request('get', 'backups', headers=headers, params=params)
+
+
+    def api_v1_logs_defender_download_request(self, hostname, lines):
+        """
+        Download all logs for a certain defender
+
+        Args:
+            hostname (str): The hostname to get the logs for
+            lines (int): The number of logs to return
+
+        Returns:
+            list: the logs to download
+        """
+        params = assign_params(hostname=hostname, lines=lines)
+
+        headers = self._headers
+        return self._http_request('get', 'logs/defender/download', params=params, headers=headers, resp_type='response')
+
+
+def format_context(context):
+    """
+    Format the context keys
+    """
+    if context and isinstance(context, dict):
+        context = {pascalToSpace(key).replace(" ", ""): format_context(value) for key, value in context.items()}
+    elif context and isinstance(context, list):
+        context = [format_context(item) for item in context]
+    return context
+
 def str_to_bool(s):
     """
     Translates string representing boolean value into boolean value
@@ -1863,6 +1906,46 @@ def api_v1_logs_defender_command(client, args):
     )
 
 
+def get_api_v1_backups_command(client, args):
+    """
+    Get the defender backups.
+
+    Args:
+        client (PrismaCloudComputeClient): prisma-cloud-compute client.
+        args (dict): prisma-cloud-compute-get-backups command arguments
+
+    Returns:
+        CommandResults: command-results object.
+    """
+    project = args.get("project", None)
+    response = client.get_api_v1_backups_request(project)
+    return CommandResults(
+        outputs_prefix='PrismaCloudCompute.Backups',
+        outputs_key_field='Id',
+        outputs=format_context(response),
+        raw_response=response
+    )
+
+
+def api_v1_logs_defender_download_command(client, args):
+    """
+    Get the defender logs download bundle.
+
+    Args:
+        client (PrismaCloudComputeClient): prisma-cloud-compute client.
+        args (dict): prisma-cloud-compute-logs-defender-download command arguments
+
+    Returns:
+        CommandResults: command-results object.
+    """
+    hostname = str(args.get('hostname', ''))
+    lines = args.get('lines', None)
+
+    response = client.api_v1_logs_defender_download_request(hostname, lines)
+
+    return fileResult("logs.tar.gz", response.content)
+
+
 def main():
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
@@ -1967,12 +2050,16 @@ def main():
         elif requested_command == 'prisma-cloud-compute-get-audit-firewall-container-alerts':
             return_results(results=get_audit_firewall_container_alerts(client, args=demisto.args()))
         elif requested_command == "prisma-cloud-compute-get-alert-profiles": 
-            return_results(results=get_api_v1_alert_profiles_command)
+            return_results(results=get_api_v1_alert_profiles_command(client=client, args=demisto.args()))
         elif requested_command == "prisma-cloud-compute-get-settings-defender":
             return_results(results=get_api_v1_settings_defender_command)
 
         elif requested_command == "prisma-cloud-compute-logs-defender":
-            return_results(results=api_v1_logs_defender_command)
+            return_results(results=api_v1_logs_defender_command(client=client, args=demisto.args()))
+        elif requested_command == "prisma-cloud-compute-get-backups":
+            return_results(results=get_api_v1_backups_command(client=client, args=demisto.args()))
+        elif requested_command == "prisma-cloud-compute-logs-defender-download":
+            return_results(results=api_v1_logs_defender_download_command(client=client, args=demisto.args()))
     # Log exceptions
     except Exception as e:
         return_error(f'Failed to execute {requested_command} command. Error: {str(e)}')
