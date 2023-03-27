@@ -5475,7 +5475,7 @@ script:
       - filter-pcap
       - threat-pcap
       - dlp-pcap
-    - description: The serial number of the firewall to download the PCAP from.
+    - description: The serial number of the firewall to download the PCAP from, relevant only for Panorama instances.
       name: serialNumber
     - description: The file name for the PCAP type ('dlp-pcap', 'filter-pcap', or 'application-pcap'). Required for 'filter-pcap'.
       name: from
@@ -5489,11 +5489,11 @@ script:
       name: pcapID
     - description: The password for Panorama, needed for the 'dlp-pcap' PCAP type only.
       name: password
-    - description: The device name on which the PCAP is stored. See the Panorama XML API documentation. Required for 'threat-pcap' in pan-os firewalls < 9.0.7 versions
+    - description: The device name on which the PCAP is stored. See the Panorama XML API documentation. Required for 'threat-pcap' when using a Panorama instance.
       name: deviceName
-    - description: The Session ID of the PCAP. See the Panorama XML API documentation. Required for 'threat-pcap' in pan-os firewalls < 9.0.7 versions
+    - description: The Session ID of the PCAP. See the Panorama XML API documentation. Required for 'threat-pcap' when using Panorama instance.
       name: sessionID
-    description: Returns information for a Panorama PCAP file. The recommended maximum file size is 5 MB. If the limit is exceeded, you may need to SSH the firewall and run the scp export command to export the PCAP file. See the Palo Alto Networks documentation.
+    description: Returns a PCAP file. The recommended maximum file size is 5 MB. If the limit is exceeded, you may need to connect to the firewall and run the scp export command in order to export the PCAP file. See the Palo Alto Networks documentation.
     name: pan-os-get-pcap
     outputs:
     - contextPath: File.Size
@@ -9552,7 +9552,7 @@ script:
     description: Deletes an application-group
     name: pan-os-delete-application-group
     outputs: []
-  dockerimage: demisto/pan-os-python:1.0.0.49154
+  dockerimage: demisto/pan-os-python:1.0.0.50141
   feed: false
   isfetch: true
   longRunning: false

@@ -44,7 +44,7 @@ description: |-
 
   [MITRE Technique T1036](https://attack.mitre.org/techniques/T1036/)
 
-  [Possible Microsoft process masquerading](https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-analytics-alert-reference/cortex-xdr-analytics-alert-reference/possible-microsoft-process-masquerading.html)
+  [Possible Microsoft process masquerading](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Analytics-Alert-Reference/Possible-Microsoft-process-masquerading)
 starttaskid: "0"
 tasks:
   "0":
@@ -66,7 +66,7 @@ tasks:
       {
         "position": {
           "x": 70,
-          "y": 1300
+          "y": 1280
         }
       }
     note: false
@@ -416,8 +416,6 @@ tasks:
       FileRemediation:
         complex:
           root: inputs.FileRemediation
-      IAMUserDomain:
-        simple: ''
       UserContainment:
         simple: "False"
       Username:
@@ -563,14 +561,10 @@ tasks:
           accessor: domainname
       FileSHA256:
         complex:
-          root: alert
-          accessor: initiatorsha256
-          transformers:
-          - operator: uniq
+          root: inputs.FileSHA256
       IP:
         complex:
-          root: alert
-          accessor: hostip
+          root: inputs.IP
       URL:
         complex:
           root: alert
@@ -580,7 +574,7 @@ tasks:
           root: alert
           accessor: username
       query:
-        simple: (initiatorsha256:${alert.initiatorsha256} or hostip:${alert.hostip} or username:${alert.username} or url:${alert.url}) and sourceBrand:"${alert.sourceBrand}" and name:"${alert.name}"
+        simple: (initiatorsha256:${inputs.FileSHA256} or hostip:${inputs.IP}) and sourceBrand:"${alert.sourceBrand}" and name:"${alert.name}"
       threshold:
         simple: "5"
     separatecontext: false
@@ -773,7 +767,7 @@ tasks:
       {
         "position": {
           "x": 70,
-          "y": 1430
+          "y": 1420
         }
       }
     note: false
@@ -832,18 +826,18 @@ tasks:
         simple: "True"
       FileHash:
         complex:
-          root: alert
+          root: inputs
           filters:
           - - operator: isNotEqualString
               left:
                 value:
-                  simple: alert.initiatorpath
+                  simple: inputs.FilePath
                 iscontext: true
               right:
                 value:
                   simple: c:\windows\explorer.exe
               ignorecase: true
-          accessor: initiatorsha256
+          accessor: FileSHA256
           transformers:
           - operator: SetIfEmpty
             args:
@@ -854,17 +848,18 @@ tasks:
                 iscontext: true
       FilePath:
         complex:
-          root: alert.initiatorpath
+          root: inputs
           filters:
           - - operator: isNotEqualString
               left:
                 value:
-                  simple: alert.initiatorpath
+                  simple: inputs.FilePath
                 iscontext: true
               right:
                 value:
                   simple: c:\windows\explorer.exe
               ignorecase: true
+          accessor: FilePath
           transformers:
           - operator: SetIfEmpty
             args:
@@ -882,9 +877,11 @@ tasks:
           - operator: uniq
       FileRemediation:
         simple: Quarantine
-      IAMUserDomain:
-        simple: ''
+      HostContainment:
+        simple: "True"
       UserContainment:
+        simple: "False"
+      UserVerification:
         simple: "False"
       Username:
         complex:
@@ -931,8 +928,7 @@ tasks:
     scriptarguments:
       FileSHA256:
         complex:
-          root: alert
-          accessor: initiatorsha256
+          root: inputs.FileSHA256
       ShouldCloseAutomatically:
         complex:
           root: inputs.AutoCloseAlert
@@ -940,6 +936,13 @@ tasks:
         complex:
           root: alert
           accessor: name
+      sourceIP:
+        complex:
+          root: inputs.IP
+      username:
+        complex:
+          root: alert
+          accessor: username
     separatecontext: true
     loop:
       iscommand: false
@@ -1142,6 +1145,9 @@ tasks:
       '#none#':
       - "90"
     scriptarguments:
+      FileHash:
+        complex:
+          root: inputs.FileSHA256
       endpointID:
         complex:
           root: alert
@@ -1294,10 +1300,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 3275,
+        "height": 3295,
         "width": 1810,
         "x": -330,
-        "y": 1300
+        "y": 1280
       }
     }
   }
@@ -1340,6 +1346,30 @@ inputs:
     * Terminate process
     * Delete file
     * Reset the user's password
+  playbookInputQuery:
+- key: FileSHA256
+  value:
+    complex:
+      root: alert
+      accessor: initiatorsha256
+  required: false
+  description: The file SHA256 to investigate.
+  playbookInputQuery:
+- key: FilePath
+  value:
+    complex:
+      root: alert
+      accessor: initiatorpath
+  required: false
+  description: The file path to investigate.
+  playbookInputQuery:
+- key: IP
+  value:
+    complex:
+      root: alert
+      accessor: hostip
+  required: false
+  description: The IP address to investigate.
   playbookInputQuery:
 outputs: []
 tests:

@@ -1,3 +1,4 @@
+import boto3
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -7,6 +8,17 @@ from dateparser import parse
 
 # Disable insecure warnings
 urllib3.disable_warnings()
+
+MIRROR_DIRECTION_MAPPING = {
+    "None": None,
+    "Incoming": "In",
+    "Outgoing": "Out",
+    "Incoming And Outgoing": "Both",
+}
+
+OUT_FIELDS = ['Confidence', 'Criticality', 'Note.Text', 'Note.UpdatedBy', 'Severity.Label', 'VerificationState',
+              'Workflow.Status']
+FindingIdentifiers_lIST = ['FindingIdentifiers.Id', 'FindingIdentifiers.ProductArn']
 
 '''HELPER FUNCTIONS'''
 
@@ -505,7 +517,7 @@ def parse_filter_field(string_filters) -> dict:
     return filters
 
 
-def severity_mapping(severity: int) -> int:
+def severity_mapping(severity: str) -> int:
     """
     Maps AWS finding severity to demisto severity
     Args:
@@ -514,33 +526,83 @@ def severity_mapping(severity: int) -> int:
     Returns:
         Demisto severity
     """
-    if 1 <= severity <= 30:
+    if severity == 'LOW':
         demisto_severity = 1
-    elif 31 <= severity <= 70:
+    elif severity == 'MEDIUM':
         demisto_severity = 2
-    elif 71 <= severity <= 100:
+    elif severity == 'HIGH':
         demisto_severity = 3
+    elif severity == 'CRITICAL':
+        demisto_severity = 4
     else:
         demisto_severity = 0
 
     return demisto_severity
 
 
-def sh_severity_mapping(severity: str):
+def create_filters_list_dictionaries(arr: List[str], compare_param: str) -> List[Dict]:
+    """ Returns the object for the filters dictionary.
+        Args:
+            arr: List[str] - An array of strings
+            compare_param: str - The comparison string. can be EQUALS or PREFIX.
+        Returns:
+            The correct object to add to filters.
     """
-    Maps AWS finding string severity (LOW, Medium, High) into AWS finding number severity
-    Args:
-        severity: AWS finding string severity
+    result_arr = []
+    for item in arr:
+        d = {
+            'Comparison': compare_param,
+            'Value': item
+        }
+        result_arr.append(d)
+    return result_arr
 
-    Returns:
-        The number representation of the AWS finding severity
+
+def build_severity_label_obj(label: str) -> List:
+    """ Returns the object for the severity label in the fetch.
+        Args:
+            label: str - The severity label the user provided.
+        Returns:
+            A list of dictionaries to be sent in the filters object.
     """
-    severity_mapper = {
+    severity_dict = {
+        'Informational': 0,
         'Low': 1,
-        'Medium': 31,
-        'High': 71
+        'Medium': 2,
+        'High': 3,
+        'Critical': 4
     }
-    return severity_mapper.get(severity, 0)
+    severity_label_obj = []
+    num = severity_dict.get(label, -1)  # -1 is smaller than all -> all the severities will be in the object.
+    for lbl in severity_dict:
+        key = severity_dict.get(lbl, 5)  # 5 is bigger than all -> all the severities will be in the object.
+        # in order to get incident with equal or higher severity we need to add all the relevant severities to this
+        # object, and then the API will return all the incidents that are equal to one of the severities we provided.
+        if key >= num:
+            severity_label_obj.append({
+                'Comparison': 'EQUALS',
+                'Value': lbl.upper()
+            })
+    return severity_label_obj
+
+
+def last_update_to_time(last_update: str) -> int:
+    """
+        Converting the lastUpdate string to int
+        Args:
+            last_update: str
+        Returns:
+            The int representing the date.
+        """
+    if not last_update:
+        raise ValueError('Missing lastUpdate')
+    else:
+        date_time = dateparser.parse(last_update, settings={'TIMEZONE': 'UTC'})
+        if not date_time:
+            raise ValueError('Invalid date.')
+        else:
+            demisto.debug('In last_update_to_time returning the result')
+            return int(date_time.timestamp())
 
 
 def disable_security_hub_command(client, args):
@@ -699,7 +761,8 @@ def batch_update_findings_command(client, args):
     return human_readable, outputs, response
 
 
-def fetch_incidents(client, aws_sh_severity, archive_findings, additional_filters):
+def fetch_incidents(client, aws_sh_severity, archive_findings, additional_filters, mirror_direction, finding_types,
+                    workflow_status, product_name):
     last_run = demisto.getLastRun().get('lastRun', None)
     next_token = demisto.getLastRun().get('next_token', None)
     if last_run is None:
@@ -713,30 +776,44 @@ def fetch_incidents(client, aws_sh_severity, archive_findings, additional_filter
         'CreatedAt': [{
             'Start': last_run,
             'End': now.isoformat()
-        }],
-        'SeverityNormalized': [{
-            'Gte': sh_severity_mapping(aws_sh_severity),
         }]
     }
+    if aws_sh_severity:
+        filters['SeverityLabel'] = build_severity_label_obj(aws_sh_severity)
     if additional_filters is not None:
         filters.update(parse_filter_field(additional_filters))
+    if finding_types:
+        filters['Type'] = create_filters_list_dictionaries(finding_types, 'PREFIX')
+    if workflow_status:
+        statuses = [stat.upper() for stat in workflow_status]
+        filters['WorkflowStatus'] = create_filters_list_dictionaries(statuses, 'EQUALS')
+    if product_name:
+        filters['ProductName'] = create_filters_list_dictionaries(product_name, 'EQUALS')
+    demisto.debug(f'The filters to the fetch are: {filters}')
     if next_token:
         try:
             response = client.get_findings(NextToken=next_token)
+
         # In case a new request is made with another input the nextToken will be revoked
-        except client.exceptions.InvalidInputException:
+        except client.exceptions.InvalidInputException as e:
+            demisto.debug(f'The {next_token=} is not valid.\nThe exception is {e}')
             response = client.get_findings(Filters=filters)
     else:
         response = client.get_findings(Filters=filters)
     findings = response['Findings']
     next_token = response.get('NextToken')
-    incidents = [{
-        'occurred': finding['CreatedAt'],
-        'severity': severity_mapping(finding['Severity']['Normalized']),
-        'rawJSON': json.dumps(finding),
-        'dbotMirrorId': finding['Id']
-    }
-        for finding in findings]
+    demisto.debug(f'The findings in the fetch_incidents are: {findings}')
+    incidents = []
+    for finding in findings:
+        finding.update({
+            'mirror_direction': mirror_direction,
+            'mirror_instance': demisto.integrationInstance()
+        })
+        incidents.append({
+            'occurred': finding['CreatedAt'],
+            'severity': severity_mapping(finding['Severity']['Label']),
+            'rawJSON': json.dumps(finding)
+        })
     if findings:
         # in case we got finding, we should get the latest created one and increase it by 1 ms so the next fetch
         # wont include it in the query and fetch duplicates
@@ -764,6 +841,125 @@ def fetch_incidents(client, aws_sh_severity, archive_findings, additional_filter
         client.batch_update_findings(**kwargs)
 
 
+def get_remote_data_command(client: boto3.client, args: Dict[str, Any]) -> GetRemoteDataResponse:
+    """
+    get-remote-data command: Returns an updated incident and entries
+    Args:
+        client: XSOAR client to use
+        args:
+            id: incident id to retrieve
+            lastUpdate: when was the last time we retrieved data
+
+    Returns:
+        GetRemoteDataResponse object, which contain the incident data to update.
+    """
+    remote_args = GetRemoteDataArgs(args)
+    remote_incident_id = remote_args.remote_incident_id
+    # The incident can be updated in a 3rd party provider, which can cause a delayed update in AWS Security Hub,
+    # that can lead to XSOAR missing the update. This is way the -60 seconds
+    last_update_time = last_update_to_time(remote_args.last_update) - 60
+    demisto.debug(f'Performing get-remote-data command with incident id: {remote_incident_id} and {last_update_time=}')
+
+    filters = {
+        'Id': [
+            {
+                'Comparison': 'EQUALS',
+                'Value': remote_incident_id
+            }
+        ]
+    }
+    response = client.get_findings(Filters=filters)
+    demisto.debug(f'The response is: {response} \nEnd of response.')
+    finding = response.get('Findings')[0]  # a list with one dict in it
+    incident_last_update = finding.get('UpdatedAt', '')
+    incident_last_update_time = last_update_to_time(incident_last_update)
+    demisto.debug(f'The incident last update time is: {incident_last_update}\nAnd {incident_last_update_time=}')
+
+    if last_update_time < incident_last_update_time:
+        demisto.debug(f'Updated incident {remote_incident_id}')
+        return GetRemoteDataResponse(mirrored_object=finding, entries=[{}])
+    else:
+        demisto.debug('Nothing new in the incident.')
+        return GetRemoteDataResponse(mirrored_object={}, entries=[{}])
+
+
+def get_mapping_fields_command() -> GetMappingFieldsResponse:
+    """
+    Returns the list of fields to map in outgoing mirroring, for incidents and detections.
+    """
+    incident_type_scheme = SchemeTypeMapping(type_name='AWS Security Hub Finding')
+    demisto.debug('Collecting incident mapping.')
+
+    for field in OUT_FIELDS + FindingIdentifiers_lIST:
+        incident_type_scheme.add_field(field)
+
+    mapping_response = GetMappingFieldsResponse()
+    mapping_response.add_scheme_type(incident_type_scheme)
+
+    return mapping_response
+
+
+def update_remote_system_command(client: boto3.client, args: Dict[str, Any], resolve_findings: bool) -> str:
+    """
+    Mirrors out local changes to the remote system.
+    Args:
+        client: boto3.client - AWS client
+        args: A dictionary containing the data regarding a modified incident, including: data, entries,
+            incident_changed, remote_incident_id, inc_status, delta.
+        resolve_findings: bool - Whether to resolve an incident in Security Hub, that was closed in XSOAR.
+
+    Returns:
+        The remote incident id that was modified. This is important when the incident is newly created remotely.
+    """
+    parsed_args = UpdateRemoteSystemArgs(args)
+    delta = parsed_args.delta
+    remote_incident_id = parsed_args.remote_incident_id
+    data = parsed_args.data
+    demisto.debug(f'Got the following {parsed_args.inc_status=}, {data=}, {delta=} '
+                  f'and remote ID: {remote_incident_id}.')
+
+    if parsed_args.incident_changed and delta:
+        demisto.debug(f'Got the following delta keys {list(delta.keys())}.\n'
+                      f'Incident id {remote_incident_id} and incident change: '
+                      f'{parsed_args.incident_changed}')
+        kwargs = {
+            "FindingIdentifiers": [{
+                "Id": data.get('FindingIdentifiers.Id'),
+                "ProductArn": data.get('FindingIdentifiers.ProductArn')
+            }],
+            'Severity': {
+                "Label": delta.get('Severity.Label')
+            },
+            # should contain only 1 state
+            'VerificationState': delta.get('VerificationState')[0] if delta.get('VerificationState') else None,
+            'Confidence': int(delta.get('Confidence')) if delta.get('Confidence') else None,
+            'Criticality': int(delta.get('Criticality')) if delta.get('Criticality') else None,
+            # should contain only 1 status
+            'Workflow': {
+                "Status": delta.get('Workflow.Status')[0] if delta.get('Workflow.Status') else None
+            }
+        }
+
+        if delta.get('Note.Text'):
+            kwargs['Note'] = {
+                'Text': delta.get('Note.Text') or data.get('Note.Text'),
+                'UpdatedBy': delta.get('Note.UpdatedBy') or data.get('Note.UpdatedBy')
+            }
+        demisto.debug(f'The {resolve_findings=} ,{parsed_args.inc_status=}')
+        if parsed_args.inc_status == IncidentStatus.DONE and resolve_findings:
+            kwargs['Workflow']['Status'] = 'RESOLVED'
+            parsed_args.data['Workflow.Status'] = ['RESOLVED']
+            demisto.debug(f"{parsed_args.data['Workflow.Status']=}")
+
+        kwargs = remove_empty_elements(kwargs)
+        demisto.debug(f'{kwargs=}')
+        response = client.batch_update_findings(**kwargs)
+        demisto.debug(f'The update remote system response is: {response}')
+    else:
+        demisto.debug(f'Skipping updating remote incident {remote_incident_id} as it did not change.')
+    return remote_incident_id
+
+
 def test_function(client):
     response = client.get_findings()
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
@@ -789,6 +985,11 @@ def main():  # pragma: no cover
     aws_sh_severity = params.get('sh_severity')
     archive_findings = params.get('archiveFindings', False)
     additional_filters = params.get('additionalFilters', '')
+    mirror_direction = MIRROR_DIRECTION_MAPPING[params.get('mirror_direction')]
+    finding_type = params.get('finding_type', '')
+    workflow_status = params.get('workflow_status', '')
+    product_name = argToList(params.get('product_name', ''))
+    resolve_findings = params.get('resolve_finding')
 
     try:
         validate_params(aws_default_region, aws_role_arn, aws_role_session_name, aws_access_key_id,
@@ -825,8 +1026,21 @@ def main():  # pragma: no cover
         elif command == 'aws-securityhub-batch-update-findings':
             human_readable, outputs, response = batch_update_findings_command(client, args)
         elif command == 'fetch-incidents':
-            fetch_incidents(client, aws_sh_severity, archive_findings, additional_filters)
+            fetch_incidents(client, aws_sh_severity, archive_findings, additional_filters, mirror_direction,
+                            finding_type, workflow_status, product_name)
             return
+        elif command == 'get-remote-data':
+            return_results(get_remote_data_command(client, args))
+            return
+        elif command == 'update-remote-system':
+            return_results(update_remote_system_command(client, args, resolve_findings))
+            return
+        elif command == 'get-mapping-fields':
+            return_results(get_mapping_fields_command())
+            return
+        else:
+            raise NotImplementedError(f'{command} command is not implemented.')
+
         return_outputs(human_readable, outputs, response)
 
     except Exception as e:

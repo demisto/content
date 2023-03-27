@@ -1,4 +1,4 @@
-category: IT Services
+category: Authentication & Identity Management
 commonfields:
   id: Microsoft Graph Groups
   version: -1
@@ -390,6 +390,15 @@ script:
       name: filter
       required: false
       secret: false
+    - default: false
+      description: Retrieves the total count of matching resources.
+      isArray: false
+      name: count
+      required: false
+      secret: false
+      auto: PREDEFINED
+      predefined:
+      - 'true'
     deprecated: false
     description: Lists group members.
     execution: false
@@ -475,7 +484,7 @@ script:
     execution: false
     name: msgraph-groups-generate-login-url
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.48652
+  dockerimage: demisto/crypto:1.0.0.51288
   isfetch: false
   longRunning: false
   longRunningPort: false

@@ -1,4 +1,4 @@
-This playbook blocks malicious Indicators using all integrations that are enabled, using the following sub-playbooks:
+This playbook blocks malicious indicators using all integrations that are enabled, using the following sub-playbooks:
 
 - Block URL - Generic v2
 - Block Account - Generic v2
@@ -10,26 +10,32 @@ This playbook blocks malicious Indicators using all integrations that are enable
 
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
-* Block File - Generic v2
-* Block Email - Generic
-* Block URL - Generic v2
-* Block Domain - Generic
+
 * Block IP - Generic v3
+* Block URL - Generic v2
 * Block Account - Generic v2
+* Block Email - Generic
+* Block File - Generic v2
+* Block Domain - Generic
 
 ### Integrations
+
 This playbook does not use any integrations.
 
 ### Scripts
-This playbook does not use any scripts.
+
+* Set
 
 ### Commands
+
 * setIndicators
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
@@ -39,6 +45,10 @@ This playbook does not use any scripts.
 | Username | Array of malicious usernames to block. | DBotScore.Indicator | Optional |
 | MD5 | The MD5 hash of the file you want to block. | DBotScore.Indicator | Optional |
 | SHA256 | The SHA256 hash of the file you want to block. | DBotScore.Indicator | Optional |
+| FilesToBlock | Array of malicious file hashes to block. | DBotScore.Indicator | Optional |
+| DomainToBlock | The domain that you wish to block. | DBotScore.Indicator | Optional |
+| EmailToBlock | The email address that you wish to block. | DBotScore.Indicator | Optional |
+| AutoBlockIndicators | Possible values: True/False.  Default: True.<br/>Should the given indicators be automatically blocked, or should the user be given the option to choose?<br/><br/>If set to False - no prompt will appear, and all provided indicators will be blocked automatically.<br/>If set to True - the user will be prompted to select which indicators to block. | True | Optional |
 | CustomBlockRule | This input determines whether Palo Alto Networks Panorama or Firewall Custom Block Rules are used.<br/>Specify "True" to create new Custom Block Rules \(2 FW rules inside the PAN-OS device\). <br/>For "False" - no rules will be created. | True | Optional |
 | LogForwarding | Panorama log forwarding object name. Indicate what type of Log Forwarding setting will be specified in the PAN-OS custom rules. |  | Optional |
 | AutoCommit | This input determines whether to commit the configuration automatically on PAN-OS devices and other FWs. <br/>Yes - Commit automatically.<br/>No - Commit manually. | No | Optional |
@@ -47,8 +57,6 @@ This playbook does not use any scripts.
 | type | Custom URL category type. Insert "URL List"/ "Category Match". |  | Optional |
 | device-group | Device group for the Custom URL Category \(Panorama instances\). |  | Optional |
 | categories | The list of categories. Relevant from PAN-OS v9.x. |  | Optional |
-| EmailToBlock | The email address that you wish to block. |  | Optional |
-| DomainToBlock | The domain that you wish to block. |  | Optional |
 | DomainBlackListID | The Domain List ID to add the Domain to.<br/>product: Proofpoint Threat Response |  | Optional |
 | Tag | Insert a tag name with which indicators will get tagged. This tag can be used later in the External Dynamic Lists integration by using the tag for filtering IPs in the indicator query. |  | Optional |
 | DAG | This input determines whether Palo Alto Networks Panorama or Firewall Dynamic Address Groups are used.<br/>Specify the Dynamic Address Group tag name for IPs list handling. |  | Optional |
@@ -63,6 +71,7 @@ This playbook does not use any scripts.
 | EDLServerIP | EDL Server IP Address |  | Optional |
 
 ## Playbook Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -94,7 +103,10 @@ This playbook does not use any scripts.
 | CheckpointFWRule.Hits.Level | Level of rule hits. | unknown |
 | CheckpointFWRule.Hits.Percentage | Percentage of rule hits | unknown |
 | CheckpointFWRule.Hits.Value | Value of rule hits. | unknown |
+| IndicatorsToBlock | Selected indicators to block | unknown |
 
 ## Playbook Image
+
 ---
+
 ![Block Indicators - Generic v3](../doc_files/Block_Indicators_-_Generic_v3.png)

@@ -93,7 +93,7 @@ def get_indicators(client: Client, args: Dict[str, Any]) -> CommandResults:
     page_number = 2
     full_response = raw_response
 
-    while raw_response['total_pages'] != raw_response['page']:
+    while raw_response['total_pages'] >= raw_response['page']:
         if serial:
             api_query = "indicators?page=" + str(page_number) + "&serial%5B%5D=" + serial
         else:
