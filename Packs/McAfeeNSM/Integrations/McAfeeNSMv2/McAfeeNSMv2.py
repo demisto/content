@@ -789,7 +789,8 @@ def create_body_update_rule_for_v10(rule_type: str, address: List, number: int,
     # build a list of dictionaries with the state, the address, and changedState for update or delete
     # code explanations:
     # changedState: 1 = add, 3 = delete, depends on the choice of the user to overwrite or not
-    # address is a list of dictionaries or strings. The existing addresses are dictionaries and the upcoming addresses are strings
+    # AS you can tell from the 'update_rule_object_command', address is a list of dictionaries or strings.
+    # The existing addresses are dictionaries and the upcoming addresses are strings
     # if the address is a dictionary, the user wants to delete and overwrite that's the reason we kept that address in the list.
     list_to_send: list[Dict] = []
     for single_address in address:
