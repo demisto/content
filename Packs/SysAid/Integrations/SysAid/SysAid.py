@@ -1,7 +1,8 @@
-register_module_line('SysAid', 'start', __line__())
-import urllib3
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+import urllib3
+
+
 
 import os
 import mimetypes
@@ -1070,4 +1071,4 @@ def main() -> None:
 if __name__ in ['__main__', '__builtin__', 'builtins']:
     main()
 
-register_module_line('SysAid', 'end', __line__())
+

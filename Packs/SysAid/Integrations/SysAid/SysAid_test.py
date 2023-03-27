@@ -264,6 +264,90 @@ def test_service_record_delete_command(mocker, sysaid_client):
                                     resp_type='response', ok_codes=(200, 400))
 
 
+def test_service_record_attach_file_command(mocker, sysaid_client):
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+    When:
+        - sysaid-service-record-attach-file command is executed
+    Then:
+        - The http request is called with the right arguments
+    """
+    from SysAid import service_record_attach_file_command, read_file, get_content_type
+    http_request = mocker.patch.object(sysaid_client, '_http_request')
+    args = {'id': '37', 'file_id': '50@519fe085-179d-43f4-85c7-795eb4edd1a0'}
+    service_record_attach_file_command(sysaid_client, args)
+    file_data, file_size, file_name = read_file(args['file_id'])
+    file_type = get_content_type(file_name)
+    http_request.assert_called_with('POST', 'sr/37/attachment', files={'file': (file_name, file_data, file_type)},
+                                    cookies=COOKIES, resp_type='response')
+
+
+def test_service_record_delete_file_command(mocker, sysaid_client):
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+    When:
+        - sysaid-service-record-delete-file command is executed
+    Then:
+        - The http request is called with the right arguments
+    """
+    from SysAid import service_record_delete_file_command
+    http_request = mocker.patch.object(sysaid_client, '_http_request')
+    args = {'id': '2', 'file_id': '-1147906284_-769427333'}
+    service_record_delete_file_command(sysaid_client, args)
+    http_request.assert_called_with('DELETE', 'sr/2/attachment', json_data={'fileId': '-1147906284_-769427333'},
+                                    cookies=COOKIES, resp_type='response')
+
+
+def test_service_record_get_request(mocker, sysaid_client):
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+    When:
+        - sysaid-service-record-get command is executed
+    Then:
+        - The http request is called with the right arguments
+    """
+    from SysAid import service_record_get_command
+    http_request = mocker.patch.object(sysaid_client, '_http_request')
+    args = {'id': '37', 'fields': 'all'}
+    service_record_get_command(sysaid_client, args)
+    http_request.assert_called_with('GET', 'sr/37', params={'fields': 'all'}, cookies=COOKIES)
+
+
+def test_service_record_add_note_command(mocker, sysaid_client):
+    """
+    Given:
+        - All relevant arguments for the command that is executed
+    When:
+        - sysaid-service-record-add-note command is executed
+    Then:
+        - The http request is called with the right arguments
+    """
+    from SysAid import service_record_add_note_command
+    http_request = mocker.patch.object(sysaid_client, '_http_request')
+    args = {'id': '29', 'note': 'this is a new note', 'username': 'xsoar_dev'}
+
+    service_record_add_note_command(sysaid_client, args)
+    data = {
+        "id": "29",
+        "info": [
+            {
+                "key": "notes",
+                "value": [
+                    {
+                        "userName": "xsoar_dev",
+                        "createDate": "1679945624000",
+                        "text": "this is a new note"
+                    }
+                ]
+            }
+        ]
+    }
+    http_request.assert_called_with('PUT', 'sr/29', json_data=data, cookies=COOKIES, resp_type='response')
+
+
 ''' HELPER FUNCTIONS TESTS '''
 
 
