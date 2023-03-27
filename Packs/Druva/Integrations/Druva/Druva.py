@@ -27,42 +27,48 @@ class Client(BaseClient):
         self._headers = headers
 
     def test_apiModule(self):
-        return self._http_request(method='GET', url_suffix="/realize/ransomwarerecovery/v1/quarantineranges",
+        return self._http_request(method='GET', url_suffix=f"/realize/ransomwarerecovery/v1/quarantineranges",
                                   resp_type='response')
 
     def get_quarantineRanges(self):
-        return self._http_request(method='GET', url_suffix="/realize/ransomwarerecovery/v1/quarantineranges",
+        return self._http_request(method='GET', url_suffix=f"/realize/ransomwarerecovery/v1/quarantineranges",
                                   resp_type='response')
 
-    def get_findDevice(self, search_string):
+    def get_findFsNasDevice(self, search_string):
         params = {'hostname': search_string}
-        return self._http_request(method='GET', url_suffix="/realize/ransomwarerecovery/v1/search/backupset",
+        return self._http_request(method='GET', url_suffix=f"/realize/ransomwarerecovery/v1/search/backupset",
+                                  params=params, resp_type='response')
+
+    def get_findVMDevice(self, search_string):
+        params = {'hostname': search_string,'serverTypes[]':3}
+        return self._http_request(method='GET', url_suffix=f"/realize/ransomwarerecovery/v1/search/backupset",
                                   params=params, resp_type='response')
 
     def get_findUser(self, user_string):
         params = {'users': user_string}
-        return self._http_request(method='GET', url_suffix="realize/ransomwarerecovery/v1/users",
+        return self._http_request(method='GET', url_suffix=f"realize/ransomwarerecovery/v1/users",
                                   params=params, resp_type='response')
 
-    def get_findUserDevice(self, userId):
-        params = {'users[]': userId, 'resourceTypes[]': ['Endpoint', 'OneDrive', 'Google Drive']}
-        return self._http_request(method='GET', url_suffix="realize/ransomwarerecovery/v1/search/device",
+    def get_findUserDevice(self,userId):
+        params = {'users[]':userId,'resourceTypes[]':['Endpoint','OneDrive','Google Drive']}
+        return self._http_request(method='GET', url_suffix=f"realize/ransomwarerecovery/v1/search/device",
                                   params=params, resp_type='response')
 
-    def get_findSharePointSites(self, search_string):
+    def get_findSharePointSites(self,search_string):
         params = {'siteTitlePrefix': search_string}
-        return self._http_request(method='GET', url_suffix="/realize/ransomwarerecovery/v1/search/sharepoint-sites",
+        return self._http_request(method='GET', url_suffix=f"/realize/ransomwarerecovery/v1/search/sharepoint-sites",
                                   params=params, resp_type='response')
 
-    def get_findSharedDrives(self, search_string):
+    def get_findSharedDrives(self,search_string):
         params = {'accountTitlePrefix': search_string}
-        return self._http_request(method='GET', url_suffix="/realize/ransomwarerecovery/v1/search/shareddrive-accounts",
+        return self._http_request(method='GET', url_suffix=f"/realize/ransomwarerecovery/v1/search/shareddrive-accounts",
                                   params=params, resp_type='response')
 
-    def post_quarantineResource(self, org_id, resource_id, resource_type, from_date, to_date):
+
+    def post_quarantineResource(self,org_id,resource_id, resource_type, from_date, to_date):
         if org_id is not None:
-            org_id = int(org_id)
-        json_data = {'orgID': org_id, 'resourceType': resource_type, 'fromDate': from_date, 'toDate': to_date}
+            org_id=int(org_id)
+        json_data = {'orgID':org_id,'resourceType': resource_type, 'fromDate': from_date, 'toDate': to_date}
 
         url_suffix = f"/realize/ransomwarerecovery/v1/quarantineranges/resource/{resource_id}"
         return self._http_request(method='POST', url_suffix=url_suffix, json_data=json_data, resp_type='response')
@@ -93,7 +99,7 @@ class Client(BaseClient):
         return self._http_request(method='GET', url_suffix=url_suffix, resp_type='response')
 
     def post_restoreToEndpoint(self, source_resourceid, target_resourceid, restore_location):
-        url_suffix = "/insync/endpoints/v1/restores"
+        url_suffix = f"/insync/endpoints/v1/restores"
         json_data = {'deviceID': int(source_resourceid), 'targetDeviceID': int(
             target_resourceid), 'restoreLocation': restore_location}
         return self._http_request(method='POST', url_suffix=url_suffix, json_data=json_data, resp_type='response')
@@ -103,15 +109,15 @@ class Client(BaseClient):
         return self._http_request(method='GET', url_suffix=url_suffix, resp_type='response')
 
     def post_decommission(self, resource_id):
-        url_suffix = f"https://apis.druva.com/insync/endpoints/v1/devices/{str(resource_id)}/decommission"
+        url_suffix = 'https://apis.druva.com/insync/endpoints/v1/devices/' + str(resource_id) + '/decommission'
         return self._http_request(method='POST', url_suffix=url_suffix, resp_type='response')
 
 
 def test_module(clientObj):
     response = clientObj.test_apiModule()
     statusCode = response.status_code
-    if statusCode == 200:
-        return "ok"
+    if (statusCode == 200):
+        return ("ok")
     else:
         raise RuntimeError('Internal Error')
 
@@ -121,10 +127,10 @@ def Druva_ListQuarantineRanges_Command(clientObj):
     statusCode = response.status_code
     if (statusCode == 200):
         responseJson = response.json()
-        results = CommandResults(
-            readable_output=tableToMarkdown('Active quarantined Ranges', responseJson['quarantineRanges']),
-            outputs={"Druva.activeQuarantineRanges(val.rangeID == obj.rangeID)": responseJson['quarantineRanges']},
-            raw_response=responseJson
+        results=CommandResults(
+            readable_output = tableToMarkdown('Active quarantined Ranges', responseJson['quarantineRanges']),
+            outputs = {"Druva.activeQuarantineRanges(val.rangeID == obj.rangeID)": responseJson['quarantineRanges']},
+            raw_response = responseJson
         )
         return results
 
@@ -133,61 +139,63 @@ def Druva_ListQuarantineRanges_Command(clientObj):
 
 
 def Druva_FindDevice_Command(clientObj, search_string):
-    response = clientObj.get_findDevice(search_string)
+    response = clientObj.get_findFsNasDevice(search_string)
+    responseVM = clientObj.get_findVMDevice(search_string)
     statusCode = response.status_code
     if (statusCode == 200):
         responseJson = response.json()
-        results = CommandResults(
-            readable_output=tableToMarkdown('Found Druva Devices', responseJson['resources']),
-            outputs={"Druva.Resource(val.resourceID == obj.resourceID)": responseJson['resources']},
-            raw_response=responseJson
+        responseVMJson = responseVM.json()
+        finalResponce=responseJson['resources']+responseVMJson['resources']
+        results=CommandResults(
+            readable_output = tableToMarkdown('Found Druva Devices', finalResponce),
+            outputs = {"Druva.Resource(val.resourceID == obj.resourceID)": finalResponce},
+            raw_response = responseJson|responseVMJson
         )
         return results
 
     else:
         raise RuntimeError('Internal Error')
+
 
 
 def Druva_FindUser_Command(clientObj, user_string):
     response = clientObj.get_findUser(user_string)
     statusCode = response.status_code
-    if statusCode == 200:
+    if (statusCode==200):
         responseJson = response.json()
-        results = CommandResults(
-            readable_output=tableToMarkdown('Found Druva users', responseJson['users']),
-            outputs={"Druva.User(val.userID == obj.userID)": responseJson['users']},
-            raw_response=responseJson
+        results=CommandResults(
+            readable_output = tableToMarkdown('Found Druva users', responseJson['users']),
+            outputs = {"Druva.User(val.userID == obj.userID)": responseJson['users']},
+            raw_response = responseJson
         )
         return results
     else:
         raise RuntimeError('Internal Error')
-
 
 def Druva_FindUserDevice_Command(clientObj, userID):
     response = clientObj.get_findUserDevice(userID)
     statusCode = response.status_code
-    if statusCode == 200:
+    if (statusCode == 200):
         responseJson = response.json()
-        results = CommandResults(
-            readable_output=tableToMarkdown('Found Druva Devices', responseJson['resources']),
-            outputs={"Druva.Resource(val.resourceID == obj.resourceID)": responseJson['resources']},
-            raw_response=responseJson
+        results=CommandResults(
+            readable_output = tableToMarkdown('Found Druva Devices', responseJson['resources']),
+            outputs = {"Druva.Resource(val.resourceID == obj.resourceID)": responseJson['resources']},
+            raw_response = responseJson
         )
         return results
 
     else:
         raise RuntimeError('Internal Error')
 
-
-def Druva_FindSharePointSites_Command(clientObj, search_string):
+def Druva_FindSharePointSites_Command(clientObj,search_string):
     response = clientObj.get_findSharePointSites(search_string)
     statusCode = response.status_code
-    if statusCode == 200:
+    if (statusCode == 200):
         responseJson = response.json()
-        results = CommandResults(
-            readable_output=tableToMarkdown('Found Druva Devices', responseJson['siteCollections']),
-            outputs={"Druva.Resource(val.resourceID == obj.resourceID)": responseJson['siteCollections']},
-            raw_response=responseJson
+        results=CommandResults(
+            readable_output = tableToMarkdown('Found Druva Devices', responseJson['siteCollections']),
+            outputs = {"Druva.Resource(val.resourceID == obj.resourceID)": responseJson['siteCollections']},
+            raw_response = responseJson
         )
 
         return results
@@ -195,16 +203,15 @@ def Druva_FindSharePointSites_Command(clientObj, search_string):
     else:
         raise RuntimeError('Internal Error')
 
-
-def Druva_FindSharedDrives_Command(clientObj, search_string):
+def Druva_FindSharedDrives_Command(clientObj,search_string):
     response = clientObj.get_findSharedDrives(search_string)
     statusCode = response.status_code
-    if statusCode == 200:
+    if (statusCode == 200):
         responseJson = response.json()
-        results = CommandResults(
-            readable_output=tableToMarkdown('Found Druva Devices', responseJson['accountList']),
-            outputs={"Druva.Resource(val.resourceID == obj.resourceID)": responseJson['accountList']},
-            raw_response=responseJson
+        results=CommandResults(
+            readable_output = tableToMarkdown('Found Druva Devices', responseJson['accountList']),
+            outputs = {"Druva.Resource(val.resourceID == obj.resourceID)": responseJson['accountList']},
+            raw_response = responseJson
         )
 
         return results
@@ -212,18 +219,17 @@ def Druva_FindSharedDrives_Command(clientObj, search_string):
     else:
         raise RuntimeError('Internal Error')
 
-
-def Druva_QuarantineResource_Command(clientObj, org_id, resource_id, resource_type, from_date, to_date):
-    response = clientObj.post_quarantineResource(org_id, resource_id, resource_type, from_date, to_date)
+def Druva_QuarantineResource_Command(clientObj,org_id,resource_id, resource_type, from_date, to_date):
+    response = clientObj.post_quarantineResource(org_id,resource_id, resource_type, from_date, to_date)
     statusCode = response.status_code
-    if statusCode == 200:
+    if (statusCode == 200):
         responseJson = response.json()
         headers = ['RangeID']
-        results = CommandResults(
-            readable_output=tableToMarkdown('Resource quarantined successfully', str(responseJson['rangeID']),
-                                            headers=headers),
-            outputs={"Druva.QuarantinedRangeID": str(responseJson['rangeID'])},
-            raw_response=responseJson
+        results=CommandResults(
+            readable_output = tableToMarkdown('Resource quarantined successfully', str(responseJson['rangeID']),
+                                          headers=headers),
+            outputs = {"Druva.QuarantinedRangeID": str(responseJson['rangeID'])},
+            raw_response = responseJson
         )
 
         return results
@@ -232,41 +238,33 @@ def Druva_QuarantineResource_Command(clientObj, org_id, resource_id, resource_ty
 
 
 def Druva_DeleteQuarantineRange_Command(clientObj, resource_id, range_id):
-    demisto.results("Mission Accomplished")
-    try:
-        response = clientObj.delete_quarantineRange(resource_id, range_id)
-    except Exception as e:
-        demisto.results(str(e))
-    demisto.results("Mission Accomplished")
+    response = clientObj.delete_quarantineRange(resource_id, range_id)
     statusCode = response.status_code
     demisto.results(str(statusCode))
-    if statusCode == 200:
+    if (statusCode == 200):
         responseJson = response.json()
         headers = ['RangeID']
-        results = CommandResults(
-            readable_output=tableToMarkdown('Quarantine Range Deleted Successfully - PIYUSH', str(range_id),
-                                            headers=headers),
-            raw_response=responseJson
+        results=CommandResults(
+            readable_output = tableToMarkdown('Quarantine Range Deleted Successfully - PIYUSH', str(range_id), headers=headers),
+            raw_response = responseJson
         )
         return results
     else:
         raise RuntimeError('Internal Error')
-
 
 def Druva_ViewQurantineRange_Command(clientObj, resource_id, range_id):
     response = clientObj.view_quarantineRange(resource_id, range_id)
     statusCode = response.status_code
-    if statusCode == 200:
+    if (statusCode == 200):
         responseJson = response.json()
-        results = CommandResults(
-            readable_output=tableToMarkdown('Range Details', responseJson),
-            outputs={"Druva.viewedQuarantineRange(val.rangeID == obj.rangeID)": responseJson},
-            raw_response=responseJson
+        results=CommandResults(
+            readable_output = tableToMarkdown('Range Details', responseJson),
+            outputs = {"Druva.viewedQuarantineRange(val.rangeID == obj.rangeID)": responseJson},
+            raw_response = responseJson
         )
         return results
     else:
         raise RuntimeError('Internal Error')
-
 
 def Druva_UpdateQuarantineRange_Command(clientObj, resource_id, resource_type, range_id, from_date, to_date):
     response = clientObj.update_quarantineRange(resource_id, resource_type, range_id, from_date, to_date)
@@ -274,11 +272,10 @@ def Druva_UpdateQuarantineRange_Command(clientObj, resource_id, resource_type, r
     if (statusCode == 200):
         responseJson = response.json()
         headers = ['RangeID']
-        results = CommandResults(
-            readable_output=tableToMarkdown('Range updated successfully', str(responseJson['rangeID']),
-                                            headers=headers),
-            outputs={"Druva.updatedQuarantineRange": str(range_id)},
-            raw_response=responseJson
+        results=CommandResults(
+            readable_output = tableToMarkdown('Range updated successfully', str(responseJson['rangeID']), headers=headers),
+            outputs = {"Druva.updatedQuarantineRange": str(range_id)},
+            raw_response = responseJson
         )
 
         return results
@@ -289,12 +286,12 @@ def Druva_UpdateQuarantineRange_Command(clientObj, resource_id, resource_type, r
 def Druva_ListQuarantine_Snapshots_Command(clientObj, resource_id, range_id):
     response = clientObj.get_quarantinedSnapshots(resource_id, range_id)
     statusCode = response.status_code
-    if statusCode == 200:
+    if (statusCode == 200):
         responseJson = response.json()
-        results = CommandResults(
-            readable_output=tableToMarkdown('Quarantined Snapshots', responseJson['snapshots']),
-            outputs={"Druva.quarantinedSnapshots(val.snapshotID == obj.snapshotID)": responseJson['snapshots']},
-            raw_response=responseJson
+        results=CommandResults(
+            readable_output = tableToMarkdown('Quarantined Snapshots', responseJson['snapshots']),
+            outputs = {"Druva.quarantinedSnapshots(val.snapshotID == obj.snapshotID)": responseJson['snapshots']},
+            raw_response = responseJson
         )
 
         return results
@@ -305,12 +302,12 @@ def Druva_ListQuarantine_Snapshots_Command(clientObj, resource_id, range_id):
 def Druva_DeleteQuarantined_Snapshots_Command(clientObj, resource_id, range_id, snapshot_id):
     response = clientObj.delete_Snapshots(resource_id, range_id, snapshot_id)
     statusCode = response.status_code
-    if statusCode == 200:
+    if (statusCode == 200):
         responseJson = response.json()
         headers = ['Snapshot ID']
-        results = CommandResults(
-            readable_output=tableToMarkdown('Snapshot Deleted successfully', str(snapshot_id), headers=headers),
-            raw_response=responseJson
+        results=CommandResults(
+            readable_output = tableToMarkdown('Snapshot Deleted successfully', str(snapshot_id), headers=headers),
+            raw_response = responseJson
         )
         return results
     else:
@@ -320,12 +317,12 @@ def Druva_DeleteQuarantined_Snapshots_Command(clientObj, resource_id, range_id, 
 def Druva_SearchbyFileHash_Command(clientObj, sha1_checksum):
     response = clientObj.get_searchbyFileHash(sha1_checksum)
     statusCode = response.status_code
-    if statusCode == 200:
+    if (statusCode == 200):
         responseJson = response.json()
-        results = CommandResults(
-            readable_output=tableToMarkdown('Search Results', responseJson['results']),
-            outputs={"Druva.searchEndpointsFileHashResults(val.objectID == obj.objectID)": responseJson['results']},
-            raw_response=responseJson
+        results=CommandResults(
+            readable_output = tableToMarkdown('Search Results', responseJson['results']),
+            outputs = {"Druva.searchEndpointsFileHashResults(val.objectID == obj.objectID)": responseJson['results']},
+            raw_response = responseJson
         )
 
         return results
@@ -336,12 +333,12 @@ def Druva_SearchbyFileHash_Command(clientObj, sha1_checksum):
 def Druva_Restore_Endpoint(clientObj, source_resourceid, target_resourceid, restore_location):
     response = clientObj.post_restoreToEndpoint(source_resourceid, target_resourceid, restore_location)
     statusCode = response.status_code
-    if statusCode == 200:
+    if (statusCode == 200):
         responseJson = response.json()
-        results = CommandResults(
-            readable_output=tableToMarkdown('Restore Job Initiated', responseJson['restores']),
-            outputs={"Druva.restoreJobs(val.restoreID == obj.restoreID)": responseJson['restores']},
-            raw_response=responseJson
+        results=CommandResults(
+            readable_output = tableToMarkdown('Restore Job Initiated', responseJson['restores']),
+            outputs = {"Druva.restoreJobs(val.restoreID == obj.restoreID)": responseJson['restores']},
+            raw_response = responseJson
         )
 
         return results
@@ -352,12 +349,12 @@ def Druva_Restore_Endpoint(clientObj, source_resourceid, target_resourceid, rest
 def Druva_Restore_Status(clientObj, restore_id):
     response = clientObj.get_restoreStatus(restore_id)
     statusCode = response.status_code
-    if statusCode == 200:
+    if (statusCode == 200):
         responseJson = response.json()
-        results = CommandResults(
-            readable_output=tableToMarkdown('Restore Job Status', responseJson),
-            outputs={"Druva.restoreJobs(val.restoreID == obj.restoreID)": responseJson},
-            raw_response=responseJson
+        results=CommandResults(
+            readable_output = tableToMarkdown('Restore Job Status', responseJson),
+            outputs = {"Druva.restoreJobs(val.restoreID == obj.restoreID)": responseJson},
+            raw_response = responseJson
         )
 
         return results
@@ -368,13 +365,13 @@ def Druva_Restore_Status(clientObj, restore_id):
 def Druva_Decommission(clientObj, resource_id):
     response = clientObj.post_decommission(resource_id)
     statusCode = response.status_code
-    if statusCode == 200:
+    if (statusCode == 200):
         responseJson = response.json()
         headers = ['Resource ID']
-        results = CommandResults(
-            readable_output=tableToMarkdown('Device Decomission Request', str(resource_id), headers=headers),
-            outputs={"Druva.decomissionedResource(val.resource_id == obj.resource_id)": str(resource_id)},
-            raw_response=responseJson
+        results=CommandResults(
+            readable_output = tableToMarkdown('Device Decomission Request', str(resource_id), headers=headers),
+            outputs = {"Druva.decomissionedResource(val.resource_id == obj.resource_id)": str(resource_id)},
+            raw_response = responseJson
         )
 
         return results
@@ -409,30 +406,30 @@ def main():
             search_string = demisto.args().get('search_string')
             return_results(Druva_FindDevice_Command(clientObj, search_string))
 
+
         if command == 'druva-find-user':
-            user_string = demisto.args().get('user_string')
-            return_results(Druva_FindUser_Command(clientObj, user_string))
+            user_string=demisto.args().get('user_string')
+            return_results(Druva_FindUser_Command(clientObj,user_string))
 
         if command == 'druva-find-userDevice':
-            userID = demisto.args().get('userID')
-            return_results(Druva_FindUserDevice_Command(clientObj, userID))
+            userID=demisto.args().get('userID')
+            return_results(Druva_FindUserDevice_Command(clientObj,userID))
 
         if command == 'druva-find-sharePointSites':
-            Site = demisto.args().get('search_string')
-            return_results(Druva_FindSharePointSites_Command(clientObj, Site))
+            Site=demisto.args().get('search_string')
+            return_results(Druva_FindSharePointSites_Command(clientObj,Site))
 
         if command == 'druva-find-sharedDrives':
-            Site = demisto.args().get('search_string')
-            return_results(Druva_FindSharedDrives_Command(clientObj, Site))
+            Site=demisto.args().get('search_string')
+            return_results(Druva_FindSharedDrives_Command(clientObj,Site))
 
         if command == 'druva-quarantine-resource':
-            org_id = demisto.args().get('org_id')
+            org_id=demisto.args().get('org_id')
             resource_id = demisto.args().get('resource_id')
             resource_type = demisto.args().get('resource_type')
             from_date = demisto.args().get('from_date')
             to_date = demisto.args().get('to_date')
-            return_results(
-                Druva_QuarantineResource_Command(clientObj, org_id, resource_id, resource_type, from_date, to_date))
+            return_results(Druva_QuarantineResource_Command(clientObj,org_id,resource_id, resource_type, from_date, to_date))
             return_results(Druva_ListQuarantineRanges_Command(clientObj))
 
         if command == 'druva-delete-quarantine-range':
@@ -440,10 +437,12 @@ def main():
             range_id = demisto.args().get('range_id')
             return_results(Druva_DeleteQuarantineRange_Command(clientObj, resource_id, range_id))
 
+
         if command == 'druva-view-quarantine-range':
             resource_id = demisto.args().get('resource_id')
             range_id = demisto.args().get('range_id')
             return_results(Druva_ViewQurantineRange_Command(clientObj, resource_id, range_id))
+
 
         if command == 'druva-update-quarantine-range':
             resource_id = demisto.args().get('resource_id')
@@ -452,8 +451,8 @@ def main():
             from_date = demisto.args().get('from_date')
             to_date = demisto.args().get('to_date')
             return_results(Druva_UpdateQuarantineRange_Command(clientObj,
-                                                               resource_id, resource_type, range_id, from_date,
-                                                               to_date))
+                                                                resource_id, resource_type, range_id, from_date,
+                                                                to_date))
             return_results(Druva_ListQuarantineRanges_Command(clientObj))
 
         if command == 'druva-list-quarantine-snapshots':
@@ -467,13 +466,10 @@ def main():
             snapshot_id = demisto.args().get('snapshot_id')
             return_results(Druva_DeleteQuarantined_Snapshots_Command(clientObj, resource_id, range_id, snapshot_id))
 
+
         if command == 'druva-endpoint-search-file-hash':
             sha1_checksum = demisto.args().get('sha1_checksum')
             return_results(Druva_SearchbyFileHash_Command(clientObj, sha1_checksum))
-
-        if command == 'druva-endpoint-decommission':
-            resource_id = demisto.args().get('resource_id')
-            return_results(Druva_Decommission(clientObj, resource_id))
 
         if command == 'druva-endpoint-initiate-restore':
             source_resourceid = demisto.args().get('source_resourceid')
@@ -484,6 +480,11 @@ def main():
         if command == 'druva-endpoint-check-restore-status':
             restore_id = demisto.args().get('restore_id')
             return_results(Druva_Restore_Status(clientObj, restore_id))
+
+
+
+
+
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
