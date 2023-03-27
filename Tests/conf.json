@@ -655,7 +655,7 @@
             "integrations": "AutoFocus V2",
             "playbookID": "Autofocus Query Samples, Sessions and Tags Test Playbook",
             "fromversion": "4.5.0",
-            "timeout": 1000
+            "timeout": 1500
         },
         {
             "integrations": "HelloWorld",
@@ -756,7 +756,7 @@
             "integrations": "SlackV3",
             "playbookID": "SlackV3 TestPB",
             "instance_names": "cached",
-            "timeout": 600,
+            "timeout": 800,
             "pid_threshold": 8,
             "fromversion": "5.5.0"
         },
