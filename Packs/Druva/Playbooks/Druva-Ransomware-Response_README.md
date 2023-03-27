@@ -1,40 +1,48 @@
 Automate response actions like quarantining effected resources or snapshots to stop the spread of ransomware and avoid reinfection or contamination spread.
 
-
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+
 This playbook does not use any sub-playbooks.
 
 ### Integrations
+
 * Druva Ransomware Response
 
 ### Scripts
+
 * IsIntegrationAvailable
 
 ### Commands
-* druva-view-quarantine-range
+
+* druva-find-userDevice
+* druva-find-sharedDrives
+* druva-find-user
 * druva-quarantine-resource
-* druva-endpoint-search-file-hash
 * druva-find-device
+* druva-find-sharePointSites
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| OccuredTime | Date when incident occurred. This field will be used as the start date for Druva snapshot quarantine.<br/>Format: YYYY-MM-DD | incident.datetimeofthebreach | Required |
-| ComputerName | ComputerName is used to search Druva for resourceID | incident.hostname | Required |
-| SHA1 | FIle Hash of ransomware Detected | File.SHA1 | Optional |
+| UserName | UserName is used to search userID  of user | ${incident.users} | Optional |
+| ResourceName | ResourceName is used to search resource of type FS,NAS and VMware | ${incident.hostnames} | Optional |
+| SiteURL | SiteURL is used to search sharedrive and sharepoint resources   | ${incident.urls} | Optional |
+| DateOfOccurrence | Date is used to quarantine device  | incident.occurred | Optional |
 
 ## Playbook Outputs
----
 
-| **Path** | **Description** | **Type** |
-| --- | --- | --- |
-| Druva.viewedQuarantineRange | Druva Range Output | unknown |
+---
+There are no outputs for this playbook.
 
 ## Playbook Image
+
 ---
-![Druva-Ransomware-Response](../doc_files/Druva-Ransomware-Response_Playbook.png)
+
+![Druva-Ransomware-Response](../doc_files/Druva-Ransomware-Response.png)
