@@ -1462,7 +1462,7 @@ def search_device(filter_operator='AND', exact_hostname_match: bool = False):
                 for arg_elem in arg:
                     if arg_elem:
                         first_arg = '{filter},{inp_arg}'.format(filter=arg_filter, inp_arg=k) if arg_filter else k
-                        if exact_hostname_match:
+                        if exact_hostname_match and k == 'hostname':
                             arg_filter = "{first}:['{second}']".format(first=first_arg, second=arg_elem)
                         else:
                             arg_filter = "{first}:'{second}'".format(first=first_arg, second=arg_elem)
