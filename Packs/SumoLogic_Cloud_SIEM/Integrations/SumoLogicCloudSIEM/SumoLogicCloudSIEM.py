@@ -297,7 +297,7 @@ def insight_get_details(client: Client, args: Dict[str, Any]) -> CommandResults:
     if record_summary_fields:
         query['recordSummaryFields'] = record_summary_fields
 
-    resp_json = client.req('GET', 'sec/v1/insights/{}'.format(insight_id), query)
+    resp_json = client.req('GET', f'sec/v1/insights/{insight_id}', query)
     insight = insight_signal_to_readable(resp_json)
     insight['SumoUrl'] = craft_sumo_url(client.get_extra_params()['instance_endpoint'], 'insight', insight_id)
 
@@ -896,7 +896,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int], 
     incidents: List[Dict[str, Any]] = []
 
     # set query values that do not change with pagination
-    q = 'created:>={}'.format(insight_timestamp_to_created_format(last_fetch_created_time))
+    q = f'created:>={insight_timestamp_to_created_format(last_fetch_created_time)}'
     offset = 0
     query = {}
     if fetch_query:

@@ -14,7 +14,8 @@ runonce: false
 script: ''
 scripttarget: 0
 subtype: python3
-tags: ['post-processing']
+tags: 
+    - 'post-processing'
 type: python
 fromversion: 6.5.0
 tests:
