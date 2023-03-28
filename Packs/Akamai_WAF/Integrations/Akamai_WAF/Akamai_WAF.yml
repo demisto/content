@@ -1298,7 +1298,7 @@ script:
       name: property_id
       required: true
     description: This lists all activations for all versions of a property, on both production and staging networks.
-    name: akamai-list-papi-proerty-activations
+    name: akamai-list-papi-property-activations
   - arguments:
     - description: Unique identifier for the contract.
       name: config_id
