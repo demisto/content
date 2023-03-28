@@ -99,6 +99,37 @@ def test_insight_get_comments(requests_mock):
     assert response.outputs[0]['Body'] == comments[0]['body'] == 'This is an example comment'
 
 
+def test_insight_add_comment(requests_mock):
+    """Tests sumologic-sec-insight-add-comment command function.
+    """
+    from SumoLogicCloudSIEM import Client, insight_add_comment, DEFAULT_HEADERS
+
+    mock_response = util_load_json('test_data/insight_add_comment.json')
+    insight_id = 'INSIGHT-116'
+    comment = mock_response['data']
+    requests_mock.post(f'{MOCK_URL}/sec/v1/insights/{insight_id}/comments', json=mock_response)
+
+    client = Client(
+        base_url=MOCK_URL,
+        verify=False,
+        headers=DEFAULT_HEADERS,
+        proxy=False,
+        auth=('access_id', 'access_key'),
+        ok_codes=[200])
+
+    args = {
+        'insight_id': insight_id
+    }
+
+    response = insight_add_comment(client, args)
+
+    assert response.outputs_prefix == 'SumoLogicSec.InsightComments'
+    assert response.outputs_key_field == 'Id'
+    assert response.outputs[0]['Id'] == comment['id'] == '32'
+    assert response.outputs[0]['Author'] == comment['author']['username'] == 'obfuscated@email.com'
+    assert response.outputs[0]['Body'] == comment['body'] == 'Test adding comment via API'
+
+
 def test_signal_get_details(requests_mock):
     """Tests sumologic-sec-signal-get-details command function.
     """
@@ -492,6 +523,124 @@ def test_fetch_incidents(requests_mock):
     assert incidents[1].get('occurred') == '2021-05-18T14:46:47.000Z'
     latest_created_time = datetime.strptime(incidents[1].get('occurred'), '%Y-%m-%dT%H:%M:%S.%fZ')
     assert next_run.get('last_fetch') == int(latest_created_time.replace(tzinfo=timezone.utc).timestamp())
+
+
+def test_fetch_incidents_with_signals(requests_mock):
+    """Tests fetch incidents.
+    """
+    from SumoLogicCloudSIEM import Client, fetch_incidents, DEFAULT_HEADERS
+
+    mock_response1 = util_load_json('test_data/insight_list_page1.json')
+    requests_mock.get(
+        '{}/sec/v1/insights?q=created%3A%3E%3D2021-05-18T00%3A00%3A00.000000+status%3Ain%28%22new%22%2C+%22inprogress%22%29'
+        '&limit=20&recordSummaryFields=action%2Cdescription%2Cdevice_hostname%2Cdevice_ip%2CdstDevice_hostname'
+        '%2CdstDevice_ip%2Cemail_sender%2Cfile_basename%2Cfile_hash_md5%2Cfile_hash_sha1%2Cfile_hash_sha256'
+        '%2CsrcDevice_hostname%2CsrcDevice_ip%2Cthreat_name%2Cthreat_category%2Cthreat_identifier%2Cuser_username'
+        '%2Cthreat_url%2ClistMatches'.format(MOCK_URL),
+        json=mock_response1)
+
+    mock_response2 = util_load_json('test_data/insight_list_page2.json')
+    requests_mock.get(
+        '{}/sec/v1/insights?q=created%3A%3E%3D2021-05-18T00%3A00%3A00.000000+status%3Ain%28%22new%22%2C+%22inprogress%22%29'
+        '&limit=20&recordSummaryFields=action%2Cdescription%2Cdevice_hostname%2Cdevice_ip%2CdstDevice_hostname'
+        '%2CdstDevice_ip%2Cemail_sender%2Cfile_basename%2Cfile_hash_md5%2Cfile_hash_sha1%2Cfile_hash_sha256'
+        '%2CsrcDevice_hostname%2CsrcDevice_ip%2Cthreat_name%2Cthreat_category%2Cthreat_identifier%2Cuser_username'
+        '%2Cthreat_url%2ClistMatches&offset=1'.format(MOCK_URL),
+        json=mock_response2)
+
+    mock_response3 = util_load_json('test_data/insight_signal_list1.json')
+    url_combo = f'{MOCK_URL}/sec/v1/signals?q=id:in("b4709a3c-c886-5cf0-9c98-88d976161edd","38c4bfea-23b5-5e4f-998c-5433dd093834'\
+        + '","0f335c0d-5ffe-5637-a868-146e7f401775","3bea8bf1-430d-5f68-b13c-81cdcf614e20","ab1313bf-de71-539c-bae4-922475561a45'\
+        + '","d1607da7-368b-5341-8aeb-927135c8f307","bc7fb3ac-a86e-57ab-bf34-3f98789bb16f","f845dfc7-dd64-58d9-a4d1-238da768ffd1'\
+        + '","bb96f1eb-8794-5c69-9e20-f21c43be87aa","8fbe5ecf-c83f-5ed8-9d6f-e5488e34d49c")'
+    requests_mock.get(url_combo, json=mock_response3)
+
+    mock_response4 = util_load_json('test_data/insight_signal_list2.json')
+    requests_mock.get(f'{MOCK_URL}/sec/v1/signals?q=id:in("2e4f64c2-e8c5-53ae-b0aa-01e5005155a7",'
+                      + '"ead54992-94f6-5aa3-b902-ec0fb5318dbc")', json=mock_response4)
+
+    client = Client(
+        base_url=MOCK_URL,
+        verify=False,
+        headers=DEFAULT_HEADERS,
+        proxy=False,
+        auth=('access_id', 'access_key'),
+        ok_codes=[200])
+
+    client.set_extra_params({'instance_endpoint': 'https://test.us2.sumologic.com'})
+
+    next_run, incidents = fetch_incidents(client=client, max_results=20, last_run={}, first_fetch_time=1621296000,
+                                          fetch_query=None, pull_signals=True,
+                                          record_summary_fields=RECORD_SUMMARY_FIELDS_DEFAULT, other_args=None)
+
+    # Signal incidents should be created first
+    assert incidents[0].get('name') == 'GCP API Permission Denied - b4709a3c-c886-5cf0-9c98-88d976161edd'
+    assert incidents[0].get('occurred') == '2021-05-17T20:02:03.000Z'
+    assert incidents[1].get('name') == 'GCP Audit Logging Sink Modified - 38c4bfea-23b5-5e4f-998c-5433dd093834'
+    assert incidents[1].get('occurred') == '2021-05-18T14:30:00.000Z'
+    assert incidents[2].get('name') == 'GCP Audit GCE Network Route Created or Modified - 0f335c0d-5ffe-5637-a868-146e7f401775'
+    assert incidents[2].get('occurred') == '2021-05-17T16:24:23.000Z'
+    assert incidents[11].get('name') == 'GCP Audit Pub/Sub Topic Deleted - ead54992-94f6-5aa3-b902-ec0fb5318dbc'
+    assert incidents[11].get('occurred') == '2021-05-18T14:45:51.000Z'
+    # Followed by Insight incidents
+    assert incidents[12].get('name') == 'Defense Evasion with Persistence - INSIGHT-231'
+    assert incidents[12].get('occurred') == '2021-05-18T14:46:46.000Z'
+    assert incidents[13].get('name') == 'Defense Evasion with Persistence - INSIGHT-232'
+    assert incidents[13].get('occurred') == '2021-05-18T14:46:47.000Z'
+    latest_created_time = datetime.strptime(incidents[13].get('occurred'), '%Y-%m-%dT%H:%M:%S.%fZ')
+    assert next_run.get('last_fetch') == int(latest_created_time.replace(tzinfo=timezone.utc).timestamp())
+
+
+DEMISTO_ARGS = {'api_endpoint': MOCK_URL,
+                'access_id': 'SUMO_ACCESS_ID',
+                'access_key': 'SUMO_ACCESS_KEY'}
+
+
+def get_demisto_arg(name):
+    if name in DEMISTO_ARGS:
+        return DEMISTO_ARGS[name]
+    raise Exception(
+        f'Test setup did not specify a Demisto argument named {name}.'
+    )
+
+
+def test_get_remote_data_command(requests_mock, mocker):
+
+    from SumoLogicCloudSIEM import Client, get_remote_data_command, DEFAULT_HEADERS
+    mocker.patch.object(demisto, 'getParam', get_demisto_arg)
+
+    client = Client(
+        base_url=MOCK_URL,
+        verify=False,
+        headers=DEFAULT_HEADERS,
+        proxy=False,
+        auth=('access_id', 'access_key'),
+        ok_codes=[200])
+    client.set_extra_params({'instance_endpoint': 'https://test.us2.sumologic.com'})
+
+    args = {
+        'id': 'INSIGHT-220',
+        'lastUpdate': 1621296000,
+    }
+
+    mock_response = util_load_json('test_data/insight_details.json')
+    requests_mock.get(f'{MOCK_URL}/sec/v1/insights/INSIGHT-220?exclude=signals.allRecords', json=mock_response)
+
+    response = get_remote_data_command(client, args, True)
+    assert isinstance(response, GetRemoteDataResponse)
+    assert response.entries[0]['Type'] == EntryType.NOTE
+    assert response.entries[0]['Contents']['dbotIncidentClose'] is True
+    assert response.entries[0]['Contents']['closeReason'] == 'Resolved'
+    assert response.entries[0]['Contents']['closeNotes'].\
+        startswith('Insight INSIGHT-220 was closed on Sumo Logic SIEM with resolution')
+    assert demisto.getParam('api_endpoint') == DEMISTO_ARGS['api_endpoint']
+
+
+def test_arg_time_to_q(requests_mock, mocker):
+    from SumoLogicCloudSIEM import arg_time_query_to_q
+    assert arg_time_query_to_q('query>', 'Last week', 'ts') == 'query> ts:NOW-7D..NOW'
+    assert arg_time_query_to_q('query>', 'Last 48 hours', 'ts') == 'query> ts:NOW-48h..NOW'
+    assert arg_time_query_to_q('query>', 'Last 24 hours', 'ts') == 'query> ts:NOW-24h..NOW'
 
 
 # python2 uses __builtin__ python3 uses builtins

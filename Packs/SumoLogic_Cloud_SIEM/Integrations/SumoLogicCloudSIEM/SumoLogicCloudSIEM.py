@@ -199,6 +199,19 @@ def insight_timestamp_to_created_format(timestamp_int):
     return datetime.strftime(created_time, '%Y-%m-%dT%H:%M:%S.%f')
 
 
+def convert_timestampstr_to_epochms(timestampstr: str) -> int:
+    '''
+    Convert a Signal or Insight timestamp string to epoch millisecs
+    '''
+    try:
+        incident_datetime = datetime.strptime(timestampstr, '%Y-%m-%dT%H:%M:%S.%f')
+    except ValueError:
+        incident_datetime = datetime.strptime(timestampstr, '%Y-%m-%dT%H:%M:%S')
+
+    incident_created_time = int((incident_datetime - datetime.utcfromtimestamp(0)).total_seconds())
+    return incident_created_time * 1000
+
+
 def craft_sumo_url(svc_url: str, resource_type: str, id: str) -> str:
     '''
     Craft a full URL to a Sumo Logic insight/signal based on its Id
@@ -731,7 +744,7 @@ def cleanup_records(signal: Optional[Dict[str, Any]]) -> Optional[Dict[str, Any]
     return signal
 
 
-def get_remote_data_command(client: Client, args: dict, close_incident):
+def get_remote_data_command(client: Client, args: dict, close_incident: bool):
     ''' get-remote-data command: Returns an updated Sumo Logic Cloud SIEM Insight incident
 
     Args:
@@ -751,7 +764,7 @@ def get_remote_data_command(client: Client, args: dict, close_incident):
     demisto.debug(f"Get-Remote-Data-Command for {insight_id} {last_update}")
     if (not is_inmirrorable_object(insight_id)):
         demisto.debug(f'Not in-mirrorable object with {insight_id}')
-        return_results(GetRemoteDataResponse(mirrored_object={}, entries={}))
+        return GetRemoteDataResponse(mirrored_object={}, entries={})
     else:
         insight = insight_get_details(client, {'insight_id': insight_id}).outputs
         insight_resolution = insight.get('Resolution')  # type: ignore
@@ -772,7 +785,7 @@ def get_remote_data_command(client: Client, args: dict, close_incident):
                 'ContentsFormat': EntryFormat.JSON
             }]
         demisto.debug(f'Updated Sumo Logic Insight {insight_id}')
-        return_results(GetRemoteDataResponse(mirrored_object=insight, entries=entries))
+        return GetRemoteDataResponse(mirrored_object=insight, entries=entries)
 
 
 def update_remote_system_command(client: Client, args: Dict[str, Any], params: Dict[str, Any]) -> str:
@@ -836,7 +849,7 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], params: D
     return insight_id
 
 
-def get_modified_remote_data_command(client: Client, args: Any) -> None:
+def get_modified_remote_data_command(client: Client, args: Any) -> Any:
     ''' Gets all Sumo Logic Insights that have changed since a given time. Currently not used
     since Sumo Logic API does not allow filtering insights by update time
 
@@ -917,13 +930,8 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int], 
                 a['mirror_direction'] = other_args['mirror_direction']
 
             if insight_id and insight_timestamp and insight_id not in last_fetch_ids:
-                try:
-                    incident_datetime = datetime.strptime(insight_timestamp, '%Y-%m-%dT%H:%M:%S.%f')
-                except ValueError:
-                    incident_datetime = datetime.strptime(insight_timestamp, '%Y-%m-%dT%H:%M:%S')
-
-                incident_created_time = int((incident_datetime - datetime.utcfromtimestamp(0)).total_seconds())
-                incident_created_time_ms = incident_created_time * 1000
+                incident_created_time_ms = convert_timestampstr_to_epochms(insight_timestamp)
+                incident_created_time = (int)(incident_created_time_ms / 1000)
 
                 # to prevent duplicates, we are only adding incidents with creation_time >= last fetched incident
                 if last_fetch:
@@ -976,9 +984,10 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int], 
                 # field inserted for classifier
                 a['readableId'] = "SIGNAL-" + signal_id
                 cleanup_records(a)
+                signal_created_time_ms = convert_timestampstr_to_epochms(a['timestamp'])
                 signal_incidents.append({
                     'name': a.get('name', 'No name') + ' - ' + signal_id,
-                    'occurred': timestamp_to_datestring(incident_created_time_ms),
+                    'occurred': timestamp_to_datestring(signal_created_time_ms),
                     'details': a.get('description'),
                     'severity': translate_severity(a.get('severity')),
                     'rawJSON': json.dumps(a)
@@ -1088,9 +1097,9 @@ def main() -> None:
             update_remote_system_command(client, demisto.args(), demisto.params())
         elif command == 'get-remote-data':
             demisto.info('########### MIRROR INTO XSOAR #############')
-            get_remote_data_command(client, demisto.args(), demisto.params())
+            return_results(get_remote_data_command(client, demisto.args(), other_args['mirror_direction'] is not None))
         elif command == 'get-modified-remote-data':
-            get_modified_remote_data_command(client, demisto.args())
+            return_results(get_modified_remote_data_command(client, demisto.args()))
 
         elif command == 'fetch-incidents':
             # Convert the argument to an int using helper function or set to MAX_INCIDENTS_TO_FETCH
