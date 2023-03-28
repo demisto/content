@@ -942,8 +942,8 @@ def service_record_get_command(client: Client, args: Dict[str, Any]) -> CommandR
 
 def service_record_add_note_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     sr_id = str(args.get('id'))
-    note = args.get('note')
-    username = args.get('username')
+    note = str(args.get('note'))
+    username = str(args.get('username'))
 
     client.service_record_add_note_request(sr_id, note, username)
     msg = 'Updated record with new note'
