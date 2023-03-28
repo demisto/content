@@ -1,0 +1,27 @@
+{
+    "value": "example.com",
+    "type": "Domains",
+    "status": "Active",
+    "severity": "PendingEnrichment",
+    "score": 0,
+    "lastUpdateDate": "2023-01-15T13:07:16.253Z",
+    "lastSeen": "2023-01-15T13:07:15.740Z",
+    "firstSeen": "2016-09-12T12:41:11.318Z",
+    "relatedMalware": [],
+    "relatedCampaigns": [],
+    "relatedThreatActors": [],
+    "reportedFeeds": [
+        {
+            "id": "59e376681bb0800644e1368f",
+            "name": "Cyber Threat Alliance",
+            "confidenceLevel": 2
+        },
+        {
+            "id": "592c3677cadf65cc488647d2",
+            "name": "Remediation Blocklist",
+            "confidenceLevel": 3
+        }
+    ],
+    "whitelisted": true,
+    "tags": []
+}

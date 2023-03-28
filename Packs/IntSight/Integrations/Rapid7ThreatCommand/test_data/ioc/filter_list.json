@@ -1,0 +1,77 @@
+{
+    "content": [
+        {
+            "value": "400e1f25b5e75bf2469f94d945da3889dbcd7b6185dff540af671bdea3f02740",
+            "type": "Hashes",
+            "status": "Retired",
+            "severity": "High",
+            "score": 95.42028985507247,
+            "lastUpdateDate": "2022-12-13T06:40:06.256Z",
+            "lastSeen": "2019-10-02T08:39:28.114Z",
+            "firstSeen": "2019-10-02T08:39:28.114Z",
+            "relatedMalware": [],
+            "relatedCampaigns": [],
+            "relatedThreatActors": [],
+            "reportedFeeds": [
+                {
+                    "id": "59e376681bb0800644e1368f",
+                    "name": "Cyber Threat Alliance",
+                    "confidenceLevel": 2
+                }
+            ],
+            "whitelisted": false,
+            "tags": []
+        },
+        {
+            "value": "b00c6f95f827803198d66287cad68a896f94577aa9e43199f0cb41ce7b0cfad8",
+            "type": "Hashes",
+            "status": "Retired",
+            "severity": "High",
+            "score": 100,
+            "lastUpdateDate": "2022-12-13T06:40:19.792Z",
+            "lastSeen": "2019-10-11T19:17:39.078Z",
+            "firstSeen": "2019-10-11T08:51:59.210Z",
+            "relatedMalware": [],
+            "relatedCampaigns": [],
+            "relatedThreatActors": [],
+            "reportedFeeds": [
+                {
+                    "id": "59e376681bb0800644e1368f",
+                    "name": "Cyber Threat Alliance",
+                    "confidenceLevel": 2
+                }
+            ],
+            "whitelisted": false,
+            "tags": []
+        },
+        {
+            "value": "104.16.51.111",
+            "type": "IpAddresses",
+            "status": "Retired",
+            "severity": "Low",
+            "score": 0,
+            "lastUpdateDate": "2022-12-13T07:40:14.740Z",
+            "lastSeen": "2021-01-17T14:03:18.731Z",
+            "firstSeen": "2019-07-26T08:35:25.755Z",
+            "geolocation": "US",
+            "relatedMalware": [],
+            "relatedCampaigns": [],
+            "relatedThreatActors": [],
+            "reportedFeeds": [
+                {
+                    "id": "59e376681bb0800644e1368f",
+                    "name": "Cyber Threat Alliance",
+                    "confidenceLevel": 2
+                },
+                {
+                    "id": "5c597cda73f7b6c78a7fb504",
+                    "name": "Bad IPs",
+                    "confidenceLevel": 1
+                }
+            ],
+            "whitelisted": true,
+            "tags": []
+        }
+    ],
+    "nextOffset": "2022-12-13T07:40:14.740Z"
+}

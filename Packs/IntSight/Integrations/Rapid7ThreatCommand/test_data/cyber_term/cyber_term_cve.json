@@ -1,0 +1,25 @@
+{
+    "content": [
+        {
+            "CveId": "CVE-2021-26855",
+            "PublishedDate": "2021-03-03T00:15:00.000Z",
+            "VendorProducts": [
+                "Microsoft Exchange Server"
+            ]
+        },
+        {
+            "CveId": "CVE-2021-34473",
+            "PublishedDate": "2021-07-14T18:15:00.000Z",
+            "VendorProducts": [
+                "Microsoft Exchange Server"
+            ]
+        },
+        {
+            "CveId": "CVE-2021-34523",
+            "PublishedDate": "2021-07-14T18:15:00.000Z",
+            "VendorProducts": [
+                "Microsoft Exchange Server"
+            ]
+        }
+    ]
+}

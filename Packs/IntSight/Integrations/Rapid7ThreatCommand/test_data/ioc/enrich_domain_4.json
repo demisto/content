@@ -1,0 +1,487 @@
+{
+    "OriginalValue": "l1v3f1r3.us",
+    "Status": "Done",
+    "Data": {
+        "Value": "l1v3f1r3.us",
+        "Type": "Domains",
+        "Sources": [
+            {
+                "Name": "Cyber Crime Tracker",
+                "ConfidenceLevel": 1
+            },
+            {
+                "Name": "Cyware",
+                "ConfidenceLevel": 2
+            }
+        ],
+        "SystemTags": [
+            "jackpos",
+            "malware related"
+        ],
+        "Tags": [],
+        "Status": "Active",
+        "IsKnownIoc": true,
+        "RelatedMalwares": [
+            "jackpos"
+        ],
+        "RelatedThreatActors": [],
+        "RelatedCampaigns": [],
+        "FirstSeen": "2018-08-22T20:06:30.890Z",
+        "LastSeen": "2023-03-27T01:14:12.420Z",
+        "UpdateDate": "2023-03-27T01:25:50.049Z",
+        "Whitelisted": false,
+        "Severity": {
+            "Value": "Medium",
+            "Score": 40,
+            "Origin": "system"
+        },
+        "DnsRecords": [
+            {
+                "Value": "ns1.l1v3f1r3.us.",
+                "Type": "NS",
+                "Count": 19
+            },
+            {
+                "Value": "ns2.l1v3f1r3.us.",
+                "Type": "NS",
+                "Count": 19
+            },
+            {
+                "Value": "ns3.l1v3f1r3.us.",
+                "Type": "NS",
+                "Count": 19
+            },
+            {
+                "Value": "ns4.l1v3f1r3.us.",
+                "Type": "NS",
+                "Count": 19
+            },
+            {
+                "Value": "bella.ns.cloudflare.com.",
+                "Type": "NS",
+                "Count": 25
+            },
+            {
+                "Value": "kanye.ns.cloudflare.com.",
+                "Type": "NS",
+                "Count": 25
+            },
+            {
+                "Value": "dns1.registrar-servers.com.",
+                "Type": "NS",
+                "Count": 320
+            },
+            {
+                "Value": "dns2.registrar-servers.com.",
+                "Type": "NS",
+                "Count": 320
+            },
+            {
+                "Value": "dns101.registrar-servers.com.",
+                "Type": "NS",
+                "Count": 35
+            },
+            {
+                "Value": "dns102.registrar-servers.com.",
+                "Type": "NS",
+                "Count": 35
+            },
+            {
+                "Value": "ns1.l1v3f1r3.us.",
+                "Type": "NS",
+                "FirstResolved": "2016-11-25T02:41:36.000Z",
+                "LastResolved": "2016-12-13T09:36:52.000Z",
+                "Count": 87
+            },
+            {
+                "Value": "ns2.l1v3f1r3.us.",
+                "Type": "NS",
+                "FirstResolved": "2016-11-25T02:41:36.000Z",
+                "LastResolved": "2016-12-13T09:36:52.000Z",
+                "Count": 87
+            },
+            {
+                "Value": "ns3.l1v3f1r3.us.",
+                "Type": "NS",
+                "FirstResolved": "2016-11-25T02:41:36.000Z",
+                "LastResolved": "2016-12-13T09:36:52.000Z",
+                "Count": 87
+            },
+            {
+                "Value": "ns4.l1v3f1r3.us.",
+                "Type": "NS",
+                "FirstResolved": "2016-11-25T02:41:36.000Z",
+                "LastResolved": "2016-12-13T09:36:52.000Z",
+                "Count": 87
+            },
+            {
+                "Value": "bella.ns.cloudflare.com.",
+                "Type": "NS",
+                "FirstResolved": "2016-12-13T14:48:26.000Z",
+                "LastResolved": "2017-01-07T07:30:34.000Z",
+                "Count": 117
+            },
+            {
+                "Value": "kanye.ns.cloudflare.com.",
+                "Type": "NS",
+                "FirstResolved": "2016-12-13T14:48:26.000Z",
+                "LastResolved": "2017-01-07T07:30:34.000Z",
+                "Count": 117
+            },
+            {
+                "Value": "dns1.registrar-servers.com.",
+                "Type": "NS",
+                "FirstResolved": "2016-06-22T19:16:59.000Z",
+                "LastResolved": "2017-06-17T10:45:20.000Z",
+                "Count": 1079
+            },
+            {
+                "Value": "dns2.registrar-servers.com.",
+                "Type": "NS",
+                "FirstResolved": "2016-06-22T19:16:59.000Z",
+                "LastResolved": "2017-06-17T10:45:20.000Z",
+                "Count": 1079
+            },
+            {
+                "Value": "dns101.registrar-servers.com.",
+                "Type": "NS",
+                "FirstResolved": "2017-06-20T12:04:13.000Z",
+                "LastResolved": "2017-07-20T17:50:26.000Z",
+                "Count": 42
+            },
+            {
+                "Value": "dns102.registrar-servers.com.",
+                "Type": "NS",
+                "FirstResolved": "2017-06-20T12:04:13.000Z",
+                "LastResolved": "2017-07-20T17:50:26.000Z",
+                "Count": 42
+            },
+            {
+                "Value": "ns1.l1v3f1r3.us.",
+                "Type": "NS",
+                "FirstResolved": "2016-11-25T02:41:36.000Z",
+                "LastResolved": "2016-11-25T02:41:36.000Z",
+                "Count": 2
+            },
+            {
+                "Value": "ns2.l1v3f1r3.us.",
+                "Type": "NS",
+                "FirstResolved": "2016-11-25T02:41:36.000Z",
+                "LastResolved": "2016-11-25T02:41:36.000Z",
+                "Count": 2
+            },
+            {
+                "Value": "ns1.l1v3f1r3.us.",
+                "Type": "NS",
+                "FirstResolved": "2016-11-28T09:29:51.000Z",
+                "LastResolved": "2016-12-13T10:47:52.000Z",
+                "Count": 42
+            },
+            {
+                "Value": "ns2.l1v3f1r3.us.",
+                "Type": "NS",
+                "FirstResolved": "2016-11-28T09:29:51.000Z",
+                "LastResolved": "2016-12-13T10:47:52.000Z",
+                "Count": 42
+            },
+            {
+                "Value": "ns3.l1v3f1r3.us.",
+                "Type": "NS",
+                "FirstResolved": "2016-11-28T09:29:51.000Z",
+                "LastResolved": "2016-12-13T10:47:52.000Z",
+                "Count": 42
+            },
+            {
+                "Value": "ns4.l1v3f1r3.us.",
+                "Type": "NS",
+                "FirstResolved": "2016-11-28T09:29:51.000Z",
+                "LastResolved": "2016-12-13T10:47:52.000Z",
+                "Count": 42
+            },
+            {
+                "Value": "dns1.registrar-servers.com.",
+                "Type": "NS",
+                "FirstResolved": "2016-06-22T19:16:59.000Z",
+                "LastResolved": "2017-06-17T10:45:20.000Z",
+                "Count": 496
+            },
+            {
+                "Value": "dns2.registrar-servers.com.",
+                "Type": "NS",
+                "FirstResolved": "2016-06-22T19:16:59.000Z",
+                "LastResolved": "2017-06-17T10:45:20.000Z",
+                "Count": 496
+            },
+            {
+                "Value": "ns1.l1v3f1r3.us. noc.rivalhost.com. 2016112511 3600 7200 1209600 86400",
+                "Type": "SOA",
+                "FirstResolved": "2016-12-09T00:58:18.000Z",
+                "LastResolved": "2016-12-13T02:35:38.000Z",
+                "Count": 25
+            },
+            {
+                "Value": "ns1.bitcoin-dns.com. noc.rivalhost.com. 2016112505 3600 7200 1209600 86400",
+                "Type": "SOA",
+                "FirstResolved": "2016-11-25T02:41:36.000Z",
+                "LastResolved": "2016-11-25T02:41:36.000Z",
+                "Count": 5
+            },
+            {
+                "Value": "bella.ns.cloudflare.com. dns.cloudflare.com. 2023329793 10000 2400 604800 3600",
+                "Type": "SOA",
+                "FirstResolved": "2016-12-24T15:14:32.000Z",
+                "LastResolved": "2016-12-25T08:00:59.000Z",
+                "Count": 4
+            },
+            {
+                "Value": "dns1.registrar-servers.com. hostmaster.registrar-servers.com. 2016062102 43200 3600 604800 3601",
+                "Type": "SOA",
+                "FirstResolved": "2016-06-22T19:16:59.000Z",
+                "LastResolved": "2016-10-16T23:49:38.000Z",
+                "Count": 19
+            },
+            {
+                "Value": "dns1.registrar-servers.com. hostmaster.registrar-servers.com. 2017010702 43200 3600 604800 3601",
+                "Type": "SOA",
+                "FirstResolved": "2017-01-11T17:05:24.000Z",
+                "LastResolved": "2017-05-12T01:15:02.000Z",
+                "Count": 872
+            },
+            {
+                "Value": "dns1.registrar-servers.com. hostmaster.registrar-servers.com. 2017051201 43200 3600 604800 3601",
+                "Type": "SOA",
+                "FirstResolved": "2017-05-17T13:04:35.000Z",
+                "LastResolved": "2017-06-02T08:17:38.000Z",
+                "Count": 13
+            },
+            {
+                "Value": "0 l1v3f1r3.us.",
+                "Type": "MX",
+                "FirstResolved": "2016-12-13T01:36:56.000Z",
+                "LastResolved": "2016-12-13T01:36:56.000Z",
+                "Count": 2
+            },
+            {
+                "Value": "10 eforward1.registrar-servers.com.",
+                "Type": "MX",
+                "FirstResolved": "2016-09-26T02:34:27.000Z",
+                "LastResolved": "2017-05-27T12:15:58.000Z",
+                "Count": 10
+            },
+            {
+                "Value": "10 eforward2.registrar-servers.com.",
+                "Type": "MX",
+                "FirstResolved": "2016-09-26T02:34:27.000Z",
+                "LastResolved": "2017-05-27T12:15:58.000Z",
+                "Count": 10
+            },
+            {
+                "Value": "10 eforward3.registrar-servers.com.",
+                "Type": "MX",
+                "FirstResolved": "2016-09-26T02:34:27.000Z",
+                "LastResolved": "2017-05-27T12:15:58.000Z",
+                "Count": 10
+            },
+            {
+                "Value": "15 eforward4.registrar-servers.com.",
+                "Type": "MX",
+                "FirstResolved": "2016-09-26T02:34:27.000Z",
+                "LastResolved": "2017-05-27T12:15:58.000Z",
+                "Count": 10
+            },
+            {
+                "Value": "20 eforward5.registrar-servers.com.",
+                "Type": "MX",
+                "FirstResolved": "2016-09-26T02:34:27.000Z",
+                "LastResolved": "2017-05-27T12:15:58.000Z",
+                "Count": 10
+            },
+            {
+                "Value": "\"v=spf1 include:spf.efwd.registrar-servers.com ~all\"",
+                "Type": "TXT",
+                "FirstResolved": "2016-09-26T02:34:27.000Z",
+                "LastResolved": "2017-05-27T12:15:58.000Z",
+                "Count": 8
+            },
+            {
+                "Value": "2400:cb00:2048:1::6812:2210",
+                "Type": "AAAA",
+                "FirstResolved": "2016-12-15T16:03:15.000Z",
+                "LastResolved": "2017-01-07T07:30:34.000Z",
+                "Count": 20
+            },
+            {
+                "Value": "2400:cb00:2048:1::6812:2310",
+                "Type": "AAAA",
+                "FirstResolved": "2016-12-15T16:03:15.000Z",
+                "LastResolved": "2017-01-07T07:30:34.000Z",
+                "Count": 20
+            }
+        ],
+        "Subdomains": [],
+        "Whois": {
+            "History": [
+                {
+                    "RegistrationDetails": {
+                        "CreatedDate": "2016-06-19T14:48:15.000Z",
+                        "UpdatedDate": "2016-06-19T14:48:18.000Z",
+                        "ExpiresDate": "2017-06-18T23:59:59.000Z",
+                        "Statuses": [
+                            "clientTransferProhibited"
+                        ],
+                        "NameServers": [
+                            "DNS1.REGISTRAR-SERVERS.COM",
+                            "DNS2.REGISTRAR-SERVERS.COM"
+                        ]
+                    },
+                    "RegistrantDetails": [
+                        {
+                            "Organization": "",
+                            "Name": "John tran",
+                            "Email": "forhaters@protonmail.com",
+                            "Telephone": "15142351245",
+                            "Fax": "",
+                            "City": "anaheim",
+                            "State": "CA",
+                            "Country": "UNITED STATES",
+                            "Address": "123 long street",
+                            "PostalCode": "91800",
+                            "CountryCode": ""
+                        },
+                        {
+                            "Organization": "",
+                            "Name": "John tran",
+                            "Email": "forhaters@protonmail.com",
+                            "Telephone": "15142351245",
+                            "Fax": "",
+                            "City": "anaheim",
+                            "State": "CA",
+                            "Country": "UNITED STATES",
+                            "Address": "123 long street",
+                            "PostalCode": "91800",
+                            "CountryCode": ""
+                        },
+                        {
+                            "Organization": "",
+                            "Name": "John tran",
+                            "Email": "forhaters@protonmail.com",
+                            "Telephone": "15142351245",
+                            "Fax": "",
+                            "City": "anaheim",
+                            "State": "CA",
+                            "Country": "UNITED STATES",
+                            "Address": "123 long street",
+                            "PostalCode": "91800",
+                            "CountryCode": ""
+                        },
+                        {
+                            "Organization": "",
+                            "Name": "John tran",
+                            "Email": "forhaters@protonmail.com",
+                            "Telephone": "15142351245",
+                            "Fax": "",
+                            "City": "anaheim",
+                            "State": "CA",
+                            "Country": "UNITED STATES",
+                            "Address": "123 long street",
+                            "PostalCode": "91800",
+                            "CountryCode": ""
+                        }
+                    ]
+                }
+            ]
+        },
+        "Resolutions": [
+            {
+                "ResolvedIpAddress": "198.54.117.212",
+                "Location": "US",
+                "ASN": 22612,
+                "Operator": "Namecheap, Inc.",
+                "FirstResolved": "2017-06-20T12:04:13.000Z",
+                "LastResolved": "2017-07-20T17:50:26.000Z",
+                "ReportingSources": [
+                    "Farsight"
+                ]
+            },
+            {
+                "ResolvedIpAddress": "185.109.146.92",
+                "Location": "DE",
+                "ASN": 59790,
+                "Operator": "Marco Bungalski GmbH",
+                "FirstResolved": "2017-05-13T09:04:29.000Z",
+                "LastResolved": "2017-06-17T10:45:20.000Z",
+                "ReportingSources": [
+                    "Farsight",
+                    "VirusTotal"
+                ]
+            },
+            {
+                "ResolvedIpAddress": "104.250.127.134",
+                "Location": "US",
+                "ASN": 40676,
+                "Operator": "Psychz Networks",
+                "FirstResolved": "2016-11-25T02:41:36.000Z",
+                "LastResolved": "2017-05-09T11:59:44.000Z",
+                "ReportingSources": [
+                    "Farsight",
+                    "VirusTotal"
+                ]
+            },
+            {
+                "ResolvedIpAddress": "104.18.34.16",
+                "Location": "US",
+                "ASN": 13335,
+                "Operator": "Cloudflare, Inc.",
+                "FirstResolved": "2016-12-13T14:48:26.000Z",
+                "LastResolved": "2017-01-07T07:30:34.000Z",
+                "ReportingSources": [
+                    "Farsight",
+                    "VirusTotal"
+                ]
+            },
+            {
+                "ResolvedIpAddress": "104.18.35.16",
+                "Location": "US",
+                "ASN": 13335,
+                "Operator": "Cloudflare, Inc.",
+                "FirstResolved": "2016-12-13T14:48:26.000Z",
+                "LastResolved": "2017-01-07T07:30:34.000Z",
+                "ReportingSources": [
+                    "Farsight",
+                    "VirusTotal"
+                ]
+            },
+            {
+                "ResolvedIpAddress": "104.145.233.152",
+                "Location": "US",
+                "ASN": 36352,
+                "Operator": "ColoCrossing",
+                "FirstResolved": "2016-06-22T19:16:59.000Z",
+                "LastResolved": "2016-11-22T13:28:20.000Z",
+                "ReportingSources": [
+                    "Farsight",
+                    "VirusTotal"
+                ]
+            }
+        ],
+        "RelatedHashes": {
+            "downloaded": [
+                "09032a7bf6eef650007c5e57e74f1abb2b7a0c2c97d7c5975ab348cf5419ccd8",
+                "1f2e1b1ca63fd91d1db36765ef4a4a48891fb48e8c1c4c455d7807ce5ca089e3",
+                "54ec1c5c5e958d1177889b829e6fd0d2056586f6d3fcfb168a0a68700f634d77"
+            ],
+            "communicating": [
+                "9477160d0dfb44a9abbd5ce68a69b2aaf9ca7c0a7c232c93609c59b62589742e"
+            ],
+            "referencing": [
+                "106091f78e1108ebb8743f96aede0541dbaf526b143c18e452568fc6070a7574",
+                "209d61afe574514dd6a2e1cee46d4ebd5ef13db2e749439ed33847cc11452446",
+                "633ef00ac5d21a2da0c6f08bdde367e2",
+                "9122a0f29a0255f76999a38467003af08714aaff",
+                "9569867fec2891c201f3d0591c3a1c61c3d3358732c10f6037405a810eb7c4a4",
+                "dee0bc4476cf96f09ef3acf71cbe450d",
+                "e73620da7d3d83edb657bfedb74d10c0382d4d32"
+            ]
+        }
+    }
+}

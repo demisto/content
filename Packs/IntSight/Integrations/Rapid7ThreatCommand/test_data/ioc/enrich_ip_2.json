@@ -1,0 +1,75 @@
+{
+    "OriginalValue": "5.252.23.159",
+    "Status": "Done",
+    "Data": {
+        "Value": "5.252.23.159",
+        "Type": "IpAddresses",
+        "Sources": [
+            {
+                "Name": "TOR Project official exit nodes",
+                "ConfidenceLevel": 3
+            },
+            {
+                "Name": "Dan.me.uk Tor List",
+                "ConfidenceLevel": 1
+            },
+            {
+                "Name": "Cyware",
+                "ConfidenceLevel": 2
+            }
+        ],
+        "SystemTags": [],
+        "Tags": [],
+        "Status": "Active",
+        "IsKnownIoc": true,
+        "RelatedMalwares": [],
+        "RelatedThreatActors": [],
+        "RelatedCampaigns": [],
+        "FirstSeen": "2023-03-23T21:12:50.138Z",
+        "LastSeen": "2023-03-27T08:39:30.188Z",
+        "UpdateDate": "2023-03-27T08:47:35.776Z",
+        "Whitelisted": false,
+        "Severity": {
+            "Value": "Low",
+            "Score": 10,
+            "Origin": "system"
+        },
+        "IpDetails": {
+            "Country": "SK",
+            "ASN": 61424,
+            "ASDescription": "eServer s.r.o."
+        },
+        "Whois": {
+            "NetworkDetails": {
+                "IPRange": "",
+                "Statuses": [
+                    "ASSIGNED",
+                    "PA"
+                ],
+                "CreatedDate": "2022-03-21T00:00:00.000Z",
+                "UpdatedDate": "2022-03-21T00:00:00.000Z"
+            },
+            "RegistrantDetails": [
+                {
+                    "Organization": "STARK INDUSTRIES SOLUTIONS LTD.",
+                    "Name": "STARK INDUSTRIES SOLUTIONS LTD.",
+                    "Email": "noc@stark-industries.solutions",
+                    "Telephone": "441234416080",
+                    "Fax": "",
+                    "City": "London",
+                    "State": "",
+                    "Country": "WC2H 9JQ",
+                    "Address": "71-75, Shelton Street",
+                    "PostalCode": "Covent Garden",
+                    "CountryCode": ""
+                }
+            ]
+        },
+        "RelatedHashes": {
+            "downloaded": [],
+            "communicating": [],
+            "referencing": []
+        },
+        "Resolutions": []
+    }
+}
