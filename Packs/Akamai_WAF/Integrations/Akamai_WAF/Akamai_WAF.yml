@@ -1246,7 +1246,7 @@ script:
       name: property_name
     - description: Unique identifier for the group
       name: group_id
-    description: get papi property info without default rule. to get default rule, please use "get-papi-property-rule" command.
+    description: Get PAPI property info without the default rule. To get the default rule, use the "get-papi-property-rule" command.
     name: akamai-get-papi-property-byname
   - arguments:
     - description: Unique identifier for the contract
