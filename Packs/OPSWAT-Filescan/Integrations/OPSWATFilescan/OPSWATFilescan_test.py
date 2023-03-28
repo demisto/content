@@ -69,7 +69,7 @@ def test_search_query_command_hash_cleanfile(mocker, client):
     response = OPSWAT_Filescan.search_query_command(client, {})
 
     assert response[0].indicator.dbot_score.indicator == "a33a6ee82144b97bf75728a7ec302dd88ae2fa54389caeb8442839580b259b85"
-    assert response[0].indicator.dbot_score.score == 2
+    assert response[0].indicator.dbot_score.score == 1
     assert response[0].indicator.dbot_score.integration_name == "OPSWAT Filescan"
     assert response[0].indicator.name == "e0e1a581-1c69-414f-8c50-22fa3afc34ae_1010%40e0e1a581-1c69-414f-8c50-22fa3afc34ae"
     assert response[0].indicator.sha256 == "a33a6ee82144b97bf75728a7ec302dd88ae2fa54389caeb8442839580b259b85"
@@ -83,13 +83,23 @@ def test_search_query_command_url(mocker, client):
     mocker.patch.object(client, "get_search_query", return_value=raw_response)
     response = OPSWAT_Filescan.search_query_command(client, {})
 
+    assert len(response) == 10+1  # 1-1 separately and a summarize
+
     assert response[0].indicator.dbot_score.indicator == "5302e0de83c841169f0543eaf5f9a2b7313d49d35d9f3ecbeed4e6b353b5a2c8"
-    assert response[0].indicator.dbot_score.score == 2
+    assert response[0].indicator.dbot_score.score == 1
     assert response[0].indicator.dbot_score.integration_name == "OPSWAT Filescan"
     assert response[0].indicator.name == "UNKNOW.EXE"
     assert response[0].indicator.sha256 == "5302e0de83c841169f0543eaf5f9a2b7313d49d35d9f3ecbeed4e6b353b5a2c8"
     assert response[0].outputs['SHA256'] == "5302e0de83c841169f0543eaf5f9a2b7313d49d35d9f3ecbeed4e6b353b5a2c8"
     assert response[0].outputs['Verdict'] == "informational"
+
+    assert response[1].indicator.dbot_score.indicator == "3a136f9524a2a1235a8cdd1b9fb229e20a04c2788b58a58f6904e256fa1ba0c4"
+    assert response[1].indicator.dbot_score.score == 3
+    assert response[1].indicator.dbot_score.integration_name == "OPSWAT Filescan"
+    assert response[1].indicator.name == "Snaptube_20230323.apk"
+    assert response[1].indicator.sha256 == "3a136f9524a2a1235a8cdd1b9fb229e20a04c2788b58a58f6904e256fa1ba0c4"
+    assert response[1].outputs['SHA256'] == "3a136f9524a2a1235a8cdd1b9fb229e20a04c2788b58a58f6904e256fa1ba0c4"
+    assert response[1].outputs['Verdict'] == "malicious"
 
 
 def test_scan_command_url_polling_waiting(requests_mock, mocker, client):

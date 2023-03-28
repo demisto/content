@@ -179,11 +179,11 @@ def build_serach_query_result(
         score = Common.DBotScore.NONE
 
         verdict = analysis.get("verdict", "UNKNOWN")
-        if verdict.upper() == "BENIGN":
+        if verdict.upper() == "BENIGN" or verdict.upper() == "INFORMATIONAL":
             score = Common.DBotScore.GOOD
         elif verdict.upper() == "UNKNOWN":
             score = Common.DBotScore.NONE
-        elif verdict.upper() == "INFORMATIONAL" or verdict.upper() == "SUSPICIOUS":
+        elif verdict.upper() == "SUSPICIOUS":
             score = Common.DBotScore.SUSPICIOUS
         else:
             score = Common.DBotScore.BAD
