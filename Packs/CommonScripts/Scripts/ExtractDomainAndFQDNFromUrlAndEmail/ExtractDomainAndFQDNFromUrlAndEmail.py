@@ -90,8 +90,10 @@ def check_if_known_url(the_input):
 
 
 def extract_fqdn(the_input):
+    if the_input.endswith("@"):
+        return ''
     the_input = check_if_known_url(the_input)
-    # pre processing the input, removing excessive charecters
+    # pre-processing the input, removing excessive characters
     the_input = pre_process_input(the_input)
 
     # Not ATP Link or Proofpoint URL so just unescape

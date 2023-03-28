@@ -1,0 +1,1496 @@
+id: Prisma Cloud - VM Alert Prioritization
+version: -1
+name: Prisma Cloud - VM Alert Prioritization
+description: |-
+  This playbook handles incidents related to dozens of Prisma Cloud public VM alerts.
+  It determines the severity of the ingested alert based on data returned from Cortex XSOAR commands interacting with the Prisma Cloud API and creates new issues in either Slack or Jira, with all of the relevant information.
+  The playbook updates the Cortex XSOAR incident’s layout with information the analyst can use to investigate the alert. It also extracts and enriches indicators using existing configured integrations and then closes the investigation.
+  
+  The flow of this playbook is as following:
+  1) Check the CSP type.
+  2) Check whether there's a public IP associated to the instance. In case there is, it will continue to other steps, if not, it will set the severity of the incident to "Low" and will close the incident.
+  3) Check if there are any vulnerabilities or findings related to the instance.
+  4) Check if there are any IAM permissions associated to the instance.
+  5) Set the incident severity based on the results:
+    - Low - No public IP was found.
+    - Medium - Public IP was found, other checks didn't return results.
+    - High - Public IP was found and also one of the other checks returned results.
+    - Critical - Public IP was found and both of the other checks returned results.
+  6) Notifications and ticketing with 3rd party systems.
+  7) Close the incident.
+  
+  This playbook will run when a new incident is created with the **Prisma Cloud - VM Alert Prioritization** incident type which also includes a dedicated layout.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 0dc00a8d-c564-45af-88f2-66115d2177d9
+    type: start
+    task:
+      id: 0dc00a8d-c564-45af-88f2-66115d2177d9
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": -690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: dedb294b-c9bf-4446-8ff5-9480bb89894a
+    type: condition
+    task:
+      id: dedb294b-c9bf-4446-8ff5-9480bb89894a
+      version: -1
+      name: Check CSP type
+      description: ' '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      aws:
+      - "5"
+      azure:
+      - "7"
+      gcp:
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: aws
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: resourcecloudtype
+            iscontext: true
+          right:
+            value:
+              simple: aws
+          ignorecase: true
+    - label: gcp
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: resourcecloudtype
+            iscontext: true
+          right:
+            value:
+              simple: gcp
+          ignorecase: true
+    - label: azure
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: resourcecloudtype
+            iscontext: true
+          right:
+            value:
+              simple: azure
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": -510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: c9d0eff1-4c0b-4b93-8cda-51b1090d9b19
+    type: regular
+    task:
+      id: c9d0eff1-4c0b-4b93-8cda-51b1090d9b19
+      version: -1
+      name: Verify if public IP exists (GCP)
+      description: Search configuration inventory on the Prisma Cloud platform using RQL language. Use this command for all queries that start with 'config'.
+      script: '|||prisma-cloud-config-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      query:
+        simple: config from cloud.resource where api.name = 'gcloud-compute-instances-list' AND json.rule = networkInterfaces[*].accessConfigs[*].natIP size greater than 0 and networkInterfaces[*].accessConfigs[*].natIP none empty and id equals "${incident.resourceid}"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": -100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 22c3cc20-acf7-46f1-84d3-7e19ff758b6b
+    type: regular
+    task:
+      id: 22c3cc20-acf7-46f1-84d3-7e19ff758b6b
+      version: -1
+      name: Verify if public IP exists (Azure)
+      description: Search configuration inventory on the Prisma Cloud platform using RQL language. Use this command for all queries that start with 'config'.
+      script: '|||prisma-cloud-config-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      query:
+        simple: config from cloud.resource where api.name = 'azure-vm-list' AND json.rule = ['properties.networkProfile'].networkInterfaces[*].ipConfigurations[*].publicIpAddress exists and id equals '${incident.resourceid}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1450,
+          "y": -110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: be525c8b-4558-4d5a-8dbd-c7cf62ef811f
+    type: title
+    task:
+      id: be525c8b-4558-4d5a-8dbd-c7cf62ef811f
+      version: -1
+      name: AWS
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "35"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 130,
+          "y": -300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 11cc02f9-62de-4d63-8f01-f5ffd510c2d6
+    type: title
+    task:
+      id: 11cc02f9-62de-4d63-8f01-f5ffd510c2d6
+      version: -1
+      name: GCP
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": -295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 5b2c1079-75b3-4108-8026-d5398c1572a2
+    type: title
+    task:
+      id: 5b2c1079-75b3-4108-8026-d5398c1572a2
+      version: -1
+      name: Azure
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1450,
+          "y": -300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: a31c1962-3e3d-4f45-8806-883edc26b56b
+    type: regular
+    task:
+      id: a31c1962-3e3d-4f45-8806-883edc26b56b
+      version: -1
+      name: Check if any findings exist
+      description: Get resource host finding list.
+      script: '|||prisma-cloud-host-finding-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      rrn:
+        complex:
+          root: PrismaCloud.Config
+          accessor: rrn
+    reputationcalc: 3
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: adb269f0-5220-4fd6-8ffa-14e035dd15ad
+    type: regular
+    task:
+      id: adb269f0-5220-4fd6-8ffa-14e035dd15ad
+      version: -1
+      name: Check if any IAM permissions attached to resource
+      description: Get resource host finding list.
+      script: '|||prisma-cloud-permission-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      query:
+        simple: config from iam where source.cloud.resource.name = '${incident.resourceid}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1100,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 3c0c5248-ae55-4227-8e0c-44e6375f45db
+    type: condition
+    task:
+      id: 3c0c5248-ae55-4227-8e0c-44e6375f45db
+      version: -1
+      name: Check severity based on results
+      description: ' '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "16"
+      Critical:
+      - "11"
+      High:
+      - "15"
+    separatecontext: false
+    conditions:
+    - label: Critical
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PrismaCloud.HostFinding
+                accessor: findingId
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PrismaCloud.Permission
+                accessor: id
+            iscontext: true
+    - label: High
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PrismaCloud.HostFinding
+                accessor: findingId
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PrismaCloud.Permission
+                accessor: id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": 1310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: b44a38ab-a57e-42ba-8d8b-d706ba32fced
+    type: regular
+    task:
+      id: b44a38ab-a57e-42ba-8d8b-d706ba32fced
+      version: -1
+      name: Set severity as Critical
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      severity:
+        simple: "4"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": 1550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 8373bf8f-0a69-4a6a-873a-a2f28279b5b4
+    type: regular
+    task:
+      id: 8373bf8f-0a69-4a6a-873a-a2f28279b5b4
+      version: -1
+      name: Set severity as High
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      severity:
+        simple: "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1260,
+          "y": 1550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 8ab0db50-aef7-412b-8331-0c649663b823
+    type: regular
+    task:
+      id: 8ab0db50-aef7-412b-8331-0c649663b823
+      version: -1
+      name: Set severity as Medium
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      severity:
+        simple: "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 400,
+          "y": 1550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: d0099e0d-69ce-4cc5-8d08-9bbbc7271815
+    type: regular
+    task:
+      id: d0099e0d-69ce-4cc5-8d08-9bbbc7271815
+      version: -1
+      name: Set severity as Low
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      severity:
+        simple: "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -30,
+          "y": 1550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 400351c3-54f7-46cf-83cd-336e4e361e6a
+    type: title
+    task:
+      id: 400351c3-54f7-46cf-83cd-336e4e361e6a
+      version: -1
+      name: Notifications and ticketing
+      description: Creates a new issue in Jira.
+      type: title
+      iscommand: false
+      brand: jira-v2
+    nexttasks:
+      '#none#':
+      - "37"
+      - "38"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": 1800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 3b2e6a13-3d33-4208-88e1-9f9b84b54a06
+    type: title
+    task:
+      id: 3b2e6a13-3d33-4208-88e1-9f9b84b54a06
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": 3100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 301823fe-1c5b-442a-8417-9263d8f9b225
+    type: regular
+    task:
+      id: 301823fe-1c5b-442a-8417-9263d8f9b225
+      version: -1
+      name: Create a Jira issue
+      description: Creates a new issue in Jira.
+      tags:
+      - NotificationsAndTicketing
+      script: jira-v2|||jira-create-issue
+      type: regular
+      iscommand: true
+      brand: jira-v2
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      description:
+        simple: |-
+          *This alert was created automatically with Cortex XSOAR.*
+
+          *Prisma Cloud - Public VM alert*
+          *Please review the following details:*
+
+          *Asset ID*: ${PrismaCloud.Config.assetId}
+
+          *RRN*: ${incident.rrn}
+
+
+          *Findings:*
+          ${FindingsResultsTable}
+
+
+          *IAM Permissions*:
+
+          ${IAMPermissionsTable}
+      issueTypeName:
+        complex:
+          root: inputs.JiraIssueTypeName
+      projectName:
+        complex:
+          root: inputs.JiraProjectName
+      summary:
+        complex:
+          root: incident
+          accessor: name
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 390,
+          "y": 2490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 04c06126-c760-4f23-851b-dee54c4a727f
+    type: regular
+    task:
+      id: 04c06126-c760-4f23-851b-dee54c4a727f
+      version: -1
+      name: Set IAM results grid
+      description: Creates a Grid table from items or key-value pairs.
+      scriptName: SetGridField
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      columns:
+        simple: "Source Service,Source Resource,Granted By Entity Type,Granted By Entity \nName,Granted By Policy Type,Granted By Policy Name,Source Cloud Account,Dest Cloud Account,Action,Destination,Last Access"
+      context_path:
+        simple: PrismaCloud.Permission
+      grid_id:
+        simple: prismacloudiamresults
+      keys:
+        simple: sourceCloudServiceName,sourceResourceName,grantedByCloudEntityType,grantedByCloudEntityName,grantedByCloudPolicyType,grantedByCloudPolicyName,sourceCloudAccount,destCloudAccount,effectiveActionName,destResourceType,lastAccessStatus
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1100,
+          "y": 1080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 9046630c-a8d0-4646-8040-81fc587629c6
+    type: regular
+    task:
+      id: 9046630c-a8d0-4646-8040-81fc587629c6
+      version: -1
+      name: Set findings results grid
+      description: Creates a Grid table from items or key-value pairs.
+      scriptName: SetGridField
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      columns:
+        simple: Title,Normalized Name,Source,Type,Score,Severity
+      context_path:
+        simple: PrismaCloud.HostFinding
+      grid_id:
+        simple: prismacloudfindingsresults
+      keys:
+        simple: title,normalizedName,source,type,score,severity
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": 1080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: af477e87-6b96-49ac-8f74-8e7061850987
+    type: condition
+    task:
+      id: af477e87-6b96-49ac-8f74-8e7061850987
+      version: -1
+      name: Close XSOAR incident?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "19"
+      "yes":
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.CloseIncidentAfterNotification
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": 2680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: b55e07cf-64f8-40ee-8f96-bf775f0bcec0
+    type: regular
+    task:
+      id: b55e07cf-64f8-40ee-8f96-bf775f0bcec0
+      version: -1
+      name: Close investigation
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -30,
+          "y": 2900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 08cb9c95-c4e1-499d-8ac1-8966cc1690a1
+    type: title
+    task:
+      id: 08cb9c95-c4e1-499d-8ac1-8966cc1690a1
+      version: -1
+      name: Check for IAM permissions and vulnerabilities
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "8"
+      - "9"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": 400
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 8d1853cb-4627-4bc8-87e3-2cf9e94389e0
+    type: condition
+    task:
+      id: 8d1853cb-4627-4bc8-87e3-2cf9e94389e0
+      version: -1
+      name: Was a public IP found?
+      description: ' '
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "17"
+      "yes":
+      - "25"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PrismaCloud.Config
+                accessor: id
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 830,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 76fb95be-23b7-4cee-82df-6bb55bce9a48
+    type: title
+    task:
+      id: 76fb95be-23b7-4cee-82df-6bb55bce9a48
+      version: -1
+      name: Jira
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "30"
+      - "31"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 400,
+          "y": 2160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: db834cb7-fa3b-40d1-8eec-0e11cd0cec3d
+    type: title
+    task:
+      id: db834cb7-fa3b-40d1-8eec-0e11cd0cec3d
+      version: -1
+      name: Slack
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1240,
+          "y": 2160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 242159b4-0494-498d-87d6-e89b2a06056b
+    type: regular
+    task:
+      id: 242159b4-0494-498d-87d6-e89b2a06056b
+      version: -1
+      name: Send a slack message
+      description: Sends a message to a user, group, or channel.
+      tags:
+      - NotificationsAndTicketing
+      script: SlackV3|||send-notification
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      channel:
+        complex:
+          root: inputs.SlackChannelName
+      channel_id:
+        complex:
+          root: inputs.SlackChannelID
+      message:
+        simple: "*This alert was created automatically with Cortex XSOAR.*\n\n*Prisma Cloud - Public VM alert*\n*Please review the following details:*\n\n*Asset ID*: ${PrismaCloud.Config.assetId}\n\n*RRN*: ${incident.rrn}\n\n\n*Findings:*\n```\n${.=JSON.stringify(val.incident.prismacloudfindingsresults,null,2)}\n```\n\n*IAM Permissions*:\n``` \n${.=JSON.stringify(val.incident.prismacloudiamresults,null,2)}\n```\n"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1240,
+          "y": 2460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: ba8ba196-85ed-489e-838c-c25865beeaf7
+    type: regular
+    task:
+      id: ba8ba196-85ed-489e-838c-c25865beeaf7
+      version: -1
+      name: Format IAM Permissions as markdown table
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      key:
+        simple: IAMPermissionsTable
+      value:
+        complex:
+          root: incident
+          accessor: prismacloudiamresults
+          transformers:
+          - operator: JsonToTable
+            args:
+              headers: {}
+              is_auto_json_transform: {}
+              json_transform_properties: {}
+              title: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 180,
+          "y": 2320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: ed51c23d-1794-4411-8fb2-2fa328742ed7
+    type: regular
+    task:
+      id: ed51c23d-1794-4411-8fb2-2fa328742ed7
+      version: -1
+      name: Format findings as markdown table
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      key:
+        simple: FindingsResultsTable
+      value:
+        complex:
+          root: incident
+          accessor: prismacloudfindingsresults
+          transformers:
+          - operator: JsonToTable
+            args:
+              headers: {}
+              is_auto_json_transform: {}
+              json_transform_properties: {}
+              title: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 610,
+          "y": 2320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 451ca1d4-666a-46c8-85db-d11aafa3d8fe
+    type: condition
+    task:
+      id: 451ca1d4-666a-46c8-85db-d11aafa3d8fe
+      version: -1
+      name: Any results for IAM query?
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PrismaCloud.Permission
+                accessor: id
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1100,
+          "y": 820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 1c83a555-e26c-4c27-8f0f-39dbbd7a8076
+    type: condition
+    task:
+      id: 1c83a555-e26c-4c27-8f0f-39dbbd7a8076
+      version: -1
+      name: Any results for findings query?
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PrismaCloud.HostFinding
+                accessor: findingId
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 560,
+          "y": 820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 356451eb-76dd-4b4e-888e-5b514a40af7d
+    type: regular
+    task:
+      id: 356451eb-76dd-4b4e-888e-5b514a40af7d
+      version: -1
+      name: Verify if public IP exists (AWS)
+      description: Search configuration inventory on the Prisma Cloud platform using RQL language. Use this command for all queries that start with 'config'.
+      script: '|||prisma-cloud-config-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      query:
+        simple: config from cloud.resource where api.name = 'aws-ec2-describe-instances' AND json.rule = networkInterfaces[*].privateIpAddresses[*].association.publicIp exists and instanceId equals "${incident.resourceid}"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -90,
+          "y": 10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 434e6363-0a85-4e94-8042-23bbdf56a4fd
+    type: condition
+    task:
+      id: 434e6363-0a85-4e94-8042-23bbdf56a4fd
+      version: -1
+      name: Is this a network interface?
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "34"
+      "yes":
+      - "36"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: startWith
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: resourceid
+            iscontext: true
+          right:
+            value:
+              simple: eni
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 130,
+          "y": -160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: b69bc1f4-7ebf-46a1-874b-b1159d026738
+    type: regular
+    task:
+      id: b69bc1f4-7ebf-46a1-874b-b1159d026738
+      version: -1
+      name: Verify if public IP of related instance exists (AWS)
+      description: Search configuration inventory on the Prisma Cloud platform using RQL language. Use this command for all queries that start with 'config'.
+      script: '|||prisma-cloud-config-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      query:
+        simple: config from cloud.resource where api.name = 'aws-ec2-describe-instances' AND json.rule = networkInterfaces[*].networkInterfaceId equals "${incident.resourceid}"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 350,
+          "y": 10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: c892c2c3-39e8-4e86-8c54-767360b1600c
+    type: condition
+    task:
+      id: c892c2c3-39e8-4e86-8c54-767360b1600c
+      version: -1
+      name: Open Jira issue?
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "23"
+      "yes":
+      - "27"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.JiraProjectName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.JiraIssueTypeName
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 400,
+          "y": 1950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 31a1f2ba-107a-4da3-80f9-9f9928e850fc
+    type: condition
+    task:
+      id: 31a1f2ba-107a-4da3-80f9-9f9928e850fc
+      version: -1
+      name: Send a Slack message?
+      description: ''
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "23"
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.SlackChannelName
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.SlackChannelID
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1240,
+          "y": 1950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "10_11_Critical": 0.59,
+      "1_6_gcp": 0.51,
+      "26_17_#default#": 0.27,
+      "37_27_yes": 0.5,
+      "38_28_yes": 0.56
+    },
+    "paper": {
+      "dimensions": {
+        "height": 3855,
+        "width": 1920,
+        "x": -90,
+        "y": -690
+      }
+    }
+  }
+inputs:
+- key: JiraProjectName
+  value: {}
+  required: false
+  description: The project name with which to associate the issue.
+  playbookInputQuery:
+- key: JiraIssueTypeName
+  value: {}
+  required: false
+  description: The name of the issue type to be opened.
+  playbookInputQuery:
+- key: CloseIncidentAfterNotification
+  value:
+    simple: "True"
+  required: false
+  description: Whether to close the incident after Jira/Slack issue was opened. Default value is "True".
+  playbookInputQuery:
+- key: SlackChannelName
+  value: {}
+  required: false
+  description: The name of the Slack channel to which to send the message.
+  playbookInputQuery:
+- key: SlackChannelID
+  value: {}
+  required: false
+  description: The ID of the Slack channel to which to send the message.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.8.0

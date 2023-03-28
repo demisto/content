@@ -8,7 +8,8 @@
 		"AWS EC2 Instance Misconfiguration",
         "Nutanix Hypervisor Alert",
 		"OpsGenie Alert",
-		"Microsoft Sentinel Incident"
+		"Microsoft Sentinel Incident",
+		"Prisma Cloud - VM Alert Prioritization"
 	],
 	"breachScript": "",
 	"caseInsensitive": true,
@@ -34,7 +35,9 @@
 	"selectValues": [],
 	"sla": 0,
 	"system": false,
-	"systemAssociatedTypes": null,
+	"systemAssociatedTypes": [
+		"Prisma Cloud - VM Alert Prioritization"
+	],
 	"threshold": 72,
 	"type": "shortText",
 	"unmapped": false,
