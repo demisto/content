@@ -1,0 +1,1028 @@
+id: Rubrik Fileset Ransomware Discovery - Rubrik Polaris
+version: -1
+name: Rubrik Fileset Ransomware Discovery - Rubrik Polaris
+description: |-
+  This playbook performs IOC Scan on fileset object. It also creates tickets on ServiceNow using "ServiceNow v2" integration.
+  Supported integrations:
+  - RubrikPolaris
+  - ServiceNow v2
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: ab398828-7849-4c05-845b-d4e7e5df8c0c
+    type: start
+    task:
+      id: ab398828-7849-4c05-845b-d4e7e5df8c0c
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: fc65973a-8760-4d60-852f-f819f865c497
+    type: collection
+    task:
+      id: fc65973a-8760-4d60-852f-f819f865c497
+      version: -1
+      name: Collect IOC data
+      description: Collecting data to initiate the IOC Scan.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: Please provide input values to initiate the IOC Scan.
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: IOC hash to scan for
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: 'IOC Hash value to scan. Supports comma separated multiple values.
+          Please provide input of either IOC hash, IOC path, IOC Yara rule or IOC
+          Yara Rule URL. '
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: IOC path to scan for
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: 'IOC path value to scan. Supports comma separated multiple values.
+          Please provide input of either IOC hash, IOC path, IOC Yara rule or IOC
+          Yara Rule URL. '
+        readonly: false
+      - id: "2"
+        label: ""
+        labelarg:
+          simple: IOC Yara rule to scan for
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: longText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: 'IOC Yara rule value to scan. Supports comma separated multiple values.
+          Please provide input of either IOC hash, IOC path, IOC Yara rule or IOC
+          Yara Rule URL. '
+        readonly: false
+      - id: "3"
+        label: ""
+        labelarg:
+          simple: Start date to initiate the IOC scan
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: 7 days ago
+        tooltip: 'To initiate the scan, provide the start date to filter the snapshots
+          from. If not provided, default will be taken as 7 days ago. Formats accepted:
+          2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ,
+          etc.  Examples of more supported values can be found at https://dateparser.readthedocs.io/en/latest/#relative-dates.'
+        readonly: false
+      - id: "4"
+        label: ""
+        labelarg:
+          simple: End date to initiate the IOC scan
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: now
+        tooltip: 'To initiate the scan, provide the end date to filter the snapshots
+          upto. If not provided, default will be taken as now. Formats accepted: 2
+          minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ,
+          etc.  Examples of more supported values can be found at https://dateparser.readthedocs.io/en/latest/#relative-dates.'
+        readonly: false
+      - id: "5"
+        label: ""
+        labelarg:
+          simple: Polling interval for IOC Scan
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: "5"
+        tooltip: Frequency that the IOC scan command will run (minutes). If not provided,
+          default will be taken as 5.
+        readonly: false
+      - id: "6"
+        label: ""
+        labelarg:
+          simple: Polling timeout for IOC Scan
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: "720"
+        tooltip: Amount of time to poll before declaring a timeout and resuming the
+          playbook (in minutes). If not provided, default will be taken as 720.
+        readonly: false
+      - id: "7"
+        label: ""
+        labelarg:
+          simple: IOC Yara rule file URL to scan for
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: IOC Yara rule file URL to fetch rule(s) to scan. Supports comma separated
+          multiple values. Please provide input of either IOC hash, IOC path, IOC
+          Yara rule or IOC Yara Rule URL.
+        readonly: false
+      - id: "8"
+        label: ""
+        labelarg:
+          simple: Paths to include in the IOC Scan
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: 'Paths to include in the scan. Supports comma separated values.  Format
+          accepted: path_to_include_1, path_to_include_2'
+        readonly: false
+      - id: "9"
+        label: ""
+        labelarg:
+          simple: Paths to exclude in the IOC Scan
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: 'Paths to exclude in the scan. Supports comma separated values. Format
+          accepted: path_to_exclude_1, path_to_exclude_2'
+        readonly: false
+      - id: "10"
+        label: ""
+        labelarg:
+          simple: Paths to exempt in the IOC Scan
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: 'Paths to exempt in the scan. Supports comma separated values. Format
+          accepted: path_to_exempt_1, path_to_exempt_2'
+        readonly: false
+      - id: "11"
+        label: ""
+        labelarg:
+          simple: Scan name
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: Name of the scan. Default is "PAXSOAR-1.1.0".
+        readonly: false
+      title: IOC Scan Data
+      description: Input arguments required to initiate IOC Scan.
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 888ceb11-bc06-4518-81e9-997ba9dd94d1
+    type: condition
+    task:
+      id: 888ceb11-bc06-4518-81e9-997ba9dd94d1
+      version: -1
+      name: 'Whether to fetch Yara rule(s) from a URL? '
+      description: Checks whether IOC Yara rule URL input is provided or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: IOC Scan Data.Answers
+                accessor: "7"
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 91d3cc1e-7b60-4c8e-82d8-2bb017fdc711
+    type: regular
+    task:
+      id: 91d3cc1e-7b60-4c8e-82d8-2bb017fdc711
+      version: -1
+      name: Fetch Yara rule(s) from file URL
+      description: Sends http request. Returns the response as json.
+      scriptName: http
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      method:
+        simple: GET
+      url:
+        complex:
+          root: IOC Scan Data.Answers
+          accessor: "7"
+          transformers:
+          - operator: split
+            args:
+              delimiter:
+                value:
+                  simple: ','
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 0c2d0e8f-29e4-4dc1-899c-2967a76f9937
+    type: regular
+    task:
+      id: 0c2d0e8f-29e4-4dc1-899c-2967a76f9937
+      version: -1
+      name: Set default value for IOC YaraRule
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      key:
+        simple: IOC Scan Data.Answers.2
+      value:
+        complex:
+          root: IOC Scan Data.Answers
+          accessor: "2"
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: NoYaraRule
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: d2e72e0e-a347-438f-8ec3-d52d789d2213
+    type: condition
+    task:
+      id: d2e72e0e-a347-438f-8ec3-d52d789d2213
+      version: -1
+      name: Is ServiceNow integration enabled?
+      description: Checks whether an instance of the ServiceNow integration is enabled
+        or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: ServiceNow v2
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: b5a2376e-189a-4ed3-8cf5-b0f9bda7ec08
+    type: regular
+    task:
+      id: b5a2376e-189a-4ed3-8cf5-b0f9bda7ec08
+      version: -1
+      name: Create SNOW ticket
+      description: Creates new ServiceNow ticket.
+      script: '|||servicenow-create-ticket'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      description:
+        simple: An anomaly incident occurred on ${incident.rubrikpolarisobjectname}
+          with ID ${inputs.ObjectId} on cluster ${incident.rubrikcdmclustername} with
+          cluster ID ${inputs.ClusterId}. The event started on ${incident.rubrikpolarisstarttime}.
+      short_description:
+        simple: Rubrik Radar Anomaly Alert on ${incident.rubrikpolarisobjectname}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 7cf18999-06f6-4e08-8b4d-68e78c088995
+    type: condition
+    task:
+      id: 7cf18999-06f6-4e08-8b4d-68e78c088995
+      version: -1
+      name: Is SNOW ticket created?
+      description: Checks whether the ServiceNow ticket is created or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "12"
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: ServiceNow.Ticket
+                accessor: ID
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 17120c90-5868-464b-891f-c3f8e48fb616
+    type: regular
+    task:
+      id: 17120c90-5868-464b-891f-c3f8e48fb616
+      version: -1
+      name: Print scan status message
+      description: Prints text to war room (Markdown supported)
+      scriptName: Print
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      extend-context:
+        simple: Message=.
+      value:
+        complex:
+          root: RubrikPolaris.RadarIOCScan
+          accessor: status
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Unknown
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'The status of the IOC Scan is '
+              suffix: {}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 59053e12-bf2f-4f07-86a5-664a2b3af1e0
+    type: regular
+    task:
+      id: 59053e12-bf2f-4f07-86a5-664a2b3af1e0
+      version: -1
+      name: Add comment in SNOW ticket
+      description: Adds a comment to the specified ticket, by ticket ID.
+      script: '|||servicenow-add-comment'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      comment:
+        simple: ${Message}
+      id:
+        complex:
+          root: ServiceNow.Ticket
+          accessor: ID
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: ed011d47-8d23-4d2d-89d4-d49bb4cd766c
+    type: regular
+    task:
+      id: ed011d47-8d23-4d2d-89d4-d49bb4cd766c
+      version: -1
+      name: Close SNOW ticket
+      description: Updates the specified ticket.
+      script: '|||servicenow-update-ticket'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      close_code:
+        simple: Closed/Resolved by Caller
+      close_notes:
+        simple: Resolved
+      id:
+        complex:
+          root: ServiceNow.Ticket
+          accessor: ID
+      state:
+        simple: "7"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: e9244282-b7c5-4298-8331-232f37e3f9f3
+    type: title
+    task:
+      id: e9244282-b7c5-4298-8331-232f37e3f9f3
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 0e404467-b7a9-469f-8f94-32e21e409250
+    type: condition
+    task:
+      id: 0e404467-b7a9-469f-8f94-32e21e409250
+      version: -1
+      name: Is Rubrik Polaris enabled?
+      description: Checks whether an instance of the Rubrik Polaris integration is
+        enabled or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "12"
+      "yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: RubrikPolaris
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                accessor: name
+            iscontext: true
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: a546b448-7bff-4a38-8679-2dee8e9174fc
+    type: condition
+    task:
+      id: a546b448-7bff-4a38-8679-2dee8e9174fc
+      version: -1
+      name: Is object type Fileset?
+      description: Checks whether an object type of the incident is Fileset or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "12"
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: incident
+                accessor: rubrikpolarisobjecttype
+            iscontext: true
+          right:
+            value:
+              simple: Fileset
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: f04688b1-ab1a-470c-8880-280e4f471942
+    type: playbook
+    task:
+      id: f04688b1-ab1a-470c-8880-280e4f471942
+      version: -1
+      name: Rubrik IOC Scan - Rubrik Polaris
+      description: This playbook starts an IOC Scan with the provided IOC values.
+        It can be looped until recoverable snapshots are obtained or the limit to
+        loop is reached.
+      playbookName: Rubrik IOC Scan - Rubrik Polaris
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      ClusterId:
+        complex:
+          root: inputs.ClusterId
+      EndDate:
+        complex:
+          root: IOC Scan Data.Answers
+          accessor: "4"
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: now
+      IOCHash:
+        complex:
+          root: IOC Scan Data.Answers
+          accessor: "0"
+      IOCPath:
+        complex:
+          root: IOC Scan Data.Answers
+          accessor: "1"
+      IOCYaraRule:
+        complex:
+          root: HttpRequest.Response
+          accessor: Body
+          transformers:
+          - operator: join
+            args:
+              separator:
+                value:
+                  simple: ' '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: ' '
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: IOC Scan Data.Answers.2
+                iscontext: true
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: \\
+              toReplace:
+                value:
+                  simple: \
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: \"
+              toReplace:
+                value:
+                  simple: '"'
+          - operator: replaceMatch
+            args:
+              regex:
+                value:
+                  simple: '[\t\r]'
+              replaceWith:
+                value:
+                  simple: ' '
+          - operator: replaceMatch
+            args:
+              regex:
+                value:
+                  simple: \n
+              replaceWith:
+                value:
+                  simple: \n
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: ' '
+              toReplace:
+                value:
+                  simple: NoYaraRule
+          - operator: trim
+      Limit:
+        simple: "1"
+      ObjectId:
+        complex:
+          root: inputs.ObjectId
+      PathsToExclude:
+        complex:
+          root: IOC Scan Data.Answers
+          accessor: "9"
+      PathsToExempt:
+        complex:
+          root: IOC Scan Data.Answers
+          accessor: "10"
+      PathsToInclude:
+        complex:
+          root: IOC Scan Data.Answers
+          accessor: "8"
+      PollingInterval:
+        complex:
+          root: IOC Scan Data.Answers
+          accessor: "5"
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: "5"
+      PollingTimeout:
+        complex:
+          root: IOC Scan Data.Answers
+          accessor: "6"
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: "720"
+      ScanName:
+        complex:
+          root: IOC Scan Data.Answers
+          accessor: "11"
+      StartDate:
+        complex:
+          root: IOC Scan Data.Answers
+          accessor: "3"
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: 7 days ago
+    separatecontext: true
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "13_12_#default#": 0.1,
+      "14_12_#default#": 0.23
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2485,
+        "width": 605,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: ClusterId
+  value:
+    complex:
+      root: incident
+      accessor: rubrikcdmclusterid
+  required: true
+  description: Cluster ID of the incident.
+  playbookInputQuery:
+- key: ObjectId
+  value:
+    complex:
+      root: incident
+      accessor: rubrikpolarisfid
+  required: true
+  description: Object ID of the incident.
+  playbookInputQuery:
+outputs: []
+tests:
+- RubrikPolaris-Test
+fromversion: 6.0.0

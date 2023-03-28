@@ -2,7 +2,7 @@ comment: Shows the Rubrik Radar amount of Files Added.
 commonfields:
   id: RubrikCDMClusterConnectionState
   version: -1
-dockerimage: demisto/python3:3.10.4.31492
+dockerimage: demisto/python3:3.10.10.50695
 enabled: true
 name: RubrikCDMClusterConnectionState
 runas: DBotWeakRole
