@@ -83,7 +83,7 @@ def test_search_query_command_url(mocker, client):
     mocker.patch.object(client, "get_search_query", return_value=raw_response)
     response = OPSWAT_Filescan.search_query_command(client, {})
 
-    assert len(response) == 10+1  # 1-1 separately and a summarize
+    assert len(response) == 10 + 1  # 1-1 separately and a summarize
 
     assert response[0].indicator.dbot_score.indicator == "5302e0de83c841169f0543eaf5f9a2b7313d49d35d9f3ecbeed4e6b353b5a2c8"
     assert response[0].indicator.dbot_score.score == 1
