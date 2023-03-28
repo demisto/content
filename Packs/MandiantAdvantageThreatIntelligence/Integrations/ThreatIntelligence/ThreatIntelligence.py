@@ -1166,6 +1166,10 @@ def fetch_indicator_by_value(client: MandiantClient, args: Dict = None):
     INDICATOR_TYPE_MAP: dict[str, str] = {"ipv4": "ip", "fqdn": "domain", "url": "url", "md5": "file"}
 
     indicators_list = client.get_indicators_by_value(indicator_value=indicator_value)
+
+    if not indicators_list:
+        return CommandResults()
+
     indicators = [
         MAP_INDICATORS_FUNCTIONS[INDICATOR_TYPE_MAP[indicator["type"]]](
             client, indicator
@@ -1283,7 +1287,7 @@ def fetch_reputation(client: MandiantClient, args: Dict = None):
 """ COMMAND FUNCTIONS """
 
 
-def test_module(client: MandiantClient, args: Dict) -> str:
+def test_module(client: MandiantClient) -> str:
     """Tests API connectivity and authentication
 
     Returning 'ok' indicates that the integration works like it is supposed to.
