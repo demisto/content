@@ -1465,10 +1465,9 @@ def search_device(filter_operator='AND', exact_hostname: bool = False):
                 for arg_elem in arg:
                     if arg_elem:
                         first_arg = '{filter},{inp_arg}'.format(filter=arg_filter, inp_arg=k) if arg_filter else k
+                        arg_elem = f"'{arg_elem}'"
                         if k == 'hostname' and exact_hostname:
-                            arg_elem = f"['{arg_elem}']"
-                        else:
-                            arg_elem = f"'{arg_elem}'"
+                            arg_elem = f'[{arg_elem}]'
                         arg_filter = "{first}:{second}".format(first=first_arg, second=arg_elem)
                 if arg_filter:
                     url_filter = "{url_filter}{arg_filter}".format(url_filter=url_filter + op if url_filter else '',
