@@ -5037,8 +5037,6 @@ def get_papi_property_byname_command(client: Client,
 
         err_msg = f'{INTEGRATION_NAME} - get papi property command: Property {property_name} is not found'
         raise DemistoException(err_msg)
-        # human_readable = f'{INTEGRATION_NAME} - get papi property command: Property {property_name} is not found'
-        # return human_readable, {}, {}
 
 
 # Created by D.S. 2022-11-25
