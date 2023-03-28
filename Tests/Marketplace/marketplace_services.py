@@ -840,7 +840,7 @@ class Pack(object):
         entry_result = {}
 
         if new_version:
-            pull_request_numbers = self.get_version_to_pr_numbers(version_display_name)
+            pull_request_numbers = self.get_pr_numbers_for_version(version_display_name)
             entry_result = {Changelog.RELEASE_NOTES: release_notes,
                             Changelog.DISPLAY_NAME: f'{version_display_name} - {build_number}',
                             Changelog.RELEASED: datetime.utcnow().strftime(Metadata.DATE_FORMAT),
@@ -1668,7 +1668,7 @@ class Pack(object):
                             for version, modified_release_notes_lines in modified_release_notes_lines_dict.items():
                                 versions, _ = self.get_same_block_versions(release_notes_dir, version, changelog)
                                 all_relevant_pr_nums_for_unified = list({pr_num for _version in versions.keys()
-                                                                        for pr_num in self.get_version_to_pr_numbers(_version)})
+                                                                        for pr_num in self.get_pr_numbers_for_version(_version)})
                                 logging.debug(f"{all_relevant_pr_nums_for_unified=}")
                                 updated_entry = self._get_updated_changelog_entry(
                                     changelog=changelog,
@@ -3624,7 +3624,7 @@ class Pack(object):
         return {str(bc_ver): bc_version_to_text.get(str(bc_ver)) for bc_ver in breaking_changes_versions if
                 predecessor_version < bc_ver <= rn_version}
 
-    def get_version_to_pr_numbers(self, version: str) -> List[int]:
+    def get_pr_numbers_for_version(self, version: str) -> List[int]:
         """
         Get List[PullRequests] for the given version
         Args:
