@@ -1,5 +1,7 @@
 Close historical XSOAR incidents that are already closed on Securonix.
 
+NOTE: This script will close all the XSOAR incidents which are created from Securonix integration and does not have incident type as "Securonix Incident" in the provided time frame.
+
 ## Script Data
 ---
 
