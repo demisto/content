@@ -1,0 +1,30 @@
+{
+    "name": "Palo Alto Networks Cortex XSIAM - Compliance Dashboards and Reports",
+    "description": "Pack for viewing compliance data via dashboards and reports. Dashboards and reports utilize queries which refrence XDM, allowing queries to refrence data across multiple datasets.",
+    "support": "xsiam",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSIAM",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "categories": [
+        "Endpoint"
+    ],
+    "tags": [
+        "compliance",
+	"pci",
+	"pci dss",
+	"hipaa",
+	"nist",
+	"nist csf"
+	"nist 800",
+	"nist 800-53",
+	"nist 800-171",
+        "xsiam"
+    ],
+    "created": "2023-03-20T13:16:53Z",
+    "useCases": [
+        "Compliance"
+    ],
+    "keywords": [
+        "compliance",
+    ]
+}
