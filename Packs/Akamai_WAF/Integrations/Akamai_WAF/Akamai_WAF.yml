@@ -1286,7 +1286,7 @@ script:
       name: create_from_version
       required: true
     description: 'Create a new property version based on any previous version.          All data from the createFromVersion populates the new version, including its rules and hostnames. '
-    name: akamai-new-papi-proerty-version
+    name: akamai-new-papi-property-version
   - arguments:
     - description: Unique identifier for the contract.
       name: contract_id
