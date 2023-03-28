@@ -238,7 +238,7 @@ Get the list of actively reporting metrics.
 | --- | --- | --- |
 | from | List of actively reporting metrics from a given time until now.<br/>Format :  yyyy-MM-dd’T’HH:mm:ssZ Or '-1days' . | Required | 
 | host_name | Hostname for filtering the list of metrics. | Optional | 
-| tag_filter | Filter metrics that have been submitted with the given tags. | Optional | 
+| tag_filter | Filter metrics that have been submitted with the given tags.<br/>Ex: “region:east,env:prod”. | Optional | 
 | page | The page number. Default is 1. | Optional | 
 | page_size | The number of requested results per page. Default is 50. | Optional | 
 | limit | The maximum number of records to return from the collection. Limit default value is 50. If the page_size argument is set by the user, then the limit argument will be ignored. | Optional | 
@@ -269,7 +269,7 @@ Search for metrics from the last 24 hours in Datadog.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Datadog.Metric | Unknown | List of metrics that match the search query. | 
+| Datadog.Metric.metric_name | Unknown | List of metrics that match the search query. | 
 
 ### datadog-metric-metadata-get
 
@@ -290,13 +290,14 @@ Get metadata about a specific metric.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Datadog.Metric.description | String | Metric description. | 
-| Datadog.Metric.integration | String | Name of the integration that sent the metric if applicable. | 
-| Datadog.Metric.per_unit | String | Per unit of the metric such as second in bytes per second. | 
-| Datadog.Metric.short_name | String | A more human-readable and abbreviated version of the metric name. | 
-| Datadog.Metric.statsd_interval | Number | StatsD flush interval of the metric in seconds if applicable. | 
-| Datadog.Metric.type | String | Metric type | 
-| Datadog.Metric.unit | String | Primary unit of the metric | 
+| Datadog.MetricMetadata.description | String | Metric description. | 
+| Datadog.MetricMetadata.integration | String | Name of the integration that sent the metric if applicable. | 
+| Datadog.MetricMetadata.per_unit | String | Per unit of the metric such as second in bytes per second. | 
+| Datadog.MetricMetadata.short_name | String | A more human-readable and abbreviated version of the metric name. | 
+| Datadog.MetricMetadata.statsd_interval | Number | StatsD flush interval of the metric in seconds if applicable. | 
+| Datadog.MetricMetadata.type | String | Metric type | 
+| Datadog.MetricMetadata.unit | String | Primary unit of the metric | 
+| Datadog.MetricMetadata.metric_name | String | The metric name. | 
 
 ### datadog-metric-metadata-update
 
@@ -323,9 +324,102 @@ Edit metadata of a specific metric.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Datadog.Metric.description | String | Metric description. | 
-| Datadog.Metric.per_unit | String | Per unit of the metric such as second in bytes per second. | 
-| Datadog.Metric.short_name | String | A more human-readable and abbreviated version of the metric name. | 
-| Datadog.Metric.statsd_interval | Number | StatsD flush interval of the metric in seconds if applicable. | 
-| Datadog.Metric.type | String | Metric type | 
-| Datadog.Metric.unit | String | Primary unit of the metric | 
+| Datadog.MetricMetadata.description | String | Metric description. | 
+| Datadog.MetricMetadata.per_unit | String | Per unit of the metric such as second in bytes per second. | 
+| Datadog.MetricMetadata.short_name | String | A more human-readable and abbreviated version of the metric name. | 
+| Datadog.MetricMetadata.statsd_interval | Number | StatsD flush interval of the metric in seconds if applicable. | 
+| Datadog.MetricMetadata.type | String | Metric type | 
+| Datadog.MetricMetadata.unit | String | Primary unit of the metric | 
+| Datadog.MetricMetadata.metric_name | String | The metric name. | 
+
+### datadog-incident-create
+
+***
+Datadog Incidents Create is used to Create an incident.
+
+#### Base Command
+
+`datadog-incident-create`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| customer_impacted | A flag indicating whether the incident caused customer impact. Possible values are: True, False. | Required | 
+| title | The title of the incident, which summarizes what happened. | Required | 
+| severity | The severity of the incident.<br/>Default value=unknown. Possible values are: SEV-1, SEV-2, SEV-3, SEV-4, SEV-5, UNKNOWN. | Optional | 
+| state | The State of the incident. Possible values are: active, stable, resolved. | Optional | 
+| detection_method | Specify how the incident was detected. Possible values are: customer, employee, monitor, other, unknown. | Optional | 
+| root_cause | This field allows you to enter the description of the root cause, triggers, and contributing factors of the incident. | Optional | 
+| summary | Summary of the incident. | Optional | 
+| content | The Markdown content of the cell  which is used to format using the Markdown syntax rules.<br/>Markdown cells usually serve as explanatory or descriptive texts to your code.<br/>If content is provided important is required. | Optional | 
+| important | A flag indicating whether the timeline cell is important and should be highlighted. Possible values are: True, False. | Optional | 
+| display_name | The name of the notified handle. | Optional | 
+| handle | The email address used for the notification. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Datadog.Incident.id | String | The ID of the incident. | 
+| Datadog.Incident.attributes.public_id | Number | The monotonically increasing integer ID for the incident. | 
+| Datadog.Incident.attributes.resolved | Unknown | Timestamp when the incident's state was last changed from active or stable to resolved or completed. | 
+| Datadog.Incident.attributes.title | String | The title of the incident, which summarizes what happened. | 
+| Datadog.Incident.attributes.customer_impact_scope | Unknown | A summary of the impact customers experienced during the incident. | 
+| Datadog.Incident.attributes.customer_impact_start | Unknown | Timestamp when customers began being impacted by the incident. | 
+| Datadog.Incident.attributes.customer_impact_end | Unknown | Timestamp when customers were no longer impacted by the incident. | 
+| Datadog.Incident.attributes.customer_impacted | Boolean | A flag indicating whether the incident caused customer impact. | 
+| Datadog.Incident.attributes.notification_handles.display_name | String | The name of the notified handle. | 
+| Datadog.Incident.attributes.notification_handles.handle | String | The email address used for the notification. | 
+| Datadog.Incident.attributes.created | String | Timestamp when the incident was created. | 
+| Datadog.Incident.attributes.modified | String | Timestamp when the incident was last modified. | 
+| Datadog.Incident.attributes.detected | String | Timestamp when the incident was detected. | 
+| Datadog.Incident.attributes.customer_impact_duration | Number | Length of the incident's customer impact in seconds. Equals the difference between customer_impact_start and customer_impact_end. | 
+| Datadog.Incident.attributes.time_to_detect | Number | The amount of time in seconds to detect the incident. Equals the difference between customer_impact_start and detected. | 
+| Datadog.Incident.attributes.time_to_repair | Number | The amount of time in seconds to resolve customer impact after detecting the issue. Equals the difference between customer_impact_end and detected. | 
+| Datadog.Incident.attributes.time_to_internal_response | Number | The amount of time in seconds to call incident after detection. Equals the difference of detected and created. | 
+| Datadog.Incident.attributes.time_to_resolve | Number | The amount of time in seconds to resolve the incident after it was created. Equals the difference between created and resolved. | 
+| Datadog.Incident.attributes.fields.severity.value | String | The severity of the incident. | 
+| Datadog.Incident.attributes.fields.state.value | String | The status of the incident. | 
+| Datadog.Incident.attributes.fields.detection_method.value | String | Specify how the incident was detected with these default options - customer, employee, monitor, other, or unknown. | 
+| Datadog.Incident.attributes.fields.root_cause.value | String | This text field allows you to enter the description of the root cause, triggers, and contributing factors of the incident. | 
+| Datadog.Incident.attributes.fields.summary.value | String | Summary of incident. | 
+| Datadog.Incident.relationships.created_by_user.data.id | String | A unique identifier that represents the user. | 
+| Datadog.Incident.relationships.integrations.data.id | String | A unique identifier that represents the integration metadata. | 
+| Datadog.Incident.relationships.last_modified_by_user.data.id | String | A unique identifier that represents the user. | 
+| Datadog.Incident.relationships.commander_user.data.id | Unknown | A unique identifier that represents the user. | 
+| Datadog.Incident.included.attributes.created_at | String | Creation time of the user. | 
+| Datadog.Incident.included.attributes.disabled | Boolean | Whether the user is disabled. | 
+| Datadog.Incident.included.attributes.email | String | Email of the user. | 
+| Datadog.Incident.included.attributes.handle | String | Handle of the user. | 
+| Datadog.Incident.included.attributes.icon | String | URL of the user's icon. | 
+| Datadog.Incident.included.attributes.modified_at | String | Time that the user was last modified. | 
+| Datadog.Incident.included.attributes.name | String | Name of the user. | 
+| Datadog.Incident.included.attributes.service_account | Boolean | Whether the user is a service account. | 
+| Datadog.Incident.included.attributes.status | String | Status of the user. | 
+| Datadog.Incident.included.attributes.title | String | Title of the user. | 
+| Datadog.Incident.included.attributes.verified | Boolean | Whether the user is verified. | 
+| Datadog.Incident.included.id | String | ID of the user. | 
+| Datadog.Incident.included.relationships.org.id | String | ID of the organization. | 
+| Datadog.Incident.included.relationships.other_orgs.id | String | ID of the other organization. | 
+| Datadog.Incident.included.relationships.other_users.id | String | A unique identifier that represents the user. | 
+| Datadog.Incident.included.relationships.roles.id | String | The unique identifier of the role. | 
+
+### datadog-incident-delete
+
+***
+Delete an existing incident.
+
+#### Base Command
+
+`datadog-incident-delete`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| incident_id | The UUID of the incident. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
