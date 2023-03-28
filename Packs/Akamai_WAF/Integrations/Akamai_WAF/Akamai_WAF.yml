@@ -1242,7 +1242,7 @@ script:
     - description: Unique identifier for the contract
       name: contract_id
       required: true
-    - description: name of the papi property
+    - description: Name of the PAPI property.
       name: property_name
     - description: Unique identifier for the group
       name: group_id
