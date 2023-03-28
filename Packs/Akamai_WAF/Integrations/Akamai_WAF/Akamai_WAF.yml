@@ -1249,7 +1249,7 @@ script:
     description: Get PAPI property info without the default rule. To get the default rule, use the "get-papi-property-rule" command.
     name: akamai-get-papi-property-byname
   - arguments:
-    - description: Unique identifier for the contract
+    - description: Unique identifier for the contract.
       name: contract_id
       required: true
     - description: Unique identifier for the group
