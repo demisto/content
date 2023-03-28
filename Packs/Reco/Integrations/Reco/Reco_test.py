@@ -8,8 +8,15 @@ import base64
 import pytest
 import datetime
 
-from Reco import RecoClient, fetch_incidents, map_reco_score_to_demisto_score, get_max_fetch, get_risky_users_from_reco, \
-    add_risky_user_label
+from Reco import (
+    RecoClient,
+    fetch_incidents,
+    map_reco_score_to_demisto_score,
+    get_max_fetch,
+    get_risky_users_from_reco,
+    add_risky_user_label,
+    get_assets_user_has_access,
+)
 
 from test_data.structs import (
     TableData,
@@ -87,6 +94,89 @@ def get_random_table_response() -> GetIncidentTableResponse:
     )
 
 
+def get_random_assets_user_has_access_to_response() -> GetIncidentTableResponse:
+    return GetIncidentTableResponse(
+        get_table_response=GetTableResponse(
+            data=TableData(
+                rows=[
+                    RowData(
+                        cells=[
+                            KeyValuePair(
+                                key="source",
+                                value=base64.b64encode(
+                                    "GDRIVE_ACCESS_LOG_AP".encode(ENCODING)
+                                ).decode(ENCODING),
+                            ),
+                            KeyValuePair(
+                                key="file_type",
+                                value=base64.b64encode(
+                                    "document".encode(ENCODING)
+                                ).decode(ENCODING),
+                            ),
+                            KeyValuePair(
+                                key="currently_permitted_users",
+                                value=base64.b64encode(
+                                    json.dumps(["a", "b", "c", "d", "e"]).encode(
+                                        ENCODING
+                                    )
+                                ).decode(ENCODING),
+                            ),
+                            KeyValuePair(
+                                key="labels",
+                                value=base64.b64encode(
+                                    json.dumps(["a", "b", "c", "d", "e"]).encode(
+                                        ENCODING
+                                    )
+                                ).decode(ENCODING),
+                            ),
+                            KeyValuePair(
+                                key="delete_state",
+                                value=base64.b64encode(
+                                    "active".encode(ENCODING)
+                                ).decode(ENCODING),
+                            ),
+                            KeyValuePair(
+                                key="file_size",
+                                value=base64.b64encode("0".encode(ENCODING)).decode(
+                                    ENCODING
+                                ),
+                            ),
+                            KeyValuePair(
+                                key="file_name",
+                                value=base64.b64encode(
+                                    "User Activity Report".encode(ENCODING)
+                                ).decode(ENCODING),
+                            ),
+                            KeyValuePair(
+                                key="visibility",
+                                value=base64.b64encode(
+                                    "shared_internally".encode(ENCODING)
+                                ).decode(ENCODING),
+                            ),
+                            KeyValuePair(
+                                key="file_id",
+                                value=base64.b64encode("1".encode(ENCODING)).decode(
+                                    ENCODING
+                                ),
+                            ),
+                            KeyValuePair(
+                                key="file_owner",
+                                value=base64.b64encode("a".encode(ENCODING)).decode(
+                                    ENCODING
+                                ),
+                            ),
+                        ],
+                    )
+                ],
+            ),
+            total_number_of_results=1,
+            table_definition="",
+            dynamic_table_definition="",
+            token="",
+        ),
+    )
+
+
 def get_random_risky_users_response() -> GetIncidentTableResponse:
     return GetIncidentTableResponse(
         get_table_response=GetTableResponse(
@@ -139,10 +229,19 @@ def get_random_risky_users_response() -> GetIncidentTableResponse:
 
 
 def get_mock_assets() -> List[Dict[str, Any]]:
-    return dict(assets=[{"entityId": "1Fk-_IB4nAWh5TRkG7bV7LKj15ZQP0DimklY2fr5fKX1", "name": "Untitled document",
-                         "link": "https://drive.google.com/file/d/1Fk-_IB4nAWh5TRkG7bV7LKj15ZQP0DimklY2fr5fKX1",
-                         "dataSource": "GSUITE_GDRIVE_AUDIT_LOG_API", "type": "ASSET_TYPE_FILE", "attributes": {},
-                         "owner": "test@acme.com"}])
+    return dict(
+        assets=[
+            {
+                "entityId": "1Fk-_IB4nAWh5TRkG7bV7LKj15ZQP0DimklY2fr5fKX1",
+                "name": "Untitled document",
+                "link": "https://drive.google.com/file/d/1Fk-_IB4nAWh5TRkG7bV7LKj15ZQP0DimklY2fr5fKX1",
+                "dataSource": "GSUITE_GDRIVE_AUDIT_LOG_API",
+                "type": "ASSET_TYPE_FILE",
+                "attributes": {},
+                "owner": "test@acme.com",
+            }
+        ]
+    )
 
 
 def test_test_module_success(requests_mock, reco_client: RecoClient) -> None:
@@ -158,18 +257,29 @@ def test_test_module_success(requests_mock, reco_client: RecoClient) -> None:
 @pytest.fixture
 def reco_client() -> RecoClient:
     api_token = "dummy api key"
-    return RecoClient(api_token=api_token, base_url=DUMMY_RECO_API_DNS_NAME, verify=True, proxy=True)
+    return RecoClient(
+        api_token=api_token, base_url=DUMMY_RECO_API_DNS_NAME, verify=True, proxy=True
+    )
 
 
 def test_fetch_incidents_should_succeed(requests_mock, reco_client: RecoClient) -> None:
     random_incidents = get_random_table_response()
     assets = get_mock_assets()
     requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/incident", json=random_incidents)
-    requests_mock.get(f"{DUMMY_RECO_API_DNS_NAME}/incident/assets/{INCIDET_ID_UUID}", json=assets)
-    last_run, fetched_incidents = fetch_incidents(
-        reco_client=reco_client, risk_level=40, before=datetime.datetime.now(), last_run={}, max_fetch=1
+    requests_mock.get(
+        f"{DUMMY_RECO_API_DNS_NAME}/incident/assets/{INCIDET_ID_UUID}", json=assets
     )
-    assert len(fetched_incidents) == random_incidents.getTableResponse.total_number_of_results
+    last_run, fetched_incidents = fetch_incidents(
+        reco_client=reco_client,
+        risk_level=40,
+        before=datetime.datetime.now(),
+        last_run={},
+        max_fetch=1,
+    )
+    assert (
+        len(fetched_incidents)
+        == random_incidents.getTableResponse.total_number_of_results
+    )
     assert fetched_incidents[0].get("name") == INCIDENT_DESCRIPTION
     assert fetched_incidents[0].get("dbotMirrorId") == INCIDET_ID_UUID
     res_json = json.loads(fetched_incidents[0].get("rawJSON"))
@@ -180,42 +290,75 @@ def test_fetch_same_incidents(requests_mock, reco_client: RecoClient) -> None:
     random_incidents = get_random_table_response()
     assets = get_mock_assets()
     requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/incident", json=random_incidents)
-    requests_mock.get(f"{DUMMY_RECO_API_DNS_NAME}/incident/assets/{INCIDET_ID_UUID}", json=assets)
-    last_run, fetched_incidents = fetch_incidents(
-        reco_client=reco_client, risk_level=40, before=datetime.datetime.now(), last_run={}, max_fetch=1
+    requests_mock.get(
+        f"{DUMMY_RECO_API_DNS_NAME}/incident/assets/{INCIDET_ID_UUID}", json=assets
     )
-    assert len(fetched_incidents) == random_incidents.getTableResponse.total_number_of_results
+    last_run, fetched_incidents = fetch_incidents(
+        reco_client=reco_client,
+        risk_level=40,
+        before=datetime.datetime.now(),
+        last_run={},
+        max_fetch=1,
+    )
+    assert (
+        len(fetched_incidents)
+        == random_incidents.getTableResponse.total_number_of_results
+    )
     last_run, incidents = fetch_incidents(
-        reco_client=reco_client, risk_level=40, before=datetime.datetime.now(), last_run=last_run, max_fetch=1
+        reco_client=reco_client,
+        risk_level=40,
+        before=datetime.datetime.now(),
+        last_run=last_run,
+        max_fetch=1,
     )
     assert len(incidents) == 0
 
 
-def test_fetch_incidents_without_assets_info(requests_mock, reco_client: RecoClient) -> None:
+def test_fetch_incidents_without_assets_info(
+    requests_mock, reco_client: RecoClient
+) -> None:
     random_incidents = get_random_table_response()
     requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/incident", json=random_incidents)
-    requests_mock.get(f"{DUMMY_RECO_API_DNS_NAME}/incident/assets/{INCIDET_ID_UUID}", json={})
+    requests_mock.get(
+        f"{DUMMY_RECO_API_DNS_NAME}/incident/assets/{INCIDET_ID_UUID}", json={}
+    )
     last_run, fetched_incidents = fetch_incidents(
         reco_client=reco_client, last_run={}, source="GOOGLE_DRIVE", max_fetch=1
     )
-    assert len(fetched_incidents) == random_incidents.getTableResponse.total_number_of_results
+    assert (
+        len(fetched_incidents)
+        == random_incidents.getTableResponse.total_number_of_results
+    )
     assert fetched_incidents[0].get("name") == INCIDENT_DESCRIPTION
     assert fetched_incidents[0].get("dbotMirrorId") == INCIDET_ID_UUID
     res_json = json.loads(fetched_incidents[0].get("rawJSON"))
     assert res_json.get("assets", {}) == []
 
 
-def test_fetch_assets_with_empty_response(requests_mock, reco_client: RecoClient) -> None:
+def test_fetch_assets_with_empty_response(
+    requests_mock, reco_client: RecoClient
+) -> None:
     incident_id = uuid.uuid1()
-    requests_mock.get(f"{DUMMY_RECO_API_DNS_NAME}/incident/assets/{incident_id}", json={})
+    requests_mock.get(
+        f"{DUMMY_RECO_API_DNS_NAME}/incident/assets/{incident_id}", json={}
+    )
     assets = reco_client.get_incidents_assets(incident_id=incident_id)
     assert assets == []
 
 
 def test_empty_response(requests_mock, reco_client: RecoClient) -> None:
-    requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/incident", json=GetIncidentTableResponse(
-        get_table_response=GetTableResponse(data=TableData(rows=[]), total_number_of_results=0, table_definition="",
-                                            dynamic_table_definition="", token="")))
+    requests_mock.put(
+        f"{DUMMY_RECO_API_DNS_NAME}/incident",
+        json=GetIncidentTableResponse(
+            get_table_response=GetTableResponse(
+                data=TableData(rows=[]),
+                total_number_of_results=0,
+                table_definition="",
+                dynamic_table_definition="",
+                token="",
+            )
+        ),
+    )
     last_run, fetched_incidents = fetch_incidents(
         reco_client=reco_client, last_run={}, max_fetch=1
     )
@@ -225,9 +368,18 @@ def test_empty_response(requests_mock, reco_client: RecoClient) -> None:
 
 
 def test_empty_valid_response(requests_mock, reco_client: RecoClient) -> None:
-    requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/incident", json=GetIncidentTableResponse(
-        get_table_response=GetTableResponse(data=TableData(rows=[]), total_number_of_results=0, table_definition="",
-                                            dynamic_table_definition="", token="")))
+    requests_mock.put(
+        f"{DUMMY_RECO_API_DNS_NAME}/incident",
+        json=GetIncidentTableResponse(
+            get_table_response=GetTableResponse(
+                data=TableData(rows=[]),
+                total_number_of_results=0,
+                table_definition="",
+                dynamic_table_definition="",
+                token="",
+            )
+        ),
+    )
     last_run, fetched_incidents = fetch_incidents(
         reco_client=reco_client, last_run={}, max_fetch=1
     )
@@ -243,7 +395,7 @@ def test_invalid_response(requests_mock, reco_client: RecoClient) -> None:
         last_run={},
         max_fetch=1,
         risk_level=str(RiskLevel.HIGH),
-        source="GSUITE_GDRIVE_AUDIT_LOG_API"
+        source="GSUITE_GDRIVE_AUDIT_LOG_API",
     )
 
     assert len(fetched_incidents) == 0
@@ -269,53 +421,112 @@ def test_max_fetch():
 
 def test_update_reco_incident_timeline(requests_mock, reco_client: RecoClient) -> None:
     incident_id = uuid.uuid1()
-    requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/incident-timeline/{str(incident_id)}", json={}, status_code=200)
-    res = reco_client.update_reco_incident_timeline(incident_id=str(incident_id), comment="test")
+    requests_mock.put(
+        f"{DUMMY_RECO_API_DNS_NAME}/incident-timeline/{str(incident_id)}",
+        json={},
+        status_code=200,
+    )
+    res = reco_client.update_reco_incident_timeline(
+        incident_id=str(incident_id), comment="test"
+    )
     assert res == {}
 
 
-def test_update_reco_incident_timeline_error(capfd, requests_mock, reco_client: RecoClient) -> None:
+def test_update_reco_incident_timeline_error(
+    capfd, requests_mock, reco_client: RecoClient
+) -> None:
     incident_id = uuid.uuid1()
-    requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/incident-timeline/{str(incident_id)}", json={}, status_code=404)
+    requests_mock.put(
+        f"{DUMMY_RECO_API_DNS_NAME}/incident-timeline/{str(incident_id)}",
+        json={},
+        status_code=404,
+    )
     with capfd.disabled():
         with pytest.raises(Exception):
-            reco_client.update_reco_incident_timeline(incident_id=str(incident_id), comment="test")
+            reco_client.update_reco_incident_timeline(
+                incident_id=str(incident_id), comment="test"
+            )
 
 
 def test_resolve_visibility_event(requests_mock, reco_client: RecoClient) -> None:
     entry_id = uuid.uuid1()
-    requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/set-label-status", json={}, status_code=200)
-    res = reco_client.resolve_visibility_event(entity_id=str(entry_id), label_name="Accessible by all")
+    requests_mock.put(
+        f"{DUMMY_RECO_API_DNS_NAME}/set-label-status", json={}, status_code=200
+    )
+    res = reco_client.resolve_visibility_event(
+        entity_id=str(entry_id), label_name="Accessible by all"
+    )
     assert res == {}
 
 
-def test_resolve_visibility_event_error(capfd, requests_mock, reco_client: RecoClient) -> None:
+def test_resolve_visibility_event_error(
+    capfd, requests_mock, reco_client: RecoClient
+) -> None:
     entry_id = uuid.uuid1()
-    requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/set-label-status", json={}, status_code=404)
+    requests_mock.put(
+        f"{DUMMY_RECO_API_DNS_NAME}/set-label-status", json={}, status_code=404
+    )
     with capfd.disabled():
         with pytest.raises(Exception):
-            reco_client.resolve_visibility_event(entity_id=str(entry_id), label_name="Accessible by all")
+            reco_client.resolve_visibility_event(
+                entity_id=str(entry_id), label_name="Accessible by all"
+            )
 
 
 def test_get_risky_users(requests_mock, reco_client: RecoClient) -> None:
     raw_result = get_random_risky_users_response()
-    requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/risk-management/get-risk-management-table",
-                      json=raw_result, status_code=200)
+    requests_mock.put(
+        f"{DUMMY_RECO_API_DNS_NAME}/risk-management/get-risk-management-table",
+        json=raw_result,
+        status_code=200,
+    )
     actual_result = get_risky_users_from_reco(reco_client=reco_client)
     assert len(actual_result.outputs) == len(raw_result.getTableResponse.data.rows)
     assert "@" in actual_result.outputs[0].get("email_account")
 
 
-def test_get_risky_users_bad_response(capfd, requests_mock, reco_client: RecoClient) -> None:
-    requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/risk-management/get-risk-management-table",
-                      json={}, status_code=200)
+def test_get_risky_users_bad_response(
+    capfd, requests_mock, reco_client: RecoClient
+) -> None:
+    requests_mock.put(
+        f"{DUMMY_RECO_API_DNS_NAME}/risk-management/get-risk-management-table",
+        json={},
+        status_code=200,
+    )
     with capfd.disabled():
         with pytest.raises(Exception):
             get_risky_users_from_reco(reco_client=reco_client)
 
 
 def test_add_risky_user_label(requests_mock, reco_client: RecoClient) -> None:
-    requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/entry-label-relations",
-                      json={}, status_code=200)
-    res = add_risky_user_label(reco_client=reco_client, email_address=f"{uuid.uuid1()}@gmail.com")
-    assert 'labeled as risky' in res.readable_output
+    label_id = f"{uuid.uuid1()}@gmail.com"
+    requests_mock.put(
+        f"{DUMMY_RECO_API_DNS_NAME}/entry-labels/{label_id}", json={}, status_code=200
+    )
+    res = add_risky_user_label(reco_client=reco_client, email_address=label_id)
+    assert "labeled as risky" in res.readable_output
+
+
+def test_get_assets_user_has_access_to(requests_mock, reco_client: RecoClient) -> None:
+    raw_result = get_random_assets_user_has_access_to_response()
+    requests_mock.post(
+        f"{DUMMY_RECO_API_DNS_NAME}/asset-management", json=raw_result, status_code=200
+    )
+    actual_result = get_assets_user_has_access(
+        reco_client=reco_client,
+        email_address=f"{uuid.uuid1()}@gmail.com",
+        only_sensitive=False,
+    )
+    assert len(actual_result.outputs) == len(raw_result.getTableResponse.data.rows)
+    assert actual_result.outputs[0].get("source") is not None
+
+
+def test_get_assets_user_bad_response(
+    capfd, requests_mock, reco_client: RecoClient
+) -> None:
+    requests_mock.post(
+        f"{DUMMY_RECO_API_DNS_NAME}/asset-management", json={}, status_code=200
+    )
+    with capfd.disabled():
+        with pytest.raises(Exception):
+            get_assets_user_has_access(reco_client=reco_client)

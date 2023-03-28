@@ -20,7 +20,7 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
     flattenCell, date_to_timestamp, datetime, timedelta, camelize, pascalToSpace, argToList, \
     remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult, is_ip_valid, get_demisto_version, \
     IntegrationLogger, parse_date_string, IS_PY3, PY_VER_MINOR, DebugLogger, b64_encode, parse_date_range, \
-    return_outputs, is_filename_valid, \
+    return_outputs, is_filename_valid, convert_dict_values_bytes_to_str, \
     argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, urlRegex, ipv6Regex, domainRegex, batch, FeedIndicatorType, \
     encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown, is_demisto_version_ge, \
     appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str, get_x_content_info_headers, \
@@ -3324,6 +3324,7 @@ regexes_test = [
     (ipv4Regex, '192.256.1.1', False),
     (ipv4Regex, '192.256.1.1.1', False),
     (ipv4Regex, '192.168.1.1/12', False),
+    (ipv4Regex, '', False),
     (ipv4cidrRegex, '192.168.1.1/32', True),
     (ipv4cidrRegex, '192.168.1.1.1/30', False),
     (ipv4cidrRegex, '192.168.1.b/30', False),
@@ -3543,7 +3544,8 @@ INDICATOR_VALUE_AND_TYPE = [
     ('1[.]1[.]1[.]1', 'IP'),
     ('test[@]test.com', 'Email'),
     ('https[:]//www[.]test[.]com/abc', 'URL'),
-    ('test[.]com', 'Domain')
+    ('test[.]com', 'Domain'),
+    ('https://192.168.1.1:8080', 'URL'),
 ]
 
 
@@ -3729,7 +3731,6 @@ INVALID_URL_INDICATORS = [
     'google.com*',
     '1.1.1.1',
     'path/path',
-    '1.1.1.1:8080',
     '1.1.1.1:111112243245/path',
     '3.4.6.92:8080:/test',
     '1.1.1.1:4lll/',
@@ -8824,6 +8825,32 @@ def test_append_metrics(mocker):
 
     results = CommonServerPython.append_metrics(metrics, results)
     assert len(results) == 1
+
+
+def test_convert_dict_values_bytes_to_str():
+    """
+    Given:
+        Dictionary contains bytes objects
+
+    When:
+        Creating outputs for commands
+
+    Then:
+        assert all bytes objects have been converted to strings
+    """
+
+    input_dict = {'some_key': b'some_value',
+                  'some_key1': [b'some_value'],
+                  'some_key2': {'some_key': [b'some_value'],
+                                'some_key1': b'some_value'}
+                  }
+    expected_output_dict = {'some_key': 'some_value',
+                            'some_key1': ['some_value'],
+                            'some_key2': {'some_key': ['some_value'],
+                                          'some_key1': 'some_value'}
+                            }
+    actual_output = convert_dict_values_bytes_to_str(input_dict)
+    assert actual_output == expected_output_dict
 
 
 @pytest.mark.parametrize(
