@@ -34,7 +34,7 @@ This playbook does not use any scripts.
 | GcpNetwork | The VPC network of the GCP instance. |  | Required |
 | RemotePort | The remote port that is publicly exposed to. | alert.remoteport | Required |
 | RemoteProtocol | The remote protocol that is publicly exposed to. |  | Required |
-| GcpProject | The name of the GCP project associated the instance and related objects. | alert.asmcloud.Project | Required |
+| GcpProject | The name of the GCP project associated with the instance and related objects. | alert.asmcloud.Project | Required |
 
 ## Playbook Outputs
 

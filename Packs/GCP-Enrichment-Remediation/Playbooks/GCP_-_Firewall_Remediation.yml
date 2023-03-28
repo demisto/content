@@ -764,7 +764,7 @@ inputs:
       transformers:
       - operator: FirstArrayElement
   required: true
-  description: The name of the GCP project associated the instance and related objects.
+  description: The name of the GCP project associated with the instance and related objects.
   playbookInputQuery:
 outputs: []
 tests:
