@@ -961,12 +961,15 @@ def fetch_incidents(client: Client, first_fetch: str, limit: Optional[int] = MAX
     last_fetch = demisto.getLastRun().get('last_fetch')
     last_id_fetched = demisto.getLastRun().get('last_id_fetched', '-1')
     fetch_start_datetime = calculate_fetch_start_datetime(last_fetch, first_fetch)
+
+    # Filter only tickets since the last pull time
+    epochts = datetime.strptime(str(fetch_start_datetime), '%Y-%m-%d %H:%M:%S.%f').strftime('%s')
+    epochms = f'{epochts}000'
+    filter_times = f'{epochms},0'
     demisto.debug(f'last fetch was at: {last_fetch}, last id fetched was: {last_id_fetched}, '
                   f'time to fetch from is: {fetch_start_datetime}.')
-    filter_times = None
 
     responses = fetch_request(client, fetch_types, include_archived, included_statuses, filter_times)
-
     limit = limit or MAX_INCIDENTS_TO_FETCH
     last_fetch, last_id_fetched, incidents = parse_service_records(responses, limit, fetch_start_datetime, last_id_fetched)
     demisto.setLastRun({'last_fetch': last_fetch.isoformat(), 'last_id_fetched': last_id_fetched})
