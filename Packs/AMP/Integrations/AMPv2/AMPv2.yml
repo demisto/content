@@ -44,6 +44,11 @@ configuration:
   name: max_fetch
   required: false
   type: 0
+- defaultvalue: 'false'
+  display: Fetch incidents with severity = null
+  name: include_null_severities
+  required: false
+  type: 8
 - display: Incident severity to fetch.
   name: incident_severities
   options:
@@ -2003,7 +2008,7 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: Number
-  dockerimage: demisto/python3:3.10.10.48392
+  dockerimage: demisto/python3:3.10.10.49934
   feed: false
   isfetch: true
   longRunning: false

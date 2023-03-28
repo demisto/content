@@ -3006,7 +3006,7 @@ script:
     - contextPath: AzureSentinel.AlertRule.properties.incidentConfiguration
       description: The settings of the incidents that were created from alerts triggered by this analytics rule.
       type: Unknown
-  dockerimage: demisto/crypto:1.0.0.49392
+  dockerimage: demisto/crypto:1.0.0.49599
   feed: false
   isfetch: true
   longRunning: false
