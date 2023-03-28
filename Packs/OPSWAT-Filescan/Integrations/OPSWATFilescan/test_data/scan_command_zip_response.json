@@ -9,7 +9,7 @@
     "fileReadProgressBytes": 15834135,
     "sourceArchive": {
         "scan_task_id": "afb3d699-be8f-4192-9ca5-904ec25320cb",
-        "name": "threesome_mal.zip",
+        "name": "three_mal.zip",
         "mimeType": "application/zip",
         "sha256": "37ec20c328a389e51430d794e12dce643d92f4b532e04c9e014b5f06884e8209",
         "private": false,
@@ -150,7 +150,7 @@
                                 "SHA-512": "5b52b8dfed1a4b1bea4b95ab3ec80b14ceb111c92e684159ac61d6f44e8c1b7fa4b746cf5b836c36d07b4b2e0d017e8353a25e1e6076510849ea2f5ba437490e"
                             },
                             "totalArchiveFiles": 3,
-                            "name": "threesome_mal.zip",
+                            "name": "three_mal.zip",
                             "additionalInfo": "MEDIA_TYPE:zip"
                         }
                     }
@@ -790,7 +790,7 @@
             "taskReference": {
                 "name": "transform-file",
                 "additionalInfo": {
-                    "submitName": "munkaltatoi.docx",
+                    "submitName": "contract.docx",
                     "submitTime": 1679686979386,
                     "digests": {
                         "SHA-256": "ede5221225a03b12d11df11f4babf24e9c4a55e05aff27612813dd44876a71c2"
@@ -808,7 +808,7 @@
                                 "SHA-512": "5b52b8dfed1a4b1bea4b95ab3ec80b14ceb111c92e684159ac61d6f44e8c1b7fa4b746cf5b836c36d07b4b2e0d017e8353a25e1e6076510849ea2f5ba437490e"
                             },
                             "totalArchiveFiles": 3,
-                            "name": "threesome_mal.zip",
+                            "name": "three_mal.zip",
                             "additionalInfo": "MEDIA_TYPE:zip"
                         }
                     }
@@ -971,7 +971,7 @@
                 }
             ],
             "file": {
-                "name": "munkaltatoi.docx",
+                "name": "contract.docx",
                 "hash": "ede5221225a03b12d11df11f4babf24e9c4a55e05aff27612813dd44876a71c2",
                 "type": "ms-office"
             },
@@ -1025,7 +1025,7 @@
                                 "SHA-512": "5b52b8dfed1a4b1bea4b95ab3ec80b14ceb111c92e684159ac61d6f44e8c1b7fa4b746cf5b836c36d07b4b2e0d017e8353a25e1e6076510849ea2f5ba437490e"
                             },
                             "totalArchiveFiles": 3,
-                            "name": "threesome_mal.zip",
+                            "name": "three_mal.zip",
                             "additionalInfo": "MEDIA_TYPE:zip"
                         }
                     }

@@ -150,15 +150,42 @@ def test_scan_command_file_polling(mocker, client):
     response = OPSWAT_Filescan.scan_command(client, polling_args)
 
     assert len(response) == 3
+
     assert response[0].indicator.dbot_score.indicator == "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc"
-    assert response[1].indicator.dbot_score.score == 1
-    assert response[2].indicator.dbot_score.integration_name == "OPSWAT Filescan"
+    assert response[0].indicator.dbot_score.score == 3
+    assert response[0].indicator.dbot_score.integration_name == "OPSWAT Filescan"
     assert response[0].indicator.name == "bad_file.exe"
-    assert response[1].indicator.sha256 == "ede5221225a03b12d11df11f4babf24e9c4a55e05aff27612813dd44876a71c2"
-    assert response[2].outputs['finalVerdict']['verdict'] == "INFORMATIONAL"
+    assert response[0].indicator.sha256 == "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc"
+    assert response[0].outputs['finalVerdict']['verdict'] == "MALICIOUS"
     assert len(response[0].outputs['allTags']) == 5
-    assert response[1].outputs['overallState'] == "success"
-    assert response[2].outputs['taskReference']['name'] == "transform-file"
-    assert response[1].outputs['file']['name'] == "munkaltatoi.docx"
-    assert response[2].outputs['file']['hash'] == "2ee79f9a52e660f2322985c72c9dffefdfb5a3c302576d61b4e629d049098cb5"
+    assert response[0].outputs['overallState'] == "success"
+    assert response[0].outputs['taskReference']['name'] == "transform-file"
+    assert response[0].outputs['file']['name'] == "bad_file.exe"
+    assert response[0].outputs['file']['hash'] == "834d1dbfab8330ea5f1844f6e905ed0ac19d1033ee9a9f1122ad2051c56783dc"
     assert response[0].outputs['file']['type'] == "pe"
+
+    assert response[1].indicator.dbot_score.indicator == "ede5221225a03b12d11df11f4babf24e9c4a55e05aff27612813dd44876a71c2"
+    assert response[1].indicator.dbot_score.score == 1
+    assert response[1].indicator.dbot_score.integration_name == "OPSWAT Filescan"
+    assert response[1].indicator.name == "contract.docx"
+    assert response[1].indicator.sha256 == "ede5221225a03b12d11df11f4babf24e9c4a55e05aff27612813dd44876a71c2"
+    assert response[1].outputs['finalVerdict']['verdict'] == "INFORMATIONAL"
+    assert len(response[1].outputs['allTags']) == 3
+    assert response[1].outputs['overallState'] == "success"
+    assert response[1].outputs['taskReference']['name'] == "transform-file"
+    assert response[1].outputs['file']['name'] == "contract.docx"
+    assert response[1].outputs['file']['hash'] == "ede5221225a03b12d11df11f4babf24e9c4a55e05aff27612813dd44876a71c2"
+    assert response[1].outputs['file']['type'] == "ms-office"
+
+    assert response[2].indicator.dbot_score.indicator == "2ee79f9a52e660f2322985c72c9dffefdfb5a3c302576d61b4e629d049098cb5"
+    assert response[2].indicator.dbot_score.score == 1
+    assert response[2].indicator.dbot_score.integration_name == "OPSWAT Filescan"
+    assert response[2].indicator.name == "poorguy.png"
+    assert response[2].indicator.sha256 == "2ee79f9a52e660f2322985c72c9dffefdfb5a3c302576d61b4e629d049098cb5"
+    assert response[2].outputs['finalVerdict']['verdict'] == "INFORMATIONAL"
+    assert len(response[2].outputs['allTags']) == 1
+    assert response[2].outputs['overallState'] == "success"
+    assert response[2].outputs['taskReference']['name'] == "transform-file"
+    assert response[2].outputs['file']['name'] == "poorguy.png"
+    assert response[2].outputs['file']['hash'] == "2ee79f9a52e660f2322985c72c9dffefdfb5a3c302576d61b4e629d049098cb5"
+    assert response[2].outputs['file']['type'] == "other"
