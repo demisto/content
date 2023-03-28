@@ -166,7 +166,7 @@ script:
       description: The value of the tag.
       type: string
     - contextPath: Nexpose.AssetTag.CreatedTime
-      description: Timestamp of when the tag was create.
+      description: Timestamp of when the tag was created.
       type: string
     - contextPath: Nexpose.AssetTag.RiskModifier
       description: The risk modifier value associated with criticality tag type.
@@ -2217,7 +2217,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Hosts that should be included as a part of the scan. Can be an IP addresses or a hostname. Can be a comma-separated list.
+      description: Specific host(s) on the site to run the scan on. Can be an IP address or a hostname. Can be a comma-separated list.
       isArray: true
       name: hosts
       required: false
@@ -2285,8 +2285,8 @@ script:
       name: name
       required: false
       secret: false
-    deprecated: false
-    description: Starts a scan for specified asset IP addresses and host names.
+    deprecated: true
+    description: Deprecated. Use `nexpose-start-site-scan` using the `hosts` argument instead.
     execution: false
     name: nexpose-start-assets-scan
     outputs:
@@ -3133,7 +3133,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.10.48392
+  dockerimage: demisto/python3:3.10.10.50695
 fromversion: 5.0.0
 tests:
 - nexpose_test

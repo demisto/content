@@ -518,6 +518,9 @@ script:
     - contextPath: Endpoint.Hostname
       description: The hostname that is mapped to this endpoint.
       type: String
+    - contextPath: Endpoint.ID
+      description: The agent ID of the endpoint.
+      type: String
     - contextPath: File.Path
       description: The path where the file is located.
       type: String
@@ -3291,7 +3294,7 @@ script:
       type: Number
     arguments: []
     description: Provides information about the tenant.
-  dockerimage: demisto/python3:3.10.10.48392
+  dockerimage: demisto/python3:3.10.10.49934
   isfetch: true
   runonce: false
   script: ''
