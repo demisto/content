@@ -1185,6 +1185,7 @@ def fetch_indicator_by_value(client: MandiantClient, args: Dict = None):
         outputs_prefix=f"MANDIANTTI.{INDICATOR_TYPE_MAP[indicators_list[0]['type']].upper()}",
         outputs=indicators,
         outputs_key_field="name",
+        ignore_auto_extract=True,
     )
 
 
@@ -1369,6 +1370,7 @@ def main() -> None:
             "url": fetch_reputation,
             "domain": fetch_reputation,
             "cve": fetch_reputation,
+            "mati-feed-get-indicators": fetch_indicators
         }
         params_only_cmds: Dict[str, Callable] = {
             "test-module": test_module,

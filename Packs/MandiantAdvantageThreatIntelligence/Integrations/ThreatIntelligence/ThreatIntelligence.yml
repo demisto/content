@@ -409,6 +409,57 @@ script:
     - contextPath: MANDIANTTI.Campaign.fields.publications.link
       description: The link to the report in Mandiant Advantage
       type: String
+  - name: mati-feed-get-indicators
+    arguments:
+    - default: true
+      description: Update context.
+      isArray: false
+      name: update_context
+      required: false
+      secret: false
+    - default: false
+      description: The maximum number of indicators to fetch.
+      isArray: false
+      name: limit
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Whether to retrieve additional data for each indicator.
+      isArray: false
+      name: indicatorMetadata
+      predefined:
+        - 'true'
+        - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: 'false'
+      description: Whether to create indicator relationships.
+      isArray: false
+      name: indicatorRelationships
+      predefined:
+        - 'true'
+        - 'false'
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      defaultValue: Malware,Indicators,Actors
+      description: The type of indicators to fetch.
+      isArray: true
+      name: type
+      predefined:
+        - Malware
+        - Indicators
+        - Actors
+      required: true
+      secret: false
+    deprecated: false
+    description: Get Mandiant Indicators.
+    execution: false
   dockerimage: demisto/python3:3.10.10.50695
   feed: true
   isfetch: false
