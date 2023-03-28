@@ -5331,7 +5331,7 @@ def main():
         f'{INTEGRATION_COMMAND_NAME}-get-papi-property-rule': get_papi_property_rule_command,
         f'{INTEGRATION_COMMAND_NAME}-acknowledge-pre-verification-warning': acknowledge_pre_verification_warning_command,
         f'{INTEGRATION_COMMAND_NAME}-list-papi-property-by-group': list_papi_property_by_group_command,
-        f'{INTEGRATION_COMMAND_NAME}-get-papi-property-byname': get_papi_property_byname_command,
+        f'{INTEGRATION_COMMAND_NAME}-get-papi-property-by-name': get_papi_property_byname_command,
         f'{INTEGRATION_COMMAND_NAME}-get-papi-property-byid': get_papi_property_byid_command,
         f'{INTEGRATION_COMMAND_NAME}-new-papi-proerty-version': new_papi_proerty_version_command,
         f'{INTEGRATION_COMMAND_NAME}-list-papi-proerty-activations': list_papi_proerty_activations_command,
