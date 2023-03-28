@@ -237,7 +237,7 @@ def read_file(file_id: str) -> Tuple[bytes, int, str]:
         raise Exception(f'Unable to read file with id {file_id}', e)
 
 
-def get_content_type(file_name):
+def get_content_type(file_name: str):
     """Get the correct content type for the POST request.
 
     Args:
