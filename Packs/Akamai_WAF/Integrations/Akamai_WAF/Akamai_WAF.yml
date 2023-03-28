@@ -1317,7 +1317,7 @@ script:
       - PRODUCTION
     - description: Unique identifier for the contract. contract_id and groupd_id need to be presented at the same time
       name: contract_id
-    - description: Unique identifier for the group. contract_id and groupd_id need to be presented at the same time
+    - description: Unique identifier for the group. Both contract_id and group_id need to be defined.
       name: group_id
     description: 'Lists active property hostnames for all properties available in an account. '
     name: akamai-list-papi-property-by-hostname
