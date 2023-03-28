@@ -61,7 +61,7 @@ configuration:
   name: include_archived
   required: false
   type: 8
-- defaultvalue: "1"
+- defaultvalue: "5"
   display: Incidents Fetch Interval
   name: incidentFetchInterval
   required: false
