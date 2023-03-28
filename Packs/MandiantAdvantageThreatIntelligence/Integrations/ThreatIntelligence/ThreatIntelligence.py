@@ -1103,14 +1103,14 @@ def fetch_indicators(client: MandiantClient, args: Dict = None) -> List:
     Returns:
         List of all indicators
     """
-    limit = client.limit
+    limit = args.get("limit", client.limit)
     # Cap maximum number of indicators to 1000
     if limit > 1000:
         limit = 1000
 
-    metadata = argToBoolean(client.metadata)
-    enrichment = argToBoolean(client.enrichment)
-    types = argToList(client.types)
+    metadata = argToBoolean(args.get("indicatorMetadata", client.metadata))
+    enrichment = argToBoolean(args.get("indicatorRelationships", client.enrichment))
+    types = argToList(args.get("type",client.types))
 
     first_fetch = client.first_fetch
 
