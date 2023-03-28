@@ -70,9 +70,8 @@ def get_events(client: boto3.client, start_time: datetime | None = None,
         else:
             kwargs['MaxResults'] = 100
 
-        demisto.debug(f'Fetching events with kwargs:\n{kwargs}.')
-        if response := client.get_findings(**kwargs):
-            events.extend(response.get('Findings', []))
+        response = client.get_findings(**kwargs)
+        events.extend(response.get('Findings', []))
 
         if 'NextToken' in response and (limit == 0 or len(events) < limit):
             kwargs['NextToken'] = response['NextToken']
@@ -113,7 +112,7 @@ def fetch_events(client: boto3.client, last_run: dict[str, str],
         limit=limit
     )
 
-    last_finding_update_time: str | None = events[-1].get('UpdatedAt') if events else None
+    last_finding_update_time: str | None = events[-1].get('UpdatedAt') if events else last_run.get('last_update_date')
     demisto.info(f'Fetched {len(events)} findings.\nUpdate time of last finding: {last_finding_update_time}.')
 
     # --- Set next_run data ---
@@ -245,7 +244,6 @@ def main():
 
     # Log exceptions and return errors
     except Exception as e:
-        raise e
         return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
 
