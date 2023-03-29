@@ -231,7 +231,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "98"
+      - "118"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2158,77 +2158,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "98":
-    id: "98"
-    taskid: 257c7072-d19b-47a8-830c-500288215015
-    type: playbook
-    task:
-      id: 257c7072-d19b-47a8-830c-500288215015
-      version: -1
-      name: Cortex ASM - Remediation
-      description: This playbook contains all the cloud provider sub playbooks for remediation
-      playbookName: Cortex ASM - Remediation
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "64"
-    scriptarguments:
-      RemediationRule:
-        complex:
-          root: inputs.RemediationRule
-    separatecontext: true
-    continueonerrortype: ""
-    loop:
-      iscommand: false
-      scriptArguments:
-        NicID:
-          complex:
-            root: alert.asmsystemids
-            filters:
-            - - operator: isEqualString
-                left:
-                  value:
-                    simple: alert.asmsystemids.Type
-                  iscontext: true
-                right:
-                  value:
-                    simple: AWS-NIC
-            accessor: ID
-        RemediationRule:
-          complex:
-            root: inputs.RemediationRule
-        VpcID:
-          complex:
-            root: alert.asmsystemids
-            filters:
-            - - operator: isEqualString
-                left:
-                  value:
-                    simple: alert.asmsystemids.Type
-                  iscontext: true
-                right:
-                  value:
-                    simple: AWS-VPC
-            accessor: ID
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": -1250,
-          "y": 2505
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "100":
     id: "100"
     taskid: b1d3eab1-f16c-4c27-8363-d0fb6e63d8c4
@@ -2237,11 +2166,11 @@ tasks:
       id: b1d3eab1-f16c-4c27-8363-d0fb6e63d8c4
       version: -1
       name: Cortex ASM - Detect Service
+      description: Playbook that looks at what ASM sub-type the alert is and directs it to different pre/post mitigation scans (such as NMAP).
       playbookName: Cortex ASM - Detect Service
       type: playbook
       iscommand: false
       brand: ""
-      description: 'Playbook that looks at what ASM sub-type the alert is and directs it to different pre/post mitigation scans (such as NMAP).'
     nexttasks:
       '#none#':
       - "16"
@@ -2995,6 +2924,15 @@ tasks:
             value:
               complex:
                 root: alert.asmserviceowner
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: alert.asmserviceowner.Email
+                      iscontext: true
+                    right:
+                      value:
+                        simple: '@'
                 accessor: Email
             iscontext: true
           right:
@@ -3048,9 +2986,20 @@ tasks:
           </body>
           </html>
       subject:
-        simple: A new security risk was addressed on an external service owned by your team'
+        simple: A new security risk was addressed on an external service owned by your team
       to:
-        simple: ${alert.asmserviceowner.Email}
+        complex:
+          root: alert.asmserviceowner
+          filters:
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: alert.asmserviceowner.Email
+                iscontext: true
+              right:
+                value:
+                  simple: '@'
+          accessor: Email
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -3058,6 +3007,38 @@ tasks:
         "position": {
           "x": -660,
           "y": 3790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "118":
+    id: "118"
+    taskid: 93c3a0af-b2c4-4721-8984-0d86b28ed61b
+    type: playbook
+    task:
+      id: 93c3a0af-b2c4-4721-8984-0d86b28ed61b
+      version: -1
+      name: Cortex ASM - Remediation
+      playbookName: Cortex ASM - Remediation
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "64"
+    separatecontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1250,
+          "y": 2495
         }
       }
     note: false
@@ -3105,13 +3086,6 @@ inputs:
 
   required: true
   description: Body of the notification (email or ticket) sent to potential service owner.
-  playbookInputQuery:
-- key: RemediationRule
-  value:
-    simple: |-
-      Remediation-Security-Group
-  required: true
-  description: 'The firewall rule that will be used for remediating internet exposures. '
   playbookInputQuery:
 outputs: []
 tests:

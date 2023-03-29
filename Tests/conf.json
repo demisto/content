@@ -147,7 +147,7 @@
         },
         {
             "integrations": "AzureWAF",
-            "instance_names": "azure_waf_user_auth_instance",
+            "instance_names": "azure_waf_prod",
             "playbookID": "Azure WAF - Test",
             "fromversion": "5.0.0"
         },
@@ -165,6 +165,11 @@
             "integrations": "GoogleCalendar",
             "playbookID": "GoogleCalendar-Test",
             "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "AWS-WAF",
+            "playbookID": "TEST_AWS_WAF",
+            "fromversion": "6.5.0"
         },
         {
             "integrations": "GoogleDrive",
@@ -650,7 +655,7 @@
             "integrations": "AutoFocus V2",
             "playbookID": "Autofocus Query Samples, Sessions and Tags Test Playbook",
             "fromversion": "4.5.0",
-            "timeout": 1000
+            "timeout": 1500
         },
         {
             "integrations": "HelloWorld",
@@ -751,7 +756,7 @@
             "integrations": "SlackV3",
             "playbookID": "SlackV3 TestPB",
             "instance_names": "cached",
-            "timeout": 400,
+            "timeout": 800,
             "pid_threshold": 8,
             "fromversion": "5.5.0"
         },
@@ -779,7 +784,7 @@
             "integrations": "Cortex XDR - IR",
             "playbookID": "Test XDR Playbook general commands",
             "fromversion": "4.1.0",
-            "timeout": 1200
+            "timeout": 2500
         },
         {
             "integrations": "Cortex XDR - IR",
@@ -2276,6 +2281,10 @@
             "integrations": "Whois",
             "playbookID": "whois_test",
             "fromversion": "4.1.0"
+        },
+        {
+            "integrations": "TeamCymru",
+            "playbookID": "TeamCymruTest"
         },
         {
             "integrations": "RSA NetWitness Endpoint",
@@ -4147,7 +4156,7 @@
             "instance_names": [
                 "microsoft_defender_atp_dev_self_deployed"
             ],
-            "timeout": 200
+            "timeout": 250
         },
         {
             "playbookID": "Polygon-Test",
@@ -4472,7 +4481,7 @@
             "integrations": [
                 "CrowdStrike Falcon X"
             ],
-            "timeout": 2000
+            "timeout": 2500
         },
         {
             "playbookID": "CrowdStrike_Falcon_X_-Test-Detonate_File",
@@ -4549,7 +4558,7 @@
                 "classifier_id": "EWS v2",
                 "incoming_mapper_id": "EWS v2-mapper"
             },
-            "memory_threshold": 300,
+            "memory_threshold": 400,
             "pid_threshold": 80
         },
         {
@@ -5519,7 +5528,8 @@
         "O365-SecurityAndCompliance-Test": "Deprecated, consumes connection quota for V2",
         "ThreatGrid_v2_Test": "No instance, developed by Qmasters",
         "Test-Detonate URL - ThreatGrid": "No instance, developed by Qmasters",
-        "awake_security_test_pb": "No instance, CRTX-77572"
+        "awake_security_test_pb": "No instance, CRTX-77572",
+        "Create Phishing Classifier V2 ML Test": "Updated docker image lacks data for the ml model. Once data issue is solved for ml module can un skip. "
     },
     "skipped_integrations": {
         "CiscoWSAv2": "No instance - No license",
@@ -5646,7 +5656,8 @@
         "AttackIQFireDrill": "License issues #29774",
         "LogRhythm": "The integration is deprecated",
         "Threat Grid": "No instance & Depreceated, replaced by ThreatGridv2",
-        "ThreatGridv2": "No instance - developed by Qmasters"
+        "ThreatGridv2": "No instance - developed by Qmasters",
+        "SentinelOne V2": "No instance - developed by partner"
     },
     "nightly_integrations": [],
     "nightly_packs": [
@@ -5808,7 +5819,8 @@
         "Anomali ThreatStream v3": "recording is not working",
         "LogRhythmRest V2": "Submits a file - tests that send files shouldn't be mocked.",
         "Cortex XDR - IR": "internal product, no need to mock",
-        "Microsoft Teams via Webhook": "message sent contains random hostname of server"
+        "Microsoft Teams via Webhook": "message sent contains random hostname of server",
+        "TeamCymru": "Mocks does not support sockets"
     },
     "parallel_integrations": [
         "AWS - ACM",

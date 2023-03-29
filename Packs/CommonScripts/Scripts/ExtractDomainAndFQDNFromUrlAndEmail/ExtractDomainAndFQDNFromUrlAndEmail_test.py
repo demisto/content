@@ -48,6 +48,7 @@ import pytest
     ('test.co.il)', 'test.co.il'),
     ('/evil3.com', 'evil3.com'),  # noqa: E501 disable-secrets-detection
     ('<br>kasai.qlmsourcing.com', 'kasai.qlmsourcing.com'),  # disable-secrets-detection
+    ('test.com@', ''),  # disable-secrets-detection
 ])  # noqa: E124
 def test_extract_fqdn_or_domain(input, fqdn):
     extracted_fqdn = extract_fqdn(input)
