@@ -90,7 +90,6 @@ ONLY_UPLOAD_PACK_FILE_TYPES: set[FileType] = {
 }
 
 IGNORED_FILE_TYPES: set[FileType] = {
-    FileType.README,
     FileType.PACK_IGNORE,
     FileType.XIF_FILE,
     FileType.SECRET_IGNORE,
