@@ -115,8 +115,8 @@ class BoxEventsClient(IntegrationEventsClient):
         api_url: str,
         session: Optional[requests.Session] = None,
     ) -> None:
-        self.api_url = api_url
-        self.authorization_url = parse_obj_as(AnyUrl, urljoin(self.api_url, '/oauth2/token'))
+        self.api_url: str = api_url
+        self.authorization_url = parse_obj_as(AnyUrl, urljoin(str(self.api_url), '/oauth2/token'))
 
         if session is None:
             session = requests.Session()
