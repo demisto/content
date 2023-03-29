@@ -1,4 +1,3 @@
-
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
@@ -119,16 +118,22 @@ def parse_date(dt: str) -> str:
 
 
 def parse_events(events: list, last_fetch: str) -> tuple[str, list]:
+
     last_fetch_timestamp = date_to_timestamp(last_fetch, DATE_FORMAT)
-    last_event_time = None
+    last_event_timestamp = last_fetch_timestamp
+    last_event_time = last_fetch
+    parsed_events: list = []
     for event in events:
         event['_time'] = parse_date(event.get('clientTimestamp'))
         event_time = date_to_timestamp(parse_date(event.get('serverTimestamp')), DATE_FORMAT)
-        if last_fetch_timestamp < event_time:
-            last_fetch_timestamp = event_time
+        if last_event_timestamp < event_time:
+            last_event_timestamp = event_time
             last_event_time = event.get('serverTimestamp')
+        # the event was not already fetched
+        if last_fetch_timestamp != event_time:
+            parsed_events.append(event)
 
-    return parse_date(last_event_time), events
+    return parse_date(last_event_time), parsed_events
 
 
 def get_events(client: Client, fetch_from: str, limit: int) -> list:
@@ -174,7 +179,7 @@ def get_events_command(client: Client, args: dict) -> tuple[list, CommandResults
         list: A list containing the events
         CommandResults: A CommandResults object that contains the events in a table format.
     """
-    fetch_from = parse_date(args.get('fetch_from') or demisto.params().get('first_fetch', '3 months'))
+    fetch_from = parse_date(args.get('fetch_from') or demisto.params().get('first_fetch', '3 days'))
     limit = arg_to_number(args.get('limit')) or MAX_FETCH_LIMIT
     events = get_events(client, fetch_from, limit)
 
@@ -198,13 +203,13 @@ def fetch_events_command(client: Client, first_fetch: str, limit: int) -> list:
     Returns:
         list: List of events that will be created in XSIAM.
     """
-
     last_run = demisto.getLastRun()
     fetch_from = last_run.get('fetch_from') or first_fetch
     events = get_events(client, fetch_from, limit)
 
     last_fetch, parsed_events = parse_events(events if len(events) < limit else events[:limit], fetch_from)
     demisto.setLastRun({'fetch_from': last_fetch})
+
     return parsed_events
 
 
