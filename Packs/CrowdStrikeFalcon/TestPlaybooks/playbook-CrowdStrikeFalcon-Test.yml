@@ -3416,14 +3416,14 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "80"
+      - "93"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 1902.5,
-          "y": 7705
+          "y": 7530
         }
       }
     note: false
@@ -3464,6 +3464,38 @@ tasks:
         "position": {
           "x": 1902.5,
           "y": 9790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "93":
+    id: "93"
+    taskid: 032697b8-0b56-4b5a-86ae-a1c7b95aa769
+    type: regular
+    task:
+      id: 032697b8-0b56-4b5a-86ae-a1c7b95aa769
+      version: -1
+      name: Generate random exchange name
+      description: Generates a random UUID (UUID 4).
+      scriptName: GenerateRandomUUID
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "80"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1902.5,
+          "y": 7690
         }
       }
     note: false
