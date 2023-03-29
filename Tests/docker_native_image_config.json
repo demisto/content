@@ -121,7 +121,7 @@
             "chromium",
             "tesseract"
          ],
-         "docker_ref": "demisto/py3-native:8.2.0.49457"
+         "docker_ref": "demisto/py3-native:8.2.0.50625"
       }
    },
    "ignored_content_items":[
