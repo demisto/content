@@ -1,6 +1,6 @@
 {
     "name": "WithSecure",
-    "description": "## FILL MANDATORY FIELD ##",
+    "description": "connect to SIEM with WithSecure",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
