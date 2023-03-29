@@ -1283,6 +1283,9 @@ def create_relationships_objects(stix_iocs: list[dict[str, Any]], extensions: li
 
     for relationship in search_relationships:
 
+        if demisto.get(relationship, 'CustomFields.revoked'):
+            continue
+
         if not iocs_value_to_id.get(relationship.get('entityB')):
             demisto.debug(f"WARNING: Invalid entity B - Relationships will not be created to entity A:"
                           f" {relationship.get('entityA')} with relationship name {relationship.get('name')}")

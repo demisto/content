@@ -620,11 +620,17 @@ def test_taxii21_objects_with_relationships(mocker, taxii2_server_v21):
     mocker.patch.object(demisto, 'searchIndicators', side_effect=[mock_iocs,
                                                                   mock_entity_b_iocs])
 
-    mocker.patch.object(demisto, 'params', return_value={'res_size': '4'})
+    mocker.patch.object(demisto, 'params', return_value={'res_size': '20'})
     with APP.test_client() as test_client:
         response = test_client.get('/threatintel/collections/4c649e16-2bb7-50f5-8826-2a2d0a0b9631/objects/',
                                    headers=HEADERS)
         assert response.status_code == 200
         assert response.content_type == 'application/taxii+json;version=2.1'
-        demisto.searchRelationships.assert_called_once_with({'entities': ["1.1.1.1", "8.8.8.8", "3.3.3.3", "1.2.3.4"]})
+        demisto.searchRelationships.assert_called_once_with({
+            'entities': ["1.1.1.1",
+                         "3.3.3.3",
+                         "f1412386aa8db2579aff2636cb9511cacc5fd9880ecab60c048508fbe26ee4d9",
+                         "2.2.2.2",
+                         "4.4.4.4",
+                         "bad-domain.com"]})
         assert response.json == objects
