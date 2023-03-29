@@ -15,6 +15,7 @@ class Client(BaseClient):
         super().__init__(base_url=base_url, proxy=proxy, verify=verify)
         self.api_key = api_key
         self.base_url = base_url
+        self.headers = {'Authorization': f"Bearer {self.api_key}", "Content-Type": "application/json"}
 
     def chatgpt(self, prompt: str):
         if self.api_key:
