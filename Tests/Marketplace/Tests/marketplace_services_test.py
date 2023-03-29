@@ -946,23 +946,21 @@ class TestChangelogCreation:
         mocker.patch("os.listdir", return_value=dir_list)
         assert is_the_only_rn_in_block(release_notes_dir, version, AGGREGATED_CHANGELOG) == boolean_value
 
-    def test_get_version_to_pr_numbers(self, mocker):
+    def test_get_pr_numbers_for_version(self, mocker):
         """
            Given:
                - Mocked pr numbers for 3 files.
            When:
-               - Calling get_version_to_pr_numbers.
+               - Calling get_pr_numbers_for_version.
            Then:
                - Receive a dict with the proper version to pr number.
         """
-        dir_list = ['1_0_1.md', '1_0_2.md', '1_0_3.md']
-        mocker.patch("os.listdir", return_value=dir_list)
         mocker.patch("os.path.exists", return_value=True)
 
         mocker.patch("git.Git", return_value=GitMock())
 
-        versions_dict = Pack(pack_name='SomeName', pack_path='SomePath').get_version_to_pr_numbers('')
-        assert versions_dict == {'1.0.1': ['11', '111'], '1.0.2': ['22'], '1.0.3': ['33']}
+        versions_pr_numbers = Pack(pack_name='SomeName', pack_path='SomePath').get_pr_numbers_for_version('1.0.2')
+        assert versions_pr_numbers == ['22']
 
     def test_get_pull_request_numbers_from_file(self, mocker):
         """
