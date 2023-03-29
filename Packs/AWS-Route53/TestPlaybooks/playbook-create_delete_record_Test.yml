@@ -1,0 +1,391 @@
+id: playbook-create_delete_record_Test
+version: 4
+vcShouldKeepItemLegacyProdMachine: false
+name: playbook-create_delete_record_Test
+description: Creation and deletion of AWS Route53 DNS record
+fromversion: 6.5.0
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 5831ab00-ece8-4b1a-8446-47ec1aeb55b2
+    type: start
+    task:
+      id: 5831ab00-ece8-4b1a-8446-47ec1aeb55b2
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 4f3a8eb1-0073-4648-893a-8215f1fa4c6c
+    type: regular
+    task:
+      id: 4f3a8eb1-0073-4648-893a-8215f1fa4c6c
+      version: -1
+      name: Create DNS record within the hosted zone
+      description: Creates a resource record set. Creates a resource record set that
+        has the specified values.
+      script: AWS - Route53|||aws-route53-create-record
+      type: regular
+      iscommand: true
+      brand: AWS - Route53
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      hostedZoneId:
+        simple: ${AWS.Route53.HostedZones.Id}
+      source:
+        simple: ${dns_record_name}
+      target:
+        simple: google.com
+      ttl:
+        simple: "300"
+      type:
+        simple: CNAME
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 421a0b18-3414-42e2-8963-7570a7a80e34
+    type: regular
+    task:
+      id: 421a0b18-3414-42e2-8963-7570a7a80e34
+      version: -1
+      name: List hosted zones
+      description: 'Retrieves a list of the public and private hosted zones that are
+        associated with the current AWS account. '
+      script: AWS - Route53|||aws-route53-list-hosted-zones
+      type: regular
+      iscommand: true
+      brand: AWS - Route53
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 3eebac22-6839-4b77-8775-029755b80bf4
+    type: regular
+    task:
+      id: 3eebac22-6839-4b77-8775-029755b80bf4
+      version: -1
+      name: List records within the Hosted zone to find the new record
+      description: Lists the resource record sets in a specified hosted zone.
+      script: AWS - Route53|||aws-route53-list-resource-record-sets
+      type: regular
+      iscommand: true
+      brand: AWS - Route53
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      hostedZoneId:
+        simple: ${AWS.Route53.HostedZones.[0].Id}
+      retry-count:
+        simple: "3"
+      retry-interval:
+        simple: "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: ef2f4e6f-6e00-44e3-8e77-c0df125be64a
+    type: regular
+    task:
+      id: ef2f4e6f-6e00-44e3-8e77-c0df125be64a
+      version: -1
+      name: Delete the DNS record to cleanup after the playbook
+      description: Deletes a resource record set. Deletes an existing resource record
+        set that has the specified values.
+      script: '|||aws-route53-delete-record'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      hostedZoneId:
+        simple: ${AWS.Route53.HostedZones.Id}
+      source:
+        simple: ${dns_record_name}
+      target:
+        simple: google.com
+      ttl:
+        simple: "300"
+      type:
+        simple: CNAME
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: fb3c2121-d7d9-4336-8d6a-d10d223c31fb
+    type: condition
+    task:
+      id: fb3c2121-d7d9-4336-8d6a-d10d223c31fb
+      version: -1
+      name: Check if the DNS Record was created
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: AWS.Route53.RecordSets
+                accessor: Name
+                transformers:
+                - operator: Stringify
+            iscontext: true
+          right:
+            value:
+              simple: ${dns_record_name}
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 7afb1222-4962-4bbc-8f4c-ce217412d3cf
+    type: title
+    task:
+      id: 7afb1222-4962-4bbc-8f4c-ce217412d3cf
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 7ca33fd1-1ff4-4078-8b46-acfaa5f4ae3e
+    type: regular
+    task:
+      id: 7ca33fd1-1ff4-4078-8b46-acfaa5f4ae3e
+      version: -1
+      name: Wait for the DNS Record to be created
+      description: A waiter function that waits until record set change is successful
+      script: '|||aws-route53-waiter-resource-record-sets-changed'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      id:
+        simple: ${AWS.Route53.RecordSetsChange.Id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: c844db0e-be3f-4a78-8787-6901d2664662
+    type: regular
+    task:
+      id: c844db0e-be3f-4a78-8787-6901d2664662
+      version: -1
+      name: Set DNS record name to context
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      key:
+        simple: dns_record_name
+      value:
+        simple: test-playbook.${AWS.Route53.HostedZones.[0].Name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: e807c27b-7365-4ba6-83cf-bfe26eba6caf
+    type: regular
+    task:
+      id: e807c27b-7365-4ba6-83cf-bfe26eba6caf
+      version: -1
+      name: Wait for DNS record to be deleted
+      description: A waiter function that waits until record set change is successful
+      script: '|||aws-route53-waiter-resource-record-sets-changed'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      id:
+        simple: ${AWS.Route53.RecordSetsChange.Id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1610,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
