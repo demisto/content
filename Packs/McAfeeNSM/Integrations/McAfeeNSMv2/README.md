@@ -15,6 +15,7 @@ If you are upgrading from a previous of this integration, see [Breaking Changes]
     | URL (for example: https://192.168.0.1:5000) | True |
     | User Name | True |
     | Password | True |
+    | Product Version | The McAfee NSM version that the user is using.|
     | Trust any certificate (not secure) | False |
     | Use system proxy settings | False |
 
@@ -2056,7 +2057,7 @@ List the devices related to a given domain.
             {
                 "ContactInformation": null,
                 "DeviceId": 1003,
-                "DeviceName": "Virtual_NSP_01",
+                "DeviceName": "Dummy Device Name",
                 "DeviceType": "IPS_NAC_SENSOR",
                 "Location": null,
                 "UpdatingMode": "ONLINE"
@@ -2071,7 +2072,7 @@ List the devices related to a given domain.
 >### Domain devices List
 >|DeviceId|DeviceName|DeviceType|UpdatingMode|
 >|---|---|---|---|
->| 1003 | Virtual_NSP_01 | IPS_NAC_SENSOR | ONLINE |
+>| 1003 | Dummy Device Name | IPS_NAC_SENSOR | ONLINE |
 
 
 ### nsm-list-device-interface
@@ -2192,7 +2193,7 @@ List all the policies assigned to a domain or a specific device.
                 "AtdUserForOutboundATDAnalysis": null,
                 "ConnectionLimitingPolicy": null,
                 "DeviceId": 1003,
-                "DeviceName": "Virtual_NSP_01",
+                "DeviceName": "Dummy Device Name",
                 "FirewallPolicy": null,
                 "FirewallPolicyFirst": "Test",
                 "FirewallPolicyLast": null,
@@ -2218,7 +2219,7 @@ List all the policies assigned to a domain or a specific device.
 >### Device policy List
 >|DeviceId|DeviceName|FirewallPolicyFirst|InterfaceId|
 >|---|---|---|---|
->| 1003 | Virtual_NSP_01 | Test | 0 |
+>| 1003 | Dummy Device Name | Test | 0 |
 
 
 ### nsm-list-interface-policy
@@ -2276,7 +2277,7 @@ List all the policies assigned to all interfaces or a specific interface.
                 "AtdUserForOutboundATDAnalysis": null,
                 "ConnectionLimitingPolicy": null,
                 "DeviceId": 1003,
-                "DeviceName": "Virtual_NSP_01",
+                "DeviceName": "Dummy Device Name",
                 "FirewallPolicy": "a policy",
                 "FirewallPolicyFirst": null,
                 "FirewallPolicyLast": null,
@@ -2299,7 +2300,7 @@ List all the policies assigned to all interfaces or a specific interface.
                 "AtdUserForOutboundATDAnalysis": null,
                 "ConnectionLimitingPolicy": null,
                 "DeviceId": 1003,
-                "DeviceName": "Virtual_NSP_01",
+                "DeviceName": "Dummy Device Name",
                 "FirewallPolicy": null,
                 "FirewallPolicyFirst": null,
                 "FirewallPolicyLast": null,
@@ -2322,7 +2323,7 @@ List all the policies assigned to all interfaces or a specific interface.
                 "AtdUserForOutboundATDAnalysis": null,
                 "ConnectionLimitingPolicy": null,
                 "DeviceId": 1003,
-                "DeviceName": "Virtual_NSP_01",
+                "DeviceName": "Dummy Device Name",
                 "FirewallPolicy": null,
                 "FirewallPolicyFirst": null,
                 "FirewallPolicyLast": null,
@@ -2348,9 +2349,9 @@ List all the policies assigned to all interfaces or a specific interface.
 >### Interface policy List
 >|DeviceId|DeviceName|FirewallPolicy|InterfaceId|InterfaceName|IpsPolicy|
 >|---|---|---|---|---|---|
->| 1003 | Virtual_NSP_01 | a policy | 104 | 1-2 | Default Prevention |
->| 1003 | Virtual_NSP_01 |  | 103 | 3-4 | testing |
->| 1003 | Virtual_NSP_01 |  | 102 | 5-6 | testing |
+>| 1003 | Dummy Device Name | a policy | 104 | 1-2 | Default Prevention |
+>| 1003 | Dummy Device Name |  | 103 | 3-4 | testing |
+>| 1003 | Dummy Device Name |  | 102 | 5-6 | testing |
 
 
 ### nsm-assign-device-policy
@@ -2447,7 +2448,7 @@ Provides configuration information of a given device.
 {
     "NSM": {
         "DeviceConfiguration": {
-            "DeviceName": "Virtual_NSP_01",
+            "DeviceName": "Dummy Device Name",
             "IsBotnetConfigurationChanged": false,
             "IsBotnetPushRequired": false,
             "IsConfigurationChanged": true,
@@ -2470,7 +2471,7 @@ Provides configuration information of a given device.
 >### Device Configuration
 >|DeviceName|IsBotnetConfigurationChanged|IsBotnetPushRequired|IsConfigurationChanged|IsGAMUpdateRequired|IsGloablPolicyConfigurationChanged|IsMalwareConfigurationChanged|IsPolicyConfigurationChanged|IsSSLConfigurationChanged|IsSSLPushRequired|IsSignatureSetConfigurationChanged|IsSigsetConfigPushRequired|LastUpdateTime|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| Virtual_NSP_01 | false | false | true | false | false | false | false | false | false | false | true | 2023-03-25 20:52:59.600 UTC |
+>| Dummy Device Name | false | false | true | false | false | false | false | false | false | false | true | 2023-03-25 20:52:59.600 UTC |
 
 
 ### nsm-deploy-device-configuration
