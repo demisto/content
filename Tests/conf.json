@@ -756,7 +756,7 @@
             "integrations": "SlackV3",
             "playbookID": "SlackV3 TestPB",
             "instance_names": "cached",
-            "timeout": 600,
+            "timeout": 800,
             "pid_threshold": 8,
             "fromversion": "5.5.0"
         },
@@ -5353,6 +5353,10 @@
         {
             "integrations": "Microsoft Teams via Webhook",
             "playbookID": "Microsoft Teams Webhook - Test"
+        },
+        {
+            "integrations": "AWS - Route53",
+            "playbookID": "playbook-create_delete_record_Test"
         }
     ],
     "skipped_tests": {
