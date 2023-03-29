@@ -92,20 +92,22 @@ def chatgpt_output(response) -> CommandResults:
                     'Number of Total Tokens': totalTokens
                     }]
 
-    markdown = tableToMarkdown(
-        '### ChatGPT API Response ###',
-        context,
-        date_fields=['Created Time'],
-    )
+        markdown = tableToMarkdown(
+            '### ChatGPT API Response ###',
+            context,
+            date_fields=['Created Time'],
+        )
 
-    results = CommandResults(
-        readable_output=markdown,
-        outputs_prefix='ChatGPTResponse',
-        outputs_key_field='id',
-        outputs=context
-    )
+        results = CommandResults(
+            readable_output=markdown,
+            outputs_prefix='ChatGPTResponse',
+            outputs_key_field='id',
+            outputs=context
+        )
 
-    return results
+        return results
+    else:
+        raise DemistoException('Error in results')
 
 
 ''' MAIN FUNCTION '''
