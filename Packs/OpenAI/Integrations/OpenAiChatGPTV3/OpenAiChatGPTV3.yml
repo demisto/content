@@ -3,8 +3,8 @@ commonfields:
   id: OpenAi ChatGPT v3
   version: -1
 configuration:
-- defaultvalue: https://api.openai.com/v1/chat/completions
-  display: 'Server URL: (e.g. https://api.openai.com/v1/chat/completions)'
+- defaultvalue: https://api.openai.com/
+  display: 'Server URL: (e.g. https://api.openai.com/)'
   name: url
   required: true
   section: Connect
