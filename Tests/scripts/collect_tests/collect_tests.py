@@ -13,7 +13,7 @@ from demisto_sdk.commands.common.tools import find_type, str2bool, get_yaml
 from Tests.Marketplace.marketplace_services import get_last_commit_from_index
 from Tests.scripts.collect_tests.constants import (
     DEFAULT_MARKETPLACE_WHEN_MISSING, IGNORED_FILE_TYPES, NON_CONTENT_FOLDERS,
-    ONLY_INSTALL_PACK_FILE_TYPES, SANITY_TEST_TO_PACK,
+    ONLY_INSTALL_PACK_FILE_TYPES, SANITY_TEST_TO_PACK, ONLY_UPLOAD_PACK_FILE_TYPES,
     SKIPPED_CONTENT_ITEMS__NOT_UNDER_PACK, XSOAR_SANITY_TEST_NAMES,
     ALWAYS_INSTALLED_PACKS_MAPPING, MODELING_RULE_COMPONENT_FILES, XSIAM_COMPONENT_FILES)
 from Tests.scripts.collect_tests.exceptions import (
@@ -928,6 +928,8 @@ class BranchTestCollector(TestCollector):
         if file_type in IGNORED_FILE_TYPES:
             raise NothingToCollectException(path, f'ignored type {file_type}')
 
+        only_to_upload = file_type in ONLY_UPLOAD_PACK_FILE_TYPES
+
         if file_type is None and path.parent.name not in CONTENT_ENTITIES_DIRS:
             raise NothingToCollectException(
                 path,
@@ -1024,6 +1026,7 @@ class BranchTestCollector(TestCollector):
                 conf=self.conf,
                 id_set=self.id_set,
                 is_nightly=False,
+                only_to_upload=only_to_upload
             )
             for test in tests)
         )

@@ -85,6 +85,10 @@ ONLY_INSTALL_PACK_FILE_TYPES: set[FileType] = {
     FileType.LAYOUT_RULE,
 }
 
+ONLY_UPLOAD_PACK_FILE_TYPES: set[FileType] = {
+    FileType.README,
+}
+
 IGNORED_FILE_TYPES: set[FileType] = {
     FileType.README,
     FileType.PACK_IGNORE,
