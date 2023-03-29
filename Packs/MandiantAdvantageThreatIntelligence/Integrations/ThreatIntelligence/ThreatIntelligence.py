@@ -1103,6 +1103,9 @@ def fetch_indicators(client: MandiantClient, args: Dict = None) -> List:
     Returns:
         List of all indicators
     """
+    if not args:
+        args = {}
+        
     limit = args.get("limit", client.limit)
     # Cap maximum number of indicators to 1000
     if limit > 1000:
