@@ -2,7 +2,6 @@
 from CommonServerPython import *
 import os
 import re
-import requests
 import json
 from pancloud import QueryService, Credentials, exceptions
 import base64
@@ -14,7 +13,8 @@ import demistomock as demisto
 from datetime import timedelta
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 ''' GLOBAL CONSTS '''
 ACCESS_TOKEN_CONST = 'access_token'  # guardrails-disable-line
@@ -246,7 +246,7 @@ class Client(BaseClient):
             except AttributeError:
                 error_message = query_result
 
-            raise DemistoException(f'Error in query to Cortex Data Lake [{status_code}] - {error_message}')
+            raise DemistoException(f'Error in query to Cortex Data Lake XSOAR Connector [{status_code}] - {error_message}')
 
         try:
             raw_results = [r.json() for r in query_service.iter_job_results(job_id=query_result.get('jobId'),

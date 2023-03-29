@@ -2896,7 +2896,17 @@ script:
     - contextPath: CrowdStrike.VulnerabilityHost.cve.id
       description: Unique identifier for a vulnerability as cataloged in the National Vulnerability Database (NVD).
       type: String
-  dockerimage: demisto/python3:3.10.10.48392
+  - arguments:
+    - description: A comma-separated list of incident IDs.
+      isArray: true
+      name: ids
+      required: true
+    - description: A comment added to the CrowdStrike incident.
+      name: comment
+      required: true
+    description: Updates CrowdStrike Incident with the comment.
+    name: cs-falcon-update-incident-comment
+  dockerimage: demisto/python3:3.10.10.50695
   isfetch: true
   ismappable: true
   isremotesyncin: true
