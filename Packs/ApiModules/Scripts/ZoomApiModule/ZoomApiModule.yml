@@ -5,6 +5,7 @@ name: ZoomApiModule
 script: "-"
 subtype: python3
 type: python
+comment: Zoom Client class, provides generic Infrastructure to all Zoom integrations
 system: true
 scripttarget: 0
 dependson: {}
