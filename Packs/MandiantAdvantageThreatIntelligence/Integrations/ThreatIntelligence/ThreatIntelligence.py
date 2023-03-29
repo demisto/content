@@ -1140,6 +1140,10 @@ def fetch_indicators(client: MandiantClient, args: Dict = None) -> List:
         result += indicators
     return result
 
+def debug_fetch_indicators(client: MandiantClient, args: Dict = None):
+    return [CommandResults(outputs=indicator,
+                          outputs_prefix="MANDIANTTI.Feed",
+                          ignore_auto_extract=True) for indicator in fetch_indicators(client, args)]
 
 def batch_fetch_indicators(client: MandiantClient):
     """
@@ -1396,7 +1400,7 @@ def main() -> None:
             "url": fetch_reputation,
             "domain": fetch_reputation,
             "cve": fetch_reputation,
-            "mati-feed-get-indicators": fetch_indicators
+            "mati-feed-get-indicators": debug_fetch_indicators
         }
         params_only_cmds: Dict[str, Callable] = {
             "test-module": test_module,
