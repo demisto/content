@@ -3,6 +3,9 @@ from CommonServerPython import *  # noqa: F401
 import requests
 import json
 
+# Disable insecure warnings
+requests.packages.urllib3.disable_warnings()
+
 
 ''' CLIENT CLASS '''
 
@@ -60,9 +63,7 @@ def chatgpt_send_prompt_command(client: Client, prompt: str) -> CommandResults:
     if not prompt:
         raise DemistoException('the prompt argument cannot be empty.')
 
-    response = client.chatgpt(prompt)
-
-    chatgpt_response = response.json()
+    chatgpt_response = client.chatgpt(prompt)
 
     return chatgpt_output(chatgpt_response)
 
