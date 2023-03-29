@@ -420,7 +420,7 @@ def run_query_command(offset, items):
     query_timeout = int(demisto.args().get('queryTimeout', TIMEOUT))
     linq_base = demisto.args().get('linqLinkBase', None)
     time_range = get_time_range(timestamp_from, timestamp_to)
-    to_query = to_query + " offset " + str(offset) + " limit " + str(items)
+    to_query += f'offset {str(offset)} limit {str(items)}'
     results = list(ds.Reader(oauth_token=READER_OAUTH_TOKEN, end_point=READER_ENDPOINT, verify=not ALLOW_INSECURE,
                              timeout=query_timeout)
                    .query(to_query, start=float(time_range[0]), stop=float(time_range[1]),
@@ -482,7 +482,7 @@ def get_alerts_command(offset, items):
     alert_query = ALERTS_QUERY.format(
         table_name=user_alert_table, user_prefix=user_prefix)
 
-    query = alert_query + " offset " + str(offset) + " limit " + str(items)
+    query = f'{alert_query} offset {str(offset)} limit {str(items)}'
     time_range = get_time_range(timestamp_from, timestamp_to)
 
     if alert_filters:
