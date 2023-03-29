@@ -133,15 +133,16 @@ def test_http_request___when_raising_invalid_token_message(mocker):
     import ZoomApiModule
     m = mocker.patch.object(ZoomApiModule.BaseClient, "_http_request",
                             side_effect=DemistoException('Invalid access token'))
-    mocker.patch.object(Zoom_Client, "generate_oauth_token", return_value="mock")
+    generate_token_mock = mocker.patch.object(Zoom_Client, "generate_oauth_token", return_value="mock")
     mocker.patch.object(ZoomApiModule, "get_integration_context",
                         return_value={'token_info': {"generation_time": "1988-03-03T10:50:00",
                                       'oauth_token': "old token"}})
     try:
         client = Zoom_Client(base_url='https://test.com', account_id="mockaccount",
                              client_id="mockclient", client_secret="mocksecret")
-        
+
         client.error_handled_http_request('GET', 'https://test.com', params={'bla': 'bla'})
     except Exception:
         pass
     assert m.call_count == 2
+    assert generate_token_mock.called
