@@ -252,7 +252,7 @@ def main() -> None:
             return_results(result)
 
         elif command == 'fetch-events':
-            events = fetch_events_command(client, first_fetch, limit)
+            events = fetch_events_command(client, first_fetch, limit)   # type: ignore
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
 
     except Exception as e:
