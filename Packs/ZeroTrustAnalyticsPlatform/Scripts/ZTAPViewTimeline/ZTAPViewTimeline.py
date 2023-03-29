@@ -74,7 +74,7 @@ def view_timeline_command(args: Dict[str, Any]) -> CommandResults:
 """ MAIN FUNCTION """
 
 
-def main():
+def main():  # pragma: no cover
     try:
         return_results(view_timeline_command(demisto.args()))
     except Exception as ex:
