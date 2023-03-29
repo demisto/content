@@ -1,7 +1,7 @@
 ## Overview
 ---
 
-The Devo_v3 Integration carries over everyting from the version 2 and adds pagination support for single table query and multitable query.
+The Devo_v2 Integration carries over everyting from the previous and adds pagination support for single table query and multitable query.
 This integration was integrated and tested with version 6.0+ Devo. Devo is a generic log management
 solution which can also act as an advanced SIEM. Users are able to query petabytes of data in a fraction
 of the time that other traditional time series databases can't.
