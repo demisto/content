@@ -1247,7 +1247,7 @@ script:
     - description: Unique identifier for the group
       name: group_id
     description: Get PAPI property info without the default rule. To get the default rule, use the "get-papi-property-rule" command.
-    name: akamai-get-papi-property-byname
+    name: akamai-get-papi-property-by-name
   - arguments:
     - description: Unique identifier for the contract.
       name: contract_id
@@ -1259,7 +1259,7 @@ script:
       description: Custom output context path, default is "PapiProperty.ByGroup"
       name: context_path
     description: 'Lists properties available for the current contract and group. '
-    name: akamai-list-papi-property-bygroup
+    name: akamai-list-papi-property-by-group
   - arguments:
     - description: Unique identifier of the contract
       name: contract_id
@@ -1271,7 +1271,7 @@ script:
       name: property_id
       required: true
     description: get papi property info by id without default rule. to get default rule, please use "get-papi-property-rule" command.
-    name: akamai-get-papi-property-byid
+    name: akamai-get-papi-property-by-id
   - arguments:
     - description: Unique identifier for the contract.
       name: contract_id
