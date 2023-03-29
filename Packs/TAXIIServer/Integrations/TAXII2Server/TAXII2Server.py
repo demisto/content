@@ -53,7 +53,8 @@ XSOAR_TYPES_TO_STIX_SCO = {
     FeedIndicatorType.Registry: 'windows-registry-key',
     FeedIndicatorType.File: 'file',
     FeedIndicatorType.URL: 'url',
-    FeedIndicatorType.Software: 'software'
+    FeedIndicatorType.Software: 'software',
+    FeedIndicatorType.AS: 'asn',
 }
 
 XSOAR_TYPES_TO_STIX_SDO = {
@@ -91,7 +92,8 @@ STIX2_TYPES_TO_XSOAR: dict[str, Union[str, tuple[str, ...]]] = {
     'indicator': (FeedIndicatorType.IP, FeedIndicatorType.IPv6, FeedIndicatorType.DomainGlob,
                   FeedIndicatorType.Domain, FeedIndicatorType.Account, FeedIndicatorType.Email,
                   FeedIndicatorType.URL, FeedIndicatorType.File, FeedIndicatorType.Registry),
-    'software': FeedIndicatorType.Software
+    'software': FeedIndicatorType.Software,
+    'asn': FeedIndicatorType.AS,
 }
 
 HASH_TYPE_TO_STIX_HASH_TYPE = {

@@ -4,7 +4,7 @@ import json
 import pytest
 from requests.auth import _basic_auth_str
 from TAXII2Server import TAXII2Server, APP, uuid, create_fields_list, MEDIA_TYPE_STIX_V20, MEDIA_TYPE_TAXII_V20, \
-    create_query, convert_sco_to_indicator_sdo
+    create_query, convert_sco_to_indicator_sdo, build_sco_object
 import demistomock as demisto
 
 HEADERS = {
@@ -591,6 +591,25 @@ def test_convert_sco_to_indicator_sdo_with_type_file(mocker):
     assert 'file:hashes.' in output.get('pattern', '')
     assert 'SHA-1' in output.get('pattern', '')
     assert 'pattern_type' in output.keys()
+
+
+def test_build_sco_object(mocker):
+    """
+        Given
+            xsoar indicator and STIX SCO object type
+
+        When
+            Running build_sco_object
+
+        Then
+            Validate the result
+    """
+    xsoar_indicators = util_load_json('test_data/xsoar_sco_indicators.json').get('iocs', {})
+    sco_indicators = util_load_json('test_data/stix_sco_indicators.json').get('objects', {})
+
+    for index, indicator in enumerate(xsoar_indicators):
+        output = build_sco_object(indicator["stix_type"], indicator["xsoar_indicator"])
+        assert output == sco_indicators[index]
 
 
 def test_taxii21_objects_with_relationships(mocker, taxii2_server_v21):
