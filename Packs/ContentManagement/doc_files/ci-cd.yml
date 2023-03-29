@@ -106,7 +106,7 @@ jobs:
           cp $GITHUB_WORKSPACE/content/Tests/scripts/dev_envs/pytest/conftest.py ./dev_envs/pytest/
 
           # Run lint on all changed files
-          demisto-sdk lint -g -vvv --check-dependent-api-module
+          demisto-sdk lint -g -vvv
       - name: Create Packs Artifacts
         run: |
           if [ $PACKS_CHANGED ]; then
