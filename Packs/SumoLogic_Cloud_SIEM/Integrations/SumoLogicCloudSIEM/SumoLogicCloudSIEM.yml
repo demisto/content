@@ -42,7 +42,7 @@ configuration:
   defaultvalue: "20"
   type: 0
   required: false
-  additionalinfo: Fetch limit must not be greater than 20
+  additionalinfo: Fetch limit must not be greater than 200
 - display: Override default fetch query
   name: fetch_query
   type: 0
@@ -859,7 +859,7 @@ script:
       description: Server response (True or False).
       type: Boolean
     description: Add a Threat Intel Indicator to an Threat Intel Source.
-  dockerimage: demisto/python3:3.10.10.50695
+  dockerimage: demisto/python3:3.10.10.51930
   isfetch: true
   isremotesyncin: true
   isremotesyncout: true
