@@ -21,7 +21,7 @@ WELCOME_MSG = 'Thank you for your contribution. Your generosity and caring are u
 WELCOME_MSG_WITH_GFORM = 'Thank you for your contribution. Your generosity and caring are unrivaled! Make sure to ' \
                          'register your contribution by filling the [Contribution Registration]' \
                          '(https://forms.gle/XDfxU4E61ZwEESSMA) form, ' \
-                         'so our content wizard @{selected_reviewer} will know the proposed changes are ready to be' \
+                         'so our content wizard @{selected_reviewer} will know the proposed changes are ready to be ' \
                          'reviewed.'
 
 
