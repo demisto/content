@@ -20,7 +20,6 @@ import types
 import urllib
 import gzip
 import ssl
-import math
 from random import randint
 import xml.etree.cElementTree as ET
 from collections import OrderedDict
@@ -39,9 +38,9 @@ def __line__():
     return cf.f_back.f_lineno  # type: ignore[union-attr]
 
 
-# 44 - The line offset from the beginning of the file.
+# 43 - The line offset from the beginning of the file.
 _MODULES_LINE_MAPPING = {
-    'CommonServerPython': {'start': __line__() - 44, 'end': float('inf')},
+    'CommonServerPython': {'start': __line__() - 43, 'end': float('inf')},
 }
 
 XSIAM_EVENT_CHUNK_SIZE = 2 ** 20  # 1 Mib
