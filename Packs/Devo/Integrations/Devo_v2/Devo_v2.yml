@@ -92,7 +92,8 @@ script:
           description: End datetime for specified query. If provided must be in same format as "from" argument. This argument is ignored in a date range.
         - name: items_per_page
           description: Enter the per page value you want to set.
-          required: true
+          required: false
+          defaultValue: "1000"
         - name: queryTimeout
           description: Timeout in seconds for this query to run against Devo to override the minute default in the platform.
           defaultValue: "60"
@@ -121,7 +122,8 @@ script:
           description: End datetime for alerts to fetch.
         - name: items_per_page
           description: Enter the per page value you want to set.
-          required: true
+          required: false
+          defaultValue: "1000"
         - name: filters
           description: Key value filter to apply to retrieve the specified alerts. For more information, see the Devo documentation.
           isArray: true
@@ -161,7 +163,8 @@ script:
           defaultValue: "true"
         - name: items_per_page
           description: Enter the per page value you want to set.
-          required: true
+          required: false
+          defaultValue: "1000"
       outputs:
         - contextPath: Devo.MultiResults
           description: A list of dictionary results.
