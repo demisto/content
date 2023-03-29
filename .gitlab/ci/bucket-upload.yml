@@ -66,7 +66,7 @@ jobs-done-check-upload-flow:
     - .bucket-upload-rule
   needs: ['run-unittests-and-lint-upload-flow', 'run-validations-upload-flow', 'mpv2-prepare-testing-bucket-upload-flow', 'upload-id-set-bucket', 'xpanse-prepare-testing-bucket-upload-flow', 'xsoar-prepare-testing-bucket-upload-flow', 'install-packs-in-server6_5', 'install-packs-in-server6_6', 'install-packs-in-server6_8', 'install-packs-in-server-master', 'install-packs-in-xsiam-ga', 'sync-buckets-between-projects', 'upload-packs-to-marketplace', 'upload-packs-to-marketplace-v2', 'upload-packs-to-xpanse-marketplace']
   tags:
-    - gke
+    - europe-west4-gke
 
 
 
@@ -111,7 +111,7 @@ xpanse-prepare-testing-bucket-upload-flow:
 
 .install_packs_in_xsoar_server:
   tags:
-    - gke
+    - europe-west4-gke
   needs: ["xsoar-prepare-testing-bucket-upload-flow"]
   stage: run-instances
   artifacts:
@@ -178,7 +178,7 @@ install-packs-in-server-master:
 
 .install-mpv2-packs-on-xsiam-instances:
   tags:
-    - gke
+    - europe-west4-gke
   needs: ["mpv2-prepare-testing-bucket-upload-flow"]
   stage: run-instances
   artifacts:
@@ -255,7 +255,7 @@ install-packs-in-xsiam-ga:
 
 upload-packs-to-marketplace:
   tags:
-    - gke
+    - europe-west4-gke
   needs: ["run-validations-upload-flow", "install-packs-in-server6_5", "install-packs-in-server6_6", "install-packs-in-server6_8", "run-unittests-and-lint-upload-flow"]
   stage: upload-to-marketplace
   artifacts:
@@ -334,7 +334,7 @@ upload-packs-to-marketplace:
 
 upload-packs-to-marketplace-v2:
   tags:
-    - gke
+    - europe-west4-gke
   needs: ["run-validations-upload-flow", "run-unittests-and-lint-upload-flow", "mpv2-prepare-testing-bucket-upload-flow", "install-packs-in-xsiam-ga"] # "install-packs-in-xsiam-dev"
   stage: upload-to-marketplace
   artifacts:
@@ -394,7 +394,7 @@ upload-packs-to-marketplace-v2:
 
 upload-packs-to-xpanse-marketplace:
   tags:
-    - gke
+    - europe-west4-gke
   needs: ["run-validations-upload-flow", "run-unittests-and-lint-upload-flow", "xpanse-prepare-testing-bucket-upload-flow"] # "install-packs-in-xpanse-dev"
   stage: upload-to-marketplace
   artifacts:
@@ -455,7 +455,7 @@ upload-packs-to-xpanse-marketplace:
 
 force-pack-upload:
   tags:
-    - gke
+    - europe-west4-gke
   stage: upload-to-marketplace
   needs: ["xsoar-prepare-testing-bucket-upload-flow"]
   rules:
@@ -483,7 +483,7 @@ force-pack-upload:
 
 fan-in-bucket-upload:
   tags:
-    - gke
+    - europe-west4-gke
   stage: fan-in
   extends:
     - .bucket-upload-rule-always
@@ -507,7 +507,7 @@ slack-notify-bucket-upload:
 
 upload-id-set-bucket:
   tags:
-    - gke
+    - europe-west4-gke
   stage: prepare-testing-bucket
   extends:
     - .bucket-upload-rule
@@ -523,7 +523,7 @@ upload-id-set-bucket:
 sync-buckets-between-projects:
   # syncs buckets from oproxy-dev project to xdr-xsoar-content-dev-01 project
   tags:
-    - gke
+    - europe-west4-gke
   extends:
     - .bucket-upload-rule
   stage: upload-to-marketplace

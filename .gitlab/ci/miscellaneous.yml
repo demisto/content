@@ -1,6 +1,6 @@
 delete-mismatched-branches:
   tags:
-    - gke
+    - europe-west4-gke
   stage: fan-in
   extends:
     - .default-job-settings
