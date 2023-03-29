@@ -1760,7 +1760,7 @@ class Client(BaseClient):
                                   params=params)
 
     # Created by D.S. 2023-02-27
-    def new_papi_proerty_version(self,
+    def new_papi_property_version(self,
                                  contract_id: str,
                                  property_id: str,
                                  group_id: str,
@@ -1801,7 +1801,7 @@ class Client(BaseClient):
                                   params=params,
                                   )
 
-    def list_papi_proerty_activations(self,
+    def list_papi_property_activations(self,
                                       contract_id: str,
                                       property_id: str,
                                       group_id: str,) -> dict:
@@ -2619,7 +2619,7 @@ def get_papi_property_bygroup_ec(raw_response: dict) -> Tuple[list, list]:
 
 
 # Created by D.S. 2023-02-27
-def new_papi_proerty_version_ec(raw_response: dict) -> Tuple[list, list]:
+def new_papi_property_version_ec(raw_response: dict) -> Tuple[list, list]:
     """
         Parse papi propertyLink
 
@@ -2643,7 +2643,7 @@ def new_papi_proerty_version_ec(raw_response: dict) -> Tuple[list, list]:
     return entry_context, human_readable
 
 
-def list_papi_proerty_activations_ec(raw_response: dict) -> Tuple[list, list]:
+def list_papi_property_activations_ec(raw_response: dict) -> Tuple[list, list]:
     """
         Parse papi activations
 
@@ -5110,7 +5110,7 @@ def list_papi_property_by_group_command(client: Client,
 
 
 @logger
-def new_papi_proerty_version_command(client: Client,
+def new_papi_property_version_command(client: Client,
                                      contract_id: str,
                                      property_id: str,
                                      group_id: str,
@@ -5131,12 +5131,12 @@ def new_papi_proerty_version_command(client: Client,
         }
     """
 
-    raw_response: Dict = client.new_papi_proerty_version(contract_id=contract_id,
+    raw_response: Dict = client.new_papi_property_version(contract_id=contract_id,
                                                          property_id=property_id,
                                                          group_id=group_id,
                                                          create_from_version=create_from_version)
-    title = f'{INTEGRATION_NAME} - new papi proerty version command'
-    entry_context, human_readable_ec = new_papi_proerty_version_ec(raw_response)
+    title = f'{INTEGRATION_NAME} - new papi property version command'
+    entry_context, human_readable_ec = new_papi_property_version_ec(raw_response)
     context_entry: Dict = {
         f"{INTEGRATION_CONTEXT_NAME}.PapiProperty.NewVersion": entry_context
     }
@@ -5149,7 +5149,7 @@ def new_papi_proerty_version_command(client: Client,
 
 
 @logger
-def list_papi_proerty_activations_command(client: Client,
+def list_papi_property_activations_command(client: Client,
                                           contract_id: str,
                                           property_id: str,
                                           group_id: str,) -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
@@ -5165,11 +5165,11 @@ def list_papi_proerty_activations_command(client: Client,
         human readable (markdown format), entry context and raw response
     """
 
-    raw_response: Dict = client.list_papi_proerty_activations(contract_id=contract_id,
+    raw_response: Dict = client.list_papi_property_activations(contract_id=contract_id,
                                                               property_id=property_id,
                                                               group_id=group_id,)
-    title = f'{INTEGRATION_NAME} - list papi proerty activations command'
-    entry_context, human_readable_ec = list_papi_proerty_activations_ec(raw_response=raw_response)
+    title = f'{INTEGRATION_NAME} - list papi property activations command'
+    entry_context, human_readable_ec = list_papi_property_activations_ec(raw_response=raw_response)
     context_entry: Dict = {
         f"{INTEGRATION_CONTEXT_NAME}.PapiProperty.Activations"
         f"(val.PropertyId && val.PropertyId == obj.PropertyId)": entry_context
@@ -5332,8 +5332,8 @@ def main():
         f'{INTEGRATION_COMMAND_NAME}-list-papi-property-by-group': list_papi_property_by_group_command,
         f'{INTEGRATION_COMMAND_NAME}-get-papi-property-by-name': get_papi_property_by_name_command,
         f'{INTEGRATION_COMMAND_NAME}-get-papi-property-by-id': get_papi_property_by_id_command,
-        f'{INTEGRATION_COMMAND_NAME}-new-papi-proerty-version': new_papi_proerty_version_command,
-        f'{INTEGRATION_COMMAND_NAME}-list-papi-proerty-activations': list_papi_proerty_activations_command,
+        f'{INTEGRATION_COMMAND_NAME}-new-papi-property-version': new_papi_property_version_command,
+        f'{INTEGRATION_COMMAND_NAME}-list-papi-property-activations': list_papi_property_activations_command,
         f'{INTEGRATION_COMMAND_NAME}-list-appsec-configuration-activation-history':
             list_appsec_configuration_activation_history_command,
         f'{INTEGRATION_COMMAND_NAME}-list-papi-property-by-hostname': list_papi_property_by_hostname_command,
