@@ -3,7 +3,7 @@ import demistomock as demisto
 import requests
 import urllib3
 
-# Disable insecure warnings
+# Disable insecure warning
 urllib3.disable_warnings()
 
 BASE_URL = demisto.params().get('url')
