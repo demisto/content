@@ -1,9 +1,10 @@
 from CommonServerPython import *
 import demistomock as demisto
 import requests
+import urllib3
 
-# disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+# Disable insecure warnings
+urllib3.disable_warnings()
 
 BASE_URL = demisto.params().get('url')
 API_KEY = demisto.params().get('apikey')
