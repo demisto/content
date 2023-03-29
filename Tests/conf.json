@@ -3621,6 +3621,13 @@
             "timeout": 250
         },
         {
+            "integrations": "EWS Extension Online Powershell v3",
+            "playbookID": "playbook-O365-EWS-Extension-Powershell-Online-V2-Test",
+            "fromversion": "6.0.0",
+            "toversion": "6.0.9",
+            "timeout": 250
+        },
+        {
             "integrations": "VirusTotal (API v3)",
             "playbookID": "VirusTotal (API v3) Detonate Test",
             "instance_names": [

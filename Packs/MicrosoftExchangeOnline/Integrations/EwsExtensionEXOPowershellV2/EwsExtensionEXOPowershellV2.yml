@@ -36,8 +36,9 @@ configuration:
   type: 0
   section: Connect
 description: Use the EWS Extension Online Powershell v2 integration to get information about mailboxes and users in your organization.  This integration can also retrieve and modify Tenant Allow/Block Lists.
-display: EWS Extension Online Powershell v2
+display: EWS Extension Online Powershell v2 (Deprecated)
 name: EWS Extension Online Powershell v2
+deprecated: true
 script:
   commands:
   - arguments:
