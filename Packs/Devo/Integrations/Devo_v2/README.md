@@ -80,7 +80,7 @@ of the time that other traditional time series databases can't.
     ```
     * __Custom Alert table name__ If not provided, 'siem.logtrust.alert.info' will be used.
     * __Custom Alert table prefix__ Please provide if Custom alert table name is provided.
-    * __Fetch Incident Limit__ *Required*
+    * __Fetch Incident Limit__ If not provided, '50' will be used.
 4. Click __Test__ to validate the URLs, token, and connection.
 Note: single table query and multi table query can take long hours to complete runing and xsoar only allows commands to run for 5 minutes. To override that follow the below setps:
 - Login to xsoar.
@@ -149,7 +149,7 @@ Please refer to to the Devo documentation for building a query with LINQ
 | query             | A LINQ Query to run                                                                                | Required     |
 | from              | Start datetime for specified query. Unix timestamp in seconds expected (Decimal milliseconds okay) | Required     |
 | to                | End datetime for specified query. Unix timestamp in seconds expected (Decimal milliseconds okay)   | Optional     |
-| items_per_page               | per page item count.   | Required     |
+| items_per_page               | per page item count.   | Optional     |
 | queryTimeout      | Query timeout in seconds. Defaults to global which defaults to 60 seconds                          | Optional     |
 | writeToContext    | Whether to write results to context or not                                                         | Optional     |
 | linqLinkBase      | Overrides the global link base so is able to be set at run time                                    | Optional     |
@@ -266,7 +266,7 @@ Thus querying all columns for the search token and returning a union of the give
 | searchToken       | String that you wish to search for in given tables in any column          | Required     |
 | from              | Start time in seconds unix timestamp                                      | Required     |
 | to                | End time in seconds unix timestamp                                        | Optional     |
-| items_per_page               | per page item count.   | Required     |
+| items_per_page               | per page item count.   | Optional     |
 | limit             | Number of entries to return to context. Default is 50. 0 sets to no limit | Optional     |
 | queryTimeout      | Query timeout in seconds. Defaults to global which defaults to 60 seconds | Optional     |
 | writeToContext    | write results to context or not                                           | Optional     |
