@@ -842,7 +842,7 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], params: D
             insight_add_comment(client, {'insight_id': insight_id, 'comment':
                                 f"Close since the corresponding XSOAR Insight incident: {incident_id} was closed"})
             insight_obj = insight_set_status(client, changed_data).outputs  # type: ignore
-            return insight_obj.get('readableId')  # type: ignore
+            return insight_obj.get('ReadableId')  # type: ignore
     else:
         demisto.debug(f'Incident corresponding to Sumo Logic Insight {insight_id} was not changed.')
 
@@ -1017,7 +1017,7 @@ def fetch_incidents(client: Client, max_results: int, last_run: Dict[str, int], 
 ''' MAIN FUNCTION '''
 
 
-def main() -> None:
+def main() -> None:  # pragma: no cover
     """main function, parses params and runs command functions
 
     :return:

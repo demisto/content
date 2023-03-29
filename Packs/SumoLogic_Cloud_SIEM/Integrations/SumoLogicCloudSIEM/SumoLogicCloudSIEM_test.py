@@ -630,10 +630,48 @@ def test_get_remote_data_command(requests_mock, mocker):
     assert isinstance(response, GetRemoteDataResponse)
     assert response.entries[0]['Type'] == EntryType.NOTE
     assert response.entries[0]['Contents']['dbotIncidentClose'] is True
-    assert response.entries[0]['Contents']['closeReason'] == 'Resolved'
+    assert response.entries[0]['Contents']['closeReason'] == 'Other'
     assert response.entries[0]['Contents']['closeNotes'].\
         startswith('Insight INSIGHT-220 was closed on Sumo Logic SIEM with resolution')
     assert demisto.getParam('api_endpoint') == DEMISTO_ARGS['api_endpoint']
+
+
+def test_update_remote_system_command(requests_mock, mocker):
+
+    from SumoLogicCloudSIEM import Client, update_remote_system_command, DEFAULT_HEADERS
+
+    client = Client(
+        base_url=MOCK_URL,
+        verify=False,
+        headers=DEFAULT_HEADERS,
+        proxy=False,
+        auth=('access_id', 'access_key'),
+        ok_codes=[200])
+    client.set_extra_params({'instance_endpoint': 'https://test.us2.sumologic.com'})
+
+    args = {
+        'data': {'id': '8196'},
+        'entries': [],
+        'incidentChanged': True,
+        'remoteId': 'INSIGHT-220',
+        'status': IncidentStatus.DONE,
+        'delta': {
+            'closeNotes': 'Closing incident',
+            'closeReason': 'For UT',
+            'closingUserId': 'admin',
+            'runStatus': 'completed'
+        },
+    }
+    params = {'close_insight': True}
+
+    mock_response = util_load_json('test_data/insight_add_comment.json')
+    requests_mock.post(f'{MOCK_URL}/sec/v1/insights/INSIGHT-220/comments', json=mock_response)
+
+    mock_response = util_load_json('test_data/insight_status.json')
+    requests_mock.put(f'{MOCK_URL}/sec/v1/insights/INSIGHT-220/status', json=mock_response)
+    response = update_remote_system_command(client, args, params)
+    # This Insight ID comes from insight_status.json so it's different
+    assert response == 'INSIGHT-221'
 
 
 def test_arg_time_to_q(requests_mock, mocker):
