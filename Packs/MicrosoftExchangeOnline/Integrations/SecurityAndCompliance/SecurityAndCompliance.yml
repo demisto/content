@@ -2,7 +2,7 @@ category: Email
 commonfields:
   id: SecurityAndCompliance
   version: -1
-deprecated: true
+deprecated: false
 configuration:
 - defaultvalue: https://ps.compliance.protection.outlook.com
   display: Search and Compliance URL
@@ -20,7 +20,7 @@ configuration:
   required: false
   type: 8
 description: This integration allows you to manage and interact with Microsoft security and compliance content search.
-display: O365 - Security And Compliance - Content Search (Deprecated)
+display: O365 - Security And Compliance - Content Search
 name: SecurityAndCompliance
 script:
   commands:

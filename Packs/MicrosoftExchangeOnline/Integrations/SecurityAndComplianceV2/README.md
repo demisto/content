@@ -83,6 +83,14 @@ The common settings available OOTB from Microsoft can be excluded in the followi
 
 [More information can be found here.](https://learn.microsoft.com/en-us/powershell/exchange/connect-to-scc-powershell?view=exchange-ps#step-2-connect-and-authenticate)
 
+### Additional Configuration/Debugging Options
+In the event that the above does not result in a successful connection to Security and Compliance, we recommend the following:
+
+1. Adding the IP address of the XSOAR server to the list of [Named Locations](https://portal.azure.com/#view/Microsoft_AAD_ConditionalAccess/NamedLocationsBlade).
+2. Configuring the IP address of the XSOAR server as an exemption for multi-factor authentication. [https://account.activedirectory.windowsazure.com/usermanagement/mfasettings.aspx?tenantid={YOUR-TENANT-ID}](https://account.activedirectory.windowsazure.com/usermanagement/mfasettings.aspx?tenantid=)
+3. Dismissing the user's risk level and state in the [Risky Users Portal](https://portal.azure.com/#view/Microsoft_AAD_IAM/RiskyUsersBlade)
+
+
 ## Configure SecurityAndComplianceV2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
