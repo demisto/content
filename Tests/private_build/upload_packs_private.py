@@ -545,11 +545,6 @@ def main():
     # finished iteration over content packs
     if is_private_build:
         delete_public_packs_from_index(index_folder_path)
-        '''
-        index_folder_path: str, build_number: str, private_packs: list,
-                       current_commit_hash: str, force_upload: bool = False, previous_commit_hash: str = None,
-                       landing_page_sections: dict = None
-        '''
 
         prepare_index_json(index_folder_path=index_folder_path,
                            build_number=build_number,

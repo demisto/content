@@ -251,6 +251,19 @@ def clean_non_existing_packs(index_folder_path: str, private_packs: list, storag
 def prepare_index_json(index_folder_path: str, build_number: str, private_packs: list,
                        current_commit_hash: str, force_upload: bool = False, previous_commit_hash: str = None,
                        landing_page_sections: dict = None):
+    """
+    Args:
+        index_folder_path (str): index folder full path.
+        build_number (str): CI build number, used as an index revision.
+        private_packs (list): List of private packs and their price.
+        current_commit_hash (str): last commit hash of head.
+        force_upload (bool): Indicates if force upload or not.
+        previous_commit_hash (str): The previous commit hash to diff with.
+        landing_page_sections (dict): landingPage sections.
+
+    Returns:
+        None
+    """
     if force_upload:
         # If we force upload we don't want to update the commit in the index.json file,
         # this is to be able to identify all changed packs in the next upload
@@ -296,7 +309,7 @@ def upload_index_to_storage(index_folder_path: str,
     :param index_generation: downloaded index generation.
     :param is_private: Indicates if upload is private.
     :param artifacts_dir: The CI artifacts directory to upload the index.json to.
-    :param storage_bucket: The storage bucket object
+    :param index_name: The index name to upload.
     :returns None.
 
     """

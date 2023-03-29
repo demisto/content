@@ -85,7 +85,8 @@ def collect_images_from_readme_and_replace_with_storage_path(pack_readme_path: s
 
             new_replace_url = os.path.join(google_api_readme_images_url,
                                            BucketUploadFlow.README_IMAGES, image_name)
-            logging.info(f'replacing with url {new_replace_url=}')
+            logging.debug(f'Replacing {url=} with new url {new_replace_url=}')
+
             line = line.replace(url, str(new_replace_url))
 
             image_gcp_path = Path(gcs_pack_path, BucketUploadFlow.README_IMAGES, image_name)
@@ -103,6 +104,10 @@ def collect_images_from_readme_and_replace_with_storage_path(pack_readme_path: s
 def download_readme_images_from_url_data_list(readme_urls_data_list: list, storage_bucket):
     """
     Iterates over the readme_url_data_list and calls the download_readme_image_from_url_and_upload_to_gcs
+    Args:
+        readme_urls_data_list (list): A list containing the data on all the images that need to be downloaded,
+                                        and then uplaoded to storage.
+        storage_bucket: The storage bucket to upload the images to.
     """
     for readme_url_data in readme_urls_data_list:
         readme_original_url = readme_url_data.get('original_read_me_url')
@@ -154,7 +159,7 @@ def download_readme_image_from_url_and_upload_to_gcs(readme_original_url: str, g
             logging.info(f'Image sucessfully Downloaded: {image_name}')
             return True
 
-        logging.error(f'Image {image_name} could not be retreived status code {r.status_code}')
+        logging.error(f'Image {image_name} could not be retreived status code {r.status_code} reason {r.reason}')
         return False
     except Exception as e:
         logging.error(
@@ -163,8 +168,8 @@ def download_readme_image_from_url_and_upload_to_gcs(readme_original_url: str, g
         return False
 
 
-def copy_readme_images(production_bucket, build_bucket, images_data: dict, storage_base_path,
-                       build_bucket_base_path):
+def copy_readme_images(production_bucket, build_bucket, images_data: dict, storage_base_path: str,
+                       build_bucket_base_path: str):
     """ Copies pack's readme_images from the build bucket to the production bucket
 
     Args:
@@ -186,6 +191,7 @@ def copy_readme_images(production_bucket, build_bucket, images_data: dict, stora
 
             if not pc_uploaded_readme_images:
                 logging.info(f"No added/modified readme images were detected in {pack_name} pack.")
+                continue
 
             for readme_image_name in pc_uploaded_readme_images:
                 logging.info(f'copying image {readme_image_name}')
