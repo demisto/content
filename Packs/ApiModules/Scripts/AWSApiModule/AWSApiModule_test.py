@@ -202,3 +202,100 @@ def test_extract_session_from_secret(secret_key, session_token, expected):
     result = extract_session_from_secret(secret_key, session_token)
 
     assert result == expected
+
+
+@pytest.mark.parametrize(
+    'params, args, expected_assume_roles_args', [
+        (
+            {
+                'aws_default_region': 'us-east-1',
+                'aws_role_arn': None,
+                'aws_role_session_name': None,
+                'aws_access_key_id': 'test_access_key',
+            },
+            {
+                'role_arn': 'role_arn_arg',
+                'role_session_name': 'role_session_name_arg'
+            },
+            {
+                'RoleArn': 'role_arn_arg',
+                'RoleSessionName': 'role_session_name_arg'
+            }
+        ),
+        (
+            {
+                'aws_default_region': 'us-east-1',
+                'aws_role_arn': 'role_arn_param',
+                'aws_role_session_name': 'role_session_name_param',
+                'aws_access_key_id': 'test_access_key',
+            },
+            {},
+            {
+                'RoleArn': 'role_arn_param',
+                'RoleSessionName': 'role_session_name_param'
+            }
+        ),
+        (
+            {
+                'aws_default_region': 'us-east-1',
+                'aws_role_arn': 'role_arn_param',
+                'aws_role_session_name': 'role_session_name_param',
+                'aws_access_key_id': 'test_access_key',
+            },
+            {
+                'role_arn': 'role_arn_arg',
+                'role_session_name': 'role_session_name_arg'
+            },
+            {
+                'RoleArn': 'role_arn_arg',
+                'RoleSessionName': 'role_session_name_arg'
+            }
+        ),
+    ]
+)
+def test_aws_session(mocker, params, args, expected_assume_roles_args):
+    """
+    Given
+    - Case A: role arn and role session name provided only from demisto.args()
+    - Case B: role arn and role session name provided only from demisto.params()
+    - Case C: role arn and role session name provided from both demisto.params() and demisto.args()
+
+    When
+    - Calling the aws_session method
+
+    Then
+    - Case A: make sure the role arn and role session name are taken from command arguments
+    - Case B: make sure the role arn and role session name are taken from integration parameters
+    - Case C: make sure the role arn and role session name are taken from command arguments
+    """
+    params.update(
+        {
+            'aws_role_session_duration': None,
+            'aws_role_policy': None,
+            'aws_secret_access_key': 'test_secret_key',
+            'verify_certificate': False,
+            'timeout': 60,
+            'retries': 3
+        }
+    )
+
+    sts_client_mock = boto3.client('sts', region_name=params['aws_default_region'])
+    assume_client_mock = mocker.patch.object(
+        sts_client_mock,
+        'assume_role', return_value={
+            'Credentials': {
+                'AccessKeyId': '1',
+                'SecretAccessKey': '2',
+                'SessionToken': '3'
+            }
+        }
+    )
+
+    mocker.patch(
+        'AWSApiModule.boto3.client',
+        side_effect=[sts_client_mock, boto3.client('ec2', region_name=params['aws_default_region'])]
+    )
+    aws_client = AWSClient(**params)
+    aws_client.aws_session(service='ec2', **args)
+
+    assert assume_client_mock.call_args_list[0].kwargs == expected_assume_roles_args
