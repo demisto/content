@@ -922,7 +922,6 @@ def deploy_polling_message(status: Dict, args: Dict):
     Args:
         status: the status of the deployment
         args: the arguments of the deployment command
-        request_id: the request id of the deployment
     Returns:
         fail_or_success_list: a list of 0 or 1, 0 for failure and 1 for success
         message: a message to be printed to the user
