@@ -241,7 +241,7 @@ references:
 
         neo4j start
         # poll for neo4j status until available
-        while ! neo4j status; do sleep 1; done
+        while ! curl --fail http://127.0.0.1:7474 &> /dev/null; do sleep 1; done
 
         demisto-sdk lint -p 8 -g -vvv --test-xml ./unit-tests --log-path ./artifacts --failure-report ./artifacts --coverage-report $ARTIFACTS_FOLDER/coverage_report --docker-image << parameters.dockerimageflag >> --check-dependent-api-module
 
