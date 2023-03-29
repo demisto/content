@@ -18,8 +18,6 @@ class Client(BaseClient):
         self.headers = {'Authorization': f"Bearer {self.api_key}", "Content-Type": "application/json"}
 
     def chatgpt(self, prompt: str):
-        if self.api_key:
-            self._headers = {'Authorization': f"Bearer {self.api_key}", "Content-Type": "application/json"}
             options = {"max_tokens": 1000, "model": "gpt-3.5-turbo", "messages": [{"role": "user", "content": prompt}]}
         return requests.post(self.base_url, headers=self._headers, json=options)
 
