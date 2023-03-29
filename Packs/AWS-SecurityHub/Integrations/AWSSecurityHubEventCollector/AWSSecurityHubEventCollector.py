@@ -1,10 +1,9 @@
-import datetime
+import datetime as dt
 
 import demistomock as demisto
 from AWSApiModule import *
 
 import urllib3
-from datetime import datetime
 
 import boto3
 
@@ -13,13 +12,15 @@ urllib3.disable_warnings()
 
 VENDOR = 'AWS'
 PRODUCT = 'Security Hub'
+TIME_FIELD = 'UpdatedAt'
 DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 DEFAULT_FIRST_FETCH = '3 days'
 DEFAULT_MAX_RESULTS = 1000  # Default maximum number of results to fetch
 
 
-def get_events(client: boto3.client, start_time: datetime | None = None,
-               end_time: datetime | None = None, id_ignore_list: list[str] | None = None, limit: int = 0) -> list[dict]:
+def get_events(client: boto3.client, start_time: dt.datetime | None = None,
+               end_time: dt.datetime | None = None,
+               id_ignore_list: list[str] | None = None, limit: int = 0) -> list[dict]:
     """
     Fetch events from AWS Security Hub.
 
@@ -34,18 +35,19 @@ def get_events(client: boto3.client, start_time: datetime | None = None,
     Returns:
         tuple[list, CommandResults]: A tuple containing the events and the CommandResults object.
     """
-    kwargs = {'SortCriteria': [{'Field': 'UpdatedAt', 'SortOrder': 'asc'}]}
-    filters = {}
+    kwargs: dict = {'SortCriteria': [{'Field': TIME_FIELD, 'SortOrder': 'asc'}]}
+    filters: dict = {}
 
     if end_time and not start_time:
         raise ValueError('start_time must be set if end_time is used.')
 
     if start_time:
-        filters['UpdatedAt'] = [{
+        filters[TIME_FIELD] = [{
             'Start':
                 start_time.strftime(DATETIME_FORMAT),
             'End':
-                end_time.strftime(DATETIME_FORMAT) if end_time else datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ')
+                end_time.strftime(DATETIME_FORMAT) if end_time else
+                dt.datetime.now().strftime('%Y-%m-%dT%H:%M:%SZ')
         }]
 
     if id_ignore_list:
@@ -60,7 +62,7 @@ def get_events(client: boto3.client, start_time: datetime | None = None,
         # which raises an error.
         kwargs['Filters'] = filters
 
-    events = []
+    events: list[dict] = []
 
     while True:
         # The API only allows a maximum of 100 results per request. Using more raises an error.
@@ -82,8 +84,8 @@ def get_events(client: boto3.client, start_time: datetime | None = None,
     return events
 
 
-def fetch_events(client: boto3.client, last_run: dict[str, str],
-                 first_fetch_time: datetime | None, limit: int = 0) -> (dict[str, int], list):
+def fetch_events(client: boto3.client, last_run: dict,
+                 first_fetch_time: dt.datetime | None, limit: int = 0) -> tuple[dict, list]:
     """
     Fetch events from AWS Security Hub.
 
@@ -103,7 +105,7 @@ def fetch_events(client: boto3.client, last_run: dict[str, str],
     else:
         start_time = first_fetch_time
 
-    id_ignore_list = last_run.get('last_update_date_finding_ids', [])
+    id_ignore_list: list = last_run.get('last_update_date_finding_ids', [])
 
     events = get_events(
         client=client,
@@ -112,25 +114,23 @@ def fetch_events(client: boto3.client, last_run: dict[str, str],
         limit=limit
     )
 
-    last_finding_update_time: str | None = events[-1].get('UpdatedAt') if events else last_run.get('last_update_date')
+    last_finding_update_time: str | None = events[-1].get(TIME_FIELD) if events else last_run.get('last_update_date')
     demisto.info(f'Fetched {len(events)} findings.\nUpdate time of last finding: {last_finding_update_time}.')
 
     # --- Set next_run data ---
-    # Since the 'UpdatedAt' filter seem to be equal or greater than,
+    # Since the time filters seem to be equal or greater than (which results in duplicate from the last run),
     # we add findings that are equal to 'last_finding_update_time' and filter them out in the next fetch.
     ignore_list: list[str] = []
 
     for event in reversed(events):
-        if event['UpdatedAt'] == last_finding_update_time:
+        if event[TIME_FIELD] == last_finding_update_time:
             ignore_list.append(event['Id'])
 
         else:
             break  # Since it's a sorted list, no need to check the rest.
 
     next_run = {
-        # The timestamp of the last finding's 'UpdatedAt' field.
         'last_update_date': last_finding_update_time,
-        # IDs of findings with UpdatedAt that are equal to 'last_update_date'.
         'last_update_date_finding_ids': ignore_list,
     }
 
@@ -179,14 +179,14 @@ def main():
     timeout = params.get('timeout')
     retries = params.get('retries', 5)
 
-    limit = arg_to_number(params.get('max_fetch')) or DEFAULT_MAX_RESULTS
+    limit: int = arg_to_number(params.get('max_fetch', DEFAULT_MAX_RESULTS))  # type: ignore
 
     # How much time before the first fetch to retrieve events
-    first_fetch_time: datetime.datetime = arg_to_datetime(
+    first_fetch_time: dt.datetime = arg_to_datetime(
         arg=params.get('first_fetch', DEFAULT_FIRST_FETCH),
         arg_name='First fetch time',
         required=True
-    )
+    )   # type: ignore
 
     try:
         validate_params(
@@ -227,8 +227,9 @@ def main():
 
         elif command == 'aws-securityhub-get-events':
             should_push_events = argToBoolean(args.get('should_push_events', False))
-            limit = arg_to_number(args.get('limit', limit))
-            return_results(get_events_command(client=client, should_push_events=should_push_events, limit=limit))
+            command_limit: int = arg_to_number(args.get('limit', limit))  # type: ignore
+            return_results(
+                get_events_command(client=client, should_push_events=should_push_events, limit=command_limit))
 
         elif command == 'fetch-events':
             next_run, events = fetch_events(
@@ -241,6 +242,9 @@ def main():
             # Saves next_run for the time fetch-events is invoked
             demisto.setLastRun(next_run)
             send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
+
+        else:
+            raise NotImplementedError(f'Command \"{command}\" is not implemented.')
 
     # Log exceptions and return errors
     except Exception as e:
