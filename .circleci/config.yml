@@ -210,7 +210,7 @@ references:
 
         neo4j start
         # poll for neo4j status until available
-        while ! neo4j status; do sleep 1; done
+        while ! curl --fail http://127.0.0.1:7474 &> /dev/null; do sleep 1; done
 
         ./Tests/scripts/linters_runner.sh
         ./Tests/scripts/validate.sh
