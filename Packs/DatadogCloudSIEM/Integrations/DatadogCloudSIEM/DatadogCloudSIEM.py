@@ -19,9 +19,6 @@ from datadog_api_client.v2.model.incident_create_attributes import (
     IncidentCreateAttributes,
 )
 from datadog_api_client.v2.model.incident_create_data import IncidentCreateData
-from datadog_api_client.v2.model.incident_create_relationships import (
-    IncidentCreateRelationships,
-)
 from datadog_api_client.v2.model.incident_create_request import IncidentCreateRequest
 from datadog_api_client.v2.model.incident_field_attributes_single_value import (
     IncidentFieldAttributesSingleValue,
@@ -42,13 +39,7 @@ from datadog_api_client.v2.model.incident_timeline_cell_markdown_content_type im
 from datadog_api_client.v2.model.incident_timeline_cell_markdown_create_attributes_content import (
     IncidentTimelineCellMarkdownCreateAttributesContent,
 )
-from datadog_api_client.v2.model.nullable_relationship_to_user import (
-    NullableRelationshipToUser,
-)
-from datadog_api_client.v2.model.nullable_relationship_to_user_data import (
-    NullableRelationshipToUserData,
-)
-from datadog_api_client.v2.model.users_type import UsersType
+
 from dateparser import parse
 from urllib3 import disable_warnings
 from datadog_api_client.exceptions import ForbiddenException, UnauthorizedException
@@ -239,10 +230,6 @@ def convert_datetime_to_str(data: Dict) -> Dict:
         replaced by ISO-formatted strings.
     """
     for key, value in data.items():
-        # if isinstance(value, datetime):
-        #     data[key] = value.strftime("%Y-%m-%dT%H:%M:%S.%f%z")
-        # elif isinstance(value, dict):
-        #     convert_datetime_to_str(value)
         if isinstance(value, dict):
             convert_datetime_to_str(value)
         elif isinstance(value, datetime):
