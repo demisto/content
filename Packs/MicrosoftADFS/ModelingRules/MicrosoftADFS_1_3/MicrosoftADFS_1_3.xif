@@ -46,13 +46,14 @@ filter event_id in (510, 1200, 1201, 1202, 1203, 1204, 1205, 1206, 1207)
     referer = json_extract_scalar(raw_data_json ,"$.Referer"),
     user_agent2 = json_extract_scalar(raw_data_json ,"$.User-Agent"),
     Host = json_extract_scalar(raw_data_json ,"$.Host"),
-    Content_Type = json_extract_scalar(raw_data_json ,"$.Content-Type")
+    Content_Type = json_extract_scalar(raw_data_json ,"$.Content-Type"),
+    X_Frame_Options = json_extract_scalar(raw_data_json ,"$.X-Frame-Options")
 //
 | alter xdm.event.operation_sub_type = audit_type,
     xdm.source.user.employee_id = user_id,
     xdm.auth.auth_method = mfa_method,
     xdm.source.host.device_id = device_id,
-    xdm.target.url = coalesce(server,referer),
+    xdm.target.url = server,
     xdm.network.application_protocol = auth_protocol,
     xdm.source.ipv4 = ip_address,
     xdm.source.user_agent = coalesce(user_agent,user_agent2),
@@ -63,4 +64,6 @@ filter event_id in (510, 1200, 1201, 1202, 1203, 1204, 1205, 1206, 1207)
     xdm.source.host.hostname = coalesce(host_name,Host),
     xdm.alert.severity = coalesce(opcode, log_level),
     xdm.event.outcome = if(event_result = "failure", XDM_CONST.OUTCOME_FAILED, event_result = "success", XDM_CONST.OUTCOME_SUCCESS, event_result = null, null, to_string(event_result)),
-    xdm.target.file.file_type = Content_Type;
+    xdm.network.http.content_type = Content_Type,
+    xdm.event.outcome_reason = X_Frame_Options,
+    xdm.network.http.referrer = referer;
