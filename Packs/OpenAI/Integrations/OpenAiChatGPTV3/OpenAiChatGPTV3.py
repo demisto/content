@@ -20,6 +20,7 @@ class Client(BaseClient):
     def chatgpt(self, prompt: str):
             options = {"max_tokens": 1000, "model": "gpt-3.5-turbo", "messages": [{"role": "user", "content": prompt}]}
         return requests.post(self.base_url, headers=self._headers, json=options)
+        return self._http_request(method='POST', url_suffix='v1/chat/completions', json_data=options, headers=self.headers)
 
 
 ''' COMMAND FUNCTIONS '''
