@@ -1105,7 +1105,7 @@ def fetch_indicators(client: MandiantClient, args: Dict = None) -> List:
     """
     if not args:
         args = {}
-        
+
     limit = args.get("limit", client.limit)
     # Cap maximum number of indicators to 1000
     if limit > 1000:
@@ -1183,7 +1183,19 @@ def fetch_indicator_by_value(client: MandiantClient, args: Dict = None):
     for indicator in indicators:
         indicator["value"] = indicators_value_to_clickable([indicator["value"]])
 
+    table = {
+        'Value': indicators[0]["rawJSON"]['value'],
+        'MScore': indicators[0]["rawJSON"]['mscore'],
+        'Last Seen': indicators[0]["rawJSON"]["last_seen"]
+    }
+    indicator_type = indicators[0]["rawJSON"]["type"].lower()
+
+    markdown = tableToMarkdown(f'Mandiant Advantage Threat Intelligence information for {table["Value"]}\n'
+                               f'[View on Mandiant Advantage](https://advantage.mandiant.com/indicator/{indicator_type}/{table["Value"]})',
+                               table)
+
     return CommandResults(
+        readable_output=markdown,
         content_format=formats["json"],
         outputs_prefix=f"MANDIANTTI.{INDICATOR_TYPE_MAP[indicators_list[0]['type']].upper()}",
         outputs=indicators,
@@ -1283,7 +1295,18 @@ def fetch_reputation(client: MandiantClient, args: Dict = None):
 
     demisto.createIndicators(indicators)
 
-    return CommandResults(
+    table = {
+        'Value': indicators[0]['value'],
+        'MScore': indicators[0]['score'],
+        'Last Seen': indicators[0]["rawJSON"]["last_seen"]
+    }
+    indicator_type = indicators[0]["rawJSON"]["type"].lower()
+
+    markdown = tableToMarkdown(f'Mandiant Advantage Threat Intelligence information for {indicators[0]["value"]}\n'
+                               f'[View on Mandiant Advantage](https://advantage.mandiant.com/indicator/{indicator_type}/{indicators[0]["value"]})',
+                               table)
+
+    return CommandResults(readable_output=markdown,
         outputs=indicators, outputs_prefix=f"MANDIANTTI.{input_type.upper()}", ignore_auto_extract=True
     )
 
