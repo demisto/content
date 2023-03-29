@@ -1,0 +1,10 @@
+[MODEL: dataset=zoom_zoom_raw]
+alter
+	xdm.event.operation = type,
+	xdm.source.ipv4 = ip_address,
+	xdm.source.interface = client_type,
+	xdm.observer.version = version,
+	xdm.source.user.upn = coalesce(operator, email),
+	xdm.event.type = category_type,
+	xdm.event.description = operation_detail,
+	xdm.event.outcome_reason = action;

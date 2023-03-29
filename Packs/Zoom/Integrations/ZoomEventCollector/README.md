@@ -45,15 +45,19 @@ Gets events from Zoom.
 There is no context output for this command.
 
 #### Command Example
+
 ```!zoom-get-events should_push_events=true limit=1```
 
 #### Human Readable Output
+
 ### operationlogs Events
+
 | action | category_type | operation_detail                | operator            | time                 |
 |--------|---------------|---------------------------------|---------------------|----------------------|
 | Delete | User          | Delete User example@example.com | example@example.com | 2023-01-16T09:51:59Z |
 
 ### activities Events
+
 | client_type | email               | ip_address | time                 | type    | version |
 |-------------|---------------------|------------|----------------------|---------|---------|
 | Browser     | example@example.com | 8.8.8.8    | 2023-01-19T14:44:23Z | Sign in | -       |

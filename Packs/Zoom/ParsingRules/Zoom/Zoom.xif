@@ -1,0 +1,2 @@
+[INGEST:vendor="Zoom", product="Zoom", target_dataset="zoom_zoom_raw" , no_hit=keep]
+alter _time = time;
