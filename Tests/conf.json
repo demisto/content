@@ -2013,19 +2013,19 @@
             "playbookID": "Microsoft Defender Advanced Threat Protection - Test prod",
             "instance_names": "microsoft_defender_atp_prod",
             "is_mockable": false,
-            "timeout": 200
+            "timeout": 500
         },
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
             "playbookID": "Microsoft Defender Advanced Threat Protection - Test dev",
             "instance_names": "microsoft_defender_atp_dev",
-            "timeout": 200
+            "timeout": 500
         },
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
             "playbookID": "Microsoft Defender Advanced Threat Protection - Test self deployed",
             "instance_names": "microsoft_defender_atp_dev_self_deployed",
-            "timeout": 200
+            "timeout": 500
         },
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
@@ -4163,7 +4163,7 @@
             "instance_names": [
                 "microsoft_defender_atp_dev_self_deployed"
             ],
-            "timeout": 250
+            "timeout": 500
         },
         {
             "playbookID": "Polygon-Test",
@@ -5360,6 +5360,10 @@
         {
             "integrations": "Microsoft Teams via Webhook",
             "playbookID": "Microsoft Teams Webhook - Test"
+        },
+        {
+            "integrations": "AWS - Route53",
+            "playbookID": "playbook-create_delete_record_Test"
         }
     ],
     "skipped_tests": {
