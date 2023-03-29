@@ -2,7 +2,7 @@ comment: Shows the Rubrik Polaris Sonar Open Access Files Count.
 commonfields:
   id: RubrikSonarOpenAccessFiles
   version: -1
-dockerimage: demisto/python3:3.10.10.50695
+dockerimage: demisto/python3.10.10.51548
 enabled: true
 name: RubrikSonarOpenAccessFiles
 runas: DBotWeakRole

@@ -2260,7 +2260,7 @@ def rubrik_gps_vm_livemount(client: PolarisClient, args: Dict[str, Any]) -> Comm
 
     if vnic_bindings:
         try:
-            vnic_bindings = json.loads(args.get("vnic_bindings", ""))
+            vnic_bindings = json.loads(args.get("vnic_bindings"))  # type: ignore[arg-type]
         except json.JSONDecodeError as exception:
             raise Exception(f'Could not able to parse the provided JSON data. Error: {str(exception)}') from exception
     if power_on:

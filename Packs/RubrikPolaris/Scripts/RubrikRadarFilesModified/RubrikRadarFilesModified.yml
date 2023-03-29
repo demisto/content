@@ -2,7 +2,7 @@ comment: Shows the Rubrik Radar amount of Files Modified.
 commonfields:
   id: RubrikRadarFilesModified
   version: -1
-dockerimage: demisto/python3:3.10.10.50695
+dockerimage: demisto/python3.10.10.51548
 enabled: true
 name: RubrikRadarFilesModified
 runas: DBotWeakRole
