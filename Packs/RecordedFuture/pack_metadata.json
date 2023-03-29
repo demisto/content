@@ -39,6 +39,7 @@
         "christian-recordedfuture"
     ],
     "marketplaces": [
-        "xsoar"
+        "xsoar",
+        "marketplacev2"
     ]
 }
