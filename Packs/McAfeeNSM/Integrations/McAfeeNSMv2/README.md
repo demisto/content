@@ -15,7 +15,7 @@ If you are upgrading from a previous of this integration, see [Breaking Changes]
     | URL (for example: https://192.168.0.1:5000) | True |
     | User Name | True |
     | Password | True |
-    | Product Version | The McAfee NSM version that the user is using.|
+    | Product Version | True |
     | Trust any certificate (not secure) | False |
     | Use system proxy settings | False |
 
