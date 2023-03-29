@@ -20,6 +20,7 @@ This integration was integrated and tested with version 6.0 of Cortex XSOAR.
     | Entry Categories | Which entries to retrieve from the Cortex XSOAR server. The available options are notes, comments (chats), and files (attachments). | False |
     | Incoming Entry tags | Only entries with these tags are retrieved from the Cortex XSOAR server. If no tags are listed, no entries are retrieved. | False |
     | Outgoing Entry Tags | Choose the tags to filter the entries you wish to send to the other Cortex XSOAR instance. If no tags are listed, no entries will be sent. | False |
+    | Outgoing Custom Fields | Comma-seperated list of custom fields CLI names you want to send to the other Cortex XSOAR instance even when their original value was empty. Make sure to also add those fields to the incoming mapper. | False |
     | Incident Mirroring Direction |  | False |
     | Disable fetching for incidents came from this integration | Enable this option to disable mirroring of incidents that came from the integration of XSOAR Mirroring. This adds \`-sourceBrand:“XSOAR Mirroring”\` to your query. | False |
     | Trust any certificate (not secure) |  | False |
@@ -42,7 +43,7 @@ This integration was integrated and tested with version 6.0 of Cortex XSOAR.
 
 
 ## Important notes:
-- In order to mirror custom fields, you need to create an incoming mapper for the integration and explicitly specify them in it.
+- In order to mirror custom fields, you need to create an incoming mapper for the integration and explicitly specify them in it. In case the original value can be empty, you should also specify them in the `Outgoing Custom Fields` integration parameter.
 - In order to mirror custom fields in both directions, the custom fields in both Cortex XSOAR instances must have the same CLI name.
 - Mirrored incidents include the playbook ID. The receiving side will attempt to run a playbook with a matching ID, if one exists locally. To have the machine run the default playbook for the mirrored incident, set the `Mirror Playbook ID` to `false`. Otherwise (default), the machine will attempt to run a playbook whose ID matches the `playbookId` field in the mirrored incident.
 
