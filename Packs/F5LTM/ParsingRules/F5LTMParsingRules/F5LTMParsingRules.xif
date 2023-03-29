@@ -1,0 +1,4 @@
+[INGEST:vendor="f5", product="bigip_ltm", target_dataset="f5_bigip_ltm_raw", no_hit=keep]
+alter timestamp=arrayindex(regextract(_raw_log,"timestamp\=\"([^=]+)\"\,"),0)
+|alter _time=parse_timestamp("%b %d %Y %H:%M:%S", timestamp)
+|fields -timestamp;
