@@ -3543,6 +3543,7 @@ def remove_tag_from_endpoints_command(client: CoreClient, args: Dict):
     endpoint_ids = argToList(args.get('endpoint_ids', []))
     tag = args.get('tag')
     raw_response = {}
+
     for b in batch(endpoint_ids, 1000):
         raw_response.update(client.remove_tag_endpoint(endpoint_ids=b, tag=tag, args=args))
 
