@@ -120,33 +120,33 @@ import demistomock as demisto
 #     assert client.access_token != "old token"
 
 
-# def test_http_request___when_raising_invalid_token_message(mocker):
-#     """
-#   Given -
-#      client
-#   When -
-#       asking for a connection when the first try fails, and return an
-#       'Invalid access token' error messoge
-#   Then -
-#       Validate that a retry to connect with a new token has been done
-#     """
+def test_http_request___when_raising_invalid_token_message(mocker):
+    """
+  Given -
+     client
+  When -
+      asking for a connection when the first try fails, and return an
+      'Invalid access token' error messoge
+  Then -
+      Validate that a retry to connect with a new token has been done
+    """
 
-#     m = mocker.patch.object(Zoom.BaseClient, "_http_request",
-#                             side_effect=DemistoException('Invalid access token'))
-#     generate_token_mock = mocker.patch.object(Client, "generate_oauth_token", return_value="mock")
-#     mocker.patch.object(Zoom, "get_integration_context",
-#                         return_value={'token_info': {"generation_time": "1988-03-03T10:50:00",
-#                                       'oauth_token': "old token"}})
-#     try:
-#         client = Client(base_url='https://test.com', account_id="mockaccount",
-#                         client_id="mockclient", client_secret="mocksecret")
-#         # a command that uses http_request
-#         client.zoom_list_users(3, "bla", "bla",
-#                                "bla")
-#     except Exception:
-#         pass
-#     assert m.call_count == 2
-#     assert generate_token_mock.called
+    m = mocker.patch.object(Zoom.BaseClient, "_http_request",
+                            side_effect=DemistoException('Invalid access token'))
+    generate_token_mock = mocker.patch.object(Client, "generate_oauth_token", return_value="mock")
+    mocker.patch.object(Zoom, "get_integration_context",
+                        return_value={'token_info': {"generation_time": "1988-03-03T10:50:00",
+                                      'oauth_token': "old token"}})
+    try:
+        client = Client(base_url='https://test.com', account_id="mockaccount",
+                        client_id="mockclient", client_secret="mocksecret")
+        # a command that uses http_request
+        client.zoom_list_users(3, "bla", "bla",
+                               "bla")
+    except Exception:
+        pass
+    assert m.call_count == 2
+    assert generate_token_mock.called
 
 
 def test_zoom_list_users_command__limit(mocker):
