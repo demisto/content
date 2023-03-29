@@ -59,8 +59,6 @@ def test_zoom_list_users_command__limit_and_page_size(mocker):
         Then -
             Validate that an error message will be returned
     """
-    # mocker.patch.object(Client, "manual_user_list_pagination", return_value=None)
-    # mocker.patch.object(Client, "user_list_basic_request", return_value={"next_page_token": "mockmock"})
     returned_dict = {'page_count': 1, 'page_number': 1, 'page_size': 30,
                      'total_records': 2, 'next_page_token': '', 'users': [{'id': '1234',
                                                                            'first_name': 'as', 'last_name': 'bla',
@@ -593,8 +591,6 @@ def test_zoom_user_list_command__when_user_id(mocker):
     from Zoom import zoom_list_users_command
     res = zoom_list_users_command(client, user_id="bla")
     assert len(res.readable_output) == 159      # type: ignore[arg-type]
-
-# i dont like this test:(
 
 
 def test_zoom_meeting_list_command__when_user_id(mocker):
