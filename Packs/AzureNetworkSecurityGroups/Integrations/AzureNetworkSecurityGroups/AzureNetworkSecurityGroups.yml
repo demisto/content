@@ -564,7 +564,7 @@ script:
     execution: false
     name: azure-nsg-generate-login-url
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.51288
+  dockerimage: demisto/crypto:1.0.0.51761
   feed: false
   isfetch: false
   longRunning: false
