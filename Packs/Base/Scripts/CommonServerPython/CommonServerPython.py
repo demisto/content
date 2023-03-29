@@ -10829,9 +10829,9 @@ def xsiam_api_call_with_retries(
     zipped_data,
     headers,
     num_of_attempts,
-    error_msg='',
     events_error_handler=None,
-    is_json_response=True
+    error_msg='',
+    is_json_response=False
 ):
     """
     Send the fetched events into the XDR data-collector private api.
@@ -11033,7 +11033,7 @@ def send_events_to_xsiam(events, vendor, product, data_format=None, url_key='url
         xsiam_api_call_with_retries(client=client, events_error_handler=events_error_handler,
                                     error_msg=header_msg, headers=headers,
                                     num_of_attempts=num_of_attempts, xsiam_url=xsiam_url,
-                                    zipped_data=zipped_data)
+                                    zipped_data=zipped_data, is_json_response=True)
     demisto.updateModuleHealth({'eventsPulled': amount_of_events})
 
 
