@@ -4151,7 +4151,7 @@ def clone_security_policy_command(client: Client,
                                                          config_version=config_version)
         lookupKey = 'policyName'
         lookupValue = policy_name
-        returnDict = next((item for item in raw_response['policies'] if item[lookupKey] == lookupValue), None)
+        returnDict = next((item for item in raw_response['policies'] if item[lookupKey].lower()  == lookupValue.lower()), None)
         if returnDict is not None:
             title = f'{INTEGRATION_NAME} - clone security policy command - found existing Security Policy'
             entry_context, human_readable_ec = clone_security_policy_command_ec(returnDict)
@@ -4994,10 +4994,10 @@ def get_papi_property_rule_command(client: Client,
 
 
 # Created by D.S. 2022-11-25
-def get_papi_property_byname_command(client: Client,
-                                     contract_id: str,
-                                     group_id: str,
-                                     property_name: str,) -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
+def get_papi_property_by_name_command(client: Client,
+                                      contract_id: str,
+                                      group_id: str,
+                                      property_name: str,) -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
     """
         Get papi property within a group by property name
     Args:
@@ -5040,10 +5040,10 @@ def get_papi_property_byname_command(client: Client,
 
 
 # Created by D.S. 2022-11-25
-def get_papi_property_byid_command(client: Client,
-                                   contract_id: str,
-                                   group_id: str,
-                                   property_id: str,) -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
+def get_papi_property_by_id_command(client: Client,
+                                    contract_id: str,
+                                    group_id: str,
+                                    property_id: str,) -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
     """
         Get papi property within a group by property name
     Args:
@@ -5074,11 +5074,11 @@ def get_papi_property_byid_command(client: Client,
 
 
 # Created by D.S. 2023-02-27
-def list_papi_property_bygroup_command(client: Client,
-                                       contract_id: str,
-                                       group_id: str,
-                                       context_path: str = 'PapiProperty.ByGroup',
-                                       ) -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
+def list_papi_property_by_group_command(client: Client,
+                                        contract_id: str,
+                                        group_id: str,
+                                        context_path: str = 'PapiProperty.ByGroup',
+                                        ) -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
     """
         Lists properties available for the current contract and group.
     Args:
@@ -5095,10 +5095,11 @@ def list_papi_property_bygroup_command(client: Client,
                                                            group_id=group_id,
                                                            )
     title = f'{INTEGRATION_NAME} - list papi property bygroup command'
-    entry_context, human_readable_ec = raw_response.get('properties', {}).get('items', [])
+    entry_context = raw_response.get('properties', {}).get('items', [])
+    human_readable_ec = entry_context
     context_entry: Dict = {
         f"{INTEGRATION_CONTEXT_NAME}.{context_path}"
-        f"(val.GroupId && val.GroupId == obj.GroupId)": raw_response.get('properties', {})
+        f"(val.GroupId && val.GroupId == obj.GroupId)": entry_context
     }
     human_readable = tableToMarkdown(
         name=title,
@@ -5329,7 +5330,7 @@ def main():
         f'{INTEGRATION_COMMAND_NAME}-get-papi-property-rule': get_papi_property_rule_command,
         f'{INTEGRATION_COMMAND_NAME}-acknowledge-pre-verification-warning': acknowledge_pre_verification_warning_command,
         f'{INTEGRATION_COMMAND_NAME}-list-papi-property-by-group': list_papi_property_by_group_command,
-        f'{INTEGRATION_COMMAND_NAME}-get-papi-property-by-name': get_papi_property_byname_command,
+        f'{INTEGRATION_COMMAND_NAME}-get-papi-property-by-name': get_papi_property_by_name_command,
         f'{INTEGRATION_COMMAND_NAME}-get-papi-property-by-id': get_papi_property_by_id_command,
         f'{INTEGRATION_COMMAND_NAME}-new-papi-proerty-version': new_papi_proerty_version_command,
         f'{INTEGRATION_COMMAND_NAME}-list-papi-proerty-activations': list_papi_proerty_activations_command,
