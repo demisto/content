@@ -1263,8 +1263,19 @@ def create_relationships_objects(stix_iocs: list[dict[str, Any]], extensions: li
     :param extensions: A list of dictionaries representing extension properties to include in the generated STIX objects.
     :return: A list of dictionaries representing the relationships objects, including entityBs objects
     """
+    def get_stix_object_value(stix_ioc):
+        if stix_ioc['type'] == "file":
+            for hash_type in ["SHA-256", "MD5", "SHA-1", "SHA-512"]:
+                if hash_type in stix_ioc["hashes"]:
+                    return stix_ioc["hashes"][hash_type]
+                else:
+                    continue
+
+        else:
+            return (stix_ioc.get('value') or stix_ioc.get('name'))
+
     relationships_list: list[dict[str, Any]] = []
-    iocs_value_to_id = {(stix_ioc.get('value') or stix_ioc.get('name')): stix_ioc.get('id') for stix_ioc in stix_iocs}
+    iocs_value_to_id = {get_stix_object_value(stix_ioc): stix_ioc.get('id') for stix_ioc in stix_iocs}
     search_relationships = demisto.searchRelationships({'entities': list(iocs_value_to_id.keys())}).get('data') or []
     demisto.debug(f"Found {len(search_relationships)} relationships for {len(iocs_value_to_id)} Stix IOC values.")
 
