@@ -29,7 +29,7 @@ configuration:
   required: false
   section: Connect
   advanced: true
-description: This integration enables you to manage and interact with Microsoft O365 - Exchange Online from within XSOAR.
+description: Deprecated. Use ***EWS Extension Online Powershell v3*** instead.
 display: O365 - EWS - Extension (Deprecated)
 name: EwsExtension
 deprecated: true
