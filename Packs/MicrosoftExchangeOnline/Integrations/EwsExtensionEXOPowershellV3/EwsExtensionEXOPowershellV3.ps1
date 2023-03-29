@@ -12,8 +12,84 @@ Import-Module ExchangeOnlineManagement
 # Disable PowerShell progress bars, as they aren't helpful in a non-interactive script
 $Global:ProgressPreference = 'SilentlyContinue'
 
-$COMMAND_PREFIX = "ews"
-$INTEGRATION_ENTRY_CONTEXT = "EWS"
+$script:INTEGRATION_NAME = "EWS extension"
+$script:COMMAND_PREFIX = "ews"
+$script:INTEGRATION_ENTRY_CONTEXT = "EWS"
+$script:JUNK_RULE_ENTRY_CONTEXT = "$script:INTEGRATION_ENTRY_CONTEXT.Rule.Junk(val.Email && val.Email == obj.Email)"
+$script:MESSAGE_TRACE_ENTRY_CONTEXT = "$script:INTEGRATION_ENTRY_CONTEXT.MessageTrace(val.MessageId && val.MessageId == obj.MessageId)"
+
+
+function ParseJunkRulesToEntryContext([PSObject]$raw_response) {
+    return @{
+        $script:JUNK_RULE_ENTRY_CONTEXT = @{
+            "MailboxOwnerId"              = $raw_response.MailboxOwnerId
+            "Identity"                    = $raw_response.Identity
+            "BlockedSendersAndDomains"    = $raw_response.BlockedSendersAndDomains
+            "TrustedRecipientsAndDomains" = $raw_response.TrustedRecipientsAndDomains
+            "TrustedSendersAndDomains"    = $raw_response.TrustedSendersAndDomains
+            "TrustedListsOnly"            = $raw_response.TrustedListsOnly
+            "ContactsTrusted"             = $raw_response.ContactsTrusted
+            "Enabled"                     = $raw_response.Enabled
+        }
+    }
+
+    <#
+        .DESCRIPTION
+        Parse junk rules raw response.
+
+        .PARAMETER raw_response
+        Junk rules raw response.
+
+        .EXAMPLE
+        ParseJunkRulesToEntryContext $raw_response
+
+        .OUTPUTS
+        PSObject - entry context.
+    #>
+}
+
+
+function ParseMessageTraceToEntryContext([PSObject]$raw_response) {
+    $entry_context = @{}
+    if ($raw_response) {
+        $entry_context = @{
+            $script:MESSAGE_TRACE_ENTRY_CONTEXT = $raw_response | ForEach-Object {
+                @{
+                    "MessageId"        = $_.MessageId
+                    "MessageTraceId"   = $_.MessageTraceId
+                    "Organization"     = $_.Organization
+                    "Received"         = $_.Received
+                    "RecipientAddress" = $_.RecipientAddress
+                    "SenderAddress"    = $_.SenderAddress
+                    "Size"             = $_.Size
+                    "StartDate"        = $_.StartDate
+                    "EndDate"          = $_.EndDate
+                    "Status"           = $_.Status
+                    "Subject"          = $_.Subject
+                    "ToIP"             = $_.ToIP
+                    "FromIP"           = $_.FromIP
+                    "Index"            = $_.Index
+                }
+            }
+        }
+    }
+
+    return $entry_context
+    <#
+        .DESCRIPTION
+        Parse message trace raw response.
+
+        .PARAMETER raw_response
+        Message trace raw response.
+
+        .EXAMPLE
+        ParseMessageTraceToEntryContext $raw_response
+
+        .OUTPUTS
+        PSObject - entry context.
+    #>
+}
+
 
 class ExchangeOnlinePowershellV3Client
 {
