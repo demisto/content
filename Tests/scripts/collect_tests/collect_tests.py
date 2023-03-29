@@ -928,14 +928,13 @@ class BranchTestCollector(TestCollector):
         if file_type in IGNORED_FILE_TYPES:
             raise NothingToCollectException(path, f'ignored type {file_type}')
 
-        only_to_upload = file_type in ONLY_UPLOAD_PACK_FILE_TYPES
-
         if file_type is None and path.parent.name not in CONTENT_ENTITIES_DIRS:
             raise NothingToCollectException(
                 path,
                 f'file of unknown type, and not directly under a content directory ({path.parent.name})')
 
         content_item = None
+        only_to_upload = False
         try:
             content_item = ContentItem(path)
             self._validate_content_item_compatibility(content_item, is_integration='Integrations' in path.parts)
@@ -1008,6 +1007,9 @@ class BranchTestCollector(TestCollector):
 
         elif file_type is None:
             raise NothingToCollectException(path, 'unknown file type')
+
+        elif file_type == FileType.README or path.suffix == '.md':
+            only_to_upload = True
 
         else:
             raise ValueError(path, f'unexpected content type {file_type} - please update collect_tests.py')
