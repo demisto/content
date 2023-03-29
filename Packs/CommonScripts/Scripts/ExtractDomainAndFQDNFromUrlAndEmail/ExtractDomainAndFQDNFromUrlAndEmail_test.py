@@ -35,6 +35,7 @@ import pytest
     ('https%3A%2F%2Fdulunggakada40[.]com', 'dulunggakada40.com'),
     ('https%3A%2F%2Fpath.test.com', 'path.test.com'),
     ('https%3A%2F%2Ftwitter.com%2F', 'twitter.com'),
+    ('hxxps%3A%2F%2Ftwitter.com%2F', 'twitter.com'),
 
     # handle special charecter
     ('www[.]demisto[.]com', 'www.demisto.com'),
@@ -72,3 +73,4 @@ def test_extract_fqdn_or_domain_empty_indicators(mocker):
     results = demisto.results.call_args[0]
 
     assert results[0] == [{'Contents': [], 'ContentsFormat': 'json', 'Type': 1, 'EntryContext': {'Domain': '1Ab.Vt'}}]
+
