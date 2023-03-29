@@ -48,8 +48,9 @@ configuration:
   - created date
   # - updated date
   type: 15
-- additionalinfo: This parameter is dismissed while not choosing "id" in "Issue Field to Fetch from".
-  display: Issue index to start fetching incidents from
+- display: Issue index to start fetching incidents from
+  additionalinfo: This parameter is dismissed if "id" is not chosen in "Issue Field to Fetch from". This will
+    only fetch Jira issues that are part of the same project as the issue that is configured in this parameter.
   name: id_offset
   required: false
   type: 0
@@ -506,7 +507,8 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether to append or rewrite the values. The default value is `rewrite`.
+      description: Whether to append or rewrite the values. The default value is `rewrite`. Only the `labels`, and `components`
+        arguments support the action append.
       isArray: false
       name: action
       required: false
@@ -877,7 +879,7 @@ script:
       description: The maximum number of results to return. Default is 50 and maximum is 5000.
       isArray: false
       name: limit
-      hidden: true
+      hidden: false
       required: false
       secret: false
       defaultValue: '50'
@@ -912,6 +914,9 @@ script:
       type: string
     - contextPath: Ticket.Comment.User
       description: The user that created the comment.
+      type: string
+    - contextPath: Ticket.Comment.UpdateUser
+      description: The user that updated the comment.
       type: string
   - arguments:
     - default: false
@@ -1900,10 +1905,19 @@ script:
     execution: false
     name: get-modified-remote-data
   dockerimage: demisto/btfl-soup:1.0.1.47958
-  script: ''
-  type: python
-  subtype: python3
+  feed: false
   isfetch: true
+  ismappable: true
+  isremotesyncin: true
+  isremotesyncout: true
+  longRunning: false
+  longRunningPort: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
 tests:
   - no tests
 defaultmapperin: classifier-mapper-incoming-JiraV3
+defaultmapperout: classifier-mapper-outgoing-Jira
+fromversion: 5.0.0
