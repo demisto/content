@@ -1761,11 +1761,11 @@ class Client(BaseClient):
 
     # Created by D.S. 2023-02-27
     def new_papi_property_version(self,
-                                 contract_id: str,
-                                 property_id: str,
-                                 group_id: str,
-                                 create_from_version: str,
-                                 ) -> dict:
+                                  contract_id: str,
+                                  property_id: str,
+                                  group_id: str,
+                                  create_from_version: str,
+                                  ) -> dict:
         """
             Create a new property version based on any previous version.
             All data from the createFromVersion populates the new version, including its rules and hostnames.
@@ -1802,9 +1802,9 @@ class Client(BaseClient):
                                   )
 
     def list_papi_property_activations(self,
-                                      contract_id: str,
-                                      property_id: str,
-                                      group_id: str,) -> dict:
+                                       contract_id: str,
+                                       property_id: str,
+                                       group_id: str,) -> dict:
         """
             This lists all activations for all versions of a property, on both production and staging networks.
         Args:
@@ -4151,7 +4151,7 @@ def clone_security_policy_command(client: Client,
                                                          config_version=config_version)
         lookupKey = 'policyName'
         lookupValue = policy_name
-        returnDict = next((item for item in raw_response['policies'] if item[lookupKey].lower()  == lookupValue.lower()), None)
+        returnDict = next((item for item in raw_response['policies'] if item[lookupKey].lower() == lookupValue.lower()), None)
         if returnDict is not None:
             title = f'{INTEGRATION_NAME} - clone security policy command - found existing Security Policy'
             entry_context, human_readable_ec = clone_security_policy_command_ec(returnDict)
@@ -5111,10 +5111,10 @@ def list_papi_property_by_group_command(client: Client,
 
 @logger
 def new_papi_property_version_command(client: Client,
-                                     contract_id: str,
-                                     property_id: str,
-                                     group_id: str,
-                                     create_from_version: str) -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
+                                      contract_id: str,
+                                      property_id: str,
+                                      group_id: str,
+                                      create_from_version: str) -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
     """
         Create a new property version based on any previous version.
         All data from the createFromVersion populates the new version, including its rules and hostnames.
@@ -5132,9 +5132,9 @@ def new_papi_property_version_command(client: Client,
     """
 
     raw_response: Dict = client.new_papi_property_version(contract_id=contract_id,
-                                                         property_id=property_id,
-                                                         group_id=group_id,
-                                                         create_from_version=create_from_version)
+                                                          property_id=property_id,
+                                                          group_id=group_id,
+                                                          create_from_version=create_from_version)
     title = f'{INTEGRATION_NAME} - new papi property version command'
     entry_context, human_readable_ec = new_papi_property_version_ec(raw_response)
     context_entry: Dict = {
@@ -5150,9 +5150,9 @@ def new_papi_property_version_command(client: Client,
 
 @logger
 def list_papi_property_activations_command(client: Client,
-                                          contract_id: str,
-                                          property_id: str,
-                                          group_id: str,) -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
+                                           contract_id: str,
+                                           property_id: str,
+                                           group_id: str,) -> Tuple[str, Dict[str, Any], Union[List, Dict]]:
     """
         This lists all activations for all versions of a property, on both production and staging networks.
 
@@ -5166,8 +5166,8 @@ def list_papi_property_activations_command(client: Client,
     """
 
     raw_response: Dict = client.list_papi_property_activations(contract_id=contract_id,
-                                                              property_id=property_id,
-                                                              group_id=group_id,)
+                                                               property_id=property_id,
+                                                               group_id=group_id,)
     title = f'{INTEGRATION_NAME} - list papi property activations command'
     entry_context, human_readable_ec = list_papi_property_activations_ec(raw_response=raw_response)
     context_entry: Dict = {
