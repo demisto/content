@@ -347,12 +347,35 @@ def upload_index_to_storage(index_folder_path: str,
         shutil.rmtree(index_folder_path)
 
 
+def init_index_v2(storage_base_path: str, extract_destination_path: str, storage_bucket, index_folder_path: str) -> tuple:
+    """
+    Args:
+        storage_base_path (str): The storage base path.
+        extract_destination_path (str): Extract_destination path.
+        storage_bucket (google.cloud.storage.bucket.Bucket): gcs bucket where core packs config is uploaded.
+        index_folder_path (str): The path to the local folder of the index file.
+    Returns:
+        index_v2_local_path (str): The path to the local folder of the index_v2.
+        index_v2_blob (Blob): google cloud storage object that represents index_v2.zip blob.
+    """
+    index_v2_gcs_path = os.path.join(storage_base_path, f"{GCPConfig.INDEX_V2_NAME}.zip")
+    index_v2_local_path = os.path.join(extract_destination_path, f"{GCPConfig.INDEX_V2_NAME}")
+    index_v2_blob = storage_bucket.blob(index_v2_gcs_path)
+    shutil.copytree(index_folder_path, index_v2_local_path)
+    return index_v2_local_path, index_v2_blob
+
+
 def upload_index_v2(index_folder_path: str,
                     extract_destination_path: str,
                     index_blob: Any,
-                    artifacts_dir: Optional[str] = None,
-                    index_name: str = GCPConfig.INDEX_NAME):
-
+                    index_name: str = GCPConfig.INDEX_V2_NAME):
+    """
+    Args:
+        index_folder_path (str): The path to the index_v2 folder.
+        extract_destination_path (str),
+        index_blob (Blob) : The blob to upload to.
+        index_name (str): Index_name
+    """
     index_zip_name = os.path.basename(index_folder_path)
     index_zip_path = shutil.make_archive(base_name=index_folder_path, format="zip",
                                          root_dir=extract_destination_path, base_dir=index_zip_name)
@@ -1312,25 +1335,12 @@ def main():
                        landing_page_sections=statistics_handler.landing_page_sections)
 
     logging.info('Strting new code index_v2')
-    index_v2_gcs_path = os.path.join(storage_base_path, f"{GCPConfig.INDEX_V2_NAME}.zip")
-    index_v2_local_path = os.path.join(extract_destination_path, f"{GCPConfig.INDEX_V2_NAME}")
-    index_v2_blob = storage_bucket.blob(index_v2_gcs_path)
-    shutil.copytree(index_folder_path, index_v2_local_path)
+    index_v2_local_path, index_v2_blob = init_index_v2(storage_base_path, extract_destination_path,
+                                                       storage_bucket, index_folder_path)
 
     logging.info('replacing the urls in index_V2')
-
     replace_readme_urls(index_v2_local_path, storage_base_path=storage_base_path,
                         marketplace=marketplace, index_v2=True)
-
-    logging.info('uploading new index')
-
-    upload_index_v2(index_folder_path=index_v2_local_path,
-                    extract_destination_path=extract_destination_path,
-                    index_blob=index_v2_blob,
-                    artifacts_dir=os.path.dirname(packs_artifacts_path),
-                    index_name=GCPConfig.INDEX_V2_NAME)
-
-    logging.info('finished uploading new index')
 
     readme_images_dict, readme_urls_data_list = replace_readme_urls(index_folder_path,
                                                                     storage_base_path=storage_base_path,
@@ -1344,6 +1354,15 @@ def main():
                             index_generation=index_generation,
                             artifacts_dir=os.path.dirname(packs_artifacts_path)
                             )
+
+    logging.info('uploading new index')
+
+    upload_index_v2(index_folder_path=index_v2_local_path,
+                    extract_destination_path=extract_destination_path,
+                    index_blob=index_v2_blob,
+                    index_name=GCPConfig.INDEX_V2_NAME)
+
+    logging.info('finished uploading new index')
 
     # dependencies zip is currently supported only for marketplace=xsoar, not for xsiam/xpanse
     if is_create_dependencies_zip and marketplace == 'xsoar':
