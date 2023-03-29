@@ -129,20 +129,18 @@ build-backend = "poetry.core.masonry.api"
 [tool.ruff]
 select = ["E", "F", "PLE"]
 ignore = [
-    "E501", # line too long
-    
     "E402", # module-import-not-at-top-of-file	
+    
     "F403", # undefined-local-with-import-star
     "F405", # undefined-local-with-import-star-usage
     "F821", # undefined-name
-
 ]
 
 # Allow autofix for all enabled rules (when `--fix`) is provided.
 # fixable = []
 # unfixable = []
 
-line-length = 140
+line-length = 130
 
 # Allow unused variables when underscore-prefixed.
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
