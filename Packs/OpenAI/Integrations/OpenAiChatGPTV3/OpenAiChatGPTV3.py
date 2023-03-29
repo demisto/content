@@ -79,13 +79,13 @@ def chatgpt_output(response) -> CommandResults:
 
         rep = json.dumps(response)
         repJSON = json.loads(rep)
-        model = repJSON['model']
-        createdTime = repJSON['created']
-        id = repJSON['id']
-        choices = repJSON['choices'][0]['message']['content'].strip('\n')
-        promptTokens = repJSON['usage']['prompt_tokens']
-        completionTokens = repJSON['usage']['completion_tokens']
-        totalTokens = repJSON['usage']['total_tokens']
+        model = repJSON.get('model')
+        createdTime = repJSON.get('created')
+        id = repJSON.get('id')
+        choices = repJSON.get('choices', [])[0].get('message', {}).get('content', "").strip('\n')
+        promptTokens = repJSON.get('usage', {}).get('prompt_tokens')
+        completionTokens = repJSON.get('usage', {}).get('completion_tokens')
+        totalTokens = repJSON.get('usage', {}).get('total_tokens')
         context = [{'ID': id, 'Model': model,
                     'ChatGPT Response': choices, 'Created Time': createdTime,
                     'Number of Prompt Tokens': promptTokens,
