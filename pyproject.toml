@@ -135,26 +135,12 @@ ignore = [
     "F403", # undefined-local-with-import-star
     "F405", # undefined-local-with-import-star-usage
     "F821", # undefined-name
-    "W605", # invalid-escape-sequence
+
 ]
 
 # Allow autofix for all enabled rules (when `--fix`) is provided.
 # fixable = []
 # unfixable = []
-
-# Exclude a variety of commonly ignored directories.
-exclude = [
-    ".git",
-    ".mypy_cache",
-    ".nox",
-    ".pytype",
-    ".ruff_cache",
-    ".tox",
-    ".venv",
-    "node_modules",
-    "venv",
-]
-per-file-ignores = {}
 
 line-length = 140
 
