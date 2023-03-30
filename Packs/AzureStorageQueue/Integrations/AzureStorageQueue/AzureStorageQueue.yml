@@ -8,7 +8,7 @@ configuration:
   name: credentials
   required: false
   type: 9
-- additionalinfo: Relevant only if the integration is running on Azure VM.
+- additionalinfo: Relevant only if the integration is running on Azure VM. 
     If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field.
     If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity.
     For additional information, see the Help tab.
@@ -371,7 +371,7 @@ script:
     description: Delete all messages from the specified Queue.
     execution: true
     name: azure-storage-queue-message-clear
-  dockerimage: demisto/python3:3.10.10.51548
+  dockerimage: demisto/python3:3.10.10.51930
   feed: false
   isfetch: true
   longRunning: false
