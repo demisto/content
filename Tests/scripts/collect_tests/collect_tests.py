@@ -938,7 +938,6 @@ class BranchTestCollector(TestCollector):
                 f'file of unknown type, and not directly under a content directory ({path.parent.name})')
 
         content_item = None
-        only_to_upload = False
         try:
             content_item = ContentItem(path)
             self._validate_content_item_compatibility(content_item, is_integration='Integrations' in path.parts)
