@@ -620,6 +620,7 @@ class URLFormatter(object):
 
         url = self.correct_and_refang_url(self.original_url)
         url = self.strip_wrappers(url)
+        url = self.correct_and_refang_url(url)
 
         try:
             self.output = URLCheck(url).output

@@ -76,6 +76,9 @@ ATP_REDIRECTS = [
     ('https://na01.safelinks.protection.outlook.com/?url=https%3A//urldefense.com/v3/__'
      'https%3A//google.com%3A443/search%3Fq%3Da%2Atest%26gs%3Dps__%3BKw%21-612Flbf0JvQ3kNJkRi5Jg&',
      'https://google.com:443/search?q=a*test&gs=ps'),
+    ('https://na01.safelinks.protection.outlook.com/?url=https%3A//urldefense.com/v3/__'
+     'hxxps%3A//google.com%3A443/search%3Fq%3Da%2Atest%26gs%3Dps__%3BKw%21-612Flbf0JvQ3kNJkRi5Jg&',
+     'https://google.com:443/search?q=a*test&gs=ps')
 ]
 
 PROOF_POINT_REDIRECTS = [
