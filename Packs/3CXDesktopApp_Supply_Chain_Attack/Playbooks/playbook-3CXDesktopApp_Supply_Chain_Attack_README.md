@@ -10,6 +10,8 @@ Between March 9-30, 2023, we observed activity at 127 Cortex XDR customers that 
 #### Affected Products 
 According to 3CX’s announcement, the supply chain attack involved 3CX’s Electron Windows App shipped in Update 7, version numbers 18.12.407 & 18.12.416 and Electron Mac App version numbers 18.11.1213, 18.12.402, 18.12.407 & 18.12.416.
 
+#### Playbook Flow
+
 **This playbook should be triggered manually or can be configured as a job.** 
 Please create a new incident and choose the 3CXDesktopApp Supply Chain Attack playbook and Rapid Breach Response incident type.
 
@@ -37,10 +39,10 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Block Indicators - Generic v3
 * QRadarFullSearch
-* Threat Hunting - Generic
 * Rapid Breach Response - Set Incident Info
+* Threat Hunting - Generic
+* Block Indicators - Generic v3
 
 ### Integrations
 
@@ -48,19 +50,19 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* ParseHTMLIndicators
 * HttpV2
+* ParseHTMLIndicators
 
 ### Commands
 
-* azure-log-analytics-execute-query
-* splunk-search
-* createNewIndicator
-* associateIndicatorsToIncident
-* extractIndicators
-* xdr-xql-generic-query
-* es-search
 * closeInvestigation
+* splunk-search
+* azure-log-analytics-execute-query
+* extractIndicators
+* es-search
+* createNewIndicator
+* xdr-xql-generic-query
+* associateIndicatorsToIncident
 
 ## Playbook Inputs
 
