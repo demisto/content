@@ -2228,9 +2228,13 @@ def direct_message_handler(integration_context: dict, request_body: dict, conver
     user_id: str = from_property.get('id', '')
 
     team_member: dict = get_team_member(integration_context, user_id)
+    if team_member:
+        # enrich the sender info
+        request_body['from'].update(team_member)
 
     username: str = team_member.get('username', '')
     user_email: str = team_member.get('user_email', '')
+    demisto_user = demisto.findUser(email=user_email) if user_email else demisto.findUser(username=username)
 
     formatted_message: str = str()
 
@@ -2239,8 +2243,6 @@ def direct_message_handler(integration_context: dict, request_body: dict, conver
     return_card: bool = False
 
     allow_external_incidents_creation: bool = demisto.params().get('allow_external_incidents_creation', False)
-
-    demisto_user = demisto.findUser(email=user_email) if user_email else demisto.findUser(username=username)
 
     lowered_message = message.lower()
     # the command is to create new incident
