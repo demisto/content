@@ -39,6 +39,9 @@ MIRROR_DIRECTION_DICT = {
     'Outgoing': 'Out',
     'Incoming And Outgoing': 'Both'
 }
+# This will be appended to the attachment's name when mirroring an attachment from XSOAR to Jira
+ATTACHMENT_MIRRORED_FROM_XSOAR = '_mirrored_from_xsoar'
+COMMENT_MIRRORED_FROM_XSOAR = 'Mirrored from Cortex XSOAR'
 # Scopes
 SCOPES = [
     'write:jira-work',
@@ -456,7 +459,8 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
 
         Args:
             issue_id_or_key (str): The id or key of the issue to edit.
-            json_data (Dict[str, Any]): The data that is sent to the endpoint to edit the issue.
+            json_data (Dict[str, Any]): The data that is sent to the endpoint to edit the issue,
+            which will hold the information about the issue fields we want to edit.
 
         Returns:
             requests.Response: The raw response of the endpoint.
@@ -2969,7 +2973,8 @@ def test_module() -> str:
 # Fetch Incidents
 def fetch_incidents(client: JiraBaseClient, issue_field_to_fetch_from: str, fetch_query: str, id_offset: int,
                     fetch_attachments: bool, fetch_comments: bool, mirror_direction: str, max_fetch_incidents: int,
-                    first_fetch_interval: str, comment_tag: str, attachment_tag: str) -> List[Dict[str, Any]]:
+                    first_fetch_interval: str, comment_tag_from_jira: str, comment_tag_to_jira: str,
+                    attachment_tag_from_jira: str, attachment_tag_to_jira: str) -> List[Dict[str, Any]]:
     """This function is the entry point of fetching incidents.
 
     Args:
@@ -2983,8 +2988,10 @@ def fetch_incidents(client: JiraBaseClient, issue_field_to_fetch_from: str, fetc
         first_fetch_interval (str): The first fetch interval to fetch from if the fetch timestamp is empty,
         and we are fetching using created time.
         mirror_direction (str): The mirroring direction.
-        comment_tag (str): The comment tag.
-        attachment_tag (str): The attachment tag.
+        comment_tag_to_jira (str): The comment tag to add to an entry to mirror it as a comment in Jira.
+        comment_tag_from_jira (str): The comment tag to add to an entry to mirror it as a comment from Jira.
+        attachment_tag_to_jira (str): The attachment tag to add to an entry to mirror it as an attachment in Jira.
+        attachment_tag_from_jira (str): The attachment tag to add to an entry to mirror it as an attachment from Jira.
 
     Returns:
         List[Dict[str, Any]]: A list of incidents.
@@ -3024,8 +3031,10 @@ def fetch_incidents(client: JiraBaseClient, issue_field_to_fetch_from: str, fetc
             incidents.append(create_incident_from_issue(
                 client=client, issue=issue, fetch_attachments=fetch_attachments, fetch_comments=fetch_comments,
                 mirror_direction=mirror_direction,
-                comment_tag=comment_tag,
-                attachment_tag=attachment_tag))
+                comment_tag_from_jira=comment_tag_from_jira,
+                comment_tag_to_jira=comment_tag_to_jira,
+                attachment_tag_from_jira=attachment_tag_from_jira,
+                attachment_tag_to_jira=attachment_tag_to_jira))
     # If we did no progress in terms of time (the created time stayed the same as the last fetch), we should keep the
     # ids of the last fetch until progress is made, so we exclude them in the next fetch.
     if (
@@ -3193,7 +3202,8 @@ def get_attachments_entries_for_fetched_incident(
 
 
 def create_incident_from_issue(client: JiraBaseClient, issue: Dict[str, Any], fetch_attachments: bool, fetch_comments: bool,
-                               mirror_direction: str, comment_tag: str, attachment_tag: str) -> Dict[str, Any]:
+                               mirror_direction: str, comment_tag_from_jira: str, comment_tag_to_jira: str,
+                               attachment_tag_from_jira: str, attachment_tag_to_jira: str) -> Dict[str, Any]:
     """Create an incident from a Jira Issue.
 
     Args:
@@ -3242,8 +3252,10 @@ def create_incident_from_issue(client: JiraBaseClient, issue: Dict[str, Any], fe
     issue['mirror_direction'] = MIRROR_DIRECTION_DICT.get(mirror_direction, None)
 
     issue['mirror_tags'] = [
-        comment_tag,
-        attachment_tag
+        comment_tag_from_jira,
+        comment_tag_to_jira,
+        attachment_tag_from_jira,
+        attachment_tag_to_jira
     ]
     issue['mirror_instance'] = demisto.integrationInstance()
     return {
@@ -3414,7 +3426,7 @@ def get_modified_issue_ids(client: JiraBaseClient, last_update_date: str, timezo
 
 
 def get_remote_data_command(client: JiraBaseClient, args: Dict[str, Any],
-                            attachment_tag: str, comment_tag: str,
+                            attachment_tag_from_jira: str, comment_tag_from_jira: str,
                             mirror_resolved_issue: bool) -> GetRemoteDataResponse:
     """ Mirror-in data to incident from Jira into XSOAR 'Jira Incident' incident.
 
@@ -3463,8 +3475,9 @@ def get_remote_data_command(client: JiraBaseClient, args: Dict[str, Any],
                 parsed_entries = get_updated_remote_data(
                     client=client, issue=issue, updated_incident=updated_incident,
                     issue_modified_date=issue_modified_date, incident_modified_date=incident_modified_date,
-                    issue_id=issue_id, mirror_resolved_issue=mirror_resolved_issue, attachment_tag=attachment_tag,
-                    comment_tag=comment_tag)
+                    issue_id=issue_id, mirror_resolved_issue=mirror_resolved_issue,
+                    attachment_tag_from_jira=attachment_tag_from_jira,
+                    comment_tag_from_jira=comment_tag_from_jira)
                 # demisto.debug(f"\nUpdate incident:\n\tIncident name: Jira issue {issue.get('id')}\n\t"
                 #               f"Reason: Issue modified in remote.\n\tIncident Last update time: {incident_modified_date}"
                 #               f"\n\Issue last updated time: {issue_modified_date}\n")
@@ -3532,7 +3545,7 @@ def get_remote_data_command(client: JiraBaseClient, args: Dict[str, Any],
 
 def get_updated_remote_data(client: JiraBaseClient, issue: Dict[str, Any], updated_incident: Dict[str, Any],
                             issue_modified_date: datetime, incident_modified_date: datetime, issue_id: str,
-                            mirror_resolved_issue: bool, attachment_tag: str, comment_tag: str,
+                            mirror_resolved_issue: bool, attachment_tag_from_jira: str, comment_tag_from_jira: str,
                             ) -> List[Dict[str, Any]]:
     """This function is in charge of returning the parsed entries of the updated incident, while updating
     the content of updated_incident, which is in charge of holding the updated data of the incident (since arguments
@@ -3572,8 +3585,9 @@ def get_updated_remote_data(client: JiraBaseClient, issue: Dict[str, Any], updat
         incident_modified_date=incident_modified_date
     )
     for attachment_entry in attachments_entries:
-        attachment_entry['Tags'] = [attachment_tag]
-        parsed_entries.append(attachment_entry)
+        if ATTACHMENT_MIRRORED_FROM_XSOAR not in attachment_entry.get('File', ''):
+            attachment_entry['Tags'] = [attachment_tag_from_jira]
+            parsed_entries.append(attachment_entry)
     demisto.debug(f'####################\n{attachments_entries}\n################')
     comments_entries = get_comments_entries_for_fetched_incident(
         client=client,
@@ -3582,14 +3596,16 @@ def get_updated_remote_data(client: JiraBaseClient, issue: Dict[str, Any], updat
     )
     comments_bodies = []
     for comment_entry in comments_entries:
-        parsed_entries.append({
-            'Type': EntryType.NOTE,
-            'Contents': (f'{comment_entry.get("Comment")}\nJira Author: {comment_entry.get("UpdateUser")}'),
-            'ContentsFormat': EntryFormat.TEXT,
-            'Tags': [comment_tag],  # the list of tags to add to the entry
-            'Note': True,
-        })
-        comments_bodies.append(comment_entry.get('Comment', ''))
+        comment_body = comment_entry.get('Comment', '')
+        if COMMENT_MIRRORED_FROM_XSOAR not in comment_body:
+            parsed_entries.append({
+                'Type': EntryType.NOTE,
+                'Contents': (f'{comment_entry.get("Comment")}\nJira Author: {comment_entry.get("UpdateUser")}'),
+                'ContentsFormat': EntryFormat.TEXT,
+                'Tags': [comment_tag_from_jira],  # the list of tags to add to the entry
+                'Note': True,
+            })
+            comments_bodies.append(comment_entry.get('Comment', ''))
     updated_incident['extractedComments'] = comments_bodies
     return parsed_entries
 
@@ -3646,7 +3662,8 @@ def get_mapping_fields_command(client: JiraBaseClient) -> GetMappingFieldsRespon
     return mapping_response
 
 
-def update_remote_system_command(client: JiraBaseClient, args: Dict[str, Any]) -> str:
+def update_remote_system_command(client: JiraBaseClient, args: Dict[str, Any], comment_tag_to_jira: str,
+                                 attachment_tag_to_jira: str) -> str:
     """ Mirror-out data that is in Demito into Jira issue
 
     Notes:
@@ -3661,17 +3678,19 @@ def update_remote_system_command(client: JiraBaseClient, args: Dict[str, Any]) -
     remote_args = UpdateRemoteSystemArgs(args)
     entries = remote_args.entries
     remote_id = remote_args.remote_incident_id
+    delta = remote_args.delta
     demisto.debug(
         f'Update remote system check if need to update: remoteId: {remote_id}, incidentChanged: '
         f'{remote_args.incident_changed}, data:'
         f' {remote_args.data}, entries: {entries}')
     try:
-        if remote_args.delta and remote_args.incident_changed:
+        if delta and remote_args.incident_changed:
+            demisto.debug(f'Got the following delta object: {delta}')
             demisto.debug(
-                f'Got the following delta keys {list(remote_args.delta.keys())} to update Jira incident {remote_id}'
+                f'Got the following delta keys {list(delta.keys())} to update Jira incident {remote_id}'
             )
             # take the val from data as it's the updated value
-            delta = {k: remote_args.data.get(k) for k in remote_args.delta.keys()}
+            delta = {k: remote_args.data.get(k) for k in delta.keys()}
             demisto.debug(f'sending the following data to edit the issue with: {delta}')
             issue_fields = create_issue_fields(issue_args=delta, issue_fields_mapper=client.ISSUE_FIELDS_CREATE_MAPPER)
             client.edit_issue(issue_id_or_key=remote_id, json_data=issue_fields)
@@ -3685,21 +3704,25 @@ def update_remote_system_command(client: JiraBaseClient, args: Dict[str, Any]) -
             for entry in entries:
                 entry_id = entry.get('id', '')
                 entry_type = entry.get('type', '')
+                entry_tags = entry.get('tags', [])
+                demisto.debug(f'Got the entry tags: {entry_tags}')
                 demisto.debug(f'Sending entry {entry_id}, type: {entry_type}')
-                if entry_type == 3:
+                if entry_type == EntryType.FILE and attachment_tag_to_jira in entry_tags:
                     demisto.debug('Add new file\n')
                     file_path = demisto.getFilePath(entry_id)
-                    # file_name = path_res.get('name')
+                    file_name, file_extension = os.path.splitext(file_path.get('name', ''))
                     upload_XSOAR_attachment_to_jira(client=client, entry_id=entry_id,
-                                                    issue_id_or_key=remote_id, attachment_name=file_path.get('name', ''))
+                                                    issue_id_or_key=remote_id,
+                                                    attachment_name=f'{file_name}{ATTACHMENT_MIRRORED_FROM_XSOAR}{file_extension}')
                     # upload_file(entry.get('id'), remote_id, file_name)
                 else:  # handle comments
-                    demisto.debug('Add new comment\n')
-                    payload = {
-                        'body': text_to_adf(text=str(entry.get('contents', '')))
-                    }
-                    res = client.add_comment(issue_id_or_key=remote_id, json_data=payload)
-                    # add_comment(remote_id, str(entry.get('contents', '')))
+                    if comment_tag_to_jira in entry_tags:
+                        demisto.debug('Add new comment\n')
+                        payload = {
+                            'body': text_to_adf(text=f'{entry.get("contents", "")}\n\n{COMMENT_MIRRORED_FROM_XSOAR}')
+                        }
+                        res = client.add_comment(issue_id_or_key=remote_id, json_data=payload)
+                        # add_comment(remote_id, str(entry.get('contents', '')))
     except Exception as e:
         demisto.error(f"Error in Jira outgoing mirror for incident {remote_args.remote_incident_id} \n"
                       f"Error message: {str(e)}")
@@ -3745,8 +3768,17 @@ def main() -> None:
     # it holds values such as: 3 days, 1 minute, 5 hours,...
     first_fetch_interval = params.get('first_fetch', DEFAULT_FIRST_FETCH_INTERVAL)
     mirror_direction = params.get('mirror_direction', 'None')
-    comment_tag = params.get('comment_tag', 'comment tag')
-    attachment_tag = params.get('file_tag', 'attachment tag')
+    comment_tag_to_jira = params.get('comment_tag_to_jira', 'comment tag')
+    comment_tag_from_jira = params.get('comment_tag_from_jira', 'comment tag from Jira')
+    if comment_tag_to_jira == comment_tag_from_jira:
+        raise DemistoException(('Comment Entry Tag to Jira and Comment Entry Tag '
+                               'from jira cannot have the same value.'))
+
+    attachment_tag_to_jira = params.get('attachment_tag_to_jira', 'attachment tag')
+    attachment_tag_from_jira = params.get('attachment_tag_from_jira', 'attachment tag from Jira')
+    if attachment_tag_to_jira == attachment_tag_from_jira:
+        raise DemistoException(('Attachment Entry Tag to Jira and Attachment Entry Tag '
+                               'from jira cannot have the same value.'))
     # Mirroring params
     mirror_resolved_issue = argToBoolean(params.get('close_incident', False))
     # Print to demisto.info which Jira instance the user supplied.
@@ -3821,8 +3853,10 @@ def main() -> None:
                 max_fetch_incidents=arg_to_number(max_fetch) or DEFAULT_FETCH_LIMIT,
                 first_fetch_interval=first_fetch_interval,
                 mirror_direction=mirror_direction,
-                comment_tag=comment_tag,
-                attachment_tag=attachment_tag,
+                comment_tag_to_jira=comment_tag_to_jira,
+                comment_tag_from_jira=comment_tag_from_jira,
+                attachment_tag_to_jira=attachment_tag_to_jira,
+                attachment_tag_from_jira=attachment_tag_from_jira
             ),
             )
         # elif demisto.command() == 'get-mapping-fields':
@@ -3832,15 +3866,16 @@ def main() -> None:
         #     return_results(update_remote_system_command(demisto.args()))
 
         elif demisto.command() == 'get-remote-data':
-            return_results(get_remote_data_command(client=client, args=args, comment_tag=comment_tag,
-                                                   attachment_tag=attachment_tag,
+            return_results(get_remote_data_command(client=client, args=args, comment_tag_from_jira=comment_tag_from_jira,
+                                                   attachment_tag_from_jira=attachment_tag_from_jira,
                                                    mirror_resolved_issue=mirror_resolved_issue))
         elif demisto.command() == 'get-modified-remote-data':
             return_results(get_modified_remote_data_command(client=client, args=args))
         elif demisto.command() == 'get-mapping-fields':
             return_results(get_mapping_fields_command(client=client))
         elif demisto.command() == 'update-remote-system':
-            return_results(update_remote_system_command(client=client, args=args))
+            return_results(update_remote_system_command(client=client, args=args, comment_tag_to_jira=comment_tag_to_jira,
+                                                        attachment_tag_to_jira=attachment_tag_to_jira))
         else:
             raise NotImplementedError(f'{command} command is not implemented.')
 

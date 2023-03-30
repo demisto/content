@@ -106,16 +106,31 @@ configuration:
 - additionalinfo: Choose the tag to add to an entry to mirror it as an attachment
     in Jira.
   defaultvalue: attachment tag
-  display: File entry tag
+  display: Attachment Entry Tag to Jira
   hidden: false
-  name: file_tag
+  name: attachment_tag_to_jira
+  required: false
+  type: 0
+- additionalinfo: Choose the tag to add to an entry to mirror it as an attachment
+    from Jira.
+  defaultvalue: attachment tag from Jira
+  display: Attachment Entry Tag from Jira
+  hidden: false
+  name: attachment_tag_from_jira
   required: false
   type: 0
 - additionalinfo: Choose the tag to add to an entry to mirror it as a comment in Jira.
   defaultvalue: comment tag
-  display: Comment entry tag
+  display: Comment Entry Tag to Jira
   hidden: false
-  name: comment_tag
+  name: comment_tag_to_jira
+  required: false
+  type: 0
+- additionalinfo: Choose the tag to add to an entry to mirror it as a comment from Jira.
+  defaultvalue: comment tag from Jira
+  display: Comment Entry Tag from Jira
+  hidden: false
+  name: comment_tag_from_jira
   required: false
   type: 0
 - additionalinfo: Fetch comments for a Jira ticket.
