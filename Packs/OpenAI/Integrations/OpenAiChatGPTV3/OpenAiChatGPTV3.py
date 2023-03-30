@@ -94,7 +94,7 @@ def chatgpt_output(response) -> CommandResults:
                     }]
 
         markdown = tableToMarkdown(
-            '### ChatGPT API Response ###',
+            'ChatGPT API Response',
             context,
             date_fields=['Created Time'],
         )
