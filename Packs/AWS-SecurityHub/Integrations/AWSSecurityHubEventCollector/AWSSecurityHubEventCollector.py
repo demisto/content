@@ -12,7 +12,7 @@ urllib3.disable_warnings()
 
 VENDOR = 'AWS'
 PRODUCT = 'Security Hub'
-TIME_FIELD = 'UpdatedAt'
+TIME_FIELD = 'CreatedAt'
 DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 DEFAULT_FIRST_FETCH = '3 days'
 DEFAULT_MAX_RESULTS = 1000  # Default maximum number of results to fetch
