@@ -143,7 +143,7 @@ class Client(BaseClient):
             Dict[str, Any]: dictionary containing response information that includes a scan ID.
         """
         data = {"request_data": {"alert_internal_id": alert_internal_id, "service_id": service_id, "attack_surface_rule_id": attack_surface_rule_id}}
-        response = self._http_request('POST', 'remediation_confirmation_scanning/get_or_create', json_data=data)
+        response = self._http_request('POST', 'remediation_confirmation_scanning/requests/get_or_create', json_data=data)
 
         if response.status_code == 500:
             try:
