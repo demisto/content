@@ -1,5 +1,5 @@
 from typing import Any
-from CommonServerPython import Common, DemistoException, ExecutionMetrics
+from CommonServerPython import DemistoException
 import json
 import pytest
 import io
@@ -43,7 +43,7 @@ APIKEY_VALIDATION_FAILURE = {"detail": "Could not validate credentials"}
 def test_test_module_negative(mocker, client, result, expected):
     mocker.patch.object(client, "test_module", return_value=result)
     with pytest.raises(Exception) as e:
-        response = OPSWAT_Filescan.test_module_command(client)
+        OPSWAT_Filescan.test_module_command(client)
     assert isinstance(e.value, expected)
 
 
@@ -114,7 +114,6 @@ def test_scan_command_url_polling_waiting(requests_mock, mocker, client):
 
 
 def test_scan_command_url_polling(mocker, client):
-    import requests
     from CommonServerPython import ScheduledCommand
 
     args = {'url': 'https://www.google.com'}
@@ -144,7 +143,6 @@ def test_scan_command_url_polling(mocker, client):
 
 
 def test_scan_command_file_polling(mocker, client):
-    import requests
     from CommonServerPython import ScheduledCommand
 
     args = {'entry_id': 'test_entry_id'}
