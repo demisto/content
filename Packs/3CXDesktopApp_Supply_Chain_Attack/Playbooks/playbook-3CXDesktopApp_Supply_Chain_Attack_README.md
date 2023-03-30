@@ -29,6 +29,8 @@ Please create a new incident and choose the 3CXDesktopApp Supply Chain Attack pl
 
 **References:**
 
+[Threat Brief: 3CXDesktopApp Supply Chain Attack](https://unit42.paloaltonetworks.com/3cxdesktopapp-supply-chain-attack/)
+
 [CrowdStrike Falcon Platform Detects and Prevents Active Intrusion Campaign Targeting 3CXDesktopApp Customers](https://www.crowdstrike.com/blog/crowdstrike-detects-and-prevents-active-intrusion-campaign-targeting-3cxdesktopapp-customers/)
 
 Note: This is a beta playbook, which lets you implement and test pre-release software. Since the playbook is beta, it might contain bugs. Updates to the pack during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the pack to help us identify issues, fix them, and continually improve.
@@ -39,10 +41,10 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* QRadarFullSearch
-* Rapid Breach Response - Set Incident Info
-* Threat Hunting - Generic
 * Block Indicators - Generic v3
+* Rapid Breach Response - Set Incident Info
+* QRadarFullSearch
+* Threat Hunting - Generic
 
 ### Integrations
 
@@ -50,19 +52,19 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* HttpV2
 * ParseHTMLIndicators
+* HttpV2
 
 ### Commands
 
 * closeInvestigation
-* splunk-search
 * azure-log-analytics-execute-query
-* extractIndicators
-* es-search
-* createNewIndicator
-* xdr-xql-generic-query
 * associateIndicatorsToIncident
+* createNewIndicator
+* splunk-search
+* extractIndicators
+* xdr-xql-generic-query
+* es-search
 
 ## Playbook Inputs
 

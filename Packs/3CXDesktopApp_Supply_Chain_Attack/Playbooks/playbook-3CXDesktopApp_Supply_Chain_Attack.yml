@@ -3,7 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: 3CXDesktopApp Supply Chain Attack
-description: "### 3CXDesktopApp Supply Chain Attack\n\n#### Executive Summary \nOn March 29, 2023, CrowdStrike [released a blog](https://www.crowdstrike.com/blog/crowdstrike-detects-and-prevents-active-intrusion-campaign-targeting-3cxdesktopapp-customers/) discussing a supply chain attack involving a software-based phone application called [3CXDesktopApp](https://www.3cx.com/). \n\nAs of March 30, the 3CXDesktopApp installer hosted on the developer’s website will install the application with two malicious libraries included. The malicious libraries will ultimately run shellcode to load a backdoor on the system that allows actors to install additional malware on the victim machine.\n\nBetween March 9-30, 2023, we observed activity at 127 Cortex XDR customers that involved the 3CXDesktopApp process attempting to run shellcode, which was blocked by the XDR Agent’s In-process Shellcode Protection Module. Due to blocking the shellcode, we were unable to obtain the secondary payload used in this attack, so we cannot determine its capabilities or any post-exploitation activities carried out by the threat actor.\n\n#### Affected Products \nAccording to 3CX’s announcement, the supply chain attack involved 3CX’s Electron Windows App shipped in Update 7, version numbers 18.12.407 & 18.12.416 and Electron Mac App version numbers 18.11.1213, 18.12.402, 18.12.407 & 18.12.416.\n\n#### Playbook Flow\n\n**This playbook should be triggered manually or can be configured as a job.** \nPlease create a new incident and choose the 3CXDesktopApp Supply Chain Attack playbook and Rapid Breach Response incident type.\n\n**The playbook includes the following tasks:**\n\n**Hunting:**\n- Cortex XDR\n    - XQL hunting queries\n- Advanced SIEM queries\n    - Splunk\n    - QRadar\n    - Elasticsearch\n    - Azure Log Analytics\n- Indicators hunting\n\n**References:**\n\n[CrowdStrike Falcon Platform Detects and Prevents Active Intrusion Campaign Targeting 3CXDesktopApp Customers](https://www.crowdstrike.com/blog/crowdstrike-detects-and-prevents-active-intrusion-campaign-targeting-3cxdesktopapp-customers/)\n\nNote: This is a beta playbook, which lets you implement and test pre-release software. Since the playbook is beta, it might contain bugs. Updates to the pack during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the pack to help us identify issues, fix them, and continually improve."
+description: "### 3CXDesktopApp Supply Chain Attack\n\n#### Executive Summary \nOn March 29, 2023, CrowdStrike [released a blog](https://www.crowdstrike.com/blog/crowdstrike-detects-and-prevents-active-intrusion-campaign-targeting-3cxdesktopapp-customers/) discussing a supply chain attack involving a software-based phone application called [3CXDesktopApp](https://www.3cx.com/). \n\nAs of March 30, the 3CXDesktopApp installer hosted on the developer’s website will install the application with two malicious libraries included. The malicious libraries will ultimately run shellcode to load a backdoor on the system that allows actors to install additional malware on the victim machine.\n\nBetween March 9-30, 2023, we observed activity at 127 Cortex XDR customers that involved the 3CXDesktopApp process attempting to run shellcode, which was blocked by the XDR Agent’s In-process Shellcode Protection Module. Due to blocking the shellcode, we were unable to obtain the secondary payload used in this attack, so we cannot determine its capabilities or any post-exploitation activities carried out by the threat actor.\n\n#### Affected Products \nAccording to 3CX’s announcement, the supply chain attack involved 3CX’s Electron Windows App shipped in Update 7, version numbers 18.12.407 & 18.12.416 and Electron Mac App version numbers 18.11.1213, 18.12.402, 18.12.407 & 18.12.416.\n\n#### Playbook Flow\n\n**This playbook should be triggered manually or can be configured as a job.** \nPlease create a new incident and choose the 3CXDesktopApp Supply Chain Attack playbook and Rapid Breach Response incident type.\n\n**The playbook includes the following tasks:**\n\n**Hunting:**\n- Cortex XDR\n    - XQL hunting queries\n- Advanced SIEM queries\n    - Splunk\n    - QRadar\n    - Elasticsearch\n    - Azure Log Analytics\n- Indicators hunting\n\n**References:**\n\n[Threat Brief: 3CXDesktopApp Supply Chain Attack](https://unit42.paloaltonetworks.com/3cxdesktopapp-supply-chain-attack/)\n\n[CrowdStrike Falcon Platform Detects and Prevents Active Intrusion Campaign Targeting 3CXDesktopApp Customers](https://www.crowdstrike.com/blog/crowdstrike-detects-and-prevents-active-intrusion-campaign-targeting-3cxdesktopapp-customers/)\n\nNote: This is a beta playbook, which lets you implement and test pre-release software. Since the playbook is beta, it might contain bugs. Updates to the pack during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the pack to help us identify issues, fix them, and continually improve."
 starttaskid: "0"
 tasks:
   "0":
@@ -53,12 +53,13 @@ tasks:
       '#none#':
       - "20"
       - "63"
+      - "116"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 880,
+          "x": 1050,
           "y": 180
         }
       }
@@ -101,7 +102,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 670,
+          "x": 1050,
           "y": 320
         }
       }
@@ -224,7 +225,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1090,
+          "x": 1460,
           "y": 320
         }
       }
@@ -2372,6 +2373,49 @@ tasks:
         "position": {
           "x": 660,
           "y": 3270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "116":
+    id: "116"
+    taskid: e2696891-41c4-43fb-88b3-c8e923405463
+    type: regular
+    task:
+      id: e2696891-41c4-43fb-88b3-c8e923405463
+      version: -1
+      name: Collect IoCs from Unit42
+      description: This script will extract indicators from given HTML and will handle bad top-level domains to avoid false positives caused by file extensions.
+      scriptName: ParseHTMLIndicators
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "65"
+    scriptarguments:
+      exclude_indicators:
+        complex:
+          root: inputs.excludeIndicators
+          transformers:
+          - operator: split
+            args:
+              delimiter: {}
+      url:
+        simple: https://unit42.paloaltonetworks.com/3cxdesktopapp-supply-chain-attack/
+    reputationcalc: 1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": 320
         }
       }
     note: false
