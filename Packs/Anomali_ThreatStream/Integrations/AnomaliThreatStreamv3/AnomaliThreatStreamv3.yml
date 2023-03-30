@@ -4593,7 +4593,7 @@ script:
       description: ID associated with the organization that created the rule.
       type: Number
     - contextPath: ThreatStream.Rule.org_shared
-      description: Whether a rule is shared across an organization or not
+      description: Whether a rule is shared across an organization or not.
       type: Boolean
     - contextPath: ThreatStream.Rule.organization.id
       description: ID associated with the organization that created the rule.

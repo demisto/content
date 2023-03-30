@@ -96,7 +96,6 @@ class TestReputationCommands:
 
     def mocked_http_request_ioc(self, method, url_suffix, params=None, data=None, headers=None, files=None, json=None,
                                 resp_type='json'):
-        # sourcery skip: assign-if-exp, inline-immediately-returned-variable, remove-unnecessary-else
         if 'associated_with_intelligence' in url_suffix:
             if 'actor' in url_suffix:
                 mocked_actor_result = util_load_json('test_data/mocked_actor_response.json')
@@ -172,7 +171,6 @@ class TestReputationCommands:
 
     def mocked_http_request(self, method, url_suffix, params=None, data=None, headers=None, files=None, json=None,
                             resp_type='json'):
-        # sourcery skip: inline-immediately-returned-variable
         if 'actor' in url_suffix:
             mocked_actor_result = util_load_json('test_data/mocked_actor_response.json')
             return mocked_actor_result
