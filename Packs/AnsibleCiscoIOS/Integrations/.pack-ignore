@@ -1,0 +1,3 @@
+[file:AnsibleCiscoIOS.yml]
+ignore=BA124
+
