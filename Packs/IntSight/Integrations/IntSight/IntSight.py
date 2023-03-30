@@ -843,7 +843,8 @@ def request_for_ioc_enrichment():
     response = http_request('GET', request_url, json_response=True)
     status = response.get('Status')
     if status == 'Done':
-        ioc_context, ioc_readable, dbot_score, domain, ip_info, url_info, hash_info = ioc_enrichment_to_readable(response)
+        ioc_context, ioc_readable, dbot_score, domain, ip_info, url_info, hash_info = ioc_enrichment_to_readable(
+            response)
 
         demisto.results(
             {
@@ -901,7 +902,7 @@ def fetch_incidents():
     demisto.info("IntSight fetch last run time is: {}".format(str(last_run)))
     if not last_run or 'time' not in last_run:
         first_fetch_date = dateparser.parse(demisto.params().get('first_fetch', DEFAULT_TIME_RANGE),
-                                 settings={'TO_TIMEZONE': 'UTC'})
+                                            settings={'TO_TIMEZONE': 'UTC'})
         if first_fetch_date is None:
             raise ValueError(f"Invalid first_fetch format: {demisto.params().get('first_fetch')}")
         fetch_delta = int(first_fetch_date.timestamp() * 1000)
