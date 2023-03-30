@@ -9,7 +9,7 @@ This integration was integrated and tested with version xx of IntSights
 
     | **Parameter** | **Required** |
     | --- | --- |
-    | Server URL (e.g. https://192.168.0.1) | True |
+    | Server URL (e.g. <https://192.168.0.1>) | True |
     | Credentials | True |
     | Password | True |
     | Alert type to fetch as incidents, allowed: "AttackIndication", "DataLeakage", "Phishing", "BrandSecurity", "ExploitableData", "VIP" | False |
@@ -47,6 +47,7 @@ Returns an image of an alert by ID.
 #### Context Output
 
 There is no context output for this command.
+
 ### intsights-get-alert-activities
 
 ***
