@@ -465,6 +465,9 @@ class MsGraphMailBaseClient(MicrosoftClient):
         folder_path = f'/{GraphMailUtils.build_folders_path(folder_id)}' if folder_id else ''
         attachment_id_path = f'/{attachment_id}/?$expand=microsoft.graph.itemattachment/item' if attachment_id else ''
         suffix = f'/users/{user_id}{folder_path}/messages/{message_id}/attachments{attachment_id_path}'
+
+        demisto.debug(f'Getting attachment with suffix: {suffix}')
+
         response = self.http_request('GET', suffix)
         return [response] if attachment_id else response.get('value', [])
 
@@ -1572,9 +1575,10 @@ def list_attachments_command(client: MsGraphMailBaseClient, args) -> CommandResu
 
 
 def get_attachment_command(client: MsGraphMailBaseClient, args) -> list[CommandResults | dict]:
-    kwargs = {arg_key: args.get(arg_key) for arg_key in ['message_id', 'user_id', 'folder_id', 'attachment_id']}
+    kwargs = {arg_key: args.get(arg_key) for arg_key in ['message_id', 'folder_id', 'attachment_id']}
+    kwargs['user_id'] = args.get('user_id', client._mailbox_to_fetch)
     raw_response = client.get_attachment(**kwargs)
-    return [GraphMailUtils.create_attachment(attachment, user_id=args.get('user_id')) for attachment in raw_response]
+    return [GraphMailUtils.create_attachment(attachment, user_id=kwargs['user_id']) for attachment in raw_response]
 
 
 def create_folder_command(client: MsGraphMailBaseClient, args) -> CommandResults:

@@ -1,7 +1,7 @@
 import pytest
 import demistomock as demisto
 import json
-from MicrosoftGraphListener import MsGraphListenerClient, item_result_creator
+from MicrosoftGraphListener import MsGraphListenerClient
 import requests_mock
 from unittest.mock import mock_open
 from CommonServerPython import *
@@ -626,11 +626,12 @@ def test_get_attachment(client):
         - Validate that the message object created successfully
 
     """
+    from MicrosoftGraphListener import GraphMailUtils
     output_prefix = 'MSGraphMail(val.ID && val.ID == obj.ID)'
     with open('test_data/mail_with_attachment') as mail_json:
         user_id = 'ex@example.com'
         raw_response = json.load(mail_json)
-        res = item_result_creator(raw_response, user_id)
+        res =  GraphMailUtils.item_result_creator(raw_response, user_id)
         assert isinstance(res, CommandResults)
         output = res.to_context().get('EntryContext', {})
         assert output.get(output_prefix).get('ID') == 'exampleID'
@@ -678,10 +679,11 @@ def test_get_attachment_unsupported_type(client):
         - Validate the human readable which explain we do not support the type
 
     """
+    from MicrosoftGraphListener import GraphMailUtils
     with open('test_data/mail_with_unsupported_attachment') as mail_json:
         user_id = 'ex@example.com'
         raw_response = json.load(mail_json)
-        res = item_result_creator(raw_response, user_id)
+        res = GraphMailUtils.item_result_creator(raw_response, user_id)
         assert isinstance(res, CommandResults)
         output = res.to_context().get('HumanReadable', '')
         assert 'Integration does not support attachments from type #microsoft.graph.contact' in output

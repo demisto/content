@@ -63,14 +63,6 @@
             "value": "multipart/alternative"
         },
         {
-            "type": "Email/Body",
-            "value": "<html>\r\n<head>\r\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\r\n<meta content=\"text/html; charset=utf-8\">\r\n</head>\r\n<body>\r\n<div dir=\"ltr\">Body 1</div>\r\n</body>\r\n</html>\r\n"
-        },
-        {
-            "type": "Email/BodyType",
-            "value": "html"
-        },
-        {
             "type": "Email/Sender",
             "value": "dummysender@works.com"
         },
@@ -81,6 +73,14 @@
         {
             "type": "Email/To",
             "value": "recipient@dev.onmicrosoft.com"
+        },
+        {
+            "type": "Email/Body",
+            "value": "<html>\r\n<head>\r\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\r\n<meta content=\"text/html; charset=utf-8\">\r\n</head>\r\n<body>\r\n<div dir=\"ltr\">Body 1</div>\r\n</body>\r\n</html>\r\n"
+        },
+        {
+            "type": "Email/BodyType",
+            "value": "html"
         },
         {
             "type": "Email/Mailbox",

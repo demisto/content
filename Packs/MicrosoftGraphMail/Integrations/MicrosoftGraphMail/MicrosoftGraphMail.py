@@ -130,7 +130,7 @@ class MsGraphMailClient(MsGraphMailBaseClient):
             'name': parsed_email.get('Subject'),
             'details': body,
             'labels': GraphMailUtils.parse_email_as_labels(parsed_email),
-            'occurred': parsed_email.get('ModifiedTime'),
+            'occurred': parsed_email.get('ReceivedTime'),
             'attachment': parsed_email.get('Attachments', []),
             'rawJSON': json.dumps(parsed_email),
             'ID': parsed_email.get('ID')  # only used for look-back to identify the email in a unique way
