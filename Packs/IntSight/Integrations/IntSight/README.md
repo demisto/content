@@ -1,5 +1,5 @@
 Use IntSights to manage and mitigate threats.
-This integration was integrated and tested with version xx of IntSights
+This integration was tested with Intsights API version 3.
 
 ## Configure IntSights on Cortex XSOAR
 
