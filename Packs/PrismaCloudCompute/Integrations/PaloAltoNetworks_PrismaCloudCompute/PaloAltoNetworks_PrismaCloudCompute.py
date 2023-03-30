@@ -390,7 +390,7 @@ class PrismaCloudComputeClient(BaseClient):
         return self._http_request('get', 'logs/defender', params=params, headers=headers)
 
 
-    def get_api_v1_backups_request(self, project):
+    def get_backups_request(self, project):
         """
         Get the defender backups.
 
@@ -1906,7 +1906,7 @@ def api_v1_logs_defender_command(client, args):
     )
 
 
-def get_api_v1_backups_command(client, args):
+def get_backups_command(client, args):
     """
     Get the defender backups.
 
@@ -1918,7 +1918,7 @@ def get_api_v1_backups_command(client, args):
         CommandResults: command-results object.
     """
     project = args.get("project", None)
-    response = client.get_api_v1_backups_request(project)
+    response = client.get_backups_request(project)
     return CommandResults(
         outputs_prefix='PrismaCloudCompute.Backups',
         outputs_key_field='Id',
@@ -2057,7 +2057,7 @@ def main():
         elif requested_command == "prisma-cloud-compute-logs-defender":
             return_results(results=api_v1_logs_defender_command(client=client, args=demisto.args()))
         elif requested_command == "prisma-cloud-compute-get-backups":
-            return_results(results=get_api_v1_backups_command(client=client, args=demisto.args()))
+            return_results(results=get_backups_command(client=client, args=demisto.args()))
         elif requested_command == "prisma-cloud-compute-logs-defender-download":
             return_results(results=api_v1_logs_defender_download_command(client=client, args=demisto.args()))
     # Log exceptions

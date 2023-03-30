@@ -1404,3 +1404,22 @@ def test_get_alert_profiles_command(mocker):
     assert get_alert_profiles_command(client, args).raw_response == d
 
 
+def test_get_backups_command(mocker):
+    """
+    Given:
+        - An app client object
+        - Relevant arguments
+    When:
+        - Calling 'prisma-cloud-compute-get-backups' command
+    Then:
+        -  Ensure the outputs of requesting the defenders backup equals the raw_response object which is mocked
+    """
+    from PaloAltoNetworks_PrismaCloudCompute import get_backups_command, PrismaCloudComputeClient
+    with open("test_data/backups.json") as f:
+        d = json.load(f)
+
+    mocker.patch.object(PrismaCloudComputeClient, 'get_backups_request', return_value=d)
+    client = PrismaCloudComputeClient(base_url=BASE_URL, verify='False', project='', auth=('test', 'test'))
+    args = {}
+
+    assert get_backups_command(client, args).raw_response == d
