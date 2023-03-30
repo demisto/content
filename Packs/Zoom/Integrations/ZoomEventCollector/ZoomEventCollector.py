@@ -246,7 +246,7 @@ def get_events(client: Client, first_fetch_time: datetime, limit: int = MAX_RECO
             hr += tableToMarkdown(name=f"{log_type} Events", t=events_)
             events.extend(events_)
         else:
-            hr += f"No events found for {log_type}."
+            hr += f"No events found for {log_type}.\n"
     return events, CommandResults(readable_output=hr)
 
 
@@ -375,6 +375,8 @@ def main() -> None:
                 # saves next_run for the time fetch-events is invoked
                 demisto.setLastRun(next_run)
             if should_push_events:
+                for event in events:
+                    event["_time"] = event.get('time')
                 send_events_to_xsiam(events,
                                      vendor=VENDOR,
                                      product=PRODUCT,
