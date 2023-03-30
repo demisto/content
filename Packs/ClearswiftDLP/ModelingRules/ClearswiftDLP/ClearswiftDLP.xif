@@ -15,14 +15,15 @@ alter
     get_email_subject = arraystring(regextract(_raw_log, "^<\d+>\d+\s[^Z]+Z\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^|]+\|[^|]+\|[^|]+\|([^|]+)\|[^|]+\|[^|]+\|[^|]+"), ""),
     get_outcome_reason = arraystring(regextract(_raw_log, "^<\d+>\d+\s[^Z]+Z\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^|]+\|[^|]+\|[^|]+\|[^|]+\|([^|]+)\|[^|]+\|[^|]+"), ""),
     get_policy_rule = arraystring(regextract(_raw_log, "^<\d+>\d+\s[^Z]+Z\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^|]+\|[^|]+\|[^|]+\|[^|]+\|[^|]+\|([^|]+)\|[^|]+"), ""),
-    get_description = arraystring(regextract(_raw_log, "^<\d+>\d+\s[^Z]+Z\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^|]+\|[^|]+\|[^|]+\|[^|]+\|[^|]+\|[^|]+\|([^|]+)"), "")    
+    get_description = arraystring(regextract(_raw_log, "^<\d+>\d+\s[^Z]+Z\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^|]+\|[^|]+\|[^|]+\|[^|]+\|[^|]+\|[^|]+\|([^|]+)"), "")   
 | alter
     clean_category = replex(get_category, "\[|\]", ""),
     get_recipient1 = arraystring(regextract(get_email_recipients, "^[^,\s]+"), ""),
     get_recipient2 = arraystring(regextract(get_email_recipients, "^[^,\s]+\,\s([^,\s]+)"), ""),
     get_recipient3 = arraystring(regextract(get_email_recipients, "^[^,\s]+\,\s[^,\s]+\,\s([^,\s]+)"), ""),
     get_recipient4 = arraystring(regextract(get_email_recipients, "^[^,\s]+\,\s[^,\s]+\,\s[^,\s]+\,\s([^,\s]+)"), ""),
-    get_recipient5 = arraystring(regextract(get_email_recipients, "^[^,\s]+\,\s[^,\s]+\,\s[^,\s]+\,\s[^,\s]+\,\s([^,\s]+)"), "")
+    get_recipient5 = arraystring(regextract(get_email_recipients, "^[^,\s]+\,\s[^,\s]+\,\s[^,\s]+\,\s[^,\s]+\,\s([^,\s]+)"), ""),
+    get_action = arraystring(regextract(get_outcome_reason, "^[^\-]+\-\s(.*)"), ""),
 | alter
     xdm.event.type = find_type,
     xdm.observer.name = get_observer_name,
@@ -34,7 +35,8 @@ alter
     xdm.email.subject = get_email_subject,
     xdm.event.outcome_reason = get_outcome_reason,
     xdm.network.rule = get_policy_rule,
-    xdm.alert.description = get_description;
+    xdm.alert.description = get_description,
+    xdm.observer.action = get_action;
 
 
 alter
