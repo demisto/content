@@ -19,7 +19,7 @@ alter
 | alter
     clean_category = replex(get_category, "\[|\]", ""),
     clean_email_recipients = arraymap(split(get_email_recipients, ","), trim("@element"))
-    get_action = arraystring(regextract(get_outcome_reason, "^[^\-]+\-\s(.*)"), ""),
+    get_action = arraystring(regextract(_raw_log, "^<\d+>\d+\s[^Z]+Z\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^|]+\|[^|]+\|[^|]+\|[^|]+\|[^-]+\-\s([^\|]+)\|"), ""),
 | alter
     xdm.event.type = find_type,
     xdm.observer.name = get_observer_name,
