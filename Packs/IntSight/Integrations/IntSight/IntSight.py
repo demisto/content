@@ -171,8 +171,7 @@ def handle_filters(found_date_from=None):
 
 def get_alerts_helper(params):
     demisto.info("Executing get_alerts with params: {}".format(params))
-    # response = http_request('GET', 'public/v1/data/alerts/alerts-list', params=params, json_response=True)
-    response = demisto.mock_http_req()
+    response = http_request('GET', 'public/v1/data/alerts/alerts-list', params=params, json_response=True)
     alerts_human_readable = []
     alerts_context = []
     for alert_id in response:
