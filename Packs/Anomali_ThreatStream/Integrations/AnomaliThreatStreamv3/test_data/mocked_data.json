@@ -1388,7 +1388,6 @@
       "workgroups": []
     },
     "create_investigation_response": {
-      "all_added": true,
       "add_related_indicators": 0,
       "assignee": null,
       "circles": [],

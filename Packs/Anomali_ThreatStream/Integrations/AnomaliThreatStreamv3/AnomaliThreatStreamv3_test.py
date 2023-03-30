@@ -1324,7 +1324,7 @@ def test_create_rule_command(mocker):
         - rule_name, keywords, match_include parameters
 
     When:
-        - Call threatstream-create_rule command
+        - Call threatstream-create-rule command
 
     Then:
         - Validate the command result
@@ -1349,7 +1349,7 @@ def test_update_rule_command(mocker):
         - rule_id, keywords, match_include, malware_ids parameters
 
     When:
-        - Call threatstream-update_rule command
+        - Call threatstream-update-rule command
 
     Then:
         - Validate the command result
@@ -1377,7 +1377,7 @@ def test_delete_rule_command(mocker):
         - rule_id parameter
 
     When:
-        - Call threatstream-delete_rule command
+        - Call threatstream-delete-rule command
 
     Then:
         - Validate the command result
@@ -1411,8 +1411,7 @@ def test_create_investigation_command(mocker):
     args: dict = {'name': "new_investigation"}
     client = mock_client()
     command_result = create_investigation_command(client, **args)
-    assert command_result.readable_output == 'Investigation was created successfully with ID: 111.\n' \
-                                             'All Elements was added successfully to the investigation.'
+    assert command_result.readable_output == 'Investigation was created successfully with ID: 111.\n'
     assert command_result.raw_response == mocked_response
     assert command_result.outputs == mocked_response
     assert command_result.outputs_prefix == 'ThreatStream.Investigation'

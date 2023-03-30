@@ -248,7 +248,7 @@ class Client(BaseClient):
         return self.http_request('GET', url_suffix, params=params)
 
     def create_rule_request(self, request_body: dict) -> dict:
-        """ Creats a rule in ThreatStream.
+        """ Creates a rule in ThreatStream.
         Args:
             request_body (dict): The request body.
         Returns:
@@ -424,7 +424,7 @@ class Client(BaseClient):
 
     def search_threat_model_request(self, params: dict) -> dict:
         """
-        Gets list of threat model according to search paramters
+        Gets list of threat model according to search parameters
         Args:
             params (dict): The request params.
         Returns:
@@ -2101,7 +2101,7 @@ def import_ioc_with_approval(client: Client, import_type, import_value, confiden
                           f'The ID of imported job is: {imported_id}.\n The identifier for the job on ThreatStream is: {job_id}.'
         return CommandResults(
             outputs_prefix=f'{THREAT_STREAM}.Import',
-            outputs_key_field='JobId',
+            outputs_key_field='ImportID',
             outputs={'ImportID': imported_id, 'JobID': job_id},
             readable_output=readable_output,
             raw_response=res,
