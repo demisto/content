@@ -1381,3 +1381,26 @@ def test_get_audit_firewall_container_alerts(mocker):
     }
 
     assert get_audit_firewall_container_alerts(client, args).raw_response == d
+
+
+def test_get_alert_profiles_command(mocker):
+    """
+    Given:
+        - An app client object
+        - Relevant arguments
+    When:
+        - Calling 'prisma-cloud-compute-get-alert-profiles' command
+    Then:
+        -  Ensure the outputs of requesting the alert profiles equals the raw_response object which is mocked
+    """
+    from PaloAltoNetworks_PrismaCloudCompute import get_alert_profiles_command, PrismaCloudComputeClient
+    with open("test_data/get_alert_profiles.json") as f:
+        d = json.load(f)
+
+    mocker.patch.object(PrismaCloudComputeClient, 'get_alert_profiles_request', return_value=d)
+    client = PrismaCloudComputeClient(base_url=BASE_URL, verify='False', project='', auth=('test', 'test'))
+    args = {}
+
+    assert get_alert_profiles_command(client, args).raw_response == d
+
+

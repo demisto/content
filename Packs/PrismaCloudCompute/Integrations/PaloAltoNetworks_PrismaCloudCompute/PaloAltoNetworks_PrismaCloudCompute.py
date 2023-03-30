@@ -350,7 +350,7 @@ class PrismaCloudComputeClient(BaseClient):
             method="GET", url_suffix="audits/firewall/app/container", params=params
         )
 
-    def get_api_v1_alert_profiles_request(self, project):
+    def get_alert_profiles_request(self, project):
         """
         Get the alert profiles.
 
@@ -1839,7 +1839,7 @@ def get_audit_firewall_container_alerts(client: PrismaCloudComputeClient, args: 
     )
 
 
-def get_api_v1_alert_profiles_command(client, args):
+def get_alert_profiles_command(client, args):
     """
     Get the alert profiles.
 
@@ -1851,7 +1851,7 @@ def get_api_v1_alert_profiles_command(client, args):
         CommandResults: command-results object.
     """
     project = args.get("project", None)
-    response = client.get_api_v1_alert_profiles_request(project)
+    response = client.get_alert_profiles_request(project)
     return CommandResults(
         outputs_prefix='PrismaCloudCompute.AlertProfiles',
         outputs_key_field='_Id',
@@ -2050,7 +2050,7 @@ def main():
         elif requested_command == 'prisma-cloud-compute-get-audit-firewall-container-alerts':
             return_results(results=get_audit_firewall_container_alerts(client, args=demisto.args()))
         elif requested_command == "prisma-cloud-compute-get-alert-profiles": 
-            return_results(results=get_api_v1_alert_profiles_command(client=client, args=demisto.args()))
+            return_results(results=get_alert_profiles_command(client=client, args=demisto.args()))
         elif requested_command == "prisma-cloud-compute-get-settings-defender":
             return_results(results=get_api_v1_settings_defender_command)
 
