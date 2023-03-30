@@ -11,8 +11,11 @@ class IncorrectUsageError(Exception):
 
 class Client(BaseClient):
     def __init__(self, base_url, *args, **kwarg):
+        demisto_version = get_demisto_version()
+        user_agent = f"Palo Alto XSOAR/{demisto_version.get('version')}.{demisto_version.get('buildNumber')} " \
+                     f"Hatching Triage Pack/{get_pack_version()}"
+        kwarg.setdefault("headers", {})["User-Agent"] = user_agent
         super().__init__(base_url, *args, **kwarg)
-
 
 def _get_behavioral_task_id(value):
     if str(value).startswith("behavioral"):
@@ -83,6 +86,9 @@ def submit_sample(client: Client, **args) -> CommandResults:
         for i in args.get("profiles", "").split(","):
             profiles_data.append({"profile": i, "pick": "sample"})
         data["profiles"] = profiles_data
+
+    if args.get("user_tags"):
+        data["user_tags"] = argToList(args["user_tags"])
 
     if data["kind"] in ("url", "fetch"):
         data.update({"url": args.get("data")})
