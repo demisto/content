@@ -1,0 +1,12 @@
+[file:GetPrBranches.yml]
+ignore=BA124
+
+[file:JobCreator.yml]
+ignore=BA124
+
+[file:ListCreator.yml]
+ignore=BA124
+
+[file:ConfigurationSetup.yml]
+ignore=BA124
+
