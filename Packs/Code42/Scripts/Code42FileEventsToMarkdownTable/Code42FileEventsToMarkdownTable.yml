@@ -11,7 +11,7 @@ script: ''
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/python3:3.10.10.49934
+dockerimage: demisto/python3:3.10.10.51930
 dependson:
   must:
   - '|||code42-file-events-table'
