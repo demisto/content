@@ -365,7 +365,7 @@ class PrismaCloudComputeClient(BaseClient):
 
         return self._http_request('get', 'alert-profiles', headers=headers, params=params)
 
-    def get_api_v1_settings_defender_request(self):
+    def get_settings_defender_request(self):
         """
         Get the defender settings.
 
@@ -1860,7 +1860,7 @@ def get_alert_profiles_command(client, args):
     )
 
 
-def get_api_v1_settings_defender_command(client, args):
+def get_settings_defender_command(client, args):
     """
     Get the defender settings.
 
@@ -1871,7 +1871,7 @@ def get_api_v1_settings_defender_command(client, args):
     Returns:
         CommandResults: command-results object.
     """
-    response = client.get_api_v1_settings_defender_request()
+    response = client.get_settings_defender_request()
     return CommandResults(
         outputs_prefix='PrismaCloudCompute.DefenderSettings',
         outputs=format_context(response),
@@ -2052,7 +2052,7 @@ def main():
         elif requested_command == "prisma-cloud-compute-get-alert-profiles": 
             return_results(results=get_alert_profiles_command(client=client, args=demisto.args()))
         elif requested_command == "prisma-cloud-compute-get-settings-defender":
-            return_results(results=get_api_v1_settings_defender_command)
+            return_results(results=get_settings_defender_command(client=client, args=demisto.args()))
         elif requested_command == "prisma-cloud-compute-logs-defender":
             return_results(results=get_logs_defender_command(client=client, args=demisto.args()))
         elif requested_command == "prisma-cloud-compute-get-backups":

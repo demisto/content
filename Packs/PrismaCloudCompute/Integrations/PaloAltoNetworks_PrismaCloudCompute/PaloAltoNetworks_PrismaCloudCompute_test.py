@@ -1452,3 +1452,24 @@ def test_get_defender_logs_command(mocker):
 
     assert len(get_logs_defender_command(client, args).outputs.get("Logs")) == args.get('lines')
     assert get_logs_defender_command(client, args).outputs.get("Hostname") == args.get("hostname")
+
+
+def test_get_defender_settings_command(mocker):
+    """
+    Given:
+        - An app client object
+        - Relevant arguments
+    When:
+        - Calling 'prisma-cloud-compute-get-settings-defender' command
+    Then:
+        -  Ensure the outputs of requesting the defenders settings equals the raw_response object which is mocked
+    """
+    from PaloAltoNetworks_PrismaCloudCompute import get_settings_defender_command, PrismaCloudComputeClient
+    with open("test_data/defender_settings.json") as f:
+        d = json.load(f)
+
+    mocker.patch.object(PrismaCloudComputeClient, 'get_settings_defender_request', return_value=d)
+    client = PrismaCloudComputeClient(base_url=BASE_URL, verify='False', project='', auth=('test', 'test'))
+    args = {}
+
+    assert get_settings_defender_command(client, args).raw_response == d
