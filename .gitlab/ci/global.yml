@@ -233,9 +233,6 @@
         ./Tests/scripts/sdk_pylint_check.sh
       fi
     - section_end "Test Infrastructure"
-    - section_start "Create id set"
-    - *create-id-set
-    - section_end "Create id set"
     - section_start "Run Unit Testing and Lint"
     - |
       if [[ -n $FORCE_BUCKET_UPLOAD || -n $BUCKET_UPLOAD ]] && [[ "$(echo "$GCS_MARKET_BUCKET" | tr '[:upper:]' '[:lower:]')" != "marketplace-dist" ]] && [[ $CI_COMMIT_BRANCH != "master" ]]; then
