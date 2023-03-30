@@ -7,7 +7,7 @@ Open your Clearswift instance UI and follow these instructions:
 1. From the Home page, click **System** > **Monitoring & Control** > **Logs & Alarms**.
 2. Click the **Log Export** tab and select **Enable log export**.
 3. Enter the IP Address (OR Hostname) and Port number of your Syslog server. The default port is 514.
-4. Enter a Poll Interval (minutes). The recommended setting is once every 5 minutes, you can enter a value between 1 and 60 minutes.
+4. Enter a Poll Interval (minutes). The recommended setting is once every 5 minutes. You can enter a value between 1 and 60 minutes.
 5. Make a selection of the log types you want to export using the checkboxes adjacent to the list.
 
 ## Collect Events from Vendor
