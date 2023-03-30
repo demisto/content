@@ -5022,7 +5022,7 @@ def get_papi_property_by_name_command(client: Client,
                                                         group_id=group_id,
                                                         property_id=returnDict['propertyId'],
                                                         )
-        title = f'{INTEGRATION_NAME} - get papi property byname command'
+        title = f'{INTEGRATION_NAME} - get papi property by name command'
         entry_context, human_readable_ec = get_papi_property_bygroup_ec(raw_response['properties']['items'][0])
         context_entry: Dict = {
             f"{INTEGRATION_CONTEXT_NAME}.PapiProperty.Found": entry_context
@@ -5060,7 +5060,7 @@ def get_papi_property_by_id_command(client: Client,
                                                           group_id=group_id,
                                                           property_id=property_id,
                                                           )
-    title = f'{INTEGRATION_NAME} - get papi property byid command'
+    title = f'{INTEGRATION_NAME} - get papi property by id command'
     entry_context, human_readable_ec = get_papi_property_bygroup_ec(raw_response['properties']['items'][0])
     context_entry: Dict = {
         f"{INTEGRATION_CONTEXT_NAME}.PapiProperty.Found": entry_context
@@ -5094,7 +5094,7 @@ def list_papi_property_by_group_command(client: Client,
     raw_response: Dict = client.list_papi_property_bygroup(contract_id=contract_id,
                                                            group_id=group_id,
                                                            )
-    title = f'{INTEGRATION_NAME} - list papi property bygroup command'
+    title = f'{INTEGRATION_NAME} - list papi property by group command'
     entry_context = raw_response.get('properties', {}).get('items', [])
     human_readable_ec = entry_context
     context_entry: Dict = {
