@@ -406,7 +406,7 @@ class PrismaCloudComputeClient(BaseClient):
         return self._http_request('get', 'backups', headers=headers, params=params)
 
 
-    def api_v1_logs_defender_download_request(self, hostname, lines):
+    def get_logs_defender_download_request(self, hostname, lines):
         """
         Download all logs for a certain defender
 
@@ -1927,7 +1927,7 @@ def get_backups_command(client, args):
     )
 
 
-def api_v1_logs_defender_download_command(client, args):
+def get_logs_defender_download_command(client, args):
     """
     Get the defender logs download bundle.
 
@@ -1941,9 +1941,9 @@ def api_v1_logs_defender_download_command(client, args):
     hostname = str(args.get('hostname', ''))
     lines = args.get('lines', None)
 
-    response = client.api_v1_logs_defender_download_request(hostname, lines)
+    response = client.get_logs_defender_download_request(hostname, lines)
 
-    return fileResult("logs.tar.gz", response.content)
+    return fileResult("logs.tar.gz", response.get("content"))
 
 
 def main():
@@ -2058,7 +2058,7 @@ def main():
         elif requested_command == "prisma-cloud-compute-get-backups":
             return_results(results=get_backups_command(client=client, args=demisto.args()))
         elif requested_command == "prisma-cloud-compute-logs-defender-download":
-            return_results(results=api_v1_logs_defender_download_command(client=client, args=demisto.args()))
+            return_results(results=get_logs_defender_download_command(client=client, args=demisto.args()))
     # Log exceptions
     except Exception as e:
         return_error(f'Failed to execute {requested_command} command. Error: {str(e)}')

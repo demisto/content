@@ -10,7 +10,7 @@ from PaloAltoNetworks_PrismaCloudCompute import (
     get_hosts_scan_list, get_impacted_resources
 )
 
-from CommonServerPython import DemistoException
+from CommonServerPython import DemistoException, fileResult
 
 BASE_URL = 'https://test.com'
 
@@ -1473,3 +1473,32 @@ def test_get_defender_settings_command(mocker):
     args = {}
 
     assert get_settings_defender_command(client, args).raw_response == d
+
+
+def test_get_logs_defender_download_command(mocker):
+    """
+    Given:
+        - An app client object
+        - Relevant arguments
+    When:
+        - Calling 'prisma-cloud-compute-logs-defender-download' command
+    Then:
+        -  Ensure a File is returned named 'logs.tar.gz'
+    """
+    from PaloAltoNetworks_PrismaCloudCompute import get_logs_defender_download_command, PrismaCloudComputeClient
+       
+    with open("test_data/defender_logs.json") as f:
+        d = json.load(f)
+
+    mock_file_result = {
+        "File": "logs.tar.gz"
+    }
+    mocker.patch.object(PrismaCloudComputeClient, 'get_logs_defender_download_request', return_value={"content": str(d)})
+    #mocker.patch.object(CommonServerPython, "fileResult", return_value=mock_file_result )
+    client = PrismaCloudComputeClient(base_url=BASE_URL, verify='False', project='', auth=('test', 'test'))
+    args = {
+        "hostname": "test.internal",
+        "lines": 2
+    }
+    r = get_logs_defender_download_command(client, args) 
+    assert r["File"] == "logs.tar.gz"
