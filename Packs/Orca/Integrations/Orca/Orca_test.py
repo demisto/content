@@ -2,7 +2,8 @@ from datetime import datetime
 
 import pytest
 import json
-from Orca import OrcaClient, BaseClient, DEMISTO_OCCURRED_FORMAT, fetch_incidents, STEP_INIT, STEP_FETCH
+from Orca import OrcaClient, BaseClient, DEMISTO_OCCURRED_FORMAT, fetch_incidents, STEP_INIT, STEP_FETCH, \
+    set_alert_severity
 
 DUMMY_ORCA_API_DNS_NAME = "https://dummy.io/api"
 
@@ -631,7 +632,7 @@ def test_fetch_all_alerts(requests_mock, orca_client: OrcaClient) -> None:
 
 
 def test_set_alert_severity(requests_mock, orca_client: OrcaClient) -> None:
-    alert_id = "orca-1111"
+    alert_id = "orca-52"
 
     requests_mock.put(f"{DUMMY_ORCA_API_DNS_NAME}/alerts/{alert_id}/severity", json={
         "user_email": "test@test.com",
@@ -642,5 +643,8 @@ def test_set_alert_severity(requests_mock, orca_client: OrcaClient) -> None:
         }
     })
 
-    response = orca_client.set_alert_score(alert_id, 5)
-    assert response.get("alert_id", "") == alert_id
+    response = set_alert_severity(orca_client=orca_client, args={
+        "alert_id": alert_id,
+        "score": 6
+    })
+    assert response.to_context()['Contents']['alert_id'] == alert_id

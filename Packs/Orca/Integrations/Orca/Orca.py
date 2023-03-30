@@ -21,7 +21,7 @@ class OrcaClient:
     def validate_api_key(self) -> str:
         demisto.info("validate_api_key, enter")
         invalid_token_string = "Test failed because the Orca API token that was entered is invalid," \
-                                   " please provide a valid API token"
+                               " please provide a valid API token"
         try:
             response = self.client._http_request(
                 method="POST",
@@ -60,7 +60,7 @@ class OrcaClient:
         params = {}
         if alert_type:
             params = {"type": alert_type}
-        elif asset_unique_id:
+        else:
             params = {"asset_unique_id": asset_unique_id}
 
         params["limit"] = str(limit)
@@ -72,8 +72,7 @@ class OrcaClient:
                 demisto.info("bad response from Orca API")
                 return response.get("error")
 
-            alerts = response.get("data")
-            return alerts
+            return response.get("data")
         except requests.exceptions.ReadTimeout as e:
             demisto.info(f"Alerts Request ReadTimeout error: {str(e)}")
             return []
@@ -148,31 +147,17 @@ class OrcaClient:
             demisto.info(f"Assets Request ReadTimeout error: {str(e)}")
             return {}
 
-        if 'error' in response or not response:
-            return "Asset Not Found"
-
-        return response
+        return "Asset Not Found" if 'error' in response or not response else response
 
     def set_alert_score(self, alert_id: str, orca_score: float) -> Dict[str, Any]:
         demisto.debug("Set alert score.")
-
-        try:
-            response = self.client._http_request(
-                method="PUT", url_suffix=f"/alerts/{alert_id}/severity",
-                data={"orca_score": orca_score},
-                timeout=ORCA_API_TIMEOUT
-            )
-
-            if 'error' in response or not response:
-                demisto.debug(response.get("error"))
-
-            return response
-        except DemistoException:
-            demisto.debug(f"could not change alert severity {alert_id}")
-        except requests.exceptions.ReadTimeout as e:
-            demisto.debug(f"Set severity Request ReadTimeout error: {str(e)}")
-
-        return {}
+        # api returns 400 status code if the alert have same score
+        return self.client._http_request(
+            method="PUT", url_suffix=f"/alerts/{alert_id}/severity",
+            data={"orca_score": orca_score},
+            timeout=ORCA_API_TIMEOUT,
+            ok_codes=(200, 400)
+        )
 
 
 def map_orca_score_to_demisto_score(orca_score: int) -> Union[int, float]:  # pylint: disable=E1136
@@ -277,11 +262,17 @@ def set_alert_severity(orca_client: OrcaClient, args: Dict[str, Any]) -> Command
 
     response = orca_client.set_alert_score(alert_id=alert_id, orca_score=score)
 
-    context = {
-        "id": response.get("alert_id"),
-        "details": response.get("details", "").get("description"),
-        "severity": response.get("details", "").get("severity")
-    }
+    context = {}
+    if "alert_id" in response:
+        context = {
+            "id": response.get("alert_id"),
+            "details": response.get("details", {}).get("description"),
+            "severity": response.get("details", {}).get("severity")
+        }
+    if "error" in response:
+        context = {
+            "details": response.get("error")
+        }
 
     return CommandResults(
         readable_output="Alert severity changed",
