@@ -105,11 +105,19 @@ def test_search_query_command_url(mocker, client):
 def test_scan_command_url_polling_waiting(requests_mock, mocker, client):
     from CommonServerPython import ScheduledCommand
 
-    mocker.patch.object(client, "post_sample", return_value={"flow_id": "1234"})
+    mocker.patch.object(client, '_http_request', return_value={"flow_id": "1234"})
     mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported', return_value=None)
     mocker.patch("builtins.open", create=True)
 
-    response = OPSWAT_Filescan.scan_command(client, {'entry_id': 'test_entry_id'})
+    args = {
+        'entry_id': 'test_entry_id',
+        'description': 'test_file',
+        'tags': 'tag1',
+        'password': 'pass1234',
+        'is_private': True
+    }
+
+    response = OPSWAT_Filescan.scan_command(client, args)
     assert response.readable_output == 'Waiting for submission "1234" to finish...'
 
 
@@ -118,7 +126,7 @@ def test_scan_command_url_polling(mocker, client):
 
     args = {'url': 'https://www.google.com'}
     raw_response = util_load_json("test_data/scan_command_url_response.json")
-    mocker.patch.object(client, "post_sample", return_value={"flow_id": "1234"})
+    mocker.patch.object(client, '_http_request', return_value={"flow_id": "1234"})
     mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported', return_value=None)
 
     response = OPSWAT_Filescan.scan_command(client, args)
@@ -154,7 +162,8 @@ def test_scan_command_file_polling(mocker, client):
     assert response.readable_output == 'Waiting for submission "1234" to finish...'
 
     polling_args = {"flow_id": "1234", "hide_polling_output": True, "continue_to_poll": True, "url": "test.com"}
-    mocker.patch.object(client, "get_scan_result", return_value=raw_response)
+    mocker.patch.object(client, '_http_request', return_value=raw_response)
+    # mocker.patch.object(client, "get_scan_result", return_value=raw_response)
     response = OPSWAT_Filescan.scan_command(client, polling_args)
 
     assert len(response) == 3
@@ -197,3 +206,43 @@ def test_scan_command_file_polling(mocker, client):
     assert response[2].outputs['file']['name'] == "poorguy.png"
     assert response[2].outputs['file']['hash'] == "2ee79f9a52e660f2322985c72c9dffefdfb5a3c302576d61b4e629d049098cb5"
     assert response[2].outputs['file']['type'] == "other"
+
+
+def test_scan_command_file_invalid_password(mocker, client):
+    from CommonServerPython import ScheduledCommand
+
+    args = {'entry_id': 'test_entry_id'}
+    raw_response = util_load_json("test_data/scan_command_zip_invalid_pass.json")
+    mocker.patch.object(client, "post_sample", return_value={"flow_id": "1234"})
+    mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported', return_value=None)
+
+    response = OPSWAT_Filescan.scan_command(client, args)
+    assert response.readable_output == 'Waiting for submission "1234" to finish...'
+
+    polling_args = {"flow_id": "1234", "hide_polling_output": True, "continue_to_poll": True, "url": "test.com"}
+    mocker.patch.object(client, "get_scan_result", return_value=raw_response)
+
+    with pytest.raises(Exception) as e:
+        OPSWAT_Filescan.scan_command(client, polling_args)
+    assert isinstance(e.value, DemistoException)
+
+
+def test_password_validator():
+    raw_response = util_load_json("test_data/scan_command_zip_valid_pass.json")
+    is_valid = OPSWAT_Filescan.is_valid_pass(raw_response)
+    assert is_valid == True
+
+
+@pytest.mark.parametrize("report, DBotScore", [
+    ({"finalVerdict": {"verdict": "UNKNOWN", }}, 0),
+    ({"finalVerdict": {"verdict": "BENIGN", }}, 1),
+    ({"finalVerdict": {"verdict": "INFORMATIONAL", }}, 1),
+    ({"finalVerdict": {"verdict": "MALICIOUS", }}, 3),
+    ({"finalVerdict": {"verdict": "LIKELY_MALICIOUS", }}, 3),
+    ({"finalVerdict": {"verdict": "SUSPICIOUS", }}, 2),
+    ({"finalVerdict": {"verdict": "SOME_FANCY", }}, 0)
+])
+def test_build_one_reputation_result(report, DBotScore):
+    reputation_result = OPSWAT_Filescan.build_one_reputation_result(report)
+    score = reputation_result.indicator.dbot_score.score
+    assert score == DBotScore
