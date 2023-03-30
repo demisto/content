@@ -1,0 +1,9 @@
+[file:SecuronixGetViolations.yml]
+ignore=BA124
+
+[file:SecuronixCloseHistoricalXSOARIncidents.yml]
+ignore=BA124
+
+[file:UpdateSecuronixIncidentStatus.yml]
+ignore=BA124
+
