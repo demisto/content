@@ -1003,7 +1003,7 @@ script:
         unknown, activated, deactivated, secured, lowSeverity, mediumSeverity, highSeverity,
         unresponsive, compromised, misconfigured.
       type: string
-  dockerimage: demisto/crypto:1.0.0.51761
+  dockerimage: demisto/crypto:1.0.0.52480
   runonce: false
   script: ''
   subtype: python3

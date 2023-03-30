@@ -631,7 +631,7 @@ script:
       description: Resource group tags.
       type: String
 
-  dockerimage: demisto/crypto:1.0.0.51761
+  dockerimage: demisto/crypto:1.0.0.52480
   feed: false
   isfetch: false
   longRunning: false
