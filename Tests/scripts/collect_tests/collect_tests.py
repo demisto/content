@@ -61,6 +61,7 @@ class CollectionReason(str, Enum):
     MODELING_RULE_NIGHTLY = 'nightly testing of modeling rules'
     DUMMY_OBJECT_FOR_COMBINING = 'creating an empty object, to combine two CollectionResult objects'
     XSIAM_COMPONENT_CHANGED = 'xsiam component was changed'
+    README_FILE_CHANGED = 'readme file was changed'
 
 
 REASONS_ALLOWING_NO_ID_SET_OR_CONF = {
@@ -525,6 +526,9 @@ class TestCollector(ABC):
                     not allow_incompatible_marketplace:
                 collect_only_to_upload = True
 
+            if reason == CollectionReason.README_FILE_CHANGED:
+                collect_only_to_upload = True
+
             # sometimes, we want to install or upload packs that are not compatible (e.g. pack belongs to both marketplaces)
             # because they have content that IS compatible.
             # But still need to avoid collecting packs that belongs to one marketplace when collecting to the other marketplace.
@@ -964,6 +968,15 @@ class BranchTestCollector(TestCollector):
                     reason_description=reason_description,
                     content_item_range=content_item.version_range if content_item else None
                 )
+
+        if file_type in ONLY_UPLOAD_PACK_FILE_TYPES:
+            return self._collect_pack(
+                pack_id=pack_id,
+                reason=CollectionReason.README_FILE_CHANGED,
+                reason_description=reason_description,
+                content_item_range=content_item.version_range if content_item else None
+            )
+
         if content_item:
             try:
                 '''
@@ -1008,10 +1021,6 @@ class BranchTestCollector(TestCollector):
         elif file_type is None:
             raise NothingToCollectException(path, 'unknown file type')
 
-        elif file_type == FileType.README:
-            only_to_upload = True
-            content_item = ContentItem(path)
-
         else:
             raise ValueError(path, f'unexpected content type {file_type} - please update collect_tests.py')
 
@@ -1029,7 +1038,6 @@ class BranchTestCollector(TestCollector):
                 conf=self.conf,
                 id_set=self.id_set,
                 is_nightly=False,
-                only_to_upload=only_to_upload
             )
             for test in tests)
         )
