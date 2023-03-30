@@ -142,8 +142,11 @@ class OCIEventHandler:
     def get_events(self, max_events: Optional[int] = None) -> List[Dict[str, Any]]:
         """
         Get events from CIO client.
-        This method eagerly loads all audit records in the time range and it does
-        have performance implications of lot of audit records.
+        - This method loads all audit events in the time range and it does
+          have performance implications of lot of audit events.
+        - The list_events function will return a maximum of 100 events per call,
+          in order to get more events this function is wrapped with the list_call_get_all_results function,
+          which will get all the events in a certain time range and than slice the events according to the desired amount of events.
         Args:
             prev_id (int): The id of the last event we got from the last run.
             alert_status (str): status of the alert to search for. Options are: 'ACTIVE' or 'CLOSED'.
@@ -158,39 +161,56 @@ class OCIEventHandler:
                 start_time=self.first_fetch_time,
                 end_time=datetime.now())
 
-            self.last_event_time = self.get_last_event_time(response.data)
-            event_list = json.loads(str(response.data[:max_events])) if max_events \
+            events = json.loads(str(response.data[:max_events])) if max_events \
                 else json.loads(str(response.data[:self.max_fetch]))
+
+            self.last_event_time = self.get_last_event_time(events)
+            events = self.add_time_key_to_events(events)
 
         except Exception as e:
             raise DemistoException(f'Error while fetching events: {e}') from e
 
-        demisto.debug(f'{len(event_list)} Events fetched from start time: {self.first_fetch_time}.')
-        return event_list
-
-    def remove_duplicates(self):
-        ...
+        demisto.debug(f'{len(events)} Events fetched from start time: {self.first_fetch_time}.')
+        return events
 
     def get_last_event_time(self, events: List) -> str:
         """Get the last event time from the events list for next fetch cycle.
         - Given a non empty list of events,
-          the function will return the time of the last event (most recent) + 1 microseconds.
+          the function will return the time of the last event (most recent event) + 1 microseconds.
         - If the event list is empty, the function will return the current first fetch time.
 
         Args:
-            events (List[Dict[str, Any]]): list of events.
+            events (List[AuditEvent]): list of events.
 
         Returns:
             str: last event time for next fetch cycle in string format.
         """
+        # if no events were fetched, return the current first fetch time.
         if not events:
             return str(self.first_fetch_time)
 
-        last_event_time = events[-1].event_time
+        # get the event time of last event in the list (will always be the most recent event)
+        last_event_time = events[-1].get('event_time')
         if not isinstance(last_event_time, datetime):
             last_event_time = arg_to_datetime(arg=last_event_time)
 
-        return str(last_event_time + timedelta(microseconds=1)) if last_event_time else ''
+        # return the last event time + 1 microsecond, or the current first fetch time if the last event time is None.
+        return str(last_event_time + timedelta(microseconds=1)) if last_event_time \
+            else str(self.first_fetch_time)
+
+    def add_time_key_to_events(self, events: List[Dict[str, Any]]) -> List:
+        """
+        Add the _time key to the events.
+        Args:
+            events (List[Dict[str, Any]]): The events to add the time key to.
+        Returns:
+            List[Dict[str, Any]]: The events with the _time key.
+        """
+        for event in events:
+            if event.get("event_time"):
+                event["_time"] = event.get("event_time")
+
+        return events
 
 
 def test_module(client: Client, oci_event_handler: OCIEventHandler) -> str:
@@ -223,22 +243,22 @@ def calculate_first_fetch_time(last_run: Optional[str], first_fetch_param: str) 
 
     Args:
         last_run (Optional[str]): Last run time from previous fetch.
-        first_fetch_param (str): First fetch time integration parameter.
+        first_fetch_param (str): First Fetch Time integration parameter.
 
     Returns:
         Optional[datetime]: Maximum datetime value between last run from previous fetch and first fetch time parameter.
     """
-    first_fetch_arg_datetime = arg_to_datetime(arg=first_fetch_param)
+    first_fetch_param_datetime = arg_to_datetime(arg=first_fetch_param)
 
     # if last_run is None (first time we are fetching) -> return first_fetch_arg datetime object
     if not last_run:
-        return first_fetch_arg_datetime
+        return first_fetch_param_datetime
     else:
-        last_run_datetime = arg_to_datetime(arg=last_run)
+        last_run_datetime = arg_to_datetime(arg=last_run, settings={'RETURN_AS_TIMEZONE_AWARE': False})
 
     # if last_run is not None -> return max(last_run, first_fetch_arg)
-    if last_run_datetime and first_fetch_arg_datetime:
-        return max(last_run_datetime, first_fetch_arg_datetime)
+    if last_run_datetime and first_fetch_param_datetime:
+        return max(last_run_datetime, first_fetch_param_datetime)
     else:  # return default first fetch time datetime object
         return arg_to_datetime(arg=FETCH_DEFAULT_TIME)
 
@@ -255,9 +275,10 @@ def main():
     args = demisto.args()
     command = demisto.command()
     last_run = demisto.getLastRun()
+    last_run_time = last_run.get('lastRun')
     max_fetch = arg_to_number(params.get('max_fetch')) or MAX_EVENTS_TO_FETCH
     first_fetch = params.get('first_fetch') or FETCH_DEFAULT_TIME
-    first_fetch_time = calculate_first_fetch_time(last_run=last_run.get('last_run'), first_fetch_param=first_fetch)
+    first_fetch_time = calculate_first_fetch_time(last_run=last_run_time, first_fetch_param=first_fetch)
     demisto.debug(f'Command being called is {command}')
 
     try:
@@ -289,7 +310,7 @@ def main():
                 if events:
                     last_event_time = oci_event_handler.last_event_time
                     demisto.debug(f'Set last run to {last_event_time}')
-                    demisto.setLastRun({"last_run": {last_event_time}})
+                    demisto.setLastRun({"lastRun": {last_event_time}})
                 else:
                     demisto.debug('No new events fetched, Last run was not updated.')
 

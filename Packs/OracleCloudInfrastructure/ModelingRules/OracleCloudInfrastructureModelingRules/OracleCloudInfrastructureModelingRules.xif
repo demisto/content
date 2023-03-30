@@ -3,7 +3,6 @@
 alter xdm.source.agent.content_version = to_string(cloud_events_version),
     xdm.network.http.content_type = to_string(content_type),
     xdm.event.id = to_string(event_id),
-    _time = parse_timestamp("%FT%H:%M:%E*S%Ez" ,event_time),
     xdm.event.type = to_string(event_type),
     xdm.source.application.version = to_string(event_type_version),
     xdm.event.description = json_extract(data, "$.additional_details"),
