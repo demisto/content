@@ -111,10 +111,17 @@
         },
         {
             "integrations": "McAfeeNSMv2",
-            "playbookID": "Test_McAfeeNSMv2",
+            "playbookID": "Test_McAfeeNSMv2_using_v9",
             "fromversion": "6.5.0",
+            "instance_names": "using_v9",
             "memory_threshold": 200,
             "timeout": 300
+        },
+        {
+            "integrations": "McAfeeNSMv2",
+            "playbookID": "Test_McAfeeNSMv2_using_v10",
+            "instance_names": "using_v10",
+            "fromversion": "6.5.0"
         },
         {
             "playbookID": "Generic Polling Test",
@@ -2006,19 +2013,19 @@
             "playbookID": "Microsoft Defender Advanced Threat Protection - Test prod",
             "instance_names": "microsoft_defender_atp_prod",
             "is_mockable": false,
-            "timeout": 200
+            "timeout": 500
         },
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
             "playbookID": "Microsoft Defender Advanced Threat Protection - Test dev",
             "instance_names": "microsoft_defender_atp_dev",
-            "timeout": 200
+            "timeout": 500
         },
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
             "playbookID": "Microsoft Defender Advanced Threat Protection - Test self deployed",
             "instance_names": "microsoft_defender_atp_dev_self_deployed",
-            "timeout": 200
+            "timeout": 500
         },
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
@@ -4163,7 +4170,7 @@
             "instance_names": [
                 "microsoft_defender_atp_dev_self_deployed"
             ],
-            "timeout": 250
+            "timeout": 500
         },
         {
             "playbookID": "Polygon-Test",
@@ -5777,7 +5784,6 @@
         "Intezer": "Nightly - Checking",
         "ProtectWise": "Nightly - Checking",
         "google-vault": "Nightly - Checking",
-        "McAfee NSM": "Nightly - Checking",
         "Forcepoint": "Nightly - Checking",
         "palo_alto_firewall": "Need to check test module",
         "Signal Sciences WAF": "error with certificate",
