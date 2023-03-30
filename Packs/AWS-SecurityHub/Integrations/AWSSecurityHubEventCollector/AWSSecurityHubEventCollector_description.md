@@ -1,6 +1,6 @@
 For detailed instructions about setting up authentication, see: [AWS Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/aws-integrations---authentication).
 
-#### Configure the AWS Security Hub Integration on Cortex XSOAR
+#### Configure the AWS Security Hub Integration on Cortex XSIAM
 - Role Arn: The Amazon Resource Name (ARN) role used for EC2 instance authentication. If this is used, an access key and secret key are not required. (such as: arn:aws:iam::<account-no>:role/xsoar-IAM.integration-Role).
 - Role Session Name: A descriptive name for the assumed role session. For example, xsiam-IAM.integration-Role_SESSION.
 - Role Session Duration: The maximum length of each session in seconds. Default: 900 seconds. The integration will have the permissions assigned only when the session is initiated and for the defined duration.
