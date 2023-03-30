@@ -171,8 +171,8 @@ def handle_filters(found_date_from=None):
 
 def get_alerts_helper(params):
     demisto.info("Executing get_alerts with params: {}".format(params))
-    response = http_request('GET', 'public/v1/data/alerts/alerts-list', params=params, json_response=True)
-
+    # response = http_request('GET', 'public/v1/data/alerts/alerts-list', params=params, json_response=True)
+    response = demisto.mock_http_req()
     alerts_human_readable = []
     alerts_context = []
     for alert_id in response:
@@ -900,7 +900,8 @@ def fetch_incidents():
     last_run = demisto.getLastRun()
     demisto.info("IntSight fetch last run time is: {}".format(str(last_run)))
     if not last_run or 'time' not in last_run:
-        fetch_delta, _ = parse_date_range(demisto.params().get('fetch_delta', DEFAULT_TIME_RANGE), to_timestamp=True)
+        fetch_delta = int(dateparser.parse(demisto.params().get('first_fetch', DEFAULT_TIME_RANGE)
+                                           , settings={'TO_TIMEZONE': 'UTC'}).timestamp() * 1000)
     else:
         fetch_delta = last_run.get('time')
 
