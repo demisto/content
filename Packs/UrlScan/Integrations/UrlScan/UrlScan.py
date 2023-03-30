@@ -343,6 +343,8 @@ def format_results(client, uuid, use_url_as_name):
 
     feed_related_indicators = []
 
+    cont['ResultPage'] = client.base_url + 'result/{}'.format(uuid)
+
     LIMIT = int(demisto.args().get('limit', 20))
     if 'certificates' in scan_lists:
         cert_md = []
@@ -672,8 +674,6 @@ def urlscan_search_command(client):
             continue
 
         human_readable = makehash()
-
-        cont['ResultPage'] = client.base_url + 'result/{}'.format(uuid)
 
         if 'url' in res_tasks:
             url = res_tasks['url']
