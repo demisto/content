@@ -328,7 +328,7 @@ def fetch_events_cmd(client) -> None:
 
     parsed_events: List[Dict[str, Any]] = []
 
-    demisto.info(f"Attempting to add parsing rules to event...")
+    demisto.info("Attempting to add parsing rules to event...")
     for event in detections + audits:
         parsed_events.append(add_parsing_rules(event))
     demisto.info("Finished adding parsing rules.")
@@ -499,7 +499,7 @@ def main() -> None:  # pragma: no cover
 
                     parsed_events: List[Dict[str, Any]] = []
 
-                    demisto.info(f"Attempting to add parsing rules to event...")
+                    demisto.info("Attempting to add parsing rules to event...")
                     for event in detections_cmd_res.outputs + audits_cmd_res.outputs:  # type: ignore
                         parsed_events.append(add_parsing_rules(event))
                     demisto.info("Finished adding parsing rules.")
