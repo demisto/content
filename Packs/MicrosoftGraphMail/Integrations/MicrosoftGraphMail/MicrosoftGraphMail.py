@@ -2171,5 +2171,4 @@ def main():
 from MicrosoftApiModule import *  # noqa: E402
 
 if __name__ in ["builtins", "__main__"]:
-    main()
-
+    main() # test
