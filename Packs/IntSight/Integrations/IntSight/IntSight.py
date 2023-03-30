@@ -178,6 +178,7 @@ def get_alerts_helper(params):
         alert_human_readable, alert_context = get_alert_by_id_helper(alert_id)
         alerts_human_readable.append(alert_human_readable)
         alerts_context.append(alert_context)
+    demisto.debug(f'{len(alerts_context)=} before filtering')
     return alerts_human_readable, alerts_context
 
 
@@ -901,6 +902,8 @@ def fetch_incidents():
     if not last_run or 'time' not in last_run:
         fetch_delta = int(dateparser.parse(demisto.params().get('first_fetch', DEFAULT_TIME_RANGE)
                                            , settings={'TO_TIMEZONE': 'UTC'}).timestamp() * 1000)
+        demisto.debug(f'First fetch, using {fetch_delta=}')
+
     else:
         fetch_delta = last_run.get('time')
 
@@ -910,6 +913,7 @@ def fetch_incidents():
     if min_severity_level not in SEVERITY_LEVEL:
         raise Exception("Minimum Alert severity level to fetch incidents incidents from, allowed values are: All,"
                         " Low, Medium, High. (Setting to All will fetch all incidents)")
+    demisto.debug(f'{min_severity_level=}')
 
     _, alerts_context = get_alerts_helper(handle_filters(fetch_delta))
     incidents = []
@@ -925,7 +929,11 @@ def fetch_incidents():
                 alert_timestamp = date_to_timestamp(alert.get('FoundDate'), date_format='%Y-%m-%dT%H:%M:%S.%fZ')
                 if alert_timestamp > current_fetch:
                     current_fetch = alert_timestamp
-
+            else:
+                demisto.debug(f'dropping incident with id {alert.get("ID")} because of alert_type filter')
+        else:
+            demisto.debug(f'dropping incident with id {alert.get("ID")} because of severity filter')
+    demisto.debug(f'returning {len(incidents)} incidents')
     demisto.incidents(incidents)
     demisto.setLastRun({'time': current_fetch + 1000})
 
