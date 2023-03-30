@@ -536,7 +536,8 @@ class FeedIndicatorType(object):
             FeedIndicatorType.MUTEX,
             FeedIndicatorType.Malware,
             FeedIndicatorType.Identity,
-            FeedIndicatorType.Location
+            FeedIndicatorType.Location,
+            FeedIndicatorType.Software
         )
 
     @staticmethod
