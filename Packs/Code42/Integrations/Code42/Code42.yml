@@ -1013,7 +1013,7 @@ script:
       - all
       - incident
       - searches
-  dockerimage: demisto/py42:1.0.0.50498
+  dockerimage: demisto/py42:1.0.0.52352
   feed: false
   isfetch: true
   longRunning: false
