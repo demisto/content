@@ -4518,7 +4518,7 @@ script:
       description: A list of keywords associated with the rule.
       type: String
     - contextPath: ThreatStream.Rule.match_actors
-      description: Unused according to ThreatStream API documentation.
+      description: Whether the rule matches keywords in newly created actors.
       type: Boolean
     - contextPath: ThreatStream.Rule.match_all_tm
       description: Whether or not the rule should match against all threat models.
@@ -4527,7 +4527,7 @@ script:
       description: Whether the rule matches keywords in newly created Attack Patterns.
       type: Boolean
     - contextPath: ThreatStream.Rule.match_campaigns
-      description: Unused according to ThreatStream API documentation.
+      description: Whether the rule matches keywords in newly created campaigns.
       type: Boolean
     - contextPath: ThreatStream.Rule.match_courseofactions
       description: Whether the rule matches keywords in newly created Course of Action.
@@ -4539,7 +4539,7 @@ script:
       description: Whether the rule matches keywords in newly created Identities.
       type: Boolean
     - contextPath: ThreatStream.Rule.match_incidents
-      description: Unused according to ThreatStream API documentation.
+      description: Whether the rule matches keywords in newly created incidents.
       type: Boolean
     - contextPath: ThreatStream.Rule.match_infrastructures
       description: Whether the rule matches keywords in newly created infrastructures.
@@ -4548,7 +4548,7 @@ script:
       description: Whether the rule matches keywords in newly created intrusion sets.
       type: Boolean
     - contextPath: ThreatStream.Rule.match_malware
-      description: Unused according to ThreatStream API documentation.
+      description: Whether the rule matches keywords in newly created malware.
       type: Boolean
     - contextPath: ThreatStream.Rule.match_observables
       description: Whether the rule matches keywords in newly created Observables.
@@ -4566,7 +4566,7 @@ script:
       description: Whether the rule should match keywords in newly created Tools.
       type: Boolean
     - contextPath: ThreatStream.Rule.match_ttps
-      description: Unused according to ThreatStream API documentation.
+      description: Whether the rule should match keywords in newly created ttps.
       type: Boolean
     - contextPath: ThreatStream.Rule.match_vulnerabilities
       description: Whether the rule matches keywords in newly created vulnerabilities.
@@ -4593,7 +4593,7 @@ script:
       description: ID associated with the organization that created the rule.
       type: Number
     - contextPath: ThreatStream.Rule.org_shared
-      description: Unused according to ThreatStream API documentation.
+      description: Whether a rule is shared across an organization or not
       type: Boolean
     - contextPath: ThreatStream.Rule.organization.id
       description: ID associated with the organization that created the rule.
@@ -4650,7 +4650,7 @@ script:
       description: User ID of the user that created the rule.
       type: Number
     - contextPath: ThreatStream.Rule.workgroups
-      description: Unused according to ThreatStream API.
+      description: Assigned workgroups.
       type: Unknown
     - contextPath: ThreatStream.Rule.actors.id
       description: Actor's ID associated with the rule.
@@ -4746,7 +4746,7 @@ script:
       description: List of users associated with the investigation created by the rule.
       type: Unknown
     - contextPath: ThreatStream.Rule.investigation.workgroups
-      description: Not used according to ThreatStream API documentation.
+      description: Assigned workgroups.
       type: Unknown
     - contextPath: ThreatStream.Rule.malware.id
       description: ID of the malware that associate to the rule.
@@ -4804,7 +4804,7 @@ script:
       type: String
   - arguments:
     - default: false
-      description: Name of the rule.
+      description: The name of the rule.
       isArray: false
       name: rule_name
       required: true
@@ -4816,7 +4816,7 @@ script:
       required: true
       secret: false
     - default: false
-      description: "A comma-separated list of fields you want the rule match to their keywords. Possible values: observables, sandbox reports, threat bulletins, signatures, vulnerabilities"
+      description: "A comma-separated list of fields you want the rule match to their keywords. Possible values: observables, sandbox reports, threat bulletins, signatures, vulnerabilities."
       isArray: true
       name: match_include
       required: true
@@ -4857,13 +4857,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A comma-separated list of indicator types you want to exclude from rule matches. Example: actor_ipv6'
+      description: 'A comma-separated list of indicator types you want to exclude from rule matches. Example: actor_ipv6.'
       isArray: true
       name: exclude_indicator
       required: false
       secret: false
     - default: false
-      description: 'A comma-separated list of indicator types you want to include from rule matches. Example: actor_ipv6'
+      description: 'A comma-separated list of indicator types you want to include from rule matches. Example: actor_ipv6.'
       isArray: true
       name: include_indicator
       required: false
@@ -5058,7 +5058,7 @@ script:
       description: List of users associated with the investigation created by the rule.
       type: Unknown
     - contextPath: ThreatStream.Rule.investigation.workgroups
-      description: Not used according to ThreatStream API documentation
+      description: Assigned workgroups.
       type: Unknown
     - contextPath: ThreatStream.Rule.is_editable
       description: Indicates whether the imported rule can be updated by an intelligence source.
@@ -5082,7 +5082,7 @@ script:
       description: Resource URI of the malware that associate to the rule.
       type: String
     - contextPath: ThreatStream.Rule.match_actors
-      description: Unused according to ThreatStream API documentation.
+      description: Whether the rule matches keywords in newly created Actors.
       type: Boolean
     - contextPath: ThreatStream.Rule.match_all_tm
       description: Whether or not the rule should match against all threat models.
@@ -5091,7 +5091,7 @@ script:
       description: Whether the rule matches keywords in newly created Attack Patterns.
       type: Boolean
     - contextPath: ThreatStream.Rule.match_campaigns
-      description: Unused according to ThreatStream API documentation.
+      description: Whether the rule matches keywords in newly created Campaigns.
       type: Boolean
     - contextPath: ThreatStream.Rule.match_courseofactions
       description: Whether the rule matches keywords in newly created Course of Action.
@@ -5106,7 +5106,7 @@ script:
       description: Indicator types in which you want to look for rule matches at the exclusion of all others.
       type: String
     - contextPath: ThreatStream.Rule.match_incidents
-      description: Unused according to ThreatStream API documentation.
+      description: Whether the rule matches keywords in newly created incident.
       type: Boolean
     - contextPath: ThreatStream.Rule.match_infrastructures
       description: Whether the rule matches keywords in newly created infrastructures.
@@ -5115,7 +5115,7 @@ script:
       description: Whether the rule matches keywords in newly created Intrusion Sets.
       type: Boolean
     - contextPath: ThreatStream.Rule.match_malware
-      description: Unused according to ThreatStream API documentation.
+      description: Whether the rule matches keywords in newly created malware.
       type: Boolean
     - contextPath: ThreatStream.Rule.match_observables
       description: Whether the rule matches keywords in newly created Observables.
@@ -5133,7 +5133,7 @@ script:
       description: Whether the rule should match keywords in newly created Tools.
       type: Boolean
     - contextPath: ThreatStream.Rule.match_ttps
-      description: Unused according to ThreatStream API documentation.
+      description: Whether the rule should match keywords in newly created ttps.
       type: Boolean
     - contextPath: ThreatStream.Rule.match_vulnerabilities
       description: Whether the rule should match keywords in newly created vulnerabilities.
@@ -5160,7 +5160,7 @@ script:
       description: ID associated with the organization that created the rule.
       type: Number
     - contextPath: ThreatStream.Rule.org_shared
-      description: Unused according to ThreatStream API documentation.
+      description: Whether a rule is shared across an organization or not.
       type: Boolean
     - contextPath: ThreatStream.Rule.organization.id
       description: ID associated with the organization that created the rule.
@@ -5259,7 +5259,7 @@ script:
       description: ID of the vulnerability with which to associate matched entities.
       type: String
     - contextPath: ThreatStream.Rule.workgroups
-      description: Not used according to ThreatStream API documentation.
+      description: Assigned workgroups.
       type: Unknown
   - arguments:
     - default: false
@@ -5524,7 +5524,7 @@ script:
       description: List of users associated with the investigation created by the rule.
       type: Unknown
     - contextPath: ThreatStream.Rule.investigation.workgroups
-      description: Not used according to ThreatStream API documentation.
+      description: Assigned workgroups.
       type: Unknown
     - contextPath: ThreatStream.Rule.is_editable
       description: Indicates whether the imported entity can be updated by an intelligence source.
@@ -5548,7 +5548,7 @@ script:
       description: Resource URI of the malware that associate to the rule.
       type: String
     - contextPath: ThreatStream.Rule.match_actors
-      description: Unused according to ThreatStream API documentation.
+      description: Whether the rule matches keywords in newly created Actors.
       type: Boolean
     - contextPath: ThreatStream.Rule.match_all_tm
       description: Whether or not the rule should match against all threat models.
@@ -5557,7 +5557,7 @@ script:
       description: Whether the rule matches keywords in newly created Attack Patterns.
       type: Boolean
     - contextPath: ThreatStream.Rule.match_campaigns
-      description: Unused according to ThreatStream API documentation.
+      description: Whether the rule matches keywords in newly created Campaigns.
       type: Boolean
     - contextPath: ThreatStream.Rule.match_courseofactions
       description: Whether the rule matches keywords in newly created Course of Action.
@@ -5572,7 +5572,7 @@ script:
       description: Indicator types in which you want to look for rule matches at the exclusion of all others.
       type: String
     - contextPath: ThreatStream.Rule.match_incidents
-      description: Unused according to ThreatStream API documentation.
+      description: Whether the rule matches keywords in newly created incidents.
       type: Boolean
     - contextPath: ThreatStream.Rule.match_infrastructures
       description: Whether the rule matches keywords in newly created infrastructures.
@@ -5581,7 +5581,7 @@ script:
       description: Whether the rule matches keywords in newly created Intrusion Sets.
       type: Boolean
     - contextPath: ThreatStream.Rule.match_malware
-      description: Unused according to ThreatStream API documentation.
+      description: Whether the rule matches keywords in newly created malware.
       type: Boolean
     - contextPath: ThreatStream.Rule.match_observables
       description: Whether the rule matches keywords in newly created Observables.
@@ -5599,7 +5599,7 @@ script:
       description: Whether the rule should match keywords in newly created Tools.
       type: Boolean
     - contextPath: ThreatStream.Rule.match_ttps
-      description: Unused according to ThreatStream API documentation.
+      description: Whether the rule should match keywords in newly created ttps.
       type: Boolean
     - contextPath: ThreatStream.Rule.match_vulnerabilities
       description: Whether the rule should match keywords in newly created vulnerabilities.
@@ -5626,7 +5626,7 @@ script:
       description: ID associated with the organization that created the rule.
       type: Number
     - contextPath: ThreatStream.Rule.org_shared
-      description: Unused according to ThreatStream API documentation.
+      description: Whether a rule is shared across an organization or not.
       type: Boolean
     - contextPath: ThreatStream.Rule.organization.id
       description: ID associated with the organization that created the rule.
@@ -5725,7 +5725,7 @@ script:
       description: Resource URI of the vulnerability with which to associate matched entities.
       type: String
     - contextPath: ThreatStream.Rule.workgroups
-      description: Not used according to ThreatStream API documentation.
+      description: Assigned workgroups.
       type: Unknown
   - arguments:
     - default: false
@@ -5996,7 +5996,7 @@ script:
       description: List of users associated with the investigation.
       type: Unknown
     - contextPath: ThreatStream.Investigation.workgroups
-      description: Not used according to ThreatStream API documentation.
+      description: Assigned workgroups.
       type: Unknown
   - arguments:
     - default: false
@@ -6259,7 +6259,7 @@ script:
       description: UUID assigned to the entity.
       type: String
     - contextPath: ThreatStream.Investigation.elements.entity.workgroups
-      description: Not used according to ThreatStream API documentation
+      description: Assigned workgroups.
       type: Unknown
     - contextPath: ThreatStream.Investigation.elements.id
       description: Unique ID assigned to the entity.
@@ -6481,7 +6481,7 @@ script:
       description: List of users associated with the investigation.
       type: Unknown
     - contextPath: ThreatStream.Investigation.workgroups
-      description: Not used according to ThreatStream API documentation
+      description: Assigned workgroups.
       type: Unknown
   - arguments:
     - default: false
@@ -6807,17 +6807,11 @@ script:
       description: Value of the entry.
       type: String
     - contextPath: ThreatStream.WhitelistEntry.objects.value_type
-      description: |-
-        The value of the file to import. file valid structure is : value_type,value,notes
-        The entries must be contained in a valid CSV file with the following header line: value_type,value,notes.
-        value_type must be specified for each entry, possible types include domain,email, ip, md5, url, user-agent, and cidr.
-        value must be specified for each entry. Values must be valid entries based on the specified type. For example, if you specify ip for type, the corresponding value must be a valid IP address.
-        notes is optional for each entry.
-        All text in the CSV file must be lower-cased.
+      description: Value type the entry.
       type: String
   - arguments:
     - default: false
-      description: 'The value of the file to import. file valid structure is : value_type,value,notes'
+      description: The entry id of the file you want to upload.
       isArray: false
       name: entry_id
       required: false
@@ -6874,7 +6868,7 @@ script:
     name: threatstream-create-whitelist-entry
   - arguments:
     - default: false
-      description: The ID of the entry you want to update. Use the threatstream-list-whitelist-entry command to get the entry id value.
+      description: The ID of the entry you want to update.
       isArray: false
       name: entry_id
       required: true
@@ -7067,7 +7061,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'The name of the threat model'
+      description: 'The name of the threat model.'
       isArray: false
       name: name
       required: false
@@ -7079,7 +7073,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'Other names by which the actors are known.'
+      description: 'Other names by which the entitiy are known.'
       isArray: false
       name: alias
       required: false
@@ -7091,7 +7085,7 @@ script:
       required: false
       secret: false
     - auto: PREDEFINED
-      description: 'Whether the threat bulletin was created as a result of an email import.'
+      description: 'Whether the entitiy was created as a result of an email import.'
       isArray: false
       name: is_email
       predefined:
@@ -7101,7 +7095,7 @@ script:
       secret: false
       default: false
     - auto: PREDEFINED
-      description: 'Whether the entity is public or private. True—if the Campaign is public, False—if the Campaign is private or belongs to a Trusted Circle'
+      description: 'Whether the entity is public or private. True—if the entitiy is public, False—if the entitiy is private or belongs to a Trusted Circle'
       isArray: false
       name: is_public
       predefined:
@@ -7111,7 +7105,7 @@ script:
       secret: false
       default: false
     - default: false
-      description: 'A comma-separated list of publication status. Supported values are: new, pending_review, review_requested, reviewed, published statuses.'
+      description: 'A comma-separated list of publication status. Supported values are: new, pending_review, review_requested, reviewed.'
       isArray: true
       name: publication_status
       required: false
@@ -7123,7 +7117,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: 'A comma-spareated list of Additional comments and context associated with the observable when it was imported from its original threat feed'
+      description: 'A comma-spareated list of Additional comments and context associated with the entitiy when it was imported from its original threat feed.'
       isArray: true
       name: tags
       required: false
@@ -7131,7 +7125,7 @@ script:
     - default: false
       description: Used for querying entities associated with specified trusted circles.
       isArray: false
-      name: trusted_circle_ids
+      name: trusted_circle_id
       required: false
       secret: false
     - default: false
@@ -7168,7 +7162,7 @@ script:
       description: Numeric ID of the threat feed that provided the Threat Model entity.
       type: Number
     - contextPath: ThreatStream.ThreatModel.workgroups
-      description: Unused according to ThreatStream API documentation.
+      description: Workgroups to which the threat model is visible.
       type: Unknown
     - contextPath: ThreatStream.ThreatModel.aliases
       description: Other names by which the actors are known.
@@ -7186,19 +7180,16 @@ script:
       description: Time stamp of when the entity was last updated by its original source.
       type: Date
     - contextPath: ThreatStream.ThreatModel.type
-      description: 'The Threat Model type'
+      description: The Threat Model type.
       type: String
     - contextPath: ThreatStream.ThreatModel.start_date
-      description: 'Time when a Threat Model was known to have started.'
+      description: Time when a Threat Model was known to have started.
       type: Unknown
-    - contextPath: ThreatStream.ThreatModel.sort
-      description: 'Not used according to ThreatStream API documentation.'
-      type: String
     - contextPath: ThreatStream.ThreatModel.publication_status
       description: An actor can be in new, pending_review, review_requested, reviewed, published statuses.
       type: String
     - contextPath: ThreatStream.ThreatModel.end_date
-      description: 'Time when a Threat Model was known to have ended.'
+      description: Time when a Threat Model was known to have ended.
       type: Unknown
     - contextPath: ThreatStream.ThreatModel.tags.id
       description: The id of the tag assigned to the actor.
@@ -7294,7 +7285,7 @@ script:
     execution: false
     description: "Creates associations between threat model entities on the ThreatStream platform"
     name: threatstream-add-threat-model-association
-  dockerimage: demisto/py3-tools:1.0.0.51296
+  dockerimage: demisto/py3-tools:1.0.0.52351
   feed: false
   isfetch: false
   longRunning: false

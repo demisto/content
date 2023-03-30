@@ -208,9 +208,12 @@ class Client(BaseClient):
         # Handle error responses gracefully
         command = demisto.command()
         if res.status_code == 401:
+            if command == 'threatstream-add-threat-model-association':
+                raise DemistoException(f'{THREAT_STREAM} - Got unauthorized from the server.'
+                                       'Make sure that the threat models belongs to your organization.')
             if command == 'threatstream-list-import-job':
                 raise DemistoException(f'{THREAT_STREAM} - Got unauthorized from the server.'
-                                       'Make sure that the import job belongs to your org.')
+                                       'Make sure that the import job belongs to your organization.')
             elif command == 'threatstream-approve-import-job':
                 raise DemistoException(f'{THREAT_STREAM} - Got unauthorized from the server.'
                                        'Please ensure that you have the necessary Intel user permission and that'
@@ -221,12 +224,230 @@ class Client(BaseClient):
             return
         elif res.status_code in {404}:
             if command in ['threatstream-get-model-description', 'threatstream-get-indicators-by-model',
-                           'threatstream-get-analysis-status', 'threatstream-analysis-report', 'threatstream-list-import-job']:
+                           'threatstream-get-analysis-status', 'threatstream-analysis-report']:
                 # in order to prevent raising en error in case model/indicator/report was not found
                 return
             else:
                 raise DemistoException(f"{THREAT_STREAM} - The resource was not found.")
         raise DemistoException(F"{THREAT_STREAM} - Error in API call {res.status_code} - {res.text}")
+
+    def list_rule_request(self, rule_id: Optional[str], params: dict) -> dict:
+        """ Gets a list of all the rules in ThreatStream.
+            If a specific rule_id is given, it will return the information about this rule.
+        Args:
+            rule_id (int):  Unique ID assigned to the rule.
+            params
+        Returns:
+            A response object in a form of a dictionary.
+        """
+        url_suffix = 'v1/rule/'
+        if rule_id:
+            url_suffix += f'{rule_id}/'
+            return self.http_request('GET', url_suffix, params=params)
+        params['order_by'] = '-created_ts'
+        return self.http_request('GET', url_suffix, params=params)
+
+    def create_rule_request(self, request_body: dict) -> dict:
+        """ Creats a rule in ThreatStream.
+        Args:
+            request_body (dict): The request body.
+        Returns:
+            A response object in a form of a dictionary.
+        """
+        return self.http_request('POST', 'v1/rule/', json=request_body)
+
+    def update_rule_request(self, rule_id: Optional[str], request_body: dict) -> dict:
+        """ Updates a rule in ThreatStream.
+        Args:
+            rule_id (dict): The rule ID.
+            request_body (dict): The request body.
+        Returns:
+            A response object in a form of a dictionary.
+        """
+        return self.http_request('PATCH', f'v1/rule/{rule_id}/', json=request_body)
+
+    def delete_rule_request(self, rule_id: Optional[str]):
+        """ Deletes a rule in ThreatStream.
+        Args:
+            rule_id (dict): The rule ID.
+        Returns:
+            None.
+        """
+        self.http_request('DELETE', f'v1/rule/{rule_id}/', resp_type='text')
+
+    def list_users_request(self, user_id: Optional[str], params: dict):
+        """ Gets a list of all the users in ThreatStream.
+            If a specific user_id is given, it will return the information about this user.
+        Args:
+            user_id (int):  Unique ID assigned to the user.
+            params (dict): The request params.
+        Returns:
+            A response object in a form of a dictionary.
+        """
+        url_suffix = 'v1/orgadmin/'
+        if user_id:
+            url_suffix += f'{user_id}/'
+            return self.http_request('GET', url_suffix)
+        return self.http_request('GET', url_suffix, params=params)
+
+    def list_investigation_request(self, investigation_id: Optional[str], params: dict):
+        """ Gets a list of all the investigations in ThreatStream.
+            If a specific investigation_id is given, it will return the information about this investigation.
+        Args:
+            user_id (int): Unique ID assigned to the investigation.
+            params (dict): The request params.
+        Returns:
+            A response object in a form of a dictionary.
+        """
+        url_suffix = 'v1/investigation/'
+        if investigation_id:
+            url_suffix += f'{investigation_id}/'
+            return self.http_request('GET', url_suffix)
+        params['order_by'] = '-created_ts'
+        return self.http_request('GET', url_suffix, params=params)
+
+    def create_investigation_request(self, request_body: dict) -> dict:
+        """ Creats an investigation in ThreatStream.
+        Args:
+            request_body (dict): The request body.
+        Returns:
+            A response object in a form of a dictionary.
+        """
+        url_suffix = 'v1/investigation/'
+        return self.http_request('POST', url_suffix, json=request_body)
+
+    def delete_investigation_request(self, investigation_id: Optional[str]):
+        """ Deletes an investigation in ThreatStream.
+        Args:
+            investigation_id (dict): The investigation ID.
+        Returns:
+            None.
+        """
+        url_suffix = f'v1/investigation/{investigation_id}/'
+        self.http_request('DELETE', url_suffix, resp_type='text')
+
+    def update_investigation_request(self, investigation_id: Optional[str], request_body: dict) -> dict:
+        """ Updates an investigation in ThreatStream.
+        Args:
+            investigation_id (dict): The investigation ID.
+            request_body (dict): The request body.
+        Returns:
+            A response object in a form of a dictionary.
+        """
+        url_suffix = f'v1/investigation/{investigation_id}/'
+        return self.http_request('PATCH', url_suffix, json=request_body)
+
+    def add_investigation_element_request(self, investigation_id: Optional[int], request_body: dict) -> dict:
+        """ Adds investigation elements to investigation.
+        Args:
+            investigation_id (dict): The rule ID.
+            request_body (dict): The request body.
+        Returns:
+            A response object in a form of a dictionary.
+        """
+        url_suffix = 'v1/investigationelement/'
+        return self.http_request('POST', url_suffix, json=request_body, params={'investigation_id': investigation_id})
+
+    def list_whitelist_entry_request(self, format: str, params: dict) -> dict:
+        """ Gets a list of all whitelist entry in ThreatStream.
+        Args:
+            format (str):  A URL parameter to define the format of the response CSV or JSON.
+            params (dict): The request params.
+        Returns:
+            A response object in a form of a dictionary.
+        """
+        params['format'] = format.lower() if format else 'json'
+        params['showNote'] = 'true'
+        params['order_by'] = '-created_ts'
+        if format and format.lower() == 'json':
+            return self.http_request('GET', 'v1/orgwhitelist/', params=params)
+        return self.http_request('GET', 'v1/orgwhitelist/', params=params, resp_type='text')
+
+    def create_whitelist_entry_with_file_request(self, file_path: str) -> dict:
+        """ Creates a whitelist entries in ThreatStream according to file data.
+        Args:
+            file_path (str): The path of the file.
+        Returns:
+            A response object in a form of a dictionary.
+        """
+        return self.http_request('POST', 'v1/orgwhitelist/upload/', params={'remove_existing': 'false'},
+                                 files={'file': open(file_path, 'rb')})
+
+    def create_whitelist_entry_without_file_request(self, whitelist: list) -> dict:
+        """ Creates a whitelist entries in ThreatStream according to arguments data.
+        Args:
+            whitelist (str): List of indicators.
+        Returns:
+            A response object in a form of a dictionary.
+        """
+        return self.http_request('POST', 'v1/orgwhitelist/bulk/', json=assign_params(whitelist=whitelist))
+
+    def update_whitelist_entry_note_request(self, entry_id: Optional[str], note: Optional[str]):
+        """ Updates a whitelist entry note in ThreatStream.
+        Args:
+            entry_id (str): Unique ID assigned to the entry.
+        """
+        url_suffix = f'v1/orgwhitelist/{entry_id}/'
+        self.http_request('PATCH', url_suffix, data=json.dumps(assign_params(notes=note)), resp_type='text')
+
+    def delete_whitelist_entry_request(self, entry_id: Optional[str]):
+        """ Deletes a whitelist entry in ThreatStream.
+        Args:
+            entry_id (str): Unique ID assigned to the entry.
+        """
+        self.http_request('DELETE', f'v1/orgwhitelist/{entry_id}/', resp_type='text')
+
+    def list_import_job_request(self, import_id: Optional[str], params: dict) -> dict:
+        """ Gets a list of all the import job in ThreatStream.
+            If a specific import_id is given, it will return the information about this import.
+        Args:
+            import_id (int): Unique ID assigned to the import.
+            params (dict): The request params.
+        Returns:
+            A response object in a form of a dictionary.
+        """
+        url_suffix = 'v1/importsession/'
+        if import_id:
+            url_suffix = f'v1/importsession/{import_id}/'
+        return self.http_request('GET', url_suffix, params=params)
+
+    def approve_import_job_request(self, import_id: Optional[str]) -> dict:
+        """
+        Approving all observables in an import job
+        Args:
+            import_id (Str):  The id of a specific import entry.
+        Returns:
+                A response object in a form of a dictionary.
+        """
+        url_suffix = f'v1/importsession/{import_id}/approve_all/'
+        return self.http_request('PATCH', url_suffix)
+
+    def search_threat_model_request(self, params: dict) -> dict:
+        """
+        Gets list of threat model according to search paramters
+        Args:
+            params (dict): The request params.
+        Returns:
+                A response object in a form of a dictionary.
+        """
+        return self.http_request('GET', 'v1/threat_model_search/', params=params)
+
+    def add_threat_model_association_request(self, entity_type_url: Optional[str], entity_id: Optional[str],
+                                             associated_entity_type_url: Optional[str],
+                                             associated_entity_ids_list: Optional[list]) -> dict:
+        """
+        Addes association between threat models
+        Args:
+            entity_type (Str): The type of threat model entity on which you are adding the association.
+            entity_id (Str): The ID of the threat model entity on which you are adding the association.
+            associated_entity_type (Str): The type of threat model entity on which you are adding the association.
+            associated_entity_ids (Str): The entity id we want to associate with the primary entity.
+        Returns:
+                A response object in a form of a dictionary.
+        """
+        url_suffix = f'v1/{entity_type_url}/{entity_id}/{associated_entity_type_url}/bulk_add/'
+        return self.http_request("POST", url_suffix,
+                                 json={'ids': associated_entity_ids_list})
 
 
 class DBotScoreCalculator:
@@ -245,7 +466,6 @@ class DBotScoreCalculator:
         }
 
     def calculate_score(self, ioc_type: str, indicator, threshold=None):
-        # sourcery skip: assign-if-exp, remove-unnecessary-else, use-named-expression
         """
             Calculate the DBot score according the indicator's confidence and thresholds if exist
         """
@@ -299,7 +519,7 @@ def prepare_args(args, command, params):
     return args
 
 
-def get_tags(indicator):  # sourcery skip: use-named-expression
+def get_tags(indicator):
     """
         Return list of the indicator's tags threat_type and maltype
     """
@@ -557,11 +777,20 @@ def get_ip_reputation(client: Client, score_calc: DBotScoreCalculator, ip, statu
     )
 
 
-def return_params_of_pagination_or_limit(page=None, page_size=None, limit=DEFAULT_LIMIT_PAGE_SIZE):
+def return_params_of_pagination_or_limit(page: int = None, page_size: int = None, limit: int = None):
+    """
+    Returns request params accroding to page, page_size and limit arguments.
+    Args:
+        page (int): page.
+        page_size (int): page size.
+        limit (int): limit.
+    Returns:
+        params (dict).
+    """
     params = {}
     if (page_size and not page) or (not page_size and page):
         raise DemistoException('Please specify page and page_size')
-    elif page:
+    elif page and isinstance(page, int) and isinstance(page_size, int):
         params['offset'] = (page * page_size) - (page_size)
         params['limit'] = page_size
     else:
@@ -596,8 +825,8 @@ def header_transformer(header: str) -> str:
     return string_to_table_header(header)
 
 
-def get_list_rule_command(client: Client, rule_id: str = None, limit: str = '50', page: str = None,
-                          page_size: str = None) -> CommandResults:
+def list_rule_command(client: Client, rule_id: str = None, limit: str = '50', page: str = None,
+                      page_size: str = None) -> CommandResults:
     """
     Returns a list rules.
     Args:
@@ -609,49 +838,34 @@ def get_list_rule_command(client: Client, rule_id: str = None, limit: str = '50'
     Returns:
         (CommandResults).
     """
-    url_suffix = 'v1/rule/'
-    if rule_id:
-        url_suffix += f'{rule_id}/'
     params = return_params_of_pagination_or_limit(arg_to_number(page), arg_to_number(page_size), arg_to_number(limit))
-    params['order_by'] = '-created_ts'
-    res = client.http_request('GET', url_suffix, params=params)
+    res = client.list_rule_request(rule_id, params)
     data = res.get('objects', res)
     return CommandResults(
         outputs_prefix=f"{THREAT_STREAM}.Rule",
         outputs_key_field="id",
         outputs=data,
-        readable_output=tableToMarkdown(
-            "Rules",
-            data,
-            removeNull=True,
-            headerTransform=header_transformer,
-            headers=[
-                "name",
-                "id",
-                "matches",
-                "intelligence_initiatives",
-                "created_ts",
-                "modified_ts",
-                "notify_me",
-                "is_enabled",
-            ],
-        ),
+        readable_output=tableToMarkdown("Rules", data, removeNull=True,
+                                        headerTransform=header_transformer,
+                                        headers=["name", "id", "matches", "intelligence_initiatives",
+                                                 "created_ts", "modified_ts", "notify_me", "is_enabled"]),
         raw_response=res,
     )
 
 
-def create_rule_command(client: Client, rule_name: str = None, keywords: str = None, match_include: str = None,
-                        actor_ids: str = None, campaign_ids: str = None, investigation_action: str = None,
-                        new_investigation_name: str = None, existing_investigation_id: str = None,
-                        exclude_indicator: str = None, include_indicator: str = None,
-                        exclude_notify_org_whitelisted: str = None, exclude_notify_owner_org: str = None,
-                        incident_ids: str = None, malware_ids: str = None, signature_ids: str = None,
-                        threat_bulletin_ids: str = None,
-                        ttp_ids: str = None, vulnerability_ids: str = None, tags: str = None) -> CommandResults:
+def create_request_body_rule(rule_id: str = None, rule_name: str = None, keywords: str = None, match_include: str = None,
+                             actor_ids: str = None, campaign_ids: str = None, investigation_action: str = None,
+                             new_investigation_name: str = None, existing_investigation_id: str = None,
+                             exclude_indicator: str = None, include_indicator: str = None,
+                             exclude_notify_org_whitelisted: str = None, exclude_notify_owner_org: str = None,
+                             incident_ids: str = None, malware_ids: str = None, signature_ids: str = None,
+                             threat_bulletin_ids: str = None,
+                             ttp_ids: str = None, vulnerability_ids: str = None, tags: str = None) -> dict:
     """
-    Creates a new rule in ThreatStream.
+    Creates a request body for create and update rule command.
     Args:
         client (Client): Client to perform calls to Anomali ThreatStream service.
+        rule_id (Str):  The rule id.
         rule_name (Str):  Rule name.
         keywords (Str):  A comma-separated list of keywords.
         match_include (Str):  Possible values: observables, sandbox reports, threat bulletins, signatures, vulnerabilities.
@@ -698,20 +912,49 @@ def create_rule_command(client: Client, rule_name: str = None, keywords: str = N
         vulnerabilities=argToList(vulnerability_ids),
         tags=[{'name': tag} for tag in tag_list] if tag_list else None
     )
-    if investigation_action == 'Create New' and (not new_investigation_name):
-        raise DemistoException("Please ensure to provide the 'new_investigation_name'"
-                               "argument when selecting the 'Create New' option for the 'investigation_action' argument.")
-    if investigation_action == 'Add To Existing' and (not existing_investigation_id):
-        raise DemistoException("Please ensure to provide the 'existing_investigation_id'"
-                               " argument when selecting the 'Add To Existing' option for the 'investigation_action' argument.")
     if new_investigation_name:
-        request_body["create_investigation"] = True
-        request_body["investigation_config"] = {'name': new_investigation_name}
+        request_body['create_investigation'] = True
+        request_body['investigation_config'] = {'name': new_investigation_name}
     if existing_investigation_id:
-        request_body["create_investigation"] = True
-        request_body["investigation"] = existing_investigation_id
+        request_body['create_investigation'] = True
+        request_body['investigation'] = existing_investigation_id
+    return request_body
+
+
+def create_rule_command(client: Client, **kwargs) -> CommandResults:
+    """
+    Creates a new rule in ThreatStream.
+    Args:
+        client (Client): Client to perform calls to Anomali ThreatStream service.
+        rule_name (Str):  Rule name.
+        keywords (Str):  A comma-separated list of keywords.
+        match_include (Str):  Possible values: observables, sandbox reports, threat bulletins, signatures, vulnerabilities.
+        actor_ids (Str):  A comma-separated list of actor IDs.
+        campaign_ids (Str):  A comma-separated list of campaign IDs.
+        investigation_action (Str): Possible values: Create New, Add To Existing, No Action.
+        new_investigation_name (Str):  Name of investigation.
+        existing_investigation_id (Str):  An id of existing investigation.
+        exclude_indicator (Str):  A comma-separated list of indicator type.
+        include_indicator (Str):  A comma-separated list of indicator type.
+        exclude_notify_org_whitelisted (Str):  'true' or 'false' value.
+        exclude_notify_owner_org (Str):  'true' or 'false' value.
+        incident_ids (Str):  A comma-separated list of incident IDs.
+        malware_ids (Str):  A comma-separated list of malwares IDs.
+        signature_ids (Str):  A comma-separated list of signatures IDs.
+        threat_bulletin_ids (Str):  A comma-separated list of threat bulletin IDs.
+        ttp_ids (Str):  A comma-separated list of ttp IDs.
+        vulnerability_ids (Str):  A comma-separated list of vulnerabilities IDs.
+        tags (Str):  A comma-separated list of tags.
+    Returns:
+        (CommandResults).
+    """
+    investigation_action: Optional[str] = kwargs.get('investigation_action')
+    new_investigation_name: Optional[str] = kwargs.get('investigation_action')
+    existing_investigation_id: Optional[str] = kwargs.get('existing_investigation_id')
+    validate_investigation_action(investigation_action, new_investigation_name, existing_investigation_id)
+    request_body = create_request_body_rule(**kwargs)
+    res = client.create_rule_request(request_body)
     demisto.debug("create rule command request body", request_body)
-    res = client.http_request('POST', 'v1/rule/', json=request_body)
     return CommandResults(
         outputs_prefix=f'{THREAT_STREAM}.Rule',
         outputs_key_field="id",
@@ -721,12 +964,21 @@ def create_rule_command(client: Client, rule_name: str = None, keywords: str = N
     )
 
 
-def update_rule_command(client: Client, rule_id=None, rule_name=None, keywords=None, match_include=None, actor_ids=None,
-                        campaign_ids=None, investigation_action=None, new_investigation_name=None,
-                        existing_investigation_id=None, exclude_indicator=None,
-                        include_indicator=None, exclude_notify_org_whitelisted=None, exclude_notify_owner_org=None,
-                        incident_ids=None, malware_ids=None, signature_ids=None, threat_bulletin_ids=None,
-                        ttp_ids=None, vulnerability_ids=None, tags=None) -> CommandResults:
+def validate_investigation_action(investigation_action: Optional[str], new_investigation_name: Optional[str],
+                                  existing_investigation_id: Optional[str]):
+    """
+        Validate the arguments new_investigation_name and existing_investigation_id
+        according to the investigation_action arguments
+    """
+    if investigation_action == 'Create New' and (not new_investigation_name):
+        raise DemistoException("Please ensure to provide the 'new_investigation_name'"
+                               "argument when selecting the 'Create New' option for the 'investigation_action' argument.")
+    if investigation_action == 'Add To Existing' and (not existing_investigation_id):
+        raise DemistoException("Please ensure to provide the 'existing_investigation_id'"
+                               " argument when selecting the 'Add To Existing' option for the 'investigation_action' argument.")
+
+
+def update_rule_command(client: Client, **kwargs) -> CommandResults:
     """
     Updates exists rule from ThreatStream.
     Args:
@@ -754,64 +1006,20 @@ def update_rule_command(client: Client, rule_id=None, rule_name=None, keywords=N
     Returns:
         (CommandResults).
     """
-    match_include_list = argToList(match_include.lower()) if match_include else []
-    tag_list = argToList(tags) or []
-    request_body = assign_params(
-        name=rule_name,
-        keywords=argToList(keywords),
-        actors=argToList(actor_ids),
-        match_observables='observables' in match_include_list,
-        match_reportedfiles='sandbox reports' in match_include_list,
-        match_tips='threat bulletins' in match_include_list,
-        match_signatures='signatures' in match_include_list,
-        match_vulnerabilities='vulnerabilities' in match_include_list,
-        campaigns=argToList(campaign_ids),
-        exclude_impacts=argToList(exclude_indicator),
-        match_impacts=argToList(include_indicator),
-        exclude_notify_org_whitelisted=argToBoolean(exclude_notify_org_whitelisted) if exclude_notify_org_whitelisted else None,
-        exclude_notify_owner_org=argToBoolean(exclude_notify_owner_org) if exclude_notify_owner_org else None,
-        incidents=argToList(incident_ids),
-        malware=argToList(malware_ids),
-        signatures=argToList(signature_ids),
-        tips=argToList(threat_bulletin_ids),
-        ttps=argToList(ttp_ids),
-        vulnerabilities=argToList(vulnerability_ids),
-        tags=[{'name': tag} for tag in tag_list] if tag_list else None
-    )
-    if investigation_action == 'Create New' and (not new_investigation_name):
-        raise DemistoException("Please ensure to provide the 'new_investigation_name'"
-                               " argument when selecting the 'Create New' option for the 'investigation_action'.")
-    if investigation_action == 'Add To Existing' and (not existing_investigation_id):
-        raise DemistoException("Please ensure to provide the 'existing_investigation_id'"
-                               " argument when selecting the 'Add To Existing' option for the 'investigation_action'.")
-    if new_investigation_name:
-        request_body["create_investigation"] = True
-        request_body["investigation_config"] = {'name': new_investigation_name}
-    if existing_investigation_id:
-        request_body["create_investigation"] = True
-        request_body["investigation"] = existing_investigation_id
-    demisto.debug("update_rule_command_request_body", request_body)
-    res = client.http_request('PATCH', f'v1/rule/{rule_id}/', json=request_body)
+    investigation_action: Optional[str] = kwargs.get('investigation_action')
+    new_investigation_name: Optional[str] = kwargs.get('investigation_action')
+    existing_investigation_id: Optional[str] = kwargs.get('existing_investigation_id')
+    rule_id: Optional[str] = kwargs.get('rule_id')
+    validate_investigation_action(investigation_action, new_investigation_name, existing_investigation_id)
+    request_body = create_request_body_rule(**kwargs)
+    res = client.update_rule_request(rule_id, request_body)
     return CommandResults(
         outputs_prefix=f"{THREAT_STREAM}.Rule",
         outputs_key_field="id",
         outputs=res,
-        readable_output=tableToMarkdown(
-            "Rules",
-            res,
-            removeNull=True,
-            headerTransform=header_transformer,
-            headers=[
-                "name",
-                "id",
-                "matches",
-                "intelligence_initiatives",
-                "created_ts",
-                "modified_ts",
-                "notify_me",
-                "is_enabled",
-            ],
-        ),
+        readable_output=tableToMarkdown("Rules", res, removeNull=True, headerTransform=header_transformer,
+                                        headers=["name", "id", "matches", "intelligence_initiatives", "created_ts",
+                                                 "modified_ts", "notify_me", "is_enabled"]),
         raw_response=res,
     )
 
@@ -825,7 +1033,7 @@ def delete_rule_command(client: Client, rule_id=None) -> CommandResults:
     Returns:
         (CommandResults).
     """
-    client.http_request('DELETE', f'v1/rule/{rule_id}/', resp_type='text')
+    client.delete_rule_request(rule_id)
     return CommandResults(
         outputs_prefix=f'{THREAT_STREAM}.Rule',
         readable_output='The rule was deleted successfully.',
@@ -845,28 +1053,17 @@ def list_user_command(client: Client, user_id: str = None, limit: str = '50',
     Returns:
         (CommandResults).
     """
-    url_suffix = 'v1/orgadmin/'
-    if user_id:
-        url_suffix += f'{user_id}/'
     params = return_params_of_pagination_or_limit(arg_to_number(page), arg_to_number(page_size), arg_to_number(limit))
-    res = client.http_request('GET', url_suffix, params=params)
+    res = client.list_users_request(user_id, params)
     data = res.get('objects', res)
     return CommandResults(
         outputs_prefix=f"{THREAT_STREAM}.User",
         outputs_key_field="id",
         outputs=data,
         readable_output=tableToMarkdown(
-            "Users",
-            data,
-            removeNull=True,
+            "Users", data, removeNull=True,
             headerTransform=string_to_table_header,
-            headers=[
-                "name",
-                "user_id",
-                "email",
-                "is_active",
-                "last_login",
-            ],
+            headers=["name", "user_id", "email", "is_active", "last_login"],
         ),
         raw_response=res,
     )
@@ -885,43 +1082,23 @@ def list_investigation_command(client: Client, investigation_id: str = None, lim
     Returns:
         (CommandResults).
     """
-    url_suffix = 'v1/investigation/'
-    if investigation_id:
-        url_suffix += f'{investigation_id}/'
+
     params = return_params_of_pagination_or_limit(arg_to_number(page), arg_to_number(page_size), arg_to_number(limit))
-    params['order_by'] = '-created_ts'
-    res = client.http_request('GET', url_suffix, params=params)
+    res = client.list_investigation_request(investigation_id, params)
     data = res.get('objects', res)
     return CommandResults(
         outputs_prefix=f"{THREAT_STREAM}.Investigation",
         outputs_key_field="id",
         outputs=data,
-        readable_output=tableToMarkdown(
-            'Investigations',
-            data,
-            removeNull=True,
-            headerTransform=header_transformer,
-            headers=[
-                'name',
-                'id',
-                'created_ts',
-                'status',
-                'source_type',
-                'assignee',
-                'reporter',
-
-            ],
-            json_transform_mapping={
-                'assignee': JsonTransformer(
-                    keys=['email'],
-                    func=lambda hdr: hdr.get('email', '')
-                ),
-                'reporter': JsonTransformer(
-                    keys=['email'],
-                    func=lambda hdr: hdr.get('email', '')
-                ),
-            }
-        ),
+        readable_output=tableToMarkdown('Investigations', data, removeNull=True,
+                                        headerTransform=header_transformer,
+                                        headers=['name', 'id', 'created_ts', 'status', 'source_type', 'assignee', 'reporter'],
+                                        json_transform_mapping={'assignee': JsonTransformer(keys=['email'],
+                                                                                            func=lambda hdr: hdr.get('email', '')
+                                                                                            ),
+                                                                'reporter': JsonTransformer(keys=['email'],
+                                                                                            func=lambda hdr: hdr.get('email', ''))
+                                                                }),
         raw_response=res,
     )
 
@@ -958,29 +1135,20 @@ def create_investigation_command(client: Client, name: str = None, description: 
     Returns:
         (CommandResults).
     """
-    associated_vulnerability_list = argToList(associated_vulnerability_ids)
-    associated_actor_list = argToList(associated_actor_ids)
-    associated_observable_list = argToList(associated_observable_ids)
-    associated_incident_list = argToList(associated_incident_ids)
-    associated_signature_list = argToList(associated_signature_ids)
-    associated_threat_bulletin_list = argToList(associated_threat_bulletin_ids)
-    associated_ttp_list = argToList(associated_ttp_ids)
-    associated_campaign_list = argToList(associated_campaign_ids)
-
-    associated_list = [associated_campaign_list, associated_vulnerability_list, associated_actor_list,
-                       associated_observable_list, associated_incident_list,
-                       associated_signature_list, associated_threat_bulletin_list, associated_ttp_list]
-
     add_related_indicators = 1 if connect_related_indicators and argToBoolean(connect_related_indicators) else 0
-    elements_list = create_element_list([('vulnerability', associated_vulnerability_list),
-                                        ('actor', associated_actor_list),
-                                        ('intelligence2', associated_observable_list),
-                                        ('incident', associated_incident_list),
-                                        ('signature', associated_signature_list),
-                                        ('tipreport', associated_threat_bulletin_list),
-                                        ('ttp', associated_ttp_list),
-                                        ('campaign', associated_campaign_list)],
-                                        add_related_indicators, False, 0)
+    elements_list, associated_list = create_element_list({
+        'vulnerability': argToList(associated_vulnerability_ids),
+        'actor': argToList(associated_actor_ids),
+        'intelligence2': argToList(associated_observable_ids),
+        'incident': argToList(associated_incident_ids),
+        'signature': argToList(associated_signature_ids),
+        'tipreport': argToList(associated_threat_bulletin_ids),
+        'ttp': argToList(associated_ttp_ids),
+        'campaign': argToList(associated_campaign_ids),
+        'add_related_indicators': add_related_indicators,
+        'is_update': False,
+        'investigation_id': 0,
+    })
     demisto.debug('elements_list_create_investigation', elements_list)
     tag_list = argToList(tags) or []
     request_body = assign_params(
@@ -995,31 +1163,27 @@ def create_investigation_command(client: Client, name: str = None, description: 
         add_related_indicators=add_related_indicators,
         elements=elements_list,
     )
-    url_suffix = 'v1/investigation/'
-    res = client.http_request('POST', url_suffix, json=request_body)
-    if res.get('all_added') and (res.get('all_added') is False):
-        all_associated_list = [id for sublist in associated_list for id in sublist]
-        data = res.get('elements')
+    res = client.create_investigation_request(request_body)
+    readable_output = f'Investigation was created successfully with ID: {res.get("id")}.\n'
+    if res.get('all_added') is False:
+        data = res.get('elements', [])
         successful_ids = [
             str(entity.get('r_id'))
             for entity in data
-            if str(entity.get('r_id')) in all_associated_list
+            if str(entity.get('r_id')) in associated_list
         ]
-        return CommandResults(
-            outputs_prefix=f'{THREAT_STREAM}.Investigation',
-            outputs_key_field='id',
-            readable_output=f'{res.get("added_elements_count")} Elements with ids {successful_ids} was added successfully'
-                            f' to the investigation with ID: {res.get("id")}ֿ\n',
-            raw_response=res,
-            outputs=res,
-        )
+        readable_output = f'Investigation was created successfully with ID: {res.get("id")}.\n' \
+                          f' Elements with ids {", ".join(map(str, successful_ids))} was added successfully' \
+                          f' to the investigation with ID: {res.get("id")}.ֿ\n'
+    elif res.get('all_added') is True:
+        readable_output = f'Investigation was created successfully with ID: {res.get("id")}.\n' \
+            'All Elements was added successfully to the investigation.'
     return CommandResults(
         outputs_prefix=f'{THREAT_STREAM}.Investigation',
         outputs_key_field='id',
-        outputs=res,
-        readable_output=f'Investigation was created successfully with ID: {res.get("id")}',
+        readable_output=readable_output,
         raw_response=res,
-    )
+        outputs=res)
 
 
 def update_investigation_command(client: Client, investigation_id: str = None, description: str = None, priority: str = None,
@@ -1049,8 +1213,7 @@ def update_investigation_command(client: Client, investigation_id: str = None, d
         assignee_type='user' if assignee_id else None,
     )
     demisto.debug("update investigation request body", request_body)
-    url_suffix = f'v1/investigation/{investigation_id}/'
-    res = client.http_request('PATCH', url_suffix, json=request_body)
+    res = client.update_investigation_request(investigation_id, request_body)
     return CommandResults(
         outputs_prefix=f'{THREAT_STREAM}.Investigation',
         outputs_key_field='id',
@@ -1069,8 +1232,7 @@ def delete_investigation_command(client: Client, investigation_id: str = None) -
     Returns:
         (CommandResults).
     """
-    url_suffix = f'v1/investigation/{investigation_id}/'
-    client.http_request('DELETE', url_suffix, resp_type='text')
+    client.delete_investigation_request(investigation_id)
     return CommandResults(
         outputs_prefix=f'{THREAT_STREAM}.Investigation',
         readable_output='Investigation was deleted successfully.',
@@ -1101,50 +1263,53 @@ def add_investigation_element_command(client: Client, investigation_id: str = No
     Returns:
         (CommandResults).
     """
-    associated_vulnerability_list = argToList(associated_vulnerability_ids)
-    associated_actor_list = argToList(associated_actor_ids)
-    associated_observable_list = argToList(associated_observable_ids)
-    associated_incident_list = argToList(associated_incident_ids)
-    associated_signature_list = argToList(associated_signature_ids)
-    associated_threat_bulletin_list = argToList(associated_threat_bulletin_ids)
-    associated_ttp_list = argToList(associated_ttp_ids)
-    associated_campaign_list = argToList(associated_campaign_ids)
-
-    associated_list = [associated_campaign_list, associated_vulnerability_list, associated_actor_list,
-                       associated_observable_list, associated_incident_list,
-                       associated_signature_list, associated_threat_bulletin_list, associated_ttp_list]
-
     add_related_indicators = 1 if connect_related_indicators and argToBoolean(connect_related_indicators) else 0
-    elements_list = create_element_list([('vulnerability', associated_vulnerability_list),
-                                        ('actor', associated_actor_list),
-                                        ('intelligence2', associated_observable_list),
-                                        ('incident', associated_incident_list),
-                                        ('signature', associated_signature_list),
-                                        ('tipreport', associated_threat_bulletin_list),
-                                        ('ttp', associated_ttp_list),
-                                        ('campaign', associated_campaign_list)],
-                                        add_related_indicators, True, arg_to_number(investigation_id))
+    elements_list, associated_list = create_element_list({
+        'vulnerability': argToList(associated_vulnerability_ids),
+        'actor': argToList(associated_actor_ids),
+        'intelligence2': argToList(associated_observable_ids),
+        'incident': argToList(associated_incident_ids),
+        'signature': argToList(associated_signature_ids),
+        'tipreport': argToList(associated_threat_bulletin_ids),
+        'ttp': argToList(associated_ttp_ids),
+        'campaign': argToList(associated_campaign_ids),
+        'add_related_indicators': add_related_indicators,
+        'is_update': True,
+        'investigation_id': arg_to_number(investigation_id),
+    })
     demisto.debug('add investigation elements', elements_list)
     request_body = assign_params(objects=elements_list)
-    url_suffix = 'v1/investigationelement/'
-    res = client.http_request('POST', url_suffix, json=request_body, params={'investigation_id': investigation_id})
+    res = client.add_investigation_element_request(arg_to_number(investigation_id), request_body)
     if not res.get('objects'):
-        raise DemistoException('The addition of elements to the investigation has failed.'
+        raise DemistoException('The addition of elements to the investigation has failed. '
                                'Please verify the accuracy of the investigation_id argument.')
-    elif not res.get('all_added'):
-        successful_ids = []
-        all_associated_list = [id for sublist in associated_list for id in sublist]
-        data = res.get('objects', {})
-        for entity in data:
-            if str(entity.get('r_id')) in all_associated_list:
-                successful_ids.append(str(entity.get('r_id')))
-        return CommandResults(
-            readable_output=f'Elements with ids {",".join(successful_ids)} was added successfully'
-                            f' to the investigation.',
-            raw_response=res,
-        )
+    if res.get('all_added') is False:
+        exists_elements = res.get('already_exists_elements_count')
+        if isinstance(exists_elements, int) and exists_elements >= len(associated_list) and \
+                res.get('added_elements_count') == 0:
+            readable_output = 'All the requested elements already exist in the investigation.'
+        else:
+            data = res.get('objects', [])
+            unsuccessful_ids = []
+            successful_ids: list[int] = []
+            for id in associated_list:
+                successful_ids.extend(id for entity in data if str(id) == str(entity.get('r_id')))
+                if id not in successful_ids:
+                    unsuccessful_ids.append(id)
+            if unsuccessful_ids:
+                readable_output = f'The following elements with IDs were successfully added: ' \
+                                  f'{", ".join(map(str, successful_ids))}.' \
+                                  ' However, attempts to add elements with IDs: ' \
+                                  f'{", ".join(map(str, unsuccessful_ids))} were unsuccessful.'
+            else:
+                readable_output = 'The following elements with IDs were successfully added:' \
+                                  f' {", ".join(map(str, successful_ids))},' \
+                                  f'However, There are already {res.get("already_exists_elements_count")}' \
+                                  ' existing elements.'
+    else:
+        readable_output = f'All The elements was added successfully to investigation ID: {investigation_id}'
     return CommandResults(
-        readable_output=f'Elements was added successfully to investigation ID: {investigation_id}',
+        readable_output=readable_output,
         raw_response=res,
     )
 
@@ -1163,33 +1328,19 @@ def list_whitelist_entry_command(client: Client, format: str = 'json', limit: st
         (CommandResults).
     """
     params = return_params_of_pagination_or_limit(arg_to_number(page), arg_to_number(page_size), arg_to_number(limit))
-    params['format'] = format.lower() if format else 'json'
-    params['showNote'] = 'true'
+    res = client.list_whitelist_entry_request(format, params)
     if format and format.lower() == 'json':
-        res = client.http_request('GET', 'v1/orgwhitelist/', params=params)
         return CommandResults(
             outputs_prefix=f'{THREAT_STREAM}.WhitelistEntry',
             outputs_key_field='id',
             outputs=res.get('objects'),
-            readable_output=tableToMarkdown(
-                'Whitelist entries',
-                res.get('objects'),
-                removeNull=True,
-                headerTransform=header_transformer,
-                headers=[
-                    'id',
-                    'value',
-                    'resource_uri',
-                    'created_ts',
-                    'modified_ts',
-                    'value_type',
-                    'notes'
-                ],
-            ),
+            readable_output=tableToMarkdown('Whitelist entries', res.get('objects'), removeNull=True,
+                                            headerTransform=header_transformer,
+                                            headers=['id', 'value', 'resource_uri', 'created_ts',
+                                                     'modified_ts', 'value_type', 'notes']),
             raw_response=res,
         )
     else:
-        res = client.http_request('GET', 'v1/orgwhitelist/', params=params, resp_type='text')
         return fileResult(filename=f'whitelist-entries-{date.today().strftime("%b-%d-%Y")}.csv',
                           data=res, file_type=EntryType.ENTRY_INFO_FILE)
 
@@ -1241,8 +1392,7 @@ def create_whitelist_entry_command(client: Client, entry_id: str = None, cidr: s
     if entry_id:
         get_file_path_res = demisto.getFilePath(entry_id)
         file_path = get_file_path_res["path"]
-        res = client.http_request('POST', 'v1/orgwhitelist/upload/', params={'remove_ existing': 'false'},
-                                  files={'file': open(file_path, 'rb')})
+        res = client.create_whitelist_entry_with_file_request(file_path)
         if res.get('success'):
             return CommandResults(readable_output=res.get('message'),
                                   raw_response=res)
@@ -1259,7 +1409,7 @@ def create_whitelist_entry_command(client: Client, entry_id: str = None, cidr: s
                                             ('cidr', argToList(cidr))],
                                            note)
         demisto.debug('whitelist - create_whitelist_entry_command', whitelist)
-        res = client.http_request('POST', 'v1/orgwhitelist/bulk/', json=assign_params(whitelist=whitelist))
+        res = client.create_whitelist_entry_without_file_request(whitelist)
         return CommandResults(readable_output=res.get("message"),
                               raw_response=res)
 
@@ -1275,8 +1425,7 @@ def update_whitelist_entry_note_command(client: Client, entry_id: str = None,
     Returns:
         (CommandResults).
     """
-    url_suffix = f'v1/orgwhitelist/{entry_id}/'
-    client.http_request('PATCH', url_suffix, data=json.dumps(assign_params(notes=note)), resp_type='text')
+    client.update_whitelist_entry_note_request(entry_id, note)
     return CommandResults(readable_output='The note was updated successfully.')
 
 
@@ -1289,7 +1438,7 @@ def delete_whitelist_entry_command(client: Client, entry_id: str = None) -> Comm
     Returns:
         (CommandResults).
     """
-    client.http_request('DELETE', f'v1/orgwhitelist/{entry_id}/', resp_type='text')
+    client.delete_whitelist_entry_request(entry_id)
     return CommandResults(readable_output='The entity was deleted successfully')
 
 
@@ -1310,53 +1459,39 @@ def list_import_job_command(client: Client, import_id: str = None, status_in: st
     """
     params = return_params_of_pagination_or_limit(arg_to_number(page), arg_to_number(page_size), arg_to_number(limit))
     if status_in == 'Processing':
-        params['status_in'] = 'processing'
+        params['status'] = 'processing'
     elif status_in == 'Rejected':
-        params['status_in'] = 'deleted'
+        params['status'] = 'deleted'
     elif status_in == 'Ready To Review':
-        params['status_in'] = 'done'
+        params['status'] = 'done'
     elif status_in == 'Errors':
-        params['status_in'] = 'errors'
+        params['status'] = 'errors'
     elif status_in == 'Approved':
-        params['status_in'] = 'approved'
-    url_suffix = 'v1/importsession/'
-    if import_id:
-        url_suffix = f'v1/importsession/{import_id}/'
-    res = client.http_request('GET', url_suffix, params=params)
-    data = res.get("objects", res)
+        params['status'] = 'approved'
+    res = client.list_import_job_request(import_id, params)
+    outputs = res.get("objects", res)
+    readable_output = tableToMarkdown("Import entries", outputs, removeNull=True, headerTransform=header_transformer,
+                                      headers=["id", "date", "status", "approved_by", "email", "intelligence_initiatives",
+                                               "numIndicators", "numRejected", "tags"],
+                                      json_transform_mapping={
+                                          'approved_by': JsonTransformer(keys=['email'], func=lambda hdr: hdr.get('email', '')),
+                                          'tags': JsonTransformer(func=lambda hdr: ", ".join([item.get('name') for item in hdr])),
+                                          'intelligence_initiatives': JsonTransformer(func=lambda hdr:
+                                                                                      ", ".join([item.get('type')
+                                                                                                for item in hdr]))})
+    if not import_id:
+        for item in outputs:
+            item['ImportID'] = item.pop('id')
+            item['JobID'] = item.pop('jobID')
+    else:
+        outputs['ImportID'] = outputs.pop('id')
+        outputs['JobID'] = outputs.pop('jobID')
     return CommandResults(
         outputs_prefix=f"{THREAT_STREAM}.Import",
-        outputs_key_field="id",
+        outputs_key_field="ImportID",
         ignore_auto_extract=True,
-        outputs=data,
-        readable_output=tableToMarkdown(
-            "Import entries",
-            data,
-            removeNull=True,
-            headerTransform=header_transformer,
-            headers=[
-                "id",
-                "date",
-                "status",
-                "approved_by",
-                "email",
-                "intelligence_initiatives",
-                "numIndicators",
-                "numRejected",
-                "tags"],
-            json_transform_mapping={
-                'approved_by': JsonTransformer(
-                    keys=['email'],
-                    func=lambda hdr: hdr.get('email', '')
-                ),
-                'tags': JsonTransformer(
-                    func=lambda hdr: ", ".join([item.get('name') for item in hdr])
-                ),
-                'intelligence_initiatives': JsonTransformer(
-                    func=lambda hdr: ", ".join([item.get('type') for item in hdr])
-                ),
-            },
-        ),
+        outputs=outputs,
+        readable_output=readable_output,
         raw_response=res,
     )
 
@@ -1370,8 +1505,7 @@ def approve_import_job_command(client: Client, import_id: str = None) -> Command
     Returns:
         (CommandResults).
     """
-    url_suffix = f'v1/importsession/{import_id}/approve_all/'
-    res = client.http_request('PATCH', url_suffix)
+    res = client.approve_import_job_request(import_id)
     if res.get("approved_by_id"):
         readable_output = 'The import session was successfully approved.'
     else:
@@ -1466,25 +1600,16 @@ def search_threat_model_command(client: Client, model_type: str = None, name: st
         params['signature$type'] = ','.join(argToList(signature_type))
         params['model_type'] = "signature"
     demisto.debug("params to request threat_model_search", params)
-    res = client.http_request('GET', 'v1/threat_model_search/', params=params)
+    res = client.search_threat_model_request(params)
     data_res = res.get('objects', res)
 
     return CommandResults(
         outputs_prefix=f"{THREAT_STREAM}.ThreatModel",
         outputs_key_field="id",
         outputs=data_res,
-        readable_output=tableToMarkdown(
-            "Threat model entities",
-            data_res,
-            removeNull=True,
-            headerTransform=header_transformer,
-            headers=[
-                "id",
-                "model_type",
-                "name",
-                "publication_status",
-                "modified_ts"],
-        ),
+        readable_output=tableToMarkdown("Threat model entities", data_res, removeNull=True,
+                                        headerTransform=header_transformer,
+                                        headers=["id", "model_type", "name", "publication_status", "modified_ts"]),
         raw_response=res,
     )
 
@@ -1504,21 +1629,22 @@ def add_threat_model_association_command(client: Client, entity_type: str = None
     """
     entity_type_url = entity_type.replace(' ', '').lower() if entity_type else None
     associated_entity_type_url = associated_entity_type.replace(' ', '').lower() if associated_entity_type else None
-    url_suffix = f'v1/{entity_type_url}/{entity_id}/{associated_entity_type_url}/bulk_add/'
     associated_entity_ids_list = [int(id) for id in argToList(associated_entity_ids)]
     num_associated_entity_ids = len(associated_entity_ids_list)
-    res = client.http_request("POST", url_suffix,
-                              json={'ids': associated_entity_ids_list})
-    associated_entity_ids_results = len(res.get("ids")) if res.get('success') else 0
+    res = client.add_threat_model_association_request(entity_type_url, entity_id,
+                                                      associated_entity_type_url,
+                                                      associated_entity_ids_list)
+    res_ids = res.get('ids')
+    associated_entity_ids_results = len(res_ids) if res.get('success') and isinstance(res_ids, list) else 0
     readable_output: str = ''
     if associated_entity_ids_results == num_associated_entity_ids:
-        readable_output = f'The {associated_entity_type} entities with ids {res.get("ids")} ' \
+        readable_output = f'The {associated_entity_type} entities with ids {", ".join(map(str, res.get("ids",[])))} ' \
                           f'were associated successfully to entity id: {entity_id}.'
     elif associated_entity_ids_results > 0:
-        readable_output = f'Part of the {associated_entity_type} entities with ids {res.get("ids")} ' \
+        readable_output = f'Part of the {associated_entity_type} entities with ids {", ".join(map(str, res.get("ids",[])))} ' \
                           f'were associated successfully to entity id: {entity_id}.'
     else:
-        readable_output = f'Unsuccessful association to {associated_entity_type} entity id: {entity_id}.'
+        raise DemistoException(f'Unsuccessful association to {associated_entity_type} entity id: {entity_id}.')
     return CommandResults(
         readable_output=readable_output,
         raw_response=res,
@@ -1540,34 +1666,35 @@ def get_intelligence(client: Client, indicator, ioc_type):
     return relationships, intelligence_outputs
 
 
-def create_element_list(names_and_ids_list: list[tuple[str, list]], add_related_indicators: int,
-                        is_update: bool, investigation_id: Optional[int]) -> list:
+def create_element_list(arguments_dict: dict) -> tuple[list, list]:
     """
     Creates an elements list.
     Args:
-        name_and_ids_list (Str):  a list of tuples each tuple include a r_type name and a list.
-        add_related_indicators (int): Whether to add related indicators possible values are 1 or 0.
-        is_update (bool): Whether it is an update command.
-        investigation_id (int): investigation id.
+        arguments_dict (Str):  dict of the required argument to creat the element list.
     Returns:
         A list of dict.
     """
+    # a list of all the association
+    associated_list = []
     element_list = []
-    for name_and_ids_list in names_and_ids_list:
-        if name_and_ids_list[1] and name_and_ids_list[0]:
+    investigation_id = arguments_dict.get('investigation_id')
+    is_update = arguments_dict.get('is_update')
+    add_related_indicators = arguments_dict.get('add_related_indicators')
+    for type, ids_list in arguments_dict.items():
+        if isinstance(ids_list, list):
+            associated_list.extend(ids_list)
             if is_update:
-                element_list.extend([{"r_type": name_and_ids_list[0], "r_id": arg_to_number(id),
-                                    "add_related_indicators": add_related_indicators, "investigation_id": investigation_id}
-                                     for id in name_and_ids_list[1]])
+                element_list.extend([{"r_type": type, "r_id": arg_to_number(id),
+                                     "add_related_indicators": add_related_indicators, "investigation_id": investigation_id}
+                                     for id in ids_list])
             else:
-                element_list.extend([{"r_type": name_and_ids_list[0], "r_id": arg_to_number(id),
-                                    "add_related_indicators": add_related_indicators}
-                                     for id in name_and_ids_list[1]])
-    return element_list
+                element_list.extend([{"r_type": type, "r_id": arg_to_number(id),
+                                     "add_related_indicators": add_related_indicators}
+                                     for id in ids_list])
+    return element_list, associated_list
 
 
 def get_intelligence_information(client: Client, indicator, ioc_type, intelligence_type):
-    # sourcery skip: use-named-expression
 
     value = indicator.get('value')
     url = f"v1/{intelligence_type}/associated_with_intelligence/"
@@ -1927,7 +2054,6 @@ def get_passive_dns(client: Client, value, all_results=None, type=DBotScoreType.
 def import_ioc_with_approval(client: Client, import_type, import_value, confidence="50", classification="Private",
                              threat_type="exploit", severity="low", ip_mapping=None, domain_mapping=None,
                              url_mapping=None, email_mapping=None, md5_mapping=None, tags=None):
-    # sourcery skip: raise-from-previous-error
     """
         Imports indicators data to ThreatStream.
         The data can be imported using one of three import_types: data-text (plain-text),
@@ -2037,9 +2163,9 @@ def get_model_list(client: Client, model, limit="50", page=None, page_size=None)
         page_int: int = arg_to_number(page) or 1
         page_size_int: int = arg_to_number(page_size) or 50
         offset = (page_int * page_size_int) - (page_size_int)
-        params = dict(offset=offset, limit=page_size, skip_intelligence="true", skip_associations="true")
+        params = dict(offset=offset, limit=page_size, skip_intelligence="true", skip_associations="true", order_by='-created_ts')
     else:
-        params = dict(limit=limit, skip_intelligence="true", skip_associations="true")
+        params = dict(limit=limit, skip_intelligence="true", skip_associations="true", order_by='-created_ts')
     model_list = client.http_request("GET", F"v1/{model.replace(' ', '')}/", params=params).get('objects', None)
 
     if not model_list:
@@ -2209,7 +2335,6 @@ def file_name_to_valid_string(file_name):
 def submit_report(client: Client, submission_type, submission_value, import_indicators=True,
                   submission_classification="private", report_platform="WINDOWS7",
                   premium_sandbox="false", detail=None):
-    # sourcery skip: extract-method
     """
         Detonates URL or file that was uploaded to war room to ThreatStream sandbox.
     """
@@ -2432,7 +2557,7 @@ def main():
 
         'threatstream-search-intelligence': search_intelligence,
 
-        'threatstream-list-rule': get_list_rule_command,
+        'threatstream-list-rule': list_rule_command,
         'threatstream-create-rule': create_rule_command,
         'threatstream-update-rule': update_rule_command,
         'threatstream-delete-rule': delete_rule_command,
