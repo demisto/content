@@ -804,8 +804,8 @@ def create_indicator(client: MandiantClient, raw_indicator: Dict) -> Dict:
         raw_indicator (Dict): raw indicator
     Returns: Parsed indicator
     """
-    indicator_type = MAP_INDICATORS[raw_indicator.get("type", "")]["name"]
-    return create_base_indicator(client, raw_indicator, indicator_type)
+    return MAP_INDICATORS_FUNCTIONS[raw_indicator.get("type", "")](client, raw_indicator)
+    # return create_base_indicator(client, raw_indicator, indicator_type)
 
 
 def create_base_indicator(
@@ -875,9 +875,12 @@ MAP_INDICATORS_FUNCTIONS: Dict[str, Callable] = {
     "Actors": create_actor_indicator,
     "Indicators": create_indicator,
     "file": create_file_indicator,
+    "md5": create_file_indicator,
     "ip": create_ip_indicator,
+    "ipv4": create_ip_indicator,
     "domain": create_fqdn_indicator,
     "url": create_url_indicator,
+    "fqdn": create_fqdn_indicator,
     "cve": create_cve_indicator,
 }
 
@@ -1121,7 +1124,7 @@ def fetch_indicators(client: MandiantClient, args: Dict = None) -> List:
     for indicator_type in types:
         indicators_list = get_indicator_list(client, limit, first_fetch, indicator_type)
 
-        if metadata and indicator_type != "Indicators":
+        if metadata:
             indicators_list = [
                 client.get_indicator_info(
                     identifier=indicator.get("id"),  # type:ignore
