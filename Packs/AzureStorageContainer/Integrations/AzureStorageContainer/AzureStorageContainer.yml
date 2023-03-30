@@ -318,7 +318,7 @@ script:
       type: unknown
     description: create SAS token for container
     name: azure-storage-container-sas-create
-  dockerimage: demisto/python3:3.10.10.49934
+  dockerimage: demisto/python3:3.10.10.51930
   feed: false
   isfetch: false
   longRunning: false
