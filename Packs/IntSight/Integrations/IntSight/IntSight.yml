@@ -937,7 +937,7 @@ script:
   isfetch: true
   runonce: false
   subtype: python3
-  dockerimage: demisto/python3:3.10.8.39276
+  dockerimage: demisto/python3:3.10.10.51930
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)
