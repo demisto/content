@@ -1,0 +1,12 @@
+[file:StripChar.yml]
+ignore=BA124
+
+[file:GetValuesOfMultipleFIelds.yml]
+ignore=BA124
+
+[file:RegexGroups.yml]
+ignore=BA124
+
+[file:DT.yml]
+ignore=BA124
+
