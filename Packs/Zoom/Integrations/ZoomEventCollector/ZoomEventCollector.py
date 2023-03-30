@@ -150,8 +150,11 @@ class Client(BaseClient):
         next_last_time = last_time
         first_page = True
 
+        demisto.debug(f"Last run before the fetch run: {last_time}")
         start_date = first_fetch_time if not last_time else dateparser.parse(last_time).replace(tzinfo=timezone.utc)
         end_date = datetime.now(timezone.utc) + timedelta(days=1)
+
+        demisto.debug(f"Start get logs from: {start_date} to: {end_date}")
 
         while start_date <= end_date:
             params = {
@@ -187,6 +190,7 @@ class Client(BaseClient):
             if not (next_page_token := response.get("next_page_token")):
                 start_date = get_next_month(start_date)
 
+        demisto.debug(f"Last run after the fetch run: {next_last_time}")
         return next_last_time, results
 
 
@@ -278,7 +282,10 @@ def fetch_events(client: Client, last_run: dict[str, str], first_fetch_time: dat
             first_fetch_time=first_fetch_time,
         )
         next_run[log_type] = next_run_time
+        demisto.debug(f"Received {len(events_)} events for log type {log_type}")
         events.extend(events_)
+
+    demisto.debug(f"Returning {len(events)} events in total")
     return next_run, events
 
 
@@ -373,6 +380,7 @@ def main() -> None:
                                                 first_fetch_time=first_fetch_datetime,
                                                 )
                 # saves next_run for the time fetch-events is invoked
+                demisto.debug(f'Set last run to {next_run}')
                 demisto.setLastRun(next_run)
             if should_push_events:
                 for event in events:
