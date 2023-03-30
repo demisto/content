@@ -687,7 +687,7 @@ def test_test_moudle__reciving_errors(mocker):
     mocker.patch.object(Client, "zoom_list_users", side_effect=DemistoException('Invalid access token'))
 
     from Zoom import test_module
-    assert test_module(client=client) == 'Invalid credentials. Verify that your credentials are valid.'
+    assert test_module(client=client) == 'Invalid credentials. Please verify that your credentials are valid.'
 
 
 def test_test_moudle__reciving_errors1(mocker):
@@ -697,7 +697,7 @@ def test_test_moudle__reciving_errors1(mocker):
     mocker.patch.object(Client, "zoom_list_users", side_effect=DemistoException("The Token's Signature resulted invalid"))
 
     from Zoom import test_module
-    assert test_module(client=client) == 'Invalid API Secret. Verify that your API Secret is valid.'
+    assert test_module(client=client) == 'Invalid API Secret. Please verify that your API Secret is valid.'
 
 
 def test_test_moudle__reciving_errors2(mocker):
@@ -707,7 +707,7 @@ def test_test_moudle__reciving_errors2(mocker):
     mocker.patch.object(Client, "zoom_list_users", side_effect=DemistoException("Invalid client_id or client_secret"))
 
     from Zoom import test_module
-    assert test_module(client=client) == 'Invalid Client ID or Client Secret. Verify that your ID and Secret is valid.'
+    assert test_module(client=client) == 'Invalid Client ID or Client Secret. Please verify that your ID and Secret is valid.'
 
 
 def test_test_moudle__reciving_errors3(mocker):
