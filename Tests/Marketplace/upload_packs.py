@@ -1334,11 +1334,11 @@ def main():
                        previous_commit_hash=previous_commit_hash,
                        landing_page_sections=statistics_handler.landing_page_sections)
 
-    logging.info('Strting new code index_v2')
+    logging.info('Starting initialize index_v2')
     index_v2_local_path, index_v2_blob = init_index_v2(storage_base_path, extract_destination_path,
                                                        storage_bucket, index_folder_path)
 
-    logging.info('replacing the urls in index_V2')
+    logging.info('Starting to replace the readme images urls in index_V2')
     replace_readme_urls(index_v2_local_path, storage_base_path=storage_base_path,
                         marketplace=marketplace, index_v2=True)
 
@@ -1355,15 +1355,14 @@ def main():
                             artifacts_dir=os.path.dirname(packs_artifacts_path)
                             )
 
-    logging.info('uploading new index')
+    logging.info('Staring to upload index v2')
 
     upload_index_v2(index_folder_path=index_v2_local_path,
                     extract_destination_path=extract_destination_path,
                     index_blob=index_v2_blob,
                     index_name=GCPConfig.INDEX_V2_NAME)
 
-    logging.info('finished uploading new index')
-
+    logging.info('Finished uploading index v2')
     # dependencies zip is currently supported only for marketplace=xsoar, not for xsiam/xpanse
     if is_create_dependencies_zip and marketplace == 'xsoar':
         # handle packs with dependencies zip
