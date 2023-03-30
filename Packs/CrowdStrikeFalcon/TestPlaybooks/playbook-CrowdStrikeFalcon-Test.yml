@@ -2965,7 +2965,8 @@ tasks:
       groups:
         simple: 7471ba0636b34cbb8c65fae7979a6a9b
       value:
-        simple: demo-test
+        complex:
+          root: GeneratedUUID
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -3041,7 +3042,8 @@ tasks:
       - "83"
     scriptarguments:
       value:
-        simple: demo-test
+        complex:
+          root: GeneratedUUID
     separatecontext: false
     continueonerrortype: ""
     view: |-
