@@ -101,6 +101,7 @@ args:
   name: page
   required: false
   secret: false
+  deprecated: true
 - default: false
   description: |-
     The number of events to return from the alert JSON. The default is 0, which returns all events.
@@ -116,6 +117,14 @@ args:
   name: size
   required: false
   secret: false
+  deprecated: true
+- default: false
+  description: The maximum number of incidents to be returned.
+  isArray: false
+  name: limit
+  required: false
+  secret: false
+  defaultValue: '100'
 - default: false
   description: Sort in format of field.asc,field.desc,...
   isArray: false
@@ -149,7 +158,7 @@ comment: |-
 
   This automation runs using the default Limited User role, unless you explicitly change the permissions.
   For more information, see the section about permissions here:
-  https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+  https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
 commonfields:
   id: SearchIncidentsV2
   version: -1
@@ -202,7 +211,7 @@ tags:
 - Utility
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.10.10.47713
+dockerimage: demisto/python3:3.10.10.48392
 fromversion: 5.0.0
 tests:
 - No tests (auto formatted)

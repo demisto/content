@@ -3,7 +3,8 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 from typing import Dict, Any, Tuple
 
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()  # pylint: disable=no-member
+import urllib3
+urllib3.disable_warnings()  # pylint: disable=no-member
 
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'

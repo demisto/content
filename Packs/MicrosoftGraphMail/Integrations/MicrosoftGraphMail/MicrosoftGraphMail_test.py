@@ -406,7 +406,7 @@ class TestFetchIncidentsWithLookBack:
         first_email = {
             'id': '1',
             'subject': 'email-1',
-            'lastModifiedDateTime': (
+            'receivedDateTime': (
                 self.start_freeze_time(self.FREEZE_TIMESTAMP) - timedelta(minutes=2)
             ).strftime(API_DATE_FORMAT)
         }
@@ -414,7 +414,7 @@ class TestFetchIncidentsWithLookBack:
         second_email = {
             'id': '2',
             'subject': 'email-2',
-            'lastModifiedDateTime': (
+            'receivedDateTime': (
                 self.start_freeze_time(self.FREEZE_TIMESTAMP) - timedelta(minutes=5)
             ).strftime(API_DATE_FORMAT)
         }
@@ -422,7 +422,7 @@ class TestFetchIncidentsWithLookBack:
         third_email = {
             'id': '3',
             'subject': 'email-3',
-            'lastModifiedDateTime': (
+            'receivedDateTime': (
                 self.start_freeze_time(self.FREEZE_TIMESTAMP) - timedelta(minutes=10)
             ).strftime(API_DATE_FORMAT)
         }

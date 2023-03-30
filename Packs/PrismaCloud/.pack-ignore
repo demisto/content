@@ -43,6 +43,10 @@ ignore=IM111
 [known_words]
 SSH
 Misconfiguration
+RRN
+FQDN
+VPC
+CloudTrail
 
 [file:classifier-Prisma_Cloud.json]
 ignore=BA101

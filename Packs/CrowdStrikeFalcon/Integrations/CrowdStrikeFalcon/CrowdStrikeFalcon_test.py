@@ -3377,6 +3377,24 @@ def test_resolve_incident_invalid(status):
         resolve_incident_command(['test'], status)
 
 
+def test_update_incident_comment(requests_mock):
+    """
+    Test Update incident comment
+    Given
+     - Comment
+    When
+     - Calling update incident comment command
+    Then
+     - Update incident comment
+     """
+    from CrowdStrikeFalcon import update_incident_comment_command
+    m = requests_mock.post(
+        f'{SERVER_URL}/incidents/entities/incident-actions/v1',
+        json={})
+    update_incident_comment_command(['test'], 'comment')
+    assert m.last_request.json()['action_parameters'][0]['value'] == 'comment'
+
+
 def test_list_host_group_members(requests_mock):
     """
     Test list host group members with not arguments given

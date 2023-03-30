@@ -1,10 +1,10 @@
 {
-    "name": "CiscoWSA",
-    "description": "To reterive and modify Cisco Web Security Gateway features (e.g. policies, etc).",
-    "support": "community",
-    "currentVersion": "1.0.1",
-    "author": "Nader El-Gohary",
-    "url": "https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions",
+    "name": "Cisco WSA",
+    "description": "Cisco Secure Web Appliance protects your organization by automatically blocking risky sites and testing unknown sites before allowing users to click on them.",
+    "support": "xsoar",
+    "currentVersion": "2.0.1",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": [
         "Network Security"
@@ -12,9 +12,6 @@
     "tags": [],
     "useCases": [],
     "keywords": [],
-    "devEmail": [
-        "ngohary@paloaltonetworks.com"
-    ],
     "githubUser": [],
     "marketplaces": [
         "xsoar",

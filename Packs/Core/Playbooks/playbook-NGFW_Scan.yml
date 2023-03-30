@@ -36,7 +36,7 @@ description: |-
 
   [Mitre technique T1046 - Network Service Scanning](https://attack.mitre.org/techniques/T1046/)
 
-  [Port Scan](https://docs.paloaltonetworks.com/cortex/cortex-xdr/cortex-xdr-analytics-alert-reference/cortex-xdr-analytics-alert-reference/port-scan.html)
+  [Port Scan](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Analytics-Alert-Reference/Port-Scan)
 starttaskid: "0"
 tasks:
   "0":
@@ -584,7 +584,7 @@ tasks:
 
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
-        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-6/cortex-xsoar-admin/playbooks/automations.html
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
       scriptName: SearchIncidentsV2
       type: regular
       iscommand: false

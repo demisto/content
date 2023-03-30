@@ -1,4 +1,4 @@
-category: Authentication
+category: Authentication & Identity Management
 sectionOrder:
 - Connect
 - Collect
@@ -1143,7 +1143,7 @@ script:
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.userGroups.usersCount
       description: The number of users in the user group.
       type: Number
-  dockerimage: demisto/crypto:1.0.0.48652
+  dockerimage: demisto/crypto:1.0.0.51452
   feed: false
   isfetch: true
   longRunning: false

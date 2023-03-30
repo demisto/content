@@ -1,3 +1,5 @@
+import os
+
 import demistomock as demisto
 from CommonServerPython import *
 from dxlclient.client_config import DxlClientConfig
@@ -295,19 +297,20 @@ def validate_certificates_format():
 
 
 def main():
-    with open(broker_ca_bundle, "w") as text_file:
-        text_file.write(demisto.params()['broker_ca_bundle'])
-
-    with open(cert_file, "w") as text_file:
-        text_file.write(demisto.params()['cert_file'])  # lgtm [py/clear-text-storage-sensitive-data]
-
-    with open(private_key, "w") as text_file:
-        text_file.write(demisto.params()['private_key'])
 
     global broker_urls
     broker_urls = demisto.params()['broker_urls'].split(',')
 
     try:
+        with open(broker_ca_bundle, "w") as text_file:
+            text_file.write(demisto.params()['broker_ca_bundle'])
+
+        with open(cert_file, "w") as text_file:
+            text_file.write(demisto.params()['cert_file'])  # lgtm [py/clear-text-storage-sensitive-data]
+
+        with open(private_key, "w") as text_file:
+            text_file.write(demisto.params()['private_key'])
+
         args = demisto.args()
         if demisto.command() == 'test-module':
             demisto.info('######## executing test command ########')
@@ -438,6 +441,10 @@ def main():
     except Exception as error:
         validate_certificates_format()
         return_error(str(error))
+    finally:
+        os.remove(broker_ca_bundle)
+        os.remove(cert_file)
+        os.remove(private_key)
 
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:

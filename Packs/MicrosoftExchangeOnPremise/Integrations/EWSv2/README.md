@@ -1463,10 +1463,10 @@ Sends an email using EWS.
 | subject | Subject for the email to be sent. | Required | 
 | replyTo | The email address specified in the 'reply to' field. | Optional | 
 | body | The contents (body) of the email to send. | Optional | 
-| html_body | HTML formatted content (body) of the email to be sent. This argument overrides the "body" argument. | Optional | 
-| attach_ids | A CSV list of War Room entry IDs that contain files, and are used to attach files to the outgoing email. For example: attachIDs=15@8,19@8. | Optional | 
-| attach_names | A CSV list of names of attachments to send. Should be the same number of elements as attach_ids. | Optional | 
-| attach_cids | A CSV list of CIDs to embed attachments within the email itself. | Optional | 
+| htmlBody | HTML formatted content (body) of the email to be sent. This argument overrides the "body" argument. | Optional | 
+| attachIDs | A CSV list of War Room entry IDs that contain files, and are used to attach files to the outgoing email. For example: attachIDs=15@8,19@8. | Optional | 
+| attachNames | A CSV list of names of attachments to send. Should be the same number of elements as attachIDs. | Optional | 
+| attachCIDs | A CSV list of CIDs to embed attachments within the email itself. | Optional | 
 | raw_message | Raw email message from MimeContent type. | Optional | 
 | from | The email address from which to reply. | Optional | 
 
@@ -1496,16 +1496,16 @@ Replies to an email using EWS.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| in_reply_to | ID of the item to reply to. | Required | 
+| inReplyTo | ID of the item to reply to. | Required | 
 | to | A CSV list of email addresses for the 'to' field. | Required | 
 | cc | A CSV list of email addresses for the 'cc' field. | Optional | 
 | bcc | A CSV list of email addresses for the 'bcc' field. | Optional | 
 | subject | Subject for the email to be sent. | Optional | 
 | body | The contents (body) of the email to be sent. | Optional | 
-| html_body | HTML formatted content (body) of the email to be sent. This argument overrides the "body" argument. | Optional | 
-| attach_ids | A CSV list of War Room entry IDs that contain files, and are used to attach files to the outgoing email. For example: attach_ids=15@8,19@8. | Optional | 
-| attach_names | A CSV list of names of attachments to send. Should be the same number of elements as attach_ids. | Optional | 
-| attach_cids | A CSV list of CIDs to embed attachments within the email itself. | Optional | 
+| htmlBody | HTML formatted content (body) of the email to be sent. This argument overrides the "body" argument. | Optional | 
+| attachIDs | A CSV list of War Room entry IDs that contain files, and are used to attach files to the outgoing email. For example: attachIDs=15@8,19@8. | Optional | 
+| attachNames | A CSV list of names of attachments to send. Should be the same number of elements as attachIDs. | Optional | 
+| attachCIDs | A CSV list of CIDs to embed attachments within the email itself. | Optional | 
 
 
 #### Context Output

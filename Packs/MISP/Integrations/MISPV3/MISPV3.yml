@@ -1674,6 +1674,15 @@ script:
       - 'false'
       required: false
       secret: false
+    - name: disable_output
+      description: If true, the attribute information will not be displayed in the
+        response, reducing the runtime.
+      required: false
+      isArray: false
+      defaultValue: "false"
+      predefined:
+        - "false"
+        - "true"
     deprecated: false
     description: Adds a tag to the given UUID attribute.
     execution: false
@@ -3003,7 +3012,7 @@ script:
     - contextPath: MISP.Warninglist.Lists
       description: Name of warninglists where the value was found.
       type: string
-  dockerimage: demisto/pymisp2:1.0.0.48162
+  dockerimage: demisto/pymisp2:1.0.0.50230
   feed: false
   isfetch: false
   longRunning: false

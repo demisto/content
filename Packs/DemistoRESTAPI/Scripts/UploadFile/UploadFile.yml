@@ -44,7 +44,7 @@ args:
   secret: false
 comment: Copies a file from this incident to the specified incident. The file is recorded as an entry in the specified incident’s War Room.
 subtype: python3
-dockerimage: demisto/python3:3.10.9.42476
+dockerimage: demisto/python3:3.10.10.49934
 system: false
 tags:
 - DemistoAPI

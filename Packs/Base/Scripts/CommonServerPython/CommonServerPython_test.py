@@ -20,7 +20,7 @@ from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToM
     flattenCell, date_to_timestamp, datetime, timedelta, camelize, pascalToSpace, argToList, \
     remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult, is_ip_valid, get_demisto_version, \
     IntegrationLogger, parse_date_string, IS_PY3, PY_VER_MINOR, DebugLogger, b64_encode, parse_date_range, \
-    return_outputs, is_filename_valid, \
+    return_outputs, is_filename_valid, convert_dict_values_bytes_to_str, \
     argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, urlRegex, ipv6Regex, domainRegex, batch, FeedIndicatorType, \
     encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown, is_demisto_version_ge, \
     appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str, get_x_content_info_headers, \
@@ -3324,6 +3324,7 @@ regexes_test = [
     (ipv4Regex, '192.256.1.1', False),
     (ipv4Regex, '192.256.1.1.1', False),
     (ipv4Regex, '192.168.1.1/12', False),
+    (ipv4Regex, '', False),
     (ipv4cidrRegex, '192.168.1.1/32', True),
     (ipv4cidrRegex, '192.168.1.1.1/30', False),
     (ipv4cidrRegex, '192.168.1.b/30', False),
@@ -3543,7 +3544,8 @@ INDICATOR_VALUE_AND_TYPE = [
     ('1[.]1[.]1[.]1', 'IP'),
     ('test[@]test.com', 'Email'),
     ('https[:]//www[.]test[.]com/abc', 'URL'),
-    ('test[.]com', 'Domain')
+    ('test[.]com', 'Domain'),
+    ('https://192.168.1.1:8080', 'URL'),
 ]
 
 
@@ -3651,7 +3653,7 @@ VALID_URL_INDICATORS = [
     'wwW.GooGle.com/path',
     '2001:db8:85a3:8d3:1319:8a2e:370:7348/65/path/path',
     '2001:db8:3333:4444:5555:6666:7777:8888/32/path/path',
-    '2001:db8:85a3:8d3:1319:8a2e:370:7348/h'
+    '2001:db8:85a3:8d3:1319:8a2e:370:7348/h',
     '1.1.1.1/7/server',
     "1.1.1.1/32/path",
     'https://evil.tld/evil.html',
@@ -3716,7 +3718,8 @@ def test_valid_url_indicator_types(indicator_value):
     Then
     - The indicators are classified as URL indicators.
     """
-    assert re.match(urlRegex, indicator_value)
+    regex_match = re.match(urlRegex, indicator_value)
+    assert regex_match.group(0) == indicator_value
 
 
 INVALID_URL_INDICATORS = [
@@ -3728,7 +3731,6 @@ INVALID_URL_INDICATORS = [
     'google.com*',
     '1.1.1.1',
     'path/path',
-    '1.1.1.1:8080',
     '1.1.1.1:111112243245/path',
     '3.4.6.92:8080:/test',
     '1.1.1.1:4lll/',
@@ -6735,6 +6737,30 @@ class TestIndicatorsSearcher:
             results.append(res)
         assert len(results) == 1
 
+    def test_search_indicators_with_sort(self, mocker):
+        """
+        Given:
+          - Searching indicators with a custom sort parameter.
+          - Mocking the searchIndicators function.
+        When:
+          - Calling the searchIndicators function with the custom sort parameter.
+        Then:
+          - Ensure that the sort parameter is set correctly.
+          - Ensure that the searchIndicators function is called with the expected arguments.
+        """
+        from CommonServerPython import IndicatorsSearcher
+        get_demisto_version._version = None  # clear cache between runs of the test
+        mocker.patch.object(demisto, 'demistoVersion', return_value={'version': '6.6.0'})
+
+        mocker.patch.object(demisto, 'searchIndicators')
+        sort_param = [{"field": "created", "asc": False}]
+        search_indicators_obj_search_after = IndicatorsSearcher(sort=sort_param)
+        search_indicators_obj_search_after.search_indicators_by_version()
+        expected_args = {'size': 100, 'sort': [{'asc': False, 'field': 'created'}]}
+        assert search_indicators_obj_search_after._sort == sort_param
+        demisto.searchIndicators.assert_called_once_with(**expected_args)
+
+
 
 class TestAutoFocusKeyRetriever:
     def test_instantiate_class_with_param_key(self, mocker, clear_version_cache):
@@ -7772,7 +7798,7 @@ class TestFetchWithLookBack:
                     {'limit': 3, 'first_fetch': '20 minutes', 'look_back': 30},
                     [INCIDENTS[2], INCIDENTS[3], INCIDENTS[4]], [NEW_INCIDENTS[1], NEW_INCIDENTS[2]], [],
                     {'found_incident_ids': {3: '', 4: '', 5: ''}, 'limit': 6},
-                    {'found_incident_ids': {3: '', 4: '', 5: '', 7: '', 8: ''}, 'limit': 3},
+                    {'found_incident_ids': {3: '', 4: '', 5: '', 7: '', 8: ''}, 'limit': 8},
                     [NEW_INCIDENTS[1], NEW_INCIDENTS[2]], 3
             ),
 
@@ -7804,7 +7830,7 @@ class TestFetchWithLookBack:
                     [INCIDENTS_TIME_AWARE[2], INCIDENTS_TIME_AWARE[3], INCIDENTS_TIME_AWARE[4]],
                     [NEW_INCIDENTS_TIME_AWARE[1], NEW_INCIDENTS_TIME_AWARE[2]], [],
                     {'found_incident_ids': {3: '', 4: '', 5: ''}, 'limit': 6},
-                    {'found_incident_ids': {3: '', 4: '', 5: '', 7: '', 8: ''}, 'limit': 3},
+                    {'found_incident_ids': {3: '', 4: '', 5: '', 7: '', 8: ''}, 'limit': 8},
                     [NEW_INCIDENTS_TIME_AWARE[1], NEW_INCIDENTS_TIME_AWARE[2]], 3
             ),
         ])
@@ -7982,7 +8008,7 @@ class TestFetchWithLookBack:
                 },
                 {
                     'time': '2022-04-02T10:12:00',
-                    'limit': 3,
+                    'limit': 8,
                     'found_incident_ids': {'4': '', '5': ''}
                 },
                 {
@@ -8002,7 +8028,7 @@ class TestFetchWithLookBack:
                 },
                 {
                     'time': '2022-04-02T10:12:00',
-                    'limit': 6,
+                    'limit': 8,
                     'found_incident_ids': {'4': '', '5': '',
                                            '7': '', '8': '', '9': ''}
                 }
@@ -8041,7 +8067,7 @@ class TestFetchWithLookBack:
                 },
                 {
                     'time': '2022-04-06T10:11:00',
-                    'limit': 3,
+                    'limit': 6,
                     'found_incident_ids': {'1': '', '2': '', '3': ''}
                 },
                 {
@@ -8057,7 +8083,7 @@ class TestFetchWithLookBack:
                 },
                 {
                     'time': '2022-04-07T10:11:00',
-                    'limit': 3,
+                    'limit': 6,
                     'found_incident_ids': {'1': '', '2': '', '3': ''}
                 }
             )
@@ -8389,6 +8415,7 @@ class TestSendEventsToXSIAMTest:
     from test_data.send_events_to_xsiam_data import events_dict, log_error
     test_data = events_dict
     test_log_data = log_error
+    orig_xsiam_file_size = 2 ** 20  # 1Mib
 
     @staticmethod
     def get_license_custom_field_mock(arg):
@@ -8397,10 +8424,15 @@ class TestSendEventsToXSIAMTest:
         elif 'url' in arg:
             return "url"
 
+    @pytest.fixture
+    def teardown_for_send_events_to_xsiam_positive(self):
+        yield
+        CommonServerPython.XSIAM_EVENT_CHUNK_SIZE = self.orig_xsiam_file_size
+
     @pytest.mark.parametrize('events_use_case', [
-        'json_events', 'text_list_events', 'text_events', 'cef_events', 'json_zero_events'
+        'json_events', 'text_list_events', 'text_events', 'cef_events', 'json_zero_events', 'big_event'
     ])
-    def test_send_events_to_xsiam_positive(self, mocker, events_use_case):
+    def test_send_events_to_xsiam_positive(self, mocker, events_use_case, teardown_for_send_events_to_xsiam_positive):
         """
         Test for the fetch events function
         Given:
@@ -8409,6 +8441,8 @@ class TestSendEventsToXSIAMTest:
             Case c: a string representing events (separated by a new line).
             Case d: a string representing events (separated by a new line).
             Case e: an empty list of events.
+            Case f: a "big" event. a big event is bigger than XSIAM EVENT SIZE declared.
+            ( currently the Ideal event size is 1 Mib)
 
         When:
             Case a: Calling the send_events_to_xsiam function with no explicit data format specified.
@@ -8416,6 +8450,7 @@ class TestSendEventsToXSIAMTest:
             Case c: Calling the send_events_to_xsiam function with no explicit data format specified.
             Case d: Calling the send_events_to_xsiam function with a cef data format specification.
             Case e: Calling the send_events_to_xsiam function with no explicit data format specified.
+            Case f: Calling the send_events_to_xsiam function with no explicit data format specified.
 
         Then ensure that:
             Case a:
@@ -8437,6 +8472,10 @@ class TestSendEventsToXSIAMTest:
             Case e:
                 - No request to XSIAM API was made.
                 - The number of events reported to the module health - 0.
+            Case f:
+                - The events data was compressed correctly. Expecting to see that last chunk sent.
+                - The data format remained as json.
+                - The number of events reported to the module health - 2. For the last chunk.
         """
         if not IS_PY3:
             return
@@ -8453,9 +8492,10 @@ class TestSendEventsToXSIAMTest:
         _http_request_mock = mocker.patch.object(BaseClient, '_http_request', return_value=api_response)
 
         events = self.test_data[events_use_case]['events']
-        number_of_events = self.test_data[events_use_case]['number_of_events']
+        number_of_events = self.test_data[events_use_case]['number_of_events']  # pushed in each chunk.
+        CommonServerPython.XSIAM_EVENT_CHUNK_SIZE = self.test_data[events_use_case].get('XSIAM_FILE_SIZE',
+                                                                                        self.orig_xsiam_file_size)
         data_format = self.test_data[events_use_case].get('format')
-
         send_events_to_xsiam(events=events, vendor='some vendor', product='some product', data_format=data_format)
 
         if number_of_events:
@@ -8799,6 +8839,32 @@ def test_append_metrics(mocker):
 
     results = CommonServerPython.append_metrics(metrics, results)
     assert len(results) == 1
+
+
+def test_convert_dict_values_bytes_to_str():
+    """
+    Given:
+        Dictionary contains bytes objects
+
+    When:
+        Creating outputs for commands
+
+    Then:
+        assert all bytes objects have been converted to strings
+    """
+
+    input_dict = {'some_key': b'some_value',
+                  'some_key1': [b'some_value'],
+                  'some_key2': {'some_key': [b'some_value'],
+                                'some_key1': b'some_value'}
+                  }
+    expected_output_dict = {'some_key': 'some_value',
+                            'some_key1': ['some_value'],
+                            'some_key2': {'some_key': ['some_value'],
+                                          'some_key1': 'some_value'}
+                            }
+    actual_output = convert_dict_values_bytes_to_str(input_dict)
+    assert actual_output == expected_output_dict
 
 
 @pytest.mark.parametrize(

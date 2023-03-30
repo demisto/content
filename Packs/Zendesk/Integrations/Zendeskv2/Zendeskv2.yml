@@ -24,7 +24,8 @@ configuration:
 - additionalinfo: 'Selects which direction you want the incidents mirrored. You can mirror **Incoming** only (from Zendesk to Cortex XSOAR), **Outgoing** only (from Cortex XSOAR to Zendesk), or both **Incoming And Outgoing**.'
   defaultvalue: None
   display: Incident Mirroring Direction
-  hidden: false
+  hidden:
+    - marketplacev2
   name: mirror_direction
   options:
   - None
@@ -39,10 +40,13 @@ configuration:
   type: 8
   required: false
   additionalinfo: If true, XSOAR will mirror also the ticket closeing.
+  hidden:
+    - marketplacev2
 - additionalinfo: Comment and files that will be marked with this tag will be pushed into Zendesk.
   defaultvalue: mirror
   display: Mirror tags
-  hidden: false
+  hidden:
+    - marketplacev2
   name: mirror_tags
   required: false
   type: 0
@@ -1351,7 +1355,7 @@ script:
     description: Updates local incident changes in the remote incident. This method is only used for debugging purposes and will not update the current incident.
     execution: false
     name: update-remote-system
-  dockerimage: demisto/python3:3.10.10.47713
+  dockerimage: demisto/python3:3.10.10.48392
   isfetch: true
   runonce: false
   subtype: python3

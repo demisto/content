@@ -1,4 +1,4 @@
-category: Messaging
+category: Messaging and Conferencing
 sectionOrder:
 - Connect
 - Collect
@@ -828,7 +828,7 @@ script:
     description: Acknowledge previously pulled message or messages.
     execution: false
     name: gcp-pubsub-topic-ack-messages
-  dockerimage: demisto/googleapi-python3:1.0.0.41311
+  dockerimage: demisto/googleapi-python3:1.0.0.49338
   feed: false
   isfetch: true
   longRunning: false
@@ -838,3 +838,5 @@ script:
   subtype: python3
   type: python
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

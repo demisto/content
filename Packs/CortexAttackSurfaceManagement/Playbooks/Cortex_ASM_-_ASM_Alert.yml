@@ -14,7 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ""
+      description: ''
     nexttasks:
       '#none#':
       - "5"
@@ -23,7 +23,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 150
+          "y": -80
         }
       }
     note: false
@@ -45,13 +45,13 @@ tasks:
       type: title
       iscommand: false
       brand: ""
-      description: ""
+      description: ''
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 90,
-          "y": 5300
+          "x": 100,
+          "y": 5900
         }
       }
     note: false
@@ -70,10 +70,10 @@ tasks:
       id: cf841205-1bc1-4490-89f8-027e330c91d2
       version: -1
       name: Triage and Qualifier Stage
-      description: ''
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "100"
@@ -82,7 +82,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 290
+          "y": 60
         }
       }
     note: false
@@ -114,7 +114,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 710
+          "y": 590
         }
       }
     note: false
@@ -145,7 +145,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 980
+          "y": 890
         }
       }
     note: false
@@ -188,16 +188,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 97a8b99b-265b-493a-8a3c-5f22b17f5fc2
+    taskid: d68ae85e-28a9-4892-8f4c-c6349355a8f5
     type: title
     task:
-      id: 97a8b99b-265b-493a-8a3c-5f22b17f5fc2
+      id: d68ae85e-28a9-4892-8f4c-c6349355a8f5
       version: -1
       name: Validation Stage
       type: title
       iscommand: false
       brand: ""
-      description: ''
+      description: 'Send an email'
     nexttasks:
       '#none#':
       - "86"
@@ -207,7 +207,7 @@ tasks:
       {
         "position": {
           "x": 90,
-          "y": 3920
+          "y": 4175
         }
       }
     note: false
@@ -231,7 +231,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "98"
+      - "118"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -269,7 +269,7 @@ tasks:
       {
         "position": {
           "x": 90,
-          "y": 4505
+          "y": 4835
         }
       }
     note: false
@@ -315,7 +315,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 540
+          "y": 370
         }
       }
     note: false
@@ -345,7 +345,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1700,
+          "x": -1740,
           "y": 2340
         }
       }
@@ -382,8 +382,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -780,
-          "y": 5130
+          "x": -910,
+          "y": 5410
         }
       }
     note: false
@@ -441,7 +441,7 @@ tasks:
       {
         "position": {
           "x": 90,
-          "y": 4160
+          "y": 4470
         }
       }
     note: false
@@ -471,8 +471,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 500,
-          "y": 4330
+          "x": 330,
+          "y": 4650
         }
       }
     note: false
@@ -516,66 +516,6 @@ tasks:
       sender: Your SOC team
       expired: false
       totalanswers: 0
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "23":
-    id: "23"
-    taskid: bfa7a592-ab98-48d6-8013-8c41fe175667
-    type: condition
-    task:
-      id: bfa7a592-ab98-48d6-8013-8c41fe175667
-      version: -1
-      name: Auto-close or keep open?
-      description: Determines if alert will be closed or kept open.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "4"
-      Auto-Close:
-      - "74"
-      Automated-Remediation:
-      - "75"
-    separatecontext: false
-    conditions:
-    - label: Automated-Remediation
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: alert.asmremediation
-                accessor: Outcome
-            iscontext: true
-          right:
-            value:
-              simple: Success
-    - label: Auto-Close
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: Select a next step.Answers
-                accessor: "0"
-            iscontext: true
-          right:
-            value:
-              simple: Close Now
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 90,
-          "y": 4940
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -1069,7 +1009,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 360,
+          "x": 440,
           "y": 3240
         }
       }
@@ -1410,8 +1350,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -390,
-          "y": 3425
+          "x": -480,
+          "y": 3245
         }
       }
     note: false
@@ -1438,7 +1378,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "11"
+      - "116"
     scriptarguments:
       gridfield:
         simple: asmremediation
@@ -1465,8 +1405,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -390,
-          "y": 3740
+          "x": -480,
+          "y": 3425
         }
       }
     note: false
@@ -1519,7 +1459,7 @@ tasks:
       {
         "position": {
           "x": 90,
-          "y": 3750
+          "y": 3860
         }
       }
     note: false
@@ -1675,81 +1615,7 @@ tasks:
       {
         "position": {
           "x": 870,
-          "y": 3750
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "74":
-    id: "74"
-    taskid: e555dece-d030-41ce-8859-da2ad3eac0be
-    type: regular
-    task:
-      id: e555dece-d030-41ce-8859-da2ad3eac0be
-      version: -1
-      name: Close alert (Auto-Close)
-      description: Close the current alert because auto-close was selected,
-      script: Builtin|||closeInvestigation
-      type: regular
-      iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "4"
-    scriptarguments:
-      closeNotes:
-        simple: Alert status set to 'Resolved' by Active Response Module
-      closeReason:
-        simple: STATUS_160_RESOLVED
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -180,
-          "y": 5130
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "75":
-    id: "75"
-    taskid: 306c3a59-d1bd-478c-8a8f-ee4d98b55547
-    type: regular
-    task:
-      id: 306c3a59-d1bd-478c-8a8f-ee4d98b55547
-      version: -1
-      name: Close alert (Remediated Automatically)
-      description: Close the current alert because Automated Remediation path was selected.
-      script: Builtin|||closeInvestigation
-      type: regular
-      iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "4"
-    scriptarguments:
-      closeNotes:
-        simple: Alert status set to 'Resolved - Remediated Automatically' by Active Response Module
-      closeReason:
-        simple: Resolved - Remediated Automatically
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 400,
-          "y": 5130
+          "y": 3860
         }
       }
     note: false
@@ -1776,7 +1642,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "23"
+      - "110"
     scriptarguments:
       gridfield:
         simple: asmalertsummary
@@ -1819,7 +1685,7 @@ tasks:
       {
         "position": {
           "x": 90,
-          "y": 4780
+          "y": 5110
         }
       }
     note: false
@@ -1871,7 +1737,7 @@ tasks:
       {
         "position": {
           "x": 90,
-          "y": 4030
+          "y": 4310
         }
       }
     note: false
@@ -1901,7 +1767,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -120,
+          "x": -50,
           "y": 3240
         }
       }
@@ -2127,7 +1993,7 @@ tasks:
       {
         "position": {
           "x": 90,
-          "y": 4630
+          "y": 4960
         }
       }
     note: false
@@ -2282,78 +2148,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 830
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "98":
-    id: "98"
-    taskid: 257c7072-d19b-47a8-830c-500288215015
-    type: playbook
-    task:
-      id: 257c7072-d19b-47a8-830c-500288215015
-      version: -1
-      name: Cortex ASM - Remediation
-      description: This playbook contains all the cloud provider sub playbooks for remediation
-      playbookName: Cortex ASM - Remediation
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "64"
-    scriptarguments:
-      RemediationRule:
-        complex:
-          root: inputs.RemediationRule
-    separatecontext: true
-    continueonerrortype: ""
-    loop:
-      iscommand: false
-      scriptArguments:
-        NicID:
-          complex:
-            root: alert.asmsystemids
-            filters:
-            - - operator: isEqualString
-                left:
-                  value:
-                    simple: alert.asmsystemids.Type
-                  iscontext: true
-                right:
-                  value:
-                    simple: AWS-NIC
-            accessor: ID
-        RemediationRule:
-          complex:
-            root: inputs.RemediationRule
-        VpcID:
-          complex:
-            root: alert.asmsystemids
-            filters:
-            - - operator: isEqualString
-                left:
-                  value:
-                    simple: alert.asmsystemids.Type
-                  iscontext: true
-                right:
-                  value:
-                    simple: AWS-VPC
-            accessor: ID
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": -1250,
-          "y": 2525
+          "y": 730
         }
       }
     note: false
@@ -2365,17 +2160,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "100":
     id: "100"
-    taskid: 775fedc2-21d6-426e-8509-9973ac13dac9
+    taskid: b1d3eab1-f16c-4c27-8363-d0fb6e63d8c4
     type: playbook
     task:
-      id: 775fedc2-21d6-426e-8509-9973ac13dac9
+      id: b1d3eab1-f16c-4c27-8363-d0fb6e63d8c4
       version: -1
       name: Cortex ASM - Detect Service
+      description: Playbook that looks at what ASM sub-type the alert is and directs it to different pre/post mitigation scans (such as NMAP).
       playbookName: Cortex ASM - Detect Service
       type: playbook
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "16"
@@ -2405,7 +2200,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 400
+          "y": 210
         }
       }
     note: false
@@ -2447,7 +2242,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1100
+          "y": 1040
         }
       }
     note: false
@@ -2470,8 +2265,6 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      Prompt no AR:
-      - "34"
       '#default#':
       - "36"
       Automated Remediation:
@@ -2484,6 +2277,8 @@ tasks:
       - "31"
       Prompt All Options - S3:
       - "108"
+      Prompt no AR:
+      - "34"
       Prompt no ServiceNow:
       - "35"
       Prompt no ServiceNow - S3:
@@ -2628,7 +2423,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1250
+          "y": 1220
         }
       }
     note: false
@@ -2680,7 +2475,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 3750
+          "y": 3860
         }
       }
     note: false
@@ -2833,10 +2628,433 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "110":
+    id: "110"
+    taskid: b4ca9b41-4ef8-47df-8873-cdfcf1830553
+    type: condition
+    task:
+      id: b4ca9b41-4ef8-47df-8873-cdfcf1830553
+      version: -1
+      name: Close or keep open?
+      description: Determines if alert will be closed or kept open.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      ' Automated-Remediation':
+      - "112"
+      Automated-Remediation With Rule Match:
+      - "114"
+      Close Now:
+      - "111"
+      Close Now With Rule Match:
+      - "113"
+    separatecontext: false
+    conditions:
+    - label: Automated-Remediation With Rule Match
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: alert.asmremediation
+                accessor: Outcome
+            iscontext: true
+          right:
+            value:
+              simple: Success
+          ignorecase: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: alert
+                accessor: asmremediationpathrule
+            iscontext: true
+    - label: ' Automated-Remediation'
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: alert.asmremediation
+                accessor: Outcome
+            iscontext: true
+          right:
+            value:
+              simple: Success
+          ignorecase: true
+    - label: Close Now With Rule Match
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Select a next step.Answers
+                accessor: "0"
+            iscontext: true
+          right:
+            value:
+              simple: Close Now
+          ignorecase: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: alert
+                accessor: asmremediationpathrule
+            iscontext: true
+    - label: Close Now
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Select a next step.Answers
+                accessor: "0"
+            iscontext: true
+          right:
+            value:
+              simple: Close Now
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 90,
+          "y": 5270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "111":
+    id: "111"
+    taskid: f50bfd4c-7402-4bb8-8047-489f3d93d495
+    type: regular
+    task:
+      id: f50bfd4c-7402-4bb8-8047-489f3d93d495
+      version: -1
+      name: Close alert (close now)
+      description: Close the current alert because auto-close was selected,
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      closeNotes:
+        simple: Alert status set to 'Resolved' by Active Response Module
+      closeReason:
+        simple: Resolved
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -80,
+          "y": 5660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "112":
+    id: "112"
+    taskid: 710aec66-336d-4cbc-8cbd-0fc5198f5e4c
+    type: regular
+    task:
+      id: 710aec66-336d-4cbc-8cbd-0fc5198f5e4c
+      version: -1
+      name: Close alert (remediated automatically)
+      description: Close the current alert because Automated Remediation path was selected.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      closeNotes:
+        simple: Alert status set to 'Resolved - Remediated Automatically' by Active Response Module
+      closeReason:
+        simple: Resolved - Remediated Automatically
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 310,
+          "y": 5660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "113":
+    id: "113"
+    taskid: 3660106c-2c7e-4a5a-8d77-13c38f87c6c4
+    type: regular
+    task:
+      id: 3660106c-2c7e-4a5a-8d77-13c38f87c6c4
+      version: -1
+      name: Close alert (close now) with rule match
+      description: Close the current alert because auto-close was selected,
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      closeNotes:
+        complex:
+          root: alert.asmremediationpathrule
+          accessor: rule_name
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'Alert status set to ''Resolved'' by Active Response Module - Remediation Path Rule: '
+              suffix: {}
+      closeReason:
+        simple: Resolved
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -310,
+          "y": 5460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "114":
+    id: "114"
+    taskid: 18f94705-5309-4adb-8735-b0a2d4beaf66
+    type: regular
+    task:
+      id: 18f94705-5309-4adb-8735-b0a2d4beaf66
+      version: -1
+      name: Close alert (remediated automatically) with rule match
+      description: Close the current alert because Automated Remediation path was selected.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      closeNotes:
+        complex:
+          root: alert.asmremediationpathrule
+          accessor: rule_name
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'Alert status set to ''Resolved - Remediated Automatically'' by Active Response Module - Remediation Path Rule: '
+              suffix: {}
+      closeReason:
+        simple: Resolved - Remediated Automatically
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 540,
+          "y": 5460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "116":
+    id: "116"
+    taskid: 98112215-f43b-4f78-875b-58f8da657f94
+    type: condition
+    task:
+      id: 98112215-f43b-4f78-875b-58f8da657f94
+      version: -1
+      name: Are there service owners with emails?
+      description: Verifies if we have emails for service owners.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "117"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: alert.asmserviceowner
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: alert.asmserviceowner.Email
+                      iscontext: true
+                    right:
+                      value:
+                        simple: '@'
+                accessor: Email
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -480,
+          "y": 3600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "117":
+    id: "117"
+    taskid: 46a8e681-4479-415f-8e31-df37d4aada6c
+    type: regular
+    task:
+      id: 46a8e681-4479-415f-8e31-df37d4aada6c
+      version: -1
+      name: Send remediation notification email to service owners
+      description: Send an email to service owners about the status of automated remediation action taken.
+      script: '|||send-mail'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      htmlBody:
+        simple: |-
+          <!DOCTYPE html>
+          <html lang="en">
+          <body>
+              <p>
+                  Infosec identified a security risk on an external service potentially owned by your
+                  team:<br><b>${alert.name}</b>
+              </p>
+              <p>
+                  <b>Alert Details:</b> ${alert.details}<br>
+                  <b>Action Taken:</b> ${alert.asmremediation.[0].Action}<br>
+                  <b>Action Outcome:</b> ${alert.asmremediation.[0].Outcome}<br>
+              </p>
+          </body>
+          </html>
+      subject:
+        simple: A new security risk was addressed on an external service owned by your team
+      to:
+        complex:
+          root: alert.asmserviceowner
+          filters:
+          - - operator: containsGeneral
+              left:
+                value:
+                  simple: alert.asmserviceowner.Email
+                iscontext: true
+              right:
+                value:
+                  simple: '@'
+          accessor: Email
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -660,
+          "y": 3790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "118":
+    id: "118"
+    taskid: 93c3a0af-b2c4-4721-8984-0d86b28ed61b
+    type: playbook
+    task:
+      id: 93c3a0af-b2c4-4721-8984-0d86b28ed61b
+      version: -1
+      name: Cortex ASM - Remediation
+      playbookName: Cortex ASM - Remediation
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "64"
+    separatecontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1250,
+          "y": 2495
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
       "102_12_Automated Remediation": 0.79,
+      "110_111_Close Now": 0.88,
+      "110_112_ Automated-Remediation": 0.88,
+      "16_6_yes": 0.6,
       "48_10_ServiceNow ticket": 0.82,
       "48_12_Automated remediation": 0.87,
       "48_60_Notification email": 0.88,
@@ -2844,10 +3062,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 5215,
-        "width": 3450,
-        "x": -1700,
-        "y": 150
+        "height": 6045,
+        "width": 3490,
+        "x": -1740,
+        "y": -80
       }
     }
   }
@@ -2869,16 +3087,9 @@ inputs:
   required: true
   description: Body of the notification (email or ticket) sent to potential service owner.
   playbookInputQuery:
-- key: RemediationRule
-  value:
-    simple: |-
-      Remediation-Security-Group
-  required: true
-  description: 'The firewall rule that will be used for remediating internet exposures. '
-  playbookInputQuery:
 outputs: []
 tests:
 - No tests (auto formatted)
-fromversion: 6.5.0
+fromversion: 6.8.0
 contentitemexportablefields:
   contentitemfields: {}

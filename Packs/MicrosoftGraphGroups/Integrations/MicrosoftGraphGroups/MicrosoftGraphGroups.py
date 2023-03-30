@@ -162,16 +162,24 @@ class MsGraphClient:
         Returns:
             Response from API.
         """
+        headers = {}
+
         if next_link:  # pagination
             return self.ms_client.http_request(method='GET', full_url=next_link)
         params = {'$top': top}
+
         if filter_:
             params['$filter'] = filter_  # type: ignore
+
+        if count := demisto.args().get('count'):
+            params['$count'] = count
+            headers['ConsistencyLevel'] = 'eventual'
 
         return self.ms_client.http_request(
             method='GET',
             url_suffix=f'groups/{group_id}/members',
-            params=params)
+            params=params,
+            headers=headers)
 
     def add_member(self, group_id: str, properties: Dict[str, str]):
         """Add a single member to a group by sending a POST request.

@@ -31,28 +31,28 @@ Search samples on the Threat Grid platform. Input parameters are ANDed together.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| sample_id | The sample ID. | Optional | 
-| artifact | The artifact to download. Sample ID is required when choosing 'artifact'. Possible values are: video.webm, network-artifacts.zip, report.html, sample.zip, screenshot.png, extracted-artifacts.zip, timeline.json, analysis.json, processes.json, network.pcap. | Optional | 
-| page | Page number of paginated results. Minimum value: 1. | Optional | 
-| page_size | The number of items per page. | Optional | 
-| limit | The maximum number of records to retrieve. Default is 50. | Optional | 
+| sample_id | The sample ID. | Optional |
+| artifact | The artifact to download. Sample ID is required when choosing 'artifact'. Possible values are: video.webm, network-artifacts.zip, report.html, sample.zip, screenshot.png, extracted-artifacts.zip, timeline.json, analysis.json, processes.json, network.pcap. | Optional |
+| page | Page number of paginated results. Minimum value: 1. | Optional |
+| page_size | The number of items per page. | Optional |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatGrid.Sample.id | String | The sample id | 
-| ThreatGrid.Sample.filename | String | The sample filename | 
-| ThreatGrid.Sample.state | String | The state of the sample, one of a stable set of strings "wait, prep, run, proc, succ, fail" | 
-| ThreatGrid.Sample.status | String | The sample status, one of a stable set of strings "succ, fail" | 
-| ThreatGrid.Sample.md5 | String | The sample md5 | 
-| ThreatGrid.Sample.sha1 | String | The sample sha1 | 
-| ThreatGrid.Sample.sha256 | String | The sample sha256 | 
-| ThreatGrid.Sample.os | String | The sample os | 
-| ThreatGrid.Sample.submitted_at | String | The sample submission time | 
-| ThreatGrid.Sample.started_at | String | The sample analysis starting time | 
-| ThreatGrid.Sample.completed_at | String | The sample completion time | 
+| ThreatGrid.Sample.id | String | The sample id |
+| ThreatGrid.Sample.filename | String | The sample filename |
+| ThreatGrid.Sample.state | String | The state of the sample, one of a stable set of strings "wait, prep, run, proc, succ, fail" |
+| ThreatGrid.Sample.status | String | The sample status, one of a stable set of strings "succ, fail" |
+| ThreatGrid.Sample.md5 | String | The sample md5 |
+| ThreatGrid.Sample.sha1 | String | The sample sha1 |
+| ThreatGrid.Sample.sha256 | String | The sample sha256 |
+| ThreatGrid.Sample.os | String | The sample os |
+| ThreatGrid.Sample.submitted_at | String | The sample submission time |
+| ThreatGrid.Sample.started_at | String | The sample analysis starting time |
+| ThreatGrid.Sample.completed_at | String | The sample completion time |
 | InfoFile.Name | String | The file name |
 | InfoFile.EntryID | String |  The ID for locating the file in the War Room |
 | InfoFile.Size | String |  The size of the file (in bytes) |
@@ -110,7 +110,7 @@ Search samples on the Threat Grid platform. Input parameters are ANDed together.
 
 #### Human Readable Output
 
->### Sample details: 
+>### Sample details:
 >|Completed At|Filename|Id|Md5|Os|Sha1|Sha256|Started At|State|Status|Submission Id|Submitted At|Tags|Vm|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 2022-12-05T04:17:00Z | md5 | id | md5 | os | sha1 | sha256 | 2022-12-05T04:10:44Z | succ | job_done | 1538519424 | 2022-12-05T04:10:44Z |  | win7-x64 |
@@ -131,26 +131,26 @@ Submits a sample to threat grid for analysis. URL or file, not both.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | file_id | The file ID. Click on the chain-like icon after you upload a file in d__ to find the file_id. | Optional |
-| url | The URL to upload. . | Optional | 
-| interval_in_seconds | Indicates how long to wait between command execution (in seconds) when 'polling' argument is true. Minimum value is 10 seconds. Default is 10. Default is 10. | Optional | 
-| timeout_in_seconds | Indicates the time in seconds until the polling sequence timeouts. Default is 60. Default is 60. | Optional | 
-| sample_id | The uploaded sample ID. | Optional | 
-| hide_polling_output | Whether to hide the polling result (automatically filled by polling). | Optional | 
+| url | The URL to upload. . | Optional |
+| interval_in_seconds | Indicates how long to wait between command execution (in seconds) when 'polling' argument is true. Minimum value is 10 seconds. Default is 10. Default is 10. | Optional |
+| timeout_in_seconds | Indicates the time in seconds until the polling sequence timeouts. Default is 60. Default is 60. | Optional |
+| sample_id | The uploaded sample ID. | Optional |
+| hide_polling_output | Whether to hide the polling result (automatically filled by polling). | Optional |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatGrid.Sample.id | String | The sample id | 
-| ThreatGrid.Sample.filename | String | The sample filename | 
-| ThreatGrid.Sample.state | String | The state of the sample, one of a stable set of strings "wait, prep, run, proc, succ, fail" | 
-| ThreatGrid.Sample.status | String | The sample status | 
-| ThreatGrid.Sample.md5 | String | The sample md5 | 
-| ThreatGrid.Sample.sha1 | String | The sample sha1 | 
-| ThreatGrid.Sample.sha256 | String | The sample sha256 | 
-| ThreatGrid.Sample.os | String | The sample os | 
-| ThreatGrid.Sample.submitted_at | String | The sample submission time | 
+| ThreatGrid.Sample.id | String | The sample id |
+| ThreatGrid.Sample.filename | String | The sample filename |
+| ThreatGrid.Sample.state | String | The state of the sample, one of a stable set of strings "wait, prep, run, proc, succ, fail" |
+| ThreatGrid.Sample.status | String | The sample status |
+| ThreatGrid.Sample.md5 | String | The sample md5 |
+| ThreatGrid.Sample.sha1 | String | The sample sha1 |
+| ThreatGrid.Sample.sha256 | String | The sample sha256 |
+| ThreatGrid.Sample.os | String | The sample os |
+| ThreatGrid.Sample.submitted_at | String | The sample submission time |
 
 #### Command example
 ```!threat-grid-sample-upload url=http://domain_example:80/```
@@ -170,34 +170,34 @@ Search threat grid submissions
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | Query text. If you wish to work with an elasticsearch query please set 'advanced' argument to true. | Optional | 
-| user_only | Only display submissions created by the current user, as determined by the value of api_key. Possible values are: True, False. | Optional | 
-| org_only | Only display submissions created by the current user's organization, as determined by the value of api_key. Possible values are: True, False. | Optional | 
-| term | Restrict matches to a subset of submission fields. The value of 'term' is a comma-delimited list of strings which select groups of fields. Possible values are: antivirus, analysis.artifacts.av_signatures.product, analysis.artifacts.av_signatures.signature, behavior, analysis.behaviors.name, analysis.behaviors.title, analysis.artifacts.av_signatures.signature, domain, analysis.domains.domain, analysis.domains.domain.component, mutant, analysis.processes.mutants, analysis.processes.mutants.whole, analysis.processes.mutants.component, path, filename, analysis.paths.path, analysis.paths.path.whole, analysis.processes.paths, process, analysis.processes.process_name, analysis.processes.startup_info.command_line, analysis.processes.startup_info.image_pathname, analysis.processes.startup_info.window_title, registry_key, analysis.registry_keys.key, analysis.registry_keys.key.whole, analysis.registry_keys.key.component, analysis.processes.registry_keys, analysis.processes.registry_keys.whole, analysis.registry_keys.value_names, sample, filename, url, analysis.urls.url, analysis.urls.url.whole.. | Optional | 
-| before | "A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+\|-hhmm e.g. : 2012-04-19T04:00:55-0500". | Optional | 
-| after | "A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+\|-hhmm e.g. : 2012-04-19T04:00:55-0500". | Optional | 
-| state | Restrict match to submissions in specific state or states. Possible values are: wait, prep, run, proc, succ, fail. | Optional | 
-| sort_by | If not specified, results will be sorted by the search score, which is based on which fields match the query most accurately, and their weight. Possible values are: timestamp, submitted_at, analyzed_at, filename, type, state, threat or threat_score, login. | Optional | 
-| sort_order | desc or asc. Possible values are: desc, asc. | Optional | 
-| highlight | Provide a 'matches' field in results, indicating which fields were matched. Possible values are: True, False. | Optional | 
-| page | Page number of paginated results. Minimum value: 1. | Optional | 
-| page_size | The number of items per page. | Optional | 
-| limit | The maximum number of records to retrieve. Default is 50. | Optional | 
+| query | Query text. If you wish to work with an elasticsearch query please set 'advanced' argument to true. | Optional |
+| user_only | Only display submissions created by the current user, as determined by the value of api_key. Possible values are: True, False. | Optional |
+| org_only | Only display submissions created by the current user's organization, as determined by the value of api_key. Possible values are: True, False. | Optional |
+| term | Restrict matches to a subset of submission fields. The value of 'term' is a comma-delimited list of strings which select groups of fields. Possible values are: antivirus, analysis.artifacts.av_signatures.product, analysis.artifacts.av_signatures.signature, behavior, analysis.behaviors.name, analysis.behaviors.title, analysis.artifacts.av_signatures.signature, domain, analysis.domains.domain, analysis.domains.domain.component, mutant, analysis.processes.mutants, analysis.processes.mutants.whole, analysis.processes.mutants.component, path, filename, analysis.paths.path, analysis.paths.path.whole, analysis.processes.paths, process, analysis.processes.process_name, analysis.processes.startup_info.command_line, analysis.processes.startup_info.image_pathname, analysis.processes.startup_info.window_title, registry_key, analysis.registry_keys.key, analysis.registry_keys.key.whole, analysis.registry_keys.key.component, analysis.processes.registry_keys, analysis.processes.registry_keys.whole, analysis.registry_keys.value_names, sample, filename, url, analysis.urls.url, analysis.urls.url.whole.. | Optional |
+| before | "A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+\|-hhmm e.g. : 2012-04-19T04:00:55-0500". | Optional |
+| after | "A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+\|-hhmm e.g. : 2012-04-19T04:00:55-0500". | Optional |
+| state | Restrict match to submissions in specific state or states. Possible values are: wait, prep, run, proc, succ, fail. | Optional |
+| sort_by | If not specified, results will be sorted by the search score, which is based on which fields match the query most accurately, and their weight. Possible values are: timestamp, submitted_at, analyzed_at, filename, type, state, threat or threat_score, login. | Optional |
+| sort_order | desc or asc. Possible values are: desc, asc. | Optional |
+| highlight | Provide a 'matches' field in results, indicating which fields were matched. Possible values are: True, False. | Optional |
+| page | Page number of paginated results. Minimum value: 1. | Optional |
+| page_size | The number of items per page. | Optional |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatGrid.Sample.sample | String | The sample ID | 
-| ThreatGrid.Sample.filename | String | The name of the sample file | 
-| ThreatGrid.Sample.state | String | The state of the sample, one of a stable set of strings "wait, prep, run, proc, succ, fail" | 
-| ThreatGrid.Sample.status | String | The status of the sample | 
-| ThreatGrid.Sample.md5 | String | The MD5 id of the sample | 
-| ThreatGrid.Sample.sha1 | String | The SHA1 id of the sample | 
-| ThreatGrid.Sample.sha256 | String | The SHA256 id of the sample | 
-| ThreatGrid.Sample.submitted_at | Date | Time of submission for the sample | 
-| ThreatGrid.Sample.threat_score | Number | The threat score of the sample | 
+| ThreatGrid.Sample.sample | String | The sample ID |
+| ThreatGrid.Sample.filename | String | The name of the sample file |
+| ThreatGrid.Sample.state | String | The state of the sample, one of a stable set of strings "wait, prep, run, proc, succ, fail" |
+| ThreatGrid.Sample.status | String | The status of the sample |
+| ThreatGrid.Sample.md5 | String | The MD5 id of the sample |
+| ThreatGrid.Sample.sha1 | String | The SHA1 id of the sample |
+| ThreatGrid.Sample.sha256 | String | The SHA256 id of the sample |
+| ThreatGrid.Sample.submitted_at | Date | Time of submission for the sample |
+| ThreatGrid.Sample.threat_score | Number | The threat score of the sample |
 
 #### Command example
 ```!threat-grid-submissions-search```
@@ -235,8 +235,8 @@ Search threat grid submissions
 
 #### Human Readable Output
 
->### Samples Submissed : 
-> Showing page 1. 
+>### Samples Submissed :
+> Showing page 1.
 > Current page size: 50
 >|Filename|Md5|Private|Sample|Sha1|Sha256|State|Status|Submitted At|
 >|---|---|---|---|---|---|---|---|---|
@@ -256,20 +256,20 @@ Returns summary analysis information
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| sample_id | The sample id. | Required | 
+| sample_id | The sample id. | Required |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatGrid.SampleAnalysisSummary.sample | String | The sample ID. | 
-| ThreatGrid.SampleAnalysisSummary.registry_count | Number | The registry count of the sample. | 
-| ThreatGrid.SampleAnalysisSummary.filename | String | The Filename of the sample. | 
-| ThreatGrid.SampleAnalysisSummary.sha256 | String | The SHA256 hash of the sample. | 
-| ThreatGrid.SampleAnalysisSummary.magic_type | String | The sample type. | 
-| ThreatGrid.SampleAnalysisSummary.first_seen | Date | The timestamp when the sample was first seen. | 
-| ThreatGrid.SampleAnalysisSummary.last_seen | Date | The timestamp when the sample was last seen. | 
+| ThreatGrid.SampleAnalysisSummary.sample | String | The sample ID. |
+| ThreatGrid.SampleAnalysisSummary.registry_count | Number | The registry count of the sample. |
+| ThreatGrid.SampleAnalysisSummary.filename | String | The Filename of the sample. |
+| ThreatGrid.SampleAnalysisSummary.sha256 | String | The SHA256 hash of the sample. |
+| ThreatGrid.SampleAnalysisSummary.magic_type | String | The sample type. |
+| ThreatGrid.SampleAnalysisSummary.first_seen | Date | The timestamp when the sample was first seen. |
+| ThreatGrid.SampleAnalysisSummary.last_seen | Date | The timestamp when the sample was last seen. |
 
 #### Command example
 ```!threat-grid-sample-summary-get sample_id=sample_id```
@@ -383,8 +383,8 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatGrid.User.email | string | Current user mail. | 
-| ThreatGrid.User.login | string | Current user login name. | 
+| ThreatGrid.User.email | string | Current user mail. |
+| ThreatGrid.User.login | string | Current user login name. |
 
 #### Command example
 ```!threat-grid-who-am-i```
@@ -429,17 +429,17 @@ Get rate limit for a specific user name. ThreatGrid employs a simple rate limiti
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| login | User login name. | Required | 
-| entity_type | User or Organization. Possible values are: user, organization. | Required | 
+| login | User login name. | Required |
+| entity_type | User or Organization. Possible values are: user, organization. | Required |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatGrid.RateLimit.submission-rate-limit | number | Array of array\(s\) representing submission\(s\) per minute\(s\) or the string"nil" to clear the value. Example: \[\[5, 1440\]\] which represents 5 samples per day. This field represent the number of samples allowed. | 
-| ThreatGrid.RateLimit.submission-wait-seconds | number | The number of seconds to wait for a submission to get uploaded on the platform. | 
-| ThreatGrid.RateLimit.submissions-available | number | The number of submissions available for the specified username | 
+| ThreatGrid.RateLimit.submission-rate-limit | number | Array of array\(s\) representing submission\(s\) per minute\(s\) or the string"nil" to clear the value. Example: \[\[5, 1440\]\] which represents 5 samples per day. This field represent the number of samples allowed. |
+| ThreatGrid.RateLimit.submission-wait-seconds | number | The number of seconds to wait for a submission to get uploaded on the platform. |
+| ThreatGrid.RateLimit.submissions-available | number | The number of submissions available for the specified username |
 
 #### Command example
 ```!threat-grid-rate-limit-get login=login_name entity_type=user```
@@ -476,18 +476,18 @@ Gets a specific threat feed
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| feed_name | The feed name. Possible values are: autorun-registry, banking-dns, dga-dns, dll-hijacking-dns, doc-net-com-dns, downloaded-pe-dns, dynamic-dns, irc-dns, modified-hosts-dns, parked-dns, public-ip-check-dns, ransomware-dns, rat-dns, scheduled-tasks, sinkholed-ip-dns, stolen-cert-dns. | Required | 
-| output_type | The output type. Possible values are: json, csv, stix, snort, txt. Default is json. | Optional | 
-| before | "A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+\|-hhmm e.g. : 2012-04-19T04:00:55-0500". | Optional | 
-| after | "A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+\|-hhmm e.g. : 2012-04-19T04:00:55-0500". | Optional | 
+| feed_name | The feed name. Possible values are: autorun-registry, banking-dns, dga-dns, dll-hijacking-dns, doc-net-com-dns, downloaded-pe-dns, dynamic-dns, irc-dns, modified-hosts-dns, parked-dns, public-ip-check-dns, ransomware-dns, rat-dns, scheduled-tasks, sinkholed-ip-dns, stolen-cert-dns. | Required |
+| output_type | The output type. Possible values are: json, csv, stix, snort, txt. Default is json. | Optional |
+| before | "A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+\|-hhmm e.g. : 2012-04-19T04:00:55-0500". | Optional |
+| after | "A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+\|-hhmm e.g. : 2012-04-19T04:00:55-0500". | Optional |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatGrid.Feed.sample | String | Feed sample. | 
-| ThreatGrid.Feed.description | String | Feed description. | 
+| ThreatGrid.Feed.sample | String | Feed sample. |
+| ThreatGrid.Feed.description | String | Feed description. |
 
 #### Command example
 ```!threat-grid-feed-specific-get feed_name=doc-net-com-dns```
@@ -551,16 +551,16 @@ Search IPs. Please provide a single argument (only one) to use this command, as 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip | The IP to search for. | Required | 
+| ip | The IP to search for. | Required |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatGrid.search.ip | string | IP item. | 
-| ThreatGrid.search.asn | string | IP asn. | 
-| ThreatGrid.search.location | string | IP location details. | 
+| ThreatGrid.search.ip | string | IP item. |
+| ThreatGrid.search.asn | string | IP asn. |
+| ThreatGrid.search.location | string | IP location details. |
 
 #### Command example
 ```!threat-grid-ip-search ip=8.8.8.8```
@@ -616,14 +616,14 @@ Returns data regarding the annotations of the analysis
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| sample_id | The sample ID. | Required | 
+| sample_id | The sample ID. | Required |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatGrid.SampleAnnotations.network | String | IP address &amp; timestamp in the annotation. | 
+| ThreatGrid.SampleAnnotations.network | String | IP address &amp; timestamp in the annotation. |
 
 #### Command example
 ```!threat-grid-analysis-annotations-get sample_id=sample_id```
@@ -664,7 +664,7 @@ Returns data regarding the annotations of the analysis
 
 ### threat-grid-url-search
 ***
-Search urls. Please provide the URL in the format http://example.com:80/ .
+Search urls. Please provide the URL in the format http://example.com:80/ (note that ThreatGrid only support '.com' domains).
 
 
 #### Base Command
@@ -674,14 +674,14 @@ Search urls. Please provide the URL in the format http://example.com:80/ .
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| url | The URL to search for. | Required | 
+| url | The URL to search for (please provide the URL in the format http://example.com:80/. note that ThreatGrid only support '.com' domains). | Required |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatGrid.search.url | String | URL item | 
+| ThreatGrid.search.url | String | URL item |
 
 #### Command example
 ```!threat-grid-url-search url=http://domain_example:80/```
@@ -723,33 +723,33 @@ Get artifacts threat feed
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| sha256 | Restrict returned records with this sha256. | Optional | 
-| sha1 | Restrict returned records with this sha1. | Optional | 
-| md5 | Restrict returned records with this md5. | Optional | 
-| path | Restrict returned records to this path or path fragment. | Optional | 
-| before | "A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+\|-hhmm e.g. : 2012-04-19T04:00:55-0500". | Optional | 
-| after | "A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+\|-hhmm e.g. : 2012-04-19T04:00:55-0500". | Optional | 
-| confidence | Restrict to IOCs with this confidence score or higher, defaults to 80. Default is 80. | Optional | 
-| severity | Restrict to IOCs with this severity score or higher, defaults to 80. Default is 80. | Optional | 
-| ioc | Restrict returned records to events of this type. | Optional | 
-| org_only | If “true”, will only match against samples submitted by your organization. Possible values are: True, False. | Optional | 
-| user_only | If “true”, will only match against samples you submitted. Possible values are: True, False. | Optional | 
-| sample_id | A comma-separated list of sample IDs. Restrict results to these samples. | Optional | 
-| limit | The maximum number of records to retrieve. Default is 50. | Optional | 
-| page_size | The number of items per page. | Optional | 
-| page | Page number of paginated results. | Optional | 
+| sha256 | Restrict returned records with this sha256. | Optional |
+| sha1 | Restrict returned records with this sha1. | Optional |
+| md5 | Restrict returned records with this md5. | Optional |
+| path | Restrict returned records to this path or path fragment. | Optional |
+| before | "A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+\|-hhmm e.g. : 2012-04-19T04:00:55-0500". | Optional |
+| after | "A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+\|-hhmm e.g. : 2012-04-19T04:00:55-0500". | Optional |
+| confidence | Restrict to IOCs with this confidence score or higher, defaults to 80. Default is 80. | Optional |
+| severity | Restrict to IOCs with this severity score or higher, defaults to 80. Default is 80. | Optional |
+| ioc | Restrict returned records to events of this type. | Optional |
+| org_only | If “true”, will only match against samples submitted by your organization. Possible values are: True, False. | Optional |
+| user_only | If “true”, will only match against samples you submitted. Possible values are: True, False. | Optional |
+| sample_id | A comma-separated list of sample IDs. Restrict results to these samples. | Optional |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
+| page_size | The number of items per page. | Optional |
+| page | Page number of paginated results. | Optional |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatGrid.Artifact.confidence | Number | Artifact confidence | 
-| ThreatGrid.Artifact.severity | Number | Artifact severity | 
-| ThreatGrid.Artifact.ioc | String | Artifact IOC | 
-| ThreatGrid.Artifact.artifact_sha256 | String | Artifact sha256 | 
-| ThreatGrid.Artifact.artifact_md5 | String | Artifact md5 | 
-| ThreatGrid.Artifact.sample_id | String | Artifact sample ID | 
+| ThreatGrid.Artifact.confidence | Number | Artifact confidence |
+| ThreatGrid.Artifact.severity | Number | Artifact severity |
+| ThreatGrid.Artifact.ioc | String | Artifact IOC |
+| ThreatGrid.Artifact.artifact_sha256 | String | Artifact sha256 |
+| ThreatGrid.Artifact.artifact_md5 | String | Artifact md5 |
+| ThreatGrid.Artifact.sample_id | String | Artifact sample ID |
 
 #### Command example
 ```!threat-grid-feeds-artifact```
@@ -787,8 +787,8 @@ Get artifacts threat feed
 
 #### Human Readable Output
 
->### Feeds IOCs list artifact : 
-> Showing page 1. 
+>### Feeds IOCs list artifact :
+> Showing page 1.
 > Current page size: 50
 >|Aid|Artifact Md5|Artifact Sha256|Confidence|Ioc|Path|Sample Id|Severity|Timestamp|
 >|---|---|---|---|---|---|---|---|---|
@@ -807,30 +807,30 @@ Get domain threat feed
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| domain | Restrict returned records to this domain or hostname. | Optional | 
-| before | "A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+\|-hhmm e.g. : 2012-04-19T04:00:55-0500". | Optional | 
-| after | "A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+\|-hhmm e.g. : 2012-04-19T04:00:55-0500". | Optional | 
-| confidence | Restrict to IOCs with this confidence score or higher, defaults to 80. Default is 80. | Optional | 
-| severity | Restrict to IOCs with this severity score or higher, defaults to 80. Default is 80. | Optional | 
-| ioc | Restrict returned records to events of this type. | Optional | 
-| org_only | If “true”, will only match against samples submitted by your organization. Possible values are: True, False. | Optional | 
-| user_only | If “true”, will only match against samples you submitted. Possible values are: True, False. | Optional | 
-| sample_id | A comma-separated list of sample IDs. Restrict results to these samples. | Optional | 
-| page | Page number of paginated results. | Optional | 
-| page_size | The number of items per page. | Optional | 
-| limit | The maximum number of records to retrieve. Default is 50. | Optional | 
+| domain | Restrict returned records to this domain or hostname. | Optional |
+| before | "A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+\|-hhmm e.g. : 2012-04-19T04:00:55-0500". | Optional |
+| after | "A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+\|-hhmm e.g. : 2012-04-19T04:00:55-0500". | Optional |
+| confidence | Restrict to IOCs with this confidence score or higher, defaults to 80. Default is 80. | Optional |
+| severity | Restrict to IOCs with this severity score or higher, defaults to 80. Default is 80. | Optional |
+| ioc | Restrict returned records to events of this type. | Optional |
+| org_only | If “true”, will only match against samples submitted by your organization. Possible values are: True, False. | Optional |
+| user_only | If “true”, will only match against samples you submitted. Possible values are: True, False. | Optional |
+| sample_id | A comma-separated list of sample IDs. Restrict results to these samples. | Optional |
+| page | Page number of paginated results. | Optional |
+| page_size | The number of items per page. | Optional |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatGrid.Domain.confidence | Number | Domain confidence | 
-| ThreatGrid.Domain.severity | Number | Domain severity | 
-| ThreatGrid.Domain.ioc | String | Domain IOC | 
-| ThreatGrid.Domain.sample_sha256 | String | Domain sha256 | 
-| ThreatGrid.Domain.sample_id | String | Domain sample ID | 
-| ThreatGrid.Domain.domain | String | The Domain  | 
+| ThreatGrid.Domain.confidence | Number | Domain confidence |
+| ThreatGrid.Domain.severity | Number | Domain severity |
+| ThreatGrid.Domain.ioc | String | Domain IOC |
+| ThreatGrid.Domain.sample_sha256 | String | Domain sha256 |
+| ThreatGrid.Domain.sample_id | String | Domain sample ID |
+| ThreatGrid.Domain.domain | String | The Domain  |
 
 #### Command example
 ```!threat-grid-feeds-domain```
@@ -865,8 +865,8 @@ Get domain threat feed
 
 #### Human Readable Output
 
->### Feeds IOCs list domain : 
-> Showing page 1. 
+>### Feeds IOCs list domain :
+> Showing page 1.
 > Current page size: 50
 >|Confidence|Domain|Ioc|Sample Id|Sample Sha256|Severity|Timestamp|
 >|---|---|---|---|---|---|---|
@@ -963,31 +963,31 @@ Get ips threat feed
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip | Restrict returned records to this IP or CIDR block. | Optional | 
-| before | "A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+\|-hhmm e.g. : 2012-04-19T04:00:55-0500". | Optional | 
-| after | "A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+\|-hhmm e.g. : 2012-04-19T04:00:55-0500". | Optional | 
-| confidence | Restrict to IOCs with this confidence score or higher, defaults to 80. Default is 80. | Optional | 
-| severity | Restrict to IOCs with this severity score or higher, defaults to 80. Default is 80. | Optional | 
-| ioc | Restrict returned records to events of this type. | Optional | 
-| org_only | If “true”, will only match against samples submitted by your organization. Possible values are: True, False. | Optional | 
-| user_only | If “true”, will only match against samples you submitted. Possible values are: True, False. | Optional | 
-| sample_id | A comma-separated list of sample IDs. Restrict results to these samples. | Optional | 
-| page | Page number of paginated results. | Optional | 
-| page_size | The number of items per page. | Optional | 
-| limit | The maximum number of records to retrieve. Default is 50. | Optional | 
+| ip | Restrict returned records to this IP or CIDR block. | Optional |
+| before | "A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+\|-hhmm e.g. : 2012-04-19T04:00:55-0500". | Optional |
+| after | "A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+\|-hhmm e.g. : 2012-04-19T04:00:55-0500". | Optional |
+| confidence | Restrict to IOCs with this confidence score or higher, defaults to 80. Default is 80. | Optional |
+| severity | Restrict to IOCs with this severity score or higher, defaults to 80. Default is 80. | Optional |
+| ioc | Restrict returned records to events of this type. | Optional |
+| org_only | If “true”, will only match against samples submitted by your organization. Possible values are: True, False. | Optional |
+| user_only | If “true”, will only match against samples you submitted. Possible values are: True, False. | Optional |
+| sample_id | A comma-separated list of sample IDs. Restrict results to these samples. | Optional |
+| page | Page number of paginated results. | Optional |
+| page_size | The number of items per page. | Optional |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatGrid.Ip.confidence | Number | IP confidence | 
-| ThreatGrid.Ip.severity | Number | IP severity | 
-| ThreatGrid.Ip.ioc | String | IP IOC | 
-| ThreatGrid.Ip.sample_sha256 | String | IP sha256 | 
-| ThreatGrid.Ip.sample_id | String | IP sample ID | 
-| ThreatGrid.Ip.ip | String | The IP | 
-| ThreatGrid.Ip.port | Number | The IP port | 
+| ThreatGrid.Ip.confidence | Number | IP confidence |
+| ThreatGrid.Ip.severity | Number | IP severity |
+| ThreatGrid.Ip.ioc | String | IP IOC |
+| ThreatGrid.Ip.sample_sha256 | String | IP sha256 |
+| ThreatGrid.Ip.sample_id | String | IP sample ID |
+| ThreatGrid.Ip.ip | String | The IP |
+| ThreatGrid.Ip.port | Number | The IP port |
 
 #### Command example
 ```!threat-grid-feeds-ip```
@@ -1023,8 +1023,8 @@ Get ips threat feed
 
 #### Human Readable Output
 
->### Feeds IOCs list ip : 
-> Showing page 1. 
+>### Feeds IOCs list ip :
+> Showing page 1.
 > Current page size: 50
 >|Confidence|Ioc|Ip|Port|Sample Id|Sample Sha256|Severity|Timestamp|
 >|---|---|---|---|---|---|---|---|
@@ -1044,34 +1044,34 @@ Get network stream threat feed
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip | Restrict returned records to this IP address. | Optional | 
-| port | Restrict returned records to this port number. | Optional | 
-| before | "A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+\|-hhmm e.g. : 2012-04-19T04:00:55-0500". | Optional | 
-| after | "A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+\|-hhmm e.g. : 2012-04-19T04:00:55-0500". | Optional | 
-| confidence | Restrict to IOCs with this confidence score or higher, defaults to 80. Default is 80. | Optional | 
-| severity | Restrict to IOCs with this severity score or higher, defaults to 80. Default is 80. | Optional | 
-| ioc | Restrict returned records to events of this type. | Optional | 
-| org_only | If “true”, will only match against samples submitted by your organization. Possible values are: True, False. | Optional | 
-| user_only | If “true”, will only match against samples you submitted. Possible values are: True, False. | Optional | 
-| sample_id | A comma-separated list of sample IDs. Restrict results to these samples. | Optional | 
-| page | Page number of paginated results. | Optional | 
-| page_size | The number of items per page. | Optional | 
-| limit | The maximum number of records to retrieve. Default is 50. | Optional | 
+| ip | Restrict returned records to this IP address. | Optional |
+| port | Restrict returned records to this port number. | Optional |
+| before | "A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+\|-hhmm e.g. : 2012-04-19T04:00:55-0500". | Optional |
+| after | "A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+\|-hhmm e.g. : 2012-04-19T04:00:55-0500". | Optional |
+| confidence | Restrict to IOCs with this confidence score or higher, defaults to 80. Default is 80. | Optional |
+| severity | Restrict to IOCs with this severity score or higher, defaults to 80. Default is 80. | Optional |
+| ioc | Restrict returned records to events of this type. | Optional |
+| org_only | If “true”, will only match against samples submitted by your organization. Possible values are: True, False. | Optional |
+| user_only | If “true”, will only match against samples you submitted. Possible values are: True, False. | Optional |
+| sample_id | A comma-separated list of sample IDs. Restrict results to these samples. | Optional |
+| page | Page number of paginated results. | Optional |
+| page_size | The number of items per page. | Optional |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatGrid.NetworkStreams.confidence | Number | Network Streams confidence | 
-| ThreatGrid.NetworkStreams.severity | Number | Network Streams severity | 
-| ThreatGrid.NetworkStreams.ioc | String | Network Streams IOC | 
-| ThreatGrid.NetworkStreams.sample_sha256 | String | Network Streams sha256 | 
-| ThreatGrid.NetworkStreams.sample_id | String | Network Streams sample ID | 
-| ThreatGrid.NetworkStreams.src | String | The Network Streams source  | 
-| ThreatGrid.NetworkStreams.src_port | Number | The Network Streams source port | 
-| ThreatGrid.NetworkStreams.dst | String | The Network Streams destination  | 
-| ThreatGrid.NetworkStreams.dst_port | Number | The Network Streams destination port | 
+| ThreatGrid.NetworkStreams.confidence | Number | Network Streams confidence |
+| ThreatGrid.NetworkStreams.severity | Number | Network Streams severity |
+| ThreatGrid.NetworkStreams.ioc | String | Network Streams IOC |
+| ThreatGrid.NetworkStreams.sample_sha256 | String | Network Streams sha256 |
+| ThreatGrid.NetworkStreams.sample_id | String | Network Streams sample ID |
+| ThreatGrid.NetworkStreams.src | String | The Network Streams source  |
+| ThreatGrid.NetworkStreams.src_port | Number | The Network Streams source port |
+| ThreatGrid.NetworkStreams.dst | String | The Network Streams destination  |
+| ThreatGrid.NetworkStreams.dst_port | Number | The Network Streams destination port |
 
 #### Command example
 ```!threat-grid-feeds-network-stream```
@@ -1112,8 +1112,8 @@ Get network stream threat feed
 
 #### Human Readable Output
 
->### Feeds IOCs list network_stream : 
-> Showing page 1. 
+>### Feeds IOCs list network_stream :
+> Showing page 1.
 > Current page size: 50
 >|Confidence|Dst|Dst Port|Ioc|Sample Id|Sample Sha256|Severity|Src|Src Port|Timestamp|
 >|---|---|---|---|---|---|---|---|---|---|
@@ -1133,29 +1133,29 @@ Get path threat feed
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| path | Restrict returned records to this path or path fragment. | Optional | 
-| before | "A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+\|-hhmm e.g. : 2012-04-19T04:00:55-0500". | Optional | 
-| after | "A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+\|-hhmm e.g. : 2012-04-19T04:00:55-0500". | Optional | 
-| confidence | Restrict to IOCs with this confidence score or higher, defaults to 80. Default is 80. | Optional | 
-| severity | Restrict to IOCs with this severity score or higher, defaults to 80. Default is 80. | Optional | 
-| ioc | Restrict returned records to events of this type. | Optional | 
-| org_only | If “true”, will only match against samples submitted by your organization. Possible values are: True, False. | Optional | 
-| user_only | If “true”, will only match against samples you submitted. Possible values are: True, False. | Optional | 
-| sample_id | A comma-separated list of sample IDs. Restrict results to these samples. | Optional | 
-| page | Page number of paginated results. | Optional | 
-| page_size | The number of items per page. | Optional | 
-| limit | The maximum number of records to retrieve. Default is 50. | Optional | 
+| path | Restrict returned records to this path or path fragment. | Optional |
+| before | "A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+\|-hhmm e.g. : 2012-04-19T04:00:55-0500". | Optional |
+| after | "A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+\|-hhmm e.g. : 2012-04-19T04:00:55-0500". | Optional |
+| confidence | Restrict to IOCs with this confidence score or higher, defaults to 80. Default is 80. | Optional |
+| severity | Restrict to IOCs with this severity score or higher, defaults to 80. Default is 80. | Optional |
+| ioc | Restrict returned records to events of this type. | Optional |
+| org_only | If “true”, will only match against samples submitted by your organization. Possible values are: True, False. | Optional |
+| user_only | If “true”, will only match against samples you submitted. Possible values are: True, False. | Optional |
+| sample_id | A comma-separated list of sample IDs. Restrict results to these samples. | Optional |
+| page | Page number of paginated results. | Optional |
+| page_size | The number of items per page. | Optional |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatGrid.Path.confidence | Number | Path confidence | 
-| ThreatGrid.Path.severity | Number | Path severity | 
-| ThreatGrid.Path.ioc | String | Path IOC | 
-| ThreatGrid.Path.sample_sha256 | String | Path sha256 | 
-| ThreatGrid.Path.sample_id | String | Path sample ID | 
+| ThreatGrid.Path.confidence | Number | Path confidence |
+| ThreatGrid.Path.severity | Number | Path severity |
+| ThreatGrid.Path.ioc | String | Path IOC |
+| ThreatGrid.Path.sample_sha256 | String | Path sha256 |
+| ThreatGrid.Path.sample_id | String | Path sample ID |
 
 #### Command example
 ```!threat-grid-feeds-path```
@@ -1189,8 +1189,8 @@ Get path threat feed
 
 #### Human Readable Output
 
->### Feeds IOCs list path : 
-> Showing page 1. 
+>### Feeds IOCs list path :
+> Showing page 1.
 > Current page size: 50
 >|Confidence|Ioc|Path|Sample Id|Sample Sha256|Severity|Timestamp|
 >|---|---|---|---|---|---|---|
@@ -1210,30 +1210,30 @@ Get url threat feed
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| url | Restrict returned records to this URL or URL fragment. | Optional | 
-| before | "A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+\|-hhmm e.g. : 2012-04-19T04:00:55-0500". | Optional | 
-| after | "A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+\|-hhmm e.g. : 2012-04-19T04:00:55-0500". | Optional | 
-| confidence | Restrict to IOCs with this confidence score or higher, defaults to 80. Default is 80. | Optional | 
-| severity | Restrict to IOCs with this severity score or higher, defaults to 80. Default is 80. | Optional | 
-| ioc | Restrict returned records to events of this type. | Optional | 
-| org_only | If “true”, will only match against samples submitted by your organization. Possible values are: True, False. | Optional | 
-| user_only | If “true”, will only match against samples you submitted. Possible values are: True, False. | Optional | 
-| sample_id | A comma-separated list of sample IDs. Restrict results to these samples. | Optional | 
-| page | Page number of paginated results. | Optional | 
-| page_size | The number of items per page. | Optional | 
-| limit | The maximum number of records to retrieve. Default is 50. | Optional | 
+| url | Restrict returned records to this URL or URL fragment. | Optional |
+| before | "A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+\|-hhmm e.g. : 2012-04-19T04:00:55-0500". | Optional |
+| after | "A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+\|-hhmm e.g. : 2012-04-19T04:00:55-0500". | Optional |
+| confidence | Restrict to IOCs with this confidence score or higher, defaults to 80. Default is 80. | Optional |
+| severity | Restrict to IOCs with this severity score or higher, defaults to 80. Default is 80. | Optional |
+| ioc | Restrict returned records to events of this type. | Optional |
+| org_only | If “true”, will only match against samples submitted by your organization. Possible values are: True, False. | Optional |
+| user_only | If “true”, will only match against samples you submitted. Possible values are: True, False. | Optional |
+| sample_id | A comma-separated list of sample IDs. Restrict results to these samples. | Optional |
+| page | Page number of paginated results. | Optional |
+| page_size | The number of items per page. | Optional |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatGrid.Url.confidence | Number | URL confidence | 
-| ThreatGrid.Url.severity | Number | URL severity | 
-| ThreatGrid.Url.ioc | String | URL IOC | 
-| ThreatGrid.Url.sample_sha256 | String | URL sha256 | 
-| ThreatGrid.Url.sample_id | String | URL sample ID | 
-| ThreatGrid.Url.url | String | The URL | 
+| ThreatGrid.Url.confidence | Number | URL confidence |
+| ThreatGrid.Url.severity | Number | URL severity |
+| ThreatGrid.Url.ioc | String | URL IOC |
+| ThreatGrid.Url.sample_sha256 | String | URL sha256 |
+| ThreatGrid.Url.sample_id | String | URL sample ID |
+| ThreatGrid.Url.url | String | The URL |
 
 ### threat-grid-analysis-artifacts-get
 ***
@@ -1247,8 +1247,8 @@ Returns the sample id artifact with artifact id
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| sample_id | the sample id. | Required | 
-| artifact_id | The artifact id requested. | Optional | 
+| sample_id | the sample id. | Required |
+| artifact_id | The artifact id requested. | Optional |
 
 
 #### Context Output
@@ -1470,21 +1470,21 @@ Returns data regarding the specified Indicator of Compromise
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| sample_id | the sample id. | Required | 
-| ioc | the IOC requested. | Optional | 
+| sample_id | the sample id. | Required |
+| ioc | the IOC requested. | Optional |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatGrid.IOCAnalysis.title | String | The title of the IOC | 
-| ThreatGrid.IOCAnalysis.confidence | Number | The confidence of the IOC | 
-| ThreatGrid.IOCAnalysis.severity | String | The severity of the IOC | 
-| ThreatGrid.IOCAnalysis.ioc | String | Threat grid's IOC | 
-| ThreatGrid.IOCAnalysis.category | String | The IOC category of the IOC | 
-| ThreatGrid.IOCAnalysis.sha256 | String | The SHA256 value of the IOC | 
-| ThreatGrid.IOCAnalysis.tags | String | The tags of the IOC | 
+| ThreatGrid.IOCAnalysis.title | String | The title of the IOC |
+| ThreatGrid.IOCAnalysis.confidence | Number | The confidence of the IOC |
+| ThreatGrid.IOCAnalysis.severity | String | The severity of the IOC |
+| ThreatGrid.IOCAnalysis.ioc | String | Threat grid's IOC |
+| ThreatGrid.IOCAnalysis.category | String | The IOC category of the IOC |
+| ThreatGrid.IOCAnalysis.sha256 | String | The SHA256 value of the IOC |
+| ThreatGrid.IOCAnalysis.tags | String | The tags of the IOC |
 
 #### Command example
 ```!threat-grid-analysis-iocs-get sample_id=sample_id```
@@ -1606,16 +1606,16 @@ Returns metadata about the analysis
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| sample_id | the sample id. | Required | 
+| sample_id | the sample id. | Required |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatGrid.AnalysisMetadata.general_details | Unknown | The Metadata Analysis General Details | 
-| ThreatGrid.AnalysisMetadata.malware_desc | Unknown | The Metadata Analysis Malware Desc | 
-| ThreatGrid.AnalysisMetadata.sandcastle_env | Unknown | The Metadata Analysis Malware Sandcastle ENV | 
+| ThreatGrid.AnalysisMetadata.general_details | Unknown | The Metadata Analysis General Details |
+| ThreatGrid.AnalysisMetadata.malware_desc | Unknown | The Metadata Analysis Malware Desc |
+| ThreatGrid.AnalysisMetadata.sandcastle_env | Unknown | The Metadata Analysis Malware Sandcastle ENV |
 
 #### Command example
 ```!threat-grid-analysis-metadata-get sample_id=sample_id```
@@ -1678,19 +1678,19 @@ Returns data regarding a specific network stream
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| sample_id | the sample id. | Required | 
-| network_stream_id | The network stream id. | Optional | 
+| sample_id | the sample id. | Required |
+| network_stream_id | The network stream id. | Optional |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatGrid.NetworkAnalysis.protocol | Number | The network protocol | 
-| ThreatGrid.NetworkAnalysis.transport | String | The network transport  | 
-| ThreatGrid.NetworkAnalysis.service | String | The network service | 
-| ThreatGrid.NetworkAnalysis.client_ip | String | The client IP | 
-| ThreatGrid.NetworkAnalysis.server_ip | String | The server IP | 
+| ThreatGrid.NetworkAnalysis.protocol | Number | The network protocol |
+| ThreatGrid.NetworkAnalysis.transport | String | The network transport  |
+| ThreatGrid.NetworkAnalysis.service | String | The network service |
+| ThreatGrid.NetworkAnalysis.client_ip | String | The client IP |
+| ThreatGrid.NetworkAnalysis.server_ip | String | The server IP |
 
 #### Command example
 ```!threat-grid-analysis-network-streams-get sample_id=sample_id```
@@ -1790,16 +1790,16 @@ Returns data regarding the specific process id in the analysis
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| sample_id | the sample id. | Required | 
-| process_id | the process id requested. | Optional | 
+| sample_id | the sample id. | Required |
+| process_id | the process id requested. | Optional |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatGrid.ProcessAnalysis.process_name | String | The process name | 
-| ThreatGrid.ProcessAnalysis.process_id | String | The process ID | 
+| ThreatGrid.ProcessAnalysis.process_name | String | The process name |
+| ThreatGrid.ProcessAnalysis.process_id | String | The process ID |
 
 #### Command example
 ```!threat-grid-analysis-processes-get sample_id=sample_id```
@@ -1954,32 +1954,32 @@ Checks the file reputation of the specified hash.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file | A CSV list of hashes of the file to query. Supports MD5, SHA1, and SHA256. | Required | 
-| long | Whether to return full response for scans. Default is "false". Possible values are: True, False. | Optional | 
-| threshold | If the number of positives is higher than the threshold, the file will be considered malicious. If the threshold is not specified, the default file threshold, as configured in the instance settings, will be used. | Optional | 
-| wait | Time (in seconds) to wait between tries if the API rate limit is reached. Default is "60". Default is 60. | Optional | 
-| retries | Number of retries for the API rate limit. Default is "0". Default is 0. | Optional | 
+| file | A CSV list of hashes of the file to query. Supports MD5, SHA1, and SHA256. | Required |
+| long | Whether to return full response for scans. Default is "false". Possible values are: True, False. | Optional |
+| threshold | If the number of positives is higher than the threshold, the file will be considered malicious. If the threshold is not specified, the default file threshold, as configured in the instance settings, will be used. | Optional |
+| wait | Time (in seconds) to wait between tries if the API rate limit is reached. Default is "60". Default is 60. | Optional |
+| retries | Number of retries for the API rate limit. Default is "0". Default is 0. | Optional |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| File.MD5 | String | Bad MD5 hash. | 
-| File.Name | String | File name. | 
-| File.SHA1 | String | Bad SHA1 hash. | 
-| File.sha256 | String | Bad SHA256 hash. | 
-| File.EntryID | String | The entry ID of the file. | 
-| File.Malicious.Vendor | String | The vendor that reported the file as malicious. | 
-| File.Malicious.Description | String | A description explaining why the file was determined to be malicious. | 
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| DBotScore.Score | Number | The actual score. | 
-| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
-| ThreatGrid.File.PositiveDetections | number | Number of engines that positively detected the indicator as malicious. | 
-| ThreatGrid.File.DetectionEngines | number | Total number of engines that checked the indicator. | 
-| ThreatGrid.File.tgLink | string | ThreatGrid permanent link. | 
+| File.MD5 | String | Bad MD5 hash. |
+| File.Name | String | File name. |
+| File.SHA1 | String | Bad SHA1 hash. |
+| File.sha256 | String | Bad SHA256 hash. |
+| File.EntryID | String | The entry ID of the file. |
+| File.Malicious.Vendor | String | The vendor that reported the file as malicious. |
+| File.Malicious.Description | String | A description explaining why the file was determined to be malicious. |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| DBotScore.Score | Number | The actual score. |
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
+| ThreatGrid.File.PositiveDetections | number | Number of engines that positively detected the indicator as malicious. |
+| ThreatGrid.File.DetectionEngines | number | Total number of engines that checked the indicator. |
+| ThreatGrid.File.tgLink | string | ThreatGrid permanent link. |
 
 ### ip
 ***
@@ -1993,29 +1993,29 @@ Checks the reputation of an IP address.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip | IP address to check. | Required | 
-| long | Whether to return full response for detected URLs. Default is "false". Possible values are: True, False. | Optional | 
-| threshold | If the number of positives is higher than the threshold, the IP address will be considered malicious. If the threshold is not specified, the default IP threshold, as configured in the instance settings, will be used. | Optional | 
-| sampleSize | The number of samples from each type (resolutions, detections, etc.) to display for long format. Default is "10". Default is 10. | Optional | 
-| wait | Time (in seconds) to wait between tries if the API rate limit is reached. Default is "60". Default is 60. | Optional | 
-| retries | Number of retries for API rate limit. Default is "0". Default is 0. | Optional | 
-| fullResponse | Whether to return all results, which can be thousands. Default is "false". We recommend that you don't return full results in playbooks. Possible values are: True, False. | Optional | 
+| ip | IP address to check. | Required |
+| long | Whether to return full response for detected URLs. Default is "false". Possible values are: True, False. | Optional |
+| threshold | If the number of positives is higher than the threshold, the IP address will be considered malicious. If the threshold is not specified, the default IP threshold, as configured in the instance settings, will be used. | Optional |
+| sampleSize | The number of samples from each type (resolutions, detections, etc.) to display for long format. Default is "10". Default is 10. | Optional |
+| wait | Time (in seconds) to wait between tries if the API rate limit is reached. Default is "60". Default is 60. | Optional |
+| retries | Number of retries for API rate limit. Default is "0". Default is 0. | Optional |
+| fullResponse | Whether to return all results, which can be thousands. Default is "false". We recommend that you don't return full results in playbooks. Possible values are: True, False. | Optional |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| IP.Address | String | Bad IP address. | 
-| IP.ASN | String | Bad IP ASN. | 
-| IP.Geo.Country | String | Bad IP country. | 
-| ThreatGrid.IP.indicator | String | IP address. | 
-| ThreatGrid.IP.confidence | Number | Indicator confidence between 0-99. | 
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| DBotScore.Score | Number | The actual score. | 
-| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
+| IP.Address | String | Bad IP address. |
+| IP.ASN | String | Bad IP ASN. |
+| IP.Geo.Country | String | Bad IP country. |
+| ThreatGrid.IP.indicator | String | IP address. |
+| ThreatGrid.IP.confidence | Number | Indicator confidence between 0-99. |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| DBotScore.Score | Number | The actual score. |
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
 
 ### url
 ***
@@ -2029,31 +2029,31 @@ Checks the reputation of a URL.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| url | A comma-seperated list of URLs to check. This command will not work properly on URLs containing commas. | Required | 
-| sampleSize | The number of samples from each type (resolutions, detections, etc.) to display for long format. Default is 10. | Optional | 
-| long | Whether to return the full response for the detected URLs. Possible values are: True, False. | Optional | 
-| threshold | If the number of positives is higher than the threshold, the URL will be considered malicious. If the threshold is not specified, the default URL threshold, as configured in the instance settings, will be used. | Optional | 
-| submitWait | Time (in seconds) to wait if the URL does not exist and is submitted for scanning. Default is "0". Default is 0. | Optional | 
-| wait | Time (in seconds) to wait between tries if the API rate limit is reached. Default is "60". Default is 60. | Optional | 
-| retries | Number of retries for API rate limit. Default is "0". Default is 0. | Optional | 
+| url | A comma-seperated list of URLs to check. This command will not work properly on URLs containing commas. | Required |
+| sampleSize | The number of samples from each type (resolutions, detections, etc.) to display for long format. Default is 10. | Optional |
+| long | Whether to return the full response for the detected URLs. Possible values are: True, False. | Optional |
+| threshold | If the number of positives is higher than the threshold, the URL will be considered malicious. If the threshold is not specified, the default URL threshold, as configured in the instance settings, will be used. | Optional |
+| submitWait | Time (in seconds) to wait if the URL does not exist and is submitted for scanning. Default is "0". Default is 0. | Optional |
+| wait | Time (in seconds) to wait between tries if the API rate limit is reached. Default is "60". Default is 60. | Optional |
+| retries | Number of retries for API rate limit. Default is "0". Default is 0. | Optional |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| URL.Data | String | Bad URLs found. | 
-| URL.Malicious.Vendor | String | For malicious URLs, the vendor that made the decision. | 
-| URL.Malicious.Description | String | For malicious URLs, the reason that the vendor made the decision. | 
-| URL.PositiveDetections | Number | Number of engines that positively detected the indicator as malicious. | 
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| DBotScore.Score | Number | The actual score. | 
-| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
-| ThreatGrid.URL.url | String | The URL. | 
-| ThreatGrid.URL.detection_engines | Number | Number of engines | 
-| ThreatGrid.URL.positive_engines | Number | Number of positive engines | 
+| URL.Data | String | Bad URLs found. |
+| URL.Malicious.Vendor | String | For malicious URLs, the vendor that made the decision. |
+| URL.Malicious.Description | String | For malicious URLs, the reason that the vendor made the decision. |
+| URL.PositiveDetections | Number | Number of engines that positively detected the indicator as malicious. |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| DBotScore.Score | Number | The actual score. |
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
+| ThreatGrid.URL.url | String | The URL. |
+| ThreatGrid.URL.detection_engines | Number | Number of engines |
+| ThreatGrid.URL.positive_engines | Number | Number of positive engines |
 
 ### domain
 ***
@@ -2067,36 +2067,36 @@ Checks the reputation of a domain.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| domain | Domain name to check. | Required | 
-| long | Whether to return the full response for detected URLs. Default is "false". Possible values are: True, False. | Optional | 
-| sampleSize | The number of samples from each type (resolutions, detections, etc.) to display for long format. Default is 10. | Optional | 
-| threshold | If the number of positives is higher than the threshold, the domain will be considered malicious. If the threshold is not specified, the default domain threshold, as configured in the instance settings, will be used. | Optional | 
-| wait | Time (in seconds) to wait between tries if the API rate limit is reached. Default is "60". Default is 60. | Optional | 
-| retries | Number of retries for API rate limit. Default is "0". Default is 0. | Optional | 
-| fullResponse | Whether to return all results, which can be thousands. Default is "false". We recommend that you don't return full results in playbooks. Possible values are: True, False. | Optional | 
+| domain | Domain name to check. | Required |
+| long | Whether to return the full response for detected URLs. Default is "false". Possible values are: True, False. | Optional |
+| sampleSize | The number of samples from each type (resolutions, detections, etc.) to display for long format. Default is 10. | Optional |
+| threshold | If the number of positives is higher than the threshold, the domain will be considered malicious. If the threshold is not specified, the default domain threshold, as configured in the instance settings, will be used. | Optional |
+| wait | Time (in seconds) to wait between tries if the API rate limit is reached. Default is "60". Default is 60. | Optional |
+| retries | Number of retries for API rate limit. Default is "0". Default is 0. | Optional |
+| fullResponse | Whether to return all results, which can be thousands. Default is "false". We recommend that you don't return full results in playbooks. Possible values are: True, False. | Optional |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Domain.Name | String | Bad domain found. | 
-| Domain.Malicious.Vendor | String | For malicious domains, the vendor that made the decision. | 
-| Domain.Malicious.Description | String | For malicious domains, the reason that the vendor made the decision. | 
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| DBotScore.Score | Number | The actual score. | 
-| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
-| Domain.CreationDate | Date | The date that the domain was created. | 
-| Domain.DNS | String | A list of IP objects resolved by DNS. | 
-| Domain.WHOIS.NameServers | String | Name servers of the domain. | 
-| Domain.WHOIS.Registrar.AbuseEmail | Unknown | The email address of the contact for reporting abuse. | 
-| Domain.WHOIS.Registrar.AbusePhone | Unknown | The phone number of contact for reporting abuse. | 
-| Domain.WHOIS.Registrar.Name | String | The name of the registrar, for example: "GoDaddy". | 
-| Domain.WHOIS.ExpirationDate | Date | The expiration date of the domain. | 
-| Domain.WHOIS.DomainStatus | String | The status of the domain. | 
-| ThreatGrid.Domain.domain | String | The domain name. | 
+| Domain.Name | String | Bad domain found. |
+| Domain.Malicious.Vendor | String | For malicious domains, the vendor that made the decision. |
+| Domain.Malicious.Description | String | For malicious domains, the reason that the vendor made the decision. |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| DBotScore.Score | Number | The actual score. |
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
+| Domain.CreationDate | Date | The date that the domain was created. |
+| Domain.DNS | String | A list of IP objects resolved by DNS. |
+| Domain.WHOIS.NameServers | String | Name servers of the domain. |
+| Domain.WHOIS.Registrar.AbuseEmail | Unknown | The email address of the contact for reporting abuse. |
+| Domain.WHOIS.Registrar.AbusePhone | Unknown | The phone number of contact for reporting abuse. |
+| Domain.WHOIS.Registrar.Name | String | The name of the registrar, for example: "GoDaddy". |
+| Domain.WHOIS.ExpirationDate | Date | The expiration date of the domain. |
+| Domain.WHOIS.DomainStatus | String | The status of the domain. |
+| ThreatGrid.Domain.domain | String | The domain name. |
 
 ### threat-grid-domain-samples-list
 ***
@@ -2110,20 +2110,20 @@ Returns a list of samples associated with a Domain.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| domain | The domain to search for. | Required | 
-| after | "A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+\|-hhmm e.g. : 2012-04-19T04:00:55-0500". | Optional | 
-| before | "A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+\|-hhmm e.g. : 2012-04-19T04:00:55-0500". | Optional | 
-| limit | The maximum number of records to retrieve. Default is 50. | Optional | 
-| page_size | The number of items per page. | Optional | 
-| page | Page number of paginated results. | Optional | 
+| domain | The domain to search for. | Required |
+| after | "A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+\|-hhmm e.g. : 2012-04-19T04:00:55-0500". | Optional |
+| before | "A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+\|-hhmm e.g. : 2012-04-19T04:00:55-0500". | Optional |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
+| page_size | The number of items per page. | Optional |
+| page | Page number of paginated results. | Optional |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatGrid.DomainAssociatedSample.domain | string | The domain. | 
-| ThreatGrid.DomainAssociatedSample.samples | string | The associated samples. | 
+| ThreatGrid.DomainAssociatedSample.domain | string | The domain. |
+| ThreatGrid.DomainAssociatedSample.samples | string | The associated samples. |
 
 #### Command example
 ```!threat-grid-domain-samples-list domain=domain_example```
@@ -2167,7 +2167,7 @@ Returns a list of samples associated with a Domain.
 #### Human Readable Output
 
 >### List of samples associated to the domain - domain_example :
-> Showing page 1. 
+> Showing page 1.
 > Current page size: 50
 >|Filename|Login|Private|Sample|Sha256|Timestamp|
 >|---|---|---|---|---|---|
@@ -2187,20 +2187,20 @@ Returns a list of samples associated with an IP.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip | The IP to search for. | Required | 
-| after | "A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+\|-hhmm e.g. : 2012-04-19T04:00:55-0500". | Optional | 
-| before | "A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+\|-hhmm e.g. : 2012-04-19T04:00:55-0500". | Optional | 
-| limit | The maximum number of records to retrieve. Default is 50. | Optional | 
-| page_size | The number of items per page. | Optional | 
-| page | Page number of paginated results. | Optional | 
+| ip | The IP to search for. | Required |
+| after | "A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+\|-hhmm e.g. : 2012-04-19T04:00:55-0500". | Optional |
+| before | "A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+\|-hhmm e.g. : 2012-04-19T04:00:55-0500". | Optional |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
+| page_size | The number of items per page. | Optional |
+| page | Page number of paginated results. | Optional |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatGrid.IpAssociatedSample.ip | string | The IP. | 
-| ThreatGrid.IpAssociatedSample.samples | string | The associated samples. | 
+| ThreatGrid.IpAssociatedSample.ip | string | The IP. |
+| ThreatGrid.IpAssociatedSample.samples | string | The associated samples. |
 
 #### Command example
 ```!threat-grid-ip-samples-list ip=8.8.8.8```
@@ -2270,8 +2270,8 @@ Returns a list of samples associated with an IP.
 
 #### Human Readable Output
 
->### List of samples associated to the ip - 8.8.8.8 :         
-> Showing page 1. 
+>### List of samples associated to the ip - 8.8.8.8 :
+> Showing page 1.
 > Current page size: 50
 >|Filename|Login|Private|Sample|Sha256|Timestamp|
 >|---|---|---|---|---|---|
@@ -2291,20 +2291,20 @@ Returns a list of samples associated with a Path.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| path | The path to search for. A path is a slash-separated list of directory names followed by either a directory name or a file name. Path example: ‘/user/name/file’. | Required | 
-| after | "A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+\|-hhmm e.g. : 2012-04-19T04:00:55-0500". | Optional | 
-| before | "A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+\|-hhmm e.g. : 2012-04-19T04:00:55-0500". | Optional | 
-| limit | The maximum number of records to retrieve. Default is 50. | Optional | 
-| page_zise | The number of items per page. | Optional | 
-| page | Page number of paginated results. | Optional | 
+| path | The path to search for. A path is a slash-separated list of directory names followed by either a directory name or a file name. Path example: ‘/user/name/file’. | Required |
+| after | "A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+\|-hhmm e.g. : 2012-04-19T04:00:55-0500". | Optional |
+| before | "A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+\|-hhmm e.g. : 2012-04-19T04:00:55-0500". | Optional |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
+| page_zise | The number of items per page. | Optional |
+| page | Page number of paginated results. | Optional |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatGrid.PathAssociatedSample.path | string | The Path. | 
-| ThreatGrid.PathAssociatedSample.samples | string | The associated samples. | 
+| ThreatGrid.PathAssociatedSample.path | string | The Path. |
+| ThreatGrid.PathAssociatedSample.samples | string | The associated samples. |
 
 #### Command example
 ```!threat-grid-path-samples-list path=user```
@@ -2367,8 +2367,8 @@ Returns a list of samples associated with a Path.
 
 #### Human Readable Output
 
->### List of samples associated to the path - user :         
-> Showing page 1. 
+>### List of samples associated to the path - user :
+> Showing page 1.
 > Current page size: 50
 >|Filename|Login|Private|Sample|Sha256|Timestamp|
 >|---|---|---|---|---|---|
@@ -2388,20 +2388,20 @@ Returns a list of samples associated with an URL.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| url | The target URL. Please provide the URL in the format http://example.com:80/ . | Required | 
-| after | "A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+\|-hhmm e.g. : 2012-04-19T04:00:55-0500". | Optional | 
-| before | "A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+\|-hhmm e.g. : 2012-04-19T04:00:55-0500". | Optional | 
-| limit | The maximum number of records to retrieve. Default is 50. | Optional | 
-| page_zise | The number of items per page. | Optional | 
-| page | Page number of paginated results. | Optional | 
+| url | The target URL. Please provide the URL in the format http://example.com:80/ . | Required |
+| after | "A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+\|-hhmm e.g. : 2012-04-19T04:00:55-0500". | Optional |
+| before | "A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+\|-hhmm e.g. : 2012-04-19T04:00:55-0500". | Optional |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
+| page_zise | The number of items per page. | Optional |
+| page | Page number of paginated results. | Optional |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatGrid.UrlAssociatedSample.url | string | The URL. | 
-| ThreatGrid.UrlAssociatedSample.samples | string | The associated samples. | 
+| ThreatGrid.UrlAssociatedSample.url | string | The URL. |
+| ThreatGrid.UrlAssociatedSample.samples | string | The associated samples. |
 
 #### Command example
 ```!threat-grid-url-samples-list url=http://domain_example:80/```
@@ -2460,7 +2460,7 @@ Returns a list of samples associated with an URL.
 #### Human Readable Output
 
 >### List of samples associated to the url - sha256_example :
-> Showing page 1. 
+> Showing page 1.
 > Current page size: 50
 >|Filename|Login|Private|Sample|Sha256|Timestamp|
 >|---|---|---|---|---|---|
@@ -2482,12 +2482,12 @@ Returns a list of samples associated with a specified registry key.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| registry_key | The registry key to search for. | Required | 
-| after | "A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+\|-hhmm e.g. : 2012-04-19T04:00:55-0500". | Optional | 
-| before | "A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+\|-hhmm e.g. : 2012-04-19T04:00:55-0500". | Optional | 
-| limit | The maximum number of records to retrieve. Default is 50. | Optional | 
-| page_size | The number of items per page. | Optional | 
-| page | Page number of paginated results. | Optional | 
+| registry_key | The registry key to search for. | Required |
+| after | "A date/time (ISO 8601), restricting results to samples submitted after it. Please use the following date/time format. YYYY-MM-DD Thhmmss+\|-hhmm e.g. : 2012-04-19T04:00:55-0500". | Optional |
+| before | "A date/time (ISO 8601), restricting results to samples submitted before it. Please use the following date/time format. YYYY-MM-DD Thhmmss+\|-hhmm e.g. : 2012-04-19T04:00:55-0500". | Optional |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
+| page_size | The number of items per page. | Optional |
+| page | Page number of paginated results. | Optional |
 
 
 #### Context Output
@@ -2495,7 +2495,7 @@ Returns a list of samples associated with a specified registry key.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | ThreatGrid.RegistryKeyAssociatedSample.key | string | The Registry Key. |
-| ThreatGrid.RegistryKeyAssociatedSample.samples | string | The associated samples. | 
+| ThreatGrid.RegistryKeyAssociatedSample.samples | string | The associated samples. |
 
 #### Command example
 ```!threat-grid-registry-key-samples-list registry_key=ChangeNotice```
@@ -2513,8 +2513,8 @@ Returns a list of samples associated with a specified registry key.
 
 #### Human Readable Output
 
->### List of samples associated to the registry_key - ChangeNotice :         
-> Showing page 1. 
+>### List of samples associated to the registry_key - ChangeNotice :
+> Showing page 1.
 > Current page size: 50
 >**No entries.**
 
@@ -2531,15 +2531,15 @@ Returns a list of domains associated with the IP.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip | The IP to search for. | Required | 
+| ip | The IP to search for. | Required |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatGrid.IpAssociatedDomain.ip | string | The IP. | 
-| ThreatGrid.IpAssociatedDomain.domains | string | The associated Domain. | 
+| ThreatGrid.IpAssociatedDomain.ip | string | The IP. |
+| ThreatGrid.IpAssociatedDomain.domains | string | The associated Domain. |
 
 #### Command example
 ```!threat-grid-ip-associated-domains ip=8.8.8.8```
@@ -2586,15 +2586,15 @@ Returns a list of URLs associated to the IP.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip | The IP to search for. | Required | 
+| ip | The IP to search for. | Required |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatGrid.IpAssociatedUrl.ip | string | The IP. | 
-| ThreatGrid.IpAssociatedUrl.urls | string | The associated URL. | 
+| ThreatGrid.IpAssociatedUrl.ip | string | The IP. |
+| ThreatGrid.IpAssociatedUrl.urls | string | The associated URL. |
 
 #### Command example
 ```!threat-grid-ip-associated-urls ip=8.8.8.8```
@@ -2642,15 +2642,15 @@ Returns a list of URLs associated to the domain.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| domain | The domain to search for. | Required | 
+| domain | The domain to search for. | Required |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatGrid.DomainAssociatedUrl.domain | string | The Domain. | 
-| ThreatGrid.DomainAssociatedUrl.urls | string | The associated URL. | 
+| ThreatGrid.DomainAssociatedUrl.domain | string | The Domain. |
+| ThreatGrid.DomainAssociatedUrl.urls | string | The associated URL. |
 
 #### Command example
 ```!threat-grid-domain-associated-urls domain=domain_example```
@@ -2699,15 +2699,15 @@ Returns a list of IPs associated to the domain.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| domain | The domain to search for. | Required | 
+| domain | The domain to search for. | Required |
 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatGrid.DomainAssociatedIp.domain | String | The Domain. | 
-| ThreatGrid.DomainAssociatedIp.ips | String | The associated IP. | 
+| ThreatGrid.DomainAssociatedIp.domain | String | The Domain. |
+| ThreatGrid.DomainAssociatedIp.ips | String | The associated IP. |
 
 #### Command example
 ```!threat-grid-domain-associated-ips domain=domain_example```

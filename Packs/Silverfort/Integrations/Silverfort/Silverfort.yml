@@ -1,4 +1,4 @@
-category: Authentication
+category: Authentication & Identity Management
 commonfields:
   id: Silverfort
   version: -1
@@ -196,7 +196,7 @@ script:
     description: Update the resource entity risk.
     execution: false
     name: silverfort-update-resource-risk
-  dockerimage: demisto/pyjwt3:1.0.0.48806
+  dockerimage: demisto/pyjwt3:1.0.0.51516
   feed: false
   isfetch: false
   longRunning: false
@@ -206,3 +206,5 @@ script:
   subtype: python3
   type: python
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

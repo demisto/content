@@ -1,3 +1,6 @@
+import random
+import time
+import urllib3
 import requests
 from CommonServerPython import *
 
@@ -10,6 +13,7 @@ SERVER = (
     if (demisto.params()['server'] and demisto.params()['server'].endswith('/'))
     else demisto.params()['server']
 )
+RETRY_ON_RATE_LIMIT = demisto.params().get("retry_on_rate_limit", True)
 SERVER += '/rest/'
 USE_SSL = not demisto.params().get('insecure', False)
 HEADERS = {'Authorization': 'api_key ' + API_KEY}
@@ -17,7 +21,8 @@ ERROR_FORMAT = 'Error in API call to VMRay [{}] - {}'
 RELIABILITY = demisto.params().get('integrationReliability', DBotScoreReliability.C) or DBotScoreReliability.C
 
 # disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+# Disable insecure warnings
+urllib3.disable_warnings()
 
 # Remove proxy
 PROXIES = handle_proxy()
@@ -47,6 +52,9 @@ DBOTSCORE = {
     'Clean': 1,
     'Not Available': 0,
 }
+
+RATE_LIMIT_REACHED = 429
+MAX_RETIES = 10
 
 ''' HELPER FUNCTIONS '''
 
@@ -101,14 +109,14 @@ def build_errors_string(errors):
     return err_str
 
 
-def http_request(method, url_suffix, params=None, files=None, ignore_errors=False, get_raw=False):
+def http_request(method, url_suffix, params=None, files=None, ignore_errors=False, get_raw=False, reties=0):
     """ General HTTP request.
     Args:
         ignore_errors (bool):
         method: (str) 'GET', 'POST', 'DELETE' 'PUT'
         url_suffix: (str)
         params: (dict)
-        files: (tuple, dict)
+        files: (dict)
         get_raw: (bool) return raw data instead of dict
 
     Returns:
@@ -142,10 +150,41 @@ def http_request(method, url_suffix, params=None, files=None, ignore_errors=Fals
                     return err_r
         return None
 
+    def reset_file_buffer(files):
+        """ The requests library reads the file buffer to the end.
+            If we want to try to submit again, we need to set the file buffer to
+            beginning manually.
+        Args:
+            files: (dict)
+        """
+
+        if not isinstance(files, dict):
+            return
+
+        try:
+            fobj = files["sample_file"][1]
+            fobj.seek(0, 0)
+        except (IndexError, KeyError):
+            return
+
     url = SERVER + url_suffix
     r = requests.request(
         method, url, params=params, headers=HEADERS, files=files, verify=USE_SSL, proxies=PROXIES
     )
+
+    if RETRY_ON_RATE_LIMIT and reties < MAX_RETIES \
+            and (r.status_code == RATE_LIMIT_REACHED or "Retry-After" in r.headers):
+        seconds_to_wait = random.uniform(1.0, 5.0)
+        try:
+            seconds_to_wait += float(r.headers.get("Retry-After", 0))
+        except ValueError:
+            pass
+
+        demisto.debug(f"Rate limit exceeded! Waiting {seconds_to_wait} seconds and then retry #{reties}.")
+        time.sleep(seconds_to_wait)  # pylint: disable=sleep-exists
+        reset_file_buffer(files)
+        return http_request(method, url_suffix, params, files, ignore_errors, get_raw, reties + 1)
+
     # Handle errors
     try:
         if r.status_code in {405, 401}:

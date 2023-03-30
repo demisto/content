@@ -83,12 +83,12 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: PrismaCloud v2
       description: Search EC2 instances in Prisma Cloud
       id: 5d21d3ef-d78f-4b93-8b0a-07a355a64601
       iscommand: true
       name: Search in EC2 Instances
-      script: '|||redlock-search-config'
+      script: PrismaCloud v2|||redlock-search-config
       type: regular
       version: -1
     taskid: 5d21d3ef-d78f-4b93-8b0a-07a355a64601
@@ -171,12 +171,12 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: PrismaCloud v2
       description: Search EC2 Elastic Load Balancers in Prisma Cloud
       id: 53e36036-6367-4c36-869e-2e0eea7eb955
       iscommand: true
       name: Search in EC2 NLB
-      script: '|||redlock-search-config'
+      script: PrismaCloud v2|||redlock-search-config
       type: regular
       version: -1
     taskid: 53e36036-6367-4c36-869e-2e0eea7eb955
@@ -196,8 +196,8 @@ tasks:
             iscontext: true
             value:
               complex:
-                accessor: Asset
-                root: Redlock
+                accessor: Config
+                root: PrismaCloud
           operator: isNotEmpty
       label: "yes"
     id: "11"
@@ -240,8 +240,8 @@ tasks:
     scriptarguments:
       assets:
         complex:
-          accessor: Asset
-          root: Redlock
+          accessor: Config
+          root: PrismaCloud
       fields: {}
     separatecontext: false
     skipunavailable: false
@@ -334,7 +334,7 @@ tasks:
                     operator: isEqualString
                     right:
                       value:
-                        simple: RedLock
+                        simple: PrismaCloud v2
                 - - left:
                       iscontext: true
                       value:
@@ -457,12 +457,12 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
+      brand: PrismaCloud v2
       description: Search EC2 instances in Prisma Cloud
       id: ace1585b-f50b-4466-8ec0-ba15ea621d90
       iscommand: true
       name: Search in Route53 Hosted Zones
-      script: '|||redlock-search-config'
+      script: PrismaCloud v2|||redlock-search-config
       type: regular
       version: -1
     taskid: ace1585b-f50b-4466-8ec0-ba15ea621d90

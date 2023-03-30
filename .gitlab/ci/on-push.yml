@@ -62,7 +62,7 @@ stop-running-pipelines:
     - section_end "Stop running piplines on current branch"
 
 
-# runs in circle for the on-push flow (because we need to run it there for contributors anyways)
+# runs in gitlab for the on-push flow (except for contributors)
 run-unittests-and-lint:
   extends:
     - .run-unittests-and-lint
@@ -70,14 +70,17 @@ run-unittests-and-lint:
     - if: '$BUCKET_UPLOAD == "true"'
       when: never
     - if: '$DEMISTO_SDK_NIGHTLY != "true"'
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
 
 
-# runs in circle for the on-push flow (because we need to run it there for contributors anyways)
+# runs in gitlab for the on-push flow (except for contributors)
 run-validations:
   extends:
     - .run-validations
   rules:
     - if: '$NIGHTLY'
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+
 
 # runs in gitlab for the on-push flow, on every new commit pushed to the branch.
 validate-content-conf:
@@ -257,8 +260,8 @@ mpv2-prepare-testing-bucket:
 
     - ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE" "$SERVER_TYPE"|| EXIT_CODE=$?
     - cp -f $ARTIFACTS_FOLDER/conf.json Tests/conf.json
-    - echo Going to sleep for 60 seconds to allow server finish indexing
-    - sleep 60
+    - echo Going to sleep for 15 minutes to allow server finish indexing
+    - sleep 900
 
     - ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE" || EXIT_CODE=$?
     - |
@@ -469,7 +472,7 @@ slack-notify-nightly-build:
       then
         echo "Job finished, removing lock file"
         gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > auth.out 2>&1
-        gsutil rm "$GCS_LOCKS_PATH/*-lock-$CI_JOB_ID"
+        gsutil rm "gs://xsoar-ci-artifacts/$GCS_LOCKS_PATH/machines_locks/*-lock-$CI_JOB_ID"
         echo "Finished removing lock file"
       fi
     - section_end "After script"
@@ -501,7 +504,7 @@ xsiam_server_ga:
     INSTANCE_ROLE: "XSIAM"
     GCS_QUEUE_FILE: "queue-ga"
     TEST_MACHINES_LIST: "test-machines-ga"
-    GCS_LOCKS_PATH: "gs://xsoar-ci-artifacts/content-locks-xsiam"
+    GCS_LOCKS_PATH: "content-locks/locks-xsiam-ga"
     CLOUD_SERVERS_FILE: "xsiam_servers_path"
     CLOUD_API_KEYS: $XSIAM_API_KEYS
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
@@ -515,30 +518,30 @@ xsiam_server_ga:
     - job: mpv2-prepare-testing-bucket
       optional: true
 
-#xsoar_ng_server_ga:
-#  extends:
-#    - .test_content_on_cloud_server_instances_base
-#  rules:
-#    - !reference [.filter-non-nightly-docker-updates-rule, rules]
-#    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
-#      when: always
-#  variables:
-#    INSTANCE_ROLE: "XSIAM"
-#    GCS_QUEUE_FILE: "queue-ga"
-#    TEST_MACHINES_LIST: "test-machines-ga"
-#    GCS_LOCKS_PATH: "gs://xsoar-ci-artifacts/content-locks-xsoar-ng"
-#    CLOUD_SERVERS_FILE: "xsoar_ng_servers_path"
-#    CLOUD_API_KEYS: $XSOAR_NG_API_KEYS
-#    GCS_SOURCE_BUCKET: "${GCS_PRODUCTION_BUCKET}"
-#    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
-#    ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_XSOAR}/env_results.json"
-#    GCS_MACHINES_BUCKET: "marketplace-dist-dev/upload-flow/builds-xsoar-ng"
-#    SERVER_TYPE: "XSIAM"
-#    MARKETPLACE_NAME: "xsoar"
-#  needs:
-#    - job: xsoar-prepare-testing-bucket
-#      optional: true
-#  allow_failure: true
+xsoar_ng_server_ga:
+  extends:
+    - .test_content_on_cloud_server_instances_base
+  rules:
+    - !reference [.filter-non-nightly-docker-updates-rule, rules]
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+      when: always
+  variables:
+    INSTANCE_ROLE: "XSIAM"
+    GCS_QUEUE_FILE: "queue-ga"
+    TEST_MACHINES_LIST: "test-machines-ga"
+    GCS_LOCKS_PATH: "content-locks/locks-xsoar-ng"
+    CLOUD_SERVERS_FILE: "xsoar_ng_servers_path"
+    CLOUD_API_KEYS: $XSOAR_NG_API_KEYS
+    GCS_SOURCE_BUCKET: "${GCS_PRODUCTION_BUCKET}"
+    ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_XSOAR}"
+    ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_XSOAR}/env_results.json"
+    GCS_MACHINES_BUCKET: "marketplace-dist-dev/upload-flow/builds-xsoar-ng"
+    SERVER_TYPE: "XSIAM"
+    MARKETPLACE_NAME: "xsoar"
+  needs:
+    - job: xsoar-prepare-testing-bucket
+      optional: true
+  allow_failure: true
 
 
 test-upload-flow:
@@ -552,7 +555,6 @@ test-upload-flow:
   variables:
     ALL_BUCKETS: "$GCS_MARKET_BUCKET_DEV,$GCS_MARKET_V2_BUCKET_DEV"
   stage: unittests-and-validations
-  allow_failure: true
   script:
     - |
     - section_start "Checks Whether to Trigger a Test Upload"

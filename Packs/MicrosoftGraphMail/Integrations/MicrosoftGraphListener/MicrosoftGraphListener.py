@@ -280,6 +280,8 @@ def main():     # pragma: no cover
             return_results(reply_to_command(client, args))
         elif command == 'msgraph-mail-list-attachments':
             return_results(list_attachments_command(client, args))
+        elif command == 'msgraph-mail-get-attachment':
+            return_results(get_attachment_command(client, args))
         elif command == 'msgraph-mail-get-email-as-eml':
             return_results(get_email_as_eml_command(client, args))
         elif command == 'msgraph-mail-send-draft':

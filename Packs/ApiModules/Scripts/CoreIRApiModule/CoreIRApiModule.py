@@ -1078,6 +1078,9 @@ class CoreClient(BaseClient):
             timeout=self.timeout,
         )
         link = response.get('reply', {}).get('DATA')
+        # If the link is None, the API call will result in a 'Connection Timeout Error', so we raise an exception
+        if not link:
+            raise DemistoException(f'Failed getting response files for {action_id=}, {endpoint_id=}')
         return self._http_request(
             method='GET',
             full_url=link,
@@ -1233,6 +1236,21 @@ class AlertFilterArg:
         self.search_type = search_type
         self.arg_type = arg_type
         self.option_mapper = option_mapper
+
+
+def catch_and_exit_gracefully(e):
+    """
+
+    Args:
+        e: DemistoException caught while running a command.
+
+    Returns:
+        CommandResult if the error is internal XDR error, else, the exception.
+    """
+    if e.res.status_code == 500 and 'no endpoint was found for creating the requested action' in str(e).lower():
+        return CommandResults(readable_output="The operation executed is not supported on the given machine.")
+    else:
+        raise e
 
 
 def init_filter_args_options():
@@ -1602,14 +1620,17 @@ def isolate_endpoint_command(client: CoreClient, args) -> CommandResults:
         raise ValueError(
             f'Error: Endpoint {endpoint_id} is pending isolation cancellation and therefore can not be isolated.'
         )
-    result = client.isolate_endpoint(endpoint_id=endpoint_id, incident_id=incident_id)
+    try:
+        result = client.isolate_endpoint(endpoint_id=endpoint_id, incident_id=incident_id)
 
-    return CommandResults(
-        readable_output=f'The isolation request has been submitted successfully on Endpoint {endpoint_id}.\n',
-        outputs={f'{args.get("integration_context_brand", "CoreApiModule")}.'
-                 f'Isolation.endpoint_id(val.endpoint_id == obj.endpoint_id)': endpoint_id},
-        raw_response=result
-    )
+        return CommandResults(
+            readable_output=f'The isolation request has been submitted successfully on Endpoint {endpoint_id}.\n',
+            outputs={f'{args.get("integration_context_brand", "CoreApiModule")}.'
+                     f'Isolation.endpoint_id(val.endpoint_id == obj.endpoint_id)': endpoint_id},
+            raw_response=result
+        )
+    except Exception as e:
+        return catch_and_exit_gracefully(e)
 
 
 def arg_to_timestamp(arg, arg_name: str, required: bool = False):
@@ -2019,25 +2040,29 @@ def quarantine_files_command(client, args):
     file_hash = args.get("file_hash")
     incident_id = arg_to_number(args.get('incident_id'))
 
-    reply = client.quarantine_files(
-        endpoint_id_list=endpoint_id_list,
-        file_path=file_path,
-        file_hash=file_hash,
-        incident_id=incident_id
-    )
-    output = {
-        'endpointIdList': endpoint_id_list,
-        'filePath': file_path,
-        'fileHash': file_hash,
-        'actionId': reply.get("action_id")
-    }
+    try:
+        reply = client.quarantine_files(
+            endpoint_id_list=endpoint_id_list,
+            file_path=file_path,
+            file_hash=file_hash,
+            incident_id=incident_id
+        )
+        output = {
+            'endpointIdList': endpoint_id_list,
+            'filePath': file_path,
+            'fileHash': file_hash,
+            'actionId': reply.get("action_id")
+        }
 
-    return CommandResults(
-        readable_output=tableToMarkdown('Quarantine files', output, headers=[*output], headerTransform=pascalToSpace),
-        outputs={f'{args.get("integration_context_brand", "CoreApiModule")}.'
-                 f'quarantineFiles.actionIds(val.actionId === obj.actionId)': output},
-        raw_response=reply
-    )
+        return CommandResults(
+            readable_output=tableToMarkdown('Quarantine files', output, headers=[*output],
+                                            headerTransform=pascalToSpace),
+            outputs={f'{args.get("integration_context_brand", "CoreApiModule")}.'
+                     f'quarantineFiles.actionIds(val.actionId === obj.actionId)': output},
+            raw_response=reply
+        )
+    except Exception as e:
+        return catch_and_exit_gracefully(e)
 
 
 def restore_file_command(client, args):

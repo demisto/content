@@ -44,9 +44,9 @@ configuration:
   required: false
   type: 0
   defaultvalue: ''
-- display: API Version
+- defaultvalue: 3.x
+  display: API Version
   additionalinfo: the version of Tanium Threat Response your instance supports.
-  defaultvalue: 4.x
   name: api_version
   required: false
   options:
@@ -1807,7 +1807,7 @@ script:
       description: The ID of the quick scan question
       type: Number
     description: Scan a computer group for hashes in intel document. Computer groups can be viewed by navigating to `Administration -> Computer Groups` in the Threat-Response product console. Computer group names and IDs can also be retrieved by using the `tn-list-groups` command in the `Tanium` integration.
-  dockerimage: demisto/lxml:1.0.0.47322
+  dockerimage: demisto/lxml:1.0.0.48857
   isfetch: true
   runonce: false
   script: ''
