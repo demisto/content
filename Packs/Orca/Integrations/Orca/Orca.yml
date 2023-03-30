@@ -114,23 +114,23 @@ script:
   - name: set-alert-severity
     description: Change severity for the alert
     arguments:
-      - name: alert_id
-        description: Alert id
-        required: true
-      - name: score
-        description: The Orca Score to set. Valid range 1.0 to 10.
-        required: true
+    - name: alert_id
+      description: Alert id
+      required: true
+    - name: score
+      description: The Orca Score to set. Valid range 1.0 to 10.
+      required: true
     outputs:
-      - contextPath: Orca.SetAlertSeverity.id
-        description: Id of the changed alert.
-        type: string
-      - contextPath: Orca.SetAlertSeverity.details
-        description: Details of the operation
-        type: string
-      - contextPath: Orca.SetAlertSeverity.severity
-        description: Current alert severity.
-        type: string
-  dockerimage: demisto/python3:3.10.8.37233
+    - contextPath: Orca.SetAlertSeverity.id
+      description: Id of the changed alert.
+      type: string
+    - contextPath: Orca.SetAlertSeverity.details
+      description: Details of the operation
+      type: string
+    - contextPath: Orca.SetAlertSeverity.severity
+      description: Current alert severity.
+      type: string
+  dockerimage: demisto/python3:3.10.10.51930
   feed: false
   isfetch: true
   longRunning: false
