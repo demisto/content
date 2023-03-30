@@ -10907,7 +10907,7 @@ def split_data_to_chunks(data, target_chunk_size):
     :return: : An iterable of lists where each list contains events with approx size of chunk size.
     :rtype: ``collections.Iterable[list]``
     """
-    chunk = [] # type: ignore[var-annotated]
+    chunk = []  # type: ignore[var-annotated]
     chunk_size = 0
     if isinstance(data, str):
         data = data.split('\n')
