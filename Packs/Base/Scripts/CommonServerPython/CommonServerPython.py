@@ -132,7 +132,7 @@ def fix_traceback_line_numbers(trace_str):
 
             # in case of ApiModule injections, adjust the line numbers of the code after the injection
             # should avoid adjust ApiModule twice in case of ApiModuleA -> import ApiModuleB
-            adjusted_lines: dict = {}
+            adjusted_lines = {}  # type: ignore[var-annotated]
             modules_info = list(_MODULES_LINE_MAPPING.values())
             modules_info.sort(key=lambda obj: int(obj.get('start_wrapper', obj['start'])))
             for module_info in modules_info:
