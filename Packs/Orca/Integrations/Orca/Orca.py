@@ -1,4 +1,5 @@
 import dateutil.parser
+from requests import Response
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -20,16 +21,23 @@ class OrcaClient:
     def validate_api_key(self) -> str:
         demisto.info("validate_api_key, enter")
         invalid_token_string = "Test failed because the Orca API token that was entered is invalid," \
-                               " please provide a valid API token"
+                                   " please provide a valid API token"
         try:
             response = self.client._http_request(
                 method="POST",
                 url_suffix="/rules/query/alerts", data={},
                 timeout=ORCA_API_TIMEOUT
             )
-        except Exception:
-            return invalid_token_string
-        if response.get("status") != "success":
+            if response.get("status") != "success":
+                return response.get("error") or invalid_token_string
+        except Exception as e:
+            demisto.debug(str(e))
+
+            # Try to get error message from response
+            response = getattr(e, "res")
+            if isinstance(response, Response):
+                return response.json().get("error") or invalid_token_string
+
             return invalid_token_string
 
         return "ok"
@@ -262,6 +270,11 @@ def set_alert_severity(orca_client: OrcaClient, args: Dict[str, Any]) -> Command
     alert_id = args.get("alert_id")
     score = args.get("score")
 
+    if not alert_id:
+        raise ValueError(f"Wrong value for {alert_id}")
+    if not score:
+        raise ValueError(f"Wrong value for {score}")
+
     response = orca_client.set_alert_score(alert_id=alert_id, orca_score=score)
 
     context = {
@@ -293,16 +306,13 @@ def main() -> None:
         max_fetch = int(demisto.params().get('max_fetch', '200'))
         pull_existing_alerts = demisto.params().get('pull_existing_alerts')
 
-        if max_fetch > 500:
-            max_fetch = 500
-
+        max_fetch = min(max_fetch, 500)
         api_url = f"https://{api_host}/api"
 
         # How much time before the first fetch to retrieve incidents
         first_fetch_time = None
         if arg := demisto.params().get('first_fetch'):
-            first_fetch_time_stamp = dateparser.parse(arg)
-            if first_fetch_time_stamp:
+            if first_fetch_time_stamp := dateparser.parse(arg):
                 first_fetch_time = first_fetch_time_stamp.isoformat()
 
         client = BaseClient(

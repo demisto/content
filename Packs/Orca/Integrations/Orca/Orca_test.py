@@ -579,21 +579,14 @@ def test_test_module_success(requests_mock, orca_client: OrcaClient) -> None:
 
 
 def test_test_module_fail(requests_mock, orca_client: OrcaClient) -> None:
-    mock_response = {
-        "detail": "Given token not valid for any token type",
-        "code": "token_not_valid",
-        "messages": [
-            {
-                "token_class": "AccessTokenWithExpiration",
-                "token_type": "access",
-                "message": "Token is invalid or expired"
-            }
-        ],
-        "status_code": 403
-    }
-    requests_mock.get(f"{DUMMY_ORCA_API_DNS_NAME}/user/action?", json=mock_response)
+    mock_response = {"status": "failure", "error": "There is no Automation Rule assigned to API token"}
+    requests_mock.post(f"{DUMMY_ORCA_API_DNS_NAME}/rules/query/alerts", status_code=200, json={"status": "failure"})
     res = orca_client.validate_api_key()
     assert res == "Test failed because the Orca API token that was entered is invalid, please provide a valid API token"
+
+    requests_mock.post(f"{DUMMY_ORCA_API_DNS_NAME}/rules/query/alerts", status_code=400, json=mock_response)
+    res = orca_client.validate_api_key()
+    assert res == "There is no Automation Rule assigned to API token"
 
 
 def test_fetch_all_alerts(requests_mock, orca_client: OrcaClient) -> None:
@@ -651,4 +644,3 @@ def test_set_alert_severity(requests_mock, orca_client: OrcaClient) -> None:
 
     response = orca_client.set_alert_score(alert_id, 5)
     assert response.get("alert_id", "") == alert_id
-
