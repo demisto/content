@@ -209,7 +209,7 @@ def reset_fetch_command(client):
     )
 
 
-def main():
+def main():  # pragma: no cover
     objects_types = ['report', 'indicator', 'malware', 'campaign', 'attack-pattern',
                      'course-of-action', 'intrusion-set', 'tool', 'threat-actor', 'infrastructure']
     params = demisto.params()
