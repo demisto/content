@@ -17,6 +17,7 @@ class Client(BaseClient):
         kwarg.setdefault("headers", {})["User-Agent"] = user_agent
         super().__init__(base_url, *args, **kwarg)
 
+
 def _get_behavioral_task_id(value):
     if str(value).startswith("behavioral"):
         return value
