@@ -339,7 +339,7 @@ script:
     execution: false
     name: azure-log-analytics-generate-login-url
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.51761
+  dockerimage: demisto/crypto:1.0.0.52480
   feed: false
   isfetch: false
   longRunning: false
