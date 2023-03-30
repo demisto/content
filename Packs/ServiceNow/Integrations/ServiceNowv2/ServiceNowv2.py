@@ -2905,6 +2905,7 @@ def main():
     """
     command = demisto.command()
     LOG(f'Executing command {command}')
+    demisto.info('Test packs subscription 2')
 
     params = demisto.params()
     verify = not params.get('insecure', False)

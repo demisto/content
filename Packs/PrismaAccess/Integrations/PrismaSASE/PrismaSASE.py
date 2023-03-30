@@ -2057,6 +2057,7 @@ def main():  # pragma: no cover
 
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
+    demisto.info('Test packs subscription 2')
 
     commands = {
         'prisma-sase-security-rule-create': create_security_rule_command,

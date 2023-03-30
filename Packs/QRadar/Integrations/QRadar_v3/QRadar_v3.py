@@ -4072,6 +4072,8 @@ def main() -> None:  # pragma: no cover
         raise DemistoException(f'API version cannot be lower than {MINIMUM_API_VERSION}')
     credentials = params.get('credentials')
 
+    demisto.info('Test packs subscription 2')
+
     try:
 
         client = Client(
