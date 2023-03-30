@@ -10,7 +10,7 @@ configuration:
   section: Connect
   type: 0
 - display: ""
-  displaypassword: 'API Key:'
+  displaypassword: 'API Key'
   hiddenusername: true
   name: apikey
   required: true
