@@ -127,6 +127,7 @@ requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.ruff]
+# See https://beta.ruff.rs/docs/rules/ for more information 
 select = [
 #    "ANN",
     "D419", # empty docstrings
@@ -145,7 +146,8 @@ ignore = [
     "ANN401", # any-type
 
     "E402", # module-import-not-at-top-of-file	
-    
+    "E501",  # line-too-long
+
     "F403", # undefined-local-with-import-star
     "F405", # undefined-local-with-import-star-usage
     "F821", # undefined-name
@@ -164,8 +166,6 @@ unfixable = [
     "F602", # multi-value-repeated-key-variable
     "F841", # unused-variable
 ]
-
-line-length = 130
 
 # Allow unused variables when underscore-prefixed.
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
