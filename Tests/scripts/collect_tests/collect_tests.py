@@ -1008,8 +1008,9 @@ class BranchTestCollector(TestCollector):
         elif file_type is None:
             raise NothingToCollectException(path, 'unknown file type')
 
-        elif file_type == FileType.README or path.suffix == '.md':
+        elif file_type == FileType.README:
             only_to_upload = True
+            content_item = ContentItem(path)
 
         else:
             raise ValueError(path, f'unexpected content type {file_type} - please update collect_tests.py')
