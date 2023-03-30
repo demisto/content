@@ -214,13 +214,11 @@ def get_indicator_list(client: MandiantClient, limit: int, first_fetch: str, ind
     """
     last_run_dict = demisto.getLastRun()
     indicators_list = last_run_dict.get(f'{indicator_type}List', [])
-    demisto.debug(f"current type is: {indicator_type}")
-    demisto.debug(f'this is the indicators_list: {indicators_list}')
+    demisto.debug(f"this is the last run object: {last_run_dict.get(f'{indicator_type}Last', first_fetch)}")
     if len(indicators_list) < limit:
         demisto.info(f'In first condition, limit is: {limit} and type is: {indicator_type}')
-        last_run = last_run_dict.get(indicator_type + 'Last', first_fetch)
+        last_run = last_run_dict.get(f'{indicator_type}Last', first_fetch)
         new_indicators_list = get_new_indicators(client, last_run, indicator_type, limit)
-        demisto.info(f'Fetched new indicators, the new list is : {new_indicators_list}')
         indicators_list += new_indicators_list
 
     if indicators_list:
@@ -229,7 +227,6 @@ def get_indicator_list(client: MandiantClient, limit: int, first_fetch: str, ind
         date_key = 'last_seen' if indicator_type == 'Indicators' else 'last_updated'
         demisto.info(f'setting the following value into last_run_dict: {new_indicators_list[-1][date_key]}')
         last_run_dict[indicator_type + 'Last'] = new_indicators_list[-1][date_key]
-        demisto.info(f'The last run is now : {last_run_dict}')
 
         if update_context:
             demisto.setLastRun(last_run_dict)
