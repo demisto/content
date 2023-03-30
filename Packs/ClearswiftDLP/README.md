@@ -4,7 +4,7 @@ This pack includes Cortex XSIAM content.
 You need to configure Clearswift DLP to forward Syslog messages.
 
 Open your Clearswift instance UI and follow these instructions:
-1. From the Home page, click on **System** > Under Monitoring & Control, press on **Logs & Alarms**.
+1. From the Home page, click **System** > **Monitoring & Control** > **Logs & Alarms**.
 2. Click the **Log Export** tab and select **Enable log export**.
 3. Enter the IP Address (OR Hostname) and Port number of your Syslog server, the default port is 514.
 4. Enter a Poll Interval (minutes). The recommended setting is once every 5 minutes, you can enter a value between 1 and 60 minutes.
