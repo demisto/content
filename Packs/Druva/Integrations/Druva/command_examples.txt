@@ -1,0 +1,4 @@
+!druva-find-userDevice userID=10000135
+!druva-find-user user_string=rit1
+!druva-find-sharedDrives search_string="rahul_drive"
+!druva-find-sharePointSites search_string="auto_restore_XQ9OBZ"
