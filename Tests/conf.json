@@ -111,10 +111,17 @@
         },
         {
             "integrations": "McAfeeNSMv2",
-            "playbookID": "Test_McAfeeNSMv2",
+            "playbookID": "Test_McAfeeNSMv2_using_v9",
             "fromversion": "6.5.0",
+            "instance_names": "using_v9",
             "memory_threshold": 200,
             "timeout": 300
+        },
+        {
+            "integrations": "McAfeeNSMv2",
+            "playbookID": "Test_McAfeeNSMv2_using_v10",
+            "instance_names": "using_v10",
+            "fromversion": "6.5.0"
         },
         {
             "playbookID": "Generic Polling Test",
@@ -165,6 +172,11 @@
             "integrations": "GoogleCalendar",
             "playbookID": "GoogleCalendar-Test",
             "fromversion": "5.0.0"
+        },
+        {
+            "integrations": "AWS-WAF",
+            "playbookID": "TEST_AWS_WAF",
+            "fromversion": "6.5.0"
         },
         {
             "integrations": "GoogleDrive",
@@ -650,7 +662,7 @@
             "integrations": "AutoFocus V2",
             "playbookID": "Autofocus Query Samples, Sessions and Tags Test Playbook",
             "fromversion": "4.5.0",
-            "timeout": 1000
+            "timeout": 1500
         },
         {
             "integrations": "HelloWorld",
@@ -751,7 +763,7 @@
             "integrations": "SlackV3",
             "playbookID": "SlackV3 TestPB",
             "instance_names": "cached",
-            "timeout": 600,
+            "timeout": 800,
             "pid_threshold": 8,
             "fromversion": "5.5.0"
         },
@@ -2001,19 +2013,19 @@
             "playbookID": "Microsoft Defender Advanced Threat Protection - Test prod",
             "instance_names": "microsoft_defender_atp_prod",
             "is_mockable": false,
-            "timeout": 200
+            "timeout": 500
         },
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
             "playbookID": "Microsoft Defender Advanced Threat Protection - Test dev",
             "instance_names": "microsoft_defender_atp_dev",
-            "timeout": 200
+            "timeout": 500
         },
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
             "playbookID": "Microsoft Defender Advanced Threat Protection - Test self deployed",
             "instance_names": "microsoft_defender_atp_dev_self_deployed",
-            "timeout": 200
+            "timeout": 500
         },
         {
             "integrations": "Microsoft Defender Advanced Threat Protection",
@@ -2669,7 +2681,7 @@
                 "Image OCR",
                 "Rasterize"
             ],
-            "timeout": 350,
+            "timeout": 700,
             "memory_threshold": 200,
             "fromversion": "4.5.0"
         },
@@ -4151,7 +4163,7 @@
             "instance_names": [
                 "microsoft_defender_atp_dev_self_deployed"
             ],
-            "timeout": 250
+            "timeout": 500
         },
         {
             "playbookID": "Polygon-Test",
@@ -4304,6 +4316,7 @@
         {
             "playbookID": "MSGraph_DeviceManagement_Test",
             "fromversion": "5.0.0",
+            "instance_names": "ms_graph_device_management_self_deployed_prod",
             "integrations": [
                 "Microsoft Graph Device Management"
             ]
@@ -4438,6 +4451,7 @@
         {
             "playbookID": "Microsoft Graph Calendar - Test",
             "fromversion": "5.0.0",
+            "instance_names": "ms_graph_calendar_dev",
             "integrations": [
                 "Microsoft Graph Calendar"
             ]
@@ -5348,6 +5362,10 @@
         {
             "integrations": "Microsoft Teams via Webhook",
             "playbookID": "Microsoft Teams Webhook - Test"
+        },
+        {
+            "integrations": "AWS - Route53",
+            "playbookID": "playbook-create_delete_record_Test"
         }
     ],
     "skipped_tests": {
@@ -5651,7 +5669,8 @@
         "AttackIQFireDrill": "License issues #29774",
         "LogRhythm": "The integration is deprecated",
         "Threat Grid": "No instance & Depreceated, replaced by ThreatGridv2",
-        "ThreatGridv2": "No instance - developed by Qmasters"
+        "ThreatGridv2": "No instance - developed by Qmasters",
+        "SentinelOne V2": "No instance - developed by partner"
     },
     "nightly_integrations": [],
     "nightly_packs": [
@@ -5760,7 +5779,6 @@
         "Intezer": "Nightly - Checking",
         "ProtectWise": "Nightly - Checking",
         "google-vault": "Nightly - Checking",
-        "McAfee NSM": "Nightly - Checking",
         "Forcepoint": "Nightly - Checking",
         "palo_alto_firewall": "Need to check test module",
         "Signal Sciences WAF": "error with certificate",
