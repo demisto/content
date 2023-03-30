@@ -47,7 +47,8 @@ RELATIONSHIP_TYPE = {
 class Client:
     def __init__(self, api_key='', user_agent='', scan_visibility=None, threshold=None, use_ssl=False,
                  reliability=DBotScoreReliability.C):
-        self.base_url = 'https://urlscan.io/api/v1/'
+        self.base_url = 'https://urlscan.io/'
+        self.base_api_url = 'https://urlscan.io/api/v1/'
         self.api_key = api_key
         self.user_agent = user_agent
         self.threshold = threshold
@@ -103,11 +104,11 @@ def http_request(client, method, url_suffix, json=None, retries=0):
     if method == 'POST':
         headers.update({'Content-Type': 'application/json'})
     demisto.debug(
-        'requesting https request with method: {}, url: {}, data: {}'.format(method, client.base_url + url_suffix,
+        'requesting https request with method: {}, url: {}, data: {}'.format(method, client.base_api_url + url_suffix,
                                                                              json))
     r = requests.request(
         method,
-        client.base_url + url_suffix,
+        client.base_api_url + url_suffix,
         data=json,
         headers=headers,
         verify=client.use_ssl
@@ -172,13 +173,13 @@ def schedule_and_report(command_results, items_to_schedule, execution_metrics, r
 
 def get_result_page(client):
     uuid = demisto.args().get('uuid')
-    uri = client.base_url + 'result/{}'.format(uuid)
+    uri = client.base_api_url + 'result/{}'.format(uuid)
     return uri
 
 
 def polling(client, uuid):
     TIMEOUT = int(demisto.args().get('timeout', 60))
-    uri = client.base_url + 'result/{}'.format(uuid)
+    uri = client.base_api_url + 'result/{}'.format(uuid)
 
     headers = {'API-Key': client.api_key}
     if client.user_agent:
@@ -671,6 +672,8 @@ def urlscan_search_command(client):
             continue
 
         human_readable = makehash()
+
+        cont['ResultPage'] = client.base_url + 'result/{}'.format(uuid)
 
         if 'url' in res_tasks:
             url = res_tasks['url']
