@@ -885,7 +885,7 @@ script:
     - contextPath: ThreatExchange.Object.id
       description: ID of a ThreatExchange object.
       type: String
-  dockerimage: demisto/python3:3.10.5.31928
+  dockerimage: demisto/python3:3.10.10.51930
   feed: false
   isfetch: false
   longRunning: false

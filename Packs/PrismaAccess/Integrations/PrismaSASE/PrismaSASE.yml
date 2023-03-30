@@ -1877,7 +1877,7 @@ script:
     execution: false
     description: Get all predefined URL categories.
     name: prisma-sase-url-category-list
-  dockerimage: demisto/python3:3.10.9.46807
+  dockerimage: demisto/python3:3.10.10.51930
   feed: false
   isfetch: false
   longRunning: false
