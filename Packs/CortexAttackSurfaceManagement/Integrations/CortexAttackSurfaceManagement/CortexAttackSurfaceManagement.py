@@ -8,6 +8,12 @@ urllib3.disable_warnings()
 
 DEFAULT_SEARCH_LIMIT = 100
 
+class NotFoundError(Exception):
+    pass
+
+class ProcessingError(Exception):
+    pass
+
 
 class Client(BaseClient):
     """
@@ -118,6 +124,38 @@ class Client(BaseClient):
         data = {"request_data": {"asm_id_list": asm_id_list}}
 
         response = self._http_request('POST', '/assets/get_asset_internet_exposure/', json_data=data)
+
+        return response
+
+    def start_remediation_confirmation_scan(self, alert_internal_id: str, service_id: str, attack_surface_rule_id: str) -> Dict[str, Any]:
+        """Retrieves ID of active (running) scan if it already exists for the given service; otherwise, creates new a scan.
+
+        Args:
+            alert_internal_id (str): _description_
+            service_id (str): _description_
+            attack_surface_rule_id (str): _description_
+
+        Raises:
+            ProcessingError: Custom error to handling 500 error with an internal error code 100 for having incorrect request values.
+            NotFoundError: Custom error for handling 500 error that is a "The server encountered an unexpected internal server error" error from waitress.
+
+        Returns:
+            Dict[str, Any]: dictionary containing response information that includes a scan ID.
+        """
+        data = {"request_data": {"alert_internal_id": alert_internal_id, "service_id": service_id, "attack_surface_rule_id": attack_surface_rule_id}}
+        response = self._http_request('POST', 'remediation_confirmation_scanning/get_or_create', json_data=data)
+
+        if response.status_code == 500:
+            try:
+                error_code = response.get('reply', {}).get("err_code", {})
+            except Exception as err:
+                print(f"Unexpected {err=}, {type(err)=}")
+            else:
+                if error_code:
+                    rcs_err_msg = response.get('reply', {}).get("err_msg", {})
+                    raise ProcessingError(f"{rcs_err_msg}. Please check you that your inputs are correct.")
+                elif not error_code:
+                    raise NotFoundError("The endpoint for scanning could not be contacted")
 
         return response
 
@@ -413,6 +451,47 @@ def get_asset_internet_exposure_command(client: Client, args: Dict[str, Any]) ->
     return command_results
 
 
+def start_remediation_confirmation_scan_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    asm-start-remediation_confirmation_scan command: Starts a new scan or gets existing scan ID.
+
+    Args:
+        client (Client): CortexAttackSurfaceManagment client to use.
+        args (dict): all command arguments, usually passed from ``demisto.args()`` (not used in this function).
+
+    Returns:
+        CommandResults: A ``CommandResults`` object that is then passed to ``return_results``,
+        that contains the ID of the Remediation Confirmation Scan.
+    """
+    service_id = str(args.get('service_id'))
+    attack_surface_rule_id = str(args.get('attack_surface_rule_id'))
+    try:
+        alert_internal_id = int(args.get('alert_internal_id'))
+    except ValueError:
+        print("The value of alert_internal_id is not an integer. Please update the value.")
+
+    response = client.start_remediation_confirmation_scan(alert_internal_id=alert_internal_id, service_id=service_id, attack_surface_rule_id=attack_surface_rule_id)
+    formatted_outputs = response.get('reply', {})
+
+    if response.status_code == 201:
+        formatted_outputs.update({"scan_creation_status": "created"})
+    elif response.status_code == 200:
+        formatted_outputs.update({"scan_creation_status": "existed"})
+
+    markdown = tableToMarkdown('External IP Address Ranges',
+                               formatted_outputs,
+                               removeNull=True,
+                               headerTransform=string_to_table_header)
+    command_results = CommandResults(
+        outputs_prefix='',
+        outputs_key_field='',
+        outputs=formatted_outputs,
+        raw_response=response,
+        readable_output=markdown
+    )
+    return command_results
+
+
 def test_module(client: Client) -> None:
     """
     Tests API connectivity and authentication'
@@ -477,7 +556,8 @@ def main() -> None:
             'asm-get-external-ip-address-range': get_external_ip_address_range_command,
             'asm-list-asset-internet-exposure': list_asset_internet_exposure_command,
             'asm-get-asset-internet-exposure': get_asset_internet_exposure_command,
-            'asm-list-remediation-rule': list_remediation_rule_command
+            'asm-list-remediation-rule': list_remediation_rule_command,
+            'asm-start-remediation_confirmation_scan': start_remediation_confirmation_scan_command
         }
 
         if command == 'test-module':
