@@ -230,7 +230,7 @@ def test_scan_command_file_invalid_password(mocker, client):
 def test_password_validator():
     raw_response = util_load_json("test_data/scan_command_zip_valid_pass.json")
     is_valid = OPSWAT_Filescan.is_valid_pass(raw_response)
-    assert is_valid == True
+    assert is_valid
 
 
 @pytest.mark.parametrize("report, DBotScore", [
