@@ -4316,6 +4316,7 @@
         {
             "playbookID": "MSGraph_DeviceManagement_Test",
             "fromversion": "5.0.0",
+            "instance_names": "ms_graph_device_management_self_deployed_prod",
             "integrations": [
                 "Microsoft Graph Device Management"
             ]
@@ -4450,6 +4451,7 @@
         {
             "playbookID": "Microsoft Graph Calendar - Test",
             "fromversion": "5.0.0",
+            "instance_names": "ms_graph_calendar_dev",
             "integrations": [
                 "Microsoft Graph Calendar"
             ]
