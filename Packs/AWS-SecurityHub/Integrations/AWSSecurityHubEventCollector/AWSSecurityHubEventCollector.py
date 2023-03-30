@@ -114,6 +114,10 @@ def fetch_events(client: boto3.client, last_run: dict,
         limit=limit
     )
 
+    # Add '_time' field to events
+    for event in events:
+        event['_time'] = event[TIME_FIELD]
+
     last_finding_update_time: str | None = events[-1].get(TIME_FIELD) if events else last_run.get('last_update_date')
     demisto.info(f'Fetched {len(events)} findings.\nUpdate time of last finding: {last_finding_update_time}.')
 
