@@ -52,15 +52,8 @@ configuration:
   type: 8
   required: false
   section: Collect
-- display: Last date to fetch. e.g., "1 min ago","2 weeks ago","3 months ago"
-  name: fetch_delta
-  defaultvalue: 1 day
-  type: 0
-  hidden: true
-  required: false
-  section: Collect
 - display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
-  defaultvalue: 7 days
+  defaultvalue: 1 days
   name: first_fetch
   required: false
   type: 0
