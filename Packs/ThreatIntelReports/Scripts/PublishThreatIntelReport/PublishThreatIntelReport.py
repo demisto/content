@@ -7,7 +7,7 @@ from CommonServerPython import *  # noqa: F401
 def publish():
     now_utc = datetime.now(timezone.utc)
     object_id = demisto.getArg('object.id')
-    if is_demisto_version_ge('6.8.0'):
+    if is_demisto_version_ge('6.9.0'):
         # getReadOnlyRoles is only supported from 6.8.0
         roles = execute_command('getReadOnlyRoles', {})
     else:
