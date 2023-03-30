@@ -2714,3 +2714,95 @@ There is no context output for this command.
 ## Known limitations:
 When fetching an incident from the Prisma Cloud Compute platform, the platform will delete the fetched incident.
 Therefore, it is recommended to configure only one instance per user to fetch incidents.
+
+### prisma-cloud-compute-get-alert-profiles
+
+***
+AlertProfiles returns the all alert profiles
+
+#### Base Command
+
+`prisma-cloud-compute-get-alert-profiles`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project | The project to get the alert profiles for. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+### prisma-cloud-compute-get-settings-defender
+
+***
+DefenderSettings returns the defenders settings
+
+#### Base Command
+
+`prisma-cloud-compute-get-settings-defender`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+There is no context output for this command.
+### prisma-cloud-compute-logs-defender
+
+***
+DownloadDefenderLogs downloads all defender logs and metadata 
+
+#### Base Command
+
+`prisma-cloud-compute-logs-defender`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| hostname | Hostname is the target defender hostname . | Optional | 
+| lines | Lines is the number of lines to fetch . | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+### prisma-cloud-compute-logs-defender-download
+
+***
+DownloadDefenderLogs downloads all defender logs and metadata 
+
+#### Base Command
+
+`prisma-cloud-compute-logs-defender-download`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| hostname | Hostname is the target defender hostname . | Optional | 
+| lines | Lines is the number of lines to fetch . | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+### prisma-cloud-compute-get-backups
+
+***
+List returns the available backups
+
+#### Base Command
+
+`prisma-cloud-compute-get-backups`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| project | The project to retrieve the backups from. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
