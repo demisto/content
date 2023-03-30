@@ -392,7 +392,6 @@ class TestImportCommands:
 
     @pytest.mark.parametrize(argnames='import_type', argvalues=['file-id', 'test-import-type'])
     def test_import_indicator_with_approval__happy_path(self, mocker, import_type):
-        # sourcery skip: move-assign-in-block, use-named-expression
         """
         Given:
             - Indicator to import with approval
