@@ -77,7 +77,6 @@ def chatgpt_output(response) -> CommandResults:
     :rtype: ``CommandResults``
     """
     if response and isinstance(response, dict):
-
         rep = json.dumps(response)
         repJSON = json.loads(rep)
         model = repJSON.get('model')
@@ -124,7 +123,7 @@ def main() -> None:
 
     api_key = params.get('apikey', {}).get('password')
     base_url = params.get('url', '')
-    verify = params.get('insecure', False)
+    verify = not params.get('insecure', False)
     proxy = params.get('proxy', False)
 
     demisto.debug(f'Command being called is {command}')

@@ -6,7 +6,7 @@ OpenAI ChatGPT is a revolutionary conversational AI system that is designed to i
 
 
 ## OpenAi ChatGPT V3
-- This section explains how to configure the instance of OpenAi ChatGPT V3 in Cortex XSOAR.
+### This section explains how to configure the instance of OpenAi ChatGPT V3 in Cortex XSOAR.
 - Login to OpenAi API
 - Click on Create New Secret Key
 - Copy the key to the left parameter
