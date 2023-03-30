@@ -480,11 +480,11 @@ tasks:
     taskid: 8e6165ed-cc2e-4820-8ae4-c73fd82a3088
     type: regular
     task:
-      id: 8e6165ed-cc2e-4820-8ae4-c73fd82a3088
+      id: 3f240277-9270-475c-8730-ccb0dd02a3df
       version: -1
       name: Tag bad indicators
-      description: commands.local.cmd.set.indicators
-      script: Builtin|||setIndicators
+      description: commands.local.cmd.add.values.to.indicator.multi.select.field
+      script: Builtin|||appendIndicatorField
       type: regular
       iscommand: true
       brand: Builtin
@@ -492,11 +492,14 @@ tasks:
       '#none#':
       - "14"
     scriptarguments:
+      field:
+        simple: tags
+      fieldValue:
+        complex:
+          root: inputs.Tag
       indicatorsValues:
         complex:
           root: IndicatorsToBlock
-      tags:
-        simple: Blocked Indicator In Systems
     separatecontext: false
     view: |-
       {
@@ -974,6 +977,7 @@ tasks:
                 value:
                   simple: No indicators to block
     separatecontext: false
+    reputationcalc: 2
     continueonerrortype: ""
     view: |-
       {
@@ -1073,6 +1077,7 @@ tasks:
     note: false
     timertriggers: []
     ignoreworker: false
+    reputationcalc: 2
     skipunavailable: false
     quietmode: 0
     isoversize: false
