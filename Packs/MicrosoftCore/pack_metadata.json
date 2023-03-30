@@ -1,6 +1,6 @@
 {
     "name": "Microsoft Logs Base",
-    "description": "The Microsoft Events Core pack contains content items that will be applicable to the dataset microsoft_windows_raw.",
+    "description": "The Microsoft Logs Base pack contains content items that will be applicable to the dataset microsoft_windows_raw.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
