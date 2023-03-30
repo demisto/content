@@ -900,8 +900,11 @@ def fetch_incidents():
     last_run = demisto.getLastRun()
     demisto.info("IntSight fetch last run time is: {}".format(str(last_run)))
     if not last_run or 'time' not in last_run:
-        fetch_delta = int(dateparser.parse(demisto.params().get('first_fetch', DEFAULT_TIME_RANGE)
-                                           , settings={'TO_TIMEZONE': 'UTC'}).timestamp() * 1000)
+        first_fetch_date = dateparser.parse(demisto.params().get('first_fetch', DEFAULT_TIME_RANGE),
+                                 settings={'TO_TIMEZONE': 'UTC'})
+        if first_fetch_date is None:
+            raise ValueError(f"Invalid first_fetch format: {demisto.params().get('first_fetch')}")
+        fetch_delta = int(first_fetch_date.timestamp() * 1000)
         demisto.debug(f'First fetch, using {fetch_delta=}')
 
     else:
