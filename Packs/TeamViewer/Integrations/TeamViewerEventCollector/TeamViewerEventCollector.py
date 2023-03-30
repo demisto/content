@@ -1,38 +1,45 @@
 import demistomock as demisto
-from CommonServerPython import *
+from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
+from CommonServerUserPython import *  # noqa
+
 import urllib3
-from typing import Dict, List, Tuple
+from typing import Dict, Any
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-""" CONSTANTS """
 
-DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
-VENDOR = "NetBox"
-PRODUCT = "IRM"
+''' CONSTANTS '''
 
-LOG_TYPES = ["journal-entries", "object-changes"]
-DEFAULT_LIMIT = "1000"
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
+LOG_TYPES = ["UserCreated", "UserDeleted", "JoinCompany", "EditUserProperties", "EditOwnProfile", "EditUserPermissions",
+             "StartedSession", "IncomingSession", "EndedSession", "JoinedSession", "LeftSession",
+             "ParticipantJoinedSession", "ParticipantLeftSession", "ChangedDisabledRemoteInput", "ReceivedDisabledLocalInput",
+             "ChangedShowBlackScreen", "ReceivedShowBlackScreen", "SwitchedSides", "StartedRecording", "EndedRecording",
+             "PausedRecording", "ResumedRecording", "SentFile", "ReceivedFile", "CreateCustomHost", "UpdateCustomHost",
+             "DeleteCustomHost", "PolicyAdded", "PolicyUpdated", "PolicyDeleted", "ScriptTokenAdded", "ScriptTokenDeleted",
+             "ScriptTokenUpdated", "GroupAdded", "GroupUpdated", "GroupDeleted", "GroupShared", "EmailConfirmed"]
+DEFAULT_LIMIT = "300"
+VENDOR = "teamviewer"
+PRODUCT = "teamviewer"
 
-""" CLIENT CLASS """
+''' CLIENT CLASS '''
 
 
 class Client(BaseClient):
     """
     Client class to interact with the service API
     """
-
     def http_request(self, url_suffix=None, full_url=None, params=None):
         return self._http_request(
-            method="GET", url_suffix=url_suffix, full_url=full_url, params=params
+            method="POST", url_suffix=url_suffix, full_url=full_url, params=params
         )
 
     def search_events(
         self, url_suffix: str, limit: int, prev_id: int = 0, ordering: str = ""
-    ) -> Tuple[int, List[Dict[str, Any]]]:
+    ) -> tuple[int, List[Dict[str, Any]]]:
         """
-        Searches for NetBox alerts using the '/<url_suffix>' API endpoint.
+        Searches for T alerts using the '/<url_suffix>' API endpoint.
         Args:
             url_suffix: str, The API endpoint to request.
             limit: int, the limit of the results to return.
@@ -68,75 +75,49 @@ class Client(BaseClient):
 
         return next_id, results[:limit]
 
-    def get_first_fetch_id(self, url_suffix, params):
-        """
-        Sets the first fetch id for log type.
-        Args:
-            url_suffix: str, the log type to fetch.
-            params: dict, the params to send to the API.
-        Returns:
-            int: The first id to fetch.
-        """
-        first_log = self.http_request(
-            url_suffix=url_suffix, params={"ordering": "id", "limit": 1} | params
-        )
 
-        if first_log.get("results"):
-            next_run = first_log.get("results")[0].get("id")
-        else:
-            next_run = None
+''' HELPER FUNCTIONS '''
 
-        return next_run
+# TODO: ADD HERE ANY HELPER FUNCTION YOU MIGHT NEED (if any)
+
+''' COMMAND FUNCTIONS '''
 
 
-def add_time_key_to_events(events: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    """
-    Adds the _time key to the events.
-    Args:
-        events: list, the events to add the time key to.
-    Returns:
-        list: The events with the _time key.
-    """
-    for event in events:
-        if event.get("created"):
-            event["_time"] = event.get("created")
-        elif event.get("time"):
-            event["_time"] = event.get("time")
+def test_module(client: Client) -> str:
+    """Tests API connectivity and authentication'
 
-    return events
-
-
-def test_module_command(client: Client) -> str:
-    """
-    Tests API connectivity and authentication'
-    When 'ok' is returned it indicates the integration works like it is supposed to and connection to the service is
-    successful.
+    Returning 'ok' indicates that the integration works like it is supposed to.
+    Connection to the service is successful.
     Raises exceptions if something goes wrong.
-    Args:
-        client (Client): NetBox client to use.
-    Returns:
-        str: 'ok' if test passed, anything else will raise an exception and will fail the test.
+
+    :type client: ``Client``
+    :param Client: client to use
+
+    :return: 'ok' if test passed, anything else will fail the test.
+    :rtype: ``str``
     """
 
+    message: str = ''
     try:
-        client.search_events(url_suffix=LOG_TYPES[0], limit=1)
-
-    except Exception as e:
-        if "Forbidden" in str(e):
-            return "Authorization Error: make sure API Key is correctly set"
+        # TODO: ADD HERE some code to test connectivity and authentication to your service.
+        # This  should validate all the inputs given in the integration configuration panel,
+        # either manually or by using an API that uses them.
+        message = 'ok'
+    except DemistoException as e:
+        if 'Forbidden' in str(e) or 'Authorization' in str(e):  # TODO: make sure you capture authentication errors
+            message = 'Authorization Error: make sure API Key is correctly set'
         else:
             raise e
-
-    return "ok"
+    return message
 
 
 def get_events_command(
     client: Client, limit: int
-) -> Tuple[List[Dict[str, Any]], CommandResults]:
+) -> tuple[List[Dict[str, Any]], CommandResults]:
     """
-    Gets all the events from the NetBox API for each log type.
+    Gets all the events from the teamviewer API for each log type.
     Args:
-        client (Client): NetBox client to use.
+        client (Client): teamviewer client to use.
         limit: int, the limit of the results to return per log_type.
     Returns:
         list: A list containing the events
@@ -155,68 +136,18 @@ def get_events_command(
     return events, CommandResults(readable_output=hr)
 
 
-def fetch_events_command(
-    client: Client, max_fetch: int, last_run: Dict[str, int], first_fetch_time: str
-) -> Tuple[Dict[str, int], List[Dict[str, Any]]]:
-    """
-    Args:
-        client (Client): NetBox client to use.
-        max_fetch (int): The maximum number of events to fetch per log type.
-        last_run (dict): A dict with a keys containing the first event id to fetch for each log type.
-        first_fetch_time (str): In case of first fetch, fetch events from this date.
-    Returns:
-        dict: Next run dictionary containing the ids of the next events to fetch.
-        list: List of events that will be created in XSIAM.
-    """
-    # In the first fetch, get the ids for the first fetch time
-    params = {
-        "journal-entries": {"created_after": first_fetch_time},
-        "object-changes": {"time_after": first_fetch_time},
-    }
-    for log_type in LOG_TYPES:
-        if last_run.get(log_type) is None:
-            last_run[log_type] = client.get_first_fetch_id(
-                url_suffix=log_type, params=params[log_type]
-            )
-
-    next_run = last_run.copy()
-    events = []
-
-    for log_type in LOG_TYPES:
-        if last_run[log_type] is None:
-            continue
-        next_run[log_type], events_ = client.search_events(
-            url_suffix=log_type,
-            limit=max_fetch,
-            ordering="id",
-            prev_id=last_run[log_type],
-        )
-        events += events_
-
-    demisto.info(
-        f'Fetched events with ids: {", ".join(f"{log_type}: {id_}" for log_type, id_ in last_run.items())}.'
-    )
-
-    # Save the next_run as a dict with the last_fetch key to be stored
-    demisto.info(
-        f'Setting next run with ids: {", ".join(f"{log_type}: {id_}" for log_type, id_ in next_run.items())}.'
-    )
-    return next_run, events
+''' MAIN FUNCTION '''
 
 
-""" MAIN FUNCTION """
-
-
-def main() -> None:  # pragma: no cover
+def main() -> None:
     """
     main function, parses params and runs command functions
     """
-
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
     api_key = params.get("credentials", {}).get("password")
-    base_url = urljoin(params.get("url"), "/api/v1/EventLogging")
+    base_url = urljoin(params.get("url"))
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
 
@@ -239,11 +170,11 @@ def main() -> None:  # pragma: no cover
 
         if command == "test-module":
             # This is the call made when pressing the integration Test button.
-            result = test_module_command(client)
+            result = test_module(client)
             return_results(result)
 
-        elif command in ("netbox-get-events", "fetch-events"):
-            if command == "netbox-get-events":
+        elif command in ("teamviewer-get-events", "fetch-events"):
+            if command == "teamviewer-get-events":
                 should_push_events = argToBoolean(args.get("should_push_events"))
                 events, results = get_events_command(
                     client, limit=arg_to_number(args.get("limit", DEFAULT_LIMIT))  # type: ignore
@@ -271,7 +202,9 @@ def main() -> None:  # pragma: no cover
         return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
 
 
-""" ENTRY POINT """
 
-if __name__ in ("__main__", "__builtin__", "builtins"):
+''' ENTRY POINT '''
+
+
+if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
