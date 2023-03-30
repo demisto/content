@@ -18,15 +18,19 @@ alter
     get_description = arraystring(regextract(_raw_log, "^<\d+>\d+\s[^Z]+Z\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^|]+\|[^|]+\|[^|]+\|[^|]+\|[^|]+\|[^|]+\|([^|]+)"), "")   
 | alter
     clean_category = replex(get_category, "\[|\]", ""),
-    clean_email_recipients = arraymap(split(get_email_recipients, ","), trim("@element"))
-    get_action = arraystring(regextract(_raw_log, "^<\d+>\d+\s[^Z]+Z\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^|]+\|[^|]+\|[^|]+\|[^|]+\|[^-]+\-\s([^\|]+)\|"), ""),
+    get_recipient1 = arraystring(regextract(get_email_recipients, "^[^,\s]+"), ""),
+    get_recipient2 = arraystring(regextract(get_email_recipients, "^[^,\s]+\,\s([^,\s]+)"), ""),
+    get_recipient3 = arraystring(regextract(get_email_recipients, "^[^,\s]+\,\s[^,\s]+\,\s([^,\s]+)"), ""),
+    get_recipient4 = arraystring(regextract(get_email_recipients, "^[^,\s]+\,\s[^,\s]+\,\s[^,\s]+\,\s([^,\s]+)"), ""),
+    get_recipient5 = arraystring(regextract(get_email_recipients, "^[^,\s]+\,\s[^,\s]+\,\s[^,\s]+\,\s[^,\s]+\,\s([^,\s]+)"), ""),
+    get_action = arraystring(regextract(_raw_log, "^<\d+>\d+\s[^Z]+Z\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^\s]+\s[^|]+\|[^|]+\|[^|]+\|[^|]+\|[^-]+\-\s([^\|]+)\|"), "")
 | alter
     xdm.event.type = find_type,
     xdm.observer.name = get_observer_name,
     xdm.alert.subcategory = clean_category,
     xdm.email.sender = get_email_sender,
     xdm.source.user.username = get_email_sender,
-    xdm.email.recipients = clean_email_recipients,
+    xdm.email.recipients = arraycreate(get_recipient1, get_recipient2, get_recipient3, get_recipient4, get_recipient5),
     xdm.alert.original_alert_id = get_event_id,
     xdm.email.subject = get_email_subject,
     xdm.event.outcome_reason = get_outcome_reason,
