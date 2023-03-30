@@ -1,7 +1,6 @@
 id: Druva-Ransomware-Response
 version: -1
 name: Druva-Ransomware-Response
-deprecated: true
 description: Use Druva-Ransomware-Response
   to stop the spread of ransomware and avoid reinfection or contamination spread.
 starttaskid: "0"
