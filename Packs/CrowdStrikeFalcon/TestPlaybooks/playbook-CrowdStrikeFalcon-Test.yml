@@ -3176,7 +3176,6 @@ tasks:
       cl_regex:
         simple: .*
       exclusion_name:
-       value:
         complex:
           root: GeneratedUUID
       groups:
@@ -3259,9 +3258,8 @@ tasks:
       - "88"
     scriptarguments:
       name:
-        value:
-          complex:
-            root: GeneratedUUID
+        complex:
+          root: GeneratedUUID
     separatecontext: false
     continueonerrortype: ""
     view: |-
