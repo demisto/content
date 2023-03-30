@@ -1,6 +1,6 @@
 {
-    "name": "## FILL MANDATORY FIELD ##",
-    "description": "## FILL MANDATORY FIELD ##",
+    "name": "3CXDesktopApp Supply Chain Attack",
+    "description": "This pack handles 3CXDesktopApp Supply Chain Attack investigation and response",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
@@ -9,7 +9,18 @@
     "categories": [],
     "tags": [],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Supply Chain",
+        "3CX",
+        "3CXDesktopApp",
+        "infostealer"
+    ],
+    "dependencies": {
+        "MajorBreachesInvestigationandResponse": {
+            "mandatory": true,
+            "display_name": "Rapid Breach Response"
+        }
+    },
     "marketplaces": [
         "xsoar",
         "marketplacev2"
