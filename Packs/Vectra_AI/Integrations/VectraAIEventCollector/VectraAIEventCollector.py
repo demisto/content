@@ -148,7 +148,7 @@ def add_parsing_rules(event: Dict[str, Any]) -> Any:
         return event
 
     except Exception as e:
-        demisto.info(
+        demisto.debug(
             f"""Failed adding parsing rules to event '{str(event)}': {str(e)}.
             Will be added in ingestion time"""
         )
@@ -223,7 +223,7 @@ def test_module(client: VectraClient) -> str:
     `str` `'ok'` if test passed, anything else will raise an exception.
     """
 
-    demisto.info(f"Testing connection and authentication to {client._base_url}...")
+    demisto.debug(f"Testing connection and authentication to {client._base_url}...")
 
     fetch_events(client)
 
@@ -323,17 +323,17 @@ def fetch_events_cmd(client) -> None:
 
     detections, audits, next_fetch = fetch_events(client=client)
 
-    demisto.info(f"Setting last run to {str(next_fetch)}...")
+    demisto.debug(f"Setting last run to {str(next_fetch)}...")
     demisto.setLastRun(next_fetch)
 
     parsed_events: List[Dict[str, Any]] = []
 
-    demisto.info("Attempting to add parsing rules to event...")
+    demisto.debug("Attempting to add parsing rules to event...")
     for event in detections + audits:
         parsed_events.append(add_parsing_rules(event))
-    demisto.info("Finished adding parsing rules.")
+    demisto.debug("Finished adding parsing rules.")
 
-    demisto.info(
+    demisto.debug(
         f"Sending {len(parsed_events)} events to XSIAM ({len(detections)} detections, {len(audits)} audits)"
     )
     send_events_to_xsiam(parsed_events, vendor=VENDOR, product=VENDOR)  # type: ignore
@@ -359,7 +359,7 @@ def fetch_events(
 
     # The first fetch
     if is_first_fetch:
-        demisto.info("First time fetching events")
+        demisto.debug("First time fetching events")
         first_fetch: datetime = arg_to_datetime(  # type: ignore
             arg=demisto.params().get("first_fetch", "3 days"), arg_name="First fetch time"
         )
@@ -380,27 +380,27 @@ def fetch_events(
         )
 
     # Fetch Audits
-    demisto.info(f"Fetching audits from {start} to now...")
+    demisto.debug(f"Fetching audits from {start} to now...")
     returned_audits: List[Dict[str, Any]] = client.get_audits(start=start).get("audits", [])
 
     audits = get_audits_to_send(
         returned_audits, is_first_fetch, previous_fetch_most_recent_audit_timestamp_str
     )
 
-    demisto.info(f"Fetched {len(audits)} audits.")
+    demisto.debug(f"Fetched {len(audits)} audits.")
     if audits:
         most_recent_audit = audits[-1]
         most_recent_audit_str = most_recent_audit.get(AUDIT_TIMESTAMP_KEY)
 
     else:
-        demisto.info("No audits were fetched.")
+        demisto.debug("No audits were fetched.")
         most_recent_audit_str = previous_fetch_most_recent_audit_timestamp_str
 
     # Fetch Detections
-    demisto.info(f"Fetching detections from {first_timestamp} to now...")
+    demisto.debug(f"Fetching detections from {first_timestamp} to now...")
     detections = client.get_detections(first_timestamp=first_timestamp).get("results", [])
 
-    demisto.info(f"{len(detections)} detections found.")
+    demisto.debug(f"{len(detections)} detections found.")
 
     if detections:
         most_recent_detection = get_most_recent_detection(detections)
@@ -468,7 +468,7 @@ def main() -> None:  # pragma: no cover
     args = demisto.args()
     config = demisto.params()
 
-    demisto.info(f"Command being called is '{cmd}'")
+    demisto.debug(f"Command being called is '{cmd}'")
     try:
 
         client = VectraClient(
@@ -499,12 +499,12 @@ def main() -> None:  # pragma: no cover
 
                     parsed_events: List[Dict[str, Any]] = []
 
-                    demisto.info("Attempting to add parsing rules to event...")
+                    demisto.debug("Attempting to add parsing rules to event...")
                     for event in detections_cmd_res.outputs + audits_cmd_res.outputs:  # type: ignore
                         parsed_events.append(add_parsing_rules(event))
-                    demisto.info("Finished adding parsing rules.")
+                    demisto.debug("Finished adding parsing rules.")
 
-                    demisto.info(
+                    demisto.debug(
                         f"Sending {len(parsed_events)} events to XSIAM, "
                         + f"({len(detections_cmd_res.outputs)} detections"  # type: ignore
                         + f"{len(audits_cmd_res.outputs)} audits)"  # type: ignore
