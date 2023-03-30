@@ -1423,3 +1423,32 @@ def test_get_backups_command(mocker):
     args = {}
 
     assert get_backups_command(client, args).raw_response == d
+
+
+def test_get_defender_logs_command(mocker):
+    """
+    Given:
+        - An app client object
+        - Relevant arguments
+    When:
+        - Calling 'prisma-cloud-compute-logs-defender' command
+    Then:
+        -  Ensure the outputs of requesting the defenders logs equals the raw_response object which is mocked
+        -  Ensure the number of logs requests equals the number of logs received
+        -  Ensure the hostname argument equals the hostname received in the context object which is mocked
+    """
+    from PaloAltoNetworks_PrismaCloudCompute import get_logs_defender_command, PrismaCloudComputeClient
+    with open("test_data/defender_logs.json") as f:
+        d = json.load(f)
+
+    mocker.patch.object(PrismaCloudComputeClient, 'get_logs_defender_request', return_value=d)
+    client = PrismaCloudComputeClient(base_url=BASE_URL, verify='False', project='', auth=('test', 'test'))
+    args = {
+        "hostname": "test.internal",
+        "lines": 2
+    }
+
+    assert get_logs_defender_command(client, args).raw_response == d
+
+    assert len(get_logs_defender_command(client, args).outputs.get("Logs")) == args.get('lines')
+    assert get_logs_defender_command(client, args).outputs.get("Hostname") == args.get("hostname")

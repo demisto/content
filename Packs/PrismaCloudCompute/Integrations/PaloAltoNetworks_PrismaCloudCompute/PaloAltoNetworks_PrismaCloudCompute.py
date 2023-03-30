@@ -376,7 +376,7 @@ class PrismaCloudComputeClient(BaseClient):
 
         return self._http_request('get', 'settings/defender', headers=headers)
 
-    def api_v1_logs_defender_request(self, hostname, lines):
+    def get_logs_defender_request(self, hostname, lines):
         """
         Get the defender logs.
 
@@ -1878,7 +1878,7 @@ def get_api_v1_settings_defender_command(client, args):
         raw_response=response
     )
 
-def api_v1_logs_defender_command(client, args):
+def get_logs_defender_command(client, args):
     """
     Get the defender logs.
 
@@ -1892,7 +1892,7 @@ def api_v1_logs_defender_command(client, args):
     hostname = str(args.get('hostname', ''))
     lines = args.get('lines', None)
 
-    response = client.api_v1_logs_defender_request(hostname, lines)
+    response = client.get_logs_defender_request(hostname, lines)
     entry = {
         "Hostname": hostname,
         "Logs": response
@@ -1901,7 +1901,7 @@ def api_v1_logs_defender_command(client, args):
         outputs_prefix='PrismaCloudCompute.Defenders',
         outputs=format_context(entry),
         outputs_key_field='Hostname',
-        raw_response=entry,
+        raw_response=response,
         readable_output=tableToMarkdown("Logs", entry.get("Logs"))
     )
 
@@ -2053,9 +2053,8 @@ def main():
             return_results(results=get_alert_profiles_command(client=client, args=demisto.args()))
         elif requested_command == "prisma-cloud-compute-get-settings-defender":
             return_results(results=get_api_v1_settings_defender_command)
-
         elif requested_command == "prisma-cloud-compute-logs-defender":
-            return_results(results=api_v1_logs_defender_command(client=client, args=demisto.args()))
+            return_results(results=get_logs_defender_command(client=client, args=demisto.args()))
         elif requested_command == "prisma-cloud-compute-get-backups":
             return_results(results=get_backups_command(client=client, args=demisto.args()))
         elif requested_command == "prisma-cloud-compute-logs-defender-download":
