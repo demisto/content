@@ -1,4 +1,4 @@
-Automate response actions like quarantining effected resources or snapshots to stop the spread of ransomware and avoid reinfection or contamination spread.
+Use Druva-Ransomware-Response to stop the spread of ransomware and avoid reinfection or contamination spread.
 
 ## Dependencies
 
@@ -18,12 +18,12 @@ This playbook does not use any sub-playbooks.
 
 ### Commands
 
+* druva-find-sharePointSites
 * druva-find-userDevice
+* druva-quarantine-resource
 * druva-find-sharedDrives
 * druva-find-user
-* druva-quarantine-resource
 * druva-find-device
-* druva-find-sharePointSites
 
 ## Playbook Inputs
 

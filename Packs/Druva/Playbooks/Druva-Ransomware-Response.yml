@@ -1,8 +1,8 @@
-id: 083d0b4d-3f94-4214-8ee0-6ed616f3aec5
-version: 10
-vcShouldKeepItemLegacyProdMachine: false
+id: Druva-Ransomware-Response
+version: -1
 name: Druva-Ransomware-Response
-description: Automate response actions like quarantining effected resources or snapshots
+deprecated: true
+description: Use Druva-Ransomware-Response
   to stop the spread of ransomware and avoid reinfection or contamination spread.
 starttaskid: "0"
 tasks:
@@ -664,4 +664,6 @@ inputs:
   description: 'Date is used to quarantine device '
   playbookInputQuery: null
 outputs: []
-sourceplaybookid: 97d62768-a09d-4f5f-83d1-8d07ddec12f4
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0
