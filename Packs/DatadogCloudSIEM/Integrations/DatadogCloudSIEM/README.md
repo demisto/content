@@ -423,3 +423,61 @@ Delete an existing incident.
 #### Context Output
 
 There is no context output for this command.
+### datadog-incident-update
+
+***
+Updates an incident. Provide only the attributes that should be updated as this request is a partial update.
+
+#### Base Command
+
+`datadog-incident-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| incident_id | The UUID of the incident. | Required | 
+| customer_impact_end | Specifies the end of the search time frame.<br/>Format : yyyy-MM-dd’T’HH:mm:ssZ Or  '-1days'. | Optional | 
+| customer_impact_scope | A summary of the impact customers experienced during the incident. | Optional | 
+| customer_impact_start | Timestamp  when customers began being impacted by the incident .<br/>Format : yyyy-MM-dd’T’HH:mm:ssZ Or  '-1days'. | Optional | 
+| customer_impacted | A flag indicating whether the incident caused customer impact. Possible values are: True, False. | Optional | 
+| detected | Timestamp when the incident was detected.<br/>Format : yyyy-MM-dd’T’HH:mm:ssZ Or  '-1days'. | Optional | 
+| severity | The Severity of the incident.<br/>Default value=unknown. Possible values are: SEV-1, SEV-2, SEV-3, SEV-4, SEV-5, UNKNOWN. | Optional | 
+| state | The State of the incident. Possible values are: active, stable, resolved. | Optional | 
+| detection_method | Specify how the incident was detected. Possible values are: customer, employee, monitor, other, unknown. | Optional | 
+| root_cause | This field allows you to enter the description of the root cause, triggers, and contributing factors of the incident. | Optional | 
+| summary | Summary of the incident. | Optional | 
+| display_name | The name of the notified handle. | Optional | 
+| handle | The email address used for the notification. | Optional | 
+| title | The title of the incident, which summarizes what happened. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Datadog.Incident.id | String | The incident ID. | 
+| Datadog.Incident.attributes.public_id | Number | The monotonically increasing integer ID for the incident. | 
+| Datadog.Incident.attributes.title | String | The title of the incident, which summarizes what happened. | 
+| Datadog.Incident.attributes.resolved | String | Timestamp when the incident's state was last changed from active or stable to resolved or completed. | 
+| Datadog.Incident.attributes.customer_impact_scope | String | A summary of the impact customers experienced during the incident. | 
+| Datadog.Incident.attributes.customer_impact_start | Date | Timestamp when customers began being impacted by the incident. | 
+| Datadog.Incident.attributes.customer_impact_end | String | Timestamp when customers were no longer impacted by the incident. | 
+| Datadog.Incident.attributes.customer_impacted | Boolean | A flag indicating whether the incident caused customer impact. | 
+| Datadog.Incident.attributes.notification_handles.handle | String | The email address used for the notification. | 
+| Datadog.Incident.attributes.notification_handles.display_name | String | The name of the notified handle. | 
+| Datadog.Incident.attributes.created | String | Timestamp when the incident was created. | 
+| Datadog.Incident.attributes.modified | String | Timestamp when the incident was last modified. | 
+| Datadog.Incident.attributes.detected | String | Timestamp when the incident was detected. | 
+| Datadog.Incident.attributes.customer_impact_duration | Number | Length of the incident's customer impact in seconds. Equals the difference between customer_impact_start and customer_impact_end. | 
+| Datadog.Incident.attributes.time_to_detect | Number | The amount of time in seconds to detect the incident. Equals the difference between customer_impact_start and detected. | 
+| Datadog.Incident.attributes.time_to_repair | Number | The amount of time in seconds to resolve customer impact after detecting the issue. Equals the difference between customer_impact_end and detected. | 
+| Datadog.Incident.attributes.time_to_internal_response | Number | The amount of time in seconds to call incident after detection. Equals the difference of detected and created. | 
+| Datadog.Incident.attributes.time_to_resolve | Number | The amount of time in seconds to resolve the incident after it was created. Equals the difference between created and resolved. | 
+| Datadog.Incident.attributes.fields.severity.value | String | The severity of the incident. | 
+| Datadog.Incident.attributes.fields.state.value | String | The status of the incident. | 
+| Datadog.Incident.attributes.fields.detection_method.value | String | Specify how the incident was detected with these default options: customer, employee, monitor, other, or unknown. | 
+| Datadog.Incident.attributes.fields.root_cause.value | String | This text field allows you to enter the description of the root cause, triggers, and contributing factors of the incident. | 
+| Datadog.Incident.attributes.fields.summary.value | String | Summary of incident. | 
+| Datadog.Incident.relationships.created_by_user.data.id | String | A unique identifier that represents the user. | 
+| Datadog.Incident.relationships.last_modified_by_user.data.id | String | A unique identifier that represents the user. | 
+| Datadog.Incident.relationships.commander_user.data.id | String | A unique identifier that represents the user. | 

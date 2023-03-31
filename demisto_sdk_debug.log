@@ -1,591 +1,133 @@
-[2023-03-27T17:50:23Z] - [MainThread] - [DEBUG] - cmd.py:976 - Popen(['git', 'remote', 'get-url', '--all', 'origin'], cwd=/home/moin/demisto/content, universal_newlines=False, shell=None, istream=None)
-[2023-03-27T17:50:23Z] - [MainThread] - [DEBUG] - connectionpool.py:1003 - Starting new HTTPS connection (1): pypi.org:443
-[2023-03-27T17:50:23Z] - [MainThread] - [DEBUG] - connectionpool.py:456 - https://pypi.org:443 "GET /pypi/demisto-sdk/json HTTP/1.1" 200 31906
-[2023-03-27T17:50:23Z] - [MainThread] - [INFO] - __main__.py:216 - You are using demisto-sdk 1.11.0.
-[2023-03-27T17:52:21Z] - [MainThread] - [DEBUG] - cmd.py:976 - Popen(['git', 'remote', 'get-url', '--all', 'origin'], cwd=/home/moin/demisto/content, universal_newlines=False, shell=None, istream=None)
-[2023-03-27T17:52:21Z] - [MainThread] - [DEBUG] - connectionpool.py:1003 - Starting new HTTPS connection (1): pypi.org:443
-[2023-03-27T17:52:21Z] - [MainThread] - [DEBUG] - connectionpool.py:456 - https://pypi.org:443 "GET /pypi/demisto-sdk/json HTTP/1.1" 200 31906
-[2023-03-27T17:52:21Z] - [MainThread] - [INFO] - __main__.py:216 - You are using demisto-sdk 1.11.0.
-[2023-03-27T17:52:22Z] - [MainThread] - [INFO] - generate_outputs.py:26 - To use the json-to-outputs version of this command please include a `prefix` argument.
-[2023-03-27T17:53:17Z] - [MainThread] - [DEBUG] - cmd.py:976 - Popen(['git', 'remote', 'get-url', '--all', 'origin'], cwd=/home/moin/demisto/content, universal_newlines=False, shell=None, istream=None)
-[2023-03-27T17:53:17Z] - [MainThread] - [DEBUG] - connectionpool.py:1003 - Starting new HTTPS connection (1): pypi.org:443
-[2023-03-27T17:53:17Z] - [MainThread] - [DEBUG] - connectionpool.py:456 - https://pypi.org:443 "GET /pypi/demisto-sdk/json HTTP/1.1" 200 31906
-[2023-03-27T17:53:17Z] - [MainThread] - [INFO] - __main__.py:216 - You are using demisto-sdk 1.11.0.
-[2023-03-27T17:53:23Z] - [MainThread] - [DEBUG] - json_to_outputs.py:216 - JSON before converting to YAML: [{'contextPath': 'Datadog.Incident.data.type', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.id', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.attributes.public_id', 'description': '', 'type': 'Number'}, {'contextPath': 'Datadog.Incident.data.attributes.title', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.attributes.resolved', 'description': '', 'type': 'Unknown'}, {'contextPath': 'Datadog.Incident.data.attributes.customer_impact_scope', 'description': '', 'type': 'Unknown'}, {'contextPath': 'Datadog.Incident.data.attributes.customer_impact_start', 'description': '', 'type': 'Unknown'}, {'contextPath': 'Datadog.Incident.data.attributes.customer_impact_end', 'description': '', 'type': 'Unknown'}, {'contextPath': 'Datadog.Incident.data.attributes.customer_impacted', 'description': '', 'type': 'Boolean'}, {'contextPath': 'Datadog.Incident.data.attributes.notification_handles.created_at', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.attributes.notification_handles.display_name', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.attributes.notification_handles.handle', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.attributes.last_modified_by.data.type', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.attributes.last_modified_by.data.id', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.attributes.last_modified_by.data.attributes.uuid', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.attributes.last_modified_by.data.attributes.handle', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.attributes.last_modified_by.data.attributes.email', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.attributes.last_modified_by.data.attributes.name', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.attributes.last_modified_by.data.attributes.icon', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.attributes.last_modified_by_uuid', 'description': '', 'type': 'Unknown'}, {'contextPath': 'Datadog.Incident.data.attributes.created', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.attributes.modified', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.attributes.commander', 'description': '', 'type': 'Unknown'}, {'contextPath': 'Datadog.Incident.data.attributes.detected', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.attributes.created_by.data.type', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.attributes.created_by.data.id', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.attributes.created_by.data.attributes.uuid', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.attributes.created_by.data.attributes.handle', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.attributes.created_by.data.attributes.email', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.attributes.created_by.data.attributes.name', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.attributes.created_by.data.attributes.icon', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.attributes.created_by_uuid', 'description': '', 'type': 'Unknown'}, {'contextPath': 'Datadog.Incident.data.attributes.creation_idempotency_key', 'description': '', 'type': 'Unknown'}, {'contextPath': 'Datadog.Incident.data.attributes.customer_impact_duration', 'description': '', 'type': 'Number'}, {'contextPath': 'Datadog.Incident.data.attributes.time_to_detect', 'description': '', 'type': 'Number'}, {'contextPath': 'Datadog.Incident.data.attributes.time_to_repair', 'description': '', 'type': 'Number'}, {'contextPath': 'Datadog.Incident.data.attributes.time_to_internal_response', 'description': '', 'type': 'Number'}, {'contextPath': 'Datadog.Incident.data.attributes.time_to_resolve', 'description': '', 'type': 'Number'}, {'contextPath': 'Datadog.Incident.data.attributes.fields.severity.type', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.attributes.fields.severity.value', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.attributes.fields.state.type', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.attributes.fields.state.value', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.attributes.fields.detection_method.type', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.attributes.fields.detection_method.value', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.attributes.fields.root_cause.type', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.attributes.fields.root_cause.value', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.attributes.fields.summary.type', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.attributes.fields.summary.value', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.attributes.fields.services.type', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.attributes.fields.services.value', 'description': '', 'type': 'Unknown'}, {'contextPath': 'Datadog.Incident.data.attributes.fields.teams.type', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.attributes.fields.teams.value', 'description': '', 'type': 'Unknown'}, {'contextPath': 'Datadog.Incident.data.attributes.field_analytics', 'description': '', 'type': 'Unknown'}, {'contextPath': 'Datadog.Incident.data.attributes.severity', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.attributes.state', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.attributes.non_datadog_creator', 'description': '', 'type': 'Unknown'}, {'contextPath': 'Datadog.Incident.data.attributes.visibility', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.attributes.case_id', 'description': '', 'type': 'Unknown'}, {'contextPath': 'Datadog.Incident.data.relationships.created_by_user.data.type', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.relationships.created_by_user.data.id', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.relationships.last_modified_by_user.data.type', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.relationships.last_modified_by_user.data.id', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.relationships.commander_user.data', 'description': '', 'type': 'Unknown'}, {'contextPath': 'Datadog.Incident.data.relationships.user_defined_fields.data.type', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.relationships.user_defined_fields.data.id', 'description': '', 'type': 'String'}]
-[2023-03-27T17:53:23Z] - [MainThread] - [INFO] - json_to_outputs.py:273 - YAML Outputs
+[2023-03-31T19:09:53Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - linter.py:651 - DatadogCloudSIEM - XSOAR Linter - Finished, stdout: 
+************* Module DatadogCloudSIEM
+/home/moin/demisto/content/Packs/DatadogCloudSIEM/Integrations/DatadogCloudSIEM/DatadogCloudSIEM.py:1:0: W9011 : return_error used too many times, should be used only once in the code, in main function. Please remove other usages.
 
+[2023-03-31T19:09:53Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - linter.py:652 - DatadogCloudSIEM - XSOAR Linter - Finished, stderr: 
+[2023-03-31T19:09:53Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:671 - DatadogCloudSIEM - Bandit - Start
+[2023-03-31T19:09:54Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - linter.py:676 - DatadogCloudSIEM - Bandit - Finished, exit-code: 0
+[2023-03-31T19:09:54Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - linter.py:677 - DatadogCloudSIEM - Bandit - Finished, stdout: 
+[2023-03-31T19:09:54Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - linter.py:678 - DatadogCloudSIEM - Bandit - Finished, stderr: 
+[2023-03-31T19:09:54Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:686 - DatadogCloudSIEM - Bandit - Successfully finished
+[2023-03-31T19:09:54Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:703 - DatadogCloudSIEM - Mypy - Start
+[2023-03-31T19:09:55Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - linter.py:711 - DatadogCloudSIEM - Mypy - Finished, exit-code: 0
+[2023-03-31T19:09:55Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - linter.py:712 - DatadogCloudSIEM - Mypy - Finished, stdout: 
+Success: no issues found in 1 source file
 
-[2023-03-27T17:55:00Z] - [MainThread] - [DEBUG] - cmd.py:976 - Popen(['git', 'remote', 'get-url', '--all', 'origin'], cwd=/home/moin/demisto/content, universal_newlines=False, shell=None, istream=None)
-[2023-03-27T17:55:00Z] - [MainThread] - [DEBUG] - connectionpool.py:1003 - Starting new HTTPS connection (1): pypi.org:443
-[2023-03-27T17:55:00Z] - [MainThread] - [DEBUG] - connectionpool.py:456 - https://pypi.org:443 "GET /pypi/demisto-sdk/json HTTP/1.1" 200 31906
-[2023-03-27T17:55:00Z] - [MainThread] - [INFO] - __main__.py:216 - You are using demisto-sdk 1.11.0.
-[2023-03-27T17:55:14Z] - [MainThread] - [DEBUG] - json_to_outputs.py:216 - JSON before converting to YAML: [{'contextPath': 'Datadog.Incident.data.type', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.id', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.attributes.public_id', 'description': '', 'type': 'Number'}, {'contextPath': 'Datadog.Incident.data.attributes.title', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.attributes.resolved', 'description': '', 'type': 'Unknown'}, {'contextPath': 'Datadog.Incident.data.attributes.customer_impact_scope', 'description': '', 'type': 'Unknown'}, {'contextPath': 'Datadog.Incident.data.attributes.customer_impact_start', 'description': '', 'type': 'Unknown'}, {'contextPath': 'Datadog.Incident.data.attributes.customer_impact_end', 'description': '', 'type': 'Unknown'}, {'contextPath': 'Datadog.Incident.data.attributes.customer_impacted', 'description': '', 'type': 'Boolean'}, {'contextPath': 'Datadog.Incident.data.attributes.notification_handles.created_at', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.attributes.notification_handles.display_name', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.attributes.notification_handles.handle', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.attributes.last_modified_by.data.type', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.attributes.last_modified_by.data.id', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.attributes.last_modified_by.data.attributes.uuid', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.attributes.last_modified_by.data.attributes.handle', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.attributes.last_modified_by.data.attributes.email', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.attributes.last_modified_by.data.attributes.name', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.attributes.last_modified_by.data.attributes.icon', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.attributes.last_modified_by_uuid', 'description': '', 'type': 'Unknown'}, {'contextPath': 'Datadog.Incident.data.attributes.created', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.attributes.modified', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.attributes.commander', 'description': '', 'type': 'Unknown'}, {'contextPath': 'Datadog.Incident.data.attributes.detected', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.attributes.created_by.data.type', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.attributes.created_by.data.id', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.attributes.created_by.data.attributes.uuid', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.attributes.created_by.data.attributes.handle', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.attributes.created_by.data.attributes.email', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.attributes.created_by.data.attributes.name', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.attributes.created_by.data.attributes.icon', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.attributes.created_by_uuid', 'description': '', 'type': 'Unknown'}, {'contextPath': 'Datadog.Incident.data.attributes.creation_idempotency_key', 'description': '', 'type': 'Unknown'}, {'contextPath': 'Datadog.Incident.data.attributes.customer_impact_duration', 'description': '', 'type': 'Number'}, {'contextPath': 'Datadog.Incident.data.attributes.time_to_detect', 'description': '', 'type': 'Number'}, {'contextPath': 'Datadog.Incident.data.attributes.time_to_repair', 'description': '', 'type': 'Number'}, {'contextPath': 'Datadog.Incident.data.attributes.time_to_internal_response', 'description': '', 'type': 'Number'}, {'contextPath': 'Datadog.Incident.data.attributes.time_to_resolve', 'description': '', 'type': 'Number'}, {'contextPath': 'Datadog.Incident.data.attributes.fields.severity.type', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.attributes.fields.severity.value', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.attributes.fields.state.type', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.attributes.fields.state.value', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.attributes.fields.detection_method.type', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.attributes.fields.detection_method.value', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.attributes.fields.root_cause.type', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.attributes.fields.root_cause.value', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.attributes.fields.summary.type', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.attributes.fields.summary.value', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.attributes.fields.services.type', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.attributes.fields.services.value', 'description': '', 'type': 'Unknown'}, {'contextPath': 'Datadog.Incident.data.attributes.fields.teams.type', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.attributes.fields.teams.value', 'description': '', 'type': 'Unknown'}, {'contextPath': 'Datadog.Incident.data.attributes.field_analytics', 'description': '', 'type': 'Unknown'}, {'contextPath': 'Datadog.Incident.data.attributes.severity', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.attributes.state', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.attributes.non_datadog_creator', 'description': '', 'type': 'Unknown'}, {'contextPath': 'Datadog.Incident.data.attributes.visibility', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.attributes.case_id', 'description': '', 'type': 'Unknown'}, {'contextPath': 'Datadog.Incident.data.relationships.created_by_user.data.type', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.relationships.created_by_user.data.id', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.relationships.last_modified_by_user.data.type', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.relationships.last_modified_by_user.data.id', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.relationships.commander_user.data', 'description': '', 'type': 'Unknown'}, {'contextPath': 'Datadog.Incident.data.relationships.user_defined_fields.data.type', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.data.relationships.user_defined_fields.data.id', 'description': '', 'type': 'String'}]
-[2023-03-27T17:55:14Z] - [MainThread] - [INFO] - json_to_outputs.py:273 - YAML Outputs
+[2023-03-31T19:09:55Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - linter.py:713 - DatadogCloudSIEM - Mypy - Finished, stderr: 
+[2023-03-31T19:09:55Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:721 - DatadogCloudSIEM - Mypy - Successfully finished
+[2023-03-31T19:09:55Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:566 - DatadogCloudSIEM - Run Lint In Host - Finished successfully
+[2023-03-31T19:09:55Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:752 - DatadogCloudSIEM - Run Lint On Docker Image - Running lint: Number of images=[['demisto/datadog-api-client:1.0.0.48939', '3.10']]
+[2023-03-31T19:09:55Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:758 - DatadogCloudSIEM - Run Lint On Docker Image - Running lint on docker image demisto/datadog-api-client:1.0.0.48939
+[2023-03-31T19:09:55Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:941 - DatadogCloudSIEM - Image create - Trying to pull existing image devtestdemisto/datadog-api-client:1.0.0.48939-f1a8a03f0d4031309fa67e5b6b566d13
+[2023-03-31T19:09:55Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - docker_helper.py:63 - pull_image - docker client already available, using current DOCKER_CLIENT
+[2023-03-31T19:09:55Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - connectionpool.py:456 - http://localhost:None "GET /v1.42/images/devtestdemisto/datadog-api-client:1.0.0.48939-f1a8a03f0d4031309fa67e5b6b566d13/json HTTP/1.1" 404 108
+[2023-03-31T19:09:55Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - docker_helper.py:107 - docker image devtestdemisto/datadog-api-client:1.0.0.48939-f1a8a03f0d4031309fa67e5b6b566d13 not found, pulling
+[2023-03-31T19:09:55Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - auth.py:39 - Looking for auth config
+[2023-03-31T19:09:55Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - auth.py:41 - No auth config in memory - loading from filesystem
+[2023-03-31T19:09:55Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - config.py:21 - Trying paths: ['/home/moin/.docker/config.json', '/home/moin/.dockercfg']
+[2023-03-31T19:09:55Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - config.py:28 - No config file found
+[2023-03-31T19:09:55Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - auth.py:240 - Looking for auth entry for 'docker.io'
+[2023-03-31T19:09:55Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - auth.py:251 - No entry found
+[2023-03-31T19:09:55Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - auth.py:56 - No auth config found
+[2023-03-31T19:09:59Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - connectionpool.py:456 - http://localhost:None "POST /v1.42/images/create?tag=1.0.0.48939-f1a8a03f0d4031309fa67e5b6b566d13&fromImage=devtestdemisto%2Fdatadog-api-client HTTP/1.1" 404 180
+[2023-03-31T19:09:59Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:946 - DatadogCloudSIEM - Image create - Unable to find image devtestdemisto/datadog-api-client:1.0.0.48939-f1a8a03f0d4031309fa67e5b6b566d13
+[2023-03-31T19:09:59Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:949 - DatadogCloudSIEM - Image create - Creating image based on demisto/datadog-api-client:1.0.0.48939 - Could take 2-3 minutes at first time
+[2023-03-31T19:09:59Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - docker_helper.py:176 - Trying to pull image demisto/datadog-api-client:1.0.0.48939
+[2023-03-31T19:09:59Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - docker_helper.py:63 - pull_image - docker client already available, using current DOCKER_CLIENT
+[2023-03-31T19:09:59Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - connectionpool.py:456 - http://localhost:None "GET /v1.42/images/demisto/datadog-api-client:1.0.0.48939/json HTTP/1.1" 200 None
+[2023-03-31T19:09:59Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - docker_helper.py:63 - docker client already available, using current DOCKER_CLIENT
+[2023-03-31T19:09:59Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - connectionpool.py:456 - http://localhost:None "POST /v1.42/containers/create HTTP/1.1" 201 88
+[2023-03-31T19:09:59Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - connectionpool.py:456 - http://localhost:None "GET /v1.42/containers/660bbb35319792fb84b8fd6c5cb40275cd53392674aaa8ca8736f9f08b3876d5/json HTTP/1.1" 200 None
+[2023-03-31T19:10:00Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - connectionpool.py:456 - http://localhost:None "POST /v1.42/containers/660bbb35319792fb84b8fd6c5cb40275cd53392674aaa8ca8736f9f08b3876d5/start HTTP/1.1" 204 0
+[2023-03-31T19:10:00Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - connectionpool.py:456 - http://localhost:None "POST /v1.42/containers/660bbb35319792fb84b8fd6c5cb40275cd53392674aaa8ca8736f9f08b3876d5/wait?condition=exited HTTP/1.1" 400 44
+[2023-03-31T19:10:00Z] - [ThreadPoolExecutor-0_0] - [CRITICAL] - linter.py:982 - DatadogCloudSIEM - Image create - Build errors occurred 400 Client Error for http+docker://localhost/v1.42/containers/660bbb35319792fb84b8fd6c5cb40275cd53392674aaa8ca8736f9f08b3876d5/wait?condition=exited: Bad Request ("invalid condition: "exited"")
+[2023-03-31T19:10:00Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:941 - DatadogCloudSIEM - Image create - Trying to pull existing image devtestdemisto/datadog-api-client:1.0.0.48939-f1a8a03f0d4031309fa67e5b6b566d13
+[2023-03-31T19:10:00Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - docker_helper.py:63 - pull_image - docker client already available, using current DOCKER_CLIENT
+[2023-03-31T19:10:00Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - connectionpool.py:456 - http://localhost:None "GET /v1.42/images/devtestdemisto/datadog-api-client:1.0.0.48939-f1a8a03f0d4031309fa67e5b6b566d13/json HTTP/1.1" 404 108
+[2023-03-31T19:10:00Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - docker_helper.py:107 - docker image devtestdemisto/datadog-api-client:1.0.0.48939-f1a8a03f0d4031309fa67e5b6b566d13 not found, pulling
+[2023-03-31T19:10:00Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - auth.py:39 - Looking for auth config
+[2023-03-31T19:10:00Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - auth.py:41 - No auth config in memory - loading from filesystem
+[2023-03-31T19:10:00Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - config.py:21 - Trying paths: ['/home/moin/.docker/config.json', '/home/moin/.dockercfg']
+[2023-03-31T19:10:00Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - config.py:28 - No config file found
+[2023-03-31T19:10:00Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - auth.py:240 - Looking for auth entry for 'docker.io'
+[2023-03-31T19:10:00Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - auth.py:251 - No entry found
+[2023-03-31T19:10:00Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - auth.py:56 - No auth config found
+[2023-03-31T19:10:03Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - connectionpool.py:456 - http://localhost:None "POST /v1.42/images/create?tag=1.0.0.48939-f1a8a03f0d4031309fa67e5b6b566d13&fromImage=devtestdemisto%2Fdatadog-api-client HTTP/1.1" 404 180
+[2023-03-31T19:10:03Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:946 - DatadogCloudSIEM - Image create - Unable to find image devtestdemisto/datadog-api-client:1.0.0.48939-f1a8a03f0d4031309fa67e5b6b566d13
+[2023-03-31T19:10:03Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:949 - DatadogCloudSIEM - Image create - Creating image based on demisto/datadog-api-client:1.0.0.48939 - Could take 2-3 minutes at first time
+[2023-03-31T19:10:03Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - docker_helper.py:176 - Trying to pull image demisto/datadog-api-client:1.0.0.48939
+[2023-03-31T19:10:03Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - docker_helper.py:63 - pull_image - docker client already available, using current DOCKER_CLIENT
+[2023-03-31T19:10:03Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - connectionpool.py:456 - http://localhost:None "GET /v1.42/images/demisto/datadog-api-client:1.0.0.48939/json HTTP/1.1" 200 None
+[2023-03-31T19:10:03Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - docker_helper.py:63 - docker client already available, using current DOCKER_CLIENT
+[2023-03-31T19:10:04Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - connectionpool.py:456 - http://localhost:None "POST /v1.42/containers/create HTTP/1.1" 201 88
+[2023-03-31T19:10:04Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - connectionpool.py:456 - http://localhost:None "GET /v1.42/containers/7a35feb4142d7065311122dfbd0d64f4d576f348febe243cb4e619a7d09aa8f9/json HTTP/1.1" 200 None
+[2023-03-31T19:10:04Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - connectionpool.py:456 - http://localhost:None "POST /v1.42/containers/7a35feb4142d7065311122dfbd0d64f4d576f348febe243cb4e619a7d09aa8f9/start HTTP/1.1" 204 0
+[2023-03-31T19:10:04Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - connectionpool.py:456 - http://localhost:None "POST /v1.42/containers/7a35feb4142d7065311122dfbd0d64f4d576f348febe243cb4e619a7d09aa8f9/wait?condition=exited HTTP/1.1" 400 44
+[2023-03-31T19:10:04Z] - [ThreadPoolExecutor-0_0] - [CRITICAL] - linter.py:982 - DatadogCloudSIEM - Image create - Build errors occurred 400 Client Error for http+docker://localhost/v1.42/containers/7a35feb4142d7065311122dfbd0d64f4d576f348febe243cb4e619a7d09aa8f9/wait?condition=exited: Bad Request ("invalid condition: "exited"")
+[2023-03-31T19:10:04Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:874 - DatadogCloudSIEM - Run Lint On Docker Image - Finished linting on docker image demisto/datadog-api-client:1.0.0.48939
+[2023-03-31T19:10:04Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:877 - DatadogCloudSIEM - Run Lint On Docker Image - Finished linting. Number of images=[['demisto/datadog-api-client:1.0.0.48939', '3.10']]
+[2023-03-31T19:10:04Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:274 - DatadogCloudSIEM - Run - Finished Successfully
+[2023-03-31T19:10:04Z] - [MainThread] - [DEBUG] - lint_manager.py:530 - checking output of future i=0
+[2023-03-31T19:10:04Z] - [MainThread] - [INFO] - lint_manager.py:532 - Got lint results for DatadogCloudSIEM
+[2023-03-31T19:10:04Z] - [MainThread] - [INFO] - lint_manager.py:553 - Finished all futures
+[2023-03-31T19:10:05Z] - [MainThread] - [WARNING] - helpers.py:558 - skipping coverage report coverage_report/.coverage file not found. Should not expect this if code files were changed or when linting all with pytest.
+[2023-03-31T19:10:05Z] - [MainThread] - [INFO] - lint_manager.py:821 - Flake8       - [PASS]
+[2023-03-31T19:10:05Z] - [MainThread] - [INFO] - lint_manager.py:821 - XSOAR linter - [PASS]
+[2023-03-31T19:10:05Z] - [MainThread] - [INFO] - lint_manager.py:821 - Bandit       - [PASS]
+[2023-03-31T19:10:05Z] - [MainThread] - [INFO] - lint_manager.py:821 - Mypy         - [PASS]
+[2023-03-31T19:10:05Z] - [MainThread] - [INFO] - lint_manager.py:821 - Vulture      - [PASS]
+[2023-03-31T19:10:05Z] - [MainThread] - [INFO] - lint_manager.py:821 - Pytest       - [PASS]
+[2023-03-31T19:10:05Z] - [MainThread] - [INFO] - lint_manager.py:821 - Pylint       - [PASS]
+[2023-03-31T19:10:05Z] - [MainThread] - [INFO] - lint_manager.py:823 - Pwsh analyze - [SKIPPED]
+[2023-03-31T19:10:05Z] - [MainThread] - [INFO] - lint_manager.py:823 - Pwsh test    - [SKIPPED]
+[2023-03-31T19:10:05Z] - [MainThread] - [INFO] - lint_manager.py:884 - 
+#######################
+[2023-03-31T19:10:05Z] - [MainThread] - [INFO] - lint_manager.py:885 -  Xsoar_linter warnings 
+[2023-03-31T19:10:05Z] - [MainThread] - [INFO] - lint_manager.py:886 - #######################
 
+[2023-03-31T19:10:05Z] - [MainThread] - [INFO] - lint_manager.py:888 - DatadogCloudSIEM
+[2023-03-31T19:10:05Z] - [MainThread] - [INFO] - lint_manager.py:889 - /home/moin/demisto/content/Packs/DatadogCloudSIEM/Integrations/DatadogCloudSIEM/DatadogCloudSIEM.py:1:0: W9011 : return_error used too many times, should be used only once in the code, in main function. Please remove other usages.
+[2023-03-31T19:10:05Z] - [MainThread] - [INFO] - lint_manager.py:1079 - 
+#######################
+[2023-03-31T19:10:05Z] - [MainThread] - [INFO] - lint_manager.py:1080 -  Image creation errors 
+[2023-03-31T19:10:05Z] - [MainThread] - [INFO] - lint_manager.py:1081 - #######################
+[2023-03-31T19:10:05Z] - [MainThread] - [INFO] - lint_manager.py:1083 -   - Package: DatadogCloudSIEM
+[2023-03-31T19:10:05Z] - [MainThread] - [INFO] - lint_manager.py:1085 -     Image: demisto/datadog-api-client:1.0.0.48939
+[2023-03-31T19:10:05Z] - [MainThread] - [INFO] - lint_manager.py:1086 -       Error: 400 Client Error for http+docker://localhost/v1.42/containers/7a35feb4142d7065311122dfb
+             d0d64f4d576f348febe243cb4e619a7d09aa8f9/wait?condition=exited: Bad Request ("invalid
+             condition: "exited"")
+[2023-03-31T19:10:05Z] - [MainThread] - [INFO] - lint_manager.py:1142 - 
+#########
+[2023-03-31T19:10:05Z] - [MainThread] - [INFO] - lint_manager.py:1143 -  Summary 
+[2023-03-31T19:10:05Z] - [MainThread] - [INFO] - lint_manager.py:1144 - #########
+[2023-03-31T19:10:05Z] - [MainThread] - [INFO] - lint_manager.py:1145 - Packages: 1
+[2023-03-31T19:10:05Z] - [MainThread] - [INFO] - lint_manager.py:1146 - Packages PASS: 0
+[2023-03-31T19:10:05Z] - [MainThread] - [INFO] - lint_manager.py:1147 - Packages FAIL: 1
+[2023-03-31T19:10:05Z] - [MainThread] - [INFO] - lint_manager.py:1148 - Packages WARNING (can either PASS or FAIL): 1
 
-[2023-03-27T17:58:27Z] - [MainThread] - [DEBUG] - cmd.py:976 - Popen(['git', 'remote', 'get-url', '--all', 'origin'], cwd=/home/moin/demisto/content, universal_newlines=False, shell=None, istream=None)
-[2023-03-27T17:58:27Z] - [MainThread] - [DEBUG] - connectionpool.py:1003 - Starting new HTTPS connection (1): pypi.org:443
-[2023-03-27T17:58:27Z] - [MainThread] - [DEBUG] - connectionpool.py:456 - https://pypi.org:443 "GET /pypi/demisto-sdk/json HTTP/1.1" 200 31906
-[2023-03-27T17:58:27Z] - [MainThread] - [INFO] - __main__.py:216 - You are using demisto-sdk 1.11.0.
-[2023-03-27T17:58:33Z] - [MainThread] - [DEBUG] - json_to_outputs.py:216 - JSON before converting to YAML: [{'contextPath': 'Datadog.Incident.type', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.id', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.attributes.public_id', 'description': '', 'type': 'Number'}, {'contextPath': 'Datadog.Incident.attributes.title', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.attributes.resolved', 'description': '', 'type': 'Unknown'}, {'contextPath': 'Datadog.Incident.attributes.customer_impact_scope', 'description': '', 'type': 'Unknown'}, {'contextPath': 'Datadog.Incident.attributes.customer_impact_start', 'description': '', 'type': 'Unknown'}, {'contextPath': 'Datadog.Incident.attributes.customer_impact_end', 'description': '', 'type': 'Unknown'}, {'contextPath': 'Datadog.Incident.attributes.customer_impacted', 'description': '', 'type': 'Boolean'}, {'contextPath': 'Datadog.Incident.attributes.notification_handles.created_at', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.attributes.notification_handles.display_name', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.attributes.notification_handles.handle', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.attributes.last_modified_by.data.type', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.attributes.last_modified_by.data.id', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.attributes.last_modified_by.data.attributes.uuid', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.attributes.last_modified_by.data.attributes.handle', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.attributes.last_modified_by.data.attributes.email', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.attributes.last_modified_by.data.attributes.name', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.attributes.last_modified_by.data.attributes.icon', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.attributes.last_modified_by_uuid', 'description': '', 'type': 'Unknown'}, {'contextPath': 'Datadog.Incident.attributes.created', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.attributes.modified', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.attributes.commander', 'description': '', 'type': 'Unknown'}, {'contextPath': 'Datadog.Incident.attributes.detected', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.attributes.created_by.data.type', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.attributes.created_by.data.id', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.attributes.created_by.data.attributes.uuid', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.attributes.created_by.data.attributes.handle', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.attributes.created_by.data.attributes.email', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.attributes.created_by.data.attributes.name', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.attributes.created_by.data.attributes.icon', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.attributes.created_by_uuid', 'description': '', 'type': 'Unknown'}, {'contextPath': 'Datadog.Incident.attributes.creation_idempotency_key', 'description': '', 'type': 'Unknown'}, {'contextPath': 'Datadog.Incident.attributes.customer_impact_duration', 'description': '', 'type': 'Number'}, {'contextPath': 'Datadog.Incident.attributes.time_to_detect', 'description': '', 'type': 'Number'}, {'contextPath': 'Datadog.Incident.attributes.time_to_repair', 'description': '', 'type': 'Number'}, {'contextPath': 'Datadog.Incident.attributes.time_to_internal_response', 'description': '', 'type': 'Number'}, {'contextPath': 'Datadog.Incident.attributes.time_to_resolve', 'description': '', 'type': 'Number'}, {'contextPath': 'Datadog.Incident.attributes.fields.severity.type', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.attributes.fields.severity.value', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.attributes.fields.state.type', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.attributes.fields.state.value', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.attributes.fields.detection_method.type', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.attributes.fields.detection_method.value', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.attributes.fields.root_cause.type', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.attributes.fields.root_cause.value', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.attributes.fields.summary.type', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.attributes.fields.summary.value', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.attributes.fields.services.type', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.attributes.fields.services.value', 'description': '', 'type': 'Unknown'}, {'contextPath': 'Datadog.Incident.attributes.fields.teams.type', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.attributes.fields.teams.value', 'description': '', 'type': 'Unknown'}, {'contextPath': 'Datadog.Incident.attributes.field_analytics', 'description': '', 'type': 'Unknown'}, {'contextPath': 'Datadog.Incident.attributes.severity', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.attributes.state', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.attributes.non_datadog_creator', 'description': '', 'type': 'Unknown'}, {'contextPath': 'Datadog.Incident.attributes.visibility', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.attributes.case_id', 'description': '', 'type': 'Unknown'}, {'contextPath': 'Datadog.Incident.relationships.created_by_user.data.type', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.relationships.created_by_user.data.id', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.relationships.last_modified_by_user.data.type', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.relationships.last_modified_by_user.data.id', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.relationships.commander_user.data', 'description': '', 'type': 'Unknown'}, {'contextPath': 'Datadog.Incident.relationships.user_defined_fields.data.type', 'description': '', 'type': 'String'}, {'contextPath': 'Datadog.Incident.relationships.user_defined_fields.data.id', 'description': '', 'type': 'String'}]
-[2023-03-27T17:58:33Z] - [MainThread] - [INFO] - json_to_outputs.py:273 - YAML Outputs
-
-
-[2023-03-28T14:55:32Z] - [MainThread] - [DEBUG] - cmd.py:976 - Popen(['git', 'remote', 'get-url', '--all', 'origin'], cwd=/home/moin/demisto/content, universal_newlines=False, shell=None, istream=None)
-[2023-03-28T14:55:32Z] - [MainThread] - [DEBUG] - connectionpool.py:1003 - Starting new HTTPS connection (1): pypi.org:443
-[2023-03-28T14:55:33Z] - [MainThread] - [DEBUG] - connectionpool.py:456 - https://pypi.org:443 "GET /pypi/demisto-sdk/json HTTP/1.1" 200 31906
-[2023-03-28T14:55:33Z] - [MainThread] - [INFO] - __main__.py:216 - You are using demisto-sdk 1.11.0.
-[2023-03-28T14:55:34Z] - [MainThread] - [INFO] - common.py:37 - Output file was saved to :
+[2023-03-31T19:10:05Z] - [MainThread] - [INFO] - lint_manager.py:1154 - Warning packages:
+[2023-03-31T19:10:05Z] - [MainThread] - [INFO] - lint_manager.py:1156 -    - DatadogCloudSIEM
+[2023-03-31T19:10:05Z] - [MainThread] - [INFO] - lint_manager.py:1159 - Failed packages:
+[2023-03-31T19:10:05Z] - [MainThread] - [INFO] - lint_manager.py:1161 -    - DatadogCloudSIEM
+[2023-03-31T19:10:38Z] - [MainThread] - [DEBUG] - cmd.py:976 - Popen(['git', 'remote', 'get-url', '--all', 'origin'], cwd=/home/moin/demisto/content, universal_newlines=False, shell=None, istream=None)
+[2023-03-31T19:10:38Z] - [MainThread] - [DEBUG] - connectionpool.py:1003 - Starting new HTTPS connection (1): pypi.org:443
+[2023-03-31T19:10:38Z] - [MainThread] - [DEBUG] - connectionpool.py:456 - https://pypi.org:443 "GET /pypi/demisto-sdk/json HTTP/1.1" 200 31906
+[2023-03-31T19:10:38Z] - [MainThread] - [INFO] - __main__.py:216 - You are using demisto-sdk 1.11.0.
+[2023-03-31T19:10:42Z] - [MainThread] - [INFO] - common.py:37 - Output file was saved to :
 /home/moin/demisto/content/Packs/DatadogCloudSIEM/Integrations/DatadogCloudSIEM/README.md
-[2023-03-28T14:55:34Z] - [MainThread] - [INFO] - generate_integration_doc.py:213 - Possible Errors:
-[2023-03-28T14:55:34Z] - [MainThread] - [INFO] - generate_integration_doc.py:215 - Command examples was not found: None.
-[2023-03-28T14:55:34Z] - [MainThread] - [INFO] - generate_integration_doc.py:215 - did not get any example for datadog-event-create. please add it manually.
-[2023-03-28T14:55:34Z] - [MainThread] - [INFO] - generate_integration_doc.py:215 - did not get any example for datadog-event-list. please add it manually.
-[2023-03-28T14:55:34Z] - [MainThread] - [INFO] - generate_integration_doc.py:215 - did not get any example for datadog-tag-list. please add it manually.
-[2023-03-28T14:55:34Z] - [MainThread] - [INFO] - generate_integration_doc.py:215 - did not get any example for datadog-host-tag-create. please add it manually.
-[2023-03-28T14:55:34Z] - [MainThread] - [INFO] - generate_integration_doc.py:215 - did not get any example for datadog-host-tag-get. please add it manually.
-[2023-03-28T14:55:34Z] - [MainThread] - [INFO] - generate_integration_doc.py:215 - did not get any example for datadog-host-tag-update. please add it manually.
-[2023-03-28T14:55:34Z] - [MainThread] - [INFO] - generate_integration_doc.py:215 - did not get any example for datadog-host-tag-delete. please add it manually.
-[2023-03-28T14:55:34Z] - [MainThread] - [INFO] - generate_integration_doc.py:215 - did not get any example for datadog-active-metric-list. please add it manually.
-[2023-03-28T14:55:34Z] - [MainThread] - [INFO] - generate_integration_doc.py:215 - did not get any example for datadog-metric-search. please add it manually.
-[2023-03-28T14:55:34Z] - [MainThread] - [INFO] - generate_integration_doc.py:215 - did not get any example for datadog-metric-metadata-get. please add it manually.
-[2023-03-28T14:55:34Z] - [MainThread] - [INFO] - generate_integration_doc.py:215 - did not get any example for datadog-metric-metadata-update. please add it manually.
-[2023-03-28T14:55:34Z] - [MainThread] - [INFO] - generate_integration_doc.py:215 - did not get any example for datadog-incident-create. please add it manually.
-[2023-03-28T14:55:34Z] - [MainThread] - [INFO] - generate_integration_doc.py:215 - did not get any example for datadog-incident-delete. please add it manually.
-[2023-03-28T15:13:39Z] - [MainThread] - [DEBUG] - cmd.py:976 - Popen(['git', 'remote', 'get-url', '--all', 'origin'], cwd=/home/moin/demisto/content, universal_newlines=False, shell=None, istream=None)
-[2023-03-28T15:13:39Z] - [MainThread] - [DEBUG] - connectionpool.py:1003 - Starting new HTTPS connection (1): pypi.org:443
-[2023-03-28T15:13:39Z] - [MainThread] - [DEBUG] - connectionpool.py:456 - https://pypi.org:443 "GET /pypi/demisto-sdk/json HTTP/1.1" 200 31906
-[2023-03-28T15:13:39Z] - [MainThread] - [INFO] - __main__.py:216 - You are using demisto-sdk 1.11.0.
-[2023-03-28T15:13:39Z] - [MainThread] - [DEBUG] - cmd.py:976 - Popen(['git', 'remote', 'get-url', '--all', 'origin'], cwd=/home/moin/demisto/content, universal_newlines=False, shell=None, istream=None)
-[2023-03-28T15:13:39Z] - [MainThread] - [DEBUG] - lint_manager.py:199 - Content path /home/moin/demisto/content
-[2023-03-28T15:13:39Z] - [MainThread] - [DEBUG] - lint_manager.py:215 - Test requirements successfully collected for python 3:
- ['astroid==2.11.5', 'attrs==21.4.0', 'certifi==2022.5.18', 'charset-normalizer==2.0.12', 'coverage==6.3.3', 'dill==0.3.4', 'execnet==1.9.0', 'flake8==4.0.1', 'freezegun==1.2.1', 'hypothesis==6.46.7', 'idna==3.3', 'iniconfig==1.1.1', 'isort==5.10.1', 'lazy-object-proxy==1.7.1', 'mccabe==0.6.1', 'multidict==6.0.2', 'packaging==21.3', 'platformdirs==2.5.2', 'pluggy==1.0.0', 'py==1.11.0', 'pycodestyle==2.8.0', 'pyflakes==2.4.0', 'pylint==2.13.9', 'pyparsing==3.0.9', 'pytest==7.1.2', 'pytest-asyncio==0.18.3', 'pytest-cov==3.0.0', 'pytest-datadir-ng==1.1.1', 'pytest-forked==1.4.0', 'pytest-json==0.4.0', 'pytest-mock==3.7.0', 'pytest-xdist==2.5.0', 'python-dateutil==2.8.2', 'pyyaml==6.0', 'requests==2.27.1', 'requests-mock==1.9.3', 'setuptools==62.3.2', 'six==1.16.0', 'sortedcontainers==2.4.0', 'toml==0.10.2', 'tomli==2.0.1', 'urllib3==1.26.9', 'vcrpy==4.1.1', 'vulture==2.4', 'wrapt==1.14.1', 'yarl==1.7.2']
-[2023-03-28T15:13:39Z] - [MainThread] - [DEBUG] - helpers.py:152 - read file /home/moin/demisto/content/Tests/demistomock/demistomock.py
-[2023-03-28T15:13:39Z] - [MainThread] - [DEBUG] - helpers.py:152 - read file /home/moin/demisto/content/Tests/scripts/dev_envs/pytest/conftest.py
-[2023-03-28T15:13:39Z] - [MainThread] - [DEBUG] - helpers.py:152 - read file /home/moin/demisto/content/Packs/Base/Scripts/CommonServerPython/CommonServerPython.py
-[2023-03-28T15:13:39Z] - [MainThread] - [DEBUG] - helpers.py:161 - Changed file /home/moin/demisto/content/Packs/Base/Scripts/CommonServerPython/CommonServerPython.py without demisto import
-[2023-03-28T15:13:39Z] - [MainThread] - [DEBUG] - helpers.py:152 - read file /home/moin/demisto/content/Tests/demistomock/demistomock.ps1
-[2023-03-28T15:13:39Z] - [MainThread] - [DEBUG] - helpers.py:152 - read file /home/moin/demisto/content/Packs/Base/Scripts/CommonServerPowerShell/CommonServerPowerShell.ps1
-[2023-03-28T15:13:39Z] - [MainThread] - [DEBUG] - lint_manager.py:231 - Test mandatory modules successfully collected
-[2023-03-28T15:13:39Z] - [MainThread] - [DEBUG] - lint_manager.py:260 - creating docker client from env
-[2023-03-28T15:13:39Z] - [MainThread] - [INFO] - docker_helper.py:37 - LintManager - init and login the docker client
-[2023-03-28T15:13:39Z] - [MainThread] - [DEBUG] - docker_helper.py:43 - LintManager - Using docker mounting: True
-[2023-03-28T15:13:39Z] - [MainThread] - [DEBUG] - config.py:21 - Trying paths: ['/home/moin/.docker/config.json', '/home/moin/.dockercfg']
-[2023-03-28T15:13:39Z] - [MainThread] - [DEBUG] - config.py:28 - No config file found
-[2023-03-28T15:13:39Z] - [MainThread] - [DEBUG] - config.py:21 - Trying paths: ['/home/moin/.docker/config.json', '/home/moin/.dockercfg']
-[2023-03-28T15:13:39Z] - [MainThread] - [DEBUG] - config.py:28 - No config file found
-[2023-03-28T15:13:39Z] - [MainThread] - [DEBUG] - connectionpool.py:456 - http://localhost:None "GET /version HTTP/1.1" 200 822
-[2023-03-28T15:13:39Z] - [MainThread] - [DEBUG] - lint_manager.py:265 - pinging docker daemon
-[2023-03-28T15:13:39Z] - [MainThread] - [DEBUG] - connectionpool.py:456 - http://localhost:None "GET /v1.42/_ping HTTP/1.1" 200 2
-[2023-03-28T15:13:39Z] - [MainThread] - [DEBUG] - lint_manager.py:283 - Docker daemon test passed
-[2023-03-28T15:13:39Z] - [MainThread] - [INFO] - lint_manager.py:329 - Executing lint and test on integrations and scripts in /home/moin/demisto/content/Packs/DatadogCloudSIEM/Integrations/DatadogCloudSIEM
-[2023-03-28T15:13:39Z] - [MainThread] - [DEBUG] - docker_helper.py:63 - Linter - docker client already available, using current DOCKER_CLIENT
-[2023-03-28T15:13:39Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:234 - DatadogCloudSIEM - Run - Start
-[2023-03-28T15:13:39Z] - [MainThread] - [INFO] - lint_manager.py:528 - Waiting for futures to complete
-[2023-03-28T15:13:39Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:289 - DatadogCloudSIEM - Facts - Using yaml file /home/moin/demisto/content/Packs/DatadogCloudSIEM/Integrations/DatadogCloudSIEM/DatadogCloudSIEM.yml
-[2023-03-28T15:13:40Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:332 - DatadogCloudSIEM - Facts - Collecting all docker images to pull
-[2023-03-28T15:13:40Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:1603 - DatadogCloudSIEM - Get All Docker Images For Lint - Requested docker image flag is: 'from-yml'
-[2023-03-28T15:13:40Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:1612 - DatadogCloudSIEM - Get Docker Image from YML - Started
-[2023-03-28T15:13:40Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:1614 - DatadogCloudSIEM - Get All Docker Images For Lint - Docker images to run on are: demisto/datadog-api-client:1.0.0.48939
-[2023-03-28T15:13:40Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - linter.py:1274 - Updating support level for DatadogCloudSIEM
-[2023-03-28T15:13:40Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - linter.py:1281 - Before reading content of /home/moin/demisto/content/Packs/DatadogCloudSIEM/pack_metadata.json
-[2023-03-28T15:13:40Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - linter.py:1284 - After reading content of /home/moin/demisto/content/Packs/DatadogCloudSIEM/pack_metadata.json
-[2023-03-28T15:13:40Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - docker_helper.py:63 - Get python version from image demisto/datadog-api-client:1.0.0.48939 - docker client already available, using current DOCKER_CLIENT
-[2023-03-28T15:13:40Z] - [ThreadPoolExecutor-0_0] - [INFO] - helpers.py:329 - Get python version from image demisto/datadog-api-client:1.0.0.48939 - Start
-[2023-03-28T15:13:40Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - helpers.py:331 - Get python version from image demisto/datadog-api-client:1.0.0.48939 - Running `sys.version_info` in the image
-[2023-03-28T15:13:40Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - connectionpool.py:456 - http://localhost:None "POST /v1.42/containers/create HTTP/1.1" 201 88
-[2023-03-28T15:13:40Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - connectionpool.py:456 - http://localhost:None "GET /v1.42/containers/6bef1691ce178eb7161c9d3741f6ef0599e59e3a172a87b036ffbd14d4c2261a/json HTTP/1.1" 200 None
-[2023-03-28T15:13:40Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - connectionpool.py:456 - http://localhost:None "POST /v1.42/containers/6bef1691ce178eb7161c9d3741f6ef0599e59e3a172a87b036ffbd14d4c2261a/start HTTP/1.1" 204 0
-[2023-03-28T15:13:40Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - connectionpool.py:456 - http://localhost:None "GET /v1.42/containers/6bef1691ce178eb7161c9d3741f6ef0599e59e3a172a87b036ffbd14d4c2261a/logs?stderr=0&stdout=1&timestamps=0&follow=1&tail=all HTTP/1.1" 200 None
-[2023-03-28T15:13:40Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - connectionpool.py:456 - http://localhost:None "GET /v1.42/containers/6bef1691ce178eb7161c9d3741f6ef0599e59e3a172a87b036ffbd14d4c2261a/json HTTP/1.1" 200 None
-[2023-03-28T15:13:40Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - connectionpool.py:456 - http://localhost:None "POST /v1.42/containers/6bef1691ce178eb7161c9d3741f6ef0599e59e3a172a87b036ffbd14d4c2261a/wait HTTP/1.1" 200 None
-[2023-03-28T15:13:41Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - connectionpool.py:456 - http://localhost:None "DELETE /v1.42/containers/6bef1691ce178eb7161c9d3741f6ef0599e59e3a172a87b036ffbd14d4c2261a?v=False&link=False&force=False HTTP/1.1" 204 0
-[2023-03-28T15:13:41Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - helpers.py:341 - Get python version from image demisto/datadog-api-client:1.0.0.48939 - Container finished running. py_num=b'3.10\n'
-[2023-03-28T15:13:41Z] - [ThreadPoolExecutor-0_0] - [INFO] - helpers.py:350 - Get python version from image demisto/datadog-api-client:1.0.0.48939 - End. Python version is 3.10
-[2023-03-28T15:13:41Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:375 - DatadogCloudSIEM - Facts - demisto/datadog-api-client:1.0.0.48939 - Python 3.10
-[2023-03-28T15:13:41Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:390 - DatadogCloudSIEM - Facts - Tests found
-[2023-03-28T15:13:41Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - cmd.py:976 - Popen(['git', 'check-ignore', '/home/moin/demisto/content/Packs/DatadogCloudSIEM/Integrations/DatadogCloudSIEM/DatadogCloudSIEM_test.py', '/home/moin/demisto/content/Packs/DatadogCloudSIEM/Integrations/DatadogCloudSIEM/DatadogCloudSIEM.py'], cwd=/home/moin/demisto/content, universal_newlines=False, shell=None, istream=None)
-[2023-03-28T15:13:41Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:460 - DatadogCloudSIEM - Facts - Lint file /home/moin/demisto/content/Packs/DatadogCloudSIEM/Integrations/DatadogCloudSIEM/DatadogCloudSIEM_test.py
-[2023-03-28T15:13:41Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:460 - DatadogCloudSIEM - Facts - Lint file /home/moin/demisto/content/Packs/DatadogCloudSIEM/Integrations/DatadogCloudSIEM/DatadogCloudSIEM.py
-[2023-03-28T15:13:41Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:538 - DatadogCloudSIEM - Run Lint In Host - Started
-[2023-03-28T15:13:41Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:599 - DatadogCloudSIEM - XSOAR Linter - Start
-[2023-03-28T15:13:48Z] - [ThreadPoolExecutor-0_0] - [WARNING] - linter.py:630 - DatadogCloudSIEM - XSOAR Linter - Finished, warnings found
-[2023-03-28T15:13:48Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - linter.py:650 - DatadogCloudSIEM - XSOAR Linter - Finished, exit-code: 4
-[2023-03-28T15:13:48Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - linter.py:651 - DatadogCloudSIEM - XSOAR Linter - Finished, stdout: 
-************* Module DatadogCloudSIEM
-/home/moin/demisto/content/Packs/DatadogCloudSIEM/Integrations/DatadogCloudSIEM/DatadogCloudSIEM.py:191:0: W9014 metric_command_results: Function arguments are missing type annotations. Please add type annotations
-
-[2023-03-28T15:13:48Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - linter.py:652 - DatadogCloudSIEM - XSOAR Linter - Finished, stderr: 
-[2023-03-28T15:13:48Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:671 - DatadogCloudSIEM - Bandit - Start
-[2023-03-28T15:13:48Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - linter.py:676 - DatadogCloudSIEM - Bandit - Finished, exit-code: 0
-[2023-03-28T15:13:48Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - linter.py:677 - DatadogCloudSIEM - Bandit - Finished, stdout: 
-[2023-03-28T15:13:48Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - linter.py:678 - DatadogCloudSIEM - Bandit - Finished, stderr: 
-[2023-03-28T15:13:48Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:686 - DatadogCloudSIEM - Bandit - Successfully finished
-[2023-03-28T15:13:48Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:703 - DatadogCloudSIEM - Mypy - Start
-[2023-03-28T15:13:55Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - linter.py:711 - DatadogCloudSIEM - Mypy - Finished, exit-code: 0
-[2023-03-28T15:13:55Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - linter.py:712 - DatadogCloudSIEM - Mypy - Finished, stdout: 
-Success: no issues found in 1 source file
-
-[2023-03-28T15:13:55Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - linter.py:713 - DatadogCloudSIEM - Mypy - Finished, stderr: 
-[2023-03-28T15:13:55Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:721 - DatadogCloudSIEM - Mypy - Successfully finished
-[2023-03-28T15:13:55Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:566 - DatadogCloudSIEM - Run Lint In Host - Finished successfully
-[2023-03-28T15:13:55Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:752 - DatadogCloudSIEM - Run Lint On Docker Image - Running lint: Number of images=[['demisto/datadog-api-client:1.0.0.48939', '3.10']]
-[2023-03-28T15:13:55Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:758 - DatadogCloudSIEM - Run Lint On Docker Image - Running lint on docker image demisto/datadog-api-client:1.0.0.48939
-[2023-03-28T15:13:55Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:941 - DatadogCloudSIEM - Image create - Trying to pull existing image devtestdemisto/datadog-api-client:1.0.0.48939-f1a8a03f0d4031309fa67e5b6b566d13
-[2023-03-28T15:13:55Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - docker_helper.py:63 - pull_image - docker client already available, using current DOCKER_CLIENT
-[2023-03-28T15:13:55Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - connectionpool.py:456 - http://localhost:None "GET /v1.42/images/devtestdemisto/datadog-api-client:1.0.0.48939-f1a8a03f0d4031309fa67e5b6b566d13/json HTTP/1.1" 404 108
-[2023-03-28T15:13:55Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - docker_helper.py:107 - docker image devtestdemisto/datadog-api-client:1.0.0.48939-f1a8a03f0d4031309fa67e5b6b566d13 not found, pulling
-[2023-03-28T15:13:55Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - auth.py:39 - Looking for auth config
-[2023-03-28T15:13:55Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - auth.py:41 - No auth config in memory - loading from filesystem
-[2023-03-28T15:13:55Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - config.py:21 - Trying paths: ['/home/moin/.docker/config.json', '/home/moin/.dockercfg']
-[2023-03-28T15:13:55Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - config.py:28 - No config file found
-[2023-03-28T15:13:55Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - auth.py:240 - Looking for auth entry for 'docker.io'
-[2023-03-28T15:13:55Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - auth.py:251 - No entry found
-[2023-03-28T15:13:55Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - auth.py:56 - No auth config found
-[2023-03-28T15:14:03Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - connectionpool.py:456 - http://localhost:None "POST /v1.42/images/create?tag=1.0.0.48939-f1a8a03f0d4031309fa67e5b6b566d13&fromImage=devtestdemisto%2Fdatadog-api-client HTTP/1.1" 404 180
-[2023-03-28T15:14:03Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:946 - DatadogCloudSIEM - Image create - Unable to find image devtestdemisto/datadog-api-client:1.0.0.48939-f1a8a03f0d4031309fa67e5b6b566d13
-[2023-03-28T15:14:03Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:949 - DatadogCloudSIEM - Image create - Creating image based on demisto/datadog-api-client:1.0.0.48939 - Could take 2-3 minutes at first time
-[2023-03-28T15:14:03Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - docker_helper.py:176 - Trying to pull image demisto/datadog-api-client:1.0.0.48939
-[2023-03-28T15:14:03Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - docker_helper.py:63 - pull_image - docker client already available, using current DOCKER_CLIENT
-[2023-03-28T15:14:03Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - connectionpool.py:456 - http://localhost:None "GET /v1.42/images/demisto/datadog-api-client:1.0.0.48939/json HTTP/1.1" 200 None
-[2023-03-28T15:14:03Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - docker_helper.py:63 - docker client already available, using current DOCKER_CLIENT
-[2023-03-28T15:14:03Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - connectionpool.py:456 - http://localhost:None "POST /v1.42/containers/create HTTP/1.1" 201 88
-[2023-03-28T15:14:03Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - connectionpool.py:456 - http://localhost:None "GET /v1.42/containers/95326e1e2838f1f43bfafdb0cb407f7529c691161cb93e622f1224b2b34532aa/json HTTP/1.1" 200 None
-[2023-03-28T15:14:04Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - connectionpool.py:456 - http://localhost:None "POST /v1.42/containers/95326e1e2838f1f43bfafdb0cb407f7529c691161cb93e622f1224b2b34532aa/start HTTP/1.1" 204 0
-[2023-03-28T15:14:04Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - connectionpool.py:456 - http://localhost:None "POST /v1.42/containers/95326e1e2838f1f43bfafdb0cb407f7529c691161cb93e622f1224b2b34532aa/wait?condition=exited HTTP/1.1" 400 44
-[2023-03-28T15:14:04Z] - [ThreadPoolExecutor-0_0] - [CRITICAL] - linter.py:982 - DatadogCloudSIEM - Image create - Build errors occurred 400 Client Error for http+docker://localhost/v1.42/containers/95326e1e2838f1f43bfafdb0cb407f7529c691161cb93e622f1224b2b34532aa/wait?condition=exited: Bad Request ("invalid condition: "exited"")
-[2023-03-28T15:14:04Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:941 - DatadogCloudSIEM - Image create - Trying to pull existing image devtestdemisto/datadog-api-client:1.0.0.48939-f1a8a03f0d4031309fa67e5b6b566d13
-[2023-03-28T15:14:04Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - docker_helper.py:63 - pull_image - docker client already available, using current DOCKER_CLIENT
-[2023-03-28T15:14:04Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - connectionpool.py:456 - http://localhost:None "GET /v1.42/images/devtestdemisto/datadog-api-client:1.0.0.48939-f1a8a03f0d4031309fa67e5b6b566d13/json HTTP/1.1" 404 108
-[2023-03-28T15:14:04Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - docker_helper.py:107 - docker image devtestdemisto/datadog-api-client:1.0.0.48939-f1a8a03f0d4031309fa67e5b6b566d13 not found, pulling
-[2023-03-28T15:14:04Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - auth.py:39 - Looking for auth config
-[2023-03-28T15:14:04Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - auth.py:41 - No auth config in memory - loading from filesystem
-[2023-03-28T15:14:04Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - config.py:21 - Trying paths: ['/home/moin/.docker/config.json', '/home/moin/.dockercfg']
-[2023-03-28T15:14:04Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - config.py:28 - No config file found
-[2023-03-28T15:14:04Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - auth.py:240 - Looking for auth entry for 'docker.io'
-[2023-03-28T15:14:04Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - auth.py:251 - No entry found
-[2023-03-28T15:14:04Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - auth.py:56 - No auth config found
-[2023-03-28T15:14:08Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - connectionpool.py:456 - http://localhost:None "POST /v1.42/images/create?tag=1.0.0.48939-f1a8a03f0d4031309fa67e5b6b566d13&fromImage=devtestdemisto%2Fdatadog-api-client HTTP/1.1" 404 180
-[2023-03-28T15:14:08Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:946 - DatadogCloudSIEM - Image create - Unable to find image devtestdemisto/datadog-api-client:1.0.0.48939-f1a8a03f0d4031309fa67e5b6b566d13
-[2023-03-28T15:14:08Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:949 - DatadogCloudSIEM - Image create - Creating image based on demisto/datadog-api-client:1.0.0.48939 - Could take 2-3 minutes at first time
-[2023-03-28T15:14:08Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - docker_helper.py:176 - Trying to pull image demisto/datadog-api-client:1.0.0.48939
-[2023-03-28T15:14:08Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - docker_helper.py:63 - pull_image - docker client already available, using current DOCKER_CLIENT
-[2023-03-28T15:14:08Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - connectionpool.py:456 - http://localhost:None "GET /v1.42/images/demisto/datadog-api-client:1.0.0.48939/json HTTP/1.1" 200 None
-[2023-03-28T15:14:08Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - docker_helper.py:63 - docker client already available, using current DOCKER_CLIENT
-[2023-03-28T15:14:08Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - connectionpool.py:456 - http://localhost:None "POST /v1.42/containers/create HTTP/1.1" 201 88
-[2023-03-28T15:14:08Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - connectionpool.py:456 - http://localhost:None "GET /v1.42/containers/b2ec84fb3e1c0b2d5c864ba8cab463bd4f30a81a1bf373d68fd70af60e3d827f/json HTTP/1.1" 200 None
-[2023-03-28T15:14:08Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - connectionpool.py:456 - http://localhost:None "POST /v1.42/containers/b2ec84fb3e1c0b2d5c864ba8cab463bd4f30a81a1bf373d68fd70af60e3d827f/start HTTP/1.1" 204 0
-[2023-03-28T15:14:08Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - connectionpool.py:456 - http://localhost:None "POST /v1.42/containers/b2ec84fb3e1c0b2d5c864ba8cab463bd4f30a81a1bf373d68fd70af60e3d827f/wait?condition=exited HTTP/1.1" 400 44
-[2023-03-28T15:14:08Z] - [ThreadPoolExecutor-0_0] - [CRITICAL] - linter.py:982 - DatadogCloudSIEM - Image create - Build errors occurred 400 Client Error for http+docker://localhost/v1.42/containers/b2ec84fb3e1c0b2d5c864ba8cab463bd4f30a81a1bf373d68fd70af60e3d827f/wait?condition=exited: Bad Request ("invalid condition: "exited"")
-[2023-03-28T15:14:08Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:874 - DatadogCloudSIEM - Run Lint On Docker Image - Finished linting on docker image demisto/datadog-api-client:1.0.0.48939
-[2023-03-28T15:14:08Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:877 - DatadogCloudSIEM - Run Lint On Docker Image - Finished linting. Number of images=[['demisto/datadog-api-client:1.0.0.48939', '3.10']]
-[2023-03-28T15:14:08Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:274 - DatadogCloudSIEM - Run - Finished Successfully
-[2023-03-28T15:14:08Z] - [MainThread] - [DEBUG] - lint_manager.py:530 - checking output of future i=0
-[2023-03-28T15:14:08Z] - [MainThread] - [INFO] - lint_manager.py:532 - Got lint results for DatadogCloudSIEM
-[2023-03-28T15:14:08Z] - [MainThread] - [INFO] - lint_manager.py:553 - Finished all futures
-[2023-03-28T15:14:09Z] - [MainThread] - [WARNING] - helpers.py:558 - skipping coverage report coverage_report/.coverage file not found. Should not expect this if code files were changed or when linting all with pytest.
-[2023-03-28T15:14:09Z] - [MainThread] - [INFO] - lint_manager.py:821 - Flake8       - [PASS]
-[2023-03-28T15:14:09Z] - [MainThread] - [INFO] - lint_manager.py:821 - XSOAR linter - [PASS]
-[2023-03-28T15:14:09Z] - [MainThread] - [INFO] - lint_manager.py:821 - Bandit       - [PASS]
-[2023-03-28T15:14:09Z] - [MainThread] - [INFO] - lint_manager.py:821 - Mypy         - [PASS]
-[2023-03-28T15:14:09Z] - [MainThread] - [INFO] - lint_manager.py:821 - Vulture      - [PASS]
-[2023-03-28T15:14:09Z] - [MainThread] - [INFO] - lint_manager.py:821 - Pytest       - [PASS]
-[2023-03-28T15:14:09Z] - [MainThread] - [INFO] - lint_manager.py:821 - Pylint       - [PASS]
-[2023-03-28T15:14:09Z] - [MainThread] - [INFO] - lint_manager.py:823 - Pwsh analyze - [SKIPPED]
-[2023-03-28T15:14:09Z] - [MainThread] - [INFO] - lint_manager.py:823 - Pwsh test    - [SKIPPED]
-[2023-03-28T15:14:09Z] - [MainThread] - [INFO] - lint_manager.py:884 - 
-#######################
-[2023-03-28T15:14:09Z] - [MainThread] - [INFO] - lint_manager.py:885 -  Xsoar_linter warnings 
-[2023-03-28T15:14:09Z] - [MainThread] - [INFO] - lint_manager.py:886 - #######################
-
-[2023-03-28T15:14:09Z] - [MainThread] - [INFO] - lint_manager.py:888 - DatadogCloudSIEM
-[2023-03-28T15:14:09Z] - [MainThread] - [INFO] - lint_manager.py:889 - /home/moin/demisto/content/Packs/DatadogCloudSIEM/Integrations/DatadogCloudSIEM/DatadogCloudSIEM.py:191:0: W9014 metric_command_results: Function arguments are missing type annotations. Please add type annotations
-[2023-03-28T15:14:09Z] - [MainThread] - [INFO] - lint_manager.py:1079 - 
-#######################
-[2023-03-28T15:14:09Z] - [MainThread] - [INFO] - lint_manager.py:1080 -  Image creation errors 
-[2023-03-28T15:14:09Z] - [MainThread] - [INFO] - lint_manager.py:1081 - #######################
-[2023-03-28T15:14:09Z] - [MainThread] - [INFO] - lint_manager.py:1083 -   - Package: DatadogCloudSIEM
-[2023-03-28T15:14:09Z] - [MainThread] - [INFO] - lint_manager.py:1085 -     Image: demisto/datadog-api-client:1.0.0.48939
-[2023-03-28T15:14:09Z] - [MainThread] - [INFO] - lint_manager.py:1086 -       Error: 400 Client Error for http+docker://localhost/v1.42/containers/b2ec84fb3e1c0b2d5c864ba8c
-             ab463bd4f30a81a1bf373d68fd70af60e3d827f/wait?condition=exited: Bad Request ("invalid
-             condition: "exited"")
-[2023-03-28T15:14:09Z] - [MainThread] - [INFO] - lint_manager.py:1142 - 
-#########
-[2023-03-28T15:14:09Z] - [MainThread] - [INFO] - lint_manager.py:1143 -  Summary 
-[2023-03-28T15:14:09Z] - [MainThread] - [INFO] - lint_manager.py:1144 - #########
-[2023-03-28T15:14:09Z] - [MainThread] - [INFO] - lint_manager.py:1145 - Packages: 1
-[2023-03-28T15:14:09Z] - [MainThread] - [INFO] - lint_manager.py:1146 - Packages PASS: 0
-[2023-03-28T15:14:09Z] - [MainThread] - [INFO] - lint_manager.py:1147 - Packages FAIL: 1
-[2023-03-28T15:14:09Z] - [MainThread] - [INFO] - lint_manager.py:1148 - Packages WARNING (can either PASS or FAIL): 1
-
-[2023-03-28T15:14:09Z] - [MainThread] - [INFO] - lint_manager.py:1154 - Warning packages:
-[2023-03-28T15:14:09Z] - [MainThread] - [INFO] - lint_manager.py:1156 -    - DatadogCloudSIEM
-[2023-03-28T15:14:09Z] - [MainThread] - [INFO] - lint_manager.py:1159 - Failed packages:
-[2023-03-28T15:14:09Z] - [MainThread] - [INFO] - lint_manager.py:1161 -    - DatadogCloudSIEM
-[2023-03-28T18:16:58Z] - [MainThread] - [DEBUG] - cmd.py:976 - Popen(['git', 'remote', 'get-url', '--all', 'origin'], cwd=/home/moin/demisto/content, universal_newlines=False, shell=None, istream=None)
-[2023-03-28T18:16:58Z] - [MainThread] - [DEBUG] - connectionpool.py:1003 - Starting new HTTPS connection (1): pypi.org:443
-[2023-03-28T18:17:18Z] - [MainThread] - [INFO] - tools.py:704 - Could not get latest demisto-sdk version.
-Encountered error: Failed to establish a new connection: [Errno -3] Temporary failure in name resolution.
-This may happen if you are not connected to the internet.
-[2023-03-28T18:17:18Z] - [MainThread] - [INFO] - __main__.py:216 - You are using demisto-sdk 1.11.0.
-[2023-03-28T18:17:19Z] - [MainThread] - [DEBUG] - cmd.py:976 - Popen(['git', 'remote', 'get-url', '--all', 'origin'], cwd=/home/moin/demisto/content, universal_newlines=False, shell=None, istream=None)
-[2023-03-28T18:17:19Z] - [MainThread] - [DEBUG] - lint_manager.py:199 - Content path /home/moin/demisto/content
-[2023-03-28T18:17:19Z] - [MainThread] - [DEBUG] - lint_manager.py:215 - Test requirements successfully collected for python 3:
- ['astroid==2.11.5', 'attrs==21.4.0', 'certifi==2022.5.18', 'charset-normalizer==2.0.12', 'coverage==6.3.3', 'dill==0.3.4', 'execnet==1.9.0', 'flake8==4.0.1', 'freezegun==1.2.1', 'hypothesis==6.46.7', 'idna==3.3', 'iniconfig==1.1.1', 'isort==5.10.1', 'lazy-object-proxy==1.7.1', 'mccabe==0.6.1', 'multidict==6.0.2', 'packaging==21.3', 'platformdirs==2.5.2', 'pluggy==1.0.0', 'py==1.11.0', 'pycodestyle==2.8.0', 'pyflakes==2.4.0', 'pylint==2.13.9', 'pyparsing==3.0.9', 'pytest==7.1.2', 'pytest-asyncio==0.18.3', 'pytest-cov==3.0.0', 'pytest-datadir-ng==1.1.1', 'pytest-forked==1.4.0', 'pytest-json==0.4.0', 'pytest-mock==3.7.0', 'pytest-xdist==2.5.0', 'python-dateutil==2.8.2', 'pyyaml==6.0', 'requests==2.27.1', 'requests-mock==1.9.3', 'setuptools==62.3.2', 'six==1.16.0', 'sortedcontainers==2.4.0', 'toml==0.10.2', 'tomli==2.0.1', 'urllib3==1.26.9', 'vcrpy==4.1.1', 'vulture==2.4', 'wrapt==1.14.1', 'yarl==1.7.2']
-[2023-03-28T18:17:19Z] - [MainThread] - [DEBUG] - helpers.py:152 - read file /home/moin/demisto/content/Tests/demistomock/demistomock.py
-[2023-03-28T18:17:19Z] - [MainThread] - [DEBUG] - helpers.py:152 - read file /home/moin/demisto/content/Tests/scripts/dev_envs/pytest/conftest.py
-[2023-03-28T18:17:19Z] - [MainThread] - [DEBUG] - helpers.py:152 - read file /home/moin/demisto/content/Packs/Base/Scripts/CommonServerPython/CommonServerPython.py
-[2023-03-28T18:17:19Z] - [MainThread] - [DEBUG] - helpers.py:161 - Changed file /home/moin/demisto/content/Packs/Base/Scripts/CommonServerPython/CommonServerPython.py without demisto import
-[2023-03-28T18:17:19Z] - [MainThread] - [DEBUG] - helpers.py:152 - read file /home/moin/demisto/content/Tests/demistomock/demistomock.ps1
-[2023-03-28T18:17:19Z] - [MainThread] - [DEBUG] - helpers.py:152 - read file /home/moin/demisto/content/Packs/Base/Scripts/CommonServerPowerShell/CommonServerPowerShell.ps1
-[2023-03-28T18:17:19Z] - [MainThread] - [DEBUG] - lint_manager.py:231 - Test mandatory modules successfully collected
-[2023-03-28T18:17:19Z] - [MainThread] - [DEBUG] - lint_manager.py:260 - creating docker client from env
-[2023-03-28T18:17:19Z] - [MainThread] - [INFO] - docker_helper.py:37 - LintManager - init and login the docker client
-[2023-03-28T18:17:19Z] - [MainThread] - [DEBUG] - docker_helper.py:43 - LintManager - Using docker mounting: True
-[2023-03-28T18:17:19Z] - [MainThread] - [DEBUG] - config.py:21 - Trying paths: ['/home/moin/.docker/config.json', '/home/moin/.dockercfg']
-[2023-03-28T18:17:19Z] - [MainThread] - [DEBUG] - config.py:28 - No config file found
-[2023-03-28T18:17:19Z] - [MainThread] - [DEBUG] - config.py:21 - Trying paths: ['/home/moin/.docker/config.json', '/home/moin/.dockercfg']
-[2023-03-28T18:17:19Z] - [MainThread] - [DEBUG] - config.py:28 - No config file found
-[2023-03-28T18:17:19Z] - [MainThread] - [DEBUG] - connectionpool.py:456 - http://localhost:None "GET /version HTTP/1.1" 200 822
-[2023-03-28T18:17:19Z] - [MainThread] - [DEBUG] - lint_manager.py:265 - pinging docker daemon
-[2023-03-28T18:17:19Z] - [MainThread] - [DEBUG] - connectionpool.py:456 - http://localhost:None "GET /v1.42/_ping HTTP/1.1" 200 2
-[2023-03-28T18:17:19Z] - [MainThread] - [DEBUG] - lint_manager.py:283 - Docker daemon test passed
-[2023-03-28T18:17:19Z] - [MainThread] - [INFO] - lint_manager.py:329 - Executing lint and test on integrations and scripts in /home/moin/demisto/content/Packs/DatadogCloudSIEM/Integrations/DatadogCloudSIEM
-[2023-03-28T18:17:19Z] - [MainThread] - [DEBUG] - docker_helper.py:63 - Linter - docker client already available, using current DOCKER_CLIENT
-[2023-03-28T18:17:19Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:234 - DatadogCloudSIEM - Run - Start
-[2023-03-28T18:17:19Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:289 - DatadogCloudSIEM - Facts - Using yaml file /home/moin/demisto/content/Packs/DatadogCloudSIEM/Integrations/DatadogCloudSIEM/DatadogCloudSIEM.yml
-[2023-03-28T18:17:19Z] - [MainThread] - [INFO] - lint_manager.py:528 - Waiting for futures to complete
-[2023-03-28T18:17:19Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:332 - DatadogCloudSIEM - Facts - Collecting all docker images to pull
-[2023-03-28T18:17:19Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:1603 - DatadogCloudSIEM - Get All Docker Images For Lint - Requested docker image flag is: 'from-yml'
-[2023-03-28T18:17:19Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:1612 - DatadogCloudSIEM - Get Docker Image from YML - Started
-[2023-03-28T18:17:19Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:1614 - DatadogCloudSIEM - Get All Docker Images For Lint - Docker images to run on are: demisto/datadog-api-client:1.0.0.48939
-[2023-03-28T18:17:19Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - linter.py:1274 - Updating support level for DatadogCloudSIEM
-[2023-03-28T18:17:19Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - linter.py:1281 - Before reading content of /home/moin/demisto/content/Packs/DatadogCloudSIEM/pack_metadata.json
-[2023-03-28T18:17:19Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - linter.py:1284 - After reading content of /home/moin/demisto/content/Packs/DatadogCloudSIEM/pack_metadata.json
-[2023-03-28T18:17:19Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - docker_helper.py:63 - Get python version from image demisto/datadog-api-client:1.0.0.48939 - docker client already available, using current DOCKER_CLIENT
-[2023-03-28T18:17:19Z] - [ThreadPoolExecutor-0_0] - [INFO] - helpers.py:329 - Get python version from image demisto/datadog-api-client:1.0.0.48939 - Start
-[2023-03-28T18:17:19Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - helpers.py:331 - Get python version from image demisto/datadog-api-client:1.0.0.48939 - Running `sys.version_info` in the image
-[2023-03-28T18:17:19Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - connectionpool.py:456 - http://localhost:None "POST /v1.42/containers/create HTTP/1.1" 201 88
-[2023-03-28T18:17:19Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - connectionpool.py:456 - http://localhost:None "GET /v1.42/containers/0c99d21965b9c3c59b8d03200f8cfebb83c04f0aebf0f8fedb7a7dda28767d29/json HTTP/1.1" 200 None
-[2023-03-28T18:17:20Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - connectionpool.py:456 - http://localhost:None "POST /v1.42/containers/0c99d21965b9c3c59b8d03200f8cfebb83c04f0aebf0f8fedb7a7dda28767d29/start HTTP/1.1" 204 0
-[2023-03-28T18:17:20Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - connectionpool.py:456 - http://localhost:None "GET /v1.42/containers/0c99d21965b9c3c59b8d03200f8cfebb83c04f0aebf0f8fedb7a7dda28767d29/logs?stderr=0&stdout=1&timestamps=0&follow=1&tail=all HTTP/1.1" 200 None
-[2023-03-28T18:17:20Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - connectionpool.py:456 - http://localhost:None "GET /v1.42/containers/0c99d21965b9c3c59b8d03200f8cfebb83c04f0aebf0f8fedb7a7dda28767d29/json HTTP/1.1" 200 None
-[2023-03-28T18:17:20Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - connectionpool.py:456 - http://localhost:None "POST /v1.42/containers/0c99d21965b9c3c59b8d03200f8cfebb83c04f0aebf0f8fedb7a7dda28767d29/wait HTTP/1.1" 200 None
-[2023-03-28T18:17:20Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - connectionpool.py:456 - http://localhost:None "DELETE /v1.42/containers/0c99d21965b9c3c59b8d03200f8cfebb83c04f0aebf0f8fedb7a7dda28767d29?v=False&link=False&force=False HTTP/1.1" 204 0
-[2023-03-28T18:17:20Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - helpers.py:341 - Get python version from image demisto/datadog-api-client:1.0.0.48939 - Container finished running. py_num=b'3.10\n'
-[2023-03-28T18:17:20Z] - [ThreadPoolExecutor-0_0] - [INFO] - helpers.py:350 - Get python version from image demisto/datadog-api-client:1.0.0.48939 - End. Python version is 3.10
-[2023-03-28T18:17:20Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:375 - DatadogCloudSIEM - Facts - demisto/datadog-api-client:1.0.0.48939 - Python 3.10
-[2023-03-28T18:17:20Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:390 - DatadogCloudSIEM - Facts - Tests found
-[2023-03-28T18:17:20Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - cmd.py:976 - Popen(['git', 'check-ignore', '/home/moin/demisto/content/Packs/DatadogCloudSIEM/Integrations/DatadogCloudSIEM/DatadogCloudSIEM.py', '/home/moin/demisto/content/Packs/DatadogCloudSIEM/Integrations/DatadogCloudSIEM/DatadogCloudSIEM_test.py'], cwd=/home/moin/demisto/content, universal_newlines=False, shell=None, istream=None)
-[2023-03-28T18:17:20Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:460 - DatadogCloudSIEM - Facts - Lint file /home/moin/demisto/content/Packs/DatadogCloudSIEM/Integrations/DatadogCloudSIEM/DatadogCloudSIEM.py
-[2023-03-28T18:17:20Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:460 - DatadogCloudSIEM - Facts - Lint file /home/moin/demisto/content/Packs/DatadogCloudSIEM/Integrations/DatadogCloudSIEM/DatadogCloudSIEM_test.py
-[2023-03-28T18:17:20Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:538 - DatadogCloudSIEM - Run Lint In Host - Started
-[2023-03-28T18:17:20Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:599 - DatadogCloudSIEM - XSOAR Linter - Start
-[2023-03-28T18:17:26Z] - [ThreadPoolExecutor-0_0] - [WARNING] - linter.py:630 - DatadogCloudSIEM - XSOAR Linter - Finished, warnings found
-[2023-03-28T18:17:26Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - linter.py:650 - DatadogCloudSIEM - XSOAR Linter - Finished, exit-code: 4
-[2023-03-28T18:17:26Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - linter.py:651 - DatadogCloudSIEM - XSOAR Linter - Finished, stdout: 
-************* Module DatadogCloudSIEM
-/home/moin/demisto/content/Packs/DatadogCloudSIEM/Integrations/DatadogCloudSIEM/DatadogCloudSIEM.py:192:0: W9014 metric_command_results: Function arguments are missing type annotations. Please add type annotations
-/home/moin/demisto/content/Packs/DatadogCloudSIEM/Integrations/DatadogCloudSIEM/DatadogCloudSIEM.py:1:0: W9011 : return_error used too many times, should be used only once in the code, in main function. Please remove other usages.
-
-[2023-03-28T18:17:26Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - linter.py:652 - DatadogCloudSIEM - XSOAR Linter - Finished, stderr: 
-[2023-03-28T18:17:26Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:671 - DatadogCloudSIEM - Bandit - Start
-[2023-03-28T18:17:26Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - linter.py:676 - DatadogCloudSIEM - Bandit - Finished, exit-code: 0
-[2023-03-28T18:17:26Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - linter.py:677 - DatadogCloudSIEM - Bandit - Finished, stdout: 
-[2023-03-28T18:17:26Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - linter.py:678 - DatadogCloudSIEM - Bandit - Finished, stderr: 
-[2023-03-28T18:17:26Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:686 - DatadogCloudSIEM - Bandit - Successfully finished
-[2023-03-28T18:17:26Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:703 - DatadogCloudSIEM - Mypy - Start
-[2023-03-28T18:17:27Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - linter.py:711 - DatadogCloudSIEM - Mypy - Finished, exit-code: 0
-[2023-03-28T18:17:27Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - linter.py:712 - DatadogCloudSIEM - Mypy - Finished, stdout: 
-Success: no issues found in 1 source file
-
-[2023-03-28T18:17:27Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - linter.py:713 - DatadogCloudSIEM - Mypy - Finished, stderr: 
-[2023-03-28T18:17:27Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:721 - DatadogCloudSIEM - Mypy - Successfully finished
-[2023-03-28T18:17:27Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:566 - DatadogCloudSIEM - Run Lint In Host - Finished successfully
-[2023-03-28T18:17:27Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:752 - DatadogCloudSIEM - Run Lint On Docker Image - Running lint: Number of images=[['demisto/datadog-api-client:1.0.0.48939', '3.10']]
-[2023-03-28T18:17:27Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:758 - DatadogCloudSIEM - Run Lint On Docker Image - Running lint on docker image demisto/datadog-api-client:1.0.0.48939
-[2023-03-28T18:17:27Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:941 - DatadogCloudSIEM - Image create - Trying to pull existing image devtestdemisto/datadog-api-client:1.0.0.48939-f1a8a03f0d4031309fa67e5b6b566d13
-[2023-03-28T18:17:27Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - docker_helper.py:63 - pull_image - docker client already available, using current DOCKER_CLIENT
-[2023-03-28T18:17:27Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - connectionpool.py:456 - http://localhost:None "GET /v1.42/images/devtestdemisto/datadog-api-client:1.0.0.48939-f1a8a03f0d4031309fa67e5b6b566d13/json HTTP/1.1" 404 108
-[2023-03-28T18:17:27Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - docker_helper.py:107 - docker image devtestdemisto/datadog-api-client:1.0.0.48939-f1a8a03f0d4031309fa67e5b6b566d13 not found, pulling
-[2023-03-28T18:17:27Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - auth.py:39 - Looking for auth config
-[2023-03-28T18:17:27Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - auth.py:41 - No auth config in memory - loading from filesystem
-[2023-03-28T18:17:27Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - config.py:21 - Trying paths: ['/home/moin/.docker/config.json', '/home/moin/.dockercfg']
-[2023-03-28T18:17:27Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - config.py:28 - No config file found
-[2023-03-28T18:17:27Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - auth.py:240 - Looking for auth entry for 'docker.io'
-[2023-03-28T18:17:27Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - auth.py:251 - No entry found
-[2023-03-28T18:17:27Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - auth.py:56 - No auth config found
-[2023-03-28T18:18:02Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - connectionpool.py:456 - http://localhost:None "POST /v1.42/images/create?tag=1.0.0.48939-f1a8a03f0d4031309fa67e5b6b566d13&fromImage=devtestdemisto%2Fdatadog-api-client HTTP/1.1" 500 161
-[2023-03-28T18:18:02Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:946 - DatadogCloudSIEM - Image create - Unable to find image devtestdemisto/datadog-api-client:1.0.0.48939-f1a8a03f0d4031309fa67e5b6b566d13
-[2023-03-28T18:18:02Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:949 - DatadogCloudSIEM - Image create - Creating image based on demisto/datadog-api-client:1.0.0.48939 - Could take 2-3 minutes at first time
-[2023-03-28T18:18:02Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - docker_helper.py:176 - Trying to pull image demisto/datadog-api-client:1.0.0.48939
-[2023-03-28T18:18:02Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - docker_helper.py:63 - pull_image - docker client already available, using current DOCKER_CLIENT
-[2023-03-28T18:18:02Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - connectionpool.py:456 - http://localhost:None "GET /v1.42/images/demisto/datadog-api-client:1.0.0.48939/json HTTP/1.1" 200 None
-[2023-03-28T18:18:02Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - docker_helper.py:63 - docker client already available, using current DOCKER_CLIENT
-[2023-03-28T18:18:02Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - connectionpool.py:456 - http://localhost:None "POST /v1.42/containers/create HTTP/1.1" 201 88
-[2023-03-28T18:18:02Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - connectionpool.py:456 - http://localhost:None "GET /v1.42/containers/5be4fc03c5430d2f9d5b7c6dc38fa85cc4b75fc220c0e0ba6ef9e1c699f30048/json HTTP/1.1" 200 None
-[2023-03-28T18:18:03Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - connectionpool.py:456 - http://localhost:None "POST /v1.42/containers/5be4fc03c5430d2f9d5b7c6dc38fa85cc4b75fc220c0e0ba6ef9e1c699f30048/start HTTP/1.1" 204 0
-[2023-03-28T18:18:03Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - connectionpool.py:456 - http://localhost:None "POST /v1.42/containers/5be4fc03c5430d2f9d5b7c6dc38fa85cc4b75fc220c0e0ba6ef9e1c699f30048/wait?condition=exited HTTP/1.1" 400 44
-[2023-03-28T18:18:03Z] - [ThreadPoolExecutor-0_0] - [CRITICAL] - linter.py:982 - DatadogCloudSIEM - Image create - Build errors occurred 400 Client Error for http+docker://localhost/v1.42/containers/5be4fc03c5430d2f9d5b7c6dc38fa85cc4b75fc220c0e0ba6ef9e1c699f30048/wait?condition=exited: Bad Request ("invalid condition: "exited"")
-[2023-03-28T18:18:03Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:941 - DatadogCloudSIEM - Image create - Trying to pull existing image devtestdemisto/datadog-api-client:1.0.0.48939-f1a8a03f0d4031309fa67e5b6b566d13
-[2023-03-28T18:18:03Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - docker_helper.py:63 - pull_image - docker client already available, using current DOCKER_CLIENT
-[2023-03-28T18:18:03Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - connectionpool.py:456 - http://localhost:None "GET /v1.42/images/devtestdemisto/datadog-api-client:1.0.0.48939-f1a8a03f0d4031309fa67e5b6b566d13/json HTTP/1.1" 404 108
-[2023-03-28T18:18:03Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - docker_helper.py:107 - docker image devtestdemisto/datadog-api-client:1.0.0.48939-f1a8a03f0d4031309fa67e5b6b566d13 not found, pulling
-[2023-03-28T18:18:03Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - auth.py:39 - Looking for auth config
-[2023-03-28T18:18:03Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - auth.py:41 - No auth config in memory - loading from filesystem
-[2023-03-28T18:18:03Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - config.py:21 - Trying paths: ['/home/moin/.docker/config.json', '/home/moin/.dockercfg']
-[2023-03-28T18:18:03Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - config.py:28 - No config file found
-[2023-03-28T18:18:03Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - auth.py:240 - Looking for auth entry for 'docker.io'
-[2023-03-28T18:18:03Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - auth.py:251 - No entry found
-[2023-03-28T18:18:03Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - auth.py:56 - No auth config found
-[2023-03-28T18:18:38Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - connectionpool.py:456 - http://localhost:None "POST /v1.42/images/create?tag=1.0.0.48939-f1a8a03f0d4031309fa67e5b6b566d13&fromImage=devtestdemisto%2Fdatadog-api-client HTTP/1.1" 500 161
-[2023-03-28T18:18:38Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:946 - DatadogCloudSIEM - Image create - Unable to find image devtestdemisto/datadog-api-client:1.0.0.48939-f1a8a03f0d4031309fa67e5b6b566d13
-[2023-03-28T18:18:38Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:949 - DatadogCloudSIEM - Image create - Creating image based on demisto/datadog-api-client:1.0.0.48939 - Could take 2-3 minutes at first time
-[2023-03-28T18:18:38Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - docker_helper.py:176 - Trying to pull image demisto/datadog-api-client:1.0.0.48939
-[2023-03-28T18:18:38Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - docker_helper.py:63 - pull_image - docker client already available, using current DOCKER_CLIENT
-[2023-03-28T18:18:38Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - connectionpool.py:456 - http://localhost:None "GET /v1.42/images/demisto/datadog-api-client:1.0.0.48939/json HTTP/1.1" 200 None
-[2023-03-28T18:18:38Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - docker_helper.py:63 - docker client already available, using current DOCKER_CLIENT
-[2023-03-28T18:18:38Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - connectionpool.py:456 - http://localhost:None "POST /v1.42/containers/create HTTP/1.1" 201 88
-[2023-03-28T18:18:38Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - connectionpool.py:456 - http://localhost:None "GET /v1.42/containers/b9431ce3d9ccb86ecb1861236625af5e2b1cd89e8019ca89997061d63688ec82/json HTTP/1.1" 200 None
-[2023-03-28T18:18:38Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - connectionpool.py:456 - http://localhost:None "POST /v1.42/containers/b9431ce3d9ccb86ecb1861236625af5e2b1cd89e8019ca89997061d63688ec82/start HTTP/1.1" 204 0
-[2023-03-28T18:18:38Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - connectionpool.py:456 - http://localhost:None "POST /v1.42/containers/b9431ce3d9ccb86ecb1861236625af5e2b1cd89e8019ca89997061d63688ec82/wait?condition=exited HTTP/1.1" 400 44
-[2023-03-28T18:18:38Z] - [ThreadPoolExecutor-0_0] - [CRITICAL] - linter.py:982 - DatadogCloudSIEM - Image create - Build errors occurred 400 Client Error for http+docker://localhost/v1.42/containers/b9431ce3d9ccb86ecb1861236625af5e2b1cd89e8019ca89997061d63688ec82/wait?condition=exited: Bad Request ("invalid condition: "exited"")
-[2023-03-28T18:18:38Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:874 - DatadogCloudSIEM - Run Lint On Docker Image - Finished linting on docker image demisto/datadog-api-client:1.0.0.48939
-[2023-03-28T18:18:38Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:877 - DatadogCloudSIEM - Run Lint On Docker Image - Finished linting. Number of images=[['demisto/datadog-api-client:1.0.0.48939', '3.10']]
-[2023-03-28T18:18:38Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:274 - DatadogCloudSIEM - Run - Finished Successfully
-[2023-03-28T18:18:38Z] - [MainThread] - [DEBUG] - lint_manager.py:530 - checking output of future i=0
-[2023-03-28T18:18:38Z] - [MainThread] - [INFO] - lint_manager.py:532 - Got lint results for DatadogCloudSIEM
-[2023-03-28T18:18:38Z] - [MainThread] - [INFO] - lint_manager.py:553 - Finished all futures
-[2023-03-28T18:18:38Z] - [MainThread] - [WARNING] - helpers.py:558 - skipping coverage report coverage_report/.coverage file not found. Should not expect this if code files were changed or when linting all with pytest.
-[2023-03-28T18:18:38Z] - [MainThread] - [INFO] - lint_manager.py:821 - Flake8       - [PASS]
-[2023-03-28T18:18:38Z] - [MainThread] - [INFO] - lint_manager.py:821 - XSOAR linter - [PASS]
-[2023-03-28T18:18:38Z] - [MainThread] - [INFO] - lint_manager.py:821 - Bandit       - [PASS]
-[2023-03-28T18:18:38Z] - [MainThread] - [INFO] - lint_manager.py:821 - Mypy         - [PASS]
-[2023-03-28T18:18:38Z] - [MainThread] - [INFO] - lint_manager.py:821 - Vulture      - [PASS]
-[2023-03-28T18:18:38Z] - [MainThread] - [INFO] - lint_manager.py:821 - Pytest       - [PASS]
-[2023-03-28T18:18:38Z] - [MainThread] - [INFO] - lint_manager.py:821 - Pylint       - [PASS]
-[2023-03-28T18:18:38Z] - [MainThread] - [INFO] - lint_manager.py:823 - Pwsh analyze - [SKIPPED]
-[2023-03-28T18:18:38Z] - [MainThread] - [INFO] - lint_manager.py:823 - Pwsh test    - [SKIPPED]
-[2023-03-28T18:18:38Z] - [MainThread] - [INFO] - lint_manager.py:884 - 
-#######################
-[2023-03-28T18:18:38Z] - [MainThread] - [INFO] - lint_manager.py:885 -  Xsoar_linter warnings 
-[2023-03-28T18:18:38Z] - [MainThread] - [INFO] - lint_manager.py:886 - #######################
-
-[2023-03-28T18:18:38Z] - [MainThread] - [INFO] - lint_manager.py:888 - DatadogCloudSIEM
-[2023-03-28T18:18:38Z] - [MainThread] - [INFO] - lint_manager.py:889 - /home/moin/demisto/content/Packs/DatadogCloudSIEM/Integrations/DatadogCloudSIEM/DatadogCloudSIEM.py:192:0: W9014 metric_command_results: Function arguments are missing type annotations. Please add type annotations
-/home/moin/demisto/content/Packs/DatadogCloudSIEM/Integrations/DatadogCloudSIEM/DatadogCloudSIEM.py:1:0: W9011 : return_error used too many times, should be used only once in the code, in main function. Please remove other usages.
-[2023-03-28T18:18:38Z] - [MainThread] - [INFO] - lint_manager.py:1079 - 
-#######################
-[2023-03-28T18:18:38Z] - [MainThread] - [INFO] - lint_manager.py:1080 -  Image creation errors 
-[2023-03-28T18:18:38Z] - [MainThread] - [INFO] - lint_manager.py:1081 - #######################
-[2023-03-28T18:18:38Z] - [MainThread] - [INFO] - lint_manager.py:1083 -   - Package: DatadogCloudSIEM
-[2023-03-28T18:18:38Z] - [MainThread] - [INFO] - lint_manager.py:1085 -     Image: demisto/datadog-api-client:1.0.0.48939
-[2023-03-28T18:18:38Z] - [MainThread] - [INFO] - lint_manager.py:1086 -       Error: 400 Client Error for http+docker://localhost/v1.42/containers/b9431ce3d9ccb86ecb1861236
-             625af5e2b1cd89e8019ca89997061d63688ec82/wait?condition=exited: Bad Request ("invalid
-             condition: "exited"")
-[2023-03-28T18:18:38Z] - [MainThread] - [INFO] - lint_manager.py:1142 - 
-#########
-[2023-03-28T18:18:38Z] - [MainThread] - [INFO] - lint_manager.py:1143 -  Summary 
-[2023-03-28T18:18:38Z] - [MainThread] - [INFO] - lint_manager.py:1144 - #########
-[2023-03-28T18:18:38Z] - [MainThread] - [INFO] - lint_manager.py:1145 - Packages: 1
-[2023-03-28T18:18:38Z] - [MainThread] - [INFO] - lint_manager.py:1146 - Packages PASS: 0
-[2023-03-28T18:18:38Z] - [MainThread] - [INFO] - lint_manager.py:1147 - Packages FAIL: 1
-[2023-03-28T18:18:38Z] - [MainThread] - [INFO] - lint_manager.py:1148 - Packages WARNING (can either PASS or FAIL): 1
-
-[2023-03-28T18:18:38Z] - [MainThread] - [INFO] - lint_manager.py:1154 - Warning packages:
-[2023-03-28T18:18:38Z] - [MainThread] - [INFO] - lint_manager.py:1156 -    - DatadogCloudSIEM
-[2023-03-28T18:18:38Z] - [MainThread] - [INFO] - lint_manager.py:1159 - Failed packages:
-[2023-03-28T18:18:38Z] - [MainThread] - [INFO] - lint_manager.py:1161 -    - DatadogCloudSIEM
-[2023-03-28T20:04:24Z] - [MainThread] - [DEBUG] - cmd.py:976 - Popen(['git', 'remote', 'get-url', '--all', 'origin'], cwd=/home/moin/demisto/content, universal_newlines=False, shell=None, istream=None)
-[2023-03-28T20:04:24Z] - [MainThread] - [DEBUG] - connectionpool.py:1003 - Starting new HTTPS connection (1): pypi.org:443
-[2023-03-28T20:04:24Z] - [MainThread] - [DEBUG] - connectionpool.py:456 - https://pypi.org:443 "GET /pypi/demisto-sdk/json HTTP/1.1" 200 31906
-[2023-03-28T20:04:24Z] - [MainThread] - [INFO] - __main__.py:216 - You are using demisto-sdk 1.11.0.
-[2023-03-28T20:04:25Z] - [MainThread] - [INFO] - common.py:37 - Output file was saved to :
-/home/moin/demisto/content/Packs/DatadogCloudSIEM/Integrations/DatadogCloudSIEM/README.md
-[2023-03-28T20:04:25Z] - [MainThread] - [INFO] - generate_integration_doc.py:213 - Possible Errors:
-[2023-03-28T20:04:25Z] - [MainThread] - [INFO] - generate_integration_doc.py:215 - Command examples was not found: None.
-[2023-03-28T20:04:25Z] - [MainThread] - [INFO] - generate_integration_doc.py:215 - did not get any example for datadog-event-create. please add it manually.
-[2023-03-28T20:04:25Z] - [MainThread] - [INFO] - generate_integration_doc.py:215 - did not get any example for datadog-event-list. please add it manually.
-[2023-03-28T20:04:25Z] - [MainThread] - [INFO] - generate_integration_doc.py:215 - did not get any example for datadog-tag-list. please add it manually.
-[2023-03-28T20:04:25Z] - [MainThread] - [INFO] - generate_integration_doc.py:215 - did not get any example for datadog-host-tag-create. please add it manually.
-[2023-03-28T20:04:25Z] - [MainThread] - [INFO] - generate_integration_doc.py:215 - did not get any example for datadog-host-tag-get. please add it manually.
-[2023-03-28T20:04:25Z] - [MainThread] - [INFO] - generate_integration_doc.py:215 - did not get any example for datadog-host-tag-update. please add it manually.
-[2023-03-28T20:04:25Z] - [MainThread] - [INFO] - generate_integration_doc.py:215 - did not get any example for datadog-host-tag-delete. please add it manually.
-[2023-03-28T20:04:25Z] - [MainThread] - [INFO] - generate_integration_doc.py:215 - did not get any example for datadog-active-metric-list. please add it manually.
-[2023-03-28T20:04:25Z] - [MainThread] - [INFO] - generate_integration_doc.py:215 - did not get any example for datadog-metric-search. please add it manually.
-[2023-03-28T20:04:25Z] - [MainThread] - [INFO] - generate_integration_doc.py:215 - did not get any example for datadog-metric-metadata-get. please add it manually.
-[2023-03-28T20:04:25Z] - [MainThread] - [INFO] - generate_integration_doc.py:215 - did not get any example for datadog-metric-metadata-update. please add it manually.
-[2023-03-28T20:04:25Z] - [MainThread] - [INFO] - generate_integration_doc.py:215 - did not get any example for datadog-incident-create. please add it manually.
-[2023-03-28T20:04:25Z] - [MainThread] - [INFO] - generate_integration_doc.py:215 - did not get any example for datadog-incident-delete. please add it manually.
-[2023-03-28T20:04:30Z] - [MainThread] - [DEBUG] - cmd.py:976 - Popen(['git', 'remote', 'get-url', '--all', 'origin'], cwd=/home/moin/demisto/content, universal_newlines=False, shell=None, istream=None)
-[2023-03-28T20:04:30Z] - [MainThread] - [DEBUG] - connectionpool.py:1003 - Starting new HTTPS connection (1): pypi.org:443
-[2023-03-28T20:04:30Z] - [MainThread] - [DEBUG] - connectionpool.py:456 - https://pypi.org:443 "GET /pypi/demisto-sdk/json HTTP/1.1" 200 31906
-[2023-03-28T20:04:30Z] - [MainThread] - [INFO] - __main__.py:216 - You are using demisto-sdk 1.11.0.
-[2023-03-28T20:04:31Z] - [MainThread] - [DEBUG] - cmd.py:976 - Popen(['git', 'remote', 'get-url', '--all', 'origin'], cwd=/home/moin/demisto/content, universal_newlines=False, shell=None, istream=None)
-[2023-03-28T20:04:31Z] - [MainThread] - [DEBUG] - lint_manager.py:199 - Content path /home/moin/demisto/content
-[2023-03-28T20:04:31Z] - [MainThread] - [DEBUG] - lint_manager.py:215 - Test requirements successfully collected for python 3:
- ['astroid==2.11.5', 'attrs==21.4.0', 'certifi==2022.5.18', 'charset-normalizer==2.0.12', 'coverage==6.3.3', 'dill==0.3.4', 'execnet==1.9.0', 'flake8==4.0.1', 'freezegun==1.2.1', 'hypothesis==6.46.7', 'idna==3.3', 'iniconfig==1.1.1', 'isort==5.10.1', 'lazy-object-proxy==1.7.1', 'mccabe==0.6.1', 'multidict==6.0.2', 'packaging==21.3', 'platformdirs==2.5.2', 'pluggy==1.0.0', 'py==1.11.0', 'pycodestyle==2.8.0', 'pyflakes==2.4.0', 'pylint==2.13.9', 'pyparsing==3.0.9', 'pytest==7.1.2', 'pytest-asyncio==0.18.3', 'pytest-cov==3.0.0', 'pytest-datadir-ng==1.1.1', 'pytest-forked==1.4.0', 'pytest-json==0.4.0', 'pytest-mock==3.7.0', 'pytest-xdist==2.5.0', 'python-dateutil==2.8.2', 'pyyaml==6.0', 'requests==2.27.1', 'requests-mock==1.9.3', 'setuptools==62.3.2', 'six==1.16.0', 'sortedcontainers==2.4.0', 'toml==0.10.2', 'tomli==2.0.1', 'urllib3==1.26.9', 'vcrpy==4.1.1', 'vulture==2.4', 'wrapt==1.14.1', 'yarl==1.7.2']
-[2023-03-28T20:04:31Z] - [MainThread] - [DEBUG] - helpers.py:152 - read file /home/moin/demisto/content/Tests/demistomock/demistomock.py
-[2023-03-28T20:04:31Z] - [MainThread] - [DEBUG] - helpers.py:152 - read file /home/moin/demisto/content/Tests/scripts/dev_envs/pytest/conftest.py
-[2023-03-28T20:04:31Z] - [MainThread] - [DEBUG] - helpers.py:152 - read file /home/moin/demisto/content/Packs/Base/Scripts/CommonServerPython/CommonServerPython.py
-[2023-03-28T20:04:31Z] - [MainThread] - [DEBUG] - helpers.py:161 - Changed file /home/moin/demisto/content/Packs/Base/Scripts/CommonServerPython/CommonServerPython.py without demisto import
-[2023-03-28T20:04:31Z] - [MainThread] - [DEBUG] - helpers.py:152 - read file /home/moin/demisto/content/Tests/demistomock/demistomock.ps1
-[2023-03-28T20:04:31Z] - [MainThread] - [DEBUG] - helpers.py:152 - read file /home/moin/demisto/content/Packs/Base/Scripts/CommonServerPowerShell/CommonServerPowerShell.ps1
-[2023-03-28T20:04:31Z] - [MainThread] - [DEBUG] - lint_manager.py:231 - Test mandatory modules successfully collected
-[2023-03-28T20:04:31Z] - [MainThread] - [DEBUG] - lint_manager.py:260 - creating docker client from env
-[2023-03-28T20:04:31Z] - [MainThread] - [INFO] - docker_helper.py:37 - LintManager - init and login the docker client
-[2023-03-28T20:04:31Z] - [MainThread] - [DEBUG] - docker_helper.py:43 - LintManager - Using docker mounting: True
-[2023-03-28T20:04:31Z] - [MainThread] - [DEBUG] - config.py:21 - Trying paths: ['/home/moin/.docker/config.json', '/home/moin/.dockercfg']
-[2023-03-28T20:04:31Z] - [MainThread] - [DEBUG] - config.py:28 - No config file found
-[2023-03-28T20:04:31Z] - [MainThread] - [DEBUG] - config.py:21 - Trying paths: ['/home/moin/.docker/config.json', '/home/moin/.dockercfg']
-[2023-03-28T20:04:31Z] - [MainThread] - [DEBUG] - config.py:28 - No config file found
-[2023-03-28T20:04:31Z] - [MainThread] - [DEBUG] - connectionpool.py:456 - http://localhost:None "GET /version HTTP/1.1" 200 822
-[2023-03-28T20:04:31Z] - [MainThread] - [DEBUG] - lint_manager.py:265 - pinging docker daemon
-[2023-03-28T20:04:31Z] - [MainThread] - [DEBUG] - connectionpool.py:456 - http://localhost:None "GET /v1.42/_ping HTTP/1.1" 200 2
-[2023-03-28T20:04:31Z] - [MainThread] - [DEBUG] - lint_manager.py:283 - Docker daemon test passed
-[2023-03-28T20:04:31Z] - [MainThread] - [INFO] - lint_manager.py:329 - Executing lint and test on integrations and scripts in /home/moin/demisto/content/Packs/DatadogCloudSIEM/Integrations/DatadogCloudSIEM
-[2023-03-28T20:04:31Z] - [MainThread] - [DEBUG] - docker_helper.py:63 - Linter - docker client already available, using current DOCKER_CLIENT
-[2023-03-28T20:04:31Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:234 - DatadogCloudSIEM - Run - Start
-[2023-03-28T20:04:31Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:289 - DatadogCloudSIEM - Facts - Using yaml file /home/moin/demisto/content/Packs/DatadogCloudSIEM/Integrations/DatadogCloudSIEM/DatadogCloudSIEM.yml
-[2023-03-28T20:04:31Z] - [MainThread] - [INFO] - lint_manager.py:528 - Waiting for futures to complete
-[2023-03-28T20:04:31Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:332 - DatadogCloudSIEM - Facts - Collecting all docker images to pull
-[2023-03-28T20:04:31Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:1603 - DatadogCloudSIEM - Get All Docker Images For Lint - Requested docker image flag is: 'from-yml'
-[2023-03-28T20:04:31Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:1612 - DatadogCloudSIEM - Get Docker Image from YML - Started
-[2023-03-28T20:04:31Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:1614 - DatadogCloudSIEM - Get All Docker Images For Lint - Docker images to run on are: demisto/datadog-api-client:1.0.0.48939
-[2023-03-28T20:04:31Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - linter.py:1274 - Updating support level for DatadogCloudSIEM
-[2023-03-28T20:04:31Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - linter.py:1281 - Before reading content of /home/moin/demisto/content/Packs/DatadogCloudSIEM/pack_metadata.json
-[2023-03-28T20:04:31Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - linter.py:1284 - After reading content of /home/moin/demisto/content/Packs/DatadogCloudSIEM/pack_metadata.json
-[2023-03-28T20:04:31Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - docker_helper.py:63 - Get python version from image demisto/datadog-api-client:1.0.0.48939 - docker client already available, using current DOCKER_CLIENT
-[2023-03-28T20:04:31Z] - [ThreadPoolExecutor-0_0] - [INFO] - helpers.py:329 - Get python version from image demisto/datadog-api-client:1.0.0.48939 - Start
-[2023-03-28T20:04:31Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - helpers.py:331 - Get python version from image demisto/datadog-api-client:1.0.0.48939 - Running `sys.version_info` in the image
-[2023-03-28T20:04:31Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - connectionpool.py:456 - http://localhost:None "POST /v1.42/containers/create HTTP/1.1" 201 88
-[2023-03-28T20:04:31Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - connectionpool.py:456 - http://localhost:None "GET /v1.42/containers/4bf386ec6d4abd7ae949d1605b338bfddd166602cf1a3b0521ed3c6635c47e60/json HTTP/1.1" 200 None
-[2023-03-28T20:04:31Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - connectionpool.py:456 - http://localhost:None "POST /v1.42/containers/4bf386ec6d4abd7ae949d1605b338bfddd166602cf1a3b0521ed3c6635c47e60/start HTTP/1.1" 204 0
-[2023-03-28T20:04:31Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - connectionpool.py:456 - http://localhost:None "GET /v1.42/containers/4bf386ec6d4abd7ae949d1605b338bfddd166602cf1a3b0521ed3c6635c47e60/logs?stderr=0&stdout=1&timestamps=0&follow=1&tail=all HTTP/1.1" 200 None
-[2023-03-28T20:04:31Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - connectionpool.py:456 - http://localhost:None "GET /v1.42/containers/4bf386ec6d4abd7ae949d1605b338bfddd166602cf1a3b0521ed3c6635c47e60/json HTTP/1.1" 200 None
-[2023-03-28T20:04:31Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - connectionpool.py:456 - http://localhost:None "POST /v1.42/containers/4bf386ec6d4abd7ae949d1605b338bfddd166602cf1a3b0521ed3c6635c47e60/wait HTTP/1.1" 200 None
-[2023-03-28T20:04:32Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - connectionpool.py:456 - http://localhost:None "DELETE /v1.42/containers/4bf386ec6d4abd7ae949d1605b338bfddd166602cf1a3b0521ed3c6635c47e60?v=False&link=False&force=False HTTP/1.1" 204 0
-[2023-03-28T20:04:32Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - helpers.py:341 - Get python version from image demisto/datadog-api-client:1.0.0.48939 - Container finished running. py_num=b'3.10\n'
-[2023-03-28T20:04:32Z] - [ThreadPoolExecutor-0_0] - [INFO] - helpers.py:350 - Get python version from image demisto/datadog-api-client:1.0.0.48939 - End. Python version is 3.10
-[2023-03-28T20:04:32Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:375 - DatadogCloudSIEM - Facts - demisto/datadog-api-client:1.0.0.48939 - Python 3.10
-[2023-03-28T20:04:32Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:390 - DatadogCloudSIEM - Facts - Tests found
-[2023-03-28T20:04:32Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - cmd.py:976 - Popen(['git', 'check-ignore', '/home/moin/demisto/content/Packs/DatadogCloudSIEM/Integrations/DatadogCloudSIEM/DatadogCloudSIEM_test.py', '/home/moin/demisto/content/Packs/DatadogCloudSIEM/Integrations/DatadogCloudSIEM/DatadogCloudSIEM.py'], cwd=/home/moin/demisto/content, universal_newlines=False, shell=None, istream=None)
-[2023-03-28T20:04:32Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:460 - DatadogCloudSIEM - Facts - Lint file /home/moin/demisto/content/Packs/DatadogCloudSIEM/Integrations/DatadogCloudSIEM/DatadogCloudSIEM_test.py
-[2023-03-28T20:04:32Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:460 - DatadogCloudSIEM - Facts - Lint file /home/moin/demisto/content/Packs/DatadogCloudSIEM/Integrations/DatadogCloudSIEM/DatadogCloudSIEM.py
-[2023-03-28T20:04:32Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:538 - DatadogCloudSIEM - Run Lint In Host - Started
-[2023-03-28T20:04:32Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:599 - DatadogCloudSIEM - XSOAR Linter - Start
-[2023-03-28T20:04:38Z] - [ThreadPoolExecutor-0_0] - [WARNING] - linter.py:630 - DatadogCloudSIEM - XSOAR Linter - Finished, warnings found
-[2023-03-28T20:04:38Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - linter.py:650 - DatadogCloudSIEM - XSOAR Linter - Finished, exit-code: 4
-[2023-03-28T20:04:38Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - linter.py:651 - DatadogCloudSIEM - XSOAR Linter - Finished, stdout: 
-************* Module DatadogCloudSIEM
-/home/moin/demisto/content/Packs/DatadogCloudSIEM/Integrations/DatadogCloudSIEM/DatadogCloudSIEM.py:192:0: W9014 metric_command_results: Function arguments are missing type annotations. Please add type annotations
-/home/moin/demisto/content/Packs/DatadogCloudSIEM/Integrations/DatadogCloudSIEM/DatadogCloudSIEM.py:1:0: W9011 : return_error used too many times, should be used only once in the code, in main function. Please remove other usages.
-
-[2023-03-28T20:04:38Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - linter.py:652 - DatadogCloudSIEM - XSOAR Linter - Finished, stderr: 
-[2023-03-28T20:04:38Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:671 - DatadogCloudSIEM - Bandit - Start
-[2023-03-28T20:04:39Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - linter.py:676 - DatadogCloudSIEM - Bandit - Finished, exit-code: 0
-[2023-03-28T20:04:39Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - linter.py:677 - DatadogCloudSIEM - Bandit - Finished, stdout: 
-[2023-03-28T20:04:39Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - linter.py:678 - DatadogCloudSIEM - Bandit - Finished, stderr: 
-[2023-03-28T20:04:39Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:686 - DatadogCloudSIEM - Bandit - Successfully finished
-[2023-03-28T20:04:39Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:703 - DatadogCloudSIEM - Mypy - Start
-[2023-03-28T20:04:39Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - linter.py:711 - DatadogCloudSIEM - Mypy - Finished, exit-code: 0
-[2023-03-28T20:04:39Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - linter.py:712 - DatadogCloudSIEM - Mypy - Finished, stdout: 
-Success: no issues found in 1 source file
-
-[2023-03-28T20:04:39Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - linter.py:713 - DatadogCloudSIEM - Mypy - Finished, stderr: 
-[2023-03-28T20:04:39Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:721 - DatadogCloudSIEM - Mypy - Successfully finished
-[2023-03-28T20:04:39Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:566 - DatadogCloudSIEM - Run Lint In Host - Finished successfully
-[2023-03-28T20:04:39Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:752 - DatadogCloudSIEM - Run Lint On Docker Image - Running lint: Number of images=[['demisto/datadog-api-client:1.0.0.48939', '3.10']]
-[2023-03-28T20:04:39Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:758 - DatadogCloudSIEM - Run Lint On Docker Image - Running lint on docker image demisto/datadog-api-client:1.0.0.48939
-[2023-03-28T20:04:39Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:941 - DatadogCloudSIEM - Image create - Trying to pull existing image devtestdemisto/datadog-api-client:1.0.0.48939-f1a8a03f0d4031309fa67e5b6b566d13
-[2023-03-28T20:04:39Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - docker_helper.py:63 - pull_image - docker client already available, using current DOCKER_CLIENT
-[2023-03-28T20:04:39Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - connectionpool.py:456 - http://localhost:None "GET /v1.42/images/devtestdemisto/datadog-api-client:1.0.0.48939-f1a8a03f0d4031309fa67e5b6b566d13/json HTTP/1.1" 404 108
-[2023-03-28T20:04:39Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - docker_helper.py:107 - docker image devtestdemisto/datadog-api-client:1.0.0.48939-f1a8a03f0d4031309fa67e5b6b566d13 not found, pulling
-[2023-03-28T20:04:39Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - auth.py:39 - Looking for auth config
-[2023-03-28T20:04:39Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - auth.py:41 - No auth config in memory - loading from filesystem
-[2023-03-28T20:04:39Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - config.py:21 - Trying paths: ['/home/moin/.docker/config.json', '/home/moin/.dockercfg']
-[2023-03-28T20:04:39Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - config.py:28 - No config file found
-[2023-03-28T20:04:39Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - auth.py:240 - Looking for auth entry for 'docker.io'
-[2023-03-28T20:04:39Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - auth.py:251 - No entry found
-[2023-03-28T20:04:39Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - auth.py:56 - No auth config found
-[2023-03-28T20:04:48Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - connectionpool.py:456 - http://localhost:None "POST /v1.42/images/create?tag=1.0.0.48939-f1a8a03f0d4031309fa67e5b6b566d13&fromImage=devtestdemisto%2Fdatadog-api-client HTTP/1.1" 404 180
-[2023-03-28T20:04:48Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:946 - DatadogCloudSIEM - Image create - Unable to find image devtestdemisto/datadog-api-client:1.0.0.48939-f1a8a03f0d4031309fa67e5b6b566d13
-[2023-03-28T20:04:48Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:949 - DatadogCloudSIEM - Image create - Creating image based on demisto/datadog-api-client:1.0.0.48939 - Could take 2-3 minutes at first time
-[2023-03-28T20:04:48Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - docker_helper.py:176 - Trying to pull image demisto/datadog-api-client:1.0.0.48939
-[2023-03-28T20:04:48Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - docker_helper.py:63 - pull_image - docker client already available, using current DOCKER_CLIENT
-[2023-03-28T20:04:48Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - connectionpool.py:456 - http://localhost:None "GET /v1.42/images/demisto/datadog-api-client:1.0.0.48939/json HTTP/1.1" 200 None
-[2023-03-28T20:04:48Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - docker_helper.py:63 - docker client already available, using current DOCKER_CLIENT
-[2023-03-28T20:04:48Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - connectionpool.py:456 - http://localhost:None "POST /v1.42/containers/create HTTP/1.1" 201 88
-[2023-03-28T20:04:48Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - connectionpool.py:456 - http://localhost:None "GET /v1.42/containers/104a909d5a063ae46c1294b268b6c50bd855965016c89eaa01f4a785eef61e6f/json HTTP/1.1" 200 None
-[2023-03-28T20:04:48Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - connectionpool.py:456 - http://localhost:None "POST /v1.42/containers/104a909d5a063ae46c1294b268b6c50bd855965016c89eaa01f4a785eef61e6f/start HTTP/1.1" 204 0
-[2023-03-28T20:04:48Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - connectionpool.py:456 - http://localhost:None "POST /v1.42/containers/104a909d5a063ae46c1294b268b6c50bd855965016c89eaa01f4a785eef61e6f/wait?condition=exited HTTP/1.1" 400 44
-[2023-03-28T20:04:48Z] - [ThreadPoolExecutor-0_0] - [CRITICAL] - linter.py:982 - DatadogCloudSIEM - Image create - Build errors occurred 400 Client Error for http+docker://localhost/v1.42/containers/104a909d5a063ae46c1294b268b6c50bd855965016c89eaa01f4a785eef61e6f/wait?condition=exited: Bad Request ("invalid condition: "exited"")
-[2023-03-28T20:04:48Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:941 - DatadogCloudSIEM - Image create - Trying to pull existing image devtestdemisto/datadog-api-client:1.0.0.48939-f1a8a03f0d4031309fa67e5b6b566d13
-[2023-03-28T20:04:48Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - docker_helper.py:63 - pull_image - docker client already available, using current DOCKER_CLIENT
-[2023-03-28T20:04:48Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - connectionpool.py:456 - http://localhost:None "GET /v1.42/images/devtestdemisto/datadog-api-client:1.0.0.48939-f1a8a03f0d4031309fa67e5b6b566d13/json HTTP/1.1" 404 108
-[2023-03-28T20:04:48Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - docker_helper.py:107 - docker image devtestdemisto/datadog-api-client:1.0.0.48939-f1a8a03f0d4031309fa67e5b6b566d13 not found, pulling
-[2023-03-28T20:04:48Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - auth.py:39 - Looking for auth config
-[2023-03-28T20:04:48Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - auth.py:41 - No auth config in memory - loading from filesystem
-[2023-03-28T20:04:48Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - config.py:21 - Trying paths: ['/home/moin/.docker/config.json', '/home/moin/.dockercfg']
-[2023-03-28T20:04:48Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - config.py:28 - No config file found
-[2023-03-28T20:04:48Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - auth.py:240 - Looking for auth entry for 'docker.io'
-[2023-03-28T20:04:48Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - auth.py:251 - No entry found
-[2023-03-28T20:04:48Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - auth.py:56 - No auth config found
-[2023-03-28T20:04:57Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - connectionpool.py:456 - http://localhost:None "POST /v1.42/images/create?tag=1.0.0.48939-f1a8a03f0d4031309fa67e5b6b566d13&fromImage=devtestdemisto%2Fdatadog-api-client HTTP/1.1" 404 180
-[2023-03-28T20:04:57Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:946 - DatadogCloudSIEM - Image create - Unable to find image devtestdemisto/datadog-api-client:1.0.0.48939-f1a8a03f0d4031309fa67e5b6b566d13
-[2023-03-28T20:04:57Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:949 - DatadogCloudSIEM - Image create - Creating image based on demisto/datadog-api-client:1.0.0.48939 - Could take 2-3 minutes at first time
-[2023-03-28T20:04:57Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - docker_helper.py:176 - Trying to pull image demisto/datadog-api-client:1.0.0.48939
-[2023-03-28T20:04:57Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - docker_helper.py:63 - pull_image - docker client already available, using current DOCKER_CLIENT
-[2023-03-28T20:04:57Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - connectionpool.py:456 - http://localhost:None "GET /v1.42/images/demisto/datadog-api-client:1.0.0.48939/json HTTP/1.1" 200 None
-[2023-03-28T20:04:57Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - docker_helper.py:63 - docker client already available, using current DOCKER_CLIENT
-[2023-03-28T20:04:58Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - connectionpool.py:456 - http://localhost:None "POST /v1.42/containers/create HTTP/1.1" 201 88
-[2023-03-28T20:04:58Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - connectionpool.py:456 - http://localhost:None "GET /v1.42/containers/c066c17248a79a36930dca2f4ca49360929eeedf9cd40a718ca30f763c74c935/json HTTP/1.1" 200 None
-[2023-03-28T20:04:58Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - connectionpool.py:456 - http://localhost:None "POST /v1.42/containers/c066c17248a79a36930dca2f4ca49360929eeedf9cd40a718ca30f763c74c935/start HTTP/1.1" 204 0
-[2023-03-28T20:04:58Z] - [ThreadPoolExecutor-0_0] - [DEBUG] - connectionpool.py:456 - http://localhost:None "POST /v1.42/containers/c066c17248a79a36930dca2f4ca49360929eeedf9cd40a718ca30f763c74c935/wait?condition=exited HTTP/1.1" 400 44
-[2023-03-28T20:04:58Z] - [ThreadPoolExecutor-0_0] - [CRITICAL] - linter.py:982 - DatadogCloudSIEM - Image create - Build errors occurred 400 Client Error for http+docker://localhost/v1.42/containers/c066c17248a79a36930dca2f4ca49360929eeedf9cd40a718ca30f763c74c935/wait?condition=exited: Bad Request ("invalid condition: "exited"")
-[2023-03-28T20:04:58Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:874 - DatadogCloudSIEM - Run Lint On Docker Image - Finished linting on docker image demisto/datadog-api-client:1.0.0.48939
-[2023-03-28T20:04:58Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:877 - DatadogCloudSIEM - Run Lint On Docker Image - Finished linting. Number of images=[['demisto/datadog-api-client:1.0.0.48939', '3.10']]
-[2023-03-28T20:04:58Z] - [ThreadPoolExecutor-0_0] - [INFO] - linter.py:274 - DatadogCloudSIEM - Run - Finished Successfully
-[2023-03-28T20:04:58Z] - [MainThread] - [DEBUG] - lint_manager.py:530 - checking output of future i=0
-[2023-03-28T20:04:58Z] - [MainThread] - [INFO] - lint_manager.py:532 - Got lint results for DatadogCloudSIEM
-[2023-03-28T20:04:58Z] - [MainThread] - [INFO] - lint_manager.py:553 - Finished all futures
-[2023-03-28T20:04:58Z] - [MainThread] - [WARNING] - helpers.py:558 - skipping coverage report coverage_report/.coverage file not found. Should not expect this if code files were changed or when linting all with pytest.
-[2023-03-28T20:04:58Z] - [MainThread] - [INFO] - lint_manager.py:821 - Flake8       - [PASS]
-[2023-03-28T20:04:58Z] - [MainThread] - [INFO] - lint_manager.py:821 - XSOAR linter - [PASS]
-[2023-03-28T20:04:58Z] - [MainThread] - [INFO] - lint_manager.py:821 - Bandit       - [PASS]
-[2023-03-28T20:04:58Z] - [MainThread] - [INFO] - lint_manager.py:821 - Mypy         - [PASS]
-[2023-03-28T20:04:58Z] - [MainThread] - [INFO] - lint_manager.py:821 - Vulture      - [PASS]
-[2023-03-28T20:04:58Z] - [MainThread] - [INFO] - lint_manager.py:821 - Pytest       - [PASS]
-[2023-03-28T20:04:58Z] - [MainThread] - [INFO] - lint_manager.py:821 - Pylint       - [PASS]
-[2023-03-28T20:04:58Z] - [MainThread] - [INFO] - lint_manager.py:823 - Pwsh analyze - [SKIPPED]
-[2023-03-28T20:04:58Z] - [MainThread] - [INFO] - lint_manager.py:823 - Pwsh test    - [SKIPPED]
-[2023-03-28T20:04:58Z] - [MainThread] - [INFO] - lint_manager.py:884 - 
-#######################
-[2023-03-28T20:04:58Z] - [MainThread] - [INFO] - lint_manager.py:885 -  Xsoar_linter warnings 
-[2023-03-28T20:04:58Z] - [MainThread] - [INFO] - lint_manager.py:886 - #######################
-
-[2023-03-28T20:04:58Z] - [MainThread] - [INFO] - lint_manager.py:888 - DatadogCloudSIEM
-[2023-03-28T20:04:58Z] - [MainThread] - [INFO] - lint_manager.py:889 - /home/moin/demisto/content/Packs/DatadogCloudSIEM/Integrations/DatadogCloudSIEM/DatadogCloudSIEM.py:192:0: W9014 metric_command_results: Function arguments are missing type annotations. Please add type annotations
-/home/moin/demisto/content/Packs/DatadogCloudSIEM/Integrations/DatadogCloudSIEM/DatadogCloudSIEM.py:1:0: W9011 : return_error used too many times, should be used only once in the code, in main function. Please remove other usages.
-[2023-03-28T20:04:58Z] - [MainThread] - [INFO] - lint_manager.py:1079 - 
-#######################
-[2023-03-28T20:04:58Z] - [MainThread] - [INFO] - lint_manager.py:1080 -  Image creation errors 
-[2023-03-28T20:04:58Z] - [MainThread] - [INFO] - lint_manager.py:1081 - #######################
-[2023-03-28T20:04:58Z] - [MainThread] - [INFO] - lint_manager.py:1083 -   - Package: DatadogCloudSIEM
-[2023-03-28T20:04:58Z] - [MainThread] - [INFO] - lint_manager.py:1085 -     Image: demisto/datadog-api-client:1.0.0.48939
-[2023-03-28T20:04:58Z] - [MainThread] - [INFO] - lint_manager.py:1086 -       Error: 400 Client Error for http+docker://localhost/v1.42/containers/c066c17248a79a36930dca2f4
-             ca49360929eeedf9cd40a718ca30f763c74c935/wait?condition=exited: Bad Request ("invalid
-             condition: "exited"")
-[2023-03-28T20:04:58Z] - [MainThread] - [INFO] - lint_manager.py:1142 - 
-#########
-[2023-03-28T20:04:58Z] - [MainThread] - [INFO] - lint_manager.py:1143 -  Summary 
-[2023-03-28T20:04:58Z] - [MainThread] - [INFO] - lint_manager.py:1144 - #########
-[2023-03-28T20:04:58Z] - [MainThread] - [INFO] - lint_manager.py:1145 - Packages: 1
-[2023-03-28T20:04:58Z] - [MainThread] - [INFO] - lint_manager.py:1146 - Packages PASS: 0
-[2023-03-28T20:04:58Z] - [MainThread] - [INFO] - lint_manager.py:1147 - Packages FAIL: 1
-[2023-03-28T20:04:58Z] - [MainThread] - [INFO] - lint_manager.py:1148 - Packages WARNING (can either PASS or FAIL): 1
-
-[2023-03-28T20:04:58Z] - [MainThread] - [INFO] - lint_manager.py:1154 - Warning packages:
-[2023-03-28T20:04:58Z] - [MainThread] - [INFO] - lint_manager.py:1156 -    - DatadogCloudSIEM
-[2023-03-28T20:04:58Z] - [MainThread] - [INFO] - lint_manager.py:1159 - Failed packages:
-[2023-03-28T20:04:58Z] - [MainThread] - [INFO] - lint_manager.py:1161 -    - DatadogCloudSIEM
+[2023-03-31T19:10:42Z] - [MainThread] - [INFO] - generate_integration_doc.py:213 - Possible Errors:
+[2023-03-31T19:10:42Z] - [MainThread] - [INFO] - generate_integration_doc.py:215 - Command examples was not found: None.
+[2023-03-31T19:10:42Z] - [MainThread] - [INFO] - generate_integration_doc.py:215 - did not get any example for datadog-event-create. please add it manually.
+[2023-03-31T19:10:42Z] - [MainThread] - [INFO] - generate_integration_doc.py:215 - did not get any example for datadog-event-list. please add it manually.
+[2023-03-31T19:10:42Z] - [MainThread] - [INFO] - generate_integration_doc.py:215 - did not get any example for datadog-tag-list. please add it manually.
+[2023-03-31T19:10:42Z] - [MainThread] - [INFO] - generate_integration_doc.py:215 - did not get any example for datadog-host-tag-create. please add it manually.
+[2023-03-31T19:10:42Z] - [MainThread] - [INFO] - generate_integration_doc.py:215 - did not get any example for datadog-host-tag-get. please add it manually.
+[2023-03-31T19:10:42Z] - [MainThread] - [INFO] - generate_integration_doc.py:215 - did not get any example for datadog-host-tag-update. please add it manually.
+[2023-03-31T19:10:42Z] - [MainThread] - [INFO] - generate_integration_doc.py:215 - did not get any example for datadog-host-tag-delete. please add it manually.
+[2023-03-31T19:10:42Z] - [MainThread] - [INFO] - generate_integration_doc.py:215 - did not get any example for datadog-active-metric-list. please add it manually.
+[2023-03-31T19:10:42Z] - [MainThread] - [INFO] - generate_integration_doc.py:215 - did not get any example for datadog-metric-search. please add it manually.
+[2023-03-31T19:10:42Z] - [MainThread] - [INFO] - generate_integration_doc.py:215 - did not get any example for datadog-metric-metadata-get. please add it manually.
+[2023-03-31T19:10:42Z] - [MainThread] - [INFO] - generate_integration_doc.py:215 - did not get any example for datadog-metric-metadata-update. please add it manually.
+[2023-03-31T19:10:42Z] - [MainThread] - [INFO] - generate_integration_doc.py:215 - did not get any example for datadog-incident-create. please add it manually.
+[2023-03-31T19:10:42Z] - [MainThread] - [INFO] - generate_integration_doc.py:215 - did not get any example for datadog-incident-delete. please add it manually.
+[2023-03-31T19:10:42Z] - [MainThread] - [INFO] - generate_integration_doc.py:215 - did not get any example for datadog-incident-update. please add it manually.

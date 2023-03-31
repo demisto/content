@@ -892,6 +892,217 @@ script:
     description: Delete an existing incident.
     execution: false
     name: datadog-incident-delete
+  - arguments:
+    - default: false
+      description: The UUID of the incident.
+      isArray: false
+      name: incident_id
+      required: true
+      secret: false
+    - default: false
+      description: |-
+        Specifies the end of the search time frame.
+        Format : yyyy-MM-dd’T’HH:mm:ssZ Or  '-1days'.
+      isArray: false
+      name: customer_impact_end
+      required: false
+      secret: false
+    - default: false
+      description: A summary of the impact customers experienced during the incident.
+      isArray: false
+      name: customer_impact_scope
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Timestamp  when customers began being impacted by the incident .
+        Format : yyyy-MM-dd’T’HH:mm:ssZ Or  '-1days'.
+      isArray: false
+      name: customer_impact_start
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: A flag indicating whether the incident caused customer impact.
+      isArray: false
+      name: customer_impacted
+      predefined:
+      - 'True'
+      - 'False'
+      required: false
+      secret: false
+    - default: false
+      description: |-
+        Timestamp when the incident was detected.
+        Format : yyyy-MM-dd’T’HH:mm:ssZ Or  '-1days'.
+      isArray: false
+      name: detected
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: |-
+        The Severity of the incident.
+        Default value=unknown
+      isArray: false
+      name: severity
+      predefined:
+      - SEV-1
+      - SEV-2
+      - SEV-3
+      - SEV-4
+      - SEV-5
+      - UNKNOWN
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: The State of the incident.
+      isArray: false
+      name: state
+      predefined:
+      - active
+      - stable
+      - resolved
+      required: false
+      secret: false
+    - auto: PREDEFINED
+      default: false
+      description: Specify how the incident was detected.
+      isArray: false
+      name: detection_method
+      predefined:
+      - customer
+      - employee
+      - monitor
+      - other
+      - unknown
+      required: false
+      secret: false
+    - default: false
+      description: This field allows you to enter the description of the root cause,
+        triggers, and contributing factors of the incident.
+      isArray: false
+      name: root_cause
+      required: false
+      secret: false
+    - default: false
+      description: Summary of the incident.
+      isArray: false
+      name: summary
+      required: false
+      secret: false
+    - default: false
+      description: The name of the notified handle.
+      isArray: false
+      name: display_name
+      required: false
+      secret: false
+    - default: false
+      description: The email address used for the notification.
+      isArray: false
+      name: handle
+      required: false
+      secret: false
+    - default: false
+      description: The title of the incident, which summarizes what happened.
+      isArray: false
+      name: title
+      required: false
+      secret: false
+    deprecated: false
+    description: Updates an incident. Provide only the attributes that should be updated
+      as this request is a partial update.
+    execution: false
+    name: datadog-incident-update
+    outputs:
+    - contextPath: Datadog.Incident.id
+      description: The incident ID.
+      type: String
+    - contextPath: Datadog.Incident.attributes.public_id
+      description: The monotonically increasing integer ID for the incident.
+      type: Number
+    - contextPath: Datadog.Incident.attributes.title
+      description: The title of the incident, which summarizes what happened.
+      type: String
+    - contextPath: Datadog.Incident.attributes.resolved
+      description: Timestamp when the incident's state was last changed from active
+        or stable to resolved or completed.
+      type: String
+    - contextPath: Datadog.Incident.attributes.customer_impact_scope
+      description: A summary of the impact customers experienced during the incident.
+      type: String
+    - contextPath: Datadog.Incident.attributes.customer_impact_start
+      description: Timestamp when customers began being impacted by the incident.
+      type: Date
+    - contextPath: Datadog.Incident.attributes.customer_impact_end
+      description: Timestamp when customers were no longer impacted by the incident.
+      type: String
+    - contextPath: Datadog.Incident.attributes.customer_impacted
+      description: A flag indicating whether the incident caused customer impact.
+      type: Boolean
+    - contextPath: Datadog.Incident.attributes.notification_handles.handle
+      description: The email address used for the notification.
+      type: String
+    - contextPath: Datadog.Incident.attributes.notification_handles.display_name
+      description: The name of the notified handle.
+      type: String
+    - contextPath: Datadog.Incident.attributes.created
+      description: Timestamp when the incident was created.
+      type: String
+    - contextPath: Datadog.Incident.attributes.modified
+      description: Timestamp when the incident was last modified.
+      type: String
+    - contextPath: Datadog.Incident.attributes.detected
+      description: Timestamp when the incident was detected.
+      type: String
+    - contextPath: Datadog.Incident.attributes.customer_impact_duration
+      description: Length of the incident's customer impact in seconds. Equals the
+        difference between customer_impact_start and customer_impact_end.
+      type: Number
+    - contextPath: Datadog.Incident.attributes.time_to_detect
+      description: The amount of time in seconds to detect the incident. Equals the
+        difference between customer_impact_start and detected.
+      type: Number
+    - contextPath: Datadog.Incident.attributes.time_to_repair
+      description: The amount of time in seconds to resolve customer impact after
+        detecting the issue. Equals the difference between customer_impact_end and
+        detected.
+      type: Number
+    - contextPath: Datadog.Incident.attributes.time_to_internal_response
+      description: The amount of time in seconds to call incident after detection.
+        Equals the difference of detected and created.
+      type: Number
+    - contextPath: Datadog.Incident.attributes.time_to_resolve
+      description: The amount of time in seconds to resolve the incident after it
+        was created. Equals the difference between created and resolved.
+      type: Number
+    - contextPath: Datadog.Incident.attributes.fields.severity.value
+      description: The severity of the incident.
+      type: String
+    - contextPath: Datadog.Incident.attributes.fields.state.value
+      description: The status of the incident.
+      type: String
+    - contextPath: Datadog.Incident.attributes.fields.detection_method.value
+      description: 'Specify how the incident was detected with these default options:
+        customer, employee, monitor, other, or unknown.'
+      type: String
+    - contextPath: Datadog.Incident.attributes.fields.root_cause.value
+      description: This text field allows you to enter the description of the root
+        cause, triggers, and contributing factors of the incident.
+      type: String
+    - contextPath: Datadog.Incident.attributes.fields.summary.value
+      description: Summary of incident.
+      type: String
+    - contextPath: Datadog.Incident.relationships.created_by_user.data.id
+      description: A unique identifier that represents the user.
+      type: String
+    - contextPath: Datadog.Incident.relationships.last_modified_by_user.data.id
+      description: A unique identifier that represents the user.
+      type: String
+    - contextPath: Datadog.Incident.relationships.commander_user.data.id
+      description: A unique identifier that represents the user.
+      type: String
   dockerimage: demisto/datadog-api-client:1.0.0.48939
   feed: false
   isfetch: false

@@ -39,6 +39,11 @@ from datadog_api_client.v2.model.incident_timeline_cell_markdown_content_type im
 from datadog_api_client.v2.model.incident_timeline_cell_markdown_create_attributes_content import (
     IncidentTimelineCellMarkdownCreateAttributesContent,
 )
+from datadog_api_client.v2.model.incident_update_data import IncidentUpdateData
+from datadog_api_client.v2.model.incident_update_request import IncidentUpdateRequest
+from datadog_api_client.v2.model.incident_update_attributes import (
+    IncidentUpdateAttributes,
+)
 
 from dateparser import parse
 from urllib3 import disable_warnings
@@ -61,6 +66,7 @@ INTEGRATION_CONTEXT_NAME = "Datadog"
 HOUR_SECONDS = 3600
 NO_RESULTS_FROM_API_MSG = "API didn't return any results for given search parameters."
 ERROR_MSG = "Something went wrong!\n"
+DATE_ERROR_MSG = "Unable to parse date. Please check help section for right format."
 
 
 # """ HELPER FUNCTIONS """
@@ -146,11 +152,63 @@ def event_for_lookup(event: Dict) -> Dict:
         "Id": event.get("id"),
         "Priority": event.get("priority"),
         "Source": event.get("source"),
-        "Tags": ",".join(tag for tag in event.get("tags", [])),
+        "Tags": ",".join(tag for tag in event.get("tags", []))
+        if event.get("tags")
+        else None,
         "Is Aggregate": event.get("is_aggregate"),
         "Host": event.get("host"),
         "Device Name": event.get("device_name"),
         "Alert Type": event.get("alert_type"),
+        "Related Event ID": event.get("related_event_id"),
+    }
+
+
+def incident_for_lookup(incident: Dict) -> Dict:
+    """
+    Returns a dictionary with selected incident information.
+
+    Args:
+        incident (Dict): A dictionary representing an incident.
+
+    Returns:`
+        Dict: A dictionary containing the following keys.
+    """
+    return {
+        "ID": str(incident.get("id")),
+        "Title": str(incident["attributes"]["title"]),
+        "Created": str(incident["attributes"]["created"]).split("T")[0],
+        "Customer Impacted": str(incident["attributes"]["customer_impacted"]),
+        "Customer Impact Duration": str(
+            incident["attributes"]["customer_impact_duration"]
+        ),
+        "Customer Impact Scope": str(incident["attributes"]["customer_impact_scope"]),
+        "Customer Impact Start": str(
+            incident["attributes"]["customer_impact_start"]
+        ).split("T")[0],
+        "Customer Impact End": str(incident["attributes"]["customer_impact_end"]).split(
+            "T"
+        )[0],
+        "Detected": str(incident["attributes"]["detected"]).split("T")[0],
+        "Resolved": str(incident["attributes"]["resolved"]),
+        "Time to Detect": str(incident["attributes"]["time_to_detect"]),
+        "Time to Internal Response": str(
+            incident["attributes"]["time_to_internal_response"]
+        ),
+        "Time to Repair": str(incident["attributes"]["time_to_repair"]),
+        "Time to Resolve": str(incident["attributes"]["time_to_resolve"]),
+        "Severity": str(incident["attributes"]["fields"]["severity"]["value"]),
+        "State": str(incident["attributes"]["fields"]["state"]["value"]),
+        "Detection Method": str(
+            incident["attributes"]["fields"]["detection_method"]["value"]
+        ),
+        "Root Cause": str(incident["attributes"]["fields"]["root_cause"]["value"]),
+        "Summary": str(incident["attributes"]["fields"]["summary"]["value"]),
+        "Notification Display Name": str(
+            incident["attributes"]["notification_handles"][0]["display_name"]
+        ),
+        "Notification Handle": str(
+            incident["attributes"]["notification_handles"][0]["handle"]
+        ),
     }
 
 
@@ -180,7 +238,9 @@ def pagination(limit: Optional[int], page: Optional[int], page_size: Optional[in
     return limit, offset
 
 
-def metric_command_results(results, metric_name):
+def metric_command_results(
+    results: Any, metric_name: str
+) -> Union[CommandResults, DemistoException]:
     """
     Helper function that returns CommandResults with list of metric data for lookup table.
 
@@ -237,6 +297,18 @@ def convert_datetime_to_str(data: Dict) -> Dict:
     return data
 
 
+def tags_context_and_readable_output(tags: Dict):
+    """
+    Returns Context output and lookup data for Tags.
+
+    Args:
+        tags (Dict): The input tags dictionary.
+    """
+    return {"Tag": tags.get("tags"), "Hostname": tags.get("host")}, lookup_to_markdown(
+        [{"Host Name": tags.get("host"), "Tag": tags.get("tags")}], "Host Tags Details"
+    )
+
+
 """ COMMAND FUNCTIONS """
 
 
@@ -282,9 +354,8 @@ def create_event_command(
         args (Dict[str, Any]): A dictionary of arguments for creating the event.
 
     Returns:
-        CommandResults: A CommandResults object with the following properties:
-        - "readable_output": A human-readable message indicating whether the event was created successfully.
-        - "Event": A dictionary representing the created event.
+        CommandResults: The object containing the command results, including the readable output, outputs prefix,
+         outputs key field, and outputs data.
     """
     priority = args.get("priority")
     alert_type = args.get("alert_type")
@@ -327,12 +398,14 @@ def create_event_command(
     with ApiClient(configuration) as api_client:
         api_instance = EventsApi(api_client)
         response = api_instance.create_event(body=body)
-        readable_output = "Event created successfully!"
+        results = response.to_dict()
+        event_lookup_data = event_for_lookup(results.get("event"))
+        readable_output = lookup_to_markdown([event_lookup_data], "Event Details")
         return CommandResults(
             readable_output=readable_output,
             outputs_prefix=f"{INTEGRATION_CONTEXT_NAME}.Event",
             outputs_key_field="id",
-            outputs=response.to_dict() if response and response.status == "ok" else {},
+            outputs=results if response and response.status == "ok" else {},
         )
 
 
@@ -537,8 +610,7 @@ def add_tags_to_host_command(
     with ApiClient(configuration) as api_client:
         tags_api = TagsApi(api_client)
         response = tags_api.create_host_tags(host_name=host_name, body=body)
-        readable_output = "Tags added to host successfully!"
-        output_context = {"Tag": response.get("tags"), "Hostname": response.get("host")}
+        output_context, readable_output = tags_context_and_readable_output(response)
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix=INTEGRATION_CONTEXT_NAME,
@@ -572,8 +644,7 @@ def update_host_tags_command(
     with ApiClient(configuration) as api_client:
         tags_api = TagsApi(api_client)
         response = tags_api.update_host_tags(host_name=host_name, body=body)
-        output_context = {"Tag": response.get("tags"), "Hostname": response.get("host")}
-        readable_output = "Tags updated to host successfully!"
+        output_context, readable_output = tags_context_and_readable_output(response)
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix=f"{INTEGRATION_CONTEXT_NAME}",
@@ -633,9 +704,7 @@ def active_metrics_list_command(
             from_arg, settings={"TIMEZONE": "UTC"}
         )
     if not from_timestamp:
-        return DemistoException(
-            "Unable to parse date. Please check help section for right format."
-        )
+        return DemistoException(DATE_ERROR_MSG)
     search_params = {
         "_from": int(from_timestamp.timestamp()) if from_timestamp else None,
         "host": args.get("host_name"),
@@ -734,7 +803,7 @@ def get_metric_metadata_command(
         CommandResults: The object containing the command results, including the readable output, outputs prefix,
          outputs key field, and outputs data.
     """
-    metric_name = args.get("metric_name")
+    metric_name = str(args.get("metric_name"))
     with ApiClient(configuration) as api_client:
         api_instance = MetricsApi(api_client)
         response = api_instance.get_metric_metadata(
@@ -765,7 +834,7 @@ def update_metric_metadata_command(
         CommandResults: The object containing the command results, including the readable output, outputs prefix,
          outputs key field, and outputs data.
     """
-    metric_name = args.get("metric_name")
+    metric_name = str(args.get("metric_name"))
     params = {
         "description": args.get("description"),
         "per_unit": args.get("per_unit"),
@@ -799,9 +868,8 @@ def create_incident_command(
         args (Dict[str, Any]): A dictionary of arguments for creating the incident.
 
     Returns:
-        CommandResults: A CommandResults object with the following properties:
-        - "readable_output": A human-readable message indicating whether the incident was created successfully.
-        - "Incident": A dictionary representing the created incident.
+        CommandResults: The object containing the command results, including the readable output, outputs prefix,
+         outputs key field, and outputs data.
     """
     customer_impacted = argToBoolean(args.get("customer_impacted"))
     title = args.get("title")
@@ -809,7 +877,7 @@ def create_incident_command(
     detection_method = args.get("detection_method")
     display_name = args.get("display_name")
     handle = args.get("handle")
-    important = argToBoolean(args.get("important"))
+    important = argToBoolean(args.get("important", False))
     root_cause = args.get("root_cause")
     severity = args.get("severity")
     state = args.get("state")
@@ -869,7 +937,113 @@ def create_incident_command(
         formatted_data = convert_datetime_to_str(results.get("data"))
         if results.get("included"):
             formatted_data["included"] = results.get("included")
-        readable_output = "Incident created successfully!"
+        incident_lookup_data = [incident_for_lookup(formatted_data)]
+        readable_output = lookup_to_markdown(incident_lookup_data, "Incident Details")
+        return CommandResults(
+            readable_output=readable_output,
+            outputs_prefix=f"{INTEGRATION_CONTEXT_NAME}.Incident",
+            outputs_key_field="id",
+            outputs=formatted_data if results else {},
+        )
+
+
+def update_incident_command(
+    configuration: Configuration, args: Dict[str, Any]
+) -> Union[CommandResults, DemistoException]:
+    """
+    Updates incident associated with the specified ID.
+
+    Args:
+     configuration (Configuration): The configuration object for Datadog.
+     args: A dictionary of arguments for the command.
+
+    Returns:
+        CommandResults: The object containing the command results, including the readable output, outputs prefix,
+         outputs key field, and outputs data.
+    """
+    incident_id = args.get("incident_id")
+    detection_method = args.get("detection_method")
+    root_cause = args.get("root_cause")
+    severity = args.get("severity")
+    state = args.get("state")
+    summary = args.get("summary")
+    incident_attributes = {
+        "title": args.get("title"),
+        "customer_impacted": argToBoolean(args.get("customer_impacted"))
+        if args.get("customer_impacted", False)
+        else None,
+        "detected": parse(str(args.get("detected")), settings={"TIMEZONE": "UTC"})
+        if args.get("detected")
+        else None,
+        "customer_impact_scope": args.get("customer_impact_scope"),
+        "customer_impact_start": parse(
+            str(args.get("customer_impact_start")), settings={"TIMEZONE": "UTC"}
+        )
+        if args.get("customer_impact_start")
+        else None,
+        "customer_impact_end": parse(
+            str(args.get("customer_impact_end")), settings={"TIMEZONE": "UTC"}
+        )
+        if args.get("customer_impact_end")
+        else None,
+    }
+    incident_fields = {
+        "state": IncidentFieldAttributesSingleValue(
+            type=IncidentFieldAttributesSingleValueType.DROPDOWN,
+            value=state,
+        )
+        if state
+        else None,
+        "severity": IncidentFieldAttributesSingleValue(
+            type=IncidentFieldAttributesSingleValueType.DROPDOWN,
+            value=severity,
+        )
+        if severity
+        else None,
+        "detection_method": IncidentFieldAttributesSingleValue(
+            type=IncidentFieldAttributesSingleValueType.DROPDOWN,
+            value=detection_method,
+        )
+        if detection_method
+        else None,
+        "root_cause": IncidentFieldAttributesSingleValue(
+            type=IncidentFieldAttributesSingleValueType.TEXTBOX,
+            value=root_cause,
+        )
+        if root_cause
+        else None,
+        "summary": IncidentFieldAttributesSingleValue(
+            type=IncidentFieldAttributesSingleValueType.TEXTBOX,
+            value=summary,
+        )
+        if summary
+        else None,
+    }
+    body = IncidentUpdateRequest(
+        data=IncidentUpdateData(
+            id=incident_id,
+            type=IncidentType.INCIDENTS,
+            attributes=IncidentUpdateAttributes(
+                **{
+                    key: value
+                    for key, value in incident_attributes.items()
+                    if value is not None
+                },
+                fields=dict(
+                    **{key: value for key, value in incident_fields.items() if value},
+                ),
+            ),
+        ),
+    )
+
+    configuration.unstable_operations["update_incident"] = True
+    with ApiClient(configuration) as api_client:
+        api_instance = IncidentsApi(api_client)
+        response = api_instance.update_incident(incident_id=incident_id, body=body)
+        results = response.to_dict()
+        formatted_data = convert_datetime_to_str(results.get("data"))
+        incident_lookup_data = [incident_for_lookup(formatted_data)]
+        readable_output = lookup_to_markdown(incident_lookup_data, "Incident Details")
         return CommandResults(
             readable_output=readable_output,
             outputs_prefix=f"{INTEGRATION_CONTEXT_NAME}.Incident",
@@ -930,6 +1104,7 @@ def main() -> None:
             "datadog-metric-metadata-get": get_metric_metadata_command,
             "datadog-metric-metadata-update": update_metric_metadata_command,
             "datadog-incident-create": create_incident_command,
+            "datadog-incident-update": update_incident_command,
             "datadog-incident-delete": delete_incident_command,
         }
         if command == "test-module":
@@ -938,8 +1113,7 @@ def main() -> None:
             return_results(commands[command](configuration, args))
         else:
             raise NotImplementedError
-        # Log exceptions
-    except (ForbiddenException, UnauthorizedException) as fex:
+    except (ForbiddenException, UnauthorizedException):
         return_error(
             "Authentication Error: Invalid API/APP Key. Make sure API/APP Key, Server URL is correctly set."
         )
