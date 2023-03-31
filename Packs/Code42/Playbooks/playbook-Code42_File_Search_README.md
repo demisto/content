@@ -10,7 +10,6 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-
 * Code42
 
 ### Scripts

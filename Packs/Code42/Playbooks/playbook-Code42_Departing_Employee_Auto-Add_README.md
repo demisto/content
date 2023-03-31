@@ -14,10 +14,10 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* Set
 * CountArraySize
-* DeleteContext
+* Set
 * Print
+* DeleteContext
 
 ### Commands
 

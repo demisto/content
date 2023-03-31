@@ -19,8 +19,8 @@ This playbook does not use any sub-playbooks.
 
 ### Commands
 
-* closeInvestigation
 * code42-alert-get
+* closeInvestigation
 
 ## Playbook Inputs
 

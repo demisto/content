@@ -7,22 +7,26 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ### Sub-playbooks
 
 * Active Directory - Get User Manager Details
+* Code42 File Download
 
 ### Integrations
-* CrowdstrikeFalcon
+
 * jira-v2
+* CrowdstrikeFalcon
+* Code42
 
 ### Scripts
 
 This playbook does not use any scripts.
 
 ### Commands
-* closeInvestigation
-* cs-falcon-contain-host
-* cs-falcon-search-device
-* send-mail
-* jira-create-issue
+
 * code42-alert-resolve
+* cs-falcon-search-device
+* cs-falcon-contain-host
+* closeInvestigation
+* jira-create-issue
+* send-mail
 
 ## Playbook Inputs
 
@@ -34,7 +38,7 @@ This playbook does not use any scripts.
 | JiraType | Type of Jira ticket to create | Investigation | Optional |
 | JiraSummary | Summary to use with Jira ticket creation | Code42 Security Alert for Demisto Incident ${incident.id} | Optional |
 | ContainHostsMax | Maximum number of network hosts to contain. | 2 | Optional |
-| DemistoInstanceURL | URL of Demisto instance for emails. | <https://example.com/> | Optional |
+| DemistoInstanceURL | URL of Demisto instance for emails. | https://example.com/ | Optional |
 
 ## Playbook Outputs
 

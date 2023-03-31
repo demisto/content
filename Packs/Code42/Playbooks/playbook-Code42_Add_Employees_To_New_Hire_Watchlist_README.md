@@ -19,8 +19,8 @@ This playbook does not use any sub-playbooks.
 
 ### Commands
 
-* code42-watchlists-add-user
 * code42-user-update-risk-profile
+* code42-watchlists-add-user
 
 ## Playbook Inputs
 

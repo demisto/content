@@ -18,8 +18,8 @@ This playbook does not use any scripts.
 
 ### Commands
 
-* setIncident
 * ad-get-user
+* setIncident
 
 ## Playbook Inputs
 

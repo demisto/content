@@ -18,9 +18,9 @@ This playbook does not use any sub-playbooks.
 
 ### Commands
 
-* code42-departingemployee-remove
 * code42-user-update-risk-profile
 * code42-securitydata-search
+* code42-departingemployee-remove
 
 ## Playbook Inputs
 

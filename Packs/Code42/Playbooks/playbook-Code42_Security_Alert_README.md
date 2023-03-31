@@ -1,4 +1,4 @@
-Retrieves Incydr alert details, assigns the alert to an analyst, and gathers employee and supervisor data from Active Directory, if applicable. Note: this playbook should be used when the Code42 Incydr integration is set to "Fetch Incidents".
+Retrieves Incydr alert details, assigns the alert to an analyst, and gathers employee and supervisor data from Active Directory, if applicable. Note: this playbook can be used as an alternate default to "Code42 Exfiltration Playbook" when the Code42 Incydr integration is set to "Fetch Incidents".
 
 ## Dependencies
 
@@ -18,9 +18,9 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Commands
 
-* setIncident
 * closeInvestigation
 * code42-alert-resolve
+* setIncident
 
 ## Playbook Inputs
 

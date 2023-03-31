@@ -18,7 +18,6 @@ This playbook does not use any scripts.
 
 ### Commands
 
-
 * code42-download-file
 
 ## Playbook Inputs

@@ -14,10 +14,10 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Scripts
 
-* Set
 * CountArraySize
-* DeleteContext
+* Set
 * Print
+* DeleteContext
 
 ### Commands
 
