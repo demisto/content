@@ -1,0 +1,6 @@
+[file:ScriptJiraListTransition.yml]
+ignore=BA124
+
+[file:ScriptJiraChangeTransition.yml]
+ignore=BA124
+
