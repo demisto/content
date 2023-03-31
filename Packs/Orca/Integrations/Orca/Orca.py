@@ -170,12 +170,26 @@ class OrcaClient:
         }
 
         if event_log_type:
-            params["type"] = event_log_type
+            params["type"] = cast(int, event_log_type)
 
         return self.client._http_request(
             method="GET",
             url_suffix=f"/alerts/{alert_id}/event_log",
             params=params,
+            timeout=ORCA_API_TIMEOUT,
+        )
+
+    def set_alert_status(self, alert_id: str, status: str) -> Dict[str, Any]:
+        return self.client._http_request(
+            method="PUT",
+            url_suffix=f"/alerts/{alert_id}/status/{status}",
+            timeout=ORCA_API_TIMEOUT,
+        )
+
+    def verify_alert(self, alert_id: str) -> Dict[str, Any]:
+        return self.client._http_request(
+            method="PUT",
+            url_suffix=f"/alerts/{alert_id}/verify",
             timeout=ORCA_API_TIMEOUT,
         )
 
@@ -275,10 +289,7 @@ def set_alert_severity(orca_client: OrcaClient, args: Dict[str, Any]) -> Command
     alert_id = args.get("alert_id")
     score = args.get("score")
 
-    if not alert_id:
-        raise ValueError(f"Wrong value for {alert_id}")
-    if not score:
-        raise ValueError(f"Wrong value for {score}")
+    assert alert_id and score
 
     response = orca_client.set_alert_score(alert_id=alert_id, orca_score=score)
 
@@ -308,8 +319,7 @@ def get_alert_event_log(orca_client: OrcaClient, args: Dict[str, Any]) -> Comman
     start_at_index = cast(int, args.get("start_at_index", 0))
     event_log_type = args.get("type")
 
-    if not alert_id:
-        raise ValueError(f"Wrong value for {alert_id}")
+    assert alert_id
 
     response = orca_client.get_alert_event_log(
         alert_id=alert_id,
@@ -322,6 +332,46 @@ def get_alert_event_log(orca_client: OrcaClient, args: Dict[str, Any]) -> Comman
     return CommandResults(
         readable_output="Alert event log",
         outputs_prefix="Orca.EventLog",
+        outputs=context
+    )
+
+
+def set_alert_status(orca_client: OrcaClient, args: Dict[str, Any]) -> CommandResults:
+    alert_id = cast(str, args.get("alert_id"))
+    status = cast(str, args.get("status"))
+    assert alert_id and status
+
+    orca_client.set_alert_status(alert_id=alert_id, status=status)
+    return CommandResults(
+        readable_output="Set alert status",
+        outputs_prefix="Orca.SetAlertStatus",
+        outputs={
+            "status": True
+        }
+    )
+
+
+def verify_alert(orca_client: OrcaClient, args: Dict[str, Any]) -> CommandResults:
+    alert_id = args.get("alert_id")
+    assert alert_id
+
+    orca_client.verify_alert(alert_id=alert_id)
+    return CommandResults(
+        readable_output="Verify alert",
+        outputs_prefix="Orca.VerifyAlert",
+        outputs={
+            "success": True
+        }
+    )
+
+
+def get_malicious_file(orca_client: OrcaClient, args: Dict[str, Any]) -> CommandResults:
+    # GET /alerts/{alert_id}/download_malicious_file
+
+    context = {}
+    return CommandResults(
+        readable_output="Get malicious file",
+        outputs_prefix="Orca.GetMaliciousFile",
         outputs=context
     )
 
@@ -400,20 +450,17 @@ def main() -> None:
             return_results(set_alert_severity(orca_client=orca_client, args=demisto_args))
 
         elif command == "orca-get-alert-event-log":
-            # GET /alerts/{alert_id}/event_log
             return_results(get_alert_event_log(orca_client=orca_client, args=demisto_args))
 
         elif command == "orca-set-alert-status":
-            # PUT /alerts/{alert_id}/status/{status}
-            print("set alert status")
+            return_results(set_alert_status(orca_client=orca_client, args=demisto_args))
 
         elif command == "orca-verify-alert":
-            # PUT /alerts/{alert_id}/verify
-            print("Verify alert")
+            return_results(verify_alert(orca_client=orca_client, args=demisto_args))
 
-        elif command == "orca-get_malicious_file":
-            # GET /alerts/{alert_id}/download_malicious_file
-            print("Get malicious file")
+        elif command == "orca-get-malicious-file":
+            return_results(get_malicious_file(orca_client=orca_client, arg=demisto_args))
+
 
         elif command == "test-module":
             test_res = orca_client.validate_api_key()

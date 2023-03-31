@@ -110,11 +110,45 @@ Get Description of An asset
 
 | **Path**                       | **Type** | **Description**     |
 |--------------------------------| --- |---------------------|
-| Orca.SetAlertSeverity.id       | String | Response            | 
-| Orca.SetAlertSeverity.details  | String | Response details    | 
-| Orca.SetAlertSeverity.severity | String | New alert serverity | 
+| Orca.Manager.EventLog      | String | Event log           | 
 
 
 #### Command Example
 ``` !orca-get-alert-event-log alert_id=orca1 limit=10 ```
 
+`orca-set-alert-status`
+#### Input
+
+| **Argument Name** | **Description**  | **Required** |
+|-------------------|------------------|--------------|
+| alert_id          | Id of the alert. | Required     | 
+| status            | New alert status | Required     | 
+
+
+#### Context Output
+
+| **Path**            | **Type** | **Description**  |
+|---------------------| --- |------------------|
+| Orca.SetAlertStatus | String | Operation result | 
+
+
+#### Command Example
+``` !orca-set-alert-status alert_id=orca1 status=open ```
+
+`orca-verify-alert`
+#### Input
+
+| **Argument Name** | **Description**  | **Required** |
+|-------------------|------------------|--------------|
+| alert_id          | Id of the alert. | Required     | 
+
+
+#### Context Output
+
+| **Path**         | **Type** | **Description**  |
+|------------------| --- |------------------|
+| Orca.VerifyAlert | String | Operation result | 
+
+
+#### Command Example
+``` !orca-set-alert-status alert_id=orca1 status=open ```
