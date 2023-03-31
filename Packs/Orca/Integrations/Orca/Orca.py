@@ -4,7 +4,7 @@ from requests import Response
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-from typing import Any, Dict, Union, Optional, Tuple
+from typing import Any, Dict, Union, Optional, Tuple, cast
 
 DEMISTO_OCCURRED_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 DEMISTO_INFORMATIONAL = 0.5
@@ -153,10 +153,30 @@ class OrcaClient:
         demisto.debug("Set alert score.")
         # api returns 400 status code if the alert have same score
         return self.client._http_request(
-            method="PUT", url_suffix=f"/alerts/{alert_id}/severity",
+            method="PUT",
+            url_suffix=f"/alerts/{alert_id}/severity",
             data={"orca_score": orca_score},
             timeout=ORCA_API_TIMEOUT,
             ok_codes=(200, 400)
+        )
+
+    def get_alert_event_log(self, alert_id: str, limit: int = 20, start_at_index: int = 0,
+                            event_log_type: Optional[str] = None) -> Dict[str, Any]:
+        # /api/alerts/{alert_id}/event_log
+
+        params = {
+            "limit": limit,
+            "start_at_index": start_at_index,
+        }
+
+        if event_log_type:
+            params["type"] = event_log_type
+
+        return self.client._http_request(
+            method="GET",
+            url_suffix=f"/alerts/{alert_id}/event_log",
+            params=params,
+            timeout=ORCA_API_TIMEOUT,
         )
 
 
@@ -276,9 +296,33 @@ def set_alert_severity(orca_client: OrcaClient, args: Dict[str, Any]) -> Command
 
     return CommandResults(
         readable_output="Alert severity changed",
-        outputs_prefix='Orca.SetAlertSeverity',
+        outputs_prefix="Orca.SetAlertSeverity",
         outputs=context,
         raw_response=response
+    )
+
+
+def get_alert_event_log(orca_client: OrcaClient, args: Dict[str, Any]) -> CommandResults:
+    alert_id = args.get("alert_id")
+    limit = cast(int, args.get("limit", 20))
+    start_at_index = cast(int, args.get("start_at_index", 0))
+    event_log_type = args.get("type")
+
+    if not alert_id:
+        raise ValueError(f"Wrong value for {alert_id}")
+
+    response = orca_client.get_alert_event_log(
+        alert_id=alert_id,
+        limit=limit,
+        start_at_index=start_at_index,
+        event_log_type=event_log_type
+    )
+    context = response.get("event_log", [])
+
+    return CommandResults(
+        readable_output="Alert event log",
+        outputs_prefix="Orca.EventLog",
+        outputs=context
     )
 
 
@@ -352,22 +396,22 @@ def main() -> None:
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
 
-        elif command == "set-alert-severity":
+        elif command == "orca-set-alert-severity":
             return_results(set_alert_severity(orca_client=orca_client, args=demisto_args))
 
-        elif command == "get-alert-event-log":
+        elif command == "orca-get-alert-event-log":
             # GET /alerts/{alert_id}/event_log
-            print("get alert event log")
+            return_results(get_alert_event_log(orca_client=orca_client, args=demisto_args))
 
-        elif command == "set-alert-status":
+        elif command == "orca-set-alert-status":
             # PUT /alerts/{alert_id}/status/{status}
             print("set alert status")
 
-        elif command == "verify-alert":
+        elif command == "orca-verify-alert":
             # PUT /alerts/{alert_id}/verify
             print("Verify alert")
 
-        elif command == "get_malicious_file":
+        elif command == "orca-get_malicious_file":
             # GET /alerts/{alert_id}/download_malicious_file
             print("Get malicious file")
 

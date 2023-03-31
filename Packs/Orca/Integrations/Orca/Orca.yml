@@ -111,7 +111,7 @@ script:
     - contextPath: Orca.Manager.Asset
       description: Asset description
       type: String
-  - name: set-alert-severity
+  - name: orca-set-alert-severity
     description: Change severity for the alert
     arguments:
     - name: alert_id
@@ -130,6 +130,43 @@ script:
     - contextPath: Orca.SetAlertSeverity.severity
       description: Current alert severity.
       type: string
+  - name: orca-get-alert-event-log
+    arguments:
+    - name: alert_id
+      required: true
+      description: Alert id
+    - name: limit
+      description: Limit of the event logs
+      defaultValue: "20"
+    - name: start_at_index
+      description: Start at index
+      defaultValue: "0"
+    - name: type
+      auto: PREDEFINED
+      predefined:
+      - comment
+      - set_status
+      - score_override
+      - dismiss
+      - snooze
+      - jira_link
+      - jira_add_vulnerabilities
+      - jira_change_log_event
+      - reset_fim_baseline
+      - verification_scan_status
+      - automation_rule_action
+      - azure_devops_work_item_link
+      - azure_devops_work_item_unlink
+      - alert_timeline_api_event
+      - service_now_incident_link
+      - service_now_incident_unlink
+      - service_now_si_incident_link
+      - service_now_si_incident_unlink
+      description: Type of the event logs
+    outputs:
+    - contextPath: Orca.Manager.EventLog
+      description: Alert Event Log
+    description: Get alert event log
   dockerimage: demisto/python3:3.10.10.51930
   feed: false
   isfetch: true

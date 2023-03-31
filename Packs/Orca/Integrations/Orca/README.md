@@ -74,7 +74,7 @@ Get Description of An asset
 
 #### Base Command
 
-`set-alert-severity`
+`orca-set-alert-severity`
 #### Input
 
 | **Argument Name** | **Description**                | **Required** |
@@ -93,5 +93,28 @@ Get Description of An asset
 
 
 #### Command Example
-``` !set-alert-severity alert_id=orca1 score=5 ```
+``` !orca-set-alert-severity alert_id=orca1 score=5 ```
+
+`orca-get-alert-event-log`
+#### Input
+
+| **Argument Name** | **Description**                | **Required** |
+|-------------------|--------------------------------|--------------|
+| alert_id          | Id of the alert.               | Required     | 
+| limit             | Limit of the event logs | Optional     | 
+| start_at_index             | Start at index | Optional     | 
+| type             | Type of the event logs | Optional     | 
+
+
+#### Context Output
+
+| **Path**                       | **Type** | **Description**     |
+|--------------------------------| --- |---------------------|
+| Orca.SetAlertSeverity.id       | String | Response            | 
+| Orca.SetAlertSeverity.details  | String | Response details    | 
+| Orca.SetAlertSeverity.severity | String | New alert serverity | 
+
+
+#### Command Example
+``` !orca-get-alert-event-log alert_id=orca1 limit=10 ```
 
