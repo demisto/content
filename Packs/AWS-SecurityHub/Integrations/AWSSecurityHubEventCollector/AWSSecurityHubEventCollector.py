@@ -1,9 +1,9 @@
 import datetime as dt
+import urllib3
+from typing import Iterator
 
 import demistomock as demisto
 from AWSApiModule import *
-
-import urllib3
 
 import boto3
 
@@ -15,12 +15,12 @@ PRODUCT = 'Security Hub'
 TIME_FIELD = 'CreatedAt'
 DATETIME_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 DEFAULT_FIRST_FETCH = '3 days'
-DEFAULT_MAX_RESULTS = 1000  # Default maximum number of results to fetch
+DEFAULT_MAX_RESULTS = 1000
 
 
 def get_events(client: boto3.client, start_time: dt.datetime | None = None,
                end_time: dt.datetime | None = None,
-               id_ignore_list: list[str] | None = None, limit: int = 0) -> list[dict]:
+               id_ignore_list: list[str] | None = None, limit: int = 0) -> Iterator[list[dict]]:
     """
     Fetch events from AWS Security Hub.
 
@@ -32,7 +32,7 @@ def get_events(client: boto3.client, start_time: dt.datetime | None = None,
         id_ignore_list (list[str] | None, optional): List of finding IDs to not include in the results.
             Defaults to None.
 
-    Returns:
+    Yields:
         tuple[list, CommandResults]: A tuple containing the events and the CommandResults object.
     """
     kwargs: dict = {'SortCriteria': [{'Field': TIME_FIELD, 'SortOrder': 'asc'}]}
@@ -62,42 +62,38 @@ def get_events(client: boto3.client, start_time: dt.datetime | None = None,
         # which raises an error.
         kwargs['Filters'] = filters
 
-    events: list[dict] = []
+    count = 0
 
     while True:
         # The API only allows a maximum of 100 results per request. Using more raises an error.
-        if limit and limit - len(events) < 100:
-            kwargs['MaxResults'] = limit - len(events)
+        if limit and limit - count < 100:
+            kwargs['MaxResults'] = limit - count
 
         else:
             kwargs['MaxResults'] = 100
 
         response = client.get_findings(**kwargs)
-        events.extend(response.get('Findings', []))
+        result = response.get('Findings', [])
+        count += len(result)
+        yield result
 
-        if 'NextToken' in response and (limit == 0 or len(events) < limit):
+        if 'NextToken' in response and (limit == 0 or count < limit):
             kwargs['NextToken'] = response['NextToken']
 
         else:
             break
 
-    return events
-
 
 def fetch_events(client: boto3.client, last_run: dict,
-                 first_fetch_time: dt.datetime | None, limit: int = 0) -> tuple[dict, list]:
+                 first_fetch_time: dt.datetime | None, limit: int = 0) -> tuple[list[dict], Exception | None]:
     """
-    Fetch events from AWS Security Hub.
+    Fetch events from AWS Security Hub and send them to XSIAM.
 
     Args:
         client (boto3.client): Boto3 client to use.
         last_run (dict): Dict containing the last fetched event creation time.
         first_fetch_time (datetime | None, optional): In case of first fetch, fetch events from this datetime.
         limit (int): Maximum number of events to fetch. Defaults to 0 (no limit).
-
-    Returns:
-        dict: Next run dictionary containing the timestamp that will be used in ``last_run`` on the next fetch.
-        list: List of events that will be generated in XSIAM.
     """
     if last_run.get('last_update_date'):
         start_time = parse_date_string(last_run['last_update_date'])
@@ -107,39 +103,47 @@ def fetch_events(client: boto3.client, last_run: dict,
 
     id_ignore_list: list = last_run.get('last_update_date_finding_ids', [])
 
-    events = get_events(
-        client=client,
-        start_time=start_time,
-        id_ignore_list=id_ignore_list,
-        limit=limit
-    )
+    events = []
+    error = None
 
-    # Add '_time' field to events
-    for event in events:
-        event['_time'] = event[TIME_FIELD]
+    try:
+        for events_batch in get_events(client=client, start_time=start_time,
+                                       id_ignore_list=id_ignore_list, limit=limit):
+            events.extend(events_batch)
 
-    last_finding_update_time: str | None = events[-1].get(TIME_FIELD) if events else last_run.get('last_update_date')
-    demisto.info(f'Fetched {len(events)} findings.\nUpdate time of last finding: {last_finding_update_time}.')
+    except Exception as e:
+        demisto.error(f'Error while fetching events: {e}')
+        error = e
 
     # --- Set next_run data ---
     # Since the time filters seem to be equal or greater than (which results in duplicate from the last run),
     # we add findings that are equal to 'last_finding_update_time' and filter them out in the next fetch.
-    ignore_list: list[str] = []
+    if events:
+        last_update_date = events[-1].get(TIME_FIELD)
+        demisto.info(f'Fetched {len(events)} findings.\nUpdate time of last finding: {last_update_date}.')
 
-    for event in reversed(events):
-        if event[TIME_FIELD] == last_finding_update_time:
-            ignore_list.append(event['Id'])
+        ignore_list: list[str] = []
+        last_update_date = events[-1].get(TIME_FIELD)
 
-        else:
-            break  # Since it's a sorted list, no need to check the rest.
+        for event in events:
+            event['_time'] = event[TIME_FIELD]
 
-    next_run = {
-        'last_update_date': last_finding_update_time,
-        'last_update_date_finding_ids': ignore_list,
-    }
+            if event[TIME_FIELD] == last_update_date:
+                ignore_list.append(event['Id'])
+
+        next_run = {
+            'last_update_date': last_update_date,
+            'last_update_date_finding_ids': ignore_list,
+        }
+
+    else:
+        demisto.info('No new findings were found.')
+        next_run = last_run
 
     demisto.info(f'Setting next run to: {next_run}.')
-    return next_run, events
+    demisto.setLastRun(next_run)
+
+    return events, error
 
 
 def get_events_command(client: boto3.client, should_push_events: bool = False, limit: int = 0) -> CommandResults:
@@ -236,16 +240,17 @@ def main():
                 get_events_command(client=client, should_push_events=should_push_events, limit=command_limit))
 
         elif command == 'fetch-events':
-            next_run, events = fetch_events(
+            events, error = fetch_events(
                 client=client,
                 last_run=demisto.getLastRun(),
                 first_fetch_time=first_fetch_time,
                 limit=limit,
             )
 
-            # Saves next_run for the time fetch-events is invoked
-            demisto.setLastRun(next_run)
             send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
+
+            if error:
+                raise error
 
         else:
             raise NotImplementedError(f'Command \"{command}\" is not implemented.')
