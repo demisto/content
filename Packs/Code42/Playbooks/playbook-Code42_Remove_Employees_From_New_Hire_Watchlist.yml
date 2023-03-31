@@ -1,0 +1,464 @@
+id: Remove Employees from New Hire Watchlist
+version: -1
+fromversion: "6.8.0"
+name: Remove Employees from New Hire Watchlist
+description: Loops through New Hire watchlist entries from Code42 Incydr and removes employees based on specified criteria.
+tags:
+- Code42 Incydr
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: a29bae15-8875-4d2e-877f-12dda3a024cc
+    type: start
+    task:
+      id: a29bae15-8875-4d2e-877f-12dda3a024cc
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": -290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 90d9da87-adc7-43f6-89a3-101f7764dca4
+    type: condition
+    task:
+      id: 90d9da87-adc7-43f6-89a3-101f7764dca4
+      version: -1
+      name: Is Start Date More Than 30 Days Ago?
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "16"
+      "Yes":
+      - "14"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isBefore
+          left:
+            value:
+              complex:
+                root: Code42.UpdatedUserRiskProfiles
+                accessor: StartDate
+                transformers:
+                - operator: DateStringToISOFormat
+                  args:
+                    add_utc_timezone: {}
+                    dayfirst:
+                      value:
+                        simple: "false"
+                    fuzzy: {}
+                    yearfirst:
+                      value:
+                        simple: "true"
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: incident
+                accessor: created
+                transformers:
+                - operator: ModifyDateTime
+                  args:
+                    variation:
+                      value:
+                        simple: 30 days ago
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 5a0a4bd5-c60d-4df1-890f-4431a825e1fe
+    type: title
+    task:
+      id: 5a0a4bd5-c60d-4df1-890f-4431a825e1fe
+      version: -1
+      name: Playbook Complete
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: ff2c7565-3727-4852-8659-1674a8b72657
+    type: regular
+    task:
+      id: ff2c7565-3727-4852-8659-1674a8b72657
+      version: -1
+      name: Get Incydr User Profile Information
+      description: Update a user's risk profile.
+      script: Code42|||code42-user-update-risk-profile
+      type: regular
+      iscommand: true
+      brand: Code42
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      ignore-outputs:
+        simple: "false"
+      notes:
+        complex:
+          root: incident
+          accessor: created
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: T
+              fields:
+                value:
+                  simple: "1"
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: 'Last checked by XSOAR automation on '
+              suffix:
+                value:
+                  simple: .
+      username:
+        simple: ${inputs.incydr_username}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": -150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 36809edd-ed9e-4a82-8be6-e142313b2e73
+    type: regular
+    task:
+      id: 36809edd-ed9e-4a82-8be6-e142313b2e73
+      version: -1
+      name: Remove User from New Employee Watchlist
+      description: Remove a user from a watchlist.
+      script: Code42|||code42-watchlists-remove-user
+      type: regular
+      iscommand: true
+      brand: Code42
+    nexttasks:
+      '#error#':
+      - "18"
+      '#none#':
+      - "20"
+    scriptarguments:
+      username:
+        simple: ${inputs.incydr_username}
+      watchlist:
+        simple: NEW_EMPLOYEE
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: ea1bc31d-34f4-4780-8219-806307df0a21
+    type: regular
+    task:
+      id: ea1bc31d-34f4-4780-8219-806307df0a21
+      version: -1
+      name: Set "No Action Taken" Log Message
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Log
+      value:
+        simple: No action taken on ${inputs.incydr_username}. Start date of ${Code42.UpdatedUserRiskProfiles.StartDate} is within 30 days.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 2ed003c7-3195-4884-89c0-dedb0fac14b2
+    type: regular
+    task:
+      id: 2ed003c7-3195-4884-89c0-dedb0fac14b2
+      version: -1
+      name: Set "Removed from Watchlist" Log Message
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Log
+      value:
+        simple: Removed ${inputs.incydr_username} from New Hire watchlist. Start date of ${Code42.UpdatedUserRiskProfiles.StartDate} is more than 30 days ago.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 705
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 00ca2651-b4d0-4f2e-8bbc-8f63a9c794b5
+    type: regular
+    task:
+      id: 00ca2651-b4d0-4f2e-8bbc-8f63a9c794b5
+      version: -1
+      name: Set "Error Removing" Log Message
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Log
+      value:
+        simple: Attempted to remove ${inputs.incydr_username} from New Hire watchlist but encountered an error.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1140,
+          "y": 535
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: b96d2d29-387f-4e41-86e5-d98f6712e866
+    type: regular
+    task:
+      id: b96d2d29-387f-4e41-86e5-d98f6712e866
+      version: -1
+      name: Format Start Date for Time Comparison
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      key:
+        simple: Code42.UpdatedUserRiskProfiles.StartDate
+      value:
+        simple: ${Code42.UpdatedUserRiskProfiles.StartDate.year}-${Code42.UpdatedUserRiskProfiles.StartDate.month}-${Code42.UpdatedUserRiskProfiles.StartDate.day}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 345b5dde-bb74-48ce-8cf3-1f7dee820fab
+    type: regular
+    task:
+      id: 345b5dde-bb74-48ce-8cf3-1f7dee820fab
+      version: -1
+      name: Update Incydr User Profile
+      description: Update a user's risk profile.
+      script: Code42|||code42-user-update-risk-profile
+      type: regular
+      iscommand: true
+      brand: Code42
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      ignore-outputs:
+        simple: "false"
+      notes:
+        complex:
+          root: incident
+          accessor: created
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: T
+              fields:
+                value:
+                  simple: "1"
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '[XSOAR] Removed from New Hire watchlist on '
+              suffix:
+                value:
+                  simple: .
+      username:
+        simple: ${inputs.incydr_username}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 535
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1235,
+        "width": 1290,
+        "x": 230,
+        "y": -290
+      }
+    }
+  }
+inputs:
+- key: incydr_username
+  value: {}
+  required: true
+  description: The username (in email format) provided by Code42 Incydr.
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)

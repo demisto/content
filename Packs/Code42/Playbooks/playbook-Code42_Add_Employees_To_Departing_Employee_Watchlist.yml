@@ -1,0 +1,612 @@
+id: Add Employees to Departing Employee Watchlist
+version: -1
+fromversion: "6.8.0"
+name: Add Employees to Departing Employee Watchlist
+description: Loops through stand-down tickets provided by the Departing Employee Auto-Add playbook and adds employees to the Departing Employee watchlist in Code42 Incydr.
+tags:
+- Code42 Incydr
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 08f37568-5152-4500-85b2-3c7e919d4423
+    type: start
+    task:
+      id: 08f37568-5152-4500-85b2-3c7e919d4423
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": -420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: a374f2cb-4609-4c75-836e-c6b074c1cbc4
+    type: regular
+    task:
+      id: a374f2cb-4609-4c75-836e-c6b074c1cbc4
+      version: -1
+      name: Add Employee to Departing Employee Watchlist
+      description: Adds a user to the Departing Employee List.
+      script: Code42|||code42-departingemployee-add
+      type: regular
+      iscommand: true
+      brand: Code42
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      departuredate:
+        simple: ${inputs.ticket_departure_date}
+      username:
+        simple: ${inputs.ticket_username}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": 60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 64faff41-21cc-4059-8153-cc222d9aa0a2
+    type: regular
+    task:
+      id: 64faff41-21cc-4059-8153-cc222d9aa0a2
+      version: -1
+      name: Query Departing Employee Watchlist for Username
+      description: Retrieve departing employee details.
+      script: Code42|||code42-departingemployee-get
+      type: regular
+      iscommand: true
+      brand: Code42
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      username:
+        simple: ${inputs.ticket_username}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": -280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 37eb8dc6-c9fd-4947-8c45-1d687a40e2a9
+    type: condition
+    task:
+      id: 37eb8dc6-c9fd-4947-8c45-1d687a40e2a9
+      version: -1
+      name: Is Username Already in Watchlist?
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Code42.DepartingEmployee.Username
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": -110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: ff404d9d-29cb-4bcd-815d-2eecd87ae8f8
+    type: regular
+    task:
+      id: ff404d9d-29cb-4bcd-815d-2eecd87ae8f8
+      version: -1
+      name: Set "No Action Taken" Log Message
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Log
+      value:
+        simple: No action taken on ${inputs.ticket_username}. Employee is on the Departing Employee watchlist with a departure date of ${inputs.ticket_departure_date}.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -315,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 555c5a18-d2dd-4cce-8dc6-82faa8b835e0
+    type: regular
+    task:
+      id: 555c5a18-d2dd-4cce-8dc6-82faa8b835e0
+      version: -1
+      name: Set "Added Employee" Log Message
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Log
+      value:
+        simple: Added ${inputs.ticket_username} to Departing Employee watchlist with a departure date of ${inputs.ticket_departure_date}.
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": 575
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 5783b153-45d5-42e6-838b-c5d06315de51
+    type: condition
+    task:
+      id: 5783b153-45d5-42e6-838b-c5d06315de51
+      version: -1
+      name: Do Departure Dates Match?
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "23"
+      "Yes":
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: inputs.ticket_departure_date
+            iscontext: true
+          right:
+            value:
+              simple: Code42.DepartingEmployee.DepartureDate
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -80,
+          "y": 60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 4c23b3c7-276a-45ed-82c8-bad2a76ad284
+    type: regular
+    task:
+      id: 4c23b3c7-276a-45ed-82c8-bad2a76ad284
+      version: -1
+      name: Set "Updated Departure" Log Message
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Log
+      value:
+        simple: Updated ${inputs.ticket_username}'s Incydr departure date to ${inputs.ticket_departure_date} based on ticket.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 160,
+          "y": 575
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 2feb4c41-eb16-4702-8b85-0993699fae70
+    type: regular
+    task:
+      id: 2feb4c41-eb16-4702-8b85-0993699fae70
+      version: -1
+      name: Verify Employee is in Watchlist
+      description: Retrieve departing employee details.
+      script: Code42|||code42-departingemployee-get
+      type: regular
+      iscommand: true
+      brand: Code42
+    nexttasks:
+      '#error#':
+      - "18"
+      '#none#':
+      - "12"
+    scriptarguments:
+      username:
+        simple: ${inputs.ticket_username}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": 405
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: cc4d51f1-3dc0-4733-8a25-1185a9c1d5f4
+    type: regular
+    task:
+      id: cc4d51f1-3dc0-4733-8a25-1185a9c1d5f4
+      version: -1
+      name: Set "Error Adding" Log Message
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Log
+      value:
+        simple: Error adding ${inputs.ticket_username} to Departing Employee watchlist.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1110,
+          "y": 575
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 04319b76-0c57-42b8-8e58-1c9b3b1dc8c1
+    type: title
+    task:
+      id: 04319b76-0c57-42b8-8e58-1c9b3b1dc8c1
+      version: -1
+      name: Playbook Complete
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -315,
+          "y": 920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: baf4dc4b-72fb-4887-8827-9f66b6b9888f
+    type: regular
+    task:
+      id: baf4dc4b-72fb-4887-8827-9f66b6b9888f
+      version: -1
+      name: Delete Departing Employee Context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs.paloaltonetworks.com/cortex/cortex-xsoar/6-2/cortex-xsoar-admin/playbooks/automations.html
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      key:
+        simple: Code42.DepartingEmployee
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -315,
+          "y": 750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 9d7c778a-84ed-428c-8389-f7588cd6c91e
+    type: regular
+    task:
+      id: 9d7c778a-84ed-428c-8389-f7588cd6c91e
+      version: -1
+      name: Update Incydr User Profile
+      description: Update a user's risk profile.
+      script: Code42|||code42-user-update-risk-profile
+      type: regular
+      iscommand: true
+      brand: Code42
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      end_date:
+        simple: ${inputs.ticket_departure_date}
+      ignore-outputs:
+        simple: "false"
+      notes:
+        complex:
+          root: incident
+          accessor: created
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: T
+              fields:
+                value:
+                  simple: "1"
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '[XSOAR] Added to Departing Employee watchlist on '
+              suffix:
+                value:
+                  simple: .
+      username:
+        simple: ${inputs.ticket_username}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 3d27f589-99a7-4dc8-8495-12e12ce40eff
+    type: regular
+    task:
+      id: 3d27f589-99a7-4dc8-8495-12e12ce40eff
+      version: -1
+      name: Update Incydr Departure Date
+      description: Adds a user to the Departing Employee List.
+      script: Code42|||code42-departingemployee-add
+      type: regular
+      iscommand: true
+      brand: Code42
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      departuredate:
+        simple: ${inputs.ticket_departure_date}
+      note:
+        complex:
+          root: incident
+          accessor: created
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: T
+              fields:
+                value:
+                  simple: "1"
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '[XSOAR] Updated departure date on '
+              suffix:
+                value:
+                  simple: .
+      username:
+        simple: ${inputs.ticket_username}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 160,
+          "y": 230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1405,
+        "width": 1805,
+        "x": -315,
+        "y": -420
+      }
+    }
+  }
+inputs:
+- key: ticket_username
+  value: {}
+  required: true
+  description: The username (in email format) provided in a stand-down ticket from Jira, Zendesk, etc.
+  playbookInputQuery:
+- key: ticket_departure_date
+  value: {}
+  required: true
+  description: The departure date (in YYYY-MM-DD format) provided in a stand-down ticket from Jira, Zendesk, etc.
+  playbookInputQuery:
+- key: ticket_key
+  value: {}
+  required: false
+  description: The unique identifier of a stand-down ticket from Jira, Zendesk, etc. (optional).
+  playbookInputQuery:
+outputs: []
+tests:
+- Code42 File Search Test

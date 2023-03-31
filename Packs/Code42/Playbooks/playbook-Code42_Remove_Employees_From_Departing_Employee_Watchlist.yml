@@ -1,0 +1,529 @@
+id: Remove Employees from Departing Employee Watchlist
+version: -1
+fromversion: "6.8.0"
+name: Remove Employees from Departing Employee Watchlist
+description: Loops through Departing Employee watchlist entries from Code42 Incydr and removes employees based on specified criteria.
+tags:
+- Code42 Incydr
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: a29bae15-8875-4d2e-877f-12dda3a024cc
+    type: start
+    task:
+      id: a29bae15-8875-4d2e-877f-12dda3a024cc
+      version: -1
+      name: ""
+      description: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 0
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: c57281eb-0cb3-4c06-8bce-aa5592261256
+    type: condition
+    task:
+      id: c57281eb-0cb3-4c06-8bce-aa5592261256
+      version: -1
+      name: Is Departure Date More Than 30 Days Ago?
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "15"
+      "Yes":
+      - "9"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isBefore
+          left:
+            value:
+              complex:
+                root: inputs.incydr_departure_date
+                transformers:
+                - operator: DateStringToISOFormat
+                  args:
+                    add_utc_timezone: {}
+                    dayfirst:
+                      value:
+                        simple: "false"
+                    fuzzy: {}
+                    yearfirst:
+                      value:
+                        simple: "true"
+            iscontext: true
+          right:
+            value:
+              complex:
+                root: incident
+                accessor: created
+                transformers:
+                - operator: ModifyDateTime
+                  args:
+                    variation:
+                      value:
+                        simple: 30 days ago
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 460,
+          "y": 140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 911e6c91-a02d-40a3-8dfd-de874cb02632
+    type: regular
+    task:
+      id: 911e6c91-a02d-40a3-8dfd-de874cb02632
+      version: -1
+      name: Remove User from Departing Employee Watchlist
+      description: Removes a user from the Departing Employee List.
+      script: Code42|||code42-departingemployee-remove
+      type: regular
+      iscommand: true
+      brand: Code42
+    nexttasks:
+      '#error#':
+      - "13"
+      '#none#':
+      - "17"
+    scriptarguments:
+      username:
+        simple: ${inputs.incydr_username}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 5a0a4bd5-c60d-4df1-890f-4431a825e1fe
+    type: title
+    task:
+      id: 5a0a4bd5-c60d-4df1-890f-4431a825e1fe
+      version: -1
+      name: Playbook Complete
+      description: ""
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 1170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 5065d779-a522-4ad3-89fd-a1ef556f1d66
+    type: regular
+    task:
+      id: 5065d779-a522-4ad3-89fd-a1ef556f1d66
+      version: -1
+      name: Check for Post-Departure File Events in Incydr
+      description: Searches for file events by JSON query, hash, username, device hostname, exfiltration type, or a combination of parameters. At least one argument must be passed in the command. If a JSON argument is passed, it will be used to the exclusion of other parameters, otherwise parameters will be combined with an AND clause.
+      script: Code42|||code42-securitydata-search
+      type: regular
+      iscommand: true
+      brand: Code42
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      json:
+        simple: |-
+          {
+            "purpose": "USER_EXECUTED_SEARCH",
+            "groups": [
+              {
+                "filterClause": "AND",
+                "filters": [
+                  {
+                    "value": "P30D",
+                    "operator": "WITHIN_THE_LAST",
+                    "term": "@timestamp"
+                  }
+                ],
+                "display": "{\"data\":{\"isMultivalue\":false},\"version\":\"v2\"}"
+              },
+              {
+                "filterClause": "AND",
+                "filters": [
+                  {
+                    "value": "${inputs.incydr_username}",
+                    "operator": "IS",
+                    "term": "user.email"
+                  }
+                ],
+                "display": "{\"data\":{\"isMultivalue\":false},\"version\":\"v2\"}"
+              }
+            ],
+            "pgSize": 100,
+            "pgNum": 1,
+            "srtKey": "@timestamp",
+            "srtDir": "desc"
+          }
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 1bbdd024-bffb-4b92-83c9-e4fbdbe848dc
+    type: condition
+    task:
+      id: 1bbdd024-bffb-4b92-83c9-e4fbdbe848dc
+      version: -1
+      name: Are There Post-Departure File Events?
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "yes":
+      - "16"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Code42.SecurityData.Source.domain
+            iscontext: true
+      - - operator: isEmpty
+          left:
+            value:
+              simple: Code42.SecurityData.Results
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 485
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 1a1e5a55-e17c-4f24-8387-7737b20447eb
+    type: regular
+    task:
+      id: 1a1e5a55-e17c-4f24-8387-7737b20447eb
+      version: -1
+      name: Set "Error Removing" Log Message
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Log
+      value:
+        simple: Attempted to remove ${inputs.incydr_username} from Departing Employee watchlist but encountered an error.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1390,
+          "y": 830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 151f708b-609a-4a1d-8439-cfad34d7d8fe
+    type: regular
+    task:
+      id: 151f708b-609a-4a1d-8439-cfad34d7d8fe
+      version: -1
+      name: Set "Removed from Watchlist" Log Message
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Log
+      value:
+        simple: Removed ${inputs.incydr_username} from Departing Employee watchlist. Departure date of ${inputs.incydr_departure_date} is more than 30 days ago.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 1000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: f6fa2f1a-34f5-41ec-8e51-e8de361aef6c
+    type: regular
+    task:
+      id: f6fa2f1a-34f5-41ec-8e51-e8de361aef6c
+      version: -1
+      name: Set "No Action Taken" Log Message
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Log
+      value:
+        simple: No action taken on ${inputs.incydr_username}. Departure date of ${inputs.incydr_departure_date} is within the past 30 days.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 310
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: fccaf487-6323-48e3-8da7-03645a020198
+    type: regular
+    task:
+      id: fccaf487-6323-48e3-8da7-03645a020198
+      version: -1
+      name: Set "Post-Departure Activity" Log Message
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: Log
+      value:
+        simple: Not removing ${inputs.incydr_username} because of post-departure activity.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 7029c695-de1a-4573-85c1-ed8aa2a30b11
+    type: regular
+    task:
+      id: 7029c695-de1a-4573-85c1-ed8aa2a30b11
+      version: -1
+      name: Update Incydr User Profile
+      description: Update a user's risk profile.
+      script: Code42|||code42-user-update-risk-profile
+      type: regular
+      iscommand: true
+      brand: Code42
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      ignore-outputs:
+        simple: "false"
+      notes:
+        complex:
+          root: incident
+          accessor: created
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: T
+              fields:
+                value:
+                  simple: "1"
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '[XSOAR] Removed from Departing Employee watchlist on '
+              suffix:
+                value:
+                  simple: .
+      username:
+        simple: ${inputs.incydr_username}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 940,
+          "y": 830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "3_13_#error#": 0.55
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1235,
+        "width": 1540,
+        "x": 230,
+        "y": 0
+      }
+    }
+  }
+inputs:
+- key: incydr_departure_date
+  value: {}
+  required: true
+  description: The departure date (in YYYY-MM-DD format) provided by Code42 Incydr.
+  playbookInputQuery:
+- key: incydr_username
+  value: {}
+  required: true
+  description: The username (in email format) provided by Code42 Incydr.
+  playbookInputQuery:
+- key: incydr_uid
+  value: {}
+  required: false
+  description: The unique identifier of a user provided by Code42 Incydr (optional).
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
