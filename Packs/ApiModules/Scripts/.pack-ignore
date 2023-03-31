@@ -1,0 +1,6 @@
+[file:MicrosoftAzureStorageApiModule.yml]
+ignore=BA124
+
+[file:DemistoClassApiModule.yml]
+ignore=BA124
+
