@@ -195,6 +195,15 @@ script:
         - contextPath: Orca.VerifyAlert
           description: Set Verify Alert result
       description: Trigger verify alert
+    - name: orca-download-malicious-file
+      arguments:
+        - name: alert_id
+          required: true
+          description: Alert id
+      outputs:
+        - contextPath: File
+          description: The Malicious File
+      description: Downloads a capture file from CS Enterprise.
   dockerimage: demisto/python3:3.10.10.51930
   feed: false
   isfetch: true

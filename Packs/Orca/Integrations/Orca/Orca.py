@@ -193,6 +193,21 @@ class OrcaClient:
             timeout=ORCA_API_TIMEOUT,
         )
 
+    def download_malicious_file(self, alert_id: str) -> Dict[str, Any]:
+        response = self.client._http_request(
+            method="GET",
+            url_suffix=f"/alerts/{alert_id}/download_malicious_file",
+            timeout=ORCA_API_TIMEOUT,
+        )
+        demisto.debug(f"Got malicious download link {response}")
+
+        file_content = self.client._http_request(
+            method="GET",
+            url_suffix=response.get("link"),
+            timeout=ORCA_API_TIMEOUT,
+        )
+        return {"filename": response.get("filename"), "file": file_content}
+
 
 def map_orca_score_to_demisto_score(orca_score: int) -> Union[int, float]:  # pylint: disable=E1136
     # demisto_unknown = 0  (commented because of linter issues)
@@ -290,6 +305,7 @@ def set_alert_severity(orca_client: OrcaClient, args: Dict[str, Any]) -> Command
     score = args.get("score")
 
     assert alert_id and score
+    demisto.debug(f"Set alert severity {alert_id=} {score=}")
 
     response = orca_client.set_alert_score(alert_id=alert_id, orca_score=score)
 
@@ -319,6 +335,8 @@ def get_alert_event_log(orca_client: OrcaClient, args: Dict[str, Any]) -> Comman
     start_at_index = cast(int, args.get("start_at_index", 0))
     event_log_type = args.get("type")
 
+    demisto.debug(f"Get alert event log {alert_id=} {limit=} {start_at_index=} {event_log_type=}")
+
     assert alert_id
 
     response = orca_client.get_alert_event_log(
@@ -340,6 +358,7 @@ def set_alert_status(orca_client: OrcaClient, args: Dict[str, Any]) -> CommandRe
     alert_id = cast(str, args.get("alert_id"))
     status = cast(str, args.get("status"))
     assert alert_id and status
+    demisto.debug(f"Set alert status {alert_id=} {status=}")
 
     orca_client.set_alert_status(alert_id=alert_id, status=status)
     return CommandResults(
@@ -354,6 +373,7 @@ def set_alert_status(orca_client: OrcaClient, args: Dict[str, Any]) -> CommandRe
 def verify_alert(orca_client: OrcaClient, args: Dict[str, Any]) -> CommandResults:
     alert_id = args.get("alert_id")
     assert alert_id
+    demisto.debug(f"Trigger verify alert {alert_id=}")
 
     orca_client.verify_alert(alert_id=alert_id)
     return CommandResults(
@@ -365,15 +385,14 @@ def verify_alert(orca_client: OrcaClient, args: Dict[str, Any]) -> CommandResult
     )
 
 
-def get_malicious_file(orca_client: OrcaClient, args: Dict[str, Any]) -> CommandResults:
-    # GET /alerts/{alert_id}/download_malicious_file
+def download_malicious_file(orca_client: OrcaClient, args: Dict[str, Any]) -> None:
+    alert_id = args.get("alert_id")
+    assert alert_id
 
-    context = {}
-    return CommandResults(
-        readable_output="Get malicious file",
-        outputs_prefix="Orca.GetMaliciousFile",
-        outputs=context
-    )
+    demisto.debug(f"Downloading malicious file for {alert_id=}")
+
+    response = orca_client.download_malicious_file(alert_id=alert_id)
+    demisto.results(fileResult(response['filename'], response['file']))
 
 
 def main() -> None:
@@ -458,9 +477,8 @@ def main() -> None:
         elif command == "orca-verify-alert":
             return_results(verify_alert(orca_client=orca_client, args=demisto_args))
 
-        elif command == "orca-get-malicious-file":
-            return_results(get_malicious_file(orca_client=orca_client, arg=demisto_args))
-
+        elif command == "orca-download-malicious-file":
+            download_malicious_file(orca_client=orca_client, args=demisto_args)
 
         elif command == "test-module":
             test_res = orca_client.validate_api_key()

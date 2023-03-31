@@ -151,4 +151,22 @@ Get Description of An asset
 
 
 #### Command Example
-``` !orca-set-alert-status alert_id=orca1 status=open ```
+``` !orca-verify-alert alert_id=orca1 ```
+
+`orca-download-malicious-file`
+#### Input
+
+| **Argument Name** | **Description**  | **Required** |
+|-------------------|------------------|--------------|
+| alert_id          | Id of the alert. | Required     | 
+
+
+#### Context Output
+
+| **Path**  | **Type** | **Description** |
+|-----------| --- |-----------------|
+| Orca.File | unknown | Malicious File  | 
+
+
+#### Command Example
+``` !orca-download-malicious-file alert_id=orca1```
