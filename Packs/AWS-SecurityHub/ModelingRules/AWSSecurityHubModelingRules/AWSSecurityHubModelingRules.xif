@@ -2,7 +2,7 @@
 alter
         outcome = json_extract_scalar(Compliance, "$.Status")
 | alter
-        xdm.alert.name = title,
+        xdm.alert.name = Title,
         xdm.alert.description = Description,
         xdm.alert.original_alert_id = Id,
         xdm.alert.subcategory = Types,
