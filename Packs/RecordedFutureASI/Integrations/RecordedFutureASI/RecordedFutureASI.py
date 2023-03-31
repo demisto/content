@@ -3,7 +3,6 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 from CommonServerUserPython import *  # noqa
 
 import time
-import json
 import urllib3
 import traceback
 from abc import ABC
@@ -19,11 +18,6 @@ urllib3.disable_warnings()
 DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
 DEFAULT_HOST_LIMIT = 200
 DEFAULT_MIN_SEVERITY = 'Moderate'
-CRITICALITY_EMOJIS = {
-    'informational': '⚪',
-    'moderate': '🟡',
-    'high': '🔴'
-}
 CRITICALITY_TITLES = {
     'informational': 'Informational',
     'moderate': 'Moderate',
@@ -177,6 +171,28 @@ class IncidentBuilder:
         """
         return [self.build_incident(issue) for issue in parsed_rules]
 
+    @staticmethod
+    def _format_references(refs: List[str]) -> str:
+        """
+        Formats references as bulleted Long Text
+
+        :param refs: list of reference links
+        :return: bulleted list
+        """
+        return '\n\n'.join([f'◦ {r}' for r in refs])
+
+    @staticmethod
+    def _use_severity_titles(rules: List[Dict]) -> List[Dict]:
+        """
+        Swap out classifications to use CRITICALITY_TITLES instead
+
+        :param rules: list of parsed rules
+        :return: mutated rules
+        """
+        for r in rules:
+            r['classification'] = CRITICALITY_TITLES[r['classification']]
+        return rules
+
 
 class ByHostIncidentBuilder(IncidentBuilder, ABC):
     def __init__(self, host: str, risk_score: int, previous_score: int, previous_snapshot: Optional[str],
@@ -203,26 +219,28 @@ class ByHostIncidentBuilder(IncidentBuilder, ABC):
             'name': rule['name'],
             'details': rule['description'],
             'classification': rule['classification'],
-            'references': rule.get('rule_metadata', {}).get('references', []),
-            'host_metadata': rule.get('rule_metadata', {}).get('target', rule.get('rule_metadata', {}).get('additional'))
+            'references': self._format_references(rule.get('rule_metadata', {}).get('references', [])),
+            'metadata': rule.get('rule_metadata', {}).get('target', rule.get('rule_metadata', {}).get('additional'))
         }
 
 
 class ByIssueIncident(IncidentBuilder):
     def parse_rule(self, rule: Dict) -> Optional[Dict]:
+        hosts = self._build_examples(rule['example_entities'].get('domains', [])) + \
+            self._build_examples(rule['example_entities'].get('ips', []))
         return {
             'name': rule['name'],
             'details': rule['description'],
             'classification': rule['classification'],
             'entity_counts': rule.get('rule_metadata', {}).get('entity_counts', {}),
-            'references': rule.get('rule_metadata', {}).get('references', []),
-            'hosts': self._build_examples(rule['example_entities'].get('domains', [])) +
-                     self._build_examples(rule['example_entities'].get('ips', []))
+            'references': self._format_references(rule.get('rule_metadata', {}).get('references', [])),
+            'hosts': hosts
         }
 
     def build_incident(self, parsed_rule: Dict) -> Dict:
         count_copy = '\n\nThis rule triggered for '
         entity_counts = parsed_rule.pop('entity_counts')
+        examples = parsed_rule.pop('hosts', [])
         domain_count = entity_counts.get('domains')
         ip_count = entity_counts.get('ips')
         if domain_count and ip_count:
@@ -233,12 +251,14 @@ class ByIssueIncident(IncidentBuilder):
             count_copy += f'{ip_count} IPs.'
 
         return {
+            'severity': SEVERITY_MAPPINGS[parsed_rule['classification']],
             'name': parsed_rule['name'],
+            'triggered_rule': parsed_rule['name'],
             'details': parsed_rule['details'] + count_copy,
             'occurred': timestamp_to_datestring(self.incident_created_time_ms),
-            'rule': parsed_rule,
-            '_incident_type': 'by_issue',
-            'severity': SEVERITY_MAPPINGS[parsed_rule['classification']]
+            'rules': self._use_severity_titles([parsed_rule]),
+            'affected_hosts': examples,
+            '_incident_type': 'by_issue'
         }
 
     @staticmethod
@@ -273,7 +293,10 @@ class ByHostIncident(ByHostIncidentBuilder):
             'details': details,
             'occurred': timestamp_to_datestring(self.incident_created_time_ms),
             '_incident_type': 'by_host',
-            'rules': list(sorted(parsed_rules, key=lambda r: SEVERITY_MAPPINGS[r['classification']], reverse=True)),
+            'affected_hosts': [{'id': self.host, 'metadata': ''}],
+            'rules': self._use_severity_titles(list(sorted(parsed_rules,
+                                                           key=lambda r: SEVERITY_MAPPINGS[r['classification']],
+                                                           reverse=True))),
             'severity': severity
         }
 
@@ -308,14 +331,11 @@ class ByHostIncident(ByHostIncidentBuilder):
         """
         if by_classification['high']:
             severity = SEVERITY_MAPPINGS['high']
-            max_severity_icon = CRITICALITY_EMOJIS['high']
         elif by_classification['moderate']:
             severity = SEVERITY_MAPPINGS['moderate']
-            max_severity_icon = CRITICALITY_EMOJIS['moderate']
         else:
             severity = SEVERITY_MAPPINGS['informational']
-            max_severity_icon = CRITICALITY_EMOJIS['informational']
-        title = f'{max_severity_icon} Attack Surface Risk: {self.host} ' \
+        title = f'Attack Surface Risk Increase: {self.host} ' \
                 f'({self.previous_score} --> {self.risk_score})'
         return title, severity
 
@@ -346,13 +366,15 @@ class ByHostIncident(ByHostIncidentBuilder):
 class ByHostByIssueIncident(ByHostIncidentBuilder):
     def build_incident(self, parsed_rule: Dict) -> Dict:
         return {
-            'name': f'{parsed_rule["name"]} ({self.host})',
+            'severity': SEVERITY_MAPPINGS[parsed_rule['classification']],
+            'name': f'{parsed_rule["name"]} [{self.host}]',
             'host': self.host,
+            'triggered_rule': parsed_rule['name'],
             'details': parsed_rule['details'],
-            'rule': parsed_rule,
+            'rules': self._use_severity_titles([parsed_rule]),
+            'affected_hosts': [{'id': self.host, 'metadata': parsed_rule['metadata']}],
             'occurred': timestamp_to_datestring(self.incident_created_time_ms),
-            '_incident_type': 'by_host_by_issue',
-            'severity': SEVERITY_MAPPINGS[parsed_rule['classification']]
+            '_incident_type': 'by_host_by_issue'
         }
 
 
@@ -465,17 +487,13 @@ def fetch_incidents(client: Client, last_run: Dict[str, int], is_by_host: bool,
     # last_run is a dict with a single key, called last_fetch
     last_fetch = last_run.get('last_fetch', None)
 
-    if last_fetch is None:
-        if not is_by_host:
+    if not is_by_host:
+        if last_fetch is None:
             incidents, total = _fetch_project_incidents(client)
         else:
-            # NOTE :: We don't want to initialize if by_host as this could flood with hundreds of Incidents
-            incidents, total = [], 0
-    else:
-        if not is_by_host:
             incidents, total = _fetch_recent_incidents(client, last_fetch)
-        else:
-            incidents, total = _fetch_recent_incidents_by_host(client, last_fetch, expand_issues)
+    else:
+        incidents, total = _fetch_recent_incidents_by_host(client, last_fetch or 0, expand_issues)
 
     incident_limit = client.host_incident_limit
     # NOTE :: Some APIs limit the number of results return, and we're also expanding issues on client side
@@ -536,7 +554,7 @@ def main() -> None:
             next_run, incidents = fetch_incidents(
                 client=client,
                 last_run={'last_fetch': int(demisto.args().get('issues_start', 0))},
-                is_by_host=demisto.args().get('issue_grouping', 'By Issue') == 'By Host',
+                is_by_host=demisto.args().get('group_by_host', 'false') == 'true',
                 expand_issues=demisto.args().get('expand_issues', 'false') == 'true'
             )
             demisto.incidents(incidents)
