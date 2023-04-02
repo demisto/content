@@ -1,0 +1,6 @@
+[file:SplunkShowAsset.yml]
+ignore=BA124
+
+[file:SplunkShowIdentity.yml]
+ignore=BA124
+
