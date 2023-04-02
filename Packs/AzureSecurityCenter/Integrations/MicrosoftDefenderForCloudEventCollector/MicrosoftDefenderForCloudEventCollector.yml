@@ -27,22 +27,24 @@ configuration:
   hiddenusername: true
   type: 9
   section: Connect
-- additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
-  display: Certificate Thumbprint
+- displaypassword: Certificate Thumbprint
   name: certificate_thumbprint
   required: false
-  type: 4
+  hiddenusername: true
+  type: 9
   section: Connect
+  additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
 - additionalinfo: Used for certificate authentication. The private key of the registered certificate.
   display: Private Key
   name: private_key
   required: false
   type: 14
   section: Connect
-- display: Subscription ID to use
+- displaypassword: Subscription ID to use
   name: sub_id
-  type: 4
   required: true
+  hiddenusername: true
+  type: 9
   section: Connect
 - display: Trust any certificate (not secure)
   name: unsecure
@@ -95,7 +97,7 @@ script:
     - contextPath: MicrosoftDefenderForCloud.Alert.ID
       description: The alert ID.
       type: string
-  dockerimage: demisto/crypto:1.0.0.42817
+  dockerimage: demisto/crypto:1.0.0.52480
   isfetchevents: true
   runonce: false
   script: '-'

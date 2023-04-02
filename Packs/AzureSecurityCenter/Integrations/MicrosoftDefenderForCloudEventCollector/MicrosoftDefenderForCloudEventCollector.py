@@ -207,9 +207,9 @@ def main() -> None:
     enc_key = params.get('enc_key', {}).get('password')
     use_ssl = not params.get('unsecure', False)
     proxy = params.get('proxy', False)
-    subscription_id = params.get("sub_id")
+    subscription_id = params.get("sub_id", {}).get('password')
     ok_codes = (200, 201, 202, 204)
-    certificate_thumbprint = params.get('certificate_thumbprint')
+    certificate_thumbprint = params.get('certificate_thumbprint', {}).get('password')
     private_key = params.get('private_key')
 
     if not enc_key and not (certificate_thumbprint and private_key):
