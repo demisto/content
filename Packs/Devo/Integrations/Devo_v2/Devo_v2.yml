@@ -209,7 +209,7 @@ script:
           type: unknown
       description: Writes lookup table entry records to a specified Devo table.
       execution: true
-  dockerimage: devdemisto/devo:1.0.0.52754
+  dockerimage: demisto/devo:1.0.0.52755
   isfetch: true
   runonce: false
   subtype: python3
