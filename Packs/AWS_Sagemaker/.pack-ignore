@@ -1,5 +1,6 @@
 [file:AWSSagemaker.yml]
-ignore=IN145,IN124
+ignore=IN145,IN124,BA124
 
 [known_words]
-Sagemaker
+sagemaker
+
