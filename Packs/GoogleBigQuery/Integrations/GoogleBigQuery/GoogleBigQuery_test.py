@@ -1,5 +1,6 @@
 import datetime
 import json
+import pytest
 
 import demistomock as demisto
 
@@ -89,10 +90,12 @@ def test_remove_outdated_incident_ids_keep_equal_no_incidents():
     assert 'aaa' not in res and 'bbb' not in res
 
 
-def test_verify_params_all_existing(mocker):
+@pytest.mark.parametrize('first_fetch_key, expected_error_call',
+                         [('first_fetch', 0), ('first_fetch_time', 1)])
+def test_verify_params_all_existing(mocker, first_fetch_key, expected_error_call):
     """
     Given:
-    - Demisto params that include the first_fetch_time, fetch_query and fetch_time_field params.
+    - Demisto params that include the first_fetch, fetch_query and fetch_time_field params.
 
     When:
     - Activating the verify_params function.
@@ -102,7 +105,7 @@ def test_verify_params_all_existing(mocker):
     """
     from GoogleBigQuery import verify_params
     mock_params = {
-        'first_fetch_time': "1 days",
+        first_fetch_key: "1 days",
         'fetch_query': "test",
         'fetch_time_field': "test"
     }
@@ -112,13 +115,13 @@ def test_verify_params_all_existing(mocker):
     return_error_target = 'GoogleBigQuery.return_error'
     return_error_mock = mocker.patch(return_error_target)
     verify_params()
-    assert return_error_mock.call_count == 0
+    assert return_error_mock.call_count == expected_error_call
 
 
-def test_verify_params_first_fetch_time_missing(mocker):
+def test_verify_params_first_fetch_missing(mocker):
     """
     Given:
-    - Demisto params that don't include the first_fetch_time param.
+    - Demisto params that don't include the first_fetch param.
 
     When:
     - Activating the verify_params function.
@@ -141,7 +144,7 @@ def test_verify_params_first_fetch_time_missing(mocker):
     assert return_error_mock.call_count == 1
 
     mock_params = {
-        'first_fetch_time': '',
+        'first_fetch': '',
         'fetch_query': "test",
         'fetch_time_field': "test"
     }
@@ -165,7 +168,7 @@ def test_verify_params_fetch_query_missing(mocker):
     from GoogleBigQuery import verify_params
 
     mock_params = {
-        'first_fetch_time': "1 days",
+        'first_fetch': "1 days",
         'fetch_time_field': "test"
     }
     mocker.patch.object(demisto, 'params', return_value=mock_params)
@@ -177,7 +180,7 @@ def test_verify_params_fetch_query_missing(mocker):
     assert return_error_mock.call_count == 1
 
     mock_params = {
-        'first_fetch_time': "1 days",
+        'first_fetch': "1 days",
         'fetch_query': "",
         'fetch_time_field': "test"
     }
@@ -201,7 +204,7 @@ def test_verify_params_fetch_time_field_missing(mocker):
     from GoogleBigQuery import verify_params
 
     mock_params = {
-        'first_fetch_time': "1 days",
+        'first_fetch': "1 days",
         'fetch_query': "test",
     }
     mocker.patch.object(demisto, 'params', return_value=mock_params)
@@ -213,7 +216,7 @@ def test_verify_params_fetch_time_field_missing(mocker):
     assert return_error_mock.call_count == 1
 
     mock_params = {
-        'first_fetch_time': "1 days",
+        'first_fetch': "1 days",
         'fetch_query': "test",
         'fetch_time_field': ""
     }
