@@ -1,4 +1,3 @@
-
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
@@ -11,7 +10,7 @@ urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%S'  # ISO8601 format with UTC, default in XSOAR
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 VENDOR = 'orca'
 PRODUCT = 'security'
 
@@ -32,16 +31,39 @@ class Client(BaseClient):
             Returns:
                 A dictionary with the alerts details.
         """
-        params = {
-            'limit': max_fetch,
-            'dsl_filter': "{\n\"filter\":\n[\n{\n\"field\": \"state.created_at\",\n\"range\": {\n\"gte\": "
-                          "\"" + last_fetch + "\"\n}\n}\n],\n"
-                                              "\"sort\":\n[\n{\"field\":\"state.created_at\",\n\"order\":\"asc\"\n}\n]}"
-        }
+        params = {}
         if next_page_token:
             params['next_page_token'] = next_page_token
+            comparative_word = "gte"
+        else:
+            comparative_word = "gt"
+        params['dsl_filter'] = "{\n\"filter\":\n[\n{\n\"field\": \"state.created_at\",\n\"range\": {\n\"" + \
+                               comparative_word + "\": \"" + last_fetch + "\"\n}\n}\n],\n\"sort\":\n[\n{\"field\":" \
+                                                                          "\"state.created_at\",\n\"order\":\"asc" \
+                                                                          "\"\n}\n]}"
+        params['limit'] = str(max_fetch)
+
         demisto.info(f'In get_alerts request {params=}')
         return self._http_request(method='GET', url_suffix='/query/alerts', params=params)
+
+
+''' HELPER FUNCTIONS '''
+
+
+def add_time_key_to_alerts(alerts: List[Dict]) -> List[Dict]:
+    """
+    Adds the _time key to the alerts.
+    Args:
+        alerts: List[Dict] - list of events to add the _time key to.
+    Returns:
+        list: The events with the _time key.
+    """
+    if alerts:
+        for alert in alerts:
+            create_time = arg_to_datetime(arg=alert.get('state', {}).get('created_at'))
+            alert['_time'] = create_time.strftime(DATE_FORMAT) if create_time else None
+            demisto.debug(f'{alert.get("state", {}).get("alert_id")=} , {alert.get("_time")=}')
+    return alerts
 
 
 ''' COMMAND FUNCTIONS '''
@@ -62,13 +84,12 @@ def test_module(client: Client, last_fetch: str) -> str:
         raise Exception(e.message)
 
 
-def get_alerts(client: Client, max_fetch: int, last_fetch: str, last_alert_id: str, next_page_token: str = None) -> tuple:
+def get_alerts(client: Client, max_fetch: int, last_fetch: str, next_page_token: str = None) -> tuple:
     """ Retrieve information about alerts.
     Args:
         client: client - An Orca client.
         max_fetch: int - The maximum number of events per fetch
         last_fetch: int - The time and date of the last fetch alert
-        last_alert_id: str - The alert_id of the last fetched alert
         next_page_token: str - The token to the next page.
     Returns:
         - list of alerts
@@ -78,11 +99,6 @@ def get_alerts(client: Client, max_fetch: int, last_fetch: str, last_alert_id: s
     next_page_token = response.get('next_page_token')
     alerts = response.get('data', [])
     demisto.debug(f'Get Alerts Response {next_page_token=} , {len(alerts)=}\n {alerts=}')
-    if alerts:
-        first_alert_id = alerts[0].get('state', {}).get('alert_id')
-        if first_alert_id == last_alert_id:
-            demisto.debug(f'Removing alert duplication {first_alert_id=}')
-            alerts = alerts[1:]
     return alerts, next_page_token
 
 
@@ -90,7 +106,6 @@ def get_alerts(client: Client, max_fetch: int, last_fetch: str, last_alert_id: s
 
 
 def main() -> None:
-
     command = demisto.command()
     api_token = demisto.params().get('credentials', {}).get('password')
     server_url = demisto.params().get('server_url')
@@ -128,12 +143,12 @@ def main() -> None:
             last_fetch = last_run.get('lastRun')
             demisto.debug(f"Isn't the first run {last_fetch}")
         next_page_token = last_run.get('next_page_token')
-        last_alert_id = last_run.get('last_alert_id', '-1')
 
         if command == 'test-module':
             return_results(test_module(client, last_fetch))
         elif command in ('fetch-events', 'orca-security-get-events'):
-            alerts, next_page_token = get_alerts(client, max_fetch, last_fetch, last_alert_id, next_page_token)
+            alerts, next_page_token = get_alerts(client, max_fetch, last_fetch, next_page_token)
+            # alerts = add_time_key_to_alerts(alerts)
 
             if command == 'fetch-events':
                 should_push_events = True
@@ -142,11 +157,11 @@ def main() -> None:
                 }
                 if next_page_token:
                     current_last_run['lastRun'] = last_fetch
-                    current_last_run['last_alert_id'] = '-1'
                 else:
+                    # current_last_run['lastRun'] = alerts[-1].get('_time') or last_fetch
                     last_updated = arg_to_datetime(arg=alerts[-1].get('state', {}).get('created_at')) if alerts else None
                     current_last_run['lastRun'] = last_updated.strftime(DATE_FORMAT) if last_updated else last_fetch
-                    current_last_run['last_alert_id'] = alerts[-1].get('state', {}).get('alert_id') if alerts else last_alert_id
+
                 demisto.setLastRun(current_last_run)
                 demisto.debug(f'{current_last_run=}')
 
@@ -160,7 +175,9 @@ def main() -> None:
                 ))
 
             if should_push_events:
+                demisto.debug(f'before send_events_to_xsiam {VENDOR=} {PRODUCT=} {alerts=}')
                 send_events_to_xsiam(alerts, VENDOR, PRODUCT)
+                demisto.debug(f'after send_events_to_xsiam {VENDOR=} {PRODUCT=} {alerts=}')
 
         else:
             raise NotImplementedError('This command is not implemented yet.')

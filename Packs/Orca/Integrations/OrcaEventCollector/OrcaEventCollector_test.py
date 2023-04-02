@@ -32,7 +32,7 @@ def test_get_alert():
     client = Client()
     expected_alerts = get_alerts_dict.get('data', [])
     expected_next_page_token = 'next_page_token'
-    alerts, next_page_token = get_alerts(client, 1, '2023-03-08T00:00:00', '-1', None)
+    alerts, next_page_token = get_alerts(client, 1, '2023-03-08T00:00:00Z', None)
     assert expected_alerts == alerts
     assert expected_next_page_token == next_page_token
 
@@ -47,12 +47,10 @@ test_params = {
     "first_fetch": "3 days",
     "max_fetch": "1"
 }
-expected_lastRun_1 = {'lastRun': '2023-03-11T00:00:00',
-                      'next_page_token': 'next_page_token',
-                      'last_alert_id': '-1'}
-expected_lastRun_2 = {'lastRun': '2023-03-13T00:00:00',
-                      'next_page_token': None,
-                      'last_alert_id': 'orca-91523'}
+expected_lastRun_1 = {'lastRun': '2023-03-11T00:00:00Z',
+                      'next_page_token': 'next_page_token'}
+expected_lastRun_2 = {'lastRun': '2023-03-13T00:00:00Z',
+                      'next_page_token': None}
 test_main_params = [(get_alerts_dict, expected_lastRun_1),
                     (test_get_alerts_json.get('test_2'), expected_lastRun_2)]
 
