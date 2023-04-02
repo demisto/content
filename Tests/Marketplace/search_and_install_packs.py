@@ -146,7 +146,8 @@ def get_pack_dependencies(client: demisto_client, pack_data: dict, lock: Lock):
             )
         except ApiException as ex:
             try:
-                logging.exception(f'Exception trying to get pack {pack_id} dependencies. Exception: {ex.status}, {ex.body}')
+                logging.exception(f'Exception trying to get pack {pack_id} dependencies.'
+                                  f' Exception: {ex.status}, {ex.body}')
             except Exception:
                 logging.debug(f'An error occurred while parsing of the dependencies error: {str(ex)}')
                 raise ex
@@ -203,7 +204,8 @@ def search_pack(client: demisto_client,
                                                                                 response_type='object')
         except ApiException as ex:
             try:
-                logging.exception(f'Exception trying to search pack "{pack_display_name}" with ID "{pack_id}". Exception: {ex.status}, {ex.body}')
+                logging.exception(f'Exception trying to search pack "{pack_display_name}" with ID "{pack_id}".'
+                                  f' Exception: {ex.status}, {ex.body}')
             except Exception:
                 logging.debug(f'An error occurred while parsing the marketplace error: {str(ex)}')
                 raise ex
