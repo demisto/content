@@ -5,14 +5,15 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 9142f6d7-807e-4f13-8351-6672535148fa
+    taskid: c9449ad7-0578-4e95-8c05-830a3b1c4188
     type: start
     task:
-      id: 9142f6d7-807e-4f13-8351-6672535148fa
+      id: c9449ad7-0578-4e95-8c05-830a3b1c4188
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "24"
@@ -31,12 +32,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "1":
     id: "1"
-    taskid: e67ebe31-7e70-47b8-897a-bc1e17226101
+    taskid: 0c13a37b-439b-4171-8526-5e1616e71ef3
     type: regular
     task:
-      id: e67ebe31-7e70-47b8-897a-bc1e17226101
+      id: 0c13a37b-439b-4171-8526-5e1616e71ef3
       version: -1
       name: Check Domain Reputation
       description: Checks the reputation of the domain name.
@@ -67,12 +69,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "3":
     id: "3"
-    taskid: bf4ba0da-661b-400e-82b9-debadd531039
+    taskid: b5bccfee-b2f0-4972-8c99-c3cf55147ee1
     type: condition
     task:
-      id: bf4ba0da-661b-400e-82b9-debadd531039
+      id: b5bccfee-b2f0-4972-8c99-c3cf55147ee1
       version: -1
       name: 'Validate  Domain Context '
       type: condition
@@ -109,17 +112,16 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "4":
     id: "4"
-    taskid: 8da949ba-e939-4a9c-830e-fdff167f5c34
+    taskid: b3e771b9-01e7-440d-8042-117b22c0b6e5
     type: regular
     task:
-      id: 8da949ba-e939-4a9c-830e-fdff167f5c34
+      id: b3e771b9-01e7-440d-8042-117b22c0b6e5
       version: -1
       name: Import IOC to Threat Stream
-      description: Imports indicators (observables) into ThreatStream. Approval is
-        not required for the imported data. You must have the Approve Intel user permission
-        to import without approval using the API.
+      description: Imports indicators (observables) into ThreatStream. Approval is not required for the imported data. You must have the Approve Intel user permission to import without approval using the API.
       script: '|||threatstream-import-indicator-without-approval'
       type: regular
       iscommand: true
@@ -151,12 +153,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "5":
     id: "5"
-    taskid: bc96def5-01d7-42e9-80e7-ef22da8baf6a
+    taskid: d85d2d6f-ece9-488b-8306-b7f53ab90a09
     type: regular
     task:
-      id: bc96def5-01d7-42e9-80e7-ef22da8baf6a
+      id: d85d2d6f-ece9-488b-8306-b7f53ab90a09
       version: -1
       name: Check IP Reputation
       description: Checks the reputation of the given IP.
@@ -187,12 +190,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "6":
     id: "6"
-    taskid: 591136e6-2a0a-46f7-882c-15807e341822
+    taskid: 2603528b-247f-4878-8320-e5e6e11c32e6
     type: condition
     task:
-      id: 591136e6-2a0a-46f7-882c-15807e341822
+      id: 2603528b-247f-4878-8320-e5e6e11c32e6
       version: -1
       name: Validate IP context
       type: condition
@@ -229,12 +233,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "7":
     id: "7"
-    taskid: 03dc3c53-0ea8-413c-8bdb-4d357bf05f4f
+    taskid: cce51180-5b10-4845-8b08-56796c6880e4
     type: regular
     task:
-      id: 03dc3c53-0ea8-413c-8bdb-4d357bf05f4f
+      id: cce51180-5b10-4845-8b08-56796c6880e4
       version: -1
       name: Check URL reputation
       description: Checks the reputation of the given URL.
@@ -265,12 +270,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "8":
     id: "8"
-    taskid: e6cb05e5-53d6-488a-8f80-55df7471f636
+    taskid: 07050c33-535e-4380-8308-8651c5c646b8
     type: condition
     task:
-      id: e6cb05e5-53d6-488a-8f80-55df7471f636
+      id: 07050c33-535e-4380-8308-8651c5c646b8
       version: -1
       name: Validate URL Reputation
       type: condition
@@ -307,12 +313,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "9":
     id: "9"
-    taskid: 3fe1cdeb-3df9-42b2-8472-2bf464d66d0b
+    taskid: 49887666-1af5-4ba7-834c-801ffe242423
     type: regular
     task:
-      id: 3fe1cdeb-3df9-42b2-8472-2bf464d66d0b
+      id: 49887666-1af5-4ba7-834c-801ffe242423
       version: -1
       name: Check email reputation
       description: Checks the reputation of the given email address.
@@ -333,7 +340,7 @@ tasks:
       {
         "position": {
           "x": 1340,
-          "y": 370
+          "y": 380
         }
       }
     note: false
@@ -343,12 +350,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "10":
     id: "10"
-    taskid: f6f12b98-7aa8-48a3-8ca7-ffdc8adb6d56
+    taskid: 4aae36e0-b7cd-4fdd-8bc3-8139bc8d9c62
     type: condition
     task:
-      id: f6f12b98-7aa8-48a3-8ca7-ffdc8adb6d56
+      id: 4aae36e0-b7cd-4fdd-8bc3-8139bc8d9c62
       version: -1
       name: Validate Email Reputation
       type: condition
@@ -385,12 +393,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "11":
     id: "11"
-    taskid: f05b5035-1746-44ff-83ae-9d47b52d022a
+    taskid: 5d1c30b5-f92e-405d-8852-9ca633246099
     type: regular
     task:
-      id: f05b5035-1746-44ff-83ae-9d47b52d022a
+      id: 5d1c30b5-f92e-405d-8852-9ca633246099
       version: -1
       name: Check file reputation
       description: Checks the reputation of the given SHA256 of the file.
@@ -421,12 +430,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "12":
     id: "12"
-    taskid: a8a9b78c-2718-4cc2-873d-4b2b76fdfe4d
+    taskid: dac8a571-9821-4227-8947-0a59f4993fbf
     type: condition
     task:
-      id: a8a9b78c-2718-4cc2-873d-4b2b76fdfe4d
+      id: dac8a571-9821-4227-8947-0a59f4993fbf
       version: -1
       name: Validate  File reputation
       type: condition
@@ -463,12 +473,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "13":
     id: "13"
-    taskid: 8f374640-9a3e-49a8-80cb-a5e4e2371261
+    taskid: dc974303-3e34-4691-84e3-e2487518874f
     type: regular
     task:
-      id: 8f374640-9a3e-49a8-80cb-a5e4e2371261
+      id: dc974303-3e34-4691-84e3-e2487518874f
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -497,23 +508,25 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "14":
     id: "14"
-    taskid: 4b023b7c-02de-4103-814e-8154f916b6ac
+    taskid: 81fd798e-22b8-4dca-8adf-839d4a0004be
     type: title
     task:
-      id: 4b023b7c-02de-4103-814e-8154f916b6ac
+      id: 81fd798e-22b8-4dca-8adf-839d4a0004be
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 2310
+          "x": 900,
+          "y": 8250
         }
       }
     note: false
@@ -523,16 +536,16 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "15":
     id: "15"
-    taskid: 03f5d9cd-a68a-48d0-85ff-3cd5fcf1bd75
+    taskid: d474da87-4b7f-46e2-864c-f020e028dc4d
     type: regular
     task:
-      id: 03f5d9cd-a68a-48d0-85ff-3cd5fcf1bd75
+      id: d474da87-4b7f-46e2-864c-f020e028dc4d
       version: -1
       name: Get Indicator by ID
-      description: Return filtered indicators from ThreatStream. If query is defined,
-        it overides all othe arguments that were passed to the command.
+      description: Return filtered indicators from ThreatStream. If query is defined, it overides all othe arguments that were passed to the command.
       script: Anomali ThreatStream v3|||threatstream-get-indicators
       type: regular
       iscommand: true
@@ -558,12 +571,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "16":
     id: "16"
-    taskid: 316490d4-ac60-45c6-88c5-5cd18a5a4a84
+    taskid: 51999e45-544b-43e4-8faa-026f6cb2a99c
     type: condition
     task:
-      id: 316490d4-ac60-45c6-88c5-5cd18a5a4a84
+      id: 51999e45-544b-43e4-8faa-026f6cb2a99c
       version: -1
       name: Validate Indicator Context
       type: condition
@@ -571,7 +585,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "17"
+      - "34"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -606,48 +620,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "17":
-    id: "17"
-    taskid: a452d599-b462-418e-827f-b04e2289facb
-    type: regular
-    task:
-      id: a452d599-b462-418e-827f-b04e2289facb
-      version: -1
-      name: Delete Context
-      description: Delete field from context
-      scriptName: DeleteContext
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "18"
-      - "20"
-      - "22"
-    scriptarguments:
-      all:
-        simple: "yes"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 910,
-          "y": 1245
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "18":
     id: "18"
-    taskid: b1e56aa5-31e9-442a-8ce6-cf45068919e0
+    taskid: cac6fd83-2c07-487c-828f-b728bae0133e
     type: regular
     task:
-      id: b1e56aa5-31e9-442a-8ce6-cf45068919e0
+      id: cac6fd83-2c07-487c-828f-b728bae0133e
       version: -1
       name: Get Actor list
       description: Returns a list of Threat Model.
@@ -678,16 +657,16 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "19":
     id: "19"
-    taskid: 3eaadf02-9952-4985-894a-b6e5feefc550
+    taskid: 42dd016a-f3b1-487f-804b-d1f025045d91
     type: regular
     task:
-      id: 3eaadf02-9952-4985-894a-b6e5feefc550
+      id: 42dd016a-f3b1-487f-804b-d1f025045d91
       version: -1
       name: Get Indicator By Model Actor
-      description: Returns a list of indecators associated with the specified model
-        and model's id.
+      description: Returns a list of indecators associated with the specified model and model's id.
       script: Anomali ThreatStream v3|||threatstream-get-indicators-by-model
       type: regular
       iscommand: true
@@ -717,12 +696,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "20":
     id: "20"
-    taskid: 0be289ab-4e5d-4d96-80bc-902f06f4bad4
+    taskid: 3c9a7a4d-ca71-4959-8cd7-efc8fd2e9485
     type: regular
     task:
-      id: 0be289ab-4e5d-4d96-80bc-902f06f4bad4
+      id: 3c9a7a4d-ca71-4959-8cd7-efc8fd2e9485
       version: -1
       name: Get Passive DNS
       description: Returns enrichment data for Domain or IP for availabe observables.
@@ -755,12 +735,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "21":
     id: "21"
-    taskid: fc5263b7-65ac-455f-81a7-b07bd9e16dec
+    taskid: 5ea89472-9ba2-4550-8bb3-e94a3251a235
     type: condition
     task:
-      id: fc5263b7-65ac-455f-81a7-b07bd9e16dec
+      id: 5ea89472-9ba2-4550-8bb3-e94a3251a235
       version: -1
       name: Validate Passive DNS Context
       type: condition
@@ -817,12 +798,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "22":
     id: "22"
-    taskid: e2f08e38-6a69-4ec9-87c8-c375d4a08a8f
+    taskid: 30bc8e84-8d55-4963-8c36-d5f25b6a4117
     type: regular
     task:
-      id: e2f08e38-6a69-4ec9-87c8-c375d4a08a8f
+      id: 30bc8e84-8d55-4963-8c36-d5f25b6a4117
       version: -1
       name: Get Campaign List
       description: Returns a list of Threat Model.
@@ -842,7 +824,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
+          "x": 1350,
           "y": 1420
         }
       }
@@ -853,16 +835,16 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "23":
     id: "23"
-    taskid: ca8dcc22-5987-48c9-81ce-5e2e78a49015
+    taskid: 293e4645-89c7-46cb-8aa4-8e85b0d2ad2b
     type: regular
     task:
-      id: ca8dcc22-5987-48c9-81ce-5e2e78a49015
+      id: 293e4645-89c7-46cb-8aa4-8e85b0d2ad2b
       version: -1
       name: Get Indicator By Model Campaing
-      description: Returns a list of indecators associated with the specified model
-        and model's id.
+      description: Returns a list of indecators associated with the specified model and model's id.
       script: Anomali ThreatStream v3|||threatstream-get-indicators-by-model
       type: regular
       iscommand: true
@@ -872,7 +854,18 @@ tasks:
       - "27"
     scriptarguments:
       id:
-        simple: ${ThreatStream.List.ID}
+        complex:
+          root: ${ThreatStream.List
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: ${ThreatStream.List.Type}
+                iscontext: true
+              right:
+                value:
+                  simple: Campaign
+          accessor: ID}
       limit:
         simple: "1"
       model:
@@ -881,7 +874,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1340,
+          "x": 1350,
           "y": 1595
         }
       }
@@ -892,12 +885,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "24":
     id: "24"
-    taskid: 59f1526a-cdea-41c1-886c-4ae2e44ef57e
+    taskid: 0e0547bf-30fb-4a8c-838f-bd20f1d2abff
     type: regular
     task:
-      id: 59f1526a-cdea-41c1-886c-4ae2e44ef57e
+      id: 0e0547bf-30fb-4a8c-838f-bd20f1d2abff
       version: -1
       name: Delete Context
       description: Delete field from context
@@ -926,12 +920,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "25":
     id: "25"
-    taskid: bbf5b6ad-5ae5-403e-81ee-baaf1bf8e252
+    taskid: bd66c94f-d780-4821-8524-fe6d43cfc160
     type: regular
     task:
-      id: bbf5b6ad-5ae5-403e-81ee-baaf1bf8e252
+      id: bd66c94f-d780-4821-8524-fe6d43cfc160
       version: -1
       name: Create IOC file data
       description: |
@@ -1009,16 +1004,16 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "26":
     id: "26"
-    taskid: 13ba55e8-5415-4606-8445-f92edf04159e
+    taskid: cf398b6e-dfef-4e5c-8349-08c9ad1602e3
     type: regular
     task:
-      id: 13ba55e8-5415-4606-8445-f92edf04159e
+      id: cf398b6e-dfef-4e5c-8349-08c9ad1602e3
       version: -1
       name: threatstream-search-intelligence
-      description: Return filtered intelligence from ThreatStream. If a query is defined,
-        it overrides all other arguments that were passed to the command.
+      description: Return filtered intelligence from ThreatStream. If a query is defined, it overrides all other arguments that were passed to the command.
       script: Anomali ThreatStream v3|||threatstream-search-intelligence
       type: regular
       iscommand: true
@@ -1048,12 +1043,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "27":
     id: "27"
-    taskid: c7011a77-fe89-4c20-83cf-baa69ee3f490
+    taskid: 426b35b8-211d-447e-8caa-a697820d290b
     type: regular
     task:
-      id: c7011a77-fe89-4c20-83cf-baa69ee3f490
+      id: 426b35b8-211d-447e-8caa-a697820d290b
       version: -1
       name: DeleteContext
       description: |-
@@ -1087,12 +1083,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "29":
     id: "29"
-    taskid: eb4c681c-94ac-4e6c-85c8-48dca9044e00
+    taskid: 933acca9-226a-4701-8c95-090dab8691bd
     type: condition
     task:
-      id: eb4c681c-94ac-4e6c-85c8-48dca9044e00
+      id: 933acca9-226a-4701-8c95-090dab8691bd
       version: -1
       name: Validate Context
       type: condition
@@ -1100,7 +1097,7 @@ tasks:
       brand: ""
     nexttasks:
       "yes":
-      - "14"
+      - "30"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1119,7 +1116,1516 @@ tasks:
       {
         "position": {
           "x": 910,
-          "y": 2120
+          "y": 2130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
+  "30":
+    id: "30"
+    taskid: 5a809151-0da2-4fec-8a06-1ef25c216761
+    type: regular
+    task:
+      id: 5a809151-0da2-4fec-8a06-1ef25c216761
+      version: -1
+      name: Import Indicator With Approval
+      description: 'Imports indicators (observables) into ThreatStream. The imported data must be approved using the ThreatStream UI. The data can be imported using one of three methods: plain-text, file, or URL.'
+      script: '|||threatstream-import-indicator-with-approval'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      import_type:
+        simple: datatext
+      import_value:
+        simple: "78"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: db2c29e4-6b2c-4bf5-858a-fba29520f006
+    type: regular
+    task:
+      id: db2c29e4-6b2c-4bf5-858a-fba29520f006
+      version: -1
+      name: Import Job List
+      description: Gets an import list
+      script: '|||threatstream-list-import-job'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      import_id:
+        simple: ${ThreatStream.Import.ImportID}
+      status_in:
+        simple: Ready To Review
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 775ff1be-e7bc-4357-8673-a19e74e0f5c5
+    type: regular
+    task:
+      id: 775ff1be-e7bc-4357-8673-a19e74e0f5c5
+      version: -1
+      name: |
+        Approve Import Job
+      description: Approving all observables in an import job
+      script: '|||threatstream-approve-import-job'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      import_id:
+        simple: ${ThreatStream.Import.ImportID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: dfd9baf6-b299-408d-8f2e-2f551a98bf35
+    type: regular
+    task:
+      id: dfd9baf6-b299-408d-8f2e-2f551a98bf35
+      version: -1
+      name: Delete Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+      - "20"
+      - "22"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 880,
+          "y": 1250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: f0e00f06-d8e4-44dc-88fe-25473f00151d
+    type: regular
+    task:
+      id: f0e00f06-d8e4-44dc-88fe-25473f00151d
+      version: -1
+      name: DeleteContext
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: cdadf9f4-780c-4f74-838f-d6aff36e60c9
+    type: regular
+    task:
+      id: cdadf9f4-780c-4f74-838f-d6aff36e60c9
+      version: -1
+      name: Create investigation
+      description: Create an investigation at ThreatStream.
+      script: '|||threatstream-create-investigation'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "44"
+    scriptarguments:
+      name:
+        simple: TPB-create-investigation-${RandomString}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 3080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: b1135d0c-98fc-49a0-8d26-9af1d65fb34b
+    type: regular
+    task:
+      id: b1135d0c-98fc-49a0-8d26-9af1d65fb34b
+      version: -1
+      name: Generate string
+      description: Generates random string
+      scriptName: GenerateRandomString
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      Digits:
+        simple: "True"
+      Length:
+        simple: "3"
+      Lowercase:
+        simple: "True"
+      Punctuation:
+        simple: "False"
+      Uppercase:
+        simple: "True"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: be6395ea-9a9b-4198-85c4-93fe6de06eb5
+    type: regular
+    task:
+      id: be6395ea-9a9b-4198-85c4-93fe6de06eb5
+      version: -1
+      name: List investigation
+      description: Gets list of investigation from ThreatStream.
+      script: '|||threatstream-list-investigation'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      investigation_id:
+        simple: ${Investigation_ID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 3610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: 02754185-ae56-47d8-86b2-e8d563e82446
+    type: condition
+    task:
+      id: 02754185-ae56-47d8-86b2-e8d563e82446
+      version: -1
+      name: Verify Output create investigation
+      description: Gets an import list
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "46"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: ThreatStream.Investigation.id
+            iscontext: true
+          right:
+            value:
+              simple: ${Investigation_ID}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 3780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: 41df60a1-3907-4c4a-826f-524f2485734d
+    type: regular
+    task:
+      id: 41df60a1-3907-4c4a-826f-524f2485734d
+      version: -1
+      name: Save Investigation ID
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "45"
+    scriptarguments:
+      key:
+        simple: Investigation_ID
+      value:
+        simple: ${ThreatStream.Investigation.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 3255
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: 17f9214d-93bb-4943-8b78-e7ed5b67dd05
+    type: regular
+    task:
+      id: 17f9214d-93bb-4943-8b78-e7ed5b67dd05
+      version: -1
+      name: DeleteContext
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      all:
+        simple: "yes"
+      keysToKeep:
+        simple: Investigation_ID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 3435
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: 3e6346d7-f89e-4e5e-87e2-dee4ddcffb40
+    type: regular
+    task:
+      id: 3e6346d7-f89e-4e5e-87e2-dee4ddcffb40
+      version: -1
+      name: 'Update Investigation '
+      description: Updates an existing investigation at ThreatStream.
+      script: '|||threatstream-update-investigation'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      investigation_id:
+        simple: ${Investigation_ID}
+      priority:
+        simple: Medium
+      status:
+        simple: In-Progress
+      tags:
+        simple: tag1,tag2
+      tlp:
+        simple: Green
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 3940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: d1813bd7-da75-43e7-860c-a1e30e93f69b
+    type: condition
+    task:
+      id: d1813bd7-da75-43e7-860c-a1e30e93f69b
+      version: -1
+      name: Verify Output update investigation
+      description: Gets list of investigation from ThreatStream.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "51"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ThreatStream.Investigation.tlp
+            iscontext: true
+          right:
+            value:
+              simple: green
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ThreatStream.Investigation.priority
+            iscontext: true
+          right:
+            value:
+              simple: medium
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ${ThreatStream.Investigation.status}
+            iscontext: true
+          right:
+            value:
+              simple: in-progress
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 4200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: f74c4daa-8a66-4ccb-8ebc-0123af700c1f
+    type: regular
+    task:
+      id: f74c4daa-8a66-4ccb-8ebc-0123af700c1f
+      version: -1
+      name: List investigation
+      description: Gets list of investigation from ThreatStream.
+      script: '|||threatstream-list-investigation'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      investigation_id:
+        simple: ${Investigation_ID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 4070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: 9b29cd4a-aca2-4d68-82f1-aa2b103fbba1
+    type: regular
+    task:
+      id: 9b29cd4a-aca2-4d68-82f1-aa2b103fbba1
+      version: -1
+      name: Delete investigation
+      description: Deletes an existing investigation at ThreatStream.
+      script: '|||threatstream-delete-investigation'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "52"
+    scriptarguments:
+      investigation_id:
+        simple: ${Investigation_ID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 4510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: a121f49c-892c-4f13-8c85-8fa401b027c0
+    type: regular
+    task:
+      id: a121f49c-892c-4f13-8c85-8fa401b027c0
+      version: -1
+      name: Generate string
+      description: Generates random string
+      scriptName: GenerateRandomString
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "53"
+    scriptarguments:
+      Digits:
+        simple: "True"
+      Length:
+        simple: "3"
+      Lowercase:
+        simple: "True"
+      Punctuation:
+        simple: "False"
+      Uppercase:
+        simple: "True"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 4800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: 8b461c81-f2aa-4e0f-8cbb-c981182de8a6
+    type: regular
+    task:
+      id: 8b461c81-f2aa-4e0f-8cbb-c981182de8a6
+      version: -1
+      name: Add investigation elements
+      description: Add an elements to existing investigation at ThreatStream.
+      script: Anomali ThreatStream v3|||threatstream-add-investigation-element
+      type: regular
+      iscommand: true
+      brand: Anomali ThreatStream v3
+    nexttasks:
+      '#none#':
+      - "49"
+    scriptarguments:
+      associated_campaign_ids:
+        simple: "390799"
+      connect_related_indicators:
+        simple: "True"
+      investigation_id:
+        simple: ${Investigation_ID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 4360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "52":
+    id: "52"
+    taskid: ea4fac22-8927-4c24-80e6-adea068f1607
+    type: regular
+    task:
+      id: ea4fac22-8927-4c24-80e6-adea068f1607
+      version: -1
+      name: DeleteContext
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "50"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 4650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "53":
+    id: "53"
+    taskid: 9a294486-1bd9-46fd-8c22-8e3389e3829e
+    type: regular
+    task:
+      id: 9a294486-1bd9-46fd-8c22-8e3389e3829e
+      version: -1
+      name: Create Rule
+      description: Create a rule in ThreatStream platform.
+      script: '|||threatstream-create-rule'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "55"
+    scriptarguments:
+      keywords:
+        simple: keywords
+      match_include:
+        simple: sandbox reports
+      rule_name:
+        simple: TPB-create-rule-${RandomString}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 4950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "54":
+    id: "54"
+    taskid: 34563593-c0d7-4f00-8cf6-6230483d211e
+    type: regular
+    task:
+      id: 34563593-c0d7-4f00-8cf6-6230483d211e
+      version: -1
+      name: Verify Rule Creation
+      description: Gets list of rule from ThreatStream.
+      script: '|||threatstream-list-rule'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "56"
+    scriptarguments:
+      rule_id:
+        simple: ${Rule_ID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 5300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "55":
+    id: "55"
+    taskid: e65df15b-f696-4f85-8e44-7420324872f7
+    type: regular
+    task:
+      id: e65df15b-f696-4f85-8e44-7420324872f7
+      version: -1
+      name: Save Rule ID
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "54"
+    scriptarguments:
+      key:
+        simple: Rule_ID
+      value:
+        simple: ${ThreatStream.Rule.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 5120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: d28d2984-af7e-4526-8fdc-be7d985fbc24
+    type: regular
+    task:
+      id: d28d2984-af7e-4526-8fdc-be7d985fbc24
+      version: -1
+      name: Update Rule
+      description: Updates exists rule from ThreatStream.
+      script: Anomali ThreatStream v3|||threatstream-update-rule
+      type: regular
+      iscommand: true
+      brand: Anomali ThreatStream v3
+    nexttasks:
+      '#none#':
+      - "57"
+    scriptarguments:
+      rule_id:
+        simple: ${Rule_ID}
+      rule_name:
+        simple: TPB-create-rule-${RandomString}-update
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 5460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: ab509ae3-a04e-4c65-878c-8f4db8ed4bdb
+    type: regular
+    task:
+      id: ab509ae3-a04e-4c65-878c-8f4db8ed4bdb
+      version: -1
+      name: 'List Rule '
+      description: Gets list of rule from ThreatStream.
+      script: '|||threatstream-list-rule'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "59"
+    scriptarguments:
+      rule_id:
+        simple: ${Rule_ID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 5630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: 7c222a54-1b27-430e-8d91-a30440f3853d
+    type: condition
+    task:
+      id: 7c222a54-1b27-430e-8d91-a30440f3853d
+      version: -1
+      name: Verify List Users
+      description: Gets list of rule from ThreatStream.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "60"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: ThreatStream.Rule.name
+            iscontext: true
+          right:
+            value:
+              simple: ${Rule_name_update}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 5950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "59":
+    id: "59"
+    taskid: 4b524940-b513-4a7d-8a7a-bf511c477e32
+    type: regular
+    task:
+      id: 4b524940-b513-4a7d-8a7a-bf511c477e32
+      version: -1
+      name: Save name after update
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "58"
+    scriptarguments:
+      key:
+        simple: Rule_name_update
+      value:
+        simple: TPB-create-rule-${RandomString}-update
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 5780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: c1e3eae8-fc5c-4beb-8b8b-038cc584bb5d
+    type: regular
+    task:
+      id: c1e3eae8-fc5c-4beb-8b8b-038cc584bb5d
+      version: -1
+      name: Delete Rule
+      description: Delete a rule from ThreatStream.
+      script: '|||threatstream-delete-rule'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "61"
+    scriptarguments:
+      rule_id:
+        simple: ${Rule_ID}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 6120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "61":
+    id: "61"
+    taskid: eef15601-d4c3-4e16-8639-fa7df3e812a7
+    type: regular
+    task:
+      id: eef15601-d4c3-4e16-8639-fa7df3e812a7
+      version: -1
+      name: DeleteContext
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "62"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 6270
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "62":
+    id: "62"
+    taskid: a2bf2d31-e2d1-4dc4-8aa6-489daaae04bb
+    type: regular
+    task:
+      id: a2bf2d31-e2d1-4dc4-8aa6-489daaae04bb
+      version: -1
+      name: List Users
+      description: Gets list of users from ThreatStream. Only org admin permission can run this command
+      script: '|||threatstream-list-user'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "63"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 6430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "63":
+    id: "63"
+    taskid: 96ed6150-05f9-4be0-8b6b-4f3dc1924255
+    type: condition
+    task:
+      id: 96ed6150-05f9-4be0-8b6b-4f3dc1924255
+      version: -1
+      name: Verify List Users
+      description: Gets list of rule from ThreatStream.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "64"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: hasLength
+          left:
+            value:
+              simple: ThreatStream.User
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 6590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "64":
+    id: "64"
+    taskid: a7ab202c-6e48-4316-8d57-407792eb6aac
+    type: regular
+    task:
+      id: a7ab202c-6e48-4316-8d57-407792eb6aac
+      version: -1
+      name: List Whitelist
+      description: Get a list of whitelist entries
+      script: '|||threatstream-list-whitelist-entry'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "66"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 6750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "65":
+    id: "65"
+    taskid: fb2287c3-7363-4c9a-8a7d-a144eaf27aa4
+    type: condition
+    task:
+      id: fb2287c3-7363-4c9a-8a7d-a144eaf27aa4
+      version: -1
+      name: 'Verify addition of the entry '
+      description: Set a value in context under the key you entered.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "67"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: ThreatStream.WhitelistEntry
+                accessor: value
+            iscontext: true
+          right:
+            value:
+              simple: 1.1.1.1
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 7160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "66":
+    id: "66"
+    taskid: 6ae04108-f59f-4335-839e-bedb0029bb1c
+    type: regular
+    task:
+      id: 6ae04108-f59f-4335-839e-bedb0029bb1c
+      version: -1
+      name: Create whitelist entry
+      description: Creates a new whitelist entry
+      script: '|||threatstream-create-whitelist-entry'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "68"
+    scriptarguments:
+      ips:
+        simple: 1.1.1.1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 6900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "67":
+    id: "67"
+    taskid: 38ee8187-1074-41d9-8dae-5844d32d3490
+    type: regular
+    task:
+      id: 38ee8187-1074-41d9-8dae-5844d32d3490
+      version: -1
+      name: Save Entry ID
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "70"
+    scriptarguments:
+      key:
+        simple: whitelist_entry_id
+      value:
+        complex:
+          root: ThreatStream.WhitelistEntry
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: ThreatStream.WhitelistEntry.value
+                iscontext: true
+              right:
+                value:
+                  simple: 1.1.1.1
+          accessor: id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 7300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "68":
+    id: "68"
+    taskid: b933d74d-872b-4eca-823c-298efa6fc6e7
+    type: regular
+    task:
+      id: b933d74d-872b-4eca-823c-298efa6fc6e7
+      version: -1
+      name: List Whitelist
+      description: Get a list of whitelist entries
+      script: '|||threatstream-list-whitelist-entry'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "65"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 7025
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "69":
+    id: "69"
+    taskid: 628b862c-a5ba-49f3-8093-63cf1c2d3909
+    type: regular
+    task:
+      id: 628b862c-a5ba-49f3-8093-63cf1c2d3909
+      version: -1
+      name: Delete Entry
+      description: Delete a whitelist entry
+      script: '|||threatstream-delete-whitelist-entry'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "73"
+    scriptarguments:
+      entry_id:
+        simple: ${whitelist_entry_id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 7860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "70":
+    id: "70"
+    taskid: 38c39321-4656-43e0-80df-ee92fa69160e
+    type: regular
+    task:
+      id: 38c39321-4656-43e0-80df-ee92fa69160e
+      version: -1
+      name: Update note whitelist
+      description: Modify contextual notes associated with existing whitelist entries
+      script: Anomali ThreatStream v3|||threatstream-update-whitelist-entry-note
+      type: regular
+      iscommand: true
+      brand: Anomali ThreatStream v3
+    nexttasks:
+      '#none#':
+      - "71"
+    scriptarguments:
+      entry_id:
+        simple: ${whitelist_entry_id}
+      note:
+        simple: some_note
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 7430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "71":
+    id: "71"
+    taskid: 3c65c517-deb1-4e93-82e3-af7ae82ee278
+    type: regular
+    task:
+      id: 3c65c517-deb1-4e93-82e3-af7ae82ee278
+      version: -1
+      name: List Whitelist
+      description: Get a list of whitelist entries
+      script: '|||threatstream-list-whitelist-entry'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "72"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 7565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "72":
+    id: "72"
+    taskid: f7f51788-1348-4278-814f-b3ccf0a73c71
+    type: condition
+    task:
+      id: f7f51788-1348-4278-814f-b3ccf0a73c71
+      version: -1
+      name: 'Verify addition of the note '
+      description: Set a value in context under the key you entered.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "69"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: ThreatStream.WhitelistEntry
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: ThreatStream.WhitelistEntry.value
+                      iscontext: true
+                    right:
+                      value:
+                        simple: 1.1.1.1
+                accessor: notes
+            iscontext: true
+          right:
+            value:
+              simple: some_note
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 7710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "73":
+    id: "73"
+    taskid: f45dd8c9-014f-4d8f-8288-d5dd2b8493bd
+    type: regular
+    task:
+      id: f45dd8c9-014f-4d8f-8288-d5dd2b8493bd
+      version: -1
+      name: Search thread model
+      description: retrieve threat model entities from ThreatStream
+      script: '|||threatstream-search-threat-model'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      model_type:
+        simple: attackpattern
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 8040
         }
       }
     note: false
@@ -1131,10 +2637,12 @@ tasks:
     isautoswitchedtoquietmode: false
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "12_13_yes": 0.74
+    },
     "paper": {
       "dimensions": {
-        "height": 2765,
+        "height": 8705,
         "width": 2100,
         "x": 50,
         "y": -390
