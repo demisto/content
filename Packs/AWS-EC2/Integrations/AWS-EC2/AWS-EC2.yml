@@ -80,6 +80,18 @@ configuration:
   type: 0
   section: Connect
   advanced: true
+- display: PrivateLink service URL.
+  name: endpoint_url
+  required: false
+  type: 0
+  section: Connect
+  advanced: true
+- display: STS PrivateLink URL.
+  name: sts_endpoint_url
+  required: false
+  type: 0
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   required: false
