@@ -525,8 +525,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 900,
-          "y": 8250
+          "x": 910,
+          "y": 8440
         }
       }
     note: false
@@ -2615,7 +2615,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "14"
+      - "74"
     scriptarguments:
       model_type:
         simple: attackpattern
@@ -2635,6 +2635,47 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "74":
+    id: "74"
+    taskid: 089c1a60-b1d3-47f6-8cc1-e5da893a066f
+    type: regular
+    task:
+      id: 089c1a60-b1d3-47f6-8cc1-e5da893a066f
+      version: -1
+      name: Add associations to TM
+      description: Creates associations between threat model entities on the ThreatStream platform
+      script: '|||threatstream-add-threat-model-association'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      associated_entity_ids:
+        simple: 1862,1860
+      associated_entity_type:
+        simple: Attack Pattern
+      entity_id:
+        simple: "26769"
+      entity_type:
+        simple: Actor
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 8220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -2642,7 +2683,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 8705,
+        "height": 8895,
         "width": 2100,
         "x": 50,
         "y": -390
