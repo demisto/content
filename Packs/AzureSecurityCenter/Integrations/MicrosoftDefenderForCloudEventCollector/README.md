@@ -1,9 +1,9 @@
 XSIAM collector for Microsoft Defender for Cloud alerts.
 This integration was integrated and tested with version xx of Microsoft Defender for Cloud Event Collector
 
-## Configure Microsoft Defender for Cloud Event Collector on Cortex XSOAR
+## Configure Microsoft Defender for Cloud Event Collector on Cortex XSIAM
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+1. Navigate to **Settings** > **Configurations** > **Data Collection** > **Automations & Feed Integrations**.
 2. Search for Microsoft Defender for Cloud Event Collector.
 3. Click **Add instance** to create and configure a new integration instance.
 
