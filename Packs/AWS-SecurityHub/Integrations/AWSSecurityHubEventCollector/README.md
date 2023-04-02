@@ -1,8 +1,8 @@
 An XSIAM event collector for AWS Security Hub.
 
-## Configure AWS Security Hub Event Collector on Cortex XSOAR
+## Configure AWS Security Hub Event Collector on Cortex XSIAM
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+1. Navigate to **Settings** > **Configurations** > **Data Collection** > **Automations & Feed Integrations**.
 2. Search for AWS Security Hub Event Collector.
 3. Click **Add instance** to create and configure a new integration instance.
 
@@ -16,7 +16,7 @@ An XSIAM event collector for AWS Security Hub.
     | Role Session Name |  | False |
     | Role Session Duration |  | False |
     | Max events per fetch | The maximum number of events to retrieve for each event type \(up to 10000 events\). For more information about event types, see the help section. | False |
-    | Timeout | The time in seconds till a timeout exception is reached. You can specify just the read timeout \(for example 60\) or also the connect timeout followed after a comma \(for example 60,10\). If a connect timeout is not specified, a default of 10 second will be used. | False |
+    | Timeout | The time in seconds until a timeout exception is reached. You can specify just the read timeout \(for example 60\) or also the connect timeout followed after a comma \(for example 60,10\). If a connect timeout is not specified, a default of 10 second will be used. | False |
     | Retries | The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time. | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
@@ -24,9 +24,6 @@ An XSIAM event collector for AWS Security Hub.
 4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
-
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
-After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### aws-securityhub-get-events
 
