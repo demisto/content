@@ -6,7 +6,7 @@ commonfields:
   id: ZoomEventCollector
   version: -1
 configuration:
-- display: Server URL (e.g. 'https://api.zoom.us/v2/')
+- display: Server URL (e.g., 'https://api.zoom.us/v2/')
   name: url
   required: false
   type: 0

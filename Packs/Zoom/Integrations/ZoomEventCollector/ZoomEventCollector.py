@@ -23,7 +23,7 @@ TOKEN_LIFE_TIME = timedelta(minutes=58)
 
 INVALID_CREDENTIALS = 'Invalid credentials. Verify that your credentials are valid.'
 INVALID_API_SECRET = 'Invalid API Secret. Verify that your API Secret is valid.'
-INVALID_ID_OR_SECRET = 'Invalid Client ID or Client Secret. Verify that your ID and Secret is valid.'
+INVALID_ID_OR_SECRET = 'Invalid Client ID or Client Secret. Verify that your ID and Secret are valid.'
 EXTRA_PARAMS = """Too many fields were filled. You should fill the Account ID, Client ID, and Client Secret fields (
 OAuth)"""
 INVALID_FIRST_FETCH_TIME = "The First fetch time should fall within the last six months."
@@ -147,7 +147,7 @@ class Client(BaseClient):
         """
 
         results: list[dict] = []
-        next_page_token: str = ''
+        next_page_token = ''
         next_last_time = last_time
         first_page = True
 
@@ -155,7 +155,7 @@ class Client(BaseClient):
         start_date = first_fetch_time if not last_time else dateparser.parse(last_time).replace(tzinfo=timezone.utc)
         end_date = datetime.now(timezone.utc) + timedelta(days=1)
 
-        demisto.debug(f"Start get logs from: {start_date} to: {end_date}")
+        demisto.debug(f"Starting to get logs from: {start_date} to: {end_date}")
 
         while start_date <= end_date:
             params = {
@@ -168,7 +168,7 @@ class Client(BaseClient):
                 params['next_page_token'] = next_page_token
                 if start_date.month == end_date.month:
                     first_page = False
-
+            demisto.debug(f'Sending HTTP request to {BASE_URL}/report/{log_type} with params: {params}')
             response = self.error_handled_http_request(
                 method='GET',
                 url_suffix=f'report/{log_type}',
@@ -326,23 +326,25 @@ def main() -> None:
 
     command = demisto.command()
 
-    # How much time before the first fetch to retrieve events
-    first_fetch_time = params.get('first_fetch', '3 days')
-    first_fetch_datetime = arg_to_datetime(
-        arg=first_fetch_time,
-        arg_name='First fetch time',
-        required=True
-    )
-    if first_fetch_time == '6 months':
-        first_fetch_datetime += timedelta(days=1)
-    if first_fetch_datetime <= dateparser.parse('6 months', settings={'TIMEZONE': 'UTC'}):
-        raise DemistoException("The First fetch time should fall within the last six months. "
-                               "Please provide a valid date within the last six months.")
-
-    demisto.info(f'First fetch timestamp: {first_fetch_datetime}')
-
     demisto.debug(f'Command being called is {command}')
     try:
+
+        # How much time before the first fetch to retrieve events
+        first_fetch_time = params.get('first_fetch', '3 days')
+        first_fetch_datetime = arg_to_datetime(
+            arg=first_fetch_time,
+            arg_name='First fetch time',
+            required=True
+        )
+        if first_fetch_time == '6 months':
+            first_fetch_datetime += timedelta(days=1)
+        if first_fetch_datetime <= dateparser.parse('6 months', settings={'TIMEZONE': 'UTC'}):
+            raise DemistoException("The First fetch time should fall within the last six months. "
+                                   "Please provide a valid date within the last six months.")
+
+        demisto.info(f'First fetch timestamp: {first_fetch_datetime}')
+
+
         client = Client(
             base_url=base_url,
             verify=verify_certificate,
