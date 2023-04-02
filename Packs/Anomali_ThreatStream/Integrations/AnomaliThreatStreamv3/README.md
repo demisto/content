@@ -4272,13 +4272,13 @@ Get a list of whitelist entries
 | InfoFile.Size | number | File Size | 
 | InfoFile.Type | string | File type e.g. "PE" | 
 | InfoFile.Info | string | Basic information of the file | 
-| ThreatStream.WhitelistEntry.objects.created_ts | Date | Timestamp of when the entry was created. | 
-| ThreatStream.WhitelistEntry.objects.id | Number | Unique ID associated with the whitelist entry. | 
-| ThreatStream.WhitelistEntry.objects.modified_ts | Date | Timestamp of when the entry was most recently modified. | 
-| ThreatStream.WhitelistEntry.objects.notes | String | Contextual note associated with the entry. | 
-| ThreatStream.WhitelistEntry.objects.resource_uri | String | Resource URI of the entry. | 
-| ThreatStream.WhitelistEntry.objects.value | String | Value of the entry. | 
-| ThreatStream.WhitelistEntry.objects.value_type | String | The value of the file to import. file valid structure is : value_type,value,notes
+| ThreatStream.WhitelistEntry.created_ts | Date | Timestamp of when the entry was created. | 
+| ThreatStream.WhitelistEntry.id | Number | Unique ID associated with the whitelist entry. | 
+| ThreatStream.WhitelistEntry.modified_ts | Date | Timestamp of when the entry was most recently modified. | 
+| ThreatStream.WhitelistEntry.notes | String | Contextual note associated with the entry. | 
+| ThreatStream.WhitelistEntry.resource_uri | String | Resource URI of the entry. | 
+| ThreatStream.WhitelistEntry.value | String | Value of the entry. | 
+| ThreatStream.WhitelistEntry.value_type | String | The value of the file to import. file valid structure is : value_type,value,notes
 The entries must be contained in a valid CSV file with the following header line: value_type,value,notes.
 value_type must be specified for each entry, possible types include domain,email, ip, md5, url, user-agent, and cidr.
 value must be specified for each entry. Values must be valid entries based on the specified type. For example, if you specify ip for type, the corresponding value must be a valid IP address.

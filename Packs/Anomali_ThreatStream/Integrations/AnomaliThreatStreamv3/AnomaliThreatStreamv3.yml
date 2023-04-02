@@ -2570,7 +2570,7 @@ script:
       description: The identifier for the job on ThreatStream.
       type: Number
     - contextPath: ThreatStream.Import.ImportID
-      description: the ID for the import job.
+      description: The ID for the import job.
       type: Number
   - arguments:
     - default: false
@@ -2670,7 +2670,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Page number to get result from. Needs to be used with page_size argument.
+      description: Page number to get result from. Needs to be used with the page_size argument.
       isArray: false
       name: page
       required: false
@@ -2762,7 +2762,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Page number to get result from. Needs to be used with page_size argument.
+      description: Page number to get result from. Needs to be used with the page_size argument.
       isArray: false
       name: page
       required: false
@@ -3121,7 +3121,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Page number to get result from. Needs to be used with page_size argument.
+      description: Page number to get result from. Needs to be used with the page_size argument.
       isArray: false
       name: page
       required: false
@@ -3463,7 +3463,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'false'
-      description: 'Whether to retrieve all results. The "limit" argument will be ignored. Possible values are: true, false.'
+      description: 'Whether to retrieve all results. The "limit" argument will be ignored.'
       isArray: false
       name: all_results
       predefined:
@@ -4315,7 +4315,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Page number to get result from. Needs to be used with page_size argument.
+      description: Page number to get result from. Needs to be used with the page_size argument.
       isArray: false
       name: page
       required: false
@@ -4482,7 +4482,7 @@ script:
       description: Objects that define additional filters or conditions for the rule.
       type: Unknown
     - contextPath: ThreatStream.Rule.create_investigation
-      description: Whether or not an investigation should be created when the rule is triggered.
+      description: Whether an investigation should be created when the rule is triggered.
       type: Boolean
     - contextPath: ThreatStream.Rule.created_ts
       description: Rule creation time.
@@ -4503,13 +4503,13 @@ script:
       description: Unique ID assigned to the rule.
       type: Number
     - contextPath: ThreatStream.Rule.intelligence_initiatives
-      description: Intelligence Initiatives associated with the rule.
+      description: Intelligence initiatives associated with the rule.
       type: Unknown
     - contextPath: ThreatStream.Rule.is_editable
       description: Indicates whether the imported rule can be updated by an intelligence source.
       type: Boolean
     - contextPath: ThreatStream.Rule.is_enabled
-      description: Whether or not the rule is currently enabled.
+      description: Whether the rule is currently enabled.
       type: Boolean
     - contextPath: ThreatStream.Rule.keyword
       description: Keyword associated with the rule.
@@ -4521,10 +4521,10 @@ script:
       description: Whether the rule matches keywords in newly created actors.
       type: Boolean
     - contextPath: ThreatStream.Rule.match_all_tm
-      description: Whether or not the rule should match against all threat models.
+      description: Whether the rule should match against all threat models.
       type: Boolean
     - contextPath: ThreatStream.Rule.match_attackpatterns
-      description: Whether the rule matches keywords in newly created Attack Patterns.
+      description: Whether the rule matches keywords in newly created attack patterns.
       type: Boolean
     - contextPath: ThreatStream.Rule.match_campaigns
       description: Whether the rule matches keywords in newly created campaigns.
@@ -4533,7 +4533,7 @@ script:
       description: Whether the rule matches keywords in newly created Course of Action.
       type: Boolean
     - contextPath: ThreatStream.Rule.match_customtms
-      description: Whether or not the rule should match custom threat models.
+      description: Whether the rule should match custom threat models.
       type: Boolean
     - contextPath: ThreatStream.Rule.match_identities
       description: Whether the rule matches keywords in newly created Identities.
@@ -4587,7 +4587,7 @@ script:
       description: List of group that should be notified when the rule triggers an alert.
       type: Unknown
     - contextPath: ThreatStream.Rule.notify_me
-      description: Whether or not the user who created the rule should be notified when the rule triggers an alert.
+      description: Whether the user who created the rule should be notified when the rule triggers an alert.
       type: Boolean
     - contextPath: ThreatStream.Rule.org_id
       description: ID associated with the organization that created the rule.
@@ -4698,7 +4698,7 @@ script:
       description: Infrastructure entities associated with the rule.
       type: Unknown
     - contextPath: ThreatStream.Rule.intrusionsets
-      description: Intrusion Sets entities associated with the rule.
+      description: Intrusion sets associated with the rule.
       type: Unknown
     - contextPath: ThreatStream.Rule.investigation.assignee.assignee_type
       description: 'Type of assignee: "user" or "tsworkgroup".'
@@ -4731,7 +4731,7 @@ script:
       description: The investigation assignee user nickname.
       type: Unknown
     - contextPath: ThreatStream.Rule.investigation.assignee.resource_uri
-      description: Resource URI associated with Investigation assignee user.
+      description: Resource URI associated with investigation assignee user.
       type: String
     - contextPath: ThreatStream.Rule.investigation.id
       description: The ID of the investigation.
@@ -4755,19 +4755,19 @@ script:
       description: Name of the malware that associate to the rule.
       type: String
     - contextPath: ThreatStream.Rule.malware.resource_uri
-      description: Resource URI of the malware that associate to the rule.
+      description: Resource URI of the malware that associates to the rule.
       type: String
     - contextPath: ThreatStream.Rule.match_impacts
       description: Indicator types in which you want to look for rule matches at the exclusion of all others.
       type: String
     - contextPath: ThreatStream.Rule.signatures.id
-      description: ID of the signature that associate to the rule.
+      description: ID of the signature that associates to the rule.
       type: String
     - contextPath: ThreatStream.Rule.signatures.name
-      description: Name of the signature that associate to the rule.
+      description: Name of the signature that associates to the rule.
       type: String
     - contextPath: ThreatStream.Rule.signatures.resource_uri
-      description: Resource URI of the signature that associate to the rule.
+      description: Resource URI of the signature that associates to the rule.
       type: String
     - contextPath: ThreatStream.Rule.tags.name
       description: Name of the tag applied to matched entities.
@@ -4845,13 +4845,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: The investigation name ,when selected 'Create New' in investigation_action argument.
+      description: The investigation name. Required when 'Create New' is selected in the investigation_action argument.
       isArray: false
       name: new_investigation_name
       required: false
       secret: false
     - default: false
-      description: Existing investigation id ,when selected 'Add To Existing' in investigation_action argument. Use the threatstream-list-investigation command to get the investigation id value.
+      description: Existing investigation ID. Required when 'Add To Existing' is selected in the investigation_action argument. Use the threatstream-list-investigation command to get the investigation ID.
       isArray: false
       name: existing_investigation_id
       required: false
@@ -4888,13 +4888,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of IDs of the incidents with which you want to associate matched entities. Use the threatstream-get-model-list command to get the incident ids value.
+      description: A comma-separated list of IDs of the incidents with which you want to associate matched entities. Use the threatstream-get-model-list command to get the incident IDs.
       isArray: true
       name: incident_ids
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of IDs of the malwares with which you want to associate matched entities. Use the threatstream-get-model-list command to get the malware ids value.
+      description: A comma-separated list of IDs of the malwares with which you want to associate matched entities. Use the threatstream-get-model-list command to get the malware IDs.
       isArray: true
       name: malware_ids
       required: false
@@ -4906,19 +4906,19 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of IDs of the threat bulletin with which you want to associate matched entities. Use the threatstream-get-model-list command to get the threat bulletin ids value.
+      description: A comma-separated list of IDs of the threat bulletin with which you want to associate matched entities. Use the threatstream-get-model-list command to get the threat bulletin IDs.
       isArray: true
       name: threat_bulletin_ids
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of IDs of the TTPs with which you want to associate matched entities. Use the threatstream-get-model-list command to get the TTPs ids value.
+      description: A comma-separated list of IDs of the TTPs with which you want to associate matched entities. Use the threatstream-get-model-list command to get the TTPs IDs.
       isArray: true
       name: ttp_ids
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of IDs of the vulnerabilities with which you want to associate matched entities. Use the threatstream-get-model-list command to get the vulnerabilities ids value.
+      description: A comma-separated list of IDs of the vulnerabilities with which you want to associate matched entities. Use the threatstream-get-model-list command to get the vulnerabilities IDs.
       isArray: true
       name: vulnerability_ids
       required: false
@@ -4959,13 +4959,13 @@ script:
       description: Campaign's name associated with the rule.
       type: String
     - contextPath: ThreatStream.Rule.campaigns.resource_uri
-      description: Campaign's resource uri associated with the rule.
+      description: Campaign's resource URI associated with the rule.
       type: String
     - contextPath: ThreatStream.Rule.courseofaction
       description: Course of Action entities associated with the rule.
       type: Unknown
     - contextPath: ThreatStream.Rule.create_investigation
-      description: Whether or not an investigation should be created when the rule is triggered.
+      description: Whether an investigation should be created when the rule is triggered.
       type: Boolean
     - contextPath: ThreatStream.Rule.created_ts
       description: Rule creation time.
@@ -4980,10 +4980,10 @@ script:
       description: Indicator types that excluded from rule matches.
       type: String
     - contextPath: ThreatStream.Rule.exclude_notify_org_whitelisted
-      description: Whether Observables whitelisted by your organization are excluded from rule matches.
+      description: Whether observables whitelisted by your organization are excluded from rule matches.
       type: Boolean
     - contextPath: ThreatStream.Rule.exclude_notify_owner_org
-      description: Whether to exclude keyword matches on Observables imported by your organization from Keyword Match or Hourly Digest email notifications.
+      description: Whether to exclude keyword matches on Observables imported by your organization from keyword match or hourly digest email notifications.
       type: Boolean
     - contextPath: ThreatStream.Rule.id
       description: Unique ID assigned to the rule.
@@ -4992,7 +4992,7 @@ script:
       description: List of identities associated with the rule.
       type: Unknown
     - contextPath: ThreatStream.Rule.incidents.id
-      description: Incident's id associated with the rule.
+      description: Incident's ID associated with the rule.
       type: String
     - contextPath: ThreatStream.Rule.incidents.name
       description: Incident's name associated with the rule.
@@ -5004,7 +5004,7 @@ script:
       description: Infrastructure entities associated with the rule.
       type: Unknown
     - contextPath: ThreatStream.Rule.intelligence_initiatives
-      description: Intelligence Initiatives associated with the rule.
+      description: Intelligence initiatives associated with the rule.
       type: Unknown
     - contextPath: ThreatStream.Rule.intrusionsets
       description: Intrusion Sets entities associated with the rule.
@@ -5028,7 +5028,7 @@ script:
       description: Whether the assignee user is active.
       type: Boolean
     - contextPath: ThreatStream.Rule.investigation.assignee.is_readonly
-      description: Whether the assigne user should be restricted to Read Only status.
+      description: Whether the assignee user should be restricted to Read Only status.
       type: Boolean
     - contextPath: ThreatStream.Rule.investigation.assignee.must_change_password
       description: Whether the assignee user will be forced to change their password the next time they login.
@@ -5040,7 +5040,7 @@ script:
       description: The investigation assignee user nickname.
       type: Unknown
     - contextPath: ThreatStream.Rule.investigation.assignee.resource_uri
-      description: Resource URI associated with Investigation assignee user.
+      description: Resource URI associated with investigation assignee user.
       type: String
     - contextPath: ThreatStream.Rule.investigation.investigation_config.name
       description: The name of the investigation configuration associated with the rule.
@@ -5064,7 +5064,7 @@ script:
       description: Indicates whether the imported rule can be updated by an intelligence source.
       type: Boolean
     - contextPath: ThreatStream.Rule.is_enabled
-      description: Whether or not the rule is currently enabled.
+      description: Whether the rule is currently enabled.
       type: Boolean
     - contextPath: ThreatStream.Rule.keyword
       description: 'Keyword associated with the rule.'
@@ -5079,16 +5079,16 @@ script:
       description: Name of the malware that associate to the rule.
       type: String
     - contextPath: ThreatStream.Rule.malware.resource_uri
-      description: Resource URI of the malware that associate to the rule.
+      description: Resource URI of the malware that associates to the rule.
       type: String
     - contextPath: ThreatStream.Rule.match_actors
-      description: Whether the rule matches keywords in newly created Actors.
+      description: Whether the rule matches keywords in newly created actors.
       type: Boolean
     - contextPath: ThreatStream.Rule.match_all_tm
-      description: Whether or not the rule should match against all threat models.
+      description: Whether the rule should match against all threat models.
       type: Boolean
     - contextPath: ThreatStream.Rule.match_attackpatterns
-      description: Whether the rule matches keywords in newly created Attack Patterns.
+      description: Whether the rule matches keywords in newly created attack patterns.
       type: Boolean
     - contextPath: ThreatStream.Rule.match_campaigns
       description: Whether the rule matches keywords in newly created Campaigns.
@@ -5097,7 +5097,7 @@ script:
       description: Whether the rule matches keywords in newly created Course of Action.
       type: Boolean
     - contextPath: ThreatStream.Rule.match_customtms
-      description: Whether or not the rule should match custom threat models.
+      description: Whether the rule should match custom threat models.
       type: Boolean
     - contextPath: ThreatStream.Rule.match_identities
       description: Whether the rule matches keywords in newly created Identities.
@@ -5154,7 +5154,7 @@ script:
       description: List of group that should be notified when the rule triggers an alert.
       type: Unknown
     - contextPath: ThreatStream.Rule.notify_me
-      description: Whether or not the user who created the rule should be notified when the rule triggers an alert.
+      description: Whether the user who created the rule should be notified when the rule triggers an alert.
       type: Boolean
     - contextPath: ThreatStream.Rule.org_id
       description: ID associated with the organization that created the rule.
@@ -5175,13 +5175,13 @@ script:
       description: Resource URI associated with the rule.
       type: String
     - contextPath: ThreatStream.Rule.signatures.id
-      description: ID of the signature that associate to the rule.
+      description: ID of the signature that associates to the rule.
       type: String
     - contextPath: ThreatStream.Rule.signatures.name
-      description: Name of the signature that associate to the rule.
+      description: Name of the signature that associates to the rule.
       type: String
     - contextPath: ThreatStream.Rule.signatures.resource_uri
-      description: Resource URI of the signature that associate to the rule.
+      description: Resource URI of the signature that associates to the rule.
       type: String
     - contextPath: ThreatStream.Rule.tags.name
       description: Name of the tag applied to matched entities.
@@ -5310,13 +5310,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: The investigation name ,when selected 'Create New' in investigation_action argument.
+      description: The investigation name. Required when 'Create New' is selected in the investigation_action argument.
       isArray: false
       name: new_investigation_name
       required: false
       secret: false
     - default: false
-      description: Existing investigation id ,when selected 'Add To Existing' in investigation_action argument. Use the threatstream-list-investigation command to get the investigation id value.
+      description: Existing investigation ID. Required when 'Add To Existing' is selected in the investigation_action argument. Use the threatstream-list-investigation command to get the investigation ID.
       isArray: false
       name: existing_investigation_id
       required: false
@@ -5335,7 +5335,7 @@ script:
       secret: false
     - auto: PREDEFINED
       default: false
-      description: Whether Observables whitelisted by your organization are excluded from rule matches.
+      description: Whether observables whitelisted by your organization are excluded from rule matches.
       isArray: false
       name: exclude_notify_org_whitelisted
       predefined:
@@ -5345,7 +5345,7 @@ script:
     - auto: PREDEFINED
       default: false
       defaultValue: 'False'
-      description: Whether you want to exclude keyword matches on Observables imported by your organization from Keyword Match or Hourly Digest email notifications.
+      description: Whether you want to exclude keyword matches on observables imported by your organization from Keyword Match or Hourly Digest email notifications.
       isArray: false
       name: exclude_notify_owner_org
       predefined:
@@ -5354,37 +5354,37 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of IDs of the incidents with which you want to associate matched entities. Use the threatstream-get-model-list command to get the incident ids value.
+      description: A comma-separated list of IDs of the incidents with which you want to associate matched entities. Use the threatstream-get-model-list command to get the incident IDs.
       isArray: true
       name: incident_ids
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of IDs of the malwares with which you want to associate matched entities. Use the threatstream-get-model-list command to get the malware ids value.
+      description: A comma-separated list of IDs of the malwares with which you want to associate matched entities. Use the threatstream-get-model-list command to get the malware IDs.
       isArray: true
       name: malware_ids
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of IDs of the signatures with which you want to associate matched entities. Use the threatstream-get-model-list command to get the signature ids value.
+      description: A comma-separated list of IDs of the signatures with which you want to associate matched entities. Use the threatstream-get-model-list command to get the signature IDs.
       isArray: true
       name: signature_ids
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of IDs of the threat bulletin with which you want to associate matched entities. Use the threatstream-get-model-list command to get the threat bulletin ids value.
+      description: A comma-separated list of IDs of the threat bulletin with which you want to associate matched entities. Use the threatstream-get-model-list command to get the threat bulletin IDs.
       isArray: true
       name: threat_bulletin_ids
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of IDs of the TTPs with which you want to associate matched entities. Use the threatstream-get-model-list command to get the TTPs ids value.
+      description: A comma-separated list of IDs of the TTPs with which you want to associate matched entities. Use the threatstream-get-model-list command to get the TTPs IDs.
       isArray: true
       name: ttp_ids
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of IDs of the vulnerabilities with which you want to associate matched entities. Use the threatstream-get-model-list command to get the vulnerabilities ids value.
+      description: A comma-separated list of IDs of the vulnerabilities with which you want to associate matched entities. Use the threatstream-get-model-list command to get the vulnerabilities IDs.
       isArray: true
       name: vulnerability_ids
       required: false
@@ -5431,7 +5431,7 @@ script:
       description: Course of Action entities associated with the rule.
       type: Unknown
     - contextPath: ThreatStream.Rule.create_investigation
-      description: Whether or not an investigation should be created when the rule is triggered.
+      description: Whether an investigation should be created when the rule is triggered.
       type: Boolean
     - contextPath: ThreatStream.Rule.created_ts
       description: Rule creation time.
@@ -5443,13 +5443,13 @@ script:
       description: The rule description.
       type: String
     - contextPath: ThreatStream.Rule.exclude_impacts
-      description: Indicator types that excluded from rule matches.
+      description: Indicator types that are excluded from rule matches.
       type: String
     - contextPath: ThreatStream.Rule.exclude_notify_org_whitelisted
-      description: Whether Observables whitelisted by your organization are excluded from rule matches.
+      description: Whether observables whitelisted by your organization are excluded from rule matches.
       type: Boolean
     - contextPath: ThreatStream.Rule.exclude_notify_owner_org
-      description: Whether to exclude keyword matches on Observables imported by your organization from Keyword Match or Hourly Digest email notifications.
+      description: Whether to exclude keyword matches on Observables imported by your organization from keyword match or hourly digest email notifications.
       type: Boolean
     - contextPath: ThreatStream.Rule.id
       description: Unique ID assigned to the rule.
@@ -5458,7 +5458,7 @@ script:
       description: List of identities associated with the rule.
       type: Unknown
     - contextPath: ThreatStream.Rule.incidents.id
-      description: Incident's id associated with the rule.
+      description: Incident's ID associated with the rule.
       type: String
     - contextPath: ThreatStream.Rule.incidents.name
       description: Incident's name associated with the rule.
@@ -5470,10 +5470,10 @@ script:
       description: Infrastructure entities associated with the rule.
       type: Unknown
     - contextPath: ThreatStream.Rule.intelligence_initiatives
-      description: Intelligence Initiatives associated with the rule.
+      description: Intelligence initiatives associated with the rule.
       type: Unknown
     - contextPath: ThreatStream.Rule.intrusionsets
-      description: Intrusion Sets entities associated with the rule.
+      description: Intrusion sets associated with the rule.
       type: Unknown
     - contextPath: ThreatStream.Rule.investigation.assignee.assignee_type
       description: 'Type of assignee: "user" or "tsworkgroup".'
@@ -5506,7 +5506,7 @@ script:
       description: The investigation assignee user nickname.
       type: Unknown
     - contextPath: ThreatStream.Rule.investigation.assignee.resource_uri
-      description: Resource URI associated with Investigation assignee user.
+      description: Resource URI associated with investigation assignee user.
       type: String
     - contextPath: ThreatStream.Rule.investigation.investigation_config.name
       description: The name of the investigation configuration associated with the rule.
@@ -5530,7 +5530,7 @@ script:
       description: Indicates whether the imported entity can be updated by an intelligence source.
       type: Boolean
     - contextPath: ThreatStream.Rule.is_enabled
-      description: Whether or not the rule is currently enabled.
+      description: Whether the rule is currently enabled.
       type: Boolean
     - contextPath: ThreatStream.Rule.keyword
       description: Keyword associated with the rule.
@@ -5545,16 +5545,16 @@ script:
       description: Name of the malware that associate to the rule.
       type: String
     - contextPath: ThreatStream.Rule.malware.resource_uri
-      description: Resource URI of the malware that associate to the rule.
+      description: Resource URI of the malware that associates to the rule.
       type: String
     - contextPath: ThreatStream.Rule.match_actors
-      description: Whether the rule matches keywords in newly created Actors.
+      description: Whether the rule matches keywords in newly created actors.
       type: Boolean
     - contextPath: ThreatStream.Rule.match_all_tm
-      description: Whether or not the rule should match against all threat models.
+      description: Whether the rule should match against all threat models.
       type: Boolean
     - contextPath: ThreatStream.Rule.match_attackpatterns
-      description: Whether the rule matches keywords in newly created Attack Patterns.
+      description: Whether the rule matches keywords in newly created attack patterns.
       type: Boolean
     - contextPath: ThreatStream.Rule.match_campaigns
       description: Whether the rule matches keywords in newly created Campaigns.
@@ -5563,7 +5563,7 @@ script:
       description: Whether the rule matches keywords in newly created Course of Action.
       type: Boolean
     - contextPath: ThreatStream.Rule.match_customtms
-      description: Whether or not the rule should match custom threat models.
+      description: Whether the rule should match custom threat models.
       type: Boolean
     - contextPath: ThreatStream.Rule.match_identities
       description: Whether the rule matches keywords in newly created Identities.
@@ -5620,7 +5620,7 @@ script:
       description: List of group that should be notified when the rule triggers an alert.
       type: Unknown
     - contextPath: ThreatStream.Rule.notify_me
-      description: Whether or not the user who created the rule should be notified when the rule triggers an alert.
+      description: Whether the user who created the rule should be notified when the rule triggers an alert.
       type: Boolean
     - contextPath: ThreatStream.Rule.org_id
       description: ID associated with the organization that created the rule.
@@ -5641,13 +5641,13 @@ script:
       description: Resource URI associated with the rule.
       type: String
     - contextPath: ThreatStream.Rule.signatures.id
-      description: ID of the signature that associate to the rule.
+      description: ID of the signature that associates to the rule.
       type: String
     - contextPath: ThreatStream.Rule.signatures.name
-      description: Name of the signature that associate to the rule.
+      description: Name of the signature that associates to the rule.
       type: String
     - contextPath: ThreatStream.Rule.signatures.resource_uri
-      description: Resource URI of the signature that associate to the rule.
+      description: Resource URI of the signature that associates to the rule.
       type: String
     - contextPath: ThreatStream.Rule.tags.name
       description: Name of the tag applied to matched entities.
@@ -5900,7 +5900,7 @@ script:
       description: The investigation assignee user nickname.
       type: Unknown
     - contextPath: ThreatStream.Investigation.assignee.resource_uri
-      description: Resource URI associated with Investigation assignee user.
+      description: Resource URI associated with investigation assignee user.
       type: String
     - contextPath: ThreatStream.Investigation.attachments
       description: The investigation attachments.
@@ -6083,7 +6083,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of IDs of the incidents with which you want to associate matched entities. Use the threatstream-get-model-list command to get the incident ids value.
+      description: A comma-separated list of IDs of the incidents with which you want to associate matched entities. Use the threatstream-get-model-list command to get the incident IDs.
       isArray: true
       name: associated_incident_ids
       required: false
@@ -6095,7 +6095,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of IDs of the signatures with which you want to associate matched entities. Use the threatstream-get-model-list command to get the signature ids value.
+      description: A comma-separated list of IDs of the signatures with which you want to associate matched entities. Use the threatstream-get-model-list command to get the signature IDs.
       isArray: true
       name: associated_signature_ids
       required: false
@@ -6107,13 +6107,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of IDs of the TTPs with which you want to associate matched entities. Use the threatstream-get-model-list command to get the TTPs ids value.
+      description: A comma-separated list of IDs of the TTPs with which you want to associate matched entities. Use the threatstream-get-model-list command to get the TTPs IDs.
       isArray: true
       name: associated_ttp_ids
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of IDs of the vulnerabilities with which you want to associate matched entities. Use the threatstream-get-model-list command to get the vulnerabilities ids value.
+      description: A comma-separated list of IDs of the vulnerabilities with which you want to associate matched entities. Use the threatstream-get-model-list command to get the vulnerabilities IDs.
       isArray: true
       name: associated_vulnerability_ids
       required: false
@@ -6698,7 +6698,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of IDs of the incidents with which you want to associate matched entities. Use the threatstream-get-model-list command to get the incident ids value.
+      description: A comma-separated list of IDs of the incidents with which you want to associate matched entities. Use the threatstream-get-model-list command to get the incident IDs.
       isArray: true
       name: associated_incident_ids
       required: false
@@ -6710,25 +6710,25 @@ script:
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of IDs of the signatures with which you want to associate matched entities. Use the threatstream-get-model-list command to get the signature ids value.
+      description: A comma-separated list of IDs of the signatures with which you want to associate matched entities. Use the threatstream-get-model-list command to get the signature IDs.
       isArray: true
       name: associated_signature_ids
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of IDs of the threat bulletin with which you want to associate matched entities. Use the threatstream-get-model-list command to get the threat bulletin ids value.
+      description: A comma-separated list of IDs of the threat bulletin with which you want to associate matched entities. Use the threatstream-get-model-list command to get the threat bulletin IDs.
       isArray: true
       name: associated_threat_bulletin_ids
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of IDs of the TTPs with which you want to associate matched entities. Use the threatstream-get-model-list command to get the TTPs ids value.
+      description: A comma-separated list of IDs of the TTPs with which you want to associate matched entities. Use the threatstream-get-model-list command to get the TTPs IDs.
       isArray: true
       name: associated_ttp_ids
       required: false
       secret: false
     - default: false
-      description: A comma-separated list of IDs of the vulnerabilities with which you want to associate matched entities. Use the threatstream-get-model-list command to get the vulnerabilities ids value.
+      description: A comma-separated list of IDs of the vulnerabilities with which you want to associate matched entities. Use the threatstream-get-model-list command to get the vulnerabilities IDs.
       isArray: true
       name: associated_vulnerability_ids
       required: false
@@ -6757,7 +6757,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Page number to get result from. Needs to be used with page_size argument.
+      description: Page number to get result from. Needs to be used with the page_size argument.
       isArray: false
       name: page
       required: false
@@ -6788,25 +6788,25 @@ script:
     - contextPath: InfoFile.Info
       description: Basic information of the file
       type: string
-    - contextPath: ThreatStream.WhitelistEntry.objects.created_ts
+    - contextPath: ThreatStream.WhitelistEntry.created_ts
       description: Timestamp of when the entry was created.
       type: Date
-    - contextPath: ThreatStream.WhitelistEntry.objects.id
+    - contextPath: ThreatStream.WhitelistEntry.id
       description: Unique ID associated with the whitelist entry.
       type: Number
-    - contextPath: ThreatStream.WhitelistEntry.objects.modified_ts
+    - contextPath: ThreatStream.WhitelistEntry.modified_ts
       description: Timestamp of when the entry was most recently modified.
       type: Date
-    - contextPath: ThreatStream.WhitelistEntry.objects.notes
+    - contextPath: ThreatStream.WhitelistEntry.notes
       description: Contextual note associated with the entry.
       type: String
-    - contextPath: ThreatStream.WhitelistEntry.objects.resource_uri
+    - contextPath: ThreatStream.WhitelistEntry.resource_uri
       description: Resource URI of the entry.
       type: String
-    - contextPath: ThreatStream.WhitelistEntry.objects.value
+    - contextPath: ThreatStream.WhitelistEntry.value
       description: Value of the entry.
       type: String
-    - contextPath: ThreatStream.WhitelistEntry.objects.value_type
+    - contextPath: ThreatStream.WhitelistEntry.value_type
       description: Value type the entry.
       type: String
   - arguments:
@@ -6921,7 +6921,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Page number to get result from. Needs to be used with page_size argument.
+      description: Page number to get result from. Needs to be used with the page_size argument.
       isArray: false
       name: page
       required: false
@@ -7136,7 +7136,7 @@ script:
       required: false
       secret: false
     - default: false
-      description: Page number to get result from. Needs to be used with page_size argument.
+      description: Page number to get result from. Needs to be used with the page_size argument.
       isArray: false
       name: page
       required: false
