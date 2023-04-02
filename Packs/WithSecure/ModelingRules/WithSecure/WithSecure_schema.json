@@ -4,6 +4,10 @@
             "type": "string",
             "is_array": false
         },
+        "proto": {
+            "type": "string",
+            "is_array": false
+        },
         "details": {
             "type": "string",
             "is_array": false
