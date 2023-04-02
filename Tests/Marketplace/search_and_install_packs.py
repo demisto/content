@@ -134,24 +134,15 @@ def get_pack_dependencies(client: demisto_client, pack_data: dict, lock: Lock):
     pack_id = pack_data['id']
     logging.debug(f'Getting dependencies for pack {pack_id}')
     try:
-        try:
-            response_data, status_code, _ = demisto_client.generic_request_func(
-                client,
-                path='/contentpacks/marketplace/search/dependencies',
-                method='POST',
-                body=[pack_data],
-                accept='application/json',
-                _request_timeout=None,
-                response_type='object'
-            )
-        except ApiException as ex:
-            try:
-                logging.exception(f'Exception trying to get pack {pack_id} dependencies. Exception: {ex.status}, {ex.body}')
-            except Exception:
-                logging.debug(f'An error occurred while parsing of the dependencies error: {str(ex)}')
-                raise ex
-        except Exception as ex:
-            logging.exception(f'Exception trying to get pack {pack_id} dependencies. Exception: {ex}')
+        response_data, status_code, _ = demisto_client.generic_request_func(
+            client,
+            path='/contentpacks/marketplace/search/dependencies',
+            method='POST',
+            body=[pack_data],
+            accept='application/json',
+            _request_timeout=None,
+            response_type='object'
+        )
 
         if 200 <= status_code < 300:
             dependencies_data: list = []
@@ -169,7 +160,7 @@ def get_pack_dependencies(client: demisto_client, pack_data: dict, lock: Lock):
             msg = response_data.get('message', '')
             raise Exception(f'Failed to get pack {pack_id} dependencies - with status code {status_code}\n{msg}\n')
     except Exception:
-        logging.exception(f'The request to get pack {pack_id} dependencies has failed. {status_code=}.')
+        logging.exception(f'The request to get pack {pack_id} dependencies has failed.')
 
         lock.acquire()
         global SUCCESS_FLAG
@@ -194,21 +185,12 @@ def search_pack(client: demisto_client,
 
     try:
         # make the search request
-        try:
-            response_data, status_code, _ = demisto_client.generic_request_func(client,
-                                                                                path=f'/contentpacks/marketplace/{pack_id}',
-                                                                                method='GET',
-                                                                                accept='application/json',
-                                                                                _request_timeout=None,
-                                                                                response_type='object')
-        except ApiException as ex:
-            try:
-                logging.exception(f'Exception trying to search pack "{pack_display_name}" with ID "{pack_id}". Exception: {ex.status}, {ex.body}')
-            except Exception:
-                logging.debug(f'An error occurred while parsing the marketplace error: {str(ex)}')
-                raise ex
-        except Exception as ex:
-            logging.exception(f'Exception trying to search pack "{pack_display_name}" with ID "{pack_id}". Exception: {ex}')
+        response_data, status_code, _ = demisto_client.generic_request_func(client,
+                                                                            path=f'/contentpacks/marketplace/{pack_id}',
+                                                                            method='GET',
+                                                                            accept='application/json',
+                                                                            _request_timeout=None,
+                                                                            response_type='object')
 
         if 200 <= status_code < 300:
 
