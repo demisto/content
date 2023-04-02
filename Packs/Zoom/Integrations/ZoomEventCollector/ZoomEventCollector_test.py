@@ -19,8 +19,8 @@ def util_load_json(path):
     ("3 days", "First fetch timestamp: 2023-03-29 00:00:00", False),
     ("6 months", "First fetch timestamp: 2022-10-02 00:00:00", False),
     ("7 months",
-     "The First fetch time should fall within the last six months. Please provide a valid date within the last "
-     "six months.", True)
+     "The First fetch time should fall within the last six months."
+     " Please provide a valid date within the last six months.", True)
 ])
 @freeze_time("2023-04-01 00:00:00")
 def test_main(first_fetch_time, expected_result, expect_error, mocker):
@@ -62,11 +62,12 @@ def test_main(first_fetch_time, expected_result, expect_error, mocker):
         "operation_logs": []
     })
     mocker_info = mocker.patch.object(demisto, "info")
+    mock_return_error = mocker.patch('ZoomEventCollector.return_error')
 
     if expect_error:
-        with pytest.raises(DemistoException) as e:
-            main()
-        assert e.value.message == expected_result
+        main()
+        assert mock_return_error.called
+        mock_return_error.assert_called_with(f'Failed to execute test-module command.\nError:\n{str(expected_result)}')
     else:
         main()
 
@@ -75,6 +76,7 @@ def test_main(first_fetch_time, expected_result, expect_error, mocker):
         assert output == expected_result
         assert demisto.results.call_count == 1
         assert demisto.results.call_args[0][0] == 'ok'
+        assert mock_return_error.call_count == 0
 
 
 @freeze_time("2023-03-30 00:00:00")
@@ -95,8 +97,10 @@ def test_fetch_events(mocker):
     first_fetch_time = datetime(2023, 3, 1).replace(tzinfo=timezone.utc)
 
     http_request_mocker = mocker.patch.object(Client, "error_handled_http_request", side_effect=[
+        util_load_json('test_data/fetch_events_operationlogs.json').get('fetch_events_month_before'),
         util_load_json('test_data/fetch_events_operationlogs.json').get('fetch_events'),
-        util_load_json('test_data/fetch_events_activities.json').get('fetch_events')
+        util_load_json('test_data/fetch_events_activities.json').get('fetch_events_month_before'),
+        util_load_json('test_data/fetch_events_activities.json').get('fetch_events'),
     ])
 
     mocker.patch('ZoomEventCollector.Client.get_oauth_token', return_value='token')
@@ -104,15 +108,19 @@ def test_fetch_events(mocker):
 
     client = Client(base_url=BASE_URL)
     next_run, events = fetch_events(client, last_run={},
-                                    first_fetch_time=datetime(2023, 3, 1).replace(tzinfo=timezone.utc))
+                                    first_fetch_time=datetime(2023, 2, 1).replace(tzinfo=timezone.utc))
 
     mock_events = util_load_json('test_data/zoom_fetch_events.json')
-    assert http_request_mocker.call_args_list[0][1].get("params") == {'page_size': 300, 'from': '2023-03-01',
+    assert http_request_mocker.call_args_list[0][1].get("params") == {'page_size': 300, 'from': '2023-02-01',
+                                                                      'to': '2023-03-01'}
+    assert http_request_mocker.call_args_list[1][1].get("params") == {'page_size': 300, 'from': '2023-03-02',
                                                                       'to': '2023-03-30'}
-    assert http_request_mocker.call_args_list[1][1].get("params") == {'page_size': 300, 'from': '2023-03-01',
+    assert http_request_mocker.call_args_list[2][1].get("params") == {'page_size': 300, 'from': '2023-02-01',
+                                                                      'to': '2023-03-01'}
+    assert http_request_mocker.call_args_list[3][1].get("params") == {'page_size': 300, 'from': '2023-03-02',
                                                                       'to': '2023-03-30'}
     assert http_request_mocker.call_args_list[0][1].get("url_suffix") == 'report/operationlogs'
-    assert http_request_mocker.call_args_list[1][1].get("url_suffix") == 'report/activities'
+    assert http_request_mocker.call_args_list[2][1].get("url_suffix") == 'report/activities'
 
     assert events == mock_events
     assert next_run == {'activities': '2023-03-29T11:38:50Z', 'operationlogs': '2023-03-21T08:22:09Z'}

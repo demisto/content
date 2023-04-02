@@ -150,7 +150,7 @@ class Client(BaseClient):
         next_page_token = ''
         next_last_time = last_time
 
-        demisto.debug(f"Last run before the fetch run: {last_time}")
+        demisto.debug(f"Last run before the fetch run: {last_time} for {log_type}")
         start_date = first_fetch_time if not last_time else \
             dateparser.parse(last_time).replace(tzinfo=timezone.utc)  # type: ignore # parse last_time only if != None
         end_date = datetime.now(timezone.utc)
