@@ -1,0 +1,9 @@
+[file:CreateChannelWrapper.yml]
+ignore=BA124
+
+[file:ManageOOOusers.yml]
+ignore=BA124
+
+[file:AssignToNextShiftOOO.yml]
+ignore=BA124
+
