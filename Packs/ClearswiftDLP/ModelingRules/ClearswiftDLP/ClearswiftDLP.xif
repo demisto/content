@@ -26,7 +26,7 @@ alter
     xdm.alert.subcategory = clean_category,
     xdm.email.sender = get_email_sender,
     xdm.source.user.username = get_email_sender,
-    xdm.email.recipients = arraycreate(get_recipient1, get_recipient2, get_recipient3, get_recipient4, get_recipient5),
+    xdm.email.recipients = clean_email_recipients,
     xdm.alert.original_alert_id = get_event_id,
     xdm.email.subject = get_email_subject,
     xdm.event.outcome_reason = get_outcome_reason,
