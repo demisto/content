@@ -6,6 +6,7 @@
     "caseInsensitive": true,
     "cliName": "code42fileevents",
     "closeForm": false,
+    "content": true,
     "columns": [
         {
             "displayName": "eventTimestamp",
@@ -320,13 +321,10 @@
             "width": 150
         }
     ],
-    "content": true,
     "defaultRows": [
-        {},
-        {},
         {}
     ],
-    "editForm": true,
+    "editForm": false,
     "group": 0,
     "hidden": false,
     "id": "incident_code42fileevents",
