@@ -9,23 +9,23 @@ configuration:
   required: false
   type: 0
   section: Connect
-- display: ID
+- displaypassword: ID
+  name: client_id
   required: true
-  additionalinfo: received from the admin consent - see Detailed Instructions
-  type: 4
+  hiddenusername: true
+  type: 9
   section: Connect
-  name: auth_id
-- display: Token
+- displaypassword: Token
   name: tenant_id
-  additionalinfo: received from the admin consent - see Detailed Instructions section
   required: true
-  type: 4
+  hiddenusername: true
+  type: 9
   section: Connect
-- display: Key
-  additionalinfo: received from the admin consent - see Detailed Instructions
+- displaypassword: Key
   name: enc_key
-  required: false
-  type: 4
+  required: true
+  hiddenusername: true
+  type: 9
   section: Connect
 - additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   display: Certificate Thumbprint
@@ -91,9 +91,6 @@ script:
       type: date
     - contextPath: MicrosoftDefenderForCloud.Alert.ReportedSeverity
       description: The estimated severity of this alert.
-      type: string
-    - contextPath: MicrosoftDefenderForCloud.Alert.State
-      description: The alert state (Active, Dismissed, etc.).
       type: string
     - contextPath: MicrosoftDefenderForCloud.Alert.ID
       description: The alert ID.

@@ -1,5 +1,27 @@
-Microsoft integrations (Graph and Azure) in Cortex XSOAR use Azure Active Directory applications to authenticate with Microsoft APIs. These integrations use OAuth 2.0 and OpenID Connect standard-compliant authentication services, which use an Application to sign-in or delegate authentication. For more information, see the Microsoft identity platform overview.
+Microsoft Defender for Cloud Event Collector, provides unified security management and advanced threat protection across hybrid cloud workloads.
+This collector retrieves a list of all the alerts that are associated with a subscription.
 
+#### Authentication with Microsoft Defender For Cloud (Self deployed Azure App)
+
+self-deployed configuration:
  * [Self-Deployed Application](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#self-deployed-application)
 
-Permission
+#### Required permissions.
+
+Azure security center
+| API / Permissions name | Type | Description |
+| --- | --- | --- |
+| Azure scurity center | --- | --- |
+| user_impresonation | Delegated | Access Azure security center |
+| SecurityCenter | --- | --- |
+| user_impresonation | Delegated | Access SecurityCenter |
+
+After you finish configuring your application with the proper permission.
+Adda “Security Reader” role to the application from the subscription.
+In order to add a role to a subscription refer to.
+* [Azure AD built-in roles](https://learn.microsoft.com/en-us/azure/active-directory/roles/permissions-reference)
+
+#### Additional information
+
+For additional information on the API refer to.
+* [Alerts](https://learn.microsoft.com/en-us/rest/api/defenderforcloud/alerts/list?tabs=HTTP)

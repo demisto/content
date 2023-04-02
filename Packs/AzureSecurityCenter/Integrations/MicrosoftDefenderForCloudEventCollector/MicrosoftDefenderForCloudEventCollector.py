@@ -10,7 +10,6 @@ urllib3.disable_warnings()
 VENDOR = 'micrsoft'
 PRODUCT = 'defender_for_cloud'
 API_VERSION = '2022-01-01'
-APP_NAME = "ms-azure-sc"
 DEFAULT_LIMIT = 50
 ''' CLIENT CLASS '''
 
@@ -20,11 +19,11 @@ class MsClient:
     Microsoft Client enables authorized access to Azure Security Center.
     """
 
-    def __init__(self, tenant_id, auth_id, enc_key, app_name, server, verify, proxy, self_deployed, subscription_id,
+    def __init__(self, tenant_id, auth_id, enc_key, server, verify, proxy, self_deployed, subscription_id,
                  ok_codes, certificate_thumbprint, private_key):
         base_url_with_subscription = f"{server}subscriptions/{subscription_id}/"
         self.ms_client = MicrosoftClient(
-            tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=app_name,
+            tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key,
             base_url=base_url_with_subscription, verify=verify, proxy=proxy, self_deployed=self_deployed,
             ok_codes=ok_codes, scope="https://management.azure.com/.default",
             certificate_thumbprint=certificate_thumbprint, private_key=private_key)
@@ -46,7 +45,7 @@ class MsClient:
         cmd_url = "/providers/Microsoft.Security/alerts"
         params = {'api-version': API_VERSION}
         events: list = []
-        response = self.ms_client.http_request(method="GET", url_suffix=cmd_url, params=params)
+        response = self.ms_client.http_request(method="GET", url_suffix=cmd_url, params=params, scope="https://management.azure.com/.default", resource=Resources.management_azure)
         curr_events = response.get("value", [])
 
         curr_filtered_events = filter_out_previosly_digested_events(curr_events, last_run)
@@ -131,7 +130,7 @@ def get_events(client: MsClient, last_run: str, limit: int):
         ],
         removeNull=True,
     )
-    cr = CommandResults(outputs_prefix="MicrosoftDefenderForCloud.Alerts",
+    cr = CommandResults(outputs_prefix="MicrosoftDefenderForCloud.Alert",
                         outputs=outputs, readable_output=md, raw_response=events_list)
     return events_list, cr
 
@@ -192,9 +191,9 @@ def main() -> None:
     command = demisto.command()
     params: dict = demisto.params()
     server = params.get('server_url', '').rstrip('/') + '/'
-    tenant = params.get('tenant_id')
-    auth_and_token_url = params.get('auth_id', '')
-    enc_key = params.get('enc_key')
+    tenant = params.get('tenant_id', {}).get('password')
+    client_id = params.get('client_id', {}).get('password')
+    enc_key = params.get('enc_key', {}).get('password')
     use_ssl = not params.get('unsecure', False)
     proxy = params.get('proxy', False)
     subscription_id = params.get("sub_id")
@@ -209,11 +208,8 @@ def main() -> None:
 
     demisto.debug(f'Command being called is {command}')
     try:
-
-        # @TODO: CHANGE THE SELF DEPLOYTED
-
-        client = MsClient(tenant_id=tenant, auth_id=auth_and_token_url, enc_key=enc_key, app_name=APP_NAME, proxy=proxy,
-                          server=server, verify=use_ssl, self_deployed=False, subscription_id=subscription_id,
+        client = MsClient(tenant_id=tenant, auth_id=client_id, enc_key=enc_key, proxy=proxy,
+                          server=server, verify=use_ssl, self_deployed=True, subscription_id=subscription_id,
                           ok_codes=ok_codes, certificate_thumbprint=certificate_thumbprint, private_key=private_key)
 
         last_run = demisto.getLastRun()

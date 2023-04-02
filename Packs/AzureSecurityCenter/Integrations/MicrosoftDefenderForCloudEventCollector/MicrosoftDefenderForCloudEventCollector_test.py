@@ -1,9 +1,7 @@
 import demistomock as demisto
 from MicrosoftDefenderForCloudEventCollector import *
-from datetime import datetime
 import json
 import pytest
-from unittest.mock import patch, MagicMock
 
 ALERTS_API_RAW = 'test_data/ListAlerts.json'
 ALERTS_TO_SORT = 'test_data/AlertsToSort.json'
