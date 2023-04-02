@@ -77,7 +77,7 @@ def test_main(first_fetch_time, expected_result, expect_error, mocker):
         assert demisto.results.call_args[0][0] == 'ok'
 
 
-@freeze_time("2023-03-29 00:00:00")
+@freeze_time("2023-03-30 00:00:00")
 def test_fetch_events(mocker):
     """
     Tests the fetch_events function
@@ -131,7 +131,7 @@ def test_fetch_events(mocker):
     assert next_run == {'activities': '2023-03-29T11:38:50Z', 'operationlogs': '2023-03-21T08:22:09Z'}
 
 
-@freeze_time("2023-03-29 00:00:00")
+@freeze_time("2023-03-30 00:00:00")
 def test_fetch_events_with_last_run(mocker):
     """
     Tests the fetch_events function
@@ -182,7 +182,7 @@ def test_fetch_events_with_last_run(mocker):
     assert next_run == {'activities': '2023-03-29T11:38:50Z', 'operationlogs': '2023-03-21T08:22:09Z'}
 
 
-@freeze_time("2023-03-29 00:00:00")
+@freeze_time("2023-03-30 00:00:00")
 def test_get_events_command(mocker):
     """
     Tests the get-events command function.

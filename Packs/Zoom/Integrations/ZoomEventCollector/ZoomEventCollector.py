@@ -131,8 +131,8 @@ class Client(BaseClient):
             else:
                 raise DemistoException(e.message)
 
-    def search_events(self, log_type: str, last_time: str = None, first_fetch_time: datetime = None,
-                      limit: int = None) -> tuple[str, list[dict[str, Any]]]:
+    def search_events(self, log_type: str, first_fetch_time: datetime, last_time: str = '', limit: int = None) -> \
+            tuple[str, list[dict[str, Any]]]:
         """
         Searches for Zoom logs using the '/<url_suffix>' API endpoint.
         Args:
@@ -149,15 +149,16 @@ class Client(BaseClient):
         results: list[dict] = []
         next_page_token = ''
         next_last_time = last_time
-        first_page = True
 
         demisto.debug(f"Last run before the fetch run: {last_time}")
-        start_date = first_fetch_time if not last_time else dateparser.parse(last_time).replace(tzinfo=timezone.utc)
-        end_date = datetime.now(timezone.utc) + timedelta(days=1)
+        start_date = first_fetch_time if not last_time else \
+            dateparser.parse(last_time).replace(tzinfo=timezone.utc)  # type: ignore # parse last_time only if != None
+        end_date = datetime.now(timezone.utc)
 
-        demisto.debug(f"Starting to get logs from: {start_date} to: {end_date}")
+        demisto.debug(f"Starting to get logs from: {start_date} to: {end_date} for {log_type}")
 
         while start_date <= end_date:
+            first_page = True
             params = {
                 'page_size': limit if limit else MAX_RECORDS_PER_PAGE,
                 'from': start_date.strftime(REQUEST_DATE_FORMAT),
@@ -166,8 +167,7 @@ class Client(BaseClient):
             }
             if next_page_token:
                 params['next_page_token'] = next_page_token
-                if start_date.month == end_date.month:
-                    first_page = False
+                first_page = False
             demisto.debug(f'Sending HTTP request to /report/{log_type} with params: {params}')
             response = self.error_handled_http_request(
                 method='GET',
@@ -179,8 +179,8 @@ class Client(BaseClient):
             logs = response.get(LOG_TYPES.get(log_type))
             for i, log in enumerate(logs):
                 log_time = log.get("time")
-                if not i and start_date.month == end_date.month and first_page:
-                    next_last_time = log_time  # save the latest time
+                if not i and first_page:
+                    next_last_time = log_time            # save the latest time
                 if last_time and last_time == log_time:  # no more results
                     limit = True
                     break
@@ -189,9 +189,9 @@ class Client(BaseClient):
                 break
 
             if not (next_page_token := response.get("next_page_token")):
-                start_date = get_next_month(start_date)
+                start_date = get_next_month(start_date) + timedelta(days=1)
 
-        demisto.debug(f"Last run after the fetch run: {next_last_time}")
+        demisto.debug(f"Last run after the fetch run: {next_last_time} for {log_type}")
         return next_last_time, results
 
 
@@ -255,7 +255,7 @@ def get_events(client: Client, first_fetch_time: datetime, limit: int = MAX_RECO
     return events, CommandResults(readable_output=hr)
 
 
-def fetch_events(client: Client, last_run: dict[str, str], first_fetch_time: datetime | None) \
+def fetch_events(client: Client, last_run: dict[str, str], first_fetch_time: datetime) \
         -> tuple[dict[str, str], list[dict[str, Any]]]:
     """
     This function retrieves new alerts every interval (default is 1 minute).
@@ -279,7 +279,7 @@ def fetch_events(client: Client, last_run: dict[str, str], first_fetch_time: dat
     for log_type in LOG_TYPES:
         next_run_time, events_ = client.search_events(
             log_type=log_type,
-            last_time=last_run.get(log_type),
+            last_time=last_run.get(log_type, ''),
             first_fetch_time=first_fetch_time,
         )
         next_run[log_type] = next_run_time
@@ -331,19 +331,18 @@ def main() -> None:
 
         # How much time before the first fetch to retrieve events
         first_fetch_time = params.get('first_fetch', '3 days')
-        first_fetch_datetime = arg_to_datetime(
+        first_fetch_datetime: datetime = arg_to_datetime(
             arg=first_fetch_time,
             arg_name='First fetch time',
             required=True
-        )
+        )  # type: ignore # - can't be None
         if first_fetch_time == '6 months':
             first_fetch_datetime += timedelta(days=1)
-        if first_fetch_datetime <= dateparser.parse('6 months', settings={'TIMEZONE': 'UTC'}):
+        if first_fetch_datetime <= dateparser.parse('6 months', settings={'TIMEZONE': 'UTC'}):  # type: ignore
             raise DemistoException("The First fetch time should fall within the last six months. "
                                    "Please provide a valid date within the last six months.")
 
         demisto.info(f'First fetch timestamp: {first_fetch_datetime}')
-
 
         client = Client(
             base_url=base_url,
