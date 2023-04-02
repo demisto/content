@@ -1111,7 +1111,7 @@ build = ["gsutil (==5.17)"]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
 reference = "fix_image_creation_error_lint"
-resolved_reference = "a3294589bc0c3dfc2bb30cd92d5381cad7ba1868"
+resolved_reference = "fae7857fb7744bf0252175ca156286ad61ab0396"
 
 [[package]]
 name = "deprecated"
