@@ -1280,6 +1280,8 @@ def is_bot_message(data: dict) -> bool:
         return True
     elif event.get('subtype') == 'bot_message':
         return True
+    elif data.get('authorizations', [{}])[0].get('is_bot', False):
+        return True
     else:
         return False
 
