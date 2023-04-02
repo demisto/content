@@ -57,7 +57,7 @@ def parse_from_ts_from_params(first_fetch_str: str = None) -> int:
     """
     Parses the `first_fetch_str` parameter as a date/time string and returns its Unix timestamp value in seconds.
     Args:
-        first_fetch_str (str, optional): The (relative) date/time string to parse. Defaults to None, 
+        first_fetch_str (str, optional): The (relative) date/time string to parse. Defaults to None,
         in which case the value "1 day" will be used.
     Returns:
         int: The Unix timestamp value of the parsed date/time string, in seconds.
