@@ -13363,6 +13363,7 @@ def test_fetch_incidents_parameters(fetch_params):
 
 def main(): # pragma: no cover
     try:
+        demisto.info('just a test')
         args = demisto.args()
         params = demisto.params()
         additional_malicious = argToList(params.get('additional_malicious'))
