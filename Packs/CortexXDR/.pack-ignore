@@ -47,12 +47,12 @@ ignore=BA113
 ignore=RM108
 
 [known_words]
-xdr
-coreirapimodule
-cortexcoreir
-xql
-indicatorsvalues
-setindicators
+XDR
+CoreIRApiModule
+CortexCoreIR
+XQL
+indicatorsValues
+setIndicators
 
 [file:classifier-PaloAltoNetworks_CortexXDR.json]
 ignore=BA101
@@ -83,6 +83,9 @@ ignore=RM106,RM108
 
 [file:playbook-Cortex_XDR_-_AWS_IAM_user_access_investigation_README.md]
 ignore=RM108
+
+[file:Cortex_XDR_incident_handling_v3_6_5.yml]
+ignore=PB121
 
 [file:XCloudResourcesPieWidget.yml]
 ignore=BA124
