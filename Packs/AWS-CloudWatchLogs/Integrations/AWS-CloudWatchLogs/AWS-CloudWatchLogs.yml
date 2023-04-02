@@ -447,7 +447,7 @@ script:
       description: The name of the log group.
       type: string
     description: Lists the specified metric filters. You can list all the metric filters or filter the results by log name, prefix, metric name, or metric namespace.
-  dockerimage: demisto/boto3py3:1.0.0.45936
+  dockerimage: demisto/boto3py3:1.0.0.52713
   runonce: false
 tests:
 - No Tests
