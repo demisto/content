@@ -11,7 +11,7 @@ pycares = ">=4.0.0"
 
 [[package]]
 name = "aiohttp"
-version = "10.8.4"
+version = "3.8.4"
 description = "Async http client/server framework (asyncio)"
 category = "dev"
 optional = false
@@ -103,7 +103,7 @@ python-versions = ">=3.6"
 
 [[package]]
 name = "attrs"
-version = "29.2.0"
+version = "22.2.0"
 description = "Classes Without Boilerplate"
 category = "dev"
 optional = false
