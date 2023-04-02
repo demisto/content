@@ -7,13 +7,6 @@ from CommonServerUserPython import *
 import requests
 import re
 import base64
-
-try:
-    import defusedxml.ElementTree as ET
-except ImportError:
-    demisto.debug('defused_ET is not supported, using ET instead.')
-    import xml.etree.cElementTree as ET
-
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from typing import Dict, Tuple, List, Optional
 
@@ -270,7 +263,12 @@ class MicrosoftClient(BaseClient):
             if resp_type == 'content':
                 return response.content
             if resp_type == 'xml':
-                ET.parse(response.text)
+                try:
+                    import defusedxml.ElementTree as defused_ET
+                    defused_ET.fromstring(response.text)
+                except ImportError:
+                    demisto.debug('defused_ET is not supported, using ET instead.')
+                    ET.fromstring(response.text)
             return response
         except ValueError as exception:
             raise DemistoException('Failed to parse json object from response: {}'.format(response.content), exception)
