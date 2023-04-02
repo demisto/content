@@ -2,13 +2,13 @@
     "name": "HashiCorp Vault",
     "description": "Manage Secrets and Protect Sensitive Data through HashiCorp Vault",
     "support": "xsoar",
-    "currentVersion": "1.1.3",
+    "currentVersion": "1.1.6",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "created": "2020-04-14T00:00:00Z",
     "categories": [
-        "Authentication"
+        "Authentication & Identity Management"
     ],
     "tags": [],
     "useCases": [],

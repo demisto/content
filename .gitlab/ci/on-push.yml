@@ -1,7 +1,13 @@
+# This rule is to not run the build for docker update branches (for non-nightly packs)
+.filter-non-nightly-docker-updates-rule:
+  rules:
+    - if: '$CI_COMMIT_BRANCH =~ /^demisto\// && $CI_COMMIT_BRANCH !~ /^demisto\/.*-nightly$/'
+      when: never
+
 .push-rule:
   rules:
+    - !reference [.filter-non-nightly-docker-updates-rule, rules]
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
-
 
 trigger-private-build:
   tags:
@@ -11,6 +17,7 @@ trigger-private-build:
   extends:
     - .default-job-settings
   rules:
+    - !reference [.filter-non-nightly-docker-updates-rule, rules]
     - if: '$CI_COMMIT_BRANCH =~ /pull\/[0-9]+/'
       when: never
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
@@ -47,6 +54,7 @@ stop-running-pipelines:
   variables:
     master_branch_name: master
   rules:
+    - !reference [.filter-non-nightly-docker-updates-rule, rules]
     - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/ && $CI_COMMIT_BRANCH != $master_branch_name'
   script:
     - section_start "Stop running piplines on current branch"
@@ -54,7 +62,7 @@ stop-running-pipelines:
     - section_end "Stop running piplines on current branch"
 
 
-# runs in circle for the on-push flow (because we need to run it there for contributors anyways)
+# runs in gitlab for the on-push flow (except for contributors)
 run-unittests-and-lint:
   extends:
     - .run-unittests-and-lint
@@ -62,14 +70,17 @@ run-unittests-and-lint:
     - if: '$BUCKET_UPLOAD == "true"'
       when: never
     - if: '$DEMISTO_SDK_NIGHTLY != "true"'
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
 
 
-# runs in circle for the on-push flow (because we need to run it there for contributors anyways)
+# runs in gitlab for the on-push flow (except for contributors)
 run-validations:
   extends:
     - .run-validations
   rules:
     - if: '$NIGHTLY'
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
+
 
 # runs in gitlab for the on-push flow, on every new commit pushed to the branch.
 validate-content-conf:
@@ -80,7 +91,7 @@ validate-content-conf:
   extends:
     - .default-job-settings
   rules:
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/ && $CI_COMMIT_BRANCH !~ /^[0-9]{2}\.[0-9]{1,2}\.[0-9]$/'
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push)$/'
   script:
     - section_start "Validate content-test-conf Branch Merged"
     - |
@@ -107,6 +118,7 @@ validate-content-conf:
   extends:
     - .default-job-settings
   rules:
+    - !reference [.filter-non-nightly-docker-updates-rule, rules]
     - if: "$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/"
     - if: "$NIGHTLY"
   cache:
@@ -225,7 +237,9 @@ mpv2-prepare-testing-bucket:
     ENV_RESULTS_PATH: "${ARTIFACTS_FOLDER_XSOAR}/env_results.json"
     SERVER_TYPE: "XSOAR"
   stage: run-instances
-  needs: ["xsoar-prepare-testing-bucket"]
+  needs:
+    - job: xsoar-prepare-testing-bucket
+      optional: true
   script:
     - EXIT_CODE=0
     - !reference [.download-demisto-conf]
@@ -246,8 +260,8 @@ mpv2-prepare-testing-bucket:
 
     - ./Tests/scripts/install_content_and_test_integrations.sh "$INSTANCE_ROLE" "$SERVER_TYPE"|| EXIT_CODE=$?
     - cp -f $ARTIFACTS_FOLDER/conf.json Tests/conf.json
-    - echo Going to sleep for 60 seconds to allow server finish indexing
-    - sleep 60
+    - echo Going to sleep for 15 minutes to allow server finish indexing
+    - sleep 900
 
     - ./Tests/scripts/run_tests.sh "$INSTANCE_ROLE" || EXIT_CODE=$?
     - |
@@ -273,34 +287,38 @@ mpv2-prepare-testing-bucket:
 
 xsoar_server_6_5:
   extends: .test_content_on_xsoar_server_instances_base
-  #  No need to trigger in case of release branch
+  #  No need to trigger in case of release branch or docker update branches (non-nightly packs)
   rules:
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH !~ /^[0-9]{2}\.[0-9]{1,2}\.[0-9]$/'
+    - !reference [.filter-non-nightly-docker-updates-rule, rules]
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
   variables:
     INSTANCE_ROLE: "Server 6.5"
 
 xsoar_server_6_6:
   extends: .test_content_on_xsoar_server_instances_base
-  #  No need to trigger in case of release branch
+  #  No need to trigger in case of release branch or docker update branches (non-nightly packs)
   rules:
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH !~ /^[0-9]{2}\.[0-9]{1,2}\.[0-9]$/'
+    - !reference [.filter-non-nightly-docker-updates-rule, rules]
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
   variables:
     INSTANCE_ROLE: "Server 6.6"
 
 xsoar_server_6_8:
   extends: .test_content_on_xsoar_server_instances_base
-  #  No need to trigger in case of release branch
+  #  No need to trigger in case of release branch or docker update branches (non-nightly packs)
   rules:
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH !~ /^[0-9]{2}\.[0-9]{1,2}\.[0-9]$/'
+    - !reference [.filter-non-nightly-docker-updates-rule, rules]
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
   variables:
     INSTANCE_ROLE: "Server 6.8"
 
 xsoar_server_master:
   extends:
     - .test_content_on_xsoar_server_instances_base
-  #  No need to trigger in case of release branch
+  #  No need to trigger in case of release branch or docker update branches (non-nightly packs)
   rules:
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH !~ /^[0-9]{2}\.[0-9]{1,2}\.[0-9]$/'
+    - !reference [.filter-non-nightly-docker-updates-rule, rules]
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
     - if: '$NIGHTLY'
       when: always
   variables:
@@ -329,9 +347,31 @@ jobs-done-check-nightly:
 
 jobs-done-check-on-push:
   extends:
-    - .jobs-done-check
     - .push-rule
-  needs: ['run-unittests-and-lint', 'trigger-private-build', 'validate-content-conf', 'mpv2-prepare-testing-bucket', 'xpanse-prepare-testing-bucket', 'xsoar-prepare-testing-bucket', 'xsiam_server_ga', 'xsoar_server_6_5', 'xsoar_server_6_6', 'xsoar_server_6_8', 'xsoar_server_master']
+    - .jobs-done-check
+  needs:
+    - job: run-unittests-and-lint
+      optional: true
+    - job: trigger-private-build
+      optional: true
+    - job: validate-content-conf
+      optional: true
+    - job: mpv2-prepare-testing-bucket
+      optional: true
+    - job: xpanse-prepare-testing-bucket
+      optional: true
+    - job: xsoar-prepare-testing-bucket
+      optional: true
+    - job: xsiam_server_ga
+      optional: true
+    - job: xsoar_server_6_5
+      optional: true
+    - job: xsoar_server_6_6
+      optional: true
+    - job: xsoar_server_6_8
+      optional: true
+    - job: xsoar_server_master
+      optional: true
   tags:
     - gke
 
@@ -395,6 +435,7 @@ slack-notify-nightly-build:
       if [[ $EXIT_CODE != 0 ]]
       then
         echo "Failed to install packs. Exiting"
+        job-done
         exit $EXIT_CODE
       fi
     - section_end "Install Packs and run Test-Module"
@@ -431,7 +472,7 @@ slack-notify-nightly-build:
       then
         echo "Job finished, removing lock file"
         gcloud auth activate-service-account --key-file="$GCS_ARTIFACTS_KEY" > auth.out 2>&1
-        gsutil rm "$GCS_LOCKS_PATH/*-lock-$CI_JOB_ID"
+        gsutil rm "gs://xsoar-ci-artifacts/$GCS_LOCKS_PATH/machines_locks/*-lock-$CI_JOB_ID"
         echo "Finished removing lock file"
       fi
     - section_end "After script"
@@ -442,7 +483,7 @@ slack-notify-nightly-build:
 #  extends:
 #    - .test_content_on_xsiam_server_instances_base
 #  rules:
-#    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH !~ /^[0-9]{2}\.[0-9]{1,2}\.[0-9]$/'
+#    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
 #    - if: '$NIGHTLY'
 #      when: always
 #  variables:
@@ -455,14 +496,15 @@ xsiam_server_ga:
   extends:
     - .test_content_on_cloud_server_instances_base
   rules:
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH !~ /^[0-9]{2}\.[0-9]{1,2}\.[0-9]$/'
+    - !reference [.filter-non-nightly-docker-updates-rule, rules]
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
     - if: '$NIGHTLY'
       when: always
   variables:
     INSTANCE_ROLE: "XSIAM"
     GCS_QUEUE_FILE: "queue-ga"
     TEST_MACHINES_LIST: "test-machines-ga"
-    GCS_LOCKS_PATH: "gs://xsoar-ci-artifacts/content-locks-xsiam"
+    GCS_LOCKS_PATH: "content-locks/locks-xsiam-ga"
     CLOUD_SERVERS_FILE: "xsiam_servers_path"
     CLOUD_API_KEYS: $XSIAM_API_KEYS
     ARTIFACTS_FOLDER: "${ARTIFACTS_FOLDER_MPV2}"
@@ -472,19 +514,22 @@ xsiam_server_ga:
     GCS_MACHINES_BUCKET: "marketplace-v2-dist-dev/upload-flow/builds-xsiam"
     SERVER_TYPE: "XSIAM"
     MARKETPLACE_NAME: "marketplacev2"
-  needs: ["mpv2-prepare-testing-bucket"]
+  needs:
+    - job: mpv2-prepare-testing-bucket
+      optional: true
 
 xsoar_ng_server_ga:
   extends:
     - .test_content_on_cloud_server_instances_base
   rules:
-    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/ && $CI_COMMIT_BRANCH !~ /^[0-9]{2}\.[0-9]{1,2}\.[0-9]$/'
+    - !reference [.filter-non-nightly-docker-updates-rule, rules]
+    - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
       when: always
   variables:
     INSTANCE_ROLE: "XSIAM"
     GCS_QUEUE_FILE: "queue-ga"
     TEST_MACHINES_LIST: "test-machines-ga"
-    GCS_LOCKS_PATH: "gs://xsoar-ci-artifacts/content-locks-xsoar-ng"
+    GCS_LOCKS_PATH: "content-locks/locks-xsoar-ng"
     CLOUD_SERVERS_FILE: "xsoar_ng_servers_path"
     CLOUD_API_KEYS: $XSOAR_NG_API_KEYS
     GCS_SOURCE_BUCKET: "${GCS_PRODUCTION_BUCKET}"
@@ -493,7 +538,9 @@ xsoar_ng_server_ga:
     GCS_MACHINES_BUCKET: "marketplace-dist-dev/upload-flow/builds-xsoar-ng"
     SERVER_TYPE: "XSIAM"
     MARKETPLACE_NAME: "xsoar"
-  needs: ["xsoar-prepare-testing-bucket"]
+  needs:
+    - job: xsoar-prepare-testing-bucket
+      optional: true
   allow_failure: true
 
 
@@ -503,11 +550,11 @@ test-upload-flow:
   extends:
     - .default-job-settings
   rules:
+    - !reference [.filter-non-nightly-docker-updates-rule, rules]
     - if: '$CI_PIPELINE_SOURCE =~ /^(push|contrib)$/'
   variables:
     ALL_BUCKETS: "$GCS_MARKET_BUCKET_DEV,$GCS_MARKET_V2_BUCKET_DEV"
   stage: unittests-and-validations
-  allow_failure: true
   script:
     - |
     - section_start "Checks Whether to Trigger a Test Upload"

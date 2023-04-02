@@ -1,4 +1,7 @@
-category: Messaging
+category: Email
+sectionorder:
+- Connect
+- Collect
 commonfields:
   id: EwsExtension
   version: -1
@@ -8,20 +11,25 @@ configuration:
   name: url
   required: true
   type: 0
+  section: Connect
 - display: Email (Password for basic authentication only)
   name: credentials
   required: false
   type: 9
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
-description: This integration enables you to manage and interact with Microsoft O365
-  - Exchange Online from within XSOAR.
+  section: Connect
+  advanced: true
+description: This integration enables you to manage and interact with Microsoft O365 - Exchange Online from within XSOAR.
 display: O365 - EWS - Extension
 name: EwsExtension
 script:
@@ -1828,7 +1836,8 @@ script:
       description: The date in UTC format of when the mailbox audit bypass association
         was created.
       type: Date
-  dockerimage: demisto/powershell-ubuntu:7.2.2.29705
+  dockerimage: demisto/powershell-ubuntu:7.1.4.24032
+  # Please do not change the docker image until CIAC-5623 is handled.
   feed: false
   isfetch: false
   longRunning: false
@@ -1837,5 +1846,6 @@ script:
   script: '-'
   type: powershell
 tests:
-- O365 - EWS - Extension - Test
+- playbook-EWS_O365_Extension_test
 fromversion: 5.5.0
+autoUpdateDockerImage: false

@@ -12,7 +12,7 @@
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
     | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
-    | Max events per fetch | The maximum amount of events to retrieve \(up to 10000 events\). | False |
+    | Max events per fetch | The maximum amount of events to retrieve \(up to 30000 events\). | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands

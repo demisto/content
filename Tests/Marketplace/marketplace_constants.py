@@ -84,6 +84,7 @@ class GCPConfig(object):
     CI_PRIVATE_BUCKET = "marketplace-ci-build-private"
     BASE_PACK = "Base"  # base pack name
     INDEX_NAME = "index"  # main index folder name
+    INDEX_V2_NAME = "index_v2"
     CORE_PACK_FILE_NAME = "corepacks.json"  # core packs file name
     BUILD_BUCKET_PACKS_ROOT_PATH = 'content/builds/{branch}/{build}/{marketplace}/content/packs'
 
@@ -235,7 +236,7 @@ class PackFolders(enum.Enum):
             PackFolders.GENERIC_DEFINITIONS.value, PackFolders.GENERIC_FIELDS.value, PackFolders.GENERIC_MODULES.value,
             PackFolders.GENERIC_TYPES.value, PackFolders.LISTS.value, PackFolders.JOBS.value,
             PackFolders.PARSING_RULES.value, PackFolders.MODELING_RULES.value, PackFolders.CORRELATION_RULES.value,
-            PackFolders.XSIAM_DASHBOARDS.value, PackFolders.XSIAM_REPORTS.value, PackFolders.TRIGGERS.value,
+            PackFolders.XSIAM_DASHBOARDS.value, PackFolders.XSIAM_REPORTS.value,
             PackFolders.WIZARDS.value, PackFolders.XDRC_TEMPLATES.value, PackFolders.LAYOUT_RULES.value
         }
 
@@ -453,7 +454,6 @@ ITEMS_NAMES_TO_DISPLAY_MAPPING = {
     CONTENT_ITEM_NAME_MAPPING[PackFolders.CORRELATION_RULES.value]: "Correlation Rule",
     CONTENT_ITEM_NAME_MAPPING[PackFolders.XSIAM_DASHBOARDS.value]: "XSIAM Dashboard",
     CONTENT_ITEM_NAME_MAPPING[PackFolders.XSIAM_REPORTS.value]: "XSIAM Report",
-    CONTENT_ITEM_NAME_MAPPING[PackFolders.TRIGGERS.value]: "Trigger",
     CONTENT_ITEM_NAME_MAPPING[PackFolders.WIZARDS.value]: "Wizard",
     CONTENT_ITEM_NAME_MAPPING[PackFolders.XDRC_TEMPLATES.value]: "XDRC Template",
     CONTENT_ITEM_NAME_MAPPING[PackFolders.LAYOUT_RULES.value]: "Layout Rule"

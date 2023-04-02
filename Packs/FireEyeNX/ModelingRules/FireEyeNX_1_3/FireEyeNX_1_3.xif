@@ -1,5 +1,6 @@
 [MODEL: dataset=fireeye_mps_raw]
-alter xdm.target.port = to_number(dpt),
+alter 
+    xdm.target.port = to_number(dpt),
     xdm.source.port = to_number(spt),
     xdm.event.operation_sub_type = act,
     xdm.target.ipv4 = dst,

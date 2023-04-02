@@ -49,6 +49,9 @@ ignore=RM108
 XDR
 CoreIRApiModule
 CortexCoreIR
+XQL
+indicatorsValues
+setIndicators
 
 [file:classifier-PaloAltoNetworks_CortexXDR.json]
 ignore=BA101
@@ -67,3 +70,15 @@ ignore=BA101
 
 [file:playbook-Cortex_XDR_-_Cloud_Cryptomining.yml]
 ignore=BA101
+
+[file:layoutscontainer-Cortex_XDR_-_XCLOUD_Cryptomining.json]
+ignore=BA101
+
+[file:Cortex_XDR_incident_handling_v2_README.md]
+ignore=RM106
+
+[file:Cortex_XDR_Incident_Handling_README.md]
+ignore=RM106,RM108
+
+[file:playbook-Cortex_XDR_-_AWS_IAM_user_access_investigation_README.md]
+ignore=RM108

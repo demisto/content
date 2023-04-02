@@ -1,39 +1,56 @@
-Enriches domains using one or more integrations.
-
+Enrich domains using one or more integrations.
 Domain enrichment includes:
 * Threat information
+* Domain reputation using !domain command
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+
 This playbook does not use any sub-playbooks.
 
 ### Integrations
+
 * VirusTotal - Private API
 
 ### Scripts
+
 This playbook does not use any scripts.
 
 ### Commands
+
 * vt-private-get-domain-report
 * umbrella-domain-categorization
+* domain
 
 ## Playbook Inputs
+
 ---
 
-| **Name** | **Description** | **Default Value** | **Source** | **Required** |
-| --- | --- | --- | --- | --- |
-| Domain | The domain name to enrich. | Name | Domain | Optional |
+| **Name** | **Description** | **Default Value** | **Required** |
+| --- | --- | --- | --- |
+| Domain | The domain name to enrich. | Domain.Name | Optional |
+| UseReputationCommand | Define if you would like to use the \!url command.<br/>Note: This input should be used whenever there is no auto-extract enabled in the investigation flow.<br/>Possible values: True / False. | False | Required |
 
 ## Playbook Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | Domain | The domain objects. | unknown |
-| DBotScore | The indicator, score, type, and vendor. | unknown |
+| DBotScore | Indicator, Score, Type, and Vendor. | unknown |
+| Domain.Name | Bad domain found. | unknown |
+| Domain.Malicious.Vendor | For malicious domains, the vendor that made the decision. | unknown |
+| DBotScore.Indicator | The indicator that was tested. | unknown |
+| DBotScore.Type | The indicator type. | unknown |
+| DBotScore.Score | The actual DBot score. | unknown |
+| DBotScore.Reliability | Reliability of the source providing the intelligence data. | unknown |
 
 ## Playbook Image
+
 ---
-![Domain_Enrichment_Generic_v2](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Domain_Enrichment_Generic_v2.png)
+
+![Domain Enrichment - Generic v2](../doc_files/Domain_Enrichment_-_Generic_v2.png)

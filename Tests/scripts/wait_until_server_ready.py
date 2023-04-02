@@ -44,8 +44,9 @@ def download_cloud_init_logs_from_server(ip: str) -> None:
         # downloading cloud-init logs to artifacts
         check_output(f'scp {SSH_USER}@{ip}:{cloud_init_log_path} '
                      f'{ARTIFACTS_FOLDER}/{ip}-cloud_init.log'.split())
-    except Exception:
-        logging.exception(f'Could not download cloud-init file from server {ip}.')
+    except Exception as e:
+        logging.exception(f'Could not download cloud-init file from server {ip}:\n{e.stderr=}\n{e.output=}\n'
+                          f'{e.returncode=}\n{e.cmd=}.')
 
 
 def docker_login(ip: str) -> None:
@@ -62,8 +63,9 @@ def docker_login(ip: str) -> None:
             f'ssh {SSH_USER}@{ip} cd /home/demisto && sudo -u demisto {container_engine_type} '
             f'login --username {docker_username} --password-stdin'.split(),
             input=docker_password.encode())
-    except Exception:
-        logging.exception(f'Could not login to {container_engine_type} on server {ip}')
+    except Exception as e:
+        logging.exception(f'Could not login to {container_engine_type} on server {ip}:\n{e.stderr=}\n{e.output=}\n'
+                          f'{e.returncode=}\n{e.cmd=}.')
 
 
 def main():

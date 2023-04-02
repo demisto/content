@@ -11,7 +11,7 @@ import requests
 import urllib3
 import dateutil.parser
 # Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
+urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 

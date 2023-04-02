@@ -642,7 +642,7 @@ tasks:
       BypassAddRecord:
         simple: "true"
       SearchCIClass:
-        simple: cmdb_ci_network_adapter
+        simple: cmdb_ci
       SearchQueryField:
         simple: ip_address
       SearchQueryValue:

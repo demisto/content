@@ -223,13 +223,29 @@ def test_filter_attack_pattern_object_by_attack_id(attack_id, attack_pattern_obj
 
 
 @pytest.mark.parametrize('description, expected_result', [
-    ('Gross, J. (2016, February 23). Operation Dust Storm. Retrieved December 22, 2021.', '2016, February 23'),
+    ('Test (23)', ''),
+    ('Test (2020, Mar)', '2020-03-01T00:00:00'),
+    ('Test (Test) (2020, Mar)', '2020-03-01T00:00:00'),
+    ('Test 2033)', ''),
+    ('Test ()', ''),
+    ('Test (Test)', ''),
+    ('Gross, J. (2016, February 23). Operation Dust Storm. Retrieved December 22, 2021.', '2016-02-23T00:00:00'),
     ('Cisco. (n.d.). Cisco IOS Software Integrity Assurance - Command History. Retrieved October 21, 2020.', ''),
-    ('Citation: Security Affairs Elderwood Sept 2012)', '')
+    ('Citation: Security Affairs Elderwood Sept 2012)', ''),
+    ('Insikt Group (Recorded Future). (2017, May 17).',
+     '2017-05-17T00:00:00'),
+    ('Insikt Group (Recorded Future). (2017, May17).',
+     '2017-05-17T00:00:00'),
+    ('Insikt Group (Recorded Future). (2017,May17).',
+     '2017-05-17T00:00:00'),
+    ('Insikt Group (Recorded Future). (2017,March17).',
+     '2017-03-17T00:00:00'),
+    ('Insikt Group (Recorded Future). (2017, March 17).',
+     '2017-03-17T00:00:00')
 ])
-def test_extract_timestamp_from_description(description, expected_result):
-    from FeedMitreAttackv2 import extract_timestamp_from_description
-    output = extract_timestamp_from_description(description)
+def test_extract_date_time_from_description(description, expected_result):
+    from FeedMitreAttackv2 import extract_date_time_from_description
+    output = extract_date_time_from_description(description)
     assert output == expected_result
 
 

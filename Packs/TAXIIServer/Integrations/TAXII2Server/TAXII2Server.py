@@ -567,6 +567,7 @@ def find_indicators(query: str, types: list, added_after, limit: int, offset: in
     new_limit = offset + limit
     iocs = []
     extensions = []
+
     if is_manifest:
         field_filters: Optional[str] = ','.join(TAXII_REQUIRED_FILTER_FIELDS)
     elif SERVER.fields_to_present:
@@ -582,7 +583,8 @@ def find_indicators(query: str, types: list, added_after, limit: int, offset: in
         query=new_query,
         limit=new_limit,
         size=PAGE_SIZE,
-        from_date=added_after
+        from_date=added_after,
+        sort=[{"field": "modified", "asc": True}],
     )
 
     total = 0
@@ -606,7 +608,11 @@ def find_indicators(query: str, types: list, added_after, limit: int, offset: in
                         extensions.append(extension_definition)
                 elif stix_ioc:
                     iocs.append(stix_ioc)
-
+    if not is_manifest and iocs and is_demisto_version_ge('6.6.0'):
+        if relationships := create_relationships_objects(iocs, extensions):
+            total += len(relationships)
+            iocs.extend(relationships)
+            iocs = sorted(iocs, key=lambda k: k['modified'])
     return iocs, extensions, total
 
 
@@ -1198,6 +1204,91 @@ def get_server_collections_command(integration_context):
     )
 
     return result
+
+
+def create_relationships_objects(stix_iocs: list[dict[str, Any]], extensions: list) -> list[dict[str, Any]]:
+    """
+    Create entries for the relationships returned by the searchRelationships command.
+    :param stix_iocs: Entries for the Stix objects associated with given indicators
+    :param extensions: A list of dictionaries representing extension properties to include in the generated STIX objects.
+    :return: A list of dictionaries representing the relationships objects, including entityBs objects
+    """
+    relationships_list: list[dict[str, Any]] = []
+    iocs_value_to_id = {(stix_ioc.get('value') or stix_ioc.get('name')): stix_ioc.get('id') for stix_ioc in stix_iocs}
+    search_relationships = demisto.searchRelationships({'entities': list(iocs_value_to_id.keys())}).get('data') or []
+    demisto.debug(f"Found {len(search_relationships)} relationships for {len(iocs_value_to_id)} Stix IOC values.")
+
+    relationships_list.extend(create_entity_b_stix_objects(search_relationships, iocs_value_to_id, extensions))
+
+    for relationship in search_relationships:
+
+        if not iocs_value_to_id.get(relationship.get('entityB')):
+            demisto.debug(f"WARNING: Invalid entity B - Relationships will not be created to entity A:"
+                          f" {relationship.get('entityA')} with relationship name {relationship.get('name')}")
+            continue
+        try:
+            created_parsed = parse(relationship.get('createdInSystem')).strftime(STIX_DATE_FORMAT)
+            modified_parsed = parse(relationship.get('modified')).strftime(STIX_DATE_FORMAT)
+        except Exception as e:
+            created_parsed, modified_parsed = '', ''
+            demisto.debug(f"Error parsing dates for relationship {relationship.get('id')}: {e}")
+
+        relationship_unique_id = uuid.uuid5(SERVER.namespace_uuid, f'relationship:{relationship.get("id")}')
+        relationship_stix_id = f'relationship--{relationship_unique_id}'
+
+        relationship_object: dict[str, Any] = {
+            'type': "relationship",
+            'spec_version': SERVER.version,
+            'id': relationship_stix_id,
+            'created': created_parsed,
+            'modified': modified_parsed,
+            "relationship_type": relationship.get('name'),
+            'source_ref': iocs_value_to_id.get(relationship.get('entityA')),
+            'target_ref': iocs_value_to_id.get(relationship.get('entityB')),
+        }
+        if description := demisto.get(relationship, 'CustomFields.description'):
+            relationship_object['Description'] = description
+
+        relationships_list.append(relationship_object)
+
+    return relationships_list
+
+
+def create_entity_b_stix_objects(relationships: list[dict[str, Any]], iocs_value_to_id: dict, extensions: list) -> list:
+    """
+    Generates a list of STIX objects for the 'entityB' values in the provided 'relationships' list.
+    :param relationships: A list of dictionaries representing relationships between entities
+    :param iocs_value_to_id: A dictionary mapping IOC values to their corresponding ID values.
+    :param extensions: A list of dictionaries representing extension properties to include in the generated STIX objects.
+    :return: A list of dictionaries representing STIX objects for the 'entityB' values
+    """
+    entity_b_objects: list[dict[str, Any]] = []
+    entity_b_values = ""
+    for relationship in relationships:
+        if (entity_b_value := relationship.get('entityB')) and entity_b_value not in iocs_value_to_id:
+            iocs_value_to_id[entity_b_value] = ""
+            entity_b_values += f'\"{entity_b_value}\" '
+    if not entity_b_values:
+        return entity_b_objects
+
+    found_indicators = demisto.searchIndicators(query=f'value:({entity_b_values})').get('iocs') or []
+
+    extensions_dict: dict = {}
+    for xsoar_indicator in found_indicators:
+        xsoar_type = xsoar_indicator.get('indicator_type')
+        stix_ioc, extension_definition, extensions_dict = create_stix_object(xsoar_indicator, xsoar_type, extensions_dict)
+        if XSOAR_TYPES_TO_STIX_SCO.get(xsoar_type) in SERVER.types_for_indicator_sdo:
+            stix_ioc = convert_sco_to_indicator_sdo(stix_ioc, xsoar_indicator)
+        if SERVER.has_extension and stix_ioc:
+            entity_b_objects.append(stix_ioc)
+            if extension_definition:
+                extensions.append(extension_definition)
+        elif stix_ioc:
+            entity_b_objects.append(stix_ioc)
+        iocs_value_to_id[(stix_ioc.get('value') or stix_ioc.get('name'))] = stix_ioc.get('id')
+
+    demisto.debug(f"Generated {len(entity_b_objects)} STIX objects for 'entityB' values.")
+    return entity_b_objects
 
 
 def main():  # pragma: no cover

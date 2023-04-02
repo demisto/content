@@ -618,3 +618,19 @@ def test_get_existing_access_token(mocker):
     )
     access_token = client._get_access_token()
     assert access_token == '123'
+
+
+def test_parse_indicator_bug_fix():
+    """
+    Given:
+        A dictionary of indicator data from Sandbox, with a version_info item without a "value" field.
+    When:
+        Running parse_indicator()
+    Then:
+        Make sure no KeyError is raised and the command succeeds.
+    """
+    sandbox = {
+        "sha256": "xxx",
+        "version_info": [{"id": "xxx"}],
+    }
+    assert parse_indicator(sandbox, DBotScoreReliability.A_PLUS)

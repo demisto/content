@@ -133,8 +133,8 @@ tasks:
             iscontext: true
             value:
               complex:
-                accessor: Asset
-                root: Redlock
+                accessor: Config
+                root: PrismaCloud
           operator: isNotEmpty
       label: "yes"
     id: "12"
@@ -177,8 +177,8 @@ tasks:
     scriptarguments:
       assets:
         complex:
-          accessor: Asset
-          root: Redlock
+          accessor: Config
+          root: PrismaCloud
       fields: {}
     separatecontext: false
     skipunavailable: false
@@ -241,7 +241,7 @@ tasks:
                     operator: isEqualString
                     right:
                       value:
-                        simple: RedLock
+                        simple: PrismaCloud v2
                 - - left:
                       iscontext: true
                       value:
@@ -727,13 +727,15 @@ tasks:
     separatecontext: false
     skipunavailable: false
     task:
-      brand: ""
-      description: Search configuration inventory on the Prisma Cloud (RedLock) platform
-        using RQL language
+      brand: PrismaCloud v2
+      description: Search configuration inventory on the Prisma Cloud platform using
+        RQL language. Use this command for all queries that start with "config". When
+        no absolute time nor relative time arguments are provided, the default time range
+        is all times.
       id: 32767fe7-d8ea-422b-8bed-c3327a805dc7
       iscommand: true
       name: Search Zone Name in Google Cloud DNS
-      script: '|||redlock-search-config'
+      script: PrismaCloud v2|||redlock-search-config
       type: regular
       version: -1
     taskid: 32767fe7-d8ea-422b-8bed-c3327a805dc7

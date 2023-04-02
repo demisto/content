@@ -1,6 +1,6 @@
 {
-    "name": "RDP Cache Hunting",
-    "description": "This pack provide the capabilities to hunt and investigate suspicious activity from collected RDP cache data",
+    "name": "RDPCacheHunting",
+    "description": "Investigates the RDP bitmap Cache files",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",

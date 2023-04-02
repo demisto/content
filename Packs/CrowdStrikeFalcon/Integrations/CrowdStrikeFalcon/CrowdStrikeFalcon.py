@@ -1434,11 +1434,14 @@ def get_proccesses_ran_on(ioc_type, value, device_id):
     return http_request('GET', '/indicators/queries/processes/v1', payload)
 
 
-def search_device(filter_operator='AND'):
+def search_device(filter_operator='AND', exact_hostname: bool = False):
     """
         Searches for devices using the argument provided by the command execution. Returns empty
         result if no device was found
+
         :param: filter_operator: the operator that should be used between filters, default is 'AND'
+        :param: exact_hostname: Whether to return exact hostname
+
         :return: Search device response json
     """
     args = demisto.args()
@@ -1462,7 +1465,10 @@ def search_device(filter_operator='AND'):
                 for arg_elem in arg:
                     if arg_elem:
                         first_arg = '{filter},{inp_arg}'.format(filter=arg_filter, inp_arg=k) if arg_filter else k
-                        arg_filter = "{first}:'{second}'".format(first=first_arg, second=arg_elem)
+                        arg_elem = f"'{arg_elem}'"
+                        if k == 'hostname' and exact_hostname:
+                            arg_elem = f'[{arg_elem}]'
+                        arg_filter = "{first}:{second}".format(first=first_arg, second=arg_elem)
                 if arg_filter:
                     url_filter = "{url_filter}{arg_filter}".format(url_filter=url_filter + op if url_filter else '',
                                                                    arg_filter=arg_filter)
@@ -1644,6 +1650,10 @@ def resolve_incident(ids: List[str], status: str):
         raise DemistoException(f'CrowdStrike Falcon Error: '
                                f'Status given is {status} and it is not in {STATUS_TEXT_TO_NUM.keys()}')
     return update_incident_request(ids, STATUS_TEXT_TO_NUM[status], 'update_status')
+
+
+def update_incident_comment(ids: List[str], comment: str):
+    return update_incident_request(ids, comment, 'add_comment')
 
 
 def update_incident_request(ids: List[str], value: str, action_name: str):
@@ -2650,7 +2660,7 @@ def get_endpoint_command():
         return create_entry_object(hr='Please add a filter argument - ip, hostname or id.')
 
     # use OR operator between filters (https://github.com/demisto/etc/issues/46353)
-    raw_res = search_device(filter_operator='OR')
+    raw_res = search_device(filter_operator='OR', exact_hostname='hostname' in args)
 
     if not raw_res:
         return create_entry_object(hr='Could not find any devices.')
@@ -3606,6 +3616,12 @@ def resolve_incident_command(ids: List[str], status: str):
     return CommandResults(readable_output=readable)
 
 
+def update_incident_comment_command(ids: List[str], comment: str):
+    update_incident_comment(ids, comment)
+    readable = '\n'.join([f'{incident_id} updated successfully with comment \"{comment}\"' for incident_id in ids])
+    return CommandResults(readable_output=readable)
+
+
 def list_host_groups_command(filter: Optional[str] = None, offset: Optional[str] = None, limit: Optional[str] = None) \
         -> CommandResults:
     response = list_host_groups(filter, limit, offset)
@@ -4234,6 +4250,9 @@ def main():
         elif command == 'cs-falcon-resolve-incident':
             return_results(resolve_incident_command(status=args.get('status'),
                                                     ids=argToList(args.get('ids'))))
+        elif command == 'cs-falcon-update-incident-comment':
+            return_results(update_incident_comment_command(comment=args.get('comment'),
+                                                           ids=argToList(args.get('ids'))))
         elif command == 'cs-falcon-batch-upload-custom-ioc':
             return_results(upload_batch_custom_ioc_command(**args))
 

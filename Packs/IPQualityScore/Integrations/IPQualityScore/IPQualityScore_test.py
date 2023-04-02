@@ -27,7 +27,7 @@ def test_ip_command(requests_mock):
 def test_email_command(requests_mock):
     from IPQualityScore import Client, email_command
     mock_response = util_load_json('test_data/email_response.json')
-    requests_mock.get('https://ipqualityscore.com/api/json/email/api_key_here/someone@gmail.com', json=mock_response)
+    requests_mock.get('https://ipqualityscore.com/api/json/email/api_key_here/someone%40gmail.com', json=mock_response)
     client = Client(
         base_url='https://ipqualityscore.com/api/json/email/api_key_here',
         verify=False)
