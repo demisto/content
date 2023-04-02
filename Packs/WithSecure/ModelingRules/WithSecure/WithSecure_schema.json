@@ -1,5 +1,9 @@
 {
     "with_secure_endpoint_protection_raw": {
+        "_raw_log": {
+            "type": "string",
+            "is_array": false
+        },
         "details": {
             "type": "string",
             "is_array": false
@@ -41,10 +45,6 @@
             "is_array": false
         },
         "commandLine": {
-            "type": "string",
-            "is_array": false
-        },
-        "-": {
             "type": "string",
             "is_array": false
         }
