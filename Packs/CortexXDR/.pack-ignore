@@ -82,3 +82,6 @@ ignore=RM106,RM108
 
 [file:playbook-Cortex_XDR_-_AWS_IAM_user_access_investigation_README.md]
 ignore=RM108
+
+[file:Cortex_XDR_incident_handling_v3_6_5.yml]
+ignore=PB121
