@@ -10,6 +10,15 @@ You need to do the following in Google before configuring the integration in Cor
 * [Delegate Domain-wide Authority to Your Service Account](#delegate-domain-wide-authority-to-your-service-account)
 * [Get an Immutable Google Apps ID](#get-an-immutable-google-apps-id-parameters)
 
+### Delegate Domain-wide Authority to Your Service Account
+
+1. Access the [Google Administrator Console](http://admin.google.com/).
+2. Enter a client name (the Unique ID) and paste the following into the **One or more API Scopes** textbox. 
+    
+``` https://www.googleapis.com/auth/gmail.settings.basic,https://www.googleapis.com/auth/admin.directory.user,https://www.googleapis.com/auth/admin.directory.device.mobile.action,https://www.googleapis.com/auth/admin.directory.device.mobile.readonly,https://www.googleapis.com/auth/gmail.modify,https://www.googleapis.com/auth/gmail.settings.sharing,https://www.googleapis.com/auth/gmail.send,https://www.googleapis.com/auth/gmail.modify,https://www.googleapis.com/auth/admin.directory.device.chromeos,https://www.googleapis.com/auth/admin.directory.user.readonly,https://www.googleapis.com/auth/admin.directory.user.security,https://www.googleapis.com/auth/admin.directory.rolemanagement,https://www.googleapis.com/auth/admin.directory.rolemanagement.readonly,https://www.googleapis.com/auth/gmail.readonly,https://mail.google.com,https://www.googleapis.com/auth/gmail.compose ```
+    
+![Setup Account](./doc_imgs/mceclip1-1.png)
+
 ### Get a New Private Key
 
 1.  Access your [Google Service Account](https://console.developers.google.com/projectselector/iam-admin/serviceaccounts%C2%A0).
@@ -22,23 +31,18 @@ You need to do the following in Google before configuring the integration in Cor
 6.  Click **Continue.**
 7.  In the **Create key** section, click **CREATE KEY**.
 8.  Select Key type **JSON** and click **CREATE**.
-9.  Click **DONE**.<br/>A Service Account file with a key pair is generated and automatically downloads.
-10.  In the **Actions** column, select the service and then click **edit**.
+9.  Click **DONE**.<br/>A Service Account file with a key pair is generated and automatically downloads.  
+
     ![mceclip1.png](https://github.com/demisto/content/raw/6d9ac954729a6dffd6be51b658e7987824238462/Integrations/Gmail/doc_imgs/mceclip1.png) 
-11.  Under the show domain wide delegation, select **Enable G Suite Domain-wide Delegation**.
-    ![gmail-_enable.png](https://github.com/demisto/content/raw/6d9ac954729a6dffd6be51b658e7987824238462/Integrations/Gmail/doc_imgs/gmail-enable.png)  
-    NOTE: Copy the value of the Unique ID for the client name in step 2 in Delegate Domain-wide Authority to Your Service Account. 
+10.  Navigate to the Google Administrator Console **Security** > **Access and data control** > **API controls** and select **Manage Domain Wide Delegation**.  
+11.  Select **Add new** and then:  
+    - Complete the configuration using the Client ID from the service account you just created.  
+    - Add the API Scopes from step 2 of [Delegate Domain-wide Authority to Your Service Account](#delegate-domain-wide-authority-to-your-service-account).      
+    NOTE: Copy the value of the Unique ID for the client name in step 2 of [Delegate Domain-wide Authority to Your Service Account](#delegate-domain-wide-authority-to-your-service-account). 
 12.  Click Save.
-13.  In the top search bar, search for _admin sdk_.
-14.  Click **Enable**.
+13.  Navigate to the Google Service Account **APIs & Services** > **Library**, and in the top search bar search for **admin sdk**. 
+14.  Select **Admin SDK API** and click **Enable**.
 
-### Delegate Domain-wide Authority to Your Service Account
-
-1. Access the [Google Administrator Console](http://admin.google.com/).
-2. Enter a client name (the Unique ID) and paste the following into the One or More API Scopes textbox. 
-    
-``` https://www.googleapis.com/auth/gmail.settings.basic,https://www.googleapis.com/auth/admin.directory.user,https://www.googleapis.com/auth/admin.directory.device.mobile.action,https://www.googleapis.com/auth/admin.directory.device.mobile.readonly,https://www.googleapis.com/auth/gmail.modify,https://www.googleapis.com/auth/gmail.settings.sharing,https://www.googleapis.com/auth/gmail.send,https://www.googleapis.com/auth/gmail.modify,https://www.googleapis.com/auth/admin.directory.device.chromeos,https://www.googleapis.com/auth/admin.directory.user.readonly,https://www.googleapis.com/auth/admin.directory.user.security,https://www.googleapis.com/auth/admin.directory.rolemanagement,https://www.googleapis.com/auth/admin.directory.rolemanagement.readonly,https://www.googleapis.com/auth/gmail.readonly,https://mail.google.com,https://www.googleapis.com/auth/gmail.compose ```
-    
 ![Setup Account](./doc_imgs/mceclip1-1.png)
 
 ### Get an Immutable Google Apps ID Parameters
