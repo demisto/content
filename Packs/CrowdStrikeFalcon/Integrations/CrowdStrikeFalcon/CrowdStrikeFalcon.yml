@@ -2059,7 +2059,7 @@ script:
     - description: The endpoint hostname.
       name: hostname
       secret: false
-    description: Returns information about an endpoint.
+    description: Returns information about an endpoint, does not support regex.
     name: endpoint
     outputs:
     - contextPath: Endpoint.Hostname

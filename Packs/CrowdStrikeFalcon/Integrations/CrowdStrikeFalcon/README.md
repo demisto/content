@@ -2079,7 +2079,7 @@ Lists incident summaries.
 
 ### 34. Endpoint
 ***
-Lists incident summaries.
+Returns information about an endpoint, does not support regex.
 
 #### Base Command
 
