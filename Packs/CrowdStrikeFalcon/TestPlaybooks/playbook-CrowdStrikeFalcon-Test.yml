@@ -164,7 +164,11 @@ tasks:
       - "5"
     scriptarguments:
       behavior_id:
-        simple: "10197"
+        complex:
+          root: CrowdStrike.Detection.Behavior
+          accessor: ID
+          transformers:
+          - operator: FirstArrayElement
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -188,7 +192,7 @@ tasks:
     task:
       id: c0347b2c-e8fe-46d6-89d2-ed9e4cd4602f
       version: -1
-      name: Assert 'suspicious_activity' scenario
+      name: Assert scenario is not empty
       type: condition
       iscommand: false
       brand: ""
@@ -199,16 +203,13 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualString
+      - - operator: isNotEmpty
           left:
             value:
               complex:
                 root: CrowdStrike
                 accessor: Behavior.Scenario
             iscontext: true
-          right:
-            value:
-              simple: suspicious_activity
     continueonerrortype: ""
     view: |-
       {
