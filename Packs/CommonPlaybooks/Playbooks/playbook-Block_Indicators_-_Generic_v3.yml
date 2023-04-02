@@ -330,7 +330,7 @@ tasks:
     taskid: 8e6165ed-cc2e-4820-8ae4-c73fd82a3088
     type: regular
     task:
-      id: 3f240277-9270-475c-8730-ccb0dd02a3df
+      id: 8e6165ed-cc2e-4820-8ae4-c73fd82a3088
       version: -1
       name: Tag bad indicators
       description: commands.local.cmd.add.values.to.indicator.multi.select.field
