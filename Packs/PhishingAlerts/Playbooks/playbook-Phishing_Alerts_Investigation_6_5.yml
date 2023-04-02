@@ -365,7 +365,7 @@ tasks:
       '#default#':
       - "173"
       "yes":
-      - "154"
+      - "197"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -427,445 +427,6 @@ tasks:
     timertriggers:
     - fieldname: remediationsla
       action: stop
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "154":
-    id: "154"
-    taskid: 3de94127-4a5e-40dc-88e0-9ace21d59e8c
-    type: playbook
-    task:
-      id: 3de94127-4a5e-40dc-88e0-9ace21d59e8c
-      version: -1
-      name: Block Indicators - Generic v2
-      description: |+
-        This playbook blocks malicious Indicators using all integrations that are enabled, using the following sub-playbooks:
-
-        - Block URL - Generic
-        - Block Account - Generic
-        - Block IP - Generic v2
-        - Block File - Generic v2
-        - Block Email - Generic
-        - Block Domain - Generic
-
-      playbookName: Block Indicators - Generic v2
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "153"
-    scriptarguments:
-      AutoCommit:
-        simple: "No"
-      CustomBlockRule:
-        simple: "True"
-      CustomURLCategory:
-        simple: Demisto Remediation - Malicious URLs
-      DomainToBlock:
-        complex:
-          root: DBotScore
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: domain
-              ignorecase: true
-          - - operator: greaterThanOrEqual
-              left:
-                value:
-                  simple: DBotScore.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "3"
-          accessor: Indicator
-          transformers:
-          - operator: uniq
-      EmailToBlock:
-        complex:
-          root: DBotScore
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: email
-              ignorecase: true
-          - - operator: greaterThanOrEqual
-              left:
-                value:
-                  simple: DBotScore.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "3"
-          accessor: Indicator
-          transformers:
-          - operator: uniq
-      IP:
-        complex:
-          root: DBotScore
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: ip
-              ignorecase: true
-          - - operator: greaterThanOrEqual
-              left:
-                value:
-                  simple: DBotScore.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "3"
-          accessor: Indicator
-          transformers:
-          - operator: uniq
-      MD5:
-        complex:
-          root: DBotScore
-          filters:
-          - - operator: stringHasLength
-              left:
-                value:
-                  simple: DBotScore.Indicator
-                iscontext: true
-              right:
-                value:
-                  simple: "32"
-          - - operator: greaterThanOrEqual
-              left:
-                value:
-                  simple: DBotScore.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "3"
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: file
-              ignorecase: true
-            - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: hash
-              ignorecase: true
-          accessor: Indicator
-          transformers:
-          - operator: uniq
-      SHA256:
-        complex:
-          root: DBotScore
-          filters:
-          - - operator: stringHasLength
-              left:
-                value:
-                  simple: DBotScore.Indicator
-                iscontext: true
-              right:
-                value:
-                  simple: "64"
-          - - operator: greaterThanOrEqual
-              left:
-                value:
-                  simple: DBotScore.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "3"
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: file
-              ignorecase: true
-            - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: hash
-              ignorecase: true
-          accessor: Indicator
-          transformers:
-          - operator: uniq
-      URL:
-        complex:
-          root: DBotScore
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: url
-              ignorecase: true
-          - - operator: greaterThanOrEqual
-              left:
-                value:
-                  simple: DBotScore.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "3"
-          accessor: Indicator
-          transformers:
-          - operator: uniq
-      URLListName:
-        simple: Demisto Remediation - URL EDL
-      Username:
-        complex:
-          root: DBotScore
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: DBotScore.Type
-                iscontext: true
-              right:
-                value:
-                  simple: username
-              ignorecase: true
-          - - operator: greaterThanOrEqual
-              left:
-                value:
-                  simple: DBotScore.Score
-                iscontext: true
-              right:
-                value:
-                  simple: "3"
-          accessor: Indicator
-          transformers:
-          - operator: uniq
-    separatecontext: true
-    loop:
-      iscommand: false
-      scriptArguments:
-        AutoCommit:
-          simple: "No"
-        CustomBlockRule:
-          simple: "True"
-        EmailToBlock:
-          complex:
-            root: DBotScore
-            filters:
-            - - operator: isEqualString
-                left:
-                  value:
-                    simple: DBotScore.Type
-                  iscontext: true
-                right:
-                  value:
-                    simple: email
-                ignorecase: true
-            - - operator: greaterThanOrEqual
-                left:
-                  value:
-                    simple: DBotScore.Score
-                  iscontext: true
-                right:
-                  value:
-                    simple: "3"
-            accessor: Indicator
-            transformers:
-            - operator: uniq
-        IP:
-          complex:
-            root: DBotScore
-            filters:
-            - - operator: isEqualString
-                left:
-                  value:
-                    simple: DBotScore.Type
-                  iscontext: true
-                right:
-                  value:
-                    simple: ip
-                ignorecase: true
-            - - operator: greaterThanOrEqual
-                left:
-                  value:
-                    simple: DBotScore.Score
-                  iscontext: true
-                right:
-                  value:
-                    simple: "3"
-            accessor: Indicator
-            transformers:
-            - operator: uniq
-        MD5:
-          complex:
-            root: DBotScore
-            filters:
-            - - operator: stringHasLength
-                left:
-                  value:
-                    simple: DBotScore.Indicator
-                  iscontext: true
-                right:
-                  value:
-                    simple: "32"
-            - - operator: greaterThanOrEqual
-                left:
-                  value:
-                    simple: DBotScore.Score
-                  iscontext: true
-                right:
-                  value:
-                    simple: "3"
-            - - operator: isEqualString
-                left:
-                  value:
-                    simple: DBotScore.Type
-                  iscontext: true
-                right:
-                  value:
-                    simple: file
-                ignorecase: true
-              - operator: isEqualString
-                left:
-                  value:
-                    simple: DBotScore.Type
-                  iscontext: true
-                right:
-                  value:
-                    simple: hash
-                ignorecase: true
-            accessor: Indicator
-            transformers:
-            - operator: uniq
-        SHA256:
-          complex:
-            root: DBotScore
-            filters:
-            - - operator: stringHasLength
-                left:
-                  value:
-                    simple: DBotScore.Indicator
-                  iscontext: true
-                right:
-                  value:
-                    simple: "64"
-            - - operator: greaterThanOrEqual
-                left:
-                  value:
-                    simple: DBotScore.Score
-                  iscontext: true
-                right:
-                  value:
-                    simple: "3"
-            - - operator: isEqualString
-                left:
-                  value:
-                    simple: DBotScore.Type
-                  iscontext: true
-                right:
-                  value:
-                    simple: file
-                ignorecase: true
-              - operator: isEqualString
-                left:
-                  value:
-                    simple: DBotScore.Type
-                  iscontext: true
-                right:
-                  value:
-                    simple: hash
-                ignorecase: true
-            accessor: Indicator
-            transformers:
-            - operator: uniq
-        URL:
-          complex:
-            root: DBotScore
-            filters:
-            - - operator: isEqualString
-                left:
-                  value:
-                    simple: DBotScore.Type
-                  iscontext: true
-                right:
-                  value:
-                    simple: url
-                ignorecase: true
-            - - operator: greaterThanOrEqual
-                left:
-                  value:
-                    simple: DBotScore.Score
-                  iscontext: true
-                right:
-                  value:
-                    simple: "3"
-            accessor: Indicator
-            transformers:
-            - operator: uniq
-        Username:
-          complex:
-            root: DBotScore
-            filters:
-            - - operator: isEqualString
-                left:
-                  value:
-                    simple: DBotScore.Type
-                  iscontext: true
-                right:
-                  value:
-                    simple: username
-                ignorecase: true
-            - - operator: greaterThanOrEqual
-                left:
-                  value:
-                    simple: DBotScore.Score
-                  iscontext: true
-                right:
-                  value:
-                    simple: "3"
-            accessor: Indicator
-            transformers:
-            - operator: uniq
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": -20,
-          "y": 2880
-        }
-      }
-    note: false
-    timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
@@ -1849,6 +1410,255 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "197":
+    id: "197"
+    taskid: e03e5bd3-f3fd-412f-8634-29543cfad2b8
+    type: playbook
+    task:
+      id: e03e5bd3-f3fd-412f-8634-29543cfad2b8
+      version: -1
+      name: Block Indicators - Generic v3
+      playbookName: Block Indicators - Generic v3
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "153"
+    scriptarguments:
+      AutoBlockIndicators:
+        complex:
+          root: inputs.AutoBlockIndicators
+      AutoCommit:
+        simple: "No"
+      CustomBlockRule:
+        simple: "True"
+      CustomURLCategory:
+        simple: XSOAR Remediation - Malicious URLs
+      DomainToBlock:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: domain
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      EmailToBlock:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: email
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      IP:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: ip
+              ignorecase: true
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      InputEnrichment:
+        simple: "False"
+      MD5:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: DBotScore.Indicator
+                iscontext: true
+              right:
+                value:
+                  simple: "32"
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: file
+            - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: hash
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      SHA256:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: stringHasLength
+              left:
+                value:
+                  simple: DBotScore.Indicator
+                iscontext: true
+              right:
+                value:
+                  simple: "64"
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: file
+            - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: hash
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      URL:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: url
+              ignorecase: true
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+      UserVerification:
+        complex:
+          root: inputs.UserVerification
+      Username:
+        complex:
+          root: DBotScore
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: DBotScore.Type
+                iscontext: true
+              right:
+                value:
+                  simple: username
+              ignorecase: true
+          - - operator: greaterThanOrEqual
+              left:
+                value:
+                  simple: DBotScore.Score
+                iscontext: true
+              right:
+                value:
+                  simple: "3"
+          accessor: Indicator
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -20,
+          "y": 2880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -1965,11 +1775,26 @@ inputs:
   value:
     simple: "True"
   required: false
-  description: Check Microsoft headers for BCL/PCL/SCL scores and set the "Severity"
-    and "Email Classification" accordingly.
+  description: Check Microsoft headers for BCL/PCL/SCL scores and set the "Severity" and "Email Classification" accordingly.
+  playbookInputQuery:
+- key: AutoBlockIndicators
+  value:
+    simple: "True"
+  required: false
+  description: |-
+    Possible values: True/False.  Default: True.
+    Should the given indicators be automatically blocked, or should the user be given the option to choose?
+
+    If set to False - no prompt will appear, and all provided indicators will be blocked automatically.
+    If set to True - the user will be prompted to select which indicators to block.
+  playbookInputQuery:
+- key: UserVerification
+  value:
+    simple: "False"
+  required: false
+  description: "Possible values: True/False.\nWhether to provide user verification for blocking IPs. \n\nFalse - No prompt will be displayed to the user.\nTrue - The server will ask the user for blocking verification and will display the blocking list."
   playbookInputQuery:
 outputs: []
 tests:
 - No tests (auto formatted)
-fromversion: 6.0.0
-toversion: 6.4.9
+fromversion: 6.5.0

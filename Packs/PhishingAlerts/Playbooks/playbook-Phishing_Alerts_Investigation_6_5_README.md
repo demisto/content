@@ -7,15 +7,15 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Extract Indicators From File - Generic v2
-* Entity Enrichment - Phishing v2
-* Detonate File - Generic
 * Process Email - Generic v2
-* Email Headers Check - Generic
-* Block Indicators - Generic v2
 * Phishing Alerts - Check Severity
-* Search And Delete Emails - Generic v2
+* Detonate File - Generic
+* Extract Indicators From File - Generic v2
+* Email Headers Check - Generic
 * Threat Hunting - Generic
+* Search And Delete Emails - Generic v2
+* Block Indicators - Generic v3
+* Entity Enrichment - Phishing v2
 
 ### Integrations
 
@@ -50,6 +50,8 @@ This playbook does not use any integrations.
 | SensitiveMailboxesList | The name of a list that contains the organization's sensitive users. | lists.sensitiveMailboxesList | Optional |
 | SearchThisWeek | Whether to search for similar emails in a week's time range or for all time. | true | Optional |
 | CheckMicrosoftHeaders | Check Microsoft headers for BCL/PCL/SCL scores and set the "Severity" and "Email Classification" accordingly. | True | Optional |
+| AutoBlockIndicators | Possible values: True/False.  Default: True.<br/>Should the given indicators be automatically blocked, or should the user be given the option to choose?<br/><br/>If set to False - no prompt will appear, and all provided indicators will be blocked automatically.<br/>If set to True - the user will be prompted to select which indicators to block. | True | Optional |
+| UserVerification | Possible values: True/False.<br/>Whether to provide user verification for blocking IPs. <br/><br/>False - No prompt will be displayed to the user.<br/>True - The server will ask the user for blocking verification and will display the blocking list. | False | Optional |
 
 ## Playbook Outputs
 
@@ -60,4 +62,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Phishing Alerts Investigation](../doc_files/Phishing_Alerts_Investigation.png)
+![Phishing Alerts Investigation](../doc_files/Phishing_Alerts_Investigation_6_5.png)
