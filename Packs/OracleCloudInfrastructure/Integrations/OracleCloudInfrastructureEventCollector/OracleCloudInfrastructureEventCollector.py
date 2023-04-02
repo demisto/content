@@ -144,9 +144,10 @@ class OCIEventHandler:
         Get events from CIO client.
         - This method loads all audit events in the time range and it does
           have performance implications of lot of audit events.
-        - The list_events function will return a maximum of 100 events per call,
-          in order to get more events this function is wrapped with the list_call_get_all_results function,
-          which will get all the events in a certain time range and than slice the events according to the desired amount of events.
+        - The list_events function will return a maximum of 100 events per call.
+          In order to get more events this function is wrapped with the list_call_get_all_results function,
+          which will get all the events in a certain time range and than slice the events
+          according to the desired amount of events.
         Args:
             prev_id (int): The id of the last event we got from the last run.
             alert_status (str): status of the alert to search for. Options are: 'ACTIVE' or 'CLOSED'.
@@ -161,6 +162,9 @@ class OCIEventHandler:
                 start_time=self.first_fetch_time,
                 end_time=datetime.now())
 
+            if not response.data:
+                return []
+
             events = json.loads(str(response.data[:max_events])) if max_events \
                 else json.loads(str(response.data[:self.max_fetch]))
 
@@ -170,7 +174,7 @@ class OCIEventHandler:
         except Exception as e:
             raise DemistoException(f'Error while fetching events: {e}') from e
 
-        demisto.debug(f'{len(events)} Events fetched from start time: {self.first_fetch_time}.')
+        demisto.info(f'{len(events)} Events fetched from start time: {self.first_fetch_time}.')
         return events
 
     def get_last_event_time(self, events: List) -> str:
@@ -279,7 +283,7 @@ def main():
     max_fetch = arg_to_number(params.get('max_fetch')) or MAX_EVENTS_TO_FETCH
     first_fetch = params.get('first_fetch') or FETCH_DEFAULT_TIME
     first_fetch_time = calculate_first_fetch_time(last_run=last_run_time, first_fetch_param=first_fetch)
-    demisto.debug(f'Command being called is {command}')
+    demisto.info(f'Command being called is {command}')
 
     try:
         if not isinstance(first_fetch_time, datetime):
@@ -294,10 +298,10 @@ def main():
             tenancy_ocid=params.get('tenancy_ocid'),
             region=params.get('region')
         )
-        demisto.debug('Client created successfully.')
+        demisto.info('Client created successfully.')
 
         oci_event_handler = OCIEventHandler(client, last_run, max_fetch, first_fetch_time)
-        demisto.debug(f'OCI Event Handler created successfully. {oci_event_handler=}')
+        demisto.info(f'OCI Event Handler created successfully. {oci_event_handler=}')
 
         if command == 'test-module':
             return_results(test_module(client, oci_event_handler))
@@ -309,10 +313,10 @@ def main():
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
                 if events:
                     last_event_time = oci_event_handler.last_event_time
-                    demisto.debug(f'Set last run to {last_event_time}')
+                    demisto.info(f'Set last run to {last_event_time}')
                     demisto.setLastRun({"lastRun": {last_event_time}})
                 else:
-                    demisto.debug('No new events fetched, Last run was not updated.')
+                    demisto.info('No new events fetched, Last run was not updated.')
 
             elif command == 'oracle-cloud-infrastructure-get-events':
                 command_results = CommandResults(
@@ -322,6 +326,8 @@ def main():
                     raw_response=events,
                 )
                 return_results(command_results)
+        else:
+            return_error(f'Command {command} does not exist for this integration.')
 
     except Exception as e:
         return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
