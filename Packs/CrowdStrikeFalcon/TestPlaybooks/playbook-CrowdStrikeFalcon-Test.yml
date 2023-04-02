@@ -3044,7 +3044,8 @@ tasks:
     scriptarguments:
       value:
         complex:
-          root: GeneratedUUID
+          root: CrowdStrike.MLExclusion
+          accessor: value
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -3260,7 +3261,8 @@ tasks:
     scriptarguments:
       name:
         complex:
-          root: GeneratedUUID
+          root: CrowdStrike.IOAExclusion
+          accessor: name
     separatecontext: false
     continueonerrortype: ""
     view: |-
