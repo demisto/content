@@ -426,10 +426,8 @@ def close_ticket():
 
 
 def edit_ticket_request(ticket_id, encoded):
-    suffix_url = 'ticket/{}/edit'.format(ticket_id)
-    edited_ticket = http_request('POST', suffix_url, data=encoded)
-
-    return edited_ticket
+    suffix_url = f'ticket/{ticket_id}/edit'
+    return http_request('POST', suffix_url, data=encoded)
 
 
 def edit_ticket():
