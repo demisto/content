@@ -743,6 +743,7 @@ script:
   isfetch: false
   longRunning: true
   longRunningPort: true
+  isFetchSamples: true
   runonce: false
   script: ''
   subtype: python3
