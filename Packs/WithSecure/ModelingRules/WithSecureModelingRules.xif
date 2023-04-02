@@ -53,7 +53,7 @@ alter
     ip3_v6 = if(extract_ip3 ~= ":", extract_ip3, null),
     ip4_v4 = if(extract_ip4 !~= ":", extract_ip4, null),
     ip4_v6 = if(extract_ip4 ~= ":", extract_ip4, null),
-    xdm.target.file.is_signed = if (xdm.target.file.signer != null, "True", "False")
+    xdm.target.file.is_signed = if(xdm.target.file.signer != null, "True", "False")
 | alter
     xdm.source.host.ipv4_addresses = ip1_v4,
     xdm.source.host.ipv6_addresses = ip1_v6,
