@@ -10,12 +10,12 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Palo Alto Networks - Hunting And Threat Detection
-* Block Indicators - Generic v2
-* Cortex XDR device control violations
-* Calculate Severity - Generic v2
-* Cortex XDR Alerts Handling
 * Entity Enrichment - Generic v3
+* Block Indicators - Generic v3
+* Cortex XDR device control violations
+* Cortex XDR Alerts Handling
+* Palo Alto Networks - Hunting And Threat Detection
+* Calculate Severity - Generic v2
 
 ### Integrations
 
@@ -24,16 +24,16 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Scripts
 
-* DBotFindSimilarIncidents
 * Set
 * SetGridField
+* DBotFindSimilarIncidents
 
 ### Commands
 
 * xdr-update-incident
-* linkIncidents
-* xdr-get-incident-extra-data
 * closeInvestigation
+* xdr-get-incident-extra-data
+* linkIncidents
 
 ## Playbook Inputs
 
@@ -53,6 +53,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | TimeStamp | Timestamp in relative date format for query device control events from Cortex XDR. | 10 days | Optional |
 | AutoRemediation | Whether remediation will be run automatically or manually. If set to "True" - remediation will be automatic. | False | Optional |
 | XDRDomain | XDR instance domain | incident.xdrurl | Optional |
+| AutoBlockIndicators | Possible values: True/False.  Default: True.<br/>Should the given indicators be automatically blocked, or should the user be given the option to choose?<br/><br/>If set to False - no prompt will appear, and all provided indicators will be blocked automatically.<br/>If set to True - the user will be prompted to select which indicators to block. | True | Optional |
+| UserVerification | Possible values: True/False.<br/>Whether to provide user verification for blocking IPs. <br/><br/>False - No prompt will be displayed to the user.<br/>True - The server will ask the user for blocking verification and will display the blocking list. | False | Optional |
 
 ## Playbook Outputs
 
@@ -63,4 +65,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Cortex XDR incident handling v3](../doc_files/Cortex_XDR_incident_handling_v3.png)
+![Cortex XDR incident handling v3](../doc_files/Cortex_XDR_incident_handling_v3_6_5.png)
