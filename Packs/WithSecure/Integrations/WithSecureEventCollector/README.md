@@ -1,5 +1,5 @@
 WithSecure event collector integration for Cortex XSIAM.
-This integration was integrated and tested with version 1.0 of WithSecure Event Collector
+This integration was integrated and tested with version 1.0 of WithSecure API
 
 ## Authentication Process
 WithSecure Authenticates the User with Client Credentials flow, follow this [documentation](https://connect.withsecure.com/getting-started/elements#:~:text=API%20deprecation%20policy.-,Getting%20client%20credentials,-To%20use%20Elements), to obtain your own Client ID and Client Secret.

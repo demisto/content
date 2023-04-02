@@ -22,7 +22,7 @@ PRODUCT = 'Endpoint Protection'
 class Client(BaseClient):
     """Client class to interact with the service API
 
-    This Client implements API calls, and does not contain any XSOAR logic.
+    This Client implements API calls.
     Should only do requests and return data.
     It inherits from BaseClient defined in CommonServer Python.
     Most calls use _http_request() that handles proxy, SSL verification, etc.
@@ -183,7 +183,7 @@ def get_events_command(client: Client, args: dict) -> tuple[list, CommandResults
     limit = arg_to_number(args.get('limit')) or MAX_FETCH_LIMIT
     events = get_events(client, fetch_from, limit)
 
-    events = events if len(events) < limit else events[:limit]
+    events = events[:limit]
     hr = tableToMarkdown(name='With Secure Events', t=events)
     return events, CommandResults(readable_output=hr)
 
@@ -207,7 +207,7 @@ def fetch_events_command(client: Client, first_fetch: str, limit: int) -> list:
     fetch_from = last_run.get('fetch_from') or first_fetch
     events = get_events(client, fetch_from, limit)
 
-    last_fetch, parsed_events = parse_events(events if len(events) < limit else events[:limit], fetch_from)
+    last_fetch, parsed_events = parse_events(events[:limit], fetch_from)
     demisto.setLastRun({'fetch_from': last_fetch})
 
     return parsed_events
