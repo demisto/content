@@ -43,7 +43,7 @@ This integration was integrated and tested with version 6.0 of Cortex XSOAR.
 
 
 ## Important notes:
-- In order to mirror custom fields, you need to create an incoming mapper for the integration and explicitly specify them in it. In case the original value can be empty, you should also specify them in the `Outgoing Custom Fields` integration parameter.
+- In order to mirror custom fields, you need to create an incoming mapper for the integration and explicitly specify them in it. In case the original value can be empty, also specify them in the `Outgoing Custom Fields` integration parameter.
 - In order to mirror custom fields in both directions, the custom fields in both Cortex XSOAR instances must have the same CLI name.
 - Mirrored incidents include the playbook ID. The receiving side will attempt to run a playbook with a matching ID, if one exists locally. To have the machine run the default playbook for the mirrored incident, set the `Mirror Playbook ID` to `false`. Otherwise (default), the machine will attempt to run a playbook whose ID matches the `playbookId` field in the mirrored incident.
 

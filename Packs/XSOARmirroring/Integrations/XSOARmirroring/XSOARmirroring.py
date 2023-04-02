@@ -698,7 +698,7 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], mirror_ta
 
     :type custom_fields: ``List[str]``
     :param custom_fields:
-        The custom fields that you will mirror out of the incident even when empty in remote system.
+        The custom fields to always mirror out of the incident, even when empty in remote system.
 
     :return:
         ``str`` containing the remote incident id - really important if the incident is newly created remotely
@@ -720,12 +720,7 @@ def update_remote_system_command(client: Client, args: Dict[str, Any], mirror_ta
             for changed_key in parsed_args.delta.keys():
                 old_incident[changed_key] = parsed_args.delta[changed_key]  # type: ignore
                 if changed_key in old_incident.get('CustomFields', {}).keys() or changed_key in custom_fields:
-                    demisto.debug(f'Field {changed_key} is synced as a custom field.')  # todo remove before merge
-
                     old_incident['CustomFields'][changed_key] = parsed_args.delta[changed_key]
-                else:
-                    demisto.debug(f'Field {changed_key} is not synced as a custom field, because it is not in the remote XSOAR '
-                                  f'CustomFields nor in the integration custom_fields parameter.')  # todo remove before merge
 
             parsed_args.data = old_incident
 
