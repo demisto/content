@@ -41,6 +41,7 @@ class BucketUploadFlow(object):
 
     """
     PACKS_RESULTS_FILE = "packs_results.json"
+    PACKS_RESULTS_FILE_FOR_SLACK = "packs_results_final.json"
     PREPARE_CONTENT_FOR_TESTING = "prepare_content_for_testing"
     UPLOAD_PACKS_TO_MARKETPLACE_STORAGE = "upload_packs_to_marketplace_storage"
     SUCCESSFUL_PACKS = "successful_packs"

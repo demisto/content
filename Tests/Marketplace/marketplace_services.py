@@ -3686,6 +3686,8 @@ def store_successful_and_failed_packs_in_ci_artifacts(packs_results_file_path: s
         logging.debug(f"Images data {images_data}")
 
     if packs_results:
+        packs_results_file_name, suffix = packs_results_file_path.split(".")
+        packs_results_file_path = f'{packs_results_file_name}_final.{suffix}'
         json_write(packs_results_file_path, packs_results)
 
 
