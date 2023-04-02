@@ -6,13 +6,17 @@ import pytest
 ALERTS_API_RAW = 'test_data/ListAlerts.json'
 ALERTS_TO_SORT = 'test_data/AlertsToSort.json'
 
+
 client = MsClient(
-    server="url", tenant_id="tenant", auth_id="auth_id", enc_key="enc_key", app_name="APP_NAME", verify="verify",
+    server="url", tenant_id="tenant", auth_id="auth_id", enc_key="enc_key", verify="verify",
     proxy="proxy", self_deployed="self_deployed", subscription_id="subscription_id", ok_codes=(1, 3),
     certificate_thumbprint=None, private_key=None)
 
 
 def read_json_util(path: str):
+    """
+    Read json util functions
+    """
     with open(path, 'r') as f:
         json_file = json.load(f)
 
@@ -108,6 +112,9 @@ def test_get_events(mocker):
 
 
 def test_add_time_key_to_events(mocker):
+    """
+    Check that the _time field was added to the events
+    """
     events = read_json_util(ALERTS_TO_SORT)
     events_with_time = add_time_key_to_events(events)
     for event in events_with_time:
@@ -176,13 +183,33 @@ def test_filter_out_previosly_digested_events_no_last_run():
 
 
 def test_filter_out_previosly_digested_events_no_events():
-    filter_out_previosly_digested_events([], {'fake': 'fake'}) == {'fake': 'fake'}
+    """
+    Given:
+        - An empty list of evetns and a last_run
+
+    When:
+        - Filtering out previosly digested events
+
+    Then:
+        - Check that an empty event list is returned
+    """
+    assert filter_out_previosly_digested_events([], {'fake': 'fake'}) == []
 
 
 @pytest.mark.parametrize('events, filtered_events, res', [([1, 2, 3], [1, 2], True),
                                                           ([], [], False),
                                                           ([1, 2, 3], [1, 2, 3, 4], False)])
 def test_check_events_were_filtered_out(events, filtered_events, res):
+    """
+    Given:
+        A list of events and a list of filtered events
+
+    When:
+        Checking if events were filtered out
+
+    Then:
+        Return true if events were filtered out and false otherwise.
+    """
     assert check_events_were_filtered_out(events, filtered_events) == res
 
 
@@ -191,9 +218,27 @@ def test_check_events_were_filtered_out(events, filtered_events, res):
                                                                              {'startTimeUtc': '2023-01-01T15:38:50.6222254Z'}},
                                                                             {'id': '2', 'properties':
                                                                              {'startTimeUtc': '2023-01-01T15:37:50.62866664Z'}}]},
-                                                                 [])
+                                                                 []),
+                                                                ({'value': [{'id': '1', 'properties':
+                                                                             {'startTimeUtc': '2023-01-01T15:42:50.6222254Z'}},
+                                                                            {'id': '2', 'properties':
+                                                                             {'startTimeUtc': '2023-01-01T15:41:50.62866664Z'}}]},
+                                                                 [{'id': '1', 'properties':
+                                                                   {'startTimeUtc': '2023-01-01T15:42:50.6222254Z'}},
+                                                                  {'id': '2', 'properties':
+                                                                   {'startTimeUtc': '2023-01-01T15:41:50.62866664Z'}}])
                                                                 ])
 def test_get_event_list(http_response, get_events_response):
+    """
+    Given:
+        - A mocked response from the ms.http_request and a lasat run
+
+    When:
+        - Collecting events from the API
+
+    Then:
+        - Validate that the function flow workes corectlly.
+    """
     class MockHttpRequest:
         def http_request(self, **kwargs):
             return http_response
