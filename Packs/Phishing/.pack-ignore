@@ -164,3 +164,4 @@ ignore=RM106
 CheckEmailAuthenticity
 DeleteReportedEmail
 GetBrandDeleteReportedEmail
+CommonTypes
