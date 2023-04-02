@@ -188,6 +188,7 @@ def get_new_indicators(client: MandiantClient, last_run: str, indicator_type: st
         params = {'start_epoch': int(start_date.timestamp()), 'limit': limit}  # type:ignore
 
     new_indicators_list = client.get_indicators(indicator_type, params=params)
+
     if indicator_type != 'Indicators': \
             # new to old
         new_indicators_list.sort(key=lambda x: arg_to_datetime(x.get('last_updated')), reverse=True)  # type:ignore
