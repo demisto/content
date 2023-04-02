@@ -1,0 +1,52 @@
+{
+    "with_secure_endpoint_protection_raw": {
+        "details": {
+            "type": "string",
+            "is_array": false
+        },
+        "severity": {
+            "type": "string",
+            "is_array": false
+        },
+        "engine": {
+            "type": "string",
+            "is_array": false
+        },
+        "id": {
+            "type": "string",
+            "is_array": false
+        },
+        "action": {
+            "type": "string",
+            "is_array": false
+        },
+        "initialDetectionTimestamp": {
+            "type": "string",
+            "is_array": false
+        },
+        "clientTimestamp": {
+            "type": "string",
+            "is_array": false
+        },
+        "serverTimestamp": {
+            "type": "string",
+            "is_array": false
+        },
+        "source": {
+            "type": "string",
+            "is_array": false
+        },
+        "device": {
+            "type": "string",
+            "is_array": false
+        },
+        "commandLine": {
+            "type": "string",
+            "is_array": false
+        },
+        "-": {
+            "type": "string",
+            "is_array": false
+        }
+    }
+}
