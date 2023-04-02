@@ -2,7 +2,8 @@ import demistomock as demisto
 from CommonServerPython import *
 import urllib3
 from typing import Any
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
+from dateutil import relativedelta
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -302,14 +303,7 @@ def get_next_month(date_obj: datetime) -> datetime:
     Examples:
         get_next_month(datetime(2021, 12, 3)) -> 2022-01-03 00:00:00
     """
-    try:
-        # Try to set the month to the next month on the same day
-        next_month_date = date_obj.replace(month=date_obj.month + 1)
-    except ValueError:
-        # If the next month doesn't have the same day, set the year to the next year and the month to January
-        next_month_date = date_obj.replace(year=date_obj.year + 1, month=1)
-
-    return next_month_date
+    return date_obj + relativedelta.relativedelta(months=1)
 
 
 ''' MAIN FUNCTION '''
@@ -338,10 +332,10 @@ def main() -> None:
         arg=first_fetch_time,
         arg_name='First fetch time',
         required=True
-    ).replace(tzinfo=timezone.utc)
+    )
     if first_fetch_time == '6 months':
         first_fetch_datetime += timedelta(days=1)
-    if first_fetch_datetime <= dateparser.parse('6 months').replace(tzinfo=timezone.utc):
+    if first_fetch_datetime <= dateparser.parse('6 months', settings={'TIMEZONE': 'UTC'}):
         raise DemistoException("The First fetch time should fall within the last six months. "
                                "Please provide a valid date within the last six months.")
 
@@ -368,7 +362,7 @@ def main() -> None:
                 should_push_events = argToBoolean(args.pop('should_push_events'))
                 events, results = get_events(client=client,
                                              limit=arg_to_number(args.get("limit")) or MAX_RECORDS_PER_PAGE,
-                                             first_fetch_time=first_fetch_datetime,
+                                             first_fetch_time=first_fetch_datetime.replace(tzinfo=timezone.utc),
                                              )
                 return_results(results)
 
@@ -377,7 +371,7 @@ def main() -> None:
                 last_run = demisto.getLastRun()
                 next_run, events = fetch_events(client=client,
                                                 last_run=last_run,
-                                                first_fetch_time=first_fetch_datetime,
+                                                first_fetch_time=first_fetch_datetime.replace(tzinfo=timezone.utc),
                                                 )
                 # saves next_run for the time fetch-events is invoked
                 demisto.debug(f'Set last run to {next_run}')
