@@ -149,10 +149,12 @@ def get_pack_dependencies(client: demisto_client, pack_data: dict, lock: Lock):
                 logging.exception(f'Exception trying to get pack {pack_id} dependencies.'
                                   f' Exception: {ex.status}, {ex.body}')
             except Exception:
-                logging.error(f'An error occurred while parsing of the dependencies error: {str(ex)}')
+                logging.error(f'An error occurred while parsing the dependencies result.'
+                              f' Rrror: {str(ex)}')
                 raise ex
         except Exception as ex:
-            logging.exception(f'Exception trying to get pack {pack_id} dependencies. Exception: {ex}')
+            logging.exception(f'Exception trying to get pack {pack_id} dependencies.'
+                              f'  Exception: {ex}')
 
         if 200 <= status_code < 300:
             dependencies_data: list = []
@@ -207,10 +209,11 @@ def search_pack(client: demisto_client,
                 logging.exception(f'Exception trying to search pack "{pack_display_name}" with ID "{pack_id}".'
                                   f' Exception: {ex.status}, {ex.body}')
             except Exception:
-                logging.debug(f'An error occurred while parsing the marketplace error: {str(ex)}')
+                logging.error(f'An error occurred while parsing the marketplace error: {str(ex)}')
                 raise ex
         except Exception as ex:
-            logging.exception(f'Exception trying to search pack "{pack_display_name}" with ID "{pack_id}". Exception: {ex}')
+            logging.exception(f'Exception trying to search pack "{pack_display_name}" with ID "{pack_id}".'
+                              f' Exception: {ex}')
 
         if 200 <= status_code < 300:
 
