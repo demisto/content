@@ -1791,6 +1791,21 @@ class TestCommandResults:
         with pytest.raises(ValueError, match='outputs_prefix'):
             CommandResults(outputs=[])
 
+    def test_outputs_with_period_outputs_prefix(self):
+        """
+        Given
+        - outputs as a period.
+
+        When
+        - Returns results.
+
+        Then
+        - Validate a ValueError is raised.
+        """
+        from CommonServerPython import CommandResults
+        with pytest.raises(ValueError, match='outputs_prefix'):
+            CommandResults(outputs=[], outputs_prefix='.')
+
     def test_with_tags(self):
         from CommonServerPython import CommandResults
         command_results = CommandResults(tags=['tag1', 'tag2'])

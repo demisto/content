@@ -6753,7 +6753,7 @@ class CommandResults:
         # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool, bool, ScheduledCommand, list, int, str, List[Any]) -> None  # noqa: E501
         if raw_response is None:
             raw_response = outputs
-        if outputs and not isinstance(outputs, dict):
+        if outputs is not None and not isinstance(outputs, dict):
             if not outputs_prefix:
                 raise ValueError('outputs_prefix is missing.')
             if outputs_prefix == '.':
